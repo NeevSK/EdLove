@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "main": "src/index.js",
+  "scripts": {
+    "dev": "node src/index.js"
+  },
   "dependencies": {
-    "fastly": "^14.0.0"
+    "fastify": "^5.6.1"
   }
 }
