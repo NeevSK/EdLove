@@ -1,3 +1,20 @@
 packages:
-  - "apps/*"
-  - "packages/*"
+  - 'packages/*'
+  - 'apps/*'
+  - 'libs/*'
+  - 'tools/*'
+  - 'examples/*'
+  - 'docs/*'
+  - 'configs/*'
+  - 'scripts/*'
+  - 'tests/*'
+  - 'benchmarks/*'
+  - 'infrastructure/*'
+  - 'deployments/*'
+  - 'extensions/*'
+  - 'integrations/*'
+  - 'components/*'  - 'themes/*'
+  - 'assets/*'
+  - 'utilities/*'
+  - 'services/*'
+  - 'platforms/*'
