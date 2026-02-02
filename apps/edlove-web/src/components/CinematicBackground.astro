@@ -1,0 +1,28 @@
+<div class="fixed inset-0 w-full h-full -z-10 bg-deepIndigo overflow-hidden">
+    
+    <!-- Cinematic Overlay: Darkens video slightly so text is readable -->
+    <div class="absolute inset-0 bg-deepIndigo/30 z-10 mix-blend-multiply"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-deepIndigo/80 z-10"></div>
+
+    <!-- The "Malick" Projector -->
+    <!-- 
+      INSTRUCTION: Drop your video file (e.g. 'tree-of-life.mp4') 
+      into 'public/assets/' and rename it to 'nature-loop.mp4' 
+    -->
+    <video
+        autoplay
+        loop
+        muted
+        playsinline
+        class="w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-100"
+    >
+        <source src="/assets/nature-loop.mp4" type="video/mp4" />
+        
+        <!-- Fallback: If no video is found, we show this Organic Gradient -->
+        <div class="absolute inset-0 bg-gradient-to-br from-[#4A6357] via-[#D4A574] to-[#2D3561]"></div>
+    </video>
+
+    <!-- Fallback Gradient (Visible if video fails or keeps loading) -->
+    <div class="-z-20 absolute inset-0 bg-gradient-to-br from-forestGreen/40 via-warmGold/20 to-deepIndigo"></div>
+
+</div>

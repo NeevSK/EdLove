@@ -1,0 +1,26 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navigation from '../../components/Navigation.astro';
+import LiquidCosmos from '../../components/LiquidCosmos.astro';
+---
+
+<Layout>
+  <Navigation />
+  
+  <main class="min-h-screen relative overflow-hidden flex flex-col items-center justify-center">
+    
+    <!-- The Living Graph Engine (Tier 3: Liquid Shader) -->
+    <LiquidCosmos />
+
+    <!-- Overlay Content -->
+    <div class="z-10 text-center space-y-8 animate-fade-in opacity-0" style="animation-delay: 0.5s;">
+      <h1 class="text-4xl md:text-6xl font-serif text-starlightSilver drop-shadow-lg">
+        The Paradigm <span class="text-transparent bg-clip-text bg-gradient-to-r from-warmGold to-cosmicPurple">Cosmos</span>
+      </h1>
+      <p class="text-skyBlue/80 font-sans tracking-wide max-w-xl mx-auto">
+        (Visualizing the Interconnected Knowledge Graph)
+      </p>
+    </div>
+
+  </main>
+</Layout>
