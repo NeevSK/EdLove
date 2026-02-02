@@ -11,10 +11,14 @@
             "id": "714aa9968942c21c",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Coding things.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "Coding things"
             }
           }
         ]
@@ -162,9 +166,9 @@
       "bases:Create new base": false
     }
   },
-  "active": "94a69c0cb08efa81",
+  "active": "714aa9968942c21c",
   "lastOpenFiles": [
-    "Coding things.md",
-    "Learning - Higher.md"
+    "Learning - Higher.md",
+    "Coding things.md"
   ]
 }
