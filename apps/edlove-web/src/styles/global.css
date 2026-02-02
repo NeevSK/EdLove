@@ -1,1 +1,32 @@
 @import "tailwindcss";
+
+@theme {
+  /* Sanctuary Palette */
+  --color-deepIndigo: #2D3561;
+  --color-warmGold: #D4A574;
+  --color-softWhite: #F5F1E8;
+  --color-forestGreen: #4A6357;
+  --color-dawnRose: #E8B4B8;
+  --color-skyBlue: #A8C5D6;
+
+  /* Accents */
+  --color-cosmicPurple: #9B7EBD;
+  --color-emberOrange: #E07A5F;
+  --color-starlightSilver: #E8F4F8;
+
+  /* Typography */
+  --font-serif: "Libre Baskerville", serif;
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Cinzel", serif;
+}
+
+/* Base Styles */
+html {
+  background-color: var(--color-softWhite);
+  color: var(--color-deepIndigo);
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+}

@@ -1,11 +1,30 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Navigation from '../components/Navigation.astro';
 ---
 
 <Layout>
-	<Welcome />
+  <Navigation />
+  
+  <main class="pt-16 min-h-screen flex flex-col items-center justify-center text-center px-4">
+    <!-- Hero Section -->
+    <div class="max-w-4xl mx-auto space-y-8 animate-fade-in">
+      <h1 class="text-5xl md:text-7xl font-serif text-deepIndigo leading-tight">
+        The Paradigm Cosmos
+      </h1>
+      
+      <p class="text-lg md:text-2xl font-sans text-deepIndigo/80 max-w-2xl mx-auto leading-relaxed">
+        What if the school you know is just one star in an infinite sky of possibilities?
+      </p>
+
+      <div class="pt-12">
+        <a 
+          href="/paradigms" 
+          class="inline-block px-8 py-4 border border-deepIndigo text-deepIndigo font-display tracking-widest hover:bg-deepIndigo hover:text-softWhite transition-all duration-500 rounded-sm"
+        >
+          ENTER THE COSMOS
+        </a>
+      </div>
+    </div>
+  </main>
 </Layout>

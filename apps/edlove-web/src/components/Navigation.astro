@@ -1,0 +1,44 @@
+---
+const links = [
+  { name: "Paradigm Cosmos", href: "/", color: "hover:text-skyBlue" },
+  { name: "Sri Lanka System", href: "/sri-lanka", color: "hover:text-emberOrange" },
+  { name: "Gurudevi Portal", href: "/gurudevi", color: "hover:text-forestGreen" },
+  { name: "Resource Ecosystem", href: "/resources", color: "hover:text-warmGold" },
+  { name: "The Sangha", href: "/community", color: "hover:text-dawnRose" },
+  { name: "Epistemic Core", href: "/library", color: "hover:text-deepIndigo" },
+];
+---
+
+<nav class="fixed top-0 w-full z-50 bg-softWhite/90 backdrop-blur-sm border-b border-deepIndigo/10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16 items-center">
+      <!-- Logo Stub -->
+      <div class="flex-shrink-0 flex items-center">
+        <a href="/" class="font-display font-bold text-xl text-deepIndigo tracking-widest">
+          EDLOVE.ORG
+        </a>
+      </div>
+
+      <!-- Desktop Menu -->
+      <div class="hidden md:flex space-x-8">
+        {links.map((link) => (
+          <a 
+            href={link.href} 
+            class={`font-sans text-sm font-medium text-deepIndigo/80 transition-colors duration-300 ${link.color}`}
+          >
+            {link.name}
+          </a>
+        ))}
+      </div>
+
+      <!-- Mobile Menu Button (Stub) -->
+      <div class="md:hidden">
+        <button class="text-deepIndigo hover:text-warmGold">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
