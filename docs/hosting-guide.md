@@ -1,5 +1,7 @@
 # Free Hosting Guide for EdLove Web
 
+> **Update**: After testing, Cloudflare Pages has persistent pnpm lockfile issues with monorepos. **Vercel is recommended** for this project.
+
 ## The Best Free Options (Ranked by Ease)
 
 ### 🥇 Tier 1: Zero-Config (Recommended for EdLove)
