@@ -80,12 +80,12 @@ export default function AuthScreen() {
         setLoading(false);
     }
 
-    async function handleGoogleSignIn() {
+    async function handleOAuthSignIn(provider: 'google' | 'apple') {
         setLoading(true);
         hapticLight();
         
         const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
+            provider,
             options: {
                 redirectTo: 'gurudevi://auth/callback',
             }
@@ -93,27 +93,8 @@ export default function AuthScreen() {
         
         if (error) {
             hapticError();
-            showToast(error.message, "error");
-        } else {
-            hapticSuccess();
-        }
-        setLoading(false);
-    }
-
-    async function handleAppleSignIn() {
-        setLoading(true);
-        hapticLight();
-        
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'apple',
-            options: {
-                redirectTo: 'gurudevi://auth/callback',
-            }
-        });
-        
-        if (error) {
-            hapticError();
-            showToast(error.message, "error");
+            const errorKey = provider === 'google' ? 'auth.googleSignInError' : 'auth.appleSignInError';
+            showToast(t(errorKey), "error");
         } else {
             hapticSuccess();
         }
@@ -296,7 +277,7 @@ export default function AuthScreen() {
                         {/* Google Sign In */}
                         <Button
                             size="lg"
-                            onPress={handleGoogleSignIn}
+                            onPress={() => handleOAuthSignIn('google')}
                             isDisabled={loading}
                             variant="outline"
                             sx={{
@@ -313,7 +294,7 @@ export default function AuthScreen() {
                         {/* Apple Sign In */}
                         <Button
                             size="lg"
-                            onPress={handleAppleSignIn}
+                            onPress={() => handleOAuthSignIn('apple')}
                             isDisabled={loading}
                             variant="outline"
                             sx={{

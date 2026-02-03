@@ -36,7 +36,9 @@
         "principal": "විදුහල්පතිවරයා",
         "signInWithGoogle": "Google සමඟ පිවිසෙන්න",
         "signInWithApple": "Apple සමඟ පිවිසෙන්න",
-        "orContinueWith": "හෝ මේවා සමඟ ඉදිරියට යන්න"
+        "orContinueWith": "හෝ මේවා සමඟ ඉදිරියට යන්න",
+        "googleSignInError": "Google පිවිසීම අසාර්ථක විය. කරුණාකර නැවත උත්සාහ කරන්න.",
+        "appleSignInError": "Apple පිවිසීම අසාර්ථක විය. කරුණාකර නැවත උත්සාහ කරන්න."
     },
     "tabs": {
         "self": "ස්වයං",
