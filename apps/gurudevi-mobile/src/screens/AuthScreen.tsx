@@ -204,9 +204,7 @@ export default function AuthScreen() {
                                         placeholder={t('auth.role')}
                                         color={Theme.colors.sacredWhite}
                                     />
-                                    <SelectIcon mr="$3">
-                                        <ChevronDown color={Theme.colors.mistGray} size={20} />
-                                    </SelectIcon>
+                                    <SelectIcon mr="$3" as={ChevronDown} color={Theme.colors.mistGray} />
                                 </SelectTrigger>
                                 <SelectPortal>
                                     <SelectBackdrop />
