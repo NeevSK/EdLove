@@ -13,20 +13,39 @@ import {
     ToastTitle,
     Center,
     HStack,
-    Pressable
+    Pressable,
+    Select,
+    SelectTrigger,
+    SelectInput,
+    SelectIcon,
+    SelectPortal,
+    SelectBackdrop,
+    SelectContent,
+    SelectDragIndicatorWrapper,
+    SelectDragIndicator,
+    SelectItem,
 } from "@gluestack-ui/themed";
+import { ChevronDown } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
+import { Theme } from '../constants/Theme';
+import { UserRole } from '../types/User';
+import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
 
 export default function AuthScreen() {
+    const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [fullName, setFullName] = useState('');
+    const [role, setRole] = useState<UserRole>('teacher'); // Default to teacher
     const [loading, setLoading] = useState(false);
     const [isSignUp, setIsSignUp] = useState(false);
     const toast = useToast();
 
     async function handleAuth() {
         setLoading(true);
+        hapticLight();
+
         if (isSignUp) {
             const { error } = await supabase.auth.signUp({
                 email,
@@ -34,13 +53,16 @@ export default function AuthScreen() {
                 options: {
                     data: {
                         full_name: fullName,
+                        role: role,
                     }
                 }
             });
             if (error) {
+                hapticError();
                 showToast(error.message, "error");
             } else {
-                showToast("Check your email for confirmation!", "success");
+                hapticSuccess();
+                showToast(t('auth.checkEmail'), "success");
             }
         } else {
             const { error } = await supabase.auth.signInWithPassword({
@@ -48,7 +70,10 @@ export default function AuthScreen() {
                 password,
             });
             if (error) {
+                hapticError();
                 showToast(error.message, "error");
+            } else {
+                hapticSuccess();
             }
         }
         setLoading(false);
@@ -66,64 +91,169 @@ export default function AuthScreen() {
     }
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: '$backgroundDark950', padding: '$6' }}>
+        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo, padding: Theme.spacing.xl }}>
             <Center sx={{ flex: 1 }}>
-                <VStack space="xl" sx={{ width: '100%' }}>
-                    <VStack space="xs">
-                        <Heading size="4xl" color="$orange500">Gurudevi</Heading>
-                        <Text color="$textDark400" size="lg">
-                            {isSignUp ? "Join the Teacher Community" : "Enter Your Sanctuary"}
+                <VStack space="lg" sx={{ width: '100%', maxWidth: 400 }}>
+                    {/* Heading */}
+                    <VStack space="xs" mb={Theme.spacing.lg}>
+                        <Heading color={Theme.colors.sanctuarySaffron} size="3xl" textAlign="center">
+                            {t('auth.enterSanctuary')}
+                        </Heading>
+                        <Text color={Theme.colors.pearlGray} size="md" textAlign="center">
+                            {isSignUp ? t('auth.joinCommunity') : t('auth.enterSanctuary')}
                         </Text>
                     </VStack>
 
-                    <VStack space="md" sx={{ marginTop: '$4' }}>
-                        {isSignUp && (
-                            <Input variant="underlined" size="lg">
+                    {/* Full Name (Sign Up Only) */}
+                    {isSignUp && (
+                        <VStack space="xs">
+                            <Text color={Theme.colors.sacredWhite} size="sm">
+                                {t('auth.fullName')}
+                            </Text>
+                            <Input
+                                variant="outline"
+                                size="lg"
+                                sx={{
+                                    borderColor: Theme.colors.mistGray,
+                                    borderRadius: Theme.corners.comfortable,
+                                    backgroundColor: Theme.colors.deepIndigo,
+                                }}
+                            >
                                 <InputField
-                                    placeholder="Full Name"
+                                    placeholder={t('auth.fullName')}
                                     value={fullName}
                                     onChangeText={setFullName}
-                                    color="$textDark100"
+                                    color={Theme.colors.sacredWhite}
+                                    placeholderTextColor={Theme.colors.dimGray}
                                 />
                             </Input>
-                        )}
-                        <Input variant="underlined" size="lg">
+                        </VStack>
+                    )}
+
+                    {/* Email */}
+                    <VStack space="xs">
+                        <Text color={Theme.colors.sacredWhite} size="sm">
+                            {t('auth.email')}
+                        </Text>
+                        <Input
+                            variant="outline"
+                            size="lg"
+                            sx={{
+                                borderColor: Theme.colors.mistGray,
+                                borderRadius: Theme.corners.comfortable,
+                                backgroundColor: Theme.colors.deepIndigo,
+                            }}
+                        >
                             <InputField
-                                placeholder="Email Address"
+                                placeholder={t('auth.email')}
                                 value={email}
                                 onChangeText={setEmail}
+                                keyboardType="email-address"
                                 autoCapitalize="none"
-                                color="$textDark100"
+                                color={Theme.colors.sacredWhite}
+                                placeholderTextColor={Theme.colors.dimGray}
                             />
                         </Input>
-                        <Input variant="underlined" size="lg">
+                    </VStack>
+
+                    {/* Password */}
+                    <VStack space="xs">
+                        <Text color={Theme.colors.sacredWhite} size="sm">
+                            {t('auth.password')}
+                        </Text>
+                        <Input
+                            variant="outline"
+                            size="lg"
+                            sx={{
+                                borderColor: Theme.colors.mistGray,
+                                borderRadius: Theme.corners.comfortable,
+                                backgroundColor: Theme.colors.deepIndigo,
+                            }}
+                        >
                             <InputField
-                                placeholder="Password"
+                                placeholder={t('auth.password')}
                                 value={password}
                                 onChangeText={setPassword}
                                 secureTextEntry
-                                color="$textDark100"
+                                color={Theme.colors.sacredWhite}
+                                placeholderTextColor={Theme.colors.dimGray}
                             />
                         </Input>
                     </VStack>
 
+                    {/* Role Selection (Sign Up Only) */}
+                    {isSignUp && (
+                        <VStack space="xs">
+                            <Text color={Theme.colors.sacredWhite} size="sm">
+                                {t('auth.role')}
+                            </Text>
+                            <Select
+                                selectedValue={role}
+                                onValueChange={(value) => setRole(value as UserRole)}
+                            >
+                                <SelectTrigger
+                                    variant="outline"
+                                    size="lg"
+                                    sx={{
+                                        borderColor: Theme.colors.mistGray,
+                                        borderRadius: Theme.corners.comfortable,
+                                        backgroundColor: Theme.colors.deepIndigo,
+                                    }}
+                                >
+                                    <SelectInput
+                                        placeholder={t('auth.role')}
+                                        color={Theme.colors.sacredWhite}
+                                    />
+                                    <SelectIcon mr="$3">
+                                        <ChevronDown color={Theme.colors.mistGray} size={20} />
+                                    </SelectIcon>
+                                </SelectTrigger>
+                                <SelectPortal>
+                                    <SelectBackdrop />
+                                    <SelectContent>
+                                        <SelectDragIndicatorWrapper>
+                                            <SelectDragIndicator />
+                                        </SelectDragIndicatorWrapper>
+                                        <SelectItem label={t('auth.teacher')} value="teacher" />
+                                        <SelectItem label={t('auth.student')} value="student" />
+                                        <SelectItem label={t('auth.principal')} value="principal" />
+                                    </SelectContent>
+                                </SelectPortal>
+                            </Select>
+                        </VStack>
+                    )}
+
+                    {/* Submit Button */}
                     <Button
+                        size="lg"
                         onPress={handleAuth}
                         isDisabled={loading}
-                        sx={{ backgroundColor: '$orange500', height: 50, borderRadius: '$full', marginTop: '$4' }}
+                        sx={{
+                            backgroundColor: Theme.colors.sanctuarySaffron,
+                            borderRadius: Theme.corners.comfortable,
+                            marginTop: Theme.spacing.md,
+                        }}
                     >
-                        <ButtonText color="$white" size="lg" bold>
-                            {loading ? "Processing..." : (isSignUp ? "Create Account" : "Login")}
+                        <ButtonText color={Theme.colors.white} fontWeight="$semibold">
+                            {loading
+                                ? t('auth.processing')
+                                : isSignUp
+                                    ? t('auth.signup')
+                                    : t('auth.login')}
                         </ButtonText>
                     </Button>
 
-                    <HStack space="xs" justifyContent="center" sx={{ marginTop: '$2' }}>
-                        <Text color="$textDark400">
-                            {isSignUp ? "Already have an account?" : "New to Gurudevi?"}
+                    {/* Toggle Sign Up / Login */}
+                    <HStack space="xs" justifyContent="center" mt={Theme.spacing.md}>
+                        <Text color={Theme.colors.mistGray} size="sm">
+                            {isSignUp ? t('auth.alreadyHaveAccount') : t('auth.newToGurudevi')}
                         </Text>
-                        <Pressable onPress={() => setIsSignUp(!isSignUp)}>
-                            <Text color="$orange500" bold>
-                                {isSignUp ? "Login" : "Sign Up"}
+                        <Pressable onPress={() => {
+                            hapticLight();
+                            setIsSignUp(!isSignUp);
+                        }}>
+                            <Text color={Theme.colors.sanctuarySaffron} size="sm" fontWeight="$semibold">
+                                {isSignUp ? t('auth.login') : t('auth.createAccount')}
                             </Text>
                         </Pressable>
                     </HStack>

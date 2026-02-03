@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     Box,
     VStack,
@@ -14,6 +14,10 @@ import {
     ButtonText
 } from "@gluestack-ui/themed";
 import { Mic, Send, MessageCircle, Repeat, Sun, FileText } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { Theme } from '../constants/Theme';
+import { getGreetingKey } from '../utils/time';
+import { hapticLight } from '../utils/haptics';
 import DailyRhythm from '../components/DailyRhythm';
 
 const SUB_FEATURES = [
@@ -24,23 +28,21 @@ const SUB_FEATURES = [
 ];
 
 export default function SelfScreen() {
-    const [greeting, setGreeting] = useState('');
+    const { t } = useTranslation();
     const [activeFeature, setActiveFeature] = useState('venting');
-
-    useEffect(() => {
-        const hour = new Date().getHours();
-        if (hour < 12) setGreeting('Good Morning');
-        else if (hour < 17) setGreeting('Good Afternoon');
-        else setGreeting('Good Evening');
-    }, []);
+    const greetingKey = getGreetingKey(); // Get i18n key based on time
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: '$backgroundDark950' }}>
+        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
             <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 100 }}>
                 {/* 1. Atmospheric Header */}
-                <VStack space="xs" px="$6" pt="$16" pb="$8">
-                    <Text color="#F5F1E8" size="lg" sx={{ opacity: 0.8 }}>{greeting},</Text>
-                    <Heading color="#FF9933" size="4xl" sx={{ lineHeight: '$5xl' }}>Teacher</Heading>
+                <VStack space="xs" px={Theme.spacing.xl} pt={Theme.spacing['3xl']} pb={Theme.spacing.lg}>
+                    <Text color={Theme.colors.pearlGray} size="lg" sx={{ opacity: Theme.opacity.heavy }}>
+                        {t(greetingKey)},
+                    </Text>
+                    <Heading color={Theme.colors.sanctuarySaffron} size="4xl" sx={{ lineHeight: '$5xl' }}>
+                        {t('tabs.self')}
+                    </Heading>
                 </VStack>
 
                 {/* 2. Sub-Feature Carousel */}
@@ -53,7 +55,10 @@ export default function SelfScreen() {
                         {SUB_FEATURES.map((feature) => (
                             <Pressable
                                 key={feature.id}
-                                onPress={() => setActiveFeature(feature.id)}
+                                onPress={() => {
+                                    hapticLight();
+                                    setActiveFeature(feature.id);
+                                }}
                             >
                                 <VStack
                                     alignItems="center"
@@ -62,23 +67,27 @@ export default function SelfScreen() {
                                     sx={{
                                         width: 100,
                                         height: 80,
-                                        borderRadius: '$xl',
-                                        backgroundColor: activeFeature === feature.id ? '#FF9933' : '$backgroundDark900',
+                                        borderRadius: Theme.corners.generous,
+                                        backgroundColor: activeFeature === feature.id
+                                            ? Theme.colors.sanctuarySaffron
+                                            : Theme.colors.deepIndigo,
                                         borderWidth: 1,
-                                        borderColor: activeFeature === feature.id ? '#FF9933' : 'transparent',
+                                        borderColor: activeFeature === feature.id
+                                            ? Theme.colors.sanctuarySaffron
+                                            : Theme.colors.transparent,
                                     }}
                                 >
                                     <feature.icon
-                                        color={activeFeature === feature.id ? 'white' : '#666'}
+                                        color={activeFeature === feature.id ? Theme.colors.white : Theme.colors.dimGray}
                                         size={24}
                                     />
                                     <Text
                                         size="xs"
                                         bold={activeFeature === feature.id}
-                                        color={activeFeature === feature.id ? '$white' : '$textDark400'}
+                                        color={activeFeature === feature.id ? Theme.colors.white : Theme.colors.mistGray}
                                         textAlign="center"
                                     >
-                                        {feature.label}
+                                        {t(`self.${feature.id}`)}
                                     </Text>
                                 </VStack>
                             </Pressable>
@@ -89,46 +98,67 @@ export default function SelfScreen() {
                 {/* 3. Dynamic Content Workbench */}
                 <Box px="$6" mt="$6">
                     <Box
-                        p="$6"
+                        p={Theme.spacing.xl}
                         sx={{
-                            backgroundColor: '$backgroundDark900',
-                            borderRadius: '$3xl',
+                            backgroundColor: Theme.colors.midnightBlue,
+                            borderRadius: Theme.corners.generous,
                             minHeight: 300
                         }}
                     >
                         {activeFeature === 'venting' && (
                             <VStack space="lg" sx={{ flex: 1 }}>
                                 <VStack space="xs">
-                                    <Heading color="$textDark100" size="lg">Venting Space</Heading>
-                                    <Text color="$textDark400" size="sm">Release the weight of the day.</Text>
+                                    <Heading color={Theme.colors.sacredWhite} size="lg">{t('self.venting')}</Heading>
+                                    <Text color={Theme.colors.mistGray} size="sm">{t('self.ventingDesc')}</Text>
                                 </VStack>
 
                                 <Box
                                     sx={{
                                         flex: 1,
-                                        backgroundColor: '$backgroundDark800',
-                                        borderRadius: '$2xl',
-                                        padding: '$4',
+                                        backgroundColor: Theme.colors.deepIndigo,
+                                        borderRadius: Theme.corners.comfortable,
+                                        padding: Theme.spacing.md,
                                         minHeight: 150
                                     }}
                                 >
                                     <Input variant="outline" size="md" sx={{ borderWidth: 0, flex: 1 }}>
                                         <InputField
-                                            placeholder="Speak your truth..."
+                                            placeholder={t('self.speakTruth')}
                                             multiline
-                                            color="$textDark100"
+                                            color={Theme.colors.sacredWhite}
+                                            placeholderTextColor={Theme.colors.dimGray}
                                             sx={{ textAlignVertical: 'top' }}
                                         />
                                     </Input>
                                 </Box>
 
                                 <HStack space="md" justifyContent="flex-end">
-                                    <Button size="md" variant="link" action="primary" sx={{ borderRadius: '$full', width: 44, height: 44, backgroundColor: '$backgroundDark800' }}>
-                                        <Mic color="#FF9933" size={20} />
+                                    <Button
+                                        size="md"
+                                        variant="link"
+                                        action="primary"
+                                        onPress={hapticLight}
+                                        sx={{
+                                            borderRadius: Theme.corners.full,
+                                            width: 44,
+                                            height: 44,
+                                            backgroundColor: Theme.colors.deepIndigo
+                                        }}
+                                    >
+                                        <Mic color={Theme.colors.sanctuarySaffron} size={20} />
                                     </Button>
-                                    <Button size="md" action="primary" sx={{ borderRadius: '$full', backgroundColor: '#FF9933', paddingHorizontal: '$4' }}>
-                                        <ButtonText color="$white" mr="$2">Unburden</ButtonText>
-                                        <Send color="white" size={16} />
+                                    <Button
+                                        size="md"
+                                        action="primary"
+                                        onPress={hapticLight}
+                                        sx={{
+                                            borderRadius: Theme.corners.full,
+                                            backgroundColor: Theme.colors.sanctuarySaffron,
+                                            paddingHorizontal: Theme.spacing.md
+                                        }}
+                                    >
+                                        <ButtonText color={Theme.colors.white} mr="$2">{t('self.unburden')}</ButtonText>
+                                        <Send color={Theme.colors.white} size={16} />
                                     </Button>
                                 </HStack>
                             </VStack>
@@ -140,19 +170,27 @@ export default function SelfScreen() {
 
                         {activeFeature === 'shadow' && (
                             <Center sx={{ flex: 1 }}>
-                                <Sun size={48} color="#FF9933" />
-                                <Text color="$textDark400" mt="$4" textAlign="center">
-                                    Your Shadow Assistant is preparing your teaching focus for tomorrow.
+                                <Sun size={48} color={Theme.colors.sanctuarySaffron} />
+                                <Text color={Theme.colors.mistGray} mt={Theme.spacing.md} textAlign="center">
+                                    {t('self.shadowPrep')}
                                 </Text>
                             </Center>
                         )}
 
                         {activeFeature === 'notes' && (
                             <VStack space="md">
-                                <Heading color="$textDark100" size="lg">Personal Notes</Heading>
-                                <Text color="$textDark400">Your garden of insights.</Text>
-                                <Button variant="outline" action="primary" sx={{ borderColor: '#FF9933', borderRadius: '$full' }}>
-                                    <ButtonText color="#FF9933">New Insight</ButtonText>
+                                <Heading color={Theme.colors.sacredWhite} size="lg">{t('self.notes')}</Heading>
+                                <Text color={Theme.colors.mistGray}>{t('self.notesDesc')}</Text>
+                                <Button
+                                    variant="outline"
+                                    action="primary"
+                                    onPress={hapticLight}
+                                    sx={{
+                                        borderColor: Theme.colors.sanctuarySaffron,
+                                        borderRadius: Theme.corners.full
+                                    }}
+                                >
+                                    <ButtonText color={Theme.colors.sanctuarySaffron}>{t('self.newInsight')}</ButtonText>
                                 </Button>
                             </VStack>
                         )}
