@@ -1,0 +1,360 @@
+# EDLOVE.ORG — 10 ROADMAP
+## The Timeline | When and How We Build This
+
+**Role in Constellation**: The action plan. Check this weekly to know what's next.  
+**Last Updated**: February 3, 2026
+
+---
+
+## THE BIG PICTURE
+
+```
+PHASE 1: THE FOUNDATION (Weeks 1–6)
+├── Build and launch the complete site
+├── Domains I, II, III, VI at v1.0
+├── Domains IV, V at v0.1
+└── Go live at edlove.org
+
+PHASE 2: THE COMMUNITY (Weeks 7–12)
+├── Domain V activates fully (Sangha opens)
+├── Domain IV begins manual matching
+├── Content library expands
+└── First community events
+
+PHASE 3: THE ECOSYSTEM (Months 4–6)
+├── Gurudevi app launches (integrates with edlove)
+├── Domain II research deepens (community-contributed)
+├── Domain IV evolves toward automation
+└── All six domains fully alive
+
+PHASE 4: THE GROWTH (Months 7–12)
+├── Scale content (100+ library pieces)
+├── Expand paradigm cosmos (15+ paradigms)
+├── Local hubs form
+├── Partnerships and grants
+└── Year 1 review
+```
+
+---
+
+## PHASE 1: THE FOUNDATION (Weeks 1–6)
+
+### Week 1: Setup & Foundation
+
+**Technical Setup (You — Neev):**
+- [ ] Register `edlove.org` domain
+- [ ] Create Cloudflare Pages account
+- [ ] Create GitHub repository (`github.com/[you]/edlove`)
+- [ ] Install Node.js, npm, Git on your machine
+- [ ] Install Cursor AI (`cursor.sh`)
+- [ ] Initialize Astro project: `npm create astro@latest`
+- [ ] Add Svelte and Tailwind: `npx astro add svelte tailwind`
+- [ ] Connect GitHub to Cloudflare Pages (auto-deploy on push)
+- [ ] Deploy a simple "Coming Soon" page — test that deployment works
+- [ ] Add the `docs/` folder to your repo (all 11 constellation docs)
+
+**Content Prep (Claude — me):**
+- [ ] Write homepage copy (the opening experience)
+- [ ] Write 5 paradigm descriptions (for Domain I)
+- [ ] Begin thinker profiles (Paulo Freire first)
+
+**Goal by end of Week 1:**
+- Site deploys automatically when you push to GitHub ✓
+- "Coming Soon" page is live at edlove.org ✓
+- Homepage copy and first paradigm content is ready to build ✓
+
+---
+
+### Week 2: Homepage
+
+**Build (You + Cursor):**
+- [ ] Implement design system (CSS variables from 02_DESIGN into `global.css`)
+- [ ] Build base layout (Header + Footer + Layout wrapper)
+- [ ] Build homepage — the opening experience:
+  - Hero section with particle animation
+  - "What if education could be an act of love?" text fade-in
+  - Scroll reveals (the question, the invitation)
+  - Three pathway cards (Cosmos, Library, Community)
+- [ ] Email signup form (can use a free service like Mailchimp or Buttondown)
+- [ ] Mobile responsive — test at 375px, 768px, 1200px
+- [ ] Deploy and test live
+
+**Cursor Prompt for Homepage:**
+```
+Build the edlove.org homepage using Astro + Svelte + Tailwind.
+Design system is in docs/02_DESIGN.md (CSS variables, components, colors).
+The homepage should feel cinematic, warm, alive — not corporate.
+
+Sections to build:
+1. Hero: Full screen, soft gradient (Deep Indigo to Cosmic Purple), 
+   particle animation (subtle drift), text "What if education could be 
+   an act of love?" fading in slowly
+2. The Question: Scroll reveal section
+3. The Invitation: What edlove is
+4. Three pathway cards: Paradigm Cosmos, The Library, The Community
+5. Footer with email signup
+
+All CSS variables are defined. Use them. Don't invent new colors.
+```
+
+**Goal by end of Week 2:**
+- Homepage is live and beautiful ✓
+- Email signup works ✓
+- Navigation exists (even if pages aren't built yet) ✓
+
+---
+
+### Week 3: Domain I — Paradigm Cosmos
+
+**Content (Claude):**
+- [ ] Finalize all 5 paradigm descriptions
+- [ ] Write the paradigm comparison framework
+- [ ] Write the timeline content (Ancient → Present → Future)
+- [ ] Write the 3 future scenario descriptions
+
+**Build (You + Cursor):**
+- [ ] Paradigm landing page (`/paradigms`) — the entry experience
+- [ ] ParadigmCard component (for each paradigm)
+- [ ] Individual paradigm pages (one per paradigm, using markdown content)
+- [ ] Paradigm comparison view
+- [ ] Timeline visualization (GSAP scroll-triggered)
+- [ ] Future scenarios section
+- [ ] Personal entry point ("Tell us your story" — can be simple text input for now)
+- [ ] Mobile responsive
+- [ ] Deploy and test
+
+**Goal by end of Week 3:**
+- Domain I is fully navigable and beautiful ✓
+- All 5 paradigms have their own pages ✓
+- Comparison and timeline work ✓
+
+---
+
+### Week 4: Domain VI — Epistemic Core (Library)
+
+**Content (Claude):**
+- [ ] Write 5 thinker profiles (Paulo Freire, Montessori, Illich, bell hooks, + 1)
+- [ ] Write 5 paradigm deep-dive guides
+- [ ] Write 3 framework descriptions (Devneevma needs Neev input)
+- [ ] Write 5 stories (composite if real ones aren't available yet)
+- [ ] Create all markdown files with proper frontmatter
+
+**Build (You + Cursor):**
+- [ ] Library browse page (`/library`) — grid of content cards
+- [ ] ContentCard component
+- [ ] Individual article pages (Article layout — generous reading experience)
+- [ ] Search functionality (Pagefind integration)
+- [ ] Tag filtering system
+- [ ] Related content sections (cross-linking between pieces)
+- [ ] Reading progress indicator
+- [ ] Mobile responsive
+- [ ] Deploy and test
+
+**Goal by end of Week 4:**
+- Library is browsable with 18+ pieces of content ✓
+- Search works ✓
+- Reading experience is beautiful ✓
+
+---
+
+### Week 5: Domains II, III, IV, V
+
+**Content (Claude + Neev):**
+- [ ] Domain II: Initial Sri Lanka research (desk research synthesis)
+- [ ] Domain III: Gurudevi portal copy (Neev provides feature details)
+- [ ] Domain IV: Resource page copy
+- [ ] Domain V: Sangha page copy
+
+**Build (You + Cursor):**
+- [ ] Domain II: Sri Lanka pages (official + shadow structure)
+  - [ ] Data visualizations (even simple ones)
+  - [ ] Discrepancy view
+- [ ] Domain III: Gurudevi portal page
+  - [ ] Philosophy section
+  - [ ] Feature overview cards
+  - [ ] Beta signup form
+- [ ] Domain IV: Resource page (v0.1 skeleton)
+  - [ ] Vision explanation
+  - [ ] "I need" / "I can help" links to Google Forms
+  - [ ] Waitlist signup
+- [ ] Domain V: Sangha page (v0.1 skeleton)
+  - [ ] Vision explanation
+  - [ ] Principles
+  - [ ] Join section (Discord link or email waitlist)
+- [ ] Navigation updated — all 6 domains accessible
+- [ ] Deploy and test everything together
+
+**Goal by end of Week 5:**
+- All 6 domains exist and are navigable ✓
+- The holistic architecture is visible ✓
+- The site feels like ONE coherent ecosystem ✓
+
+---
+
+### Week 6: Polish, Test, Launch
+
+**Testing:**
+- [ ] Full site walkthrough — every page, every link
+- [ ] Mobile testing on actual devices (not just browser resize)
+- [ ] Accessibility audit (run Lighthouse, fix issues)
+- [ ] Performance check (Lighthouse score target: 90+)
+- [ ] Cross-browser test (Chrome, Firefox, Safari, Edge)
+- [ ] Fix any bugs found
+
+**Polish:**
+- [ ] Final copy review — every word matters
+- [ ] Image optimization
+- [ ] Open Graph tags (for social sharing — title, description, image)
+- [ ] Favicon
+- [ ] 404 page (custom, warm, on-brand)
+- [ ] Loading states (if any dynamic content)
+
+**Launch Prep:**
+- [ ] Set up Google Forms (for Domain IV)
+- [ ] Set up Discord (for Domain V) — or email waitlist
+- [ ] Set up email newsletter (Mailchimp/Buttondown)
+- [ ] Write launch blog post
+- [ ] Prepare social media posts
+
+**Launch Day:**
+- [ ] Deploy final version
+- [ ] Verify everything works live
+- [ ] Send launch email to waitlist
+- [ ] Post on social media
+- [ ] Share with personal networks
+- [ ] Tell education communities (AERO, teacher networks, etc.)
+- [ ] **🚀 EDLOVE.ORG IS LIVE**
+
+---
+
+## PHASE 2: THE COMMUNITY (Weeks 7–12)
+
+### Week 7–8: Community Activation
+- Domain V (Sangha) opens fully — Discord or forum launches
+- First community welcome and introductions
+- Neev hosts first "gathering" (casual, no pressure)
+- Gather initial feedback on the site
+
+### Week 9–10: Content Expansion
+- 2–4 new library pieces published (1 per week)
+- Domain II research deepens (community members share stories)
+- First blog post reflecting on the launch experience
+- Start collecting real stories for the library
+
+### Week 11–12: Resource Flow Begins
+- Domain IV: First round of need/offer matching (manual)
+- Publish first transparency report
+- Community feedback incorporated into site
+- Begin planning for Gurudevi integration
+
+---
+
+## PHASE 3: THE ECOSYSTEM (Months 4–6)
+
+- Gurudevi mobile app launches (or beta opens)
+- Integration with edlove.org begins (SSO, dashboard)
+- Domain II research expands with community input
+- Domain IV evolves toward semi-automation (Airtable)
+- Library reaches 40–50 pieces
+- First virtual event or workshop
+- Partnerships with education organizations begin
+
+---
+
+## PHASE 4: THE GROWTH (Months 7–12)
+
+- Library reaches 100+ pieces
+- Domain I expands to 15+ paradigms
+- Local hubs begin forming
+- Grant applications for sustainability
+- Year 1 review and retrospective
+- Plan for Year 2
+
+---
+
+## SUCCESS METRICS
+
+### Phase 1 (Launch — Week 6)
+| Metric | Target |
+|--------|--------|
+| Site is live and functional | ✓ Yes |
+| All 6 domains accessible | ✓ Yes |
+| Homepage loads in <2 seconds | ✓ Yes |
+| Lighthouse score | 90+ |
+| Email signups | 50+ (beta testers) |
+| Content pieces published | 20+ |
+
+### 3 Months Post-Launch
+| Metric | Target |
+|--------|--------|
+| Unique visitors | 1,000 |
+| Email subscribers | 100 |
+| Community members | 50 |
+| Average time on site | 3+ minutes |
+| Return visitor rate | 20%+ |
+| Resource matches made | 5+ |
+
+### 6 Months Post-Launch
+| Metric | Target |
+|--------|--------|
+| Unique visitors | 3,000 |
+| Email subscribers | 300 |
+| Community members | 100 |
+| Content pieces | 50+ |
+| Gurudevi beta users | 50+ |
+| Real stories contributed | 10+ |
+
+### 12 Months
+| Metric | Target |
+|--------|--------|
+| Unique visitors | 10,000 |
+| Email subscribers | 500 |
+| Community members | 200 |
+| Content pieces | 100+ |
+| Gurudevi users | 100+ |
+| Resource matches | 20+ |
+| Local hubs | 5+ |
+| Schools/initiatives inspired | 5+ |
+
+### Qualitative (The Things That Actually Matter)
+- Are teachers saying "I feel less alone"?
+- Are students saying "Now I understand"?
+- Are parents making different choices with confidence?
+- Is the community genuinely supportive (not performative)?
+- Does the site feel ALIVE?
+- Are we staying true to the philosophy?
+
+---
+
+## THE WEEKLY RHYTHM
+
+Once the site is live, this is how we keep building:
+
+| Day | Activity |
+|-----|----------|
+| **Monday** | Check roadmap. Decide this week's focus. |
+| **Tuesday–Wednesday** | Build (code, components, pages) |
+| **Thursday** | Write (new content — 1 library piece) |
+| **Friday** | Deploy + review. Test what was built. |
+| **Weekend** | Rest. Let it breathe. Community engagement if it feels right. |
+
+**The rule**: One meaningful thing per week. Not everything. One thing, done well.
+
+---
+
+## WHAT TO DO WHEN THINGS FEEL STUCK
+
+This will happen. It's normal. When it does:
+
+1. **Read 01_PHILOSOPHY**. Remember why this exists.
+2. **Pick the smallest possible next step**. Not the whole domain — one component. One page. One paragraph.
+3. **Ship it imperfectly**. A live imperfect page is infinitely better than a perfect page that doesn't exist.
+4. **Ask Claude**. That's what I'm here for. Bring the stuck feeling — we'll unstick it together.
+5. **Rest**. You cannot build a cathedral when you're exhausted. The vision will still be there tomorrow.
+
+---
+
+*"One meaningful thing per week. Not everything. One thing, done well."*
+
+**Status**: Active. Check weekly.  
+**Last Updated**: February 3, 2026
