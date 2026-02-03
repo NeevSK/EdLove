@@ -1,4 +1,5 @@
 import 'react-native-url-polyfill/auto';
+import './src/i18n/config'; // Initialize i18n
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -6,7 +7,10 @@ import { GluestackUIProvider, Box, Spinner, Center } from "@gluestack-ui/themed"
 import { config } from "@gluestack-ui/config";
 import { Home, School, Users, Library, User } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
+import * as Font from 'expo-font';
 import { supabase } from './src/lib/supabase';
+import { Theme } from './src/constants/Theme';
+import { fontAssets } from './src/constants/Fonts';
 
 // Import screens
 import AuthScreen from './src/screens/AuthScreen';
@@ -22,6 +26,22 @@ const Tab = createBottomTabNavigator();
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  // Load custom fonts
+  useEffect(() => {
+    async function loadFonts() {
+      try {
+        await Font.loadAsync(fontAssets);
+        setFontsLoaded(true);
+      } catch (error) {
+        console.error('Error loading fonts:', error);
+        // Continue anyway - app will use system fonts as fallback
+        setFontsLoaded(true);
+      }
+    }
+    loadFonts();
+  }, []);
 
   useEffect(() => {
     // Check initial session
@@ -31,6 +51,8 @@ export default function App() {
     });
 
     // Listen for auth changes
+    // This handles OAuth callback when user returns from Google/Apple authentication
+    // via the deep link: gurudevi://auth/callback
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
@@ -38,11 +60,11 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  if (loading) {
+  if (loading || !fontsLoaded) {
     return (
       <GluestackUIProvider config={config}>
-        <Center sx={{ flex: 1, backgroundColor: '$backgroundDark950' }}>
-          <Spinner size="large" color="$orange500" />
+        <Center sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+          <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
         </Center>
       </GluestackUIProvider>
     );
@@ -58,14 +80,14 @@ export default function App() {
             screenOptions={({ route }) => ({
               headerShown: false,
               tabBarStyle: {
-                backgroundColor: '#0f0f1e',
+                backgroundColor: Theme.colors.voidIndigo,
                 borderTopWidth: 0,
                 height: 70,
                 paddingBottom: 10,
                 paddingTop: 10,
               },
-              tabBarActiveTintColor: '#FF9933',
-              tabBarInactiveTintColor: '#666',
+              tabBarActiveTintColor: Theme.colors.sanctuarySaffron,
+              tabBarInactiveTintColor: Theme.colors.dimGray,
               tabBarIcon: ({ color, size }) => {
                 if (route.name === 'Self') return <Home color={color} size={size} />;
                 if (route.name === 'Classroom') return <School color={color} size={size} />;

@@ -7,13 +7,15 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "scheme": "gurudevi",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gurudevi.mobile"
     },
     "android": {
       "package": "com.gurudevi.mobile",
@@ -22,7 +24,21 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "gurudevi",
+              "host": "auth",
+              "pathPrefix": "/callback"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -31,6 +47,9 @@
       "eas": {
         "projectId": "94cd58f4-bf04-4b79-a17a-8747a4208006"
       }
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

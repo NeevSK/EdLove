@@ -1,0 +1,111 @@
+{
+    "common": {
+        "save": "සුරකින්න",
+        "cancel": "අවලංගු කරන්න",
+        "delete": "මකන්න",
+        "edit": "සංස්කරණය කරන්න",
+        "confirm": "තහවුරු කරන්න",
+        "yes": "ඔව්",
+        "no": "නැහැ",
+        "ok": "හරි",
+        "back": "ආපසු",
+        "next": "ඊළඟ",
+        "done": "අවසන්",
+        "loading": "පූරණය වෙමින්...",
+        "error": "දෝෂයකි",
+        "success": "සාර්ථකයි"
+    },
+    "auth": {
+        "login": "පිවිසෙන්න",
+        "signup": "ලියාපදිංචි වන්න",
+        "logout": "පිටවන්න",
+        "email": "විද්‍යුත් තැපෑල",
+        "password": "මුරපදය",
+        "fullName": "සම්පූර්ණ නම",
+        "forgotPassword": "මුරපදය අමතක ද?",
+        "createAccount": "ගිණුමක් සාදන්න",
+        "alreadyHaveAccount": "දැනටමත් ගිණුමක් තිබේද?",
+        "newToGurudevi": "ගුරුදෙවි වෙත අලුත්ද?",
+        "enterSanctuary": "ඔබේ සන්සුන් තැනට එන්න",
+        "joinCommunity": "ගුරු පවුලට එකතු වෙන්න",
+        "processing": "සකසමින්...",
+        "checkEmail": "ඔබගේ විද්‍යුත් තැපෑල පරීක්ෂා කරන්න!",
+        "role": "භූමිකාව",
+        "teacher": "ගුරුවරයා",
+        "student": "ශිෂ්‍යයා",
+        "principal": "විදුහල්පතිවරයා",
+        "signInWithGoogle": "Google සමඟ පිවිසෙන්න",
+        "signInWithApple": "Apple සමඟ පිවිසෙන්න",
+        "orContinueWith": "හෝ මේවා සමඟ ඉදිරියට යන්න",
+        "googleSignInError": "Google පිවිසීම අසාර්ථක විය. කරුණාකර නැවත උත්සාහ කරන්න.",
+        "appleSignInError": "Apple පිවිසීම අසාර්ථක විය. කරුණාකර නැවත උත්සාහ කරන්න.",
+        "openingBrowser": "විවෘත වෙමින්..."
+    },
+    "tabs": {
+        "self": "ස්වයං",
+        "classroom": "පන්තිය",
+        "community": "ප්‍රජාව",
+        "library": "පුස්තකාලය",
+        "profile": "ප්‍රොෆයිල්"
+    },
+    "self": {
+        "goodMorning": "සුභ උදෑසනක්",
+        "goodAfternoon": "සුභ සන්ධ්‍යාවක්",
+        "goodEvening": "සුභ සවසක්",
+        "venting": "හිත මුදා හැරීම",
+        "ventingDesc": "හිතේ බර ඉවත් කර ගන්න",
+        "rhythm": "දෛනික රිද්මය",
+        "shadow": "සෙවනැලි සහායක",
+        "notes": "පෞද්ගලික සටහන්",
+        "notesDesc": "ඔබේ අදහස් රැස් කිරීම",
+        "speakTruth": "ඔබට දැනෙන දේ මෙහි ලියන්න...",
+        "unburden": "හිත සැහැල්ලු කරන්න",
+        "newInsight": "නව අවබෝධයක්",
+        "shadowPrep": "හෙට දවස සඳහා සූදානම් වෙමින්..."
+    },
+    "classroom": {
+        "title": "පන්තිය",
+        "description": "ඔබේ ඉගැන්වීම් ගමන මෙතැනින් විහිදේ",
+        "createLesson": "පාඩමක් සාදන්න",
+        "viewStudents": "ශිෂ්‍යයින් බලන්න",
+        "assignments": "පැවරුම්",
+        "resources": "සම්පත්"
+    },
+    "community": {
+        "title": "ප්‍රජාව",
+        "description": "ගුරු ප්‍රජාව සමඟ සම්බන්ධ වන්න",
+        "announcements": "නිවේදන",
+        "postAnnouncement": "නිවේදනයක් පළ කරන්න"
+    },
+    "library": {
+        "title": "පුස්තකාලය",
+        "description": "දැන ගැනීමේ කෝෂ්ඨාගාරය",
+        "browse": "බ්‍රවුස් කරන්න",
+        "upload": "උඩුගත කරන්න",
+        "search": "සොයන්න"
+    },
+    "profile": {
+        "title": "ප්‍රොෆයිල්",
+        "fullName": "සම්පූර්ණ නම",
+        "role": "භූමිකාව",
+        "school": "පාසල",
+        "notSetYet": "තවම සකසා නැත",
+        "guestUser": "අමුත්තා",
+        "logout": "පිටවන්න",
+        "language": "භාෂාව",
+        "languageDesc": "ඔබට පහසු භාෂාව තෝර ගන්න",
+        "quote": "ගුරුවරයකු හැටියට ඔබේ බලපෑම මෙහි මල් පිපෙනවා",
+        "settings": "සැකසුම්",
+        "subscription": "දායකත්වය",
+        "tier": "ස්ථරය",
+        "free": "නොමිලේ",
+        "pro": "ප්‍රෝ",
+        "premium": "ප්‍රීමියම්"
+    },
+    "errors": {
+        "somethingWentWrong": "මොකක්හරි වැරදුනා",
+        "tryAgain": "නැවත උත්සාහ කරන්න",
+        "noInternet": "අන්තර්ජාල සම්බන්ධතාවයක් නැත",
+        "fetchFailed": "දත්ත ලබා ගැනීම අසාර්ථක විය"
+    }
+}
