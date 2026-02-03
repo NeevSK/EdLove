@@ -33,7 +33,13 @@
         "role": "பாத்திரம்",
         "teacher": "ஆசிரியர்",
         "student": "மாணவர்",
-        "principal": "அதிபர்"
+        "principal": "அதிபர்",
+        "signInWithGoogle": "Google உடன் உள்நுழை",
+        "signInWithApple": "Apple உடன் உள்நுழை",
+        "orContinueWith": "அல்லது இவற்றுடன் தொடரவும்",
+        "googleSignInError": "Google உள்நுழைவு தோல்வியடைந்தது. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.",
+        "appleSignInError": "Apple உள்நுழைவு தோல்வியடைந்தது. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.",
+        "openingBrowser": "திறக்கிறது..."
     },
     "tabs": {
         "self": "சுய",
