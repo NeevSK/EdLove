@@ -84,6 +84,9 @@ export default function AuthScreen() {
         setLoading(true);
         hapticLight();
         
+        // Redirect URL must match:
+        // 1. The deep link scheme configured in app.json
+        // 2. Allowed redirect URLs in Supabase dashboard (Authentication -> URL Configuration)
         const { error } = await supabase.auth.signInWithOAuth({
             provider,
             options: {
