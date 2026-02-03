@@ -47,15 +47,15 @@
         "goodAfternoon": "Good Afternoon",
         "goodEvening": "Good Evening",
         "venting": "Venting Space",
-        "ventingDesc": "Release the weight of the day",
+        "ventingDesc": "Let go of today's stress",
         "rhythm": "Daily Rhythm",
         "shadow": "Shadow Assistant",
         "notes": "Personal Notes",
-        "notesDesc": "Your garden of insights",
-        "speakTruth": "Speak your truth...",
+        "notesDesc": "Your personal notes",
+        "speakTruth": "What's on your mind...",
         "unburden": "Unburden",
         "newInsight": "New Insight",
-        "shadowPrep": "Your Shadow Assistant is preparing your teaching focus for tomorrow"
+        "shadowPrep": "Preparing for tomorrow..."
     },
     "classroom": {
         "title": "Classroom",
@@ -88,7 +88,7 @@
         "logout": "Logout",
         "language": "Language",
         "languageDesc": "Choose your preferred language",
-        "quote": "Your influence as a teacher shall bloom here.",
+        "quote": "Your influence as a teacher blooms here",
         "settings": "Settings",
         "subscription": "Subscription",
         "tier": "Tier",
