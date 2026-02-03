@@ -1,0 +1,97 @@
+{
+    "common": {
+        "save": "சேமிக்கவும்",
+        "cancel": "ரத்துசெய்",
+        "delete": "அழி",
+        "edit": "திருத்து",
+        "confirm": "உறுதிப்படுத்து",
+        "yes": "ஆம்",
+        "no": "இல்லை",
+        "ok": "சரி",
+        "back": "பின்செல்",
+        "next": "அடுத்து",
+        "done": "முடிந்தது",
+        "loading": "ஏற்றுகிறது...",
+        "error": "பிழை",
+        "success": "வெற்றி"
+    },
+    "auth": {
+        "login": "உள்நுழை",
+        "signup": "பதிவு செய்",
+        "logout": "வெளியேறு",
+        "email": "மின்னஞ்சல்",
+        "password": "கடவுச்சொல்",
+        "fullName": "முழு பெயர்",
+        "forgotPassword": "கடவுச்சொல் மறந்துவிட்டதா?",
+        "createAccount": "கணக்கை உருவாக்கு",
+        "alreadyHaveAccount": "ஏற்கனவே கணக்கு உள்ளதா?",
+        "newToGurudevi": "குருதேவிக்கு புதியதா?",
+        "enterSanctuary": "உங்கள் புனித இடத்திற்குள் நுழைக",
+        "joinCommunity": "ஆசிரியர் சமூகத்தில் சேரவும்",
+        "processing": "செயலாக்குகிறது...",
+        "checkEmail": "உங்கள் மின்னஞ்சலைச் சரிபார்க்கவும்!",
+        "role": "பாத்திரம்",
+        "teacher": "ஆசிரியர்",
+        "student": "மாணவர்",
+        "principal": "அதிபர்"
+    },
+    "tabs": {
+        "self": "சுய",
+        "classroom": "வகுப்பு",
+        "community": "சமூகம்",
+        "library": "நூலகம்",
+        "profile": "சுயவிவரம்"
+    },
+    "self": {
+        "goodMorning": "காலை வணக்கம்",
+        "goodAfternoon": "மதிய வணக்கம்",
+        "goodEvening": "மாலை வணக்கம்",
+        "venting": "வெளிப்படுத்தும் இடம்",
+        "ventingDesc": "நாளின் பாரத்தை விடுவியுங்கள்",
+        "rhythm": "தினசரி ரிதம்",
+        "shadow": "நிழல் உதவியாளர்",
+        "notes": "தனிப்பட்ட குறிப்புகள்",
+        "notesDesc": "உங்கள் நுண்ணறிவுகளின் தோட்டம்",
+        "speakTruth": "உங்கள் உண்மையைப் பேசுங்கள்...",
+        "unburden": "பாரம் இறக்கு",
+        "newInsight": "புதிய நுண்ணறிவு",
+        "shadowPrep": "உங்கள் நிழல் உதவியாளர் நாளைக்கான கற்பித்தல் கவனத்தைத் தயாரிக்கிறது"
+    },
+    "classroom": {
+        "title": "வகுப்பு",
+        "description": "உங்கள் கற்றல் பயணம் இங்கே தொடர்கிறது",
+        "createLesson": "பாடத்தை உருவாக்கு",
+        "viewStudents": "மாணவர்களைப் பார்",
+        "assignments": "பணிகள்",
+        "resources": "வளங்கள்"
+    },
+    "community": {
+        "title": "சமூகம்",
+        "description": "ஆசிரியர் சமூகத்துடன் இணைக",
+        "announcements": "அறிவிப்புகள்",
+        "postAnnouncement": "அறிவிப்பை இடுகையிடு"
+    },
+    "library": {
+        "title": "நூலகம்",
+        "description": "அறிவுக் களஞ்சியம்",
+        "browse": "உலாவு",
+        "upload": "பதிவேற்று",
+        "search": "தேடு"
+    },
+    "profile": {
+        "title": "சுயவிவரம்",
+        "settings": "அமைப்புகள்",
+        "language": "மொழி",
+        "subscription": "சந்தா",
+        "tier": "நிலை",
+        "free": "இலவசம்",
+        "pro": "ப்ரோ",
+        "premium": "பிரீமியம்"
+    },
+    "errors": {
+        "somethingWentWrong": "ஏதோ தவறு நடந்தது",
+        "tryAgain": "மீண்டும் முயற்சிக்கவும்",
+        "noInternet": "இணைய இணைப்பு இல்லை",
+        "fetchFailed": "தரவு பெறுதல் தோல்வியுற்றது"
+    }
+}

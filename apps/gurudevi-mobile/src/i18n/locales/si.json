@@ -1,0 +1,97 @@
+{
+    "common": {
+        "save": "සුරකින්න",
+        "cancel": "අවලංගු කරන්න",
+        "delete": "මකන්න",
+        "edit": "සංස්කරණය කරන්න",
+        "confirm": "තහවුරු කරන්න",
+        "yes": "ඔව්",
+        "no": "නැහැ",
+        "ok": "හරි",
+        "back": "ආපසු",
+        "next": "ඊළඟ",
+        "done": "අවසන්",
+        "loading": "පූරණය වෙමින්...",
+        "error": "දෝෂයකි",
+        "success": "සාර්ථකයි"
+    },
+    "auth": {
+        "login": "පිවිසෙන්න",
+        "signup": "ලියාපදිංචි වන්න",
+        "logout": "පිටවන්න",
+        "email": "විද්‍යුත් තැපෑල",
+        "password": "මුරපදය",
+        "fullName": "සම්පූර්ණ නම",
+        "forgotPassword": "මුරපදය අමතක ද?",
+        "createAccount": "ගිණුමක් සාදන්න",
+        "alreadyHaveAccount": "දැනටමත් ගිණුමක් තිබේද?",
+        "newToGurudevi": "ගුරු දෙවි වෙත අලුත්ද?",
+        "enterSanctuary": "ඔබගේ සිද්ධස්ථානයට ඇතුලු වන්න",
+        "joinCommunity": "ගුරු ප්‍රජාවට එකතු වන්න",
+        "processing": "සකසමින්...",
+        "checkEmail": "ඔබගේ විද්‍යුත් තැපෑල පරීක්ෂා කරන්න!",
+        "role": "භූමිකාව",
+        "teacher": "ගුරුවරයා",
+        "student": "ශිෂ්‍යයා",
+        "principal": "විදුහල්පතිවරයා"
+    },
+    "tabs": {
+        "self": "ස්වයං",
+        "classroom": "පන්තිය",
+        "community": "ප්‍රජාව",
+        "library": "පුස්තකාලය",
+        "profile": "ප්‍රොෆයිල්"
+    },
+    "self": {
+        "goodMorning": "සුභ උදෑසනක්",
+        "goodAfternoon": "සුභ සන්ධ්‍යාවක්",
+        "goodEvening": "සුභ සවසක්",
+        "venting": "මතු කිරීමේ අවකාශය",
+        "ventingDesc": "දවසේ බර මුදා හරින්න",
+        "rhythm": "දෛනික රිද්මය",
+        "shadow": "සෙවනැලි සහායක",
+        "notes": "පෞද්ගලික සටහන්",
+        "notesDesc": "ඔබගේ අවබෝධයේ උද්‍යානය",
+        "speakTruth": "ඔබගේ සත්‍යය කියන්න...",
+        "unburden": "බර අඩු කරන්න",
+        "newInsight": "නව අවබෝධයක්",
+        "shadowPrep": "ඔබේ සෙවනැලි සහායක හෙට දිනට ඔබේ ඉගැන්වීම් අවධානය සූදානම් කරයි"
+    },
+    "classroom": {
+        "title": "පන්තිය",
+        "description": "ඔබේ ඉගැන්වීම් ගමන මෙතැනින් විහිදේ",
+        "createLesson": "පාඩමක් සාදන්න",
+        "viewStudents": "ශිෂ්‍යයින් බලන්න",
+        "assignments": "පැවරුම්",
+        "resources": "සම්පත්"
+    },
+    "community": {
+        "title": "ප්‍රජාව",
+        "description": "ගුරු ප්‍රජාව සමඟ සම්බන්ධ වන්න",
+        "announcements": "නිවේදන",
+        "postAnnouncement": "නිවේදනයක් පළ කරන්න"
+    },
+    "library": {
+        "title": "පුස්තකාලය",
+        "description": "දැන ගැනීමේ කෝෂ්ඨාගාරය",
+        "browse": "බ්‍රවුස් කරන්න",
+        "upload": "උඩුගත කරන්න",
+        "search": "සොයන්න"
+    },
+    "profile": {
+        "title": "ප්‍රොෆයිල්",
+        "settings": "සැකසුම්",
+        "language": "භාෂාව",
+        "subscription": "දායකත්වය",
+        "tier": "ස්ථරය",
+        "free": "නොමිලේ",
+        "pro": "ප්‍රෝ",
+        "premium": "ප්‍රීමියම්"
+    },
+    "errors": {
+        "somethingWentWrong": "මොකක්හරි වැරදුනා",
+        "tryAgain": "නැවත උත්සාහ කරන්න",
+        "noInternet": "අන්තර්ජාල සම්බන්ධතාවයක් නැත",
+        "fetchFailed": "දත්ත ලබා ගැනීම අසාර්ථක විය"
+    }
+}

@@ -1,0 +1,97 @@
+{
+    "common": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "confirm": "Confirm",
+        "yes": "Yes",
+        "no": "No",
+        "ok": "OK",
+        "back": "Back",
+        "next": "Next",
+        "done": "Done",
+        "loading": "Loading...",
+        "error": "Error",
+        "success": "Success"
+    },
+    "auth": {
+        "login": "Login",
+        "signup": "Sign Up",
+        "logout": "Logout",
+        "email": "Email Address",
+        "password": "Password",
+        "fullName": "Full Name",
+        "forgotPassword": "Forgot Password?",
+        "createAccount": "Create Account",
+        "alreadyHaveAccount": "Already have an account?",
+        "newToGurudevi": "New to Gurudevi?",
+        "enterSanctuary": "Enter Your Sanctuary",
+        "joinCommunity": "Join the Teacher Community",
+        "processing": "Processing...",
+        "checkEmail": "Check your email for confirmation!",
+        "role": "Role",
+        "teacher": "Teacher",
+        "student": "Student",
+        "principal": "Principal"
+    },
+    "tabs": {
+        "self": "Self",
+        "classroom": "Classroom",
+        "community": "Community",
+        "library": "Library",
+        "profile": "Profile"
+    },
+    "self": {
+        "goodMorning": "Good Morning",
+        "goodAfternoon": "Good Afternoon",
+        "goodEvening": "Good Evening",
+        "venting": "Venting Space",
+        "ventingDesc": "Release the weight of the day",
+        "rhythm": "Daily Rhythm",
+        "shadow": "Shadow Assistant",
+        "notes": "Personal Notes",
+        "notesDesc": "Your garden of insights",
+        "speakTruth": "Speak your truth...",
+        "unburden": "Unburden",
+        "newInsight": "New Insight",
+        "shadowPrep": "Your Shadow Assistant is preparing your teaching focus for tomorrow"
+    },
+    "classroom": {
+        "title": "Classroom",
+        "description": "Your learning journey continues here",
+        "createLesson": "Create Lesson",
+        "viewStudents": "View Students",
+        "assignments": "Assignments",
+        "resources": "Resources"
+    },
+    "community": {
+        "title": "Community",
+        "description": "Connect with the teacher community",
+        "announcements": "Announcements",
+        "postAnnouncement": "Post Announcement"
+    },
+    "library": {
+        "title": "Library",
+        "description": "Repository of knowledge",
+        "browse": "Browse",
+        "upload": "Upload",
+        "search": "Search"
+    },
+    "profile": {
+        "title": "Profile",
+        "settings": "Settings",
+        "language": "Language",
+        "subscription": "Subscription",
+        "tier": "Tier",
+        "free": "Free",
+        "pro": "Pro",
+        "premium": "Premium"
+    },
+    "errors": {
+        "somethingWentWrong": "Something went wrong",
+        "tryAgain": "Try again",
+        "noInternet": "No internet connection",
+        "fetchFailed": "Failed to fetch data"
+    }
+}

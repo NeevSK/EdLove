@@ -1,4 +1,5 @@
 import 'react-native-url-polyfill/auto';
+import './src/i18n/config'; // Initialize i18n
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -7,6 +8,7 @@ import { config } from "@gluestack-ui/config";
 import { Home, School, Users, Library, User } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from './src/lib/supabase';
+import { Theme } from './src/constants/Theme';
 
 // Import screens
 import AuthScreen from './src/screens/AuthScreen';
@@ -41,8 +43,8 @@ export default function App() {
   if (loading) {
     return (
       <GluestackUIProvider config={config}>
-        <Center sx={{ flex: 1, backgroundColor: '$backgroundDark950' }}>
-          <Spinner size="large" color="$orange500" />
+        <Center sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+          <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
         </Center>
       </GluestackUIProvider>
     );
@@ -58,14 +60,14 @@ export default function App() {
             screenOptions={({ route }) => ({
               headerShown: false,
               tabBarStyle: {
-                backgroundColor: '#0f0f1e',
+                backgroundColor: Theme.colors.voidIndigo,
                 borderTopWidth: 0,
                 height: 70,
                 paddingBottom: 10,
                 paddingTop: 10,
               },
-              tabBarActiveTintColor: '#FF9933',
-              tabBarInactiveTintColor: '#666',
+              tabBarActiveTintColor: Theme.colors.sanctuarySaffron,
+              tabBarInactiveTintColor: Theme.colors.dimGray,
               tabBarIcon: ({ color, size }) => {
                 if (route.name === 'Self') return <Home color={color} size={size} />;
                 if (route.name === 'Classroom') return <School color={color} size={size} />;
