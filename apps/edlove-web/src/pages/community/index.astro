@@ -1,12 +1,62 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Navigation from '../../components/Navigation.astro';
+import { Theme } from '@/constants/Theme';
 ---
 
 <Layout>
   <Navigation />
-  <div class="pt-32 text-center">
-    <h1 class="text-4xl font-serif text-deepIndigo">The Sangha</h1>
-    <p class="mt-4 font-sans text-deepIndigo/60">The community of educational transformation.</p>
-  </div>
+  
+  <main class="min-h-screen pt-24 pb-16">
+    <div class="max-w-6xl mx-auto px-6">
+      
+      <div class="text-center mb-16">
+        <h1 class="font-heading text-5xl md:text-7xl mb-6" style={`color: ${Theme.colors.dawnRose}`}>
+          The Sangha
+        </h1>
+        <p class="font-body text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.8`}>
+          A community of seekers. Teachers, learners, parents, dreamers.
+        </p>
+      </div>
+
+      <div class="prose prose-lg max-w-4xl mx-auto mb-16">
+        <p class="font-body text-lg leading-relaxed" style={`color: ${Theme.colors.deepIndigo}`}>
+          <strong>Sangha</strong> (සංඝය / சங்கம்) means community. Not just a forum—a space for real connection, shared struggles, and collective wisdom.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        <div class="p-8 rounded-lg" style={`background: ${Theme.colors.starlightSilver}`}>
+          <h3 class="font-heading text-2xl mb-4" style={`color: ${Theme.colors.deepIndigo}`}>
+            💬 Discussions
+          </h3>
+          <p class="font-body mb-4" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
+            Ask questions. Share stories. Think together.
+          </p>
+        </div>
+
+        <div class="p-8 rounded-lg" style={`background: ${Theme.colors.starlightSilver}`}>
+          <h3 class="font-heading text-2xl mb-4" style={`color: ${Theme.colors.deepIndigo}`}>
+            🎯 Local Groups
+          </h3>
+          <p class="font-body mb-4" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
+            Connect with educators in your area. Meet in person.
+          </p>
+        </div>
+      </div>
+
+      <div class="text-center p-12 rounded-lg" style={`background: linear-gradient(135deg, ${Theme.colors.dawnRose}15, ${Theme.colors.cosmicPurple}15)`}>
+        <h2 class="font-heading text-3xl mb-4" style={`color: ${Theme.colors.deepIndigo}`}>
+          Coming Soon
+        </h2>
+        <p class="font-body mb-6" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
+          Community features launching soon. Join the mailing list to stay updated.
+        </p>
+        <a href="mailto:hello@edlove.org" class="inline-block px-8 py-3 rounded-sm font-body font-medium hover:opacity-80 transition-opacity" style={`background: ${Theme.colors.dawnRose}; color: ${Theme.colors.softWhite}`}>
+          Get Notified →
+        </a>
+      </div>
+
+    </div>
+  </main>
 </Layout>

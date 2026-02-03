@@ -35,9 +35,13 @@ const links = [
         ))}
       </div>
 
-      <!-- Mobile Menu Button (Stub) -->
+      <!-- Mobile Menu Button -->
       <div class="md:hidden">
-        <button class="text-deepIndigo hover:text-warmGold">
+        <button 
+          id="mobile-menu-button"
+          class="text-deepIndigo hover:text-warmGold transition-colors"
+          aria-label="Toggle mobile menu"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
@@ -45,4 +49,68 @@ const links = [
       </div>
     </div>
   </div>
+
+  <!-- Mobile Menu (Hidden by default) -->
+  <div 
+    id="mobile-menu" 
+    class="md:hidden fixed inset-0 z-50 hidden"
+  >
+    <!-- Backdrop -->
+    <div class="fixed inset-0 bg-deepIndigo/80 backdrop-blur-sm" id="mobile-menu-backdrop"></div>
+    
+    <!-- Menu Panel -->
+    <div class="fixed right-0 top-0 bottom-0 w-64 bg-softWhite shadow-2xl transform translate-x-full transition-transform duration-300" id="mobile-menu-panel">
+      <!-- Close Button -->
+      <div class="flex justify-end p-4">
+        <button 
+          id="mobile-menu-close"
+          class="text-deepIndigo hover:text-warmGold transition-colors"
+          aria-label="Close mobile menu"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Menu Links -->
+      <div class="flex flex-col space-y-4 px-6 py-4">
+        {links.map((link) => (
+          <a 
+            href={link.href} 
+            class={`font-sans text-lg font-medium text-deepIndigo/80 transition-colors duration-300 ${link.color} py-3 border-b border-deepIndigo/10`}
+          >
+            {link.name}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
 </nav>
+
+<script>
+  // Mobile menu toggle functionality
+  const menuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuPanel = document.getElementById('mobile-menu-panel');
+  const menuBackdrop = document.getElementById('mobile-menu-backdrop');
+  const closeButton = document.getElementById('mobile-menu-close');
+
+  function openMenu() {
+    mobileMenu?.classList.remove('hidden');
+    setTimeout(() => {
+      menuPanel?.classList.remove('translate-x-full');
+    }, 10);
+  }
+
+  function closeMenu() {
+    menuPanel?.classList.add('translate-x-full');
+    setTimeout(() => {
+      mobileMenu?.classList.add('hidden');
+    }, 300);
+  }
+
+  menuButton?.addEventListener('click', openMenu);
+  closeButton?.addEventListener('click', closeMenu);
+  menuBackdrop?.addEventListener('click', closeMenu);
+</script>
