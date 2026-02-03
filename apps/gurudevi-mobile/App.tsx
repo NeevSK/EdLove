@@ -51,6 +51,8 @@ export default function App() {
     });
 
     // Listen for auth changes
+    // This handles OAuth callback when user returns from Google/Apple authentication
+    // via the deep link: gurudevi://auth/callback
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });

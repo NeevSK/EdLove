@@ -38,7 +38,8 @@
         "signInWithApple": "Sign in with Apple",
         "orContinueWith": "Or continue with",
         "googleSignInError": "Google sign-in failed. Please try again.",
-        "appleSignInError": "Apple sign-in failed. Please try again."
+        "appleSignInError": "Apple sign-in failed. Please try again.",
+        "openingBrowser": "Opening..."
     },
     "tabs": {
         "self": "Self",
