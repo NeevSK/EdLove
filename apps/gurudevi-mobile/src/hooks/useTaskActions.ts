@@ -1,29 +1,26 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 
 export function useTaskActions() {
     const queryClient = useQueryClient();
 
     const addTask = useMutation({
-        mutationFn: async (title: string) => {
-            const { error } = await supabase.from('tasks').insert([{ title }]);
-            if (error) throw error;
+        mutationFn: async ({ title, teacherId }: { title: string; teacherId: string }) => {
+            return api.tasks.create(title, teacherId);
         },
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
     });
 
     const toggleTask = useMutation({
         mutationFn: async ({ id, status }: { id: string; status: boolean }) => {
-            const { error } = await supabase.from('tasks').update({ is_completed: status }).eq('id', id);
-            if (error) throw error;
+            return api.tasks.updateStatus(id, status);
         },
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
     });
 
     const deleteTask = useMutation({
         mutationFn: async (id: string) => {
-            const { error } = await supabase.from('tasks').delete().eq('id', id);
-            if (error) throw error;
+            return api.tasks.delete(id);
         },
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
     });
