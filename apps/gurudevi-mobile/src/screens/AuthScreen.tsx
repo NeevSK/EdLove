@@ -24,6 +24,7 @@ import {
     SelectDragIndicatorWrapper,
     SelectDragIndicator,
     SelectItem,
+    Divider,
 } from "@gluestack-ui/themed";
 import { ChevronDown } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -75,6 +76,46 @@ export default function AuthScreen() {
             } else {
                 hapticSuccess();
             }
+        }
+        setLoading(false);
+    }
+
+    async function handleGoogleSignIn() {
+        setLoading(true);
+        hapticLight();
+        
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: 'gurudevi://auth/callback',
+            }
+        });
+        
+        if (error) {
+            hapticError();
+            showToast(error.message, "error");
+        } else {
+            hapticSuccess();
+        }
+        setLoading(false);
+    }
+
+    async function handleAppleSignIn() {
+        setLoading(true);
+        hapticLight();
+        
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'apple',
+            options: {
+                redirectTo: 'gurudevi://auth/callback',
+            }
+        });
+        
+        if (error) {
+            hapticError();
+            showToast(error.message, "error");
+        } else {
+            hapticSuccess();
         }
         setLoading(false);
     }
@@ -240,6 +281,52 @@ export default function AuthScreen() {
                                     : t('auth.login')}
                         </ButtonText>
                     </Button>
+
+                    {/* Divider with "Or continue with" */}
+                    <HStack space="md" alignItems="center" mt={Theme.spacing.lg}>
+                        <Divider sx={{ flex: 1, backgroundColor: Theme.colors.mistGray }} />
+                        <Text color={Theme.colors.mistGray} size="sm">
+                            {t('auth.orContinueWith')}
+                        </Text>
+                        <Divider sx={{ flex: 1, backgroundColor: Theme.colors.mistGray }} />
+                    </HStack>
+
+                    {/* Social Auth Buttons */}
+                    <VStack space="md" mt={Theme.spacing.md}>
+                        {/* Google Sign In */}
+                        <Button
+                            size="lg"
+                            onPress={handleGoogleSignIn}
+                            isDisabled={loading}
+                            variant="outline"
+                            sx={{
+                                borderColor: Theme.colors.mistGray,
+                                borderRadius: Theme.corners.comfortable,
+                                backgroundColor: Theme.colors.deepIndigo,
+                            }}
+                        >
+                            <ButtonText color={Theme.colors.sacredWhite}>
+                                {t('auth.signInWithGoogle')}
+                            </ButtonText>
+                        </Button>
+
+                        {/* Apple Sign In */}
+                        <Button
+                            size="lg"
+                            onPress={handleAppleSignIn}
+                            isDisabled={loading}
+                            variant="outline"
+                            sx={{
+                                borderColor: Theme.colors.mistGray,
+                                borderRadius: Theme.corners.comfortable,
+                                backgroundColor: Theme.colors.deepIndigo,
+                            }}
+                        >
+                            <ButtonText color={Theme.colors.sacredWhite}>
+                                {t('auth.signInWithApple')}
+                            </ButtonText>
+                        </Button>
+                    </VStack>
 
                     {/* Toggle Sign Up / Login */}
                     <HStack space="xs" justifyContent="center" mt={Theme.spacing.md}>

@@ -33,7 +33,10 @@
         "role": "භූමිකාව",
         "teacher": "ගුරුවරයා",
         "student": "ශිෂ්‍යයා",
-        "principal": "විදුහල්පතිවරයා"
+        "principal": "විදුහල්පතිවරයා",
+        "signInWithGoogle": "Google සමඟ පිවිසෙන්න",
+        "signInWithApple": "Apple සමඟ පිවිසෙන්න",
+        "orContinueWith": "හෝ මේවා සමඟ ඉදිරියට යන්න"
     },
     "tabs": {
         "self": "ස්වයං",

@@ -33,7 +33,10 @@
         "role": "Role",
         "teacher": "Teacher",
         "student": "Student",
-        "principal": "Principal"
+        "principal": "Principal",
+        "signInWithGoogle": "Sign in with Google",
+        "signInWithApple": "Sign in with Apple",
+        "orContinueWith": "Or continue with"
     },
     "tabs": {
         "self": "Self",
