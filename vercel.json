@@ -1,3 +1,13 @@
 {
+    "version": 2,
+    "builds": [
+        {
+            "src": "apps/edlove-web/package.json",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "dist"
+            }
+        }
+    ],
     "outputDirectory": "apps/edlove-web/dist"
 }
