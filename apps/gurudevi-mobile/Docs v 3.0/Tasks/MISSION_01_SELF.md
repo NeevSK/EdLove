@@ -1,19 +1,28 @@
-# 🧘 MISSION 01: The Self (Wellbeing)
+# 🧘 MISSION 01: The Self (Wellbeing) + Community Onboarding
 
-**Role**: You are a React Native expert specializing in "Sanctuary UI" (Animations, Reanimated, Gluestack).
-**Context**: App Name "Gurudevi". We are building the "Self" tab, which is a personal refuge for teachers/students.
+**Role**: You are a React Native expert specializing in "Sanctuary UI" (Animations, Reanimated, Gluestack) and "Social UI & Auth Flows".
+**Context**: App Name "Gurudevi". We are building the "Self" tab (personal refuge) AND completing the "Community Tab" with onboarding features.
 
 ---
 
 ## 🎯 Objective
-Build the 3 core features of the "Self" screen.
+
+### Part 1: Self Tab Features
+Build the 3 core features of the "Self" screen:
 1.  **Mood & Rhythm**: Daily lotus-slider input.
 2.  **Shadow Agent**: A "Quiet Drawer" (not a chatbot) for reflection and assistant.
 3.  **Fire Journal**: "Burn" negative thoughts.
 
+### Part 2: Community & Onboarding (MISSION_06)
+1.  **Community**: A place for school-wide announcements.
+2.  **Onboarding**: Connect the Invite Code UI to the Signup flow.
+3.  **Profile**: A visual progress bar for profile completion.
+
 ---
 
 ## 🛠️ Architectural Constraints
+
+### Part 1: Self Tab
 *   **Navigation**: You are working inside `src/screens/SelfStack/`.
 *   **Database**: Use `mood_logs` and `fire_journal` tables (Schema defined below).
 *   **Theme**: Strict usage of `src/constants/Theme.ts`.
@@ -23,9 +32,16 @@ Build the 3 core features of the "Self" screen.
     *   `react-native-reanimated` (for Fire/drawer animations).
     *   `@gluestack-ui/themed` (for layout).
 
+### Part 2: Community & Onboarding
+*   **Navigation**: `src/screens/CommunityStack/`, `src/screens/AuthStack/`.
+*   **Database**: `announcements`, `invite_codes`.
+*   **Theme**: `Theme.ts`. Use warm community colors.
+
 ---
 
 ## 📋 Task Checklist
+
+## PART 1: SELF TAB FEATURES
 
 ### 🔶 Task A: Mood Check-in Component
 **File**: `src/components/self/MoodLotus.tsx` (Create New)
@@ -59,7 +75,42 @@ Build the 3 core features of the "Self" screen.
 
 ---
 
+## PART 2: COMMUNITY & ONBOARDING (MISSION_06)
+
+### 🔶 Task D: Community Announcements
+**File**: `src/screens/community/AnnouncementsScreen.tsx` (Create New)
+**Specs**:
+- **UI**: A news feed.
+    - **Pinned Posts**: At the top, distinct background color.
+    - **Regular Posts**: Chronological list.
+- **Author View**: If `role === 'principal'`, show "+ Create Announcement" FAB.
+- **Privacy**: Only show announcements where `school_id` matches user's school.
+
+### 🔶 Task E: Invite Code Integration
+**File**: `src/screens/AuthScreen.tsx` (Modify)
+**Specs**:
+- **Goal**: Allow users to enter an Invite Code *before* or *during* signup.
+- **Flow**:
+    1.  User taps "Have an invite code?".
+    2.  Opens `InviteCodeEntry` (already built).
+    3.  On success, pre-fill the `school_id` and `role` in the Signup form.
+    4.  Hide the "Create School" option if code is valid.
+
+### 🔶 Task F: Profile Completion Widget
+**File**: `src/components/profile/ProfileCompletionBar.tsx` (Create New)
+**Specs**:
+- **Placement**: Top of Profile Screen.
+- **Visual**: A circular progress bar (e.g., 30%).
+- **Logic**: 
+    - Check if fields are null (`avatar_url`, `bio`, `phone`).
+    - Calculate %.
+    - If < 100%, show "Complete Profile" button.
+
+---
+
 ## 🗄️ Database Context (Reference Only)
+
+### Self Tab Tables
 ```sql
 CREATE TABLE mood_logs (
   id UUID PRIMARY KEY,
@@ -72,5 +123,24 @@ CREATE TABLE fire_journal (
   id UUID PRIMARY KEY,
   content_preview TEXT,
   is_burned BOOLEAN DEFAULT false
+);
+```
+
+### Community & Onboarding Tables
+```sql
+CREATE TABLE announcements (
+  id UUID,
+  school_id UUID,
+  content TEXT,
+  is_pinned BOOLEAN
+);
+
+CREATE TABLE invite_codes (
+  id UUID,
+  code TEXT UNIQUE,
+  school_id UUID,
+  role TEXT,
+  created_by UUID,
+  expires_at TIMESTAMPTZ
 );
 ```
