@@ -32,6 +32,8 @@ export function marksToGPA(marks: number): { grade: 'A' | 'B' | 'C' | 'D' | 'E' 
 /**
  * Calculates ranks for students based on marks.
  * Handles ties by assigning the same rank to students with equal marks.
+ * When students tie, the next rank skips the tied positions.
+ * Example: Two students tie for rank 1, next student gets rank 3.
  * 
  * @param grades - Array of student grades to rank
  * @returns Array of grades with rank property assigned
@@ -40,16 +42,16 @@ export function calculateRanks(grades: StudentGrade[]): StudentGrade[] {
   // Sort by marks (descending - highest marks first)
   const sorted = [...grades].sort((a, b) => b.marks - a.marks);
   
-  // Assign ranks (handle ties)
+  // Assign ranks (handle ties with proper rank skipping)
   let currentRank = 1;
   return sorted.map((grade, index) => {
     // If same marks as previous student, assign same rank
     if (index > 0 && grade.marks === sorted[index - 1].marks) {
       return { ...grade, rank: sorted[index - 1].rank };
     }
-    // Otherwise, assign current rank and increment for next
+    // Otherwise, assign current rank (which equals index + 1)
     const rankedGrade = { ...grade, rank: currentRank };
-    currentRank++;
+    currentRank = index + 2; // Next rank is current index + 2
     return rankedGrade;
   });
 }

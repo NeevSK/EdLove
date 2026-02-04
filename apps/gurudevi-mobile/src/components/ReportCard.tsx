@@ -123,7 +123,9 @@ export default function ReportCard({
                     ) : (
                         grades.map((grade) => {
                             const { grade: letterGrade, gpa } = marksToGPA(grade.marks);
-                            const assignmentName = assignmentNames[grade.id] || t('grades.assignment');
+                            const assignmentName = grade.assignment_id 
+                                ? (assignmentNames[grade.assignment_id] || t('grades.assignment'))
+                                : t('grades.assignment');
 
                             return (
                                 <Box

@@ -9,6 +9,7 @@ export interface StudentGrade {
   id: string;
   student_id: string;
   classroom_id: string;
+  assignment_id?: string; // Optional: Links grade to specific assignment
   marks: number; // 0-100 (always stored)
   grade?: 'A' | 'B' | 'C' | 'D' | 'E' | 'S' | 'F';
   gpa?: number;
