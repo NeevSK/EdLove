@@ -13,7 +13,7 @@ import {
   Library
 } from 'lucide-react-native';
 
-// Screens (Imports will be updated as files are created)
+// Screens
 import SelfScreen from '../screens/SelfScreen';
 import ClassroomScreen from '../screens/ClassroomScreen';
 import CommunityScreen from '../screens/CommunityScreen';
@@ -29,7 +29,11 @@ const useUserRole = () => {
   return { role: 'teacher' as string };
 };
 
-export default function TabNavigator() {
+interface TabNavigatorProps {
+  onTabChange?: (tabName: string) => void;
+}
+
+export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   const { t } = useTranslation();
   const { role } = useUserRole();
 
@@ -42,6 +46,17 @@ export default function TabNavigator() {
 
   return (
     <Tab.Navigator
+      screenListeners={{
+        state: (e) => {
+          const state = e.data?.state;
+          if (!state || state.index === undefined) return;
+
+          const routeName = state.routes[state.index]?.name;
+          if (routeName && onTabChange) {
+            onTabChange(routeName.toLowerCase());
+          }
+        },
+      }}
       screenOptions={{
         headerShown: false,
         tabBarStyle: {

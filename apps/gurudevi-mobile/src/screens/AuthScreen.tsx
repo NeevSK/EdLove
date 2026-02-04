@@ -35,6 +35,8 @@ import { supabase } from '../lib/supabase';
 import { Theme } from '../constants/Theme';
 import { UserRole } from '../types/User';
 import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
+import { useStore } from '../store/useStore';
+import { SchoolType } from '../constants/SriLankanSchools';
 
 // Google icon using react-native-svg
 const GoogleIcon = ({ color = "#FFF", size = 20 }: { color?: string; size?: number }) => (
@@ -98,6 +100,11 @@ export default function AuthScreen() {
                         // Principal creates an official school
                         schoolName = `${fullName}'s School`;
                         schoolType = '1AB'; // Default to 1AB (can be changed later)
+                    } else if (role === 'section_head' || role === 'grade_head') {
+                        // TODO: Section/Grade heads should join existing schools via invite code
+                        // For now, create a personal workspace until invite system is implemented
+                        schoolName = `${fullName}'s Workspace`;
+                        schoolType = 'personal_workspace';
                     } else {
                         // Teachers/students create a personal workspace
                         // They can join a real school later via invite code
@@ -130,6 +137,10 @@ export default function AuthScreen() {
 
                     if (profileError) throw profileError;
 
+                    // Sync role and school type to store (Universal Save)
+                    useStore.getState().setUserRole(role);
+                    useStore.getState().setSchoolType(schoolType as SchoolType);
+
                     hapticSuccess();
                     showToast(t('auth.signupSuccess') || 'Account created!', "success");
                 } catch (error: any) {
@@ -139,15 +150,40 @@ export default function AuthScreen() {
                 }
             }
         } else {
-            // Login flow (unchanged)
-            const { error } = await supabase.auth.signInWithPassword({
+            // Login flow - fetch user profile to get role and school type
+            const { data: authData, error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
             });
             if (error) {
                 hapticError();
                 showToast(error.message, "error");
-            } else {
+            } else if (authData.user) {
+                // Fetch user profile to get role and school info
+                const { data: userProfile, error: profileError } = await supabase
+                    .from('users')
+                    .select('role, school_id')
+                    .eq('id', authData.user.id)
+                    .single();
+
+                if (!profileError && userProfile) {
+                    // Sync role to store
+                    useStore.getState().setUserRole(userProfile.role as UserRole);
+                    
+                    // Fetch school type
+                    if (userProfile.school_id) {
+                        const { data: schoolData } = await supabase
+                            .from('schools')
+                            .select('type')
+                            .eq('id', userProfile.school_id)
+                            .single();
+                        
+                        if (schoolData) {
+                            useStore.getState().setSchoolType(schoolData.type as SchoolType);
+                        }
+                    }
+                }
+                
                 hapticSuccess();
             }
         }
@@ -312,9 +348,11 @@ export default function AuthScreen() {
                                         <SelectDragIndicatorWrapper>
                                             <SelectDragIndicator />
                                         </SelectDragIndicatorWrapper>
+                                        <SelectItem label={t('auth.principal')} value="principal" />
+                                        <SelectItem label={t('auth.sectionHead') || 'Section Head'} value="section_head" />
+                                        <SelectItem label={t('auth.gradeHead') || 'Grade Head'} value="grade_head" />
                                         <SelectItem label={t('auth.teacher')} value="teacher" />
                                         <SelectItem label={t('auth.student')} value="student" />
-                                        <SelectItem label={t('auth.principal')} value="principal" />
                                     </SelectContent>
                                 </SelectPortal>
                             </Select>

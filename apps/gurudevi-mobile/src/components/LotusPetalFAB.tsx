@@ -34,9 +34,9 @@
  * ```
  */
 
-import React, { FC, useMemo, useEffect, useCallback } from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import React, { FC, useMemo, useEffect, useCallback, useState, useRef } from 'react';
+import { View, Pressable, StyleSheet, Text, PanResponder, Dimensions } from 'react-native';
+import Svg, { Path, G } from 'react-native-svg';
 import Animated, {
     useAnimatedStyle,
     withRepeat,
@@ -65,9 +65,16 @@ import Theme from '../constants/Theme';
 
 type TabType = 'self' | 'classroom' | 'community' | 'library' | 'profile';
 
+export interface ActionItem {
+    label: string;
+    onPress: () => void;
+    icon?: React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
+}
+
 interface LotusPetalFABProps {
     currentTab: TabType;
-    onPress: () => void;
+    onPress?: () => void;
+    actions?: ActionItem[];
     scrollY?: SharedValue<number>;
     disabled?: boolean;
 }
@@ -76,9 +83,15 @@ interface LotusPetalFABProps {
 // CONSTANTS
 // ============================================================================
 
-const FAB_SIZE = 90;
-const FAB_HEIGHT = 72; // Taller than wide for petal shape
-const ICON_SIZE = 40;
+
+const FAB_SIZE = 64;
+const FAB_HEIGHT = 64; // Make it square for better lotus flower icon
+const ICON_SIZE = 32;
+const ACTION_BUBBLE_SIZE = 48;
+const ACTION_BUBBLE_SPACING = 8;
+const LONG_PRESS_DURATION = 500; // milliseconds
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 // Context-aware configuration
 type IconComponentType = React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
@@ -107,35 +120,75 @@ const fabConfig: Record<TabType, { IconComponent: IconComponentType; label: stri
 };
 
 // ============================================================================
-// PETAL SHAPE COMPONENT
+// LOTUS FLOWER ICON COMPONENT
 // ============================================================================
 
-interface PetalShapeProps {
+interface LotusFlowerIconProps {
     size: number;
-    height: number;
     color: string;
     opacity?: number;
 }
 
-const PetalShape: FC<PetalShapeProps> = React.memo(({ size, height, color, opacity = 0.95 }) => {
-    // Create an organic petal shape using SVG path
-    // The shape is taller than wide, with a pointed top and rounded bottom
-    const petalPath = useMemo(() => `
-        M ${size / 2} 0
-        C ${size * 0.35} ${height * 0.15}, ${size * 0.25} ${height * 0.3}, ${size * 0.25} ${height * 0.45}
-        C ${size * 0.25} ${height * 0.6}, ${size * 0.3} ${height * 0.75}, ${size / 2} ${height}
-        C ${size * 0.7} ${height * 0.75}, ${size * 0.75} ${height * 0.6}, ${size * 0.75} ${height * 0.45}
-        C ${size * 0.75} ${height * 0.3}, ${size * 0.65} ${height * 0.15}, ${size / 2} 0
-        Z
-    `, [size, height]);
-
+const LotusFlowerIcon: FC<LotusFlowerIconProps> = React.memo(({ size, color, opacity = 0.95 }) => {
+    // Create a stylized lotus flower shape using SVG paths
+    // The lotus has 8 petals arranged in a circular pattern
     return (
-        <Svg width={size} height={height} viewBox={`0 0 ${size} ${height}`}>
-            <Path
-                d={petalPath}
-                fill={color}
-                opacity={opacity}
-            />
+        <Svg width={size} height={size} viewBox="0 0 100 100">
+            <G opacity={opacity}>
+                {/* Center circle */}
+                <Path
+                    d="M 50 45 A 5 5 0 1 1 50 55 A 5 5 0 1 1 50 45 Z"
+                    fill={color}
+                />
+                
+                {/* Top petal */}
+                <Path
+                    d="M 50 10 Q 40 20 45 35 Q 50 30 55 35 Q 60 20 50 10 Z"
+                    fill={color}
+                />
+                
+                {/* Top-right petal */}
+                <Path
+                    d="M 70 20 Q 65 30 60 40 Q 55 35 55 40 Q 60 50 70 20 Z"
+                    fill={color}
+                />
+                
+                {/* Right petal */}
+                <Path
+                    d="M 85 45 Q 75 45 65 50 Q 70 55 65 60 Q 75 65 85 55 Z"
+                    fill={color}
+                />
+                
+                {/* Bottom-right petal */}
+                <Path
+                    d="M 75 75 Q 70 65 60 60 Q 55 65 55 70 Q 60 80 75 75 Z"
+                    fill={color}
+                />
+                
+                {/* Bottom petal */}
+                <Path
+                    d="M 50 90 Q 40 80 45 65 Q 50 70 55 65 Q 60 80 50 90 Z"
+                    fill={color}
+                />
+                
+                {/* Bottom-left petal */}
+                <Path
+                    d="M 25 75 Q 30 65 40 60 Q 45 65 45 70 Q 40 80 25 75 Z"
+                    fill={color}
+                />
+                
+                {/* Left petal */}
+                <Path
+                    d="M 15 45 Q 25 45 35 50 Q 30 55 35 60 Q 25 65 15 55 Z"
+                    fill={color}
+                />
+                
+                {/* Top-left petal */}
+                <Path
+                    d="M 30 20 Q 35 30 40 40 Q 45 35 45 40 Q 40 50 30 20 Z"
+                    fill={color}
+                />
+            </G>
         </Svg>
     );
 });
@@ -147,6 +200,7 @@ const PetalShape: FC<PetalShapeProps> = React.memo(({ size, height, color, opaci
 const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     currentTab,
     onPress,
+    actions,
     scrollY,
     disabled = false,
 }) => {
@@ -154,10 +208,66 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     const pressScale = useSharedValue(1);
     // Shared value for breathing animation
     const breathingScale = useSharedValue(0.95);
+    // Position for dragging
+    const translateX = useSharedValue(0);
+    const translateY = useSharedValue(0);
+    // Base position accumulator
+    const baseX = useRef(0);
+    const baseY = useRef(0);
+    // State for showing action menu
+    const [showActions, setShowActions] = useState(false);
+    const actionMenuScale = useSharedValue(0);
+    // Track long press
+    const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [isDragging, setIsDragging] = useState(false);
 
     // Memoize current configuration to avoid unnecessary recalculations
     const config = useMemo(() => fabConfig[currentTab], [currentTab]);
     const IconComponent = config.IconComponent;
+
+    // Pan responder for drag functionality
+    const panResponder = useRef(
+        PanResponder.create({
+            onStartShouldSetPanResponder: () => false,
+            onMoveShouldSetPanResponder: (_, gestureState) => {
+                // Only start capturing if in drag mode or moved enough
+                return isDragging || Math.abs(gestureState.dx) > 10 || Math.abs(gestureState.dy) > 10;
+            },
+            onPanResponderGrant: () => {
+                // Start long press timer
+                longPressTimer.current = setTimeout(() => {
+                    setIsDragging(true);
+                    triggerHapticFeedback();
+                }, LONG_PRESS_DURATION);
+            },
+            onPanResponderMove: (_, gestureState) => {
+                if (isDragging) {
+                    translateX.value = baseX.current + gestureState.dx;
+                    translateY.value = baseY.current + gestureState.dy;
+                }
+            },
+            onPanResponderRelease: (_, gestureState) => {
+                // Clear long press timer
+                if (longPressTimer.current) {
+                    clearTimeout(longPressTimer.current);
+                    longPressTimer.current = null;
+                }
+
+                if (isDragging) {
+                    // Update base position for next drag
+                    baseX.current += gestureState.dx;
+                    baseY.current += gestureState.dy;
+                    setIsDragging(false);
+                } else {
+                    // If not dragging, treat as a tap
+                    const moved = Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5;
+                    if (!moved) {
+                        handlePress();
+                    }
+                }
+            },
+        })
+    ).current;
 
     // ============================================================================
     // ANIMATION INITIALIZATION
@@ -214,21 +324,62 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     const handlePress = useCallback(() => {
         if (disabled) return;
 
-        // Haptic feedback
-        triggerHapticFeedback();
-
-        // Visual feedback - scale down then spring back
-        pressScale.value = withSequence(
-            withTiming(0.9, { duration: 100 }),
-            withSpring(1.0, {
+        // If actions are provided, show action menu
+        if (actions && actions.length > 0) {
+            triggerHapticFeedback();
+            setShowActions(!showActions);
+            actionMenuScale.value = withSpring(showActions ? 0 : 1, {
                 damping: 15,
                 stiffness: 150
-            })
-        );
+            });
+            return;
+        }
 
-        // Execute callback
-        onPress();
-    }, [disabled, onPress, triggerHapticFeedback]); // pressScale is a stable ref
+        // Otherwise, trigger onPress callback
+        if (onPress) {
+            // Haptic feedback
+            triggerHapticFeedback();
+
+            // Visual feedback - scale down then spring back
+            pressScale.value = withSequence(
+                withTiming(0.9, { duration: 100 }),
+                withSpring(1.0, { 
+                    damping: 15, 
+                    stiffness: 150 
+                })
+            );
+
+            // Execute callback
+            onPress();
+        }
+    }, [disabled, onPress, actions, showActions, triggerHapticFeedback]);
+
+    // Animation for action menu appearance
+    const actionMenuStyle = useAnimatedStyle(() => {
+        return {
+            transform: [{ scale: actionMenuScale.value }],
+            opacity: actionMenuScale.value,
+        };
+    });
+
+
+    // Effect to handle action menu scale
+    useEffect(() => {
+        actionMenuScale.value = withSpring(showActions ? 1 : 0, {
+            damping: 15,
+            stiffness: 150
+        });
+    }, [showActions]);
+
+
+    // Cleanup timer on unmount
+    useEffect(() => {
+        return () => {
+            if (longPressTimer.current) {
+                clearTimeout(longPressTimer.current);
+            }
+        };
+    }, []);
 
     // ============================================================================
     // ANIMATION 3: SCROLL BEHAVIOR (Optional)
@@ -261,31 +412,34 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     // RENDER
     // ============================================================================
 
+    // Animated style for drag position
+    const dragStyle = useAnimatedStyle(() => {
+        return {
+            transform: [
+                { translateX: translateX.value },
+                { translateY: translateY.value }
+            ]
+        };
+    });
+
     return (
-        <Animated.View
+        <Animated.View 
+            {...panResponder.panHandlers}
+
             style={[
                 styles.container,
                 breathingStyle,
                 pressStyle,
                 scrollStyle,
+                dragStyle,
                 disabled && styles.disabled
             ]}
         >
-            <Pressable
-                onPress={handlePress}
-                disabled={disabled}
-                style={styles.pressable}
-                testID="lotus-petal-fab"
-                accessibilityLabel={config.label}
-                accessibilityRole="button"
-                accessibilityHint="Floating action button for quick actions"
-                accessible={true}
-            >
+            <View style={styles.pressable}>
                 <View style={styles.petalContainer}>
-                    <PetalShape
+                    <LotusFlowerIcon
                         size={FAB_SIZE}
-                        height={FAB_HEIGHT}
-                        color={Theme.colors.sanctuarySaffron}
+                        color={Theme.colors.lotusDeepPink}
                         opacity={0.95}
                     />
                     <View style={styles.iconContainer}>
@@ -296,7 +450,35 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                         />
                     </View>
                 </View>
-            </Pressable>
+            </View>
+
+            {/* Action Menu */}
+            {actions && actions.length > 0 && (
+                <Animated.View style={[styles.actionMenu, actionMenuStyle]}>
+                    {actions.map((action, index) => (
+                        <Pressable
+                            key={index}
+                            style={styles.actionBubble}
+                            onPress={() => {
+                                action.onPress();
+                                setShowActions(false);
+                                triggerHapticFeedback();
+                            }}
+                        >
+                            <View style={styles.actionBubbleContent}>
+                                {action.icon && (
+                                    <action.icon
+                                        size={20}
+                                        color={Theme.colors.lotusDeepPink}
+                                        strokeWidth={2}
+                                    />
+                                )}
+                                <Text style={styles.actionLabel}>{action.label}</Text>
+                            </View>
+                        </Pressable>
+                    ))}
+                </Animated.View>
+            )}
         </Animated.View>
     );
 };
@@ -316,12 +498,15 @@ const styles = StyleSheet.create({
     pressable: {
         width: FAB_SIZE,
         height: FAB_HEIGHT,
+        borderRadius: FAB_SIZE / 2,
+        backgroundColor: Theme.colors.voidIndigo,
     },
     petalContainer: {
         width: FAB_SIZE,
         height: FAB_HEIGHT,
         alignItems: 'center',
         justifyContent: 'center',
+        borderRadius: FAB_SIZE / 2,
     },
     iconContainer: {
         position: 'absolute',
@@ -334,6 +519,31 @@ const styles = StyleSheet.create({
     },
     disabled: {
         opacity: 0.5,
+    },
+    actionMenu: {
+        position: 'absolute',
+        bottom: FAB_SIZE + ACTION_BUBBLE_SPACING,
+        right: 0,
+        alignItems: 'flex-end',
+    },
+    actionBubble: {
+        backgroundColor: Theme.colors.voidIndigo,
+        borderRadius: ACTION_BUBBLE_SIZE / 2,
+        marginBottom: ACTION_BUBBLE_SPACING,
+        paddingHorizontal: Theme.spacing.md,
+        paddingVertical: Theme.spacing.sm,
+        ...Theme.shadows.md,
+        minWidth: ACTION_BUBBLE_SIZE,
+    },
+    actionBubbleContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: Theme.spacing.sm,
+    },
+    actionLabel: {
+        color: Theme.colors.sacredWhite,
+        fontSize: Theme.typography.fontSize.sm,
+        fontWeight: Theme.typography.fontWeight.medium as any,
     },
 });
 
