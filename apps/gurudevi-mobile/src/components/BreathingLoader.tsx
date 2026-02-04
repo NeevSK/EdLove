@@ -30,8 +30,8 @@ import Animated, {
     useAnimatedStyle,
     withRepeat,
     withTiming,
+    Easing,
 } from 'react-native-reanimated';
-import { Easing } from 'react-native';
 import Theme from '../constants/Theme';
 
 // ============================================================================
@@ -78,7 +78,7 @@ const BreathingLoader: FC<BreathingLoaderProps> = ({
             -1, // infinite loop
             true // reverse (yoyo effect: 0.8 -> 1.0 -> 0.8)
         );
-    }, [scale]);
+    }, []);
 
     const animatedStyle = useAnimatedStyle(() => {
         return {
