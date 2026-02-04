@@ -179,7 +179,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
             // Reset to 1.0 when disabled
             breathingScale.value = withTiming(1.0, { duration: 200 });
         }
-    }, [disabled, breathingScale]);
+    }, [disabled]); // breathingScale is a stable ref, no need in deps
 
     // ============================================================================
     // ANIMATION 1: BREATHING (Always-on when not disabled)
@@ -189,7 +189,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         return {
             transform: [{ scale: breathingScale.value }]
         };
-    }, [breathingScale]);
+    }); // breathingScale is a stable ref, no need in deps
 
     // ============================================================================
     // ANIMATION 2: PRESS RESPONSE
@@ -199,7 +199,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         return {
             transform: [{ scale: pressScale.value }]
         };
-    }, [pressScale]);
+    }); // pressScale is a stable ref, no need in deps
 
     // Safe haptic feedback with error handling
     const triggerHapticFeedback = useCallback(async () => {
@@ -255,7 +255,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                 Extrapolate.CLAMP
             )
         };
-    }, [scrollY]);
+    }); // scrollY is a stable ref, no need in deps
 
     // ============================================================================
     // RENDER

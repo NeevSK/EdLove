@@ -11,12 +11,15 @@ import { useSharedValue, useAnimatedScrollHandler } from 'react-native-reanimate
 import LotusPetalFAB from './LotusPetalFAB';
 import Theme from '../constants/Theme';
 
+// Shared type definition for tab names
+type TabName = 'self' | 'classroom' | 'community' | 'library' | 'profile';
+
 // ============================================================================
 // EXAMPLE 1: Basic Usage (Simplest)
 // ============================================================================
 
 export function BasicFABExample() {
-    const [currentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
+    const [currentTab] = useState<TabName>('self');
 
     const handleFabPress = () => {
         console.log('FAB pressed!');
@@ -41,7 +44,7 @@ export function BasicFABExample() {
 // ============================================================================
 
 export function ScrollAwareFABExample() {
-    const [currentTab] = useState<'library' | 'self' | 'classroom' | 'community' | 'profile'>('library');
+    const [currentTab] = useState<TabName>('library');
     const scrollY = useSharedValue(0);
 
     // Track scroll position
@@ -85,7 +88,7 @@ export function ScrollAwareFABExample() {
 // ============================================================================
 
 export function ContextAwareFABExample() {
-    const [currentTab, setCurrentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
+    const [currentTab, setCurrentTab] = useState<TabName>('self');
 
     const handleFabPress = () => {
         // Different actions based on current tab
@@ -140,7 +143,7 @@ export function ContextAwareFABExample() {
 // ============================================================================
 
 export function ConditionalFABExample() {
-    const [currentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('community');
+    const [currentTab] = useState<TabName>('community');
     const [isLoading, setIsLoading] = useState(false);
 
     const handleFabPress = async () => {
@@ -178,7 +181,7 @@ export function ConditionalFABExample() {
 // ============================================================================
 
 export function CompleteFABExample() {
-    const [currentTab, setCurrentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
+    const [currentTab, setCurrentTab] = useState<TabName>('self');
     const [isProcessing, setIsProcessing] = useState(false);
     const scrollY = useSharedValue(0);
 
