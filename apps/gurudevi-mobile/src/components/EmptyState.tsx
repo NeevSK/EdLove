@@ -40,7 +40,7 @@ import LotusButton from './LotusButton';
 // ============================================================================
 
 interface EmptyStateProps {
-    icon: any; // lucide-react-native icon
+    icon: React.ComponentType<{ color?: string; size?: number }>; // lucide-react-native icon
     title: string;
     description: string;
     actionLabel?: string;
