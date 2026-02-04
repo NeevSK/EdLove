@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     },
     input: {
         color: Theme.colors.sacredWhite,
-        fontSize: 16,
+        fontSize: Theme.typography.fontSize.md,
     },
     icon: {
         marginRight: 0,

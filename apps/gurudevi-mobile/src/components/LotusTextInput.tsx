@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
         borderRadius: Theme.corners.comfortable,
         padding: Theme.spacing.md,
         color: Theme.colors.sacredWhite,
-        fontSize: 16,
+        fontSize: Theme.typography.fontSize.md,
     },
     multiline: {
         minHeight: 100,
