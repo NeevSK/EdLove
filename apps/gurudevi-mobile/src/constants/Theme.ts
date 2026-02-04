@@ -109,6 +109,26 @@ export const typography = {
         normal: 0,
         wide: 0.5,
     },
+
+    // Heading Styles (Composed from base properties)
+    h1: {
+        fontSize: 28,      // fontSize.2xl
+        lineHeight: 44.8,  // 1.6x
+        fontWeight: '700', // fontWeight.bold
+        letterSpacing: -0.5,
+    },
+    h2: {
+        fontSize: 22,      // fontSize.xl
+        lineHeight: 35.2,  // 1.6x
+        fontWeight: '600', // fontWeight.semibold
+        letterSpacing: 0,
+    },
+    h3: {
+        fontSize: 22,      // fontSize.xl
+        lineHeight: 35.2,  // 1.6x
+        fontWeight: '600', // fontWeight.semibold
+        letterSpacing: 0,
+    },
 };
 
 // ============================================================================
