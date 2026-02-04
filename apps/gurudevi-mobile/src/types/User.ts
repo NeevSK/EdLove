@@ -5,11 +5,13 @@
 
 /**
  * User Roles
- * - teacher: Primary user, can create lessons, manage classrooms
+ * - principal: School-wide access, can view all sections
+ * - section_head: Section-level access (Primary/Junior/Senior)
+ * - grade_head: Grade-level access (specific grade)
+ * - teacher: Class-level access, can create lessons, manage classrooms
  * - student: Can view lessons, submit assignments
- * - principal: Can view all school data, post announcements, support teachers
  */
-export type UserRole = 'teacher' | 'student' | 'principal';
+export type UserRole = 'principal' | 'section_head' | 'grade_head' | 'teacher' | 'student';
 
 /**
  * User Profile Interface

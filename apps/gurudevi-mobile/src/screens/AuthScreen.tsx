@@ -100,6 +100,10 @@ export default function AuthScreen() {
                         // Principal creates an official school
                         schoolName = `${fullName}'s School`;
                         schoolType = '1AB'; // Default to 1AB (can be changed later)
+                    } else if (role === 'section_head' || role === 'grade_head') {
+                        // Section/Grade heads likely join existing schools, but create workspace for now
+                        schoolName = `${fullName}'s Workspace`;
+                        schoolType = 'personal_workspace';
                     } else {
                         // Teachers/students create a personal workspace
                         // They can join a real school later via invite code
@@ -343,9 +347,11 @@ export default function AuthScreen() {
                                         <SelectDragIndicatorWrapper>
                                             <SelectDragIndicator />
                                         </SelectDragIndicatorWrapper>
+                                        <SelectItem label={t('auth.principal')} value="principal" />
+                                        <SelectItem label={t('auth.sectionHead') || 'Section Head'} value="section_head" />
+                                        <SelectItem label={t('auth.gradeHead') || 'Grade Head'} value="grade_head" />
                                         <SelectItem label={t('auth.teacher')} value="teacher" />
                                         <SelectItem label={t('auth.student')} value="student" />
-                                        <SelectItem label={t('auth.principal')} value="principal" />
                                     </SelectContent>
                                 </SelectPortal>
                             </Select>
