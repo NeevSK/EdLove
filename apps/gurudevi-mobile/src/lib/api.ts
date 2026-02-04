@@ -497,6 +497,119 @@ export const authAPI = {
 };
 
 // ============================================================================
+// MOOD LOGS API (Self - Mood Check-in)
+// ============================================================================
+
+export interface MoodLog {
+    id: string;
+    user_id: string;
+    mood_score: number;
+    created_at: string;
+}
+
+export const moodLogsAPI = {
+    /**
+     * Create a new mood log
+     */
+    async create(userId: string, moodScore: number): Promise<MoodLog> {
+        const { data, error } = await supabase
+            .from('mood_logs')
+            .insert([
+                {
+                    user_id: userId,
+                    mood_score: moodScore,
+                    created_at: new Date().toISOString(),
+                },
+            ])
+            .select()
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to create mood log', error.code, error);
+        }
+
+        return data;
+    },
+
+    /**
+     * Get mood logs for a user
+     */
+    async getAll(userId: string, limit = 30): Promise<MoodLog[]> {
+        const { data, error } = await supabase
+            .from('mood_logs')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
+            .limit(limit);
+
+        if (error) {
+            throw new APIError('Failed to fetch mood logs', error.code, error);
+        }
+
+        return data || [];
+    },
+};
+
+// ============================================================================
+// FIRE JOURNAL API (Self - Fire Journal)
+// ============================================================================
+
+export interface FireJournalEntry {
+    id: string;
+    user_id?: string;
+    content_preview: string;
+    is_burned: boolean;
+    created_at: string;
+}
+
+export const fireJournalAPI = {
+    /**
+     * Create a new fire journal entry (burned)
+     */
+    async create(userId: string, content: string): Promise<FireJournalEntry> {
+        if (!userId) {
+            throw new APIError('User ID is required for fire journal entry', 'MISSING_USER_ID');
+        }
+        
+        const { data, error } = await supabase
+            .from('fire_journal')
+            .insert([
+                {
+                    user_id: userId,
+                    content_preview: content.substring(0, 100), // Store preview only
+                    is_burned: true,
+                    created_at: new Date().toISOString(),
+                },
+            ])
+            .select()
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to create fire journal entry', error.code, error);
+        }
+
+        return data;
+    },
+
+    /**
+     * Get burned entries count (for statistics)
+     */
+    async getBurnedCount(userId: string): Promise<number> {
+        const { count, error } = await supabase
+            .from('fire_journal')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', userId)
+            .eq('is_burned', true);
+
+        if (error) {
+            throw new APIError('Failed to get burned count', error.code, error);
+        }
+
+        return count || 0;
+    },
+};
+
+// ============================================================================
 // MAIN API EXPORT
 // ============================================================================
 
@@ -506,6 +619,8 @@ export const api = {
     students: studentsAPI,
     notes: notesAPI,
     auth: authAPI,
+    moodLogs: moodLogsAPI,
+    fireJournal: fireJournalAPI,
 };
 
 export default api;
