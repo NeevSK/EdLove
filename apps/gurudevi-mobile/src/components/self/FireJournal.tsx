@@ -47,10 +47,10 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
     const [content, setContent] = useState('');
     const [isBurning, setIsBurning] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
-    
+
     // Refs for timeout cleanup
-    const burnTimeoutRef = useRef<NodeJS.Timeout>();
-    const successTimeoutRef = useRef<NodeJS.Timeout>();
+    const burnTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+    const successTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
     // Animation values
     const opacity = useSharedValue(1);

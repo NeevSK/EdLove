@@ -89,6 +89,16 @@ export function getRoleDisplayName(role: UserRole, language: 'si' | 'ta' | 'en' 
             si: 'විදුහල්පතිවරයා',
             ta: 'அதிபர்',
             en: 'Principal'
+        },
+        section_head: {
+            si: 'අංශ ප්‍රධානී',
+            ta: 'பிரிவு தலைவர்',
+            en: 'Section Head'
+        },
+        grade_head: {
+            si: 'ශ්‍රේණි ප්‍රධානී',
+            ta: 'வகுப்பு தலைவர்',
+            en: 'Grade Head'
         }
     };
 

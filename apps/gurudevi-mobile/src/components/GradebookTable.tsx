@@ -99,7 +99,8 @@ export default function GradebookTable({
                 overflow: 'hidden',
             }}
         >
-            <VStack space="none">
+            <VStack>
+                {/* @ts-ignore */}
                 {/* Table Header */}
                 <HStack
                     space="md"
@@ -120,8 +121,8 @@ export default function GradebookTable({
                             {grading_mode === 'marks'
                                 ? t('grades.marks')
                                 : grading_mode === 'gpa'
-                                ? t('grades.grade')
-                                : t('grades.marksGrade')}
+                                    ? t('grades.grade')
+                                    : t('grades.marksGrade')}
                         </Text>
                     </Box>
                     {show_ranks && (
@@ -135,7 +136,7 @@ export default function GradebookTable({
 
                 {/* Table Body */}
                 <ScrollView showsVerticalScrollIndicator={false}>
-                    <VStack space="none">
+                    <VStack>
                         {sortedGrades.length === 0 ? (
                             <Box p="$8" alignItems="center">
                                 <Text color={Theme.colors.slateGray} textAlign="center">

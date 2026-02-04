@@ -13,7 +13,7 @@ import {
     Button,
     ButtonText
 } from "@gluestack-ui/themed";
-import { Mic, Send, MessageCircle, Repeat, Sun, FileText, Lotus, Flame } from 'lucide-react-native';
+import { Mic, Send, MessageCircle, Repeat, Sun, FileText, Flower, Flame } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../constants/Theme';
 import { getGreetingKey } from '../utils/time';
@@ -23,7 +23,7 @@ import { MoodLotus, ShadowAgentDrawer, FireJournal } from '../components/self';
 import { supabase } from '../lib/supabase';
 
 const SUB_FEATURES = [
-    { id: 'mood', label: 'Mood Check-in', icon: Lotus },
+    { id: 'mood', label: 'Mood Check-in', icon: Flower },
     { id: 'fire', label: 'Fire Journal', icon: Flame },
     { id: 'rhythm', label: 'Daily Rhythm', icon: Repeat },
     { id: 'venting', label: 'Venting Space', icon: MessageCircle },

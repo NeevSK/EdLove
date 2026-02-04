@@ -118,13 +118,13 @@ const LotusButton: FC<LotusButtonProps> = ({
                             variant === 'primary'
                                 ? Theme.colors.sacredWhite
                                 : variant === 'secondary'
-                                ? Theme.colors.sanctuarySaffron
-                                : Theme.colors.dimGray
+                                    ? Theme.colors.sanctuarySaffron
+                                    : Theme.colors.dimGray
                         }
                     />
                 ) : (
                     <>
-                        {icon && <View style={styles.iconContainer}>{icon}</View>}
+                        {icon && <View style={styles.iconContainer}>{icon as any}</View>}
                         <Text
                             style={[
                                 styles.text,

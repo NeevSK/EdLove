@@ -119,7 +119,7 @@ export default function App() {
         <AuthScreen />
       ) : (
         <NavigationContainer>
-          <TabNavigator 
+          <TabNavigator
             onTabChange={(tabName) => {
               setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
             }}
