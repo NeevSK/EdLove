@@ -103,6 +103,18 @@
         "pro": "ප්‍රෝ",
         "premium": "ප්‍රීමියම්"
     },
+    "invite": {
+        "enterCode": "ආරාධනා කේතය ඇතුළත් කරන්න",
+        "codeDesc": "ඔබේ පාසලට ආරාධනා කේතයකින් එකතු වන්න",
+        "inviteCode": "ආරාධනා කේතය",
+        "codeFormat": "ආකෘතිය: GURU-XXXXXX-TEACH",
+        "validate": "කේතය තහවුරු කරන්න",
+        "whereToFind": "කේතය සොයා ගන්නේ කොහෙන්ද?",
+        "whereDesc": "ඔබේ විදුහල්පතිවරයාගෙන් ආරාධනා කේතයක් විමසන්න",
+        "createSchool": "මම විදුහල්පතිවරයෙක් - මගේ පාසල සාදන්න",
+        "invalidCode": "වලංගු නැති හෝ කල් ඉකුත් වූ කේතයකි",
+        "joiningSchool": "{{schoolName}} වෙත එකතු වෙමින්!"
+    },
     "errors": {
         "somethingWentWrong": "මොකක්හරි වැරදුනා",
         "tryAgain": "නැවත උත්සාහ කරන්න",

@@ -90,15 +90,26 @@ export default function AuthScreen() {
 
             if (authData.user) {
                 try {
-                    // Step 2: Create school (for now, create a default school)
-                    // TODO: Later, replace with invite code system or school selection
+                    // Step 2: Create school based on role
+                    let schoolName;
+                    let schoolType;
+
+                    if (role === 'principal') {
+                        // Principal creates an official school
+                        schoolName = `${fullName}'s School`;
+                        schoolType = '1AB'; // Default to 1AB (can be changed later)
+                    } else {
+                        // Teachers/students create a personal workspace
+                        // They can join a real school later via invite code
+                        schoolName = `${fullName}'s Workspace`;
+                        schoolType = 'personal_workspace';
+                    }
+
                     const { data: schoolData, error: schoolError } = await supabase
                         .from('schools')
                         .insert({
-                            name: role === 'principal'
-                                ? `${fullName}'s School`  // Principal creates their school
-                                : 'Default School',  // Others join default (temporary)
-                            type: 'government',  // Default type
+                            name: schoolName,
+                            type: schoolType,
                         })
                         .select()
                         .single();

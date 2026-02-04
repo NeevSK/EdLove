@@ -103,6 +103,18 @@
         "pro": "Pro",
         "premium": "Premium"
     },
+    "invite": {
+        "enterCode": "Enter Invite Code",
+        "codeDesc": "Join your school with an invite code",
+        "inviteCode": "Invite Code",
+        "codeFormat": "Format: GURU-XXXXXX-TEACH",
+        "validate": "Validate Code",
+        "whereToFind": "Where to find your code?",
+        "whereDesc": "Ask your principal for an invite code",
+        "createSchool": "I'm a Principal - Create my school",
+        "invalidCode": "Invalid or expired code",
+        "joiningSchool": "Joining {{schoolName}}!"
+    },
     "errors": {
         "somethingWentWrong": "Something went wrong",
         "tryAgain": "Try again",
