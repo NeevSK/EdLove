@@ -63,6 +63,12 @@ CREATE POLICY "Principals update school classrooms"
       SELECT school_id FROM public.users 
       WHERE id = auth.uid() AND role = 'principal'
     )
+  )
+  WITH CHECK (
+    school_id IN (
+      SELECT school_id FROM public.users 
+      WHERE id = auth.uid() AND role = 'principal'
+    )
   );
 
 -- RLS Policy: Teachers and principals can delete classrooms

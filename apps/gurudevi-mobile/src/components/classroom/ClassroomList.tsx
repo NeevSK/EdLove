@@ -30,37 +30,44 @@ export default function ClassroomList({ onClassroomPress }: ClassroomListProps) 
     const [classrooms, setClassrooms] = useState<Classroom[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     useEffect(() => {
+        const fetchClassrooms = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                // Get current user ID
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    throw new Error('No authenticated user');
+                }
+
+                // Fetch classrooms based on role
+                let data: Classroom[] = [];
+                if (role === 'teacher') {
+                    data = await api.classrooms.getByTeacher(user.id);
+                } else if (role === 'student') {
+                    data = await api.classrooms.getByStudent(user.id);
+                    // Sort for student view since join query may not preserve ordering
+                    data.sort((a, b) => a.name.localeCompare(b.name));
+                }
+
+                setClassrooms(data);
+            } catch (err: any) {
+                console.error('Error fetching classrooms:', err);
+                setError(err.message || 'Failed to load classrooms');
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchClassrooms();
-    }, [role]);
+    }, [role, refreshTrigger]);
 
-    const fetchClassrooms = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-
-            // Get current user ID
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                throw new Error('No authenticated user');
-            }
-
-            // Fetch classrooms based on role
-            let data: Classroom[] = [];
-            if (role === 'teacher') {
-                data = await api.classrooms.getByTeacher(user.id);
-            } else if (role === 'student') {
-                data = await api.classrooms.getByStudent(user.id);
-            }
-
-            setClassrooms(data);
-        } catch (err: any) {
-            console.error('Error fetching classrooms:', err);
-            setError(err.message || 'Failed to load classrooms');
-        } finally {
-            setLoading(false);
-        }
+    const handleRetry = () => {
+        setRefreshTrigger(prev => prev + 1);
     };
 
     const handleClassroomPress = (classroom: Classroom) => {
@@ -86,7 +93,7 @@ export default function ClassroomList({ onClassroomPress }: ClassroomListProps) 
                 <Text style={styles.errorText}>⚠️ {error}</Text>
                 <TouchableOpacity 
                     style={styles.retryButton}
-                    onPress={fetchClassrooms}
+                    onPress={handleRetry}
                 >
                     <Text style={styles.retryButtonText}>Retry</Text>
                 </TouchableOpacity>

@@ -7,6 +7,11 @@
 import { supabase } from '../supabase';
 import { APIError, Classroom } from './types';
 
+// Interface for the join result from classroom_students query
+interface ClassroomStudentJoin {
+    classroom: Classroom | null;
+}
+
 export const classroomsAPI = {
     /**
      * Get all classrooms for a teacher
@@ -51,8 +56,10 @@ export const classroomsAPI = {
             throw new APIError('Failed to fetch student classrooms', error.code, error);
         }
 
-        // Extract the classroom objects from the join result
-        return (data || []).map((item: any) => item.classroom).filter(Boolean);
+        // Extract the classroom objects from the join result with proper typing
+        return (data || [])
+            .map((item: ClassroomStudentJoin) => item.classroom)
+            .filter((classroom): classroom is Classroom => classroom !== null);
     },
 
     /**
