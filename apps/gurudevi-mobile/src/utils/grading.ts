@@ -43,15 +43,12 @@ export function calculateRanks(grades: StudentGrade[]): StudentGrade[] {
   const sorted = [...grades].sort((a, b) => b.marks - a.marks);
   
   // Assign ranks (handle ties with proper rank skipping)
-  let currentRank = 1;
   return sorted.map((grade, index) => {
     // If same marks as previous student, assign same rank
     if (index > 0 && grade.marks === sorted[index - 1].marks) {
       return { ...grade, rank: sorted[index - 1].rank };
     }
-    // Otherwise, assign current rank (which equals index + 1)
-    const rankedGrade = { ...grade, rank: currentRank };
-    currentRank = index + 2; // Next rank is current index + 2
-    return rankedGrade;
+    // Otherwise, rank is index + 1 (accounting for 0-based indexing)
+    return { ...grade, rank: index + 1 };
   });
 }

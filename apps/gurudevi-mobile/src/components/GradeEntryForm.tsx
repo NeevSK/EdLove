@@ -50,7 +50,7 @@ export default function GradeEntryForm({
     const [feedback, setFeedback] = useState(initialFeedback);
     const [error, setError] = useState('');
 
-    const marksNumber = parseFloat(marks) || 0;
+    const marksNumber = marks === '' ? 0 : (parseFloat(marks) || 0);
     const { grade, gpa } = marksToGPA(marksNumber);
 
     const handleSave = () => {
@@ -110,7 +110,7 @@ export default function GradeEntryForm({
             </VStack>
 
             {/* Auto-computed GPA Preview */}
-            {showGPA && marksNumber > 0 && (
+            {showGPA && marks !== '' && marksNumber > 0 && (
                 <Box
                     p="$3"
                     sx={{
