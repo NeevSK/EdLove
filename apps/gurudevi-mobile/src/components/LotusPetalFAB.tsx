@@ -34,7 +34,7 @@
  * ```
  */
 
-import React, { FC } from 'react';
+import React, { FC, useMemo, useEffect, useCallback } from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import Animated, {
@@ -117,17 +117,17 @@ interface PetalShapeProps {
     opacity?: number;
 }
 
-const PetalShape: FC<PetalShapeProps> = ({ size, height, color, opacity = 0.95 }) => {
+const PetalShape: FC<PetalShapeProps> = React.memo(({ size, height, color, opacity = 0.95 }) => {
     // Create an organic petal shape using SVG path
     // The shape is taller than wide, with a pointed top and rounded bottom
-    const petalPath = `
+    const petalPath = useMemo(() => `
         M ${size / 2} 0
         C ${size * 0.35} ${height * 0.15}, ${size * 0.25} ${height * 0.3}, ${size * 0.25} ${height * 0.45}
         C ${size * 0.25} ${height * 0.6}, ${size * 0.3} ${height * 0.75}, ${size / 2} ${height}
         C ${size * 0.7} ${height * 0.75}, ${size * 0.75} ${height * 0.6}, ${size * 0.75} ${height * 0.45}
         C ${size * 0.75} ${height * 0.3}, ${size * 0.65} ${height * 0.15}, ${size / 2} 0
         Z
-    `;
+    `, [size, height]);
 
     return (
         <Svg width={size} height={height} viewBox={`0 0 ${size} ${height}`}>
@@ -138,7 +138,7 @@ const PetalShape: FC<PetalShapeProps> = ({ size, height, color, opacity = 0.95 }
             />
         </Svg>
     );
-};
+});
 
 // ============================================================================
 // MAIN COMPONENT
@@ -155,34 +155,41 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     // Shared value for breathing animation
     const breathingScale = useSharedValue(0.95);
 
-    // Get current configuration
-    const config = fabConfig[currentTab];
+    // Memoize current configuration to avoid unnecessary recalculations
+    const config = useMemo(() => fabConfig[currentTab], [currentTab]);
     const IconComponent = config.IconComponent;
+
+    // ============================================================================
+    // ANIMATION INITIALIZATION
+    // ============================================================================
+    
+    // Initialize breathing animation in useEffect to avoid restarting on every render
+    useEffect(() => {
+        if (!disabled) {
+            breathingScale.value = 0.95;
+            breathingScale.value = withRepeat(
+                withTiming(1.0, { 
+                    duration: 2000, 
+                    easing: Easing.inOut(Easing.ease) 
+                }),
+                -1, // infinite
+                true // reverse (yoyo effect)
+            );
+        } else {
+            // Reset to 1.0 when disabled
+            breathingScale.value = withTiming(1.0, { duration: 200 });
+        }
+    }, [disabled]); // breathingScale, withRepeat, withTiming, and Easing are stable refs, not needed in deps
 
     // ============================================================================
     // ANIMATION 1: BREATHING (Always-on when not disabled)
     // ============================================================================
     
     const breathingStyle = useAnimatedStyle(() => {
-        if (disabled) {
-            breathingScale.value = 1;
-            return { transform: [{ scale: 1 }] };
-        }
-
-        // Animate from 0.95 to 1.0 and back (4 second total cycle: 2s up, 2s down)
-        breathingScale.value = withRepeat(
-            withTiming(1.0, { 
-                duration: 2000, 
-                easing: Easing.inOut(Easing.ease) 
-            }),
-            -1, // infinite
-            true // reverse (yoyo effect)
-        );
-
         return {
             transform: [{ scale: breathingScale.value }]
         };
-    });
+    }); // breathingScale is a stable ref, no need in deps
 
     // ============================================================================
     // ANIMATION 2: PRESS RESPONSE
@@ -192,13 +199,23 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         return {
             transform: [{ scale: pressScale.value }]
         };
-    });
+    }); // pressScale is a stable ref, no need in deps
 
-    const handlePress = () => {
+    // Safe haptic feedback with error handling
+    const triggerHapticFeedback = useCallback(async () => {
+        try {
+            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        } catch (error) {
+            // Haptics not available on simulators or devices without haptic support
+            console.warn('Haptic feedback not available on this device');
+        }
+    }, []);
+
+    const handlePress = useCallback(() => {
         if (disabled) return;
 
         // Haptic feedback
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        triggerHapticFeedback();
 
         // Visual feedback - scale down then spring back
         pressScale.value = withSequence(
@@ -211,7 +228,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
 
         // Execute callback
         onPress();
-    };
+    }, [disabled, onPress, triggerHapticFeedback]); // pressScale is a stable ref
 
     // ============================================================================
     // ANIMATION 3: SCROLL BEHAVIOR (Optional)
@@ -238,7 +255,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                 Extrapolate.CLAMP
             )
         };
-    });
+    }); // scrollY is a stable ref, no need in deps
 
     // ============================================================================
     // RENDER
@@ -258,6 +275,11 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                 onPress={handlePress}
                 disabled={disabled}
                 style={styles.pressable}
+                testID="lotus-petal-fab"
+                accessibilityLabel={config.label}
+                accessibilityRole="button"
+                accessibilityHint="Floating action button for quick actions"
+                accessible={true}
             >
                 <View style={styles.petalContainer}>
                     <PetalShape
