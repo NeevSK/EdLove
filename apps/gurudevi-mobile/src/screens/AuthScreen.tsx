@@ -35,6 +35,8 @@ import { supabase } from '../lib/supabase';
 import { Theme } from '../constants/Theme';
 import { UserRole } from '../types/User';
 import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
+import { useStore } from '../store/useStore';
+import { SchoolType } from '../constants/SriLankanSchools';
 
 // Google icon using react-native-svg
 const GoogleIcon = ({ color = "#FFF", size = 20 }: { color?: string; size?: number }) => (
@@ -130,6 +132,10 @@ export default function AuthScreen() {
 
                     if (profileError) throw profileError;
 
+                    // Sync role and school type to store (Universal Save)
+                    useStore.getState().setUserRole(role);
+                    useStore.getState().setSchoolType(schoolType as SchoolType);
+
                     hapticSuccess();
                     showToast(t('auth.signupSuccess') || 'Account created!', "success");
                 } catch (error: any) {
@@ -139,15 +145,40 @@ export default function AuthScreen() {
                 }
             }
         } else {
-            // Login flow (unchanged)
-            const { error } = await supabase.auth.signInWithPassword({
+            // Login flow - fetch user profile to get role and school type
+            const { data: authData, error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
             });
             if (error) {
                 hapticError();
                 showToast(error.message, "error");
-            } else {
+            } else if (authData.user) {
+                // Fetch user profile to get role and school info
+                const { data: userProfile, error: profileError } = await supabase
+                    .from('users')
+                    .select('role, school_id')
+                    .eq('id', authData.user.id)
+                    .single();
+
+                if (!profileError && userProfile) {
+                    // Sync role to store
+                    useStore.getState().setUserRole(userProfile.role as UserRole);
+                    
+                    // Fetch school type
+                    if (userProfile.school_id) {
+                        const { data: schoolData } = await supabase
+                            .from('schools')
+                            .select('type')
+                            .eq('id', userProfile.school_id)
+                            .single();
+                        
+                        if (schoolData) {
+                            useStore.getState().setSchoolType(schoolData.type as SchoolType);
+                        }
+                    }
+                }
+                
                 hapticSuccess();
             }
         }
