@@ -19,7 +19,7 @@ import ClassroomScreen from './src/screens/ClassroomScreen';
 import CommunityScreen from './src/screens/CommunityScreen';
 import LibraryScreen from './src/screens/LibraryScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
-import AssistivePresence from './src/components/AssistivePresence';
+import LotusPetalFAB from './src/components/LotusPetalFAB';
 
 const Tab = createBottomTabNavigator();
 
@@ -27,6 +27,7 @@ export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [currentTab, setCurrentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
 
   // Load custom fonts
   useEffect(() => {
@@ -59,6 +60,17 @@ export default function App() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const handleFabPress = () => {
+    // TODO: Implement specific actions for each tab
+    console.log(`FAB pressed in ${currentTab} tab`);
+    // Example logic (can be expanded later):
+    // switch (currentTab) {
+    //   case 'self': router.push('/log-mood'); break;
+    //   case 'classroom': router.push('/create-lesson'); break;
+    //   ...
+    // }
+  };
 
   if (loading || !fontsLoaded) {
     return (
@@ -97,6 +109,14 @@ export default function App() {
                 return null;
               },
             })}
+            screenListeners={{
+              state: (e) => {
+                const routeName = e.data?.state?.routes[e.data.state.index]?.name;
+                if (routeName) {
+                  setCurrentTab(routeName.toLowerCase() as 'self' | 'classroom' | 'community' | 'library' | 'profile');
+                }
+              },
+            }}
           >
             <Tab.Screen name="Self" component={SelfScreen} />
             <Tab.Screen name="Classroom" component={ClassroomScreen} />
@@ -104,7 +124,10 @@ export default function App() {
             <Tab.Screen name="Library" component={LibraryScreen} />
             <Tab.Screen name="Profile" component={ProfileScreen} />
           </Tab.Navigator>
-          <AssistivePresence />
+          <LotusPetalFAB
+            currentTab={currentTab}
+            onPress={handleFabPress}
+          />
         </NavigationContainer>
       )}
     </GluestackUIProvider>
