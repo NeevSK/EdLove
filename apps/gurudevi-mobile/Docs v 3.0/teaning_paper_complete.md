@@ -1,7 +1,7 @@
 # TEANING: THE SACRED SPACE WHERE EDUCATION LIVES
 ## *A Relational Framework for Understanding Educational Transformation*
 
-**By Neev [Last name]**  
+**By Naveen 'NeevSK' Sandeepa Kumara**  
 *University of Moratuwa, Sri Lanka*
 
 ---
