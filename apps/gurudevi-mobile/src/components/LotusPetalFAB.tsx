@@ -58,7 +58,9 @@ const FAB_HEIGHT = 72; // Taller than wide for petal shape
 const ICON_SIZE = 24;
 
 // Context-aware configuration
-const fabConfig: Record<TabType, { IconComponent: any; label: string }> = {
+type IconComponentType = React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
+
+const fabConfig: Record<TabType, { IconComponent: IconComponentType; label: string }> = {
     self: { 
         IconComponent: Flower2,
         label: 'Log mood',
@@ -126,7 +128,9 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     disabled = false,
 }) => {
     // Shared value for press animation
-    const scale = useSharedValue(1);
+    const pressScale = useSharedValue(1);
+    // Shared value for breathing animation
+    const breathingScale = useSharedValue(0.95);
 
     // Get current configuration
     const config = fabConfig[currentTab];
@@ -138,20 +142,22 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     
     const breathingStyle = useAnimatedStyle(() => {
         if (disabled) {
+            breathingScale.value = 1;
             return { transform: [{ scale: 1 }] };
         }
 
+        // Animate from 0.95 to 1.0 and back (4 second total cycle: 2s up, 2s down)
+        breathingScale.value = withRepeat(
+            withTiming(1.0, { 
+                duration: 2000, 
+                easing: Easing.inOut(Easing.ease) 
+            }),
+            -1, // infinite
+            true // reverse (yoyo effect)
+        );
+
         return {
-            transform: [{
-                scale: withRepeat(
-                    withTiming(0.95, { 
-                        duration: 2000, 
-                        easing: Easing.inOut(Easing.ease) 
-                    }),
-                    -1, // infinite
-                    true // reverse (yoyo effect)
-                )
-            }]
+            transform: [{ scale: breathingScale.value }]
         };
     });
 
@@ -161,7 +167,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     
     const pressStyle = useAnimatedStyle(() => {
         return {
-            transform: [{ scale: scale.value }]
+            transform: [{ scale: pressScale.value }]
         };
     });
 
@@ -172,7 +178,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
         // Visual feedback - scale down then spring back
-        scale.value = withSequence(
+        pressScale.value = withSequence(
             withTiming(0.9, { duration: 100 }),
             withSpring(1.0, { 
                 damping: 15, 
@@ -235,7 +241,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                         size={FAB_SIZE}
                         height={FAB_HEIGHT}
                         color={Theme.colors.sanctuarySaffron}
-                        opacity={disabled ? 0.5 : 0.95}
+                        opacity={0.95}
                     />
                     <View style={styles.iconContainer}>
                         <IconComponent
