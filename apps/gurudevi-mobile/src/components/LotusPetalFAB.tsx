@@ -35,7 +35,7 @@
  */
 
 import React, { FC, useMemo, useEffect, useCallback, useState, useRef } from 'react';
-import { View, Pressable, StyleSheet, Text, PanResponder, Dimensions } from 'react-native';
+import { View, Pressable, StyleSheet, Text, PanResponder, Dimensions, Image } from 'react-native';
 import Svg, { Path, G } from 'react-native-svg';
 import Animated, {
     useAnimatedStyle,
@@ -123,76 +123,6 @@ const fabConfig: Record<TabType, { IconComponent: IconComponentType; label: stri
 // LOTUS FLOWER ICON COMPONENT
 // ============================================================================
 
-interface LotusFlowerIconProps {
-    size: number;
-    color: string;
-    opacity?: number;
-}
-
-const LotusFlowerIcon: FC<LotusFlowerIconProps> = React.memo(({ size, color, opacity = 0.95 }) => {
-    // Create a stylized lotus flower shape using SVG paths
-    // The lotus has 8 petals arranged in a circular pattern
-    return (
-        <Svg width={size} height={size} viewBox="0 0 100 100">
-            <G opacity={opacity}>
-                {/* Center circle */}
-                <Path
-                    d="M 50 45 A 5 5 0 1 1 50 55 A 5 5 0 1 1 50 45 Z"
-                    fill={color}
-                />
-                
-                {/* Top petal */}
-                <Path
-                    d="M 50 10 Q 40 20 45 35 Q 50 30 55 35 Q 60 20 50 10 Z"
-                    fill={color}
-                />
-                
-                {/* Top-right petal */}
-                <Path
-                    d="M 70 20 Q 65 30 60 40 Q 55 35 55 40 Q 60 50 70 20 Z"
-                    fill={color}
-                />
-                
-                {/* Right petal */}
-                <Path
-                    d="M 85 45 Q 75 45 65 50 Q 70 55 65 60 Q 75 65 85 55 Z"
-                    fill={color}
-                />
-                
-                {/* Bottom-right petal */}
-                <Path
-                    d="M 75 75 Q 70 65 60 60 Q 55 65 55 70 Q 60 80 75 75 Z"
-                    fill={color}
-                />
-                
-                {/* Bottom petal */}
-                <Path
-                    d="M 50 90 Q 40 80 45 65 Q 50 70 55 65 Q 60 80 50 90 Z"
-                    fill={color}
-                />
-                
-                {/* Bottom-left petal */}
-                <Path
-                    d="M 25 75 Q 30 65 40 60 Q 45 65 45 70 Q 40 80 25 75 Z"
-                    fill={color}
-                />
-                
-                {/* Left petal */}
-                <Path
-                    d="M 15 45 Q 25 45 35 50 Q 30 55 35 60 Q 25 65 15 55 Z"
-                    fill={color}
-                />
-                
-                {/* Top-left petal */}
-                <Path
-                    d="M 30 20 Q 35 30 40 40 Q 45 35 45 40 Q 40 50 30 20 Z"
-                    fill={color}
-                />
-            </G>
-        </Svg>
-    );
-});
-
 // ============================================================================
 // MAIN COMPONENT
 // ============================================================================
@@ -228,10 +158,10 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     // Pan responder for drag functionality
     const panResponder = useRef(
         PanResponder.create({
-            onStartShouldSetPanResponder: () => false,
+            onStartShouldSetPanResponder: () => true, // Always capture start to check for drag vs tap
             onMoveShouldSetPanResponder: (_, gestureState) => {
-                // Only start capturing if in drag mode or moved enough
-                return isDragging || Math.abs(gestureState.dx) > 10 || Math.abs(gestureState.dy) > 10;
+                // Highly sensitive drag detection for "floating" feel
+                return isDragging || Math.abs(gestureState.dx) > 2 || Math.abs(gestureState.dy) > 2;
             },
             onPanResponderGrant: () => {
                 // Start long press timer
@@ -343,9 +273,9 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
             // Visual feedback - scale down then spring back
             pressScale.value = withSequence(
                 withTiming(0.9, { duration: 100 }),
-                withSpring(1.0, { 
-                    damping: 15, 
-                    stiffness: 150 
+                withSpring(1.0, {
+                    damping: 15,
+                    stiffness: 150
                 })
             );
 
@@ -423,7 +353,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     });
 
     return (
-        <Animated.View 
+        <Animated.View
             {...panResponder.panHandlers}
 
             style={[
@@ -437,18 +367,14 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         >
             <View style={styles.pressable}>
                 <View style={styles.petalContainer}>
-                    <LotusFlowerIcon
-                        size={FAB_SIZE}
-                        color={Theme.colors.lotusDeepPink}
-                        opacity={0.95}
+                    <Animated.Image
+                        source={require('../../assets/images/lotus_bloom.png')}
+                        style={{
+                            width: FAB_SIZE * 1.5, // Make it bloom slightly larger than container
+                            height: FAB_HEIGHT * 1.5,
+                        }}
+                        resizeMode="contain"
                     />
-                    <View style={styles.iconContainer}>
-                        <IconComponent
-                            size={ICON_SIZE}
-                            color={Theme.colors.sacredWhite}
-                            strokeWidth={2}
-                        />
-                    </View>
                 </View>
             </View>
 
@@ -499,7 +425,7 @@ const styles = StyleSheet.create({
         width: FAB_SIZE,
         height: FAB_HEIGHT,
         borderRadius: FAB_SIZE / 2,
-        backgroundColor: Theme.colors.voidIndigo,
+        backgroundColor: 'transparent',
     },
     petalContainer: {
         width: FAB_SIZE,

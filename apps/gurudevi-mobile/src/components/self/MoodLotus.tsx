@@ -22,7 +22,7 @@ import {
     SliderFilledTrack,
     SliderThumb,
 } from '@gluestack-ui/themed';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -41,11 +41,11 @@ interface MoodLotusProps {
 }
 
 const MOOD_STATES = [
-    { value: 1, label: 'Heavy', color: Theme.colors.dimGray, glow: 0 },
-    { value: 2, label: 'Challenging', color: Theme.colors.slateGray, glow: 0.1 },
-    { value: 3, label: 'Okay', color: Theme.colors.stoneGray, glow: 0.2 },
-    { value: 4, label: 'Good', color: Theme.colors.sageGreen, glow: 0.3 },
-    { value: 5, label: 'Flourishing', color: Theme.colors.sanctuarySaffron, glow: 0.5 },
+    { value: 1, label: 'Heavy', color: Theme.colors.dimGray, glow: 0, image: require('../../../assets/images/lotus_bud.png') },
+    { value: 2, label: 'Challenging', color: Theme.colors.slateGray, glow: 0.1, image: require('../../../assets/images/lotus_bud.png') },
+    { value: 3, label: 'Okay', color: Theme.colors.stoneGray, glow: 0.2, image: require('../../../assets/images/lotus_bloom.png') },
+    { value: 4, label: 'Good', color: Theme.colors.sageGreen, glow: 0.3, image: require('../../../assets/images/lotus_bloom.png') },
+    { value: 5, label: 'Flourishing', color: Theme.colors.sanctuarySaffron, glow: 0.5, image: require('../../../assets/images/lotus_bloom.png') },
 ];
 
 export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
@@ -75,18 +75,9 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
     const lotusStyle = useAnimatedStyle(() => {
         return {
             transform: [{ scale: scale.value }],
-            opacity: 0.5 + glowOpacity.value,
+            opacity: 1, // Keep image opaque, animate glow behind it if needed
         };
     });
-
-    // Memoize shadow styles to avoid recreation on each render
-    const lotusShadowStyle = useMemo(() => ({
-        backgroundColor: currentMood.color,
-        shadowColor: currentMood.color,
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: currentMood.glow,
-        shadowRadius: 20,
-    }), [currentMood.color, currentMood.glow]);
 
     const handleMoodChange = async (value: number) => {
         hapticLight();
@@ -152,31 +143,35 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
                     alignItems: 'center',
                     justifyContent: 'center',
                     padding: Theme.spacing.xl,
+                    height: 250, // Fixed height to prevent jump
                 }}
             >
                 <Animated.View style={lotusStyle}>
-                    <View
+                    <Image
+                        source={currentMood.image}
+                        style={styles.lotusImage}
+                        resizeMode="contain"
+                    />
+                    {/* Glow effect behind */}
+                    <Animated.View
                         style={[
-                            styles.lotus,
-                            lotusShadowStyle,
+                            styles.glow,
+                            {
+                                opacity: glowOpacity,
+                                backgroundColor: currentMood.color,
+                                shadowColor: currentMood.color,
+                            }
                         ]}
-                    >
-                        <Text
-                            style={{
-                                fontSize: 48,
-                                color: Theme.colors.sacredWhite,
-                            }}
-                        >
-                            🪷
-                        </Text>
-                    </View>
+                    />
                 </Animated.View>
+
                 <Text
                     style={{
                         marginTop: Theme.spacing.md,
                         fontSize: Theme.typography.fontSize.lg,
                         fontWeight: Theme.typography.fontWeight.semibold,
                         color: currentMood.color,
+                        textAlign: 'center',
                     }}
                 >
                     {currentMood.label}
@@ -191,9 +186,16 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
                     minValue={1}
                     maxValue={5}
                     step={1}
-                    size="md"
+                    size="lg" // Increased size
+                    orientation="horizontal"
+                    isDisabled={false}
+                    isReversed={false}
+                    sx={{
+                        width: '100%',
+                        height: 40, // Increased touch area
+                    }}
                 >
-                    <SliderTrack>
+                    <SliderTrack sx={{ height: 8, borderRadius: 4, backgroundColor: Theme.colors.midnightBlue }}>
                         <SliderFilledTrack
                             sx={{
                                 backgroundColor: currentMood.color,
@@ -203,10 +205,15 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
                     <SliderThumb
                         sx={{
                             backgroundColor: currentMood.color,
-                            borderWidth: 2,
+                            borderWidth: 4,
                             borderColor: Theme.colors.sacredWhite,
-                            width: 24,
-                            height: 24,
+                            width: 32, // Larger thumb
+                            height: 32,
+                            shadowColor: currentMood.color,
+                            shadowOffset: { width: 0, height: 0 },
+                            shadowOpacity: 0.5,
+                            shadowRadius: 10,
+                            elevation: 5,
                         }}
                     />
                 </Slider>
@@ -247,12 +254,22 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
 }
 
 const styles = StyleSheet.create({
-    lotus: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
-        alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 8,
+    lotusImage: {
+        width: 180,
+        height: 180,
+        zIndex: 2,
     },
+    glow: {
+        position: 'absolute',
+        width: 140,
+        height: 140,
+        borderRadius: 70,
+        top: 20,
+        left: 20,
+        zIndex: 1,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.8,
+        shadowRadius: 30,
+        elevation: 10,
+    }
 });
