@@ -124,8 +124,8 @@ export const typography = {
         letterSpacing: 0,
     },
     h3: {
-        fontSize: 22,      // fontSize.xl
-        lineHeight: 35.2,  // 1.6x
+        fontSize: 18,      // fontSize.lg
+        lineHeight: 28.8,  // 1.6x
         fontWeight: '600', // fontWeight.semibold
         letterSpacing: 0,
     },
