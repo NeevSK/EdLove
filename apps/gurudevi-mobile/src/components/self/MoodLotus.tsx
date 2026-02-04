@@ -10,7 +10,7 @@
  * 5 = Full Bloom (Glowing) - Flourishing
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     Box,
     VStack,
@@ -78,6 +78,15 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
             opacity: 0.5 + glowOpacity.value,
         };
     });
+
+    // Memoize shadow styles to avoid recreation on each render
+    const lotusShadowStyle = useMemo(() => ({
+        backgroundColor: currentMood.color,
+        shadowColor: currentMood.color,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: currentMood.glow,
+        shadowRadius: 20,
+    }), [currentMood.color, currentMood.glow]);
 
     const handleMoodChange = async (value: number) => {
         hapticLight();
@@ -149,13 +158,7 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
                     <View
                         style={[
                             styles.lotus,
-                            {
-                                backgroundColor: currentMood.color,
-                                shadowColor: currentMood.color,
-                                shadowOffset: { width: 0, height: 0 },
-                                shadowOpacity: currentMood.glow,
-                                shadowRadius: 20,
-                            },
+                            lotusShadowStyle,
                         ]}
                     >
                         <Text

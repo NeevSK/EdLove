@@ -10,7 +10,7 @@
  * - Saves to fire_journal table with is_burned = true
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     Box,
     VStack,
@@ -47,12 +47,28 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
     const [content, setContent] = useState('');
     const [isBurning, setIsBurning] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
+    
+    // Refs for timeout cleanup
+    const burnTimeoutRef = useRef<NodeJS.Timeout>();
+    const successTimeoutRef = useRef<NodeJS.Timeout>();
 
     // Animation values
     const opacity = useSharedValue(1);
     const scale = useSharedValue(1);
     const translateY = useSharedValue(0);
     const rotation = useSharedValue(0);
+
+    // Cleanup timeouts on unmount
+    useEffect(() => {
+        return () => {
+            if (burnTimeoutRef.current) {
+                clearTimeout(burnTimeoutRef.current);
+            }
+            if (successTimeoutRef.current) {
+                clearTimeout(successTimeoutRef.current);
+            }
+        };
+    }, []);
 
     const containerStyle = useAnimatedStyle(() => {
         return {
@@ -67,6 +83,10 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
 
     const handleBurn = async () => {
         if (!content.trim()) return;
+        if (!userId) {
+            console.error('User must be logged in to use Fire Journal');
+            return;
+        }
 
         hapticMedium();
         setIsBurning(true);
@@ -138,7 +158,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
         );
 
         // Reset after animation completes
-        setTimeout(() => {
+        burnTimeoutRef.current = setTimeout(() => {
             resetAfterBurn();
         }, 1500);
     };
@@ -155,7 +175,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
         rotation.value = withSpring(0);
 
         // Hide success message after delay
-        setTimeout(() => {
+        successTimeoutRef.current = setTimeout(() => {
             setShowSuccess(false);
             onBurned?.();
         }, 2000);

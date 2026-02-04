@@ -566,7 +566,11 @@ export const fireJournalAPI = {
     /**
      * Create a new fire journal entry (burned)
      */
-    async create(userId: string | undefined, content: string): Promise<FireJournalEntry> {
+    async create(userId: string, content: string): Promise<FireJournalEntry> {
+        if (!userId) {
+            throw new APIError('User ID is required for fire journal entry', 'MISSING_USER_ID');
+        }
+        
         const { data, error } = await supabase
             .from('fire_journal')
             .insert([

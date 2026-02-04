@@ -120,11 +120,11 @@ export default function SelfScreen() {
                         }}
                     >
                         {activeFeature === 'mood' && (
-                            <MoodLotus userId={userId || undefined} />
+                            <MoodLotus userId={userId ?? undefined} />
                         )}
 
                         {activeFeature === 'fire' && (
-                            <FireJournal userId={userId || undefined} />
+                            <FireJournal userId={userId ?? undefined} />
                         )}
 
                         {activeFeature === 'rhythm' && (
