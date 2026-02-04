@@ -10,9 +10,5 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
 
-  integrations: [svelte()],
-  outDir: '../../dist',
-  build: {
-    format: 'file'
-  }
+  integrations: [svelte()]
 });
