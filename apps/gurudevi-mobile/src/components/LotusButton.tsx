@@ -48,7 +48,7 @@ interface LotusButtonProps {
     size?: 'sm' | 'md' | 'lg';
     loading?: boolean;
     disabled?: boolean;
-    icon?: any;
+    icon?: React.ReactNode;
 }
 
 // ============================================================================
