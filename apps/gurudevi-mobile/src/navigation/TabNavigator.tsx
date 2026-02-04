@@ -8,6 +8,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Home, School, Users, Library, User } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { Theme } from '../constants/Theme';
 import { useUserRole } from '../hooks/useUserRole';
 
@@ -26,20 +27,21 @@ interface TabNavigatorProps {
 
 export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
     const { role } = useUserRole();
+    const { t } = useTranslation();
 
     // Get dynamic tab label based on role
     const getClassroomTabLabel = (): string => {
         switch (role) {
             case 'principal':
-                return 'School';
+                return t('tabs.school') || 'School';
             case 'section_head':
-                return 'Section';
+                return t('tabs.section') || 'Section';
             case 'grade_head':
-                return 'Grade';
+                return t('tabs.grade') || 'Grade';
             case 'teacher':
             case 'student':
             default:
-                return 'Classroom';
+                return t('tabs.classroom') || 'Classroom';
         }
     };
 

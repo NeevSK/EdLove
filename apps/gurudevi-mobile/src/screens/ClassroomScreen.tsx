@@ -18,6 +18,13 @@ import PrincipalSchoolView from './classroom/PrincipalSchoolView';
 import SectionHeadView from './classroom/SectionHeadView';
 import GradeHeadView from './classroom/GradeHeadView';
 
+// Shared container styling for role-based views
+const ROLE_VIEW_CONTAINER_STYLE = {
+    flex: 1,
+    backgroundColor: Theme.colors.voidIndigo,
+    padding: Theme.spacing.lg,
+};
+
 export default function ClassroomScreen() {
     const { role } = useUserRole();
 
@@ -36,11 +43,7 @@ export default function ClassroomScreen() {
 
     // Default view for teachers and students
     return (
-        <Box sx={{ 
-            flex: 1, 
-            backgroundColor: Theme.colors.voidIndigo, 
-            padding: Theme.spacing.lg 
-        }}>
+        <Box sx={ROLE_VIEW_CONTAINER_STYLE}>
             <Center sx={{ flex: 1 }}>
                 <Heading color={Theme.colors.sanctuarySaffron}>Classroom</Heading>
                 <Text color={Theme.colors.pearlGray}>Your learning journey continues here.</Text>

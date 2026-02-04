@@ -101,7 +101,8 @@ export default function AuthScreen() {
                         schoolName = `${fullName}'s School`;
                         schoolType = '1AB'; // Default to 1AB (can be changed later)
                     } else if (role === 'section_head' || role === 'grade_head') {
-                        // Section/Grade heads likely join existing schools, but create workspace for now
+                        // TODO: Section/Grade heads should join existing schools via invite code
+                        // For now, create a personal workspace until invite system is implemented
                         schoolName = `${fullName}'s Workspace`;
                         schoolType = 'personal_workspace';
                     } else {

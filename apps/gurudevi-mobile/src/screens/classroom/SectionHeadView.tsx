@@ -10,15 +10,18 @@ import { Box, Text, Heading, VStack, Center } from "@gluestack-ui/themed";
 import { Theme } from '../../constants/Theme';
 import { useTranslation } from 'react-i18next';
 
+// Shared container styling for role-based views
+const ROLE_VIEW_CONTAINER_STYLE = {
+    flex: 1,
+    backgroundColor: Theme.colors.voidIndigo,
+    padding: Theme.spacing.lg,
+};
+
 export default function SectionHeadView() {
     const { t } = useTranslation();
     
     return (
-        <Box sx={{ 
-            flex: 1, 
-            backgroundColor: Theme.colors.voidIndigo, 
-            padding: Theme.spacing.lg 
-        }}>
+        <Box sx={ROLE_VIEW_CONTAINER_STYLE}>
             <VStack space="lg">
                 <Heading 
                     size="2xl" 
