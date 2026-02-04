@@ -497,6 +497,356 @@ export const authAPI = {
 };
 
 // ============================================================================
+// ATTENDANCE API
+// ============================================================================
+
+export interface AttendanceRecord {
+    id: string;
+    classroom_id: string;
+    student_id: string;
+    status: 'present' | 'absent' | 'late';
+    date: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export const attendanceAPI = {
+    /**
+     * Get attendance records for a classroom on a specific date
+     */
+    async getByDate(classroomId: string, date: string): Promise<AttendanceRecord[]> {
+        const { data, error } = await supabase
+            .from('attendance')
+            .select('*')
+            .eq('classroom_id', classroomId)
+            .eq('date', date);
+
+        if (error) {
+            throw new APIError('Failed to fetch attendance', error.code, error);
+        }
+
+        return data || [];
+    },
+
+    /**
+     * Record attendance for a student
+     */
+    async record(
+        classroomId: string,
+        studentId: string,
+        status: AttendanceRecord['status'],
+        date: string
+    ): Promise<AttendanceRecord> {
+        const { data, error } = await supabase
+            .from('attendance')
+            .upsert(
+                {
+                    classroom_id: classroomId,
+                    student_id: studentId,
+                    status,
+                    date,
+                },
+                {
+                    onConflict: 'classroom_id,student_id,date',
+                }
+            )
+            .select()
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to record attendance', error.code, error);
+        }
+
+        return data;
+    },
+
+    /**
+     * Batch update attendance records
+     */
+    async batchRecord(records: Array<{
+        classroom_id: string;
+        student_id: string;
+        status: AttendanceRecord['status'];
+        date: string;
+    }>): Promise<AttendanceRecord[]> {
+        const { data, error } = await supabase
+            .from('attendance')
+            .upsert(records, {
+                onConflict: 'classroom_id,student_id,date',
+            })
+            .select();
+
+        if (error) {
+            throw new APIError('Failed to batch record attendance', error.code, error);
+        }
+
+        return data || [];
+    },
+};
+
+// ============================================================================
+// CLASSROOM RESOURCES API
+// ============================================================================
+
+export interface ClassroomResource {
+    id: string;
+    classroom_id: string;
+    teacher_id: string;
+    title: string;
+    description?: string;
+    type: 'pdf' | 'link' | 'note';
+    url?: string;
+    content?: string;
+    is_pinned: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export const resourcesAPI = {
+    /**
+     * Get all resources for a classroom
+     */
+    async getAll(classroomId: string): Promise<ClassroomResource[]> {
+        const { data, error } = await supabase
+            .from('classroom_resources')
+            .select('*')
+            .eq('classroom_id', classroomId)
+            .order('is_pinned', { ascending: false })
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            throw new APIError('Failed to fetch resources', error.code, error);
+        }
+
+        return data || [];
+    },
+
+    /**
+     * Create a new resource
+     */
+    async create(
+        resource: Omit<ClassroomResource, 'id' | 'created_at' | 'updated_at'>
+    ): Promise<ClassroomResource> {
+        const { data, error } = await supabase
+            .from('classroom_resources')
+            .insert([resource])
+            .select()
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to create resource', error.code, error);
+        }
+
+        return data;
+    },
+
+    /**
+     * Update a resource
+     */
+    async update(
+        id: string,
+        updates: Partial<ClassroomResource>
+    ): Promise<ClassroomResource> {
+        const { data, error } = await supabase
+            .from('classroom_resources')
+            .update(updates)
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to update resource', error.code, error);
+        }
+
+        return data;
+    },
+
+    /**
+     * Toggle pin status
+     */
+    async togglePin(id: string, isPinned: boolean): Promise<ClassroomResource> {
+        return this.update(id, { is_pinned: isPinned });
+    },
+
+    /**
+     * Delete a resource
+     */
+    async delete(id: string): Promise<void> {
+        const { error } = await supabase
+            .from('classroom_resources')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            throw new APIError('Failed to delete resource', error.code, error);
+        }
+    },
+};
+
+// ============================================================================
+// STUDENT GROUPS API
+// ============================================================================
+
+export interface StudentGroup {
+    id: string;
+    classroom_id: string;
+    teacher_id: string;
+    name: string;
+    description?: string;
+    student_ids: string[];
+    color: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export const groupsAPI = {
+    /**
+     * Get all groups for a classroom
+     */
+    async getAll(classroomId: string): Promise<StudentGroup[]> {
+        const { data, error } = await supabase
+            .from('student_groups')
+            .select('*')
+            .eq('classroom_id', classroomId)
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            throw new APIError('Failed to fetch groups', error.code, error);
+        }
+
+        return data || [];
+    },
+
+    /**
+     * Create a new group
+     */
+    async create(
+        group: Omit<StudentGroup, 'id' | 'created_at' | 'updated_at'>
+    ): Promise<StudentGroup> {
+        const { data, error } = await supabase
+            .from('student_groups')
+            .insert([group])
+            .select()
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to create group', error.code, error);
+        }
+
+        return data;
+    },
+
+    /**
+     * Update a group
+     */
+    async update(
+        id: string,
+        updates: Partial<StudentGroup>
+    ): Promise<StudentGroup> {
+        const { data, error } = await supabase
+            .from('student_groups')
+            .update(updates)
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to update group', error.code, error);
+        }
+
+        return data;
+    },
+
+    /**
+     * Delete a group
+     */
+    async delete(id: string): Promise<void> {
+        const { error } = await supabase
+            .from('student_groups')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            throw new APIError('Failed to delete group', error.code, error);
+        }
+    },
+};
+
+// ============================================================================
+// CLASSROOM STUDENTS API
+// ============================================================================
+
+export interface ClassroomStudent {
+    id: string;
+    classroom_id: string;
+    student_id: string;
+    full_name: string;
+    roll_number?: number;
+    enrolled_at: string;
+}
+
+export const classroomStudentsAPI = {
+    /**
+     * Get all students in a classroom
+     */
+    async getAll(classroomId: string): Promise<ClassroomStudent[]> {
+        const { data, error } = await supabase
+            .from('classroom_students')
+            .select('*')
+            .eq('classroom_id', classroomId)
+            .order('roll_number', { ascending: true });
+
+        if (error) {
+            throw new APIError('Failed to fetch classroom students', error.code, error);
+        }
+
+        return data || [];
+    },
+
+    /**
+     * Add a student to a classroom
+     */
+    async add(
+        classroomId: string,
+        studentId: string,
+        rollNumber?: number
+    ): Promise<ClassroomStudent> {
+        const { data, error } = await supabase
+            .from('classroom_students')
+            .insert([
+                {
+                    classroom_id: classroomId,
+                    student_id: studentId,
+                    roll_number: rollNumber,
+                },
+            ])
+            .select()
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to add student to classroom', error.code, error);
+        }
+
+        return data;
+    },
+
+    /**
+     * Remove a student from a classroom
+     */
+    async remove(classroomId: string, studentId: string): Promise<void> {
+        const { error } = await supabase
+            .from('classroom_students')
+            .delete()
+            .eq('classroom_id', classroomId)
+            .eq('student_id', studentId);
+
+        if (error) {
+            throw new APIError('Failed to remove student from classroom', error.code, error);
+        }
+    },
+};
+
+// ============================================================================
 // MAIN API EXPORT
 // ============================================================================
 
@@ -506,6 +856,10 @@ export const api = {
     students: studentsAPI,
     notes: notesAPI,
     auth: authAPI,
+    attendance: attendanceAPI,
+    resources: resourcesAPI,
+    groups: groupsAPI,
+    classroomStudents: classroomStudentsAPI,
 };
 
 export default api;
