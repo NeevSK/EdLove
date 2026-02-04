@@ -107,5 +107,32 @@
         "tryAgain": "නැවත උත්සාහ කරන්න",
         "noInternet": "අන්තර්ජාල සම්බන්ධතාවයක් නැත",
         "fetchFailed": "දත්ත ලබා ගැනීම අසාර්ථක විය"
+    },
+    "grades": {
+        "marks": "ලකුණු",
+        "outOf": "න්",
+        "grade": "ශ්‍රේණිය",
+        "gpa": "GPA",
+        "rank": "ශ්‍රේණිය",
+        "student": "ශිෂ්‍යයා",
+        "feedback": "ප්‍රතිචාරය",
+        "optional": "විකල්ප",
+        "feedbackPlaceholder": "ශිෂ්‍යයා සඳහා ප්‍රතිචාරයක් එක් කරන්න (විකල්ප)",
+        "invalidMarks": "කරුණාකර 0 සහ 100 අතර වලංගු ලකුණු ඇතුළත් කරන්න",
+        "marksGrade": "ලකුණු / ශ්‍රේණිය",
+        "noGrades": "තවම ශ්‍රේණි නැත",
+        "unknownStudent": "නොදන්නා ශිෂ්‍යයා",
+        "reportCard": "වාර්තා පත්‍රය",
+        "averageMarks": "සාමාන්‍ය ලකුණු",
+        "overallGPA": "සමස්ත GPA",
+        "assignments": "පැවරුම්",
+        "noAssignments": "තවම පැවරුම් ශ්‍රේණිගත කර නැත",
+        "assignment": "පැවරුම",
+        "rankInClass": "පන්තියේ #{rank} ස්ථානය",
+        "gradingMode": "ලකුණු ක්‍රමය",
+        "marksOnly": "ලකුණු පමණයි",
+        "gpaOnly": "GPA පමණයි",
+        "both": "දෙකම",
+        "showRanks": "ශ්‍රේණි පෙන්වන්න"
     }
 }

@@ -107,5 +107,32 @@
         "tryAgain": "Try again",
         "noInternet": "No internet connection",
         "fetchFailed": "Failed to fetch data"
+    },
+    "grades": {
+        "marks": "Marks",
+        "outOf": "out of",
+        "grade": "Grade",
+        "gpa": "GPA",
+        "rank": "Rank",
+        "student": "Student",
+        "feedback": "Feedback",
+        "optional": "optional",
+        "feedbackPlaceholder": "Add feedback for the student (optional)",
+        "invalidMarks": "Please enter a valid mark between 0 and 100",
+        "marksGrade": "Marks / Grade",
+        "noGrades": "No grades yet",
+        "unknownStudent": "Unknown Student",
+        "reportCard": "Report Card",
+        "averageMarks": "Average Marks",
+        "overallGPA": "Overall GPA",
+        "assignments": "Assignments",
+        "noAssignments": "No assignments graded yet",
+        "assignment": "Assignment",
+        "rankInClass": "Rank #{rank} in class",
+        "gradingMode": "Grading Mode",
+        "marksOnly": "Marks Only",
+        "gpaOnly": "GPA Only",
+        "both": "Both",
+        "showRanks": "Show Ranks"
     }
 }
