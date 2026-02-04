@@ -31,6 +31,7 @@ import Animated, {
     withSpring,
     Easing,
     runOnJS,
+    FadeIn,
 } from 'react-native-reanimated';
 import { Mic, Flame } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
@@ -308,11 +309,3 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
         </VStack>
     );
 }
-
-const FadeIn = {
-    duration: (ms: number) => ({
-        delay: 0,
-        duration: ms,
-        easing: Easing.out(Easing.ease),
-    }),
-};
