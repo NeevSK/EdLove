@@ -33,7 +33,13 @@
         "role": "பாத்திரம்",
         "teacher": "ஆசிரியர்",
         "student": "மாணவர்",
-        "principal": "அதிபர்"
+        "principal": "அதிபர்",
+        "signInWithGoogle": "Google உடன் உள்நுழை",
+        "signInWithApple": "Apple உடன் உள்நுழை",
+        "orContinueWith": "அல்லது இவற்றுடன் தொடரவும்",
+        "googleSignInError": "Google உள்நுழைவு தோல்வியடைந்தது. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.",
+        "appleSignInError": "Apple உள்நுழைவு தோல்வியடைந்தது. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.",
+        "openingBrowser": "திறக்கிறது..."
     },
     "tabs": {
         "self": "சுய",
@@ -101,5 +107,32 @@
         "tryAgain": "மீண்டும் முயற்சிக்கவும்",
         "noInternet": "இணைய இணைப்பு இல்லை",
         "fetchFailed": "தரவு பெறுதல் தோல்வியுற்றது"
+    },
+    "grades": {
+        "marks": "மதிப்பெண்கள்",
+        "outOf": "இல்",
+        "grade": "கிரேடு",
+        "gpa": "GPA",
+        "rank": "தரவரிசை",
+        "student": "மாணவர்",
+        "feedback": "பின்னூட்டம்",
+        "optional": "விருப்பமானது",
+        "feedbackPlaceholder": "மாணவருக்கு பின்னூட்டம் சேர்க்கவும் (விருப்பமானது)",
+        "invalidMarks": "தயவுசெய்து 0 மற்றும் 100 க்கு இடையில் சரியான மதிப்பெண்ணை உள்ளிடவும்",
+        "marksGrade": "மதிப்பெண்கள் / கிரேடு",
+        "noGrades": "இன்னும் கிரேடுகள் இல்லை",
+        "unknownStudent": "அறியப்படாத மாணவர்",
+        "reportCard": "அறிக்கை அட்டை",
+        "averageMarks": "சராசரி மதிப்பெண்கள்",
+        "overallGPA": "மொத்த GPA",
+        "assignments": "பணிகள்",
+        "noAssignments": "இன்னும் பணிகள் தரமிடப்படவில்லை",
+        "assignment": "பணி",
+        "rankInClass": "வகுப்பில் #{rank} தரவரிசை",
+        "gradingMode": "மதிப்பீட்டு முறை",
+        "marksOnly": "மதிப்பெண்கள் மட்டும்",
+        "gpaOnly": "GPA மட்டும்",
+        "both": "இரண்டும்",
+        "showRanks": "தரவரிசைகளைக் காட்டு"
     }
 }
