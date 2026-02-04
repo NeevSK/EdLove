@@ -19,7 +19,7 @@ import ClassroomScreen from './src/screens/ClassroomScreen';
 import CommunityScreen from './src/screens/CommunityScreen';
 import LibraryScreen from './src/screens/LibraryScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
-import LotusPetalFAB from './src/components/LotusPetalFAB';
+import LotusPetalFAB, { ActionItem } from './src/components/LotusPetalFAB';
 
 const Tab = createBottomTabNavigator();
 
@@ -70,6 +70,44 @@ export default function App() {
     //   case 'classroom': router.push('/create-lesson'); break;
     //   ...
     // }
+  };
+
+  // Define context-aware actions for each tab
+  const getFabActions = (): ActionItem[] => {
+    switch (currentTab) {
+      case 'self':
+        return [
+          { label: 'Log Mood', onPress: () => console.log('Log mood'), icon: Home },
+          { label: 'Journal Entry', onPress: () => console.log('Journal'), icon: Home },
+          { label: 'Set Goal', onPress: () => console.log('Set goal'), icon: Home },
+        ];
+      case 'classroom':
+        return [
+          { label: 'Create Lesson', onPress: () => console.log('Create lesson'), icon: School },
+          { label: 'Add Assignment', onPress: () => console.log('Add assignment'), icon: School },
+          { label: 'Schedule Class', onPress: () => console.log('Schedule class'), icon: School },
+        ];
+      case 'community':
+        return [
+          { label: 'New Post', onPress: () => console.log('New post'), icon: Users },
+          { label: 'Share Resource', onPress: () => console.log('Share resource'), icon: Users },
+          { label: 'Start Discussion', onPress: () => console.log('Start discussion'), icon: Users },
+        ];
+      case 'library':
+        return [
+          { label: 'Upload File', onPress: () => console.log('Upload file'), icon: Library },
+          { label: 'Create Collection', onPress: () => console.log('Create collection'), icon: Library },
+          { label: 'Add Bookmark', onPress: () => console.log('Add bookmark'), icon: Library },
+        ];
+      case 'profile':
+        return [
+          { label: 'Edit Profile', onPress: () => console.log('Edit profile'), icon: User },
+          { label: 'Change Avatar', onPress: () => console.log('Change avatar'), icon: User },
+          { label: 'Update Bio', onPress: () => console.log('Update bio'), icon: User },
+        ];
+      default:
+        return [];
+    }
   };
 
   if (loading || !fontsLoaded) {
@@ -134,6 +172,7 @@ export default function App() {
           <LotusPetalFAB
             currentTab={currentTab}
             onPress={handleFabPress}
+            actions={getFabActions()}
           />
         </NavigationContainer>
       )}
