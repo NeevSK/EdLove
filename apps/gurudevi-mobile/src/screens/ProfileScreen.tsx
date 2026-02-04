@@ -312,14 +312,28 @@ export default function ProfileScreen() {
                             p={Theme.spacing.xl}
                             sx={{
                                 backgroundColor: Theme.colors.midnightBlue,
-                                borderRadius: Theme.corners.generous,
-                                opacity: Theme.opacity.medium
+                                borderRadius: Theme.corners.generous
                             }}
                         >
                             <VStack space="sm">
-                                <Text color={Theme.colors.sacredWhite} size="md" bold>
-                                    {t('profile.theme')}
-                                </Text>
+                                <HStack space="sm" alignItems="center">
+                                    <Text color={Theme.colors.sacredWhite} size="md" bold>
+                                        {t('profile.theme')}
+                                    </Text>
+                                    <Box
+                                        px={Theme.spacing.sm}
+                                        py={Theme.spacing.xs}
+                                        sx={{
+                                            backgroundColor: Theme.colors.sanctuarySaffron,
+                                            borderRadius: Theme.corners.tight,
+                                            opacity: Theme.opacity.medium
+                                        }}
+                                    >
+                                        <Text color={Theme.colors.white} size="xs">
+                                            {t('profile.comingSoon')}
+                                        </Text>
+                                    </Box>
+                                </HStack>
                                 <Text color={Theme.colors.dimGray} size="sm">
                                     {t('profile.themeDesc')}
                                 </Text>
@@ -331,14 +345,28 @@ export default function ProfileScreen() {
                             p={Theme.spacing.xl}
                             sx={{
                                 backgroundColor: Theme.colors.midnightBlue,
-                                borderRadius: Theme.corners.generous,
-                                opacity: Theme.opacity.medium
+                                borderRadius: Theme.corners.generous
                             }}
                         >
                             <VStack space="sm">
-                                <Text color={Theme.colors.sacredWhite} size="md" bold>
-                                    {t('profile.dataSaver')}
-                                </Text>
+                                <HStack space="sm" alignItems="center">
+                                    <Text color={Theme.colors.sacredWhite} size="md" bold>
+                                        {t('profile.dataSaver')}
+                                    </Text>
+                                    <Box
+                                        px={Theme.spacing.sm}
+                                        py={Theme.spacing.xs}
+                                        sx={{
+                                            backgroundColor: Theme.colors.sanctuarySaffron,
+                                            borderRadius: Theme.corners.tight,
+                                            opacity: Theme.opacity.medium
+                                        }}
+                                    >
+                                        <Text color={Theme.colors.white} size="xs">
+                                            {t('profile.comingSoon')}
+                                        </Text>
+                                    </Box>
+                                </HStack>
                                 <Text color={Theme.colors.dimGray} size="sm">
                                     {t('profile.dataSaverDesc')}
                                 </Text>
@@ -350,14 +378,28 @@ export default function ProfileScreen() {
                             p={Theme.spacing.xl}
                             sx={{
                                 backgroundColor: Theme.colors.midnightBlue,
-                                borderRadius: Theme.corners.generous,
-                                opacity: Theme.opacity.medium
+                                borderRadius: Theme.corners.generous
                             }}
                         >
                             <VStack space="sm">
-                                <Text color={Theme.colors.sacredWhite} size="md" bold>
-                                    {t('profile.accessibility')}
-                                </Text>
+                                <HStack space="sm" alignItems="center">
+                                    <Text color={Theme.colors.sacredWhite} size="md" bold>
+                                        {t('profile.accessibility')}
+                                    </Text>
+                                    <Box
+                                        px={Theme.spacing.sm}
+                                        py={Theme.spacing.xs}
+                                        sx={{
+                                            backgroundColor: Theme.colors.sanctuarySaffron,
+                                            borderRadius: Theme.corners.tight,
+                                            opacity: Theme.opacity.medium
+                                        }}
+                                    >
+                                        <Text color={Theme.colors.white} size="xs">
+                                            {t('profile.comingSoon')}
+                                        </Text>
+                                    </Box>
+                                </HStack>
                                 <Text color={Theme.colors.dimGray} size="sm">
                                     {t('profile.accessibilityDesc')}
                                 </Text>
