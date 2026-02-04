@@ -9,6 +9,29 @@
  * - Scroll hide/show behavior (optional)
  * 
  * Philosophy: Organic, living UI that breathes with intention
+ * 
+ * @example
+ * ```tsx
+ * import LotusPetalFAB from './components/LotusPetalFAB';
+ * import { useSharedValue } from 'react-native-reanimated';
+ * 
+ * function MyScreen() {
+ *   const scrollY = useSharedValue(0);
+ *   const [currentTab, setCurrentTab] = useState('self');
+ * 
+ *   return (
+ *     <View>
+ *       {/* Your screen content *\/}
+ *       <LotusPetalFAB
+ *         currentTab={currentTab}
+ *         onPress={() => console.log('FAB pressed!')}
+ *         scrollY={scrollY}
+ *         disabled={false}
+ *       />
+ *     </View>
+ *   );
+ * }
+ * ```
  */
 
 import React, { FC } from 'react';
