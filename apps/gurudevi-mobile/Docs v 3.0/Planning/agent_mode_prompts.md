@@ -29,7 +29,7 @@ interface LotusButtonProps {
 Variants styling:
 - primary: 
   - backgroundColor: Theme.colors.sanctuarySaffron
-  - color: Theme.colors.white
+  - color: Theme.colors.sacredWhite
 - secondary:
   - backgroundColor: 'transparent'
   - borderWidth: 2
@@ -89,14 +89,14 @@ interface SanctuaryCardProps {
 
 Styling:
 - backgroundColor: Theme.colors.midnightBlue
-- borderRadius: Theme.corners.generous (24px)
+- borderRadius: Theme.corners.generous
 - padding: Theme.spacing.lg
-- If elevated: add shadow (shadowColor '#000', shadowOffset {0,2}, shadowOpacity 0.1, shadowRadius 8)
+- If elevated: add shadow using Theme.shadows.md (spread operator: ...Theme.shadows.md)
 
 Features:
 - If onPress provided: make it Pressable with lift animation
 - Lift animation: scale 1.0 → 1.02 on press
-- If title: render as Text with Theme.typography.h3
+- If title: render as Text with fontSize Theme.typography.fontSize.xl and fontWeight semibold
 - Children render in VStack with spacing
 - If footer: render at bottom with top border
 
