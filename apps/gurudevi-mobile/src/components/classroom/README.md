@@ -1,10 +1,10 @@
 # Classroom Components - MISSION 02: Teacher Workbench
 
-This directory contains the core components for the Teacher Workbench feature, implementing fast and efficient classroom management tools.
+This directory (`src/components/classroom`) contains the core components for the Teacher Workbench feature, implementing fast and efficient classroom management tools.
 
 ## Components
 
-### 1. AttendanceSheet (`AttendanceSheet.tsx`)
+### 1. AttendanceSheet (`src/components/classroom/AttendanceSheet.tsx`)
 
 Fast, swipe-based attendance marking interface for teachers.
 
@@ -54,7 +54,7 @@ await api.attendance.batchRecord([
 ]);
 ```
 
-### 2. GroupManager (`GroupManager.tsx`)
+### 2. GroupManager (`src/components/classroom/GroupManager.tsx`)
 
 Component for creating and managing temporary student groups for activities.
 
@@ -105,7 +105,7 @@ await api.groups.delete(groupId);
 
 ## Screens
 
-### ContentLibrary (`/screens/classroom/ContentLibrary.tsx`)
+### ContentLibrary (`src/screens/classroom/ContentLibrary.tsx`)
 
 Resource management screen for teachers to organize teaching materials.
 

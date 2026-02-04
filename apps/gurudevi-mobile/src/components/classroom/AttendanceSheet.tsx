@@ -22,12 +22,6 @@ import {
 } from "@gluestack-ui/themed";
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import { Check, X, Clock, Search } from 'lucide-react-native';
-import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withSpring,
-    interpolate,
-} from 'react-native-reanimated';
 import { Theme } from '../../constants/Theme';
 import { hapticLight } from '../../utils/haptics';
 

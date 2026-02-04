@@ -151,6 +151,14 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
             return;
         }
 
+        // Generate a unique ID using crypto or fallback to timestamp
+        const generateId = () => {
+            if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+                return crypto.randomUUID();
+            }
+            return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        };
+
         if (editingGroup) {
             // Update existing group
             setGroups((prev) =>
@@ -168,7 +176,7 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
         } else {
             // Create new group
             const newGroup: StudentGroup = {
-                id: Date.now().toString(),
+                id: generateId(),
                 name: groupName,
                 description: groupDescription || undefined,
                 studentIds: selectedStudentIds,
