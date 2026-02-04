@@ -76,9 +76,9 @@ interface LotusPetalFABProps {
 // CONSTANTS
 // ============================================================================
 
-const FAB_SIZE = 56;
+const FAB_SIZE = 90;
 const FAB_HEIGHT = 72; // Taller than wide for petal shape
-const ICON_SIZE = 24;
+const ICON_SIZE = 40;
 
 // Context-aware configuration
 type IconComponentType = React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
