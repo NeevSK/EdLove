@@ -1,4 +1,4 @@
-# 🧘 MISSION 01: The Self (Wellbeing) + Community Onboarding
+# 🧘 MISSION 01 & 06: Self (Wellbeing) and Community Onboarding
 
 **Role**: You are a React Native expert specializing in "Sanctuary UI" (Animations, Reanimated, Gluestack) and "Social UI & Auth Flows".
 **Context**: App Name "Gurudevi". We are building the "Self" tab (personal refuge) AND completing the "Community Tab" with onboarding features.
@@ -41,7 +41,7 @@ Build the 3 core features of the "Self" screen:
 
 ## 📋 Task Checklist
 
-## PART 1: SELF TAB FEATURES
+### PART 1: SELF TAB FEATURES
 
 ### 🔶 Task A: Mood Check-in Component
 **File**: `src/components/self/MoodLotus.tsx` (Create New)
@@ -75,7 +75,7 @@ Build the 3 core features of the "Self" screen:
 
 ---
 
-## PART 2: COMMUNITY & ONBOARDING (MISSION_06)
+### PART 2: COMMUNITY & ONBOARDING (MISSION_06)
 
 ### 🔶 Task D: Community Announcements
 **File**: `src/screens/community/AnnouncementsScreen.tsx` (Create New)
