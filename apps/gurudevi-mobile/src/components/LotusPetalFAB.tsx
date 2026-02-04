@@ -207,7 +207,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
             await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         } catch (error) {
             // Haptics may not be available on all devices/simulators
-            console.warn('Haptic feedback unavailable:', error);
+            console.warn('Haptic feedback unavailable (expected on simulators or devices without haptic support):', error);
         }
     }, []);
 
@@ -228,7 +228,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
 
         // Execute callback
         onPress();
-    }, [disabled, onPress, pressScale, triggerHapticFeedback]);
+    }, [disabled, onPress, triggerHapticFeedback]); // pressScale is a stable ref
 
     // ============================================================================
     // ANIMATION 3: SCROLL BEHAVIOR (Optional)
