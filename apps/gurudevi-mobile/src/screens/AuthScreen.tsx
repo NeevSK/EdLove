@@ -117,6 +117,7 @@ export default function AuthScreen() {
                         .insert({
                             name: schoolName,
                             type: schoolType,
+                            created_by: authData.user.id,
                         })
                         .select()
                         .single();
@@ -169,7 +170,7 @@ export default function AuthScreen() {
                 if (!profileError && userProfile) {
                     // Sync role to store
                     useStore.getState().setUserRole(userProfile.role as UserRole);
-                    
+
                     // Fetch school type
                     if (userProfile.school_id) {
                         const { data: schoolData } = await supabase
@@ -177,13 +178,13 @@ export default function AuthScreen() {
                             .select('type')
                             .eq('id', userProfile.school_id)
                             .single();
-                        
+
                         if (schoolData) {
                             useStore.getState().setSchoolType(schoolData.type as SchoolType);
                         }
                     }
                 }
-                
+
                 hapticSuccess();
             }
         }

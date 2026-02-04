@@ -1,6 +1,6 @@
 # 📊 MISSION 03: Grading System
 
-**Role**: You are a React Native expert specializing in "Data Visualization & Forms".
+**Role**: You are a React Native(expo) expert specializing in "Data Visualization & Forms".
 **Context**: App Name "Gurudevi". We are building the **Grading Module** linked to Classrooms.
 
 ---
