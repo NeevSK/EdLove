@@ -13,24 +13,38 @@ import {
     Button,
     ButtonText
 } from "@gluestack-ui/themed";
-import { Mic, Send, MessageCircle, Repeat, Sun, FileText } from 'lucide-react-native';
+import { Mic, Send, MessageCircle, Repeat, Sun, FileText, Lotus, Flame } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../constants/Theme';
 import { getGreetingKey } from '../utils/time';
 import { hapticLight } from '../utils/haptics';
 import DailyRhythm from '../components/DailyRhythm';
+import { MoodLotus, ShadowAgentDrawer, FireJournal } from '../components/self';
+import { supabase } from '../lib/supabase';
 
 const SUB_FEATURES = [
-    { id: 'venting', label: 'Venting Space', icon: MessageCircle },
+    { id: 'mood', label: 'Mood Check-in', icon: Lotus },
+    { id: 'fire', label: 'Fire Journal', icon: Flame },
     { id: 'rhythm', label: 'Daily Rhythm', icon: Repeat },
-    { id: 'shadow', label: 'Shadow Assistant', icon: Sun },
-    { id: 'notes', label: 'Personal Notes', icon: FileText },
+    { id: 'venting', label: 'Venting Space', icon: MessageCircle },
 ];
 
 export default function SelfScreen() {
     const { t } = useTranslation();
-    const [activeFeature, setActiveFeature] = useState('venting');
+    const [activeFeature, setActiveFeature] = useState('mood');
+    const [userId, setUserId] = useState<string | null>(null);
     const greetingKey = getGreetingKey(); // Get i18n key based on time
+
+    // Get current user on mount
+    React.useEffect(() => {
+        const fetchUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                setUserId(user.id);
+            }
+        };
+        fetchUser();
+    }, []);
 
     return (
         <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
@@ -105,6 +119,18 @@ export default function SelfScreen() {
                             minHeight: 300
                         }}
                     >
+                        {activeFeature === 'mood' && (
+                            <MoodLotus userId={userId || undefined} />
+                        )}
+
+                        {activeFeature === 'fire' && (
+                            <FireJournal userId={userId || undefined} />
+                        )}
+
+                        {activeFeature === 'rhythm' && (
+                            <DailyRhythm />
+                        )}
+
                         {activeFeature === 'venting' && (
                             <VStack space="lg" sx={{ flex: 1 }}>
                                 <VStack space="xs">
@@ -163,40 +189,12 @@ export default function SelfScreen() {
                                 </HStack>
                             </VStack>
                         )}
-
-                        {activeFeature === 'rhythm' && (
-                            <DailyRhythm />
-                        )}
-
-                        {activeFeature === 'shadow' && (
-                            <Center sx={{ flex: 1 }}>
-                                <Sun size={48} color={Theme.colors.sanctuarySaffron} />
-                                <Text color={Theme.colors.mistGray} mt={Theme.spacing.md} textAlign="center">
-                                    {t('self.shadowPrep')}
-                                </Text>
-                            </Center>
-                        )}
-
-                        {activeFeature === 'notes' && (
-                            <VStack space="md">
-                                <Heading color={Theme.colors.sacredWhite} size="lg">{t('self.notes')}</Heading>
-                                <Text color={Theme.colors.mistGray}>{t('self.notesDesc')}</Text>
-                                <Button
-                                    variant="outline"
-                                    action="primary"
-                                    onPress={hapticLight}
-                                    sx={{
-                                        borderColor: Theme.colors.sanctuarySaffron,
-                                        borderRadius: Theme.corners.full
-                                    }}
-                                >
-                                    <ButtonText color={Theme.colors.sanctuarySaffron}>{t('self.newInsight')}</ButtonText>
-                                </Button>
-                            </VStack>
-                        )}
                     </Box>
                 </Box>
             </ScrollView>
+
+            {/* Shadow Agent Drawer - Always present as a floating orb */}
+            <ShadowAgentDrawer />
         </Box>
     );
 }
