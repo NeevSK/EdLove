@@ -1,0 +1,13 @@
+<div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+  {Array.from({ length: 30 }).map((_, i) => (
+    <div 
+      class="absolute w-1 h-1 bg-warmGold/20 rounded-full animate-float"
+      style={`
+        left: ${Math.random() * 100}%;
+        top: ${Math.random() * 100}%;
+        animation-delay: ${Math.random() * 5}s;
+        animation-duration: ${3 + Math.random() * 4}s;
+      `}
+    />
+  ))}
+</div>

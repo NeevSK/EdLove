@@ -3,6 +3,21 @@
 
 @import "tailwindcss";
 
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px); 
+    opacity: 0.2;
+  }
+  50% { 
+    transform: translateY(-30px); 
+    opacity: 0.5;
+  }
+}
+
+.animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+
 @theme {
   /* Sanctuary Palette */
   --color-deepIndigo: #2D3561;
