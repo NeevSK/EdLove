@@ -1,12 +1,77 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Navigation from '../../components/Navigation.astro';
+import { Theme } from '@/constants/Theme';
 ---
 
 <Layout>
   <Navigation />
-  <div class="pt-32 text-center">
-    <h1 class="text-4xl font-serif text-deepIndigo">Epistemic Core</h1>
-    <p class="mt-4 font-sans text-deepIndigo/60">The library of wisdom and frameworks.</p>
-  </div>
+  
+  <main class="min-h-screen pt-24 pb-16">
+    <div class="max-w-6xl mx-auto px-6">
+      
+      <div class="text-center mb-16">
+        <h1 class="font-heading text-5xl md:text-7xl mb-6" style={`color: ${Theme.colors.cosmicPurple}`}>
+          Epistemic Core
+        </h1>
+        <p class="font-body text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.8`}>
+          Deep theory. Academic rigor. The philosophical foundations.
+        </p>
+      </div>
+
+      <div class="prose prose-lg max-w-4xl mx-auto mb-16">
+        <p class="font-body text-lg leading-relaxed" style={`color: ${Theme.colors.deepIndigo}`}>
+          For those who want to go deeper. Essays, research papers, philosophical frameworks, theoretical perspectives on education.
+        </p>
+        <p class="font-body text-lg leading-relaxed" style={`color: ${Theme.colors.deepIndigo}`}>
+          This is where we think hard. Where we question assumptions. Where we build the intellectual scaffolding.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="text-center p-8 rounded-lg" style={`background: ${Theme.colors.starlightSilver}`}>
+          <div class="text-4xl mb-4">📚</div>
+          <h3 class="font-heading text-xl mb-3" style={`color: ${Theme.colors.deepIndigo}`}>
+            Core Texts
+          </h3>
+          <p class="font-body text-sm" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
+            Essential readings in educational philosophy
+          </p>
+        </div>
+
+        <div class="text-center p-8 rounded-lg" style={`background: ${Theme.colors.starlightSilver}`}>
+          <div class="text-4xl mb-4">✍️</div>
+          <h3 class="font-heading text-xl mb-3" style={`color: ${Theme.colors.deepIndigo}`}>
+            Essays
+          </h3>
+          <p class="font-body text-sm" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
+            Original thinking on educational transformation
+          </p>
+        </div>
+
+        <div class="text-center p-8 rounded-lg" style={`background: ${Theme.colors.starlightSilver}`}>
+          <div class="text-4xl mb-4">🔬</div>
+          <h3 class="font-heading text-xl mb-3" style={`color: ${Theme.colors.deepIndigo}`}>
+            Research
+          </h3>
+          <p class="font-body text-sm" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
+            Evidence-based insights and studies
+          </p>
+        </div>
+      </div>
+
+      <div class="text-center p-12 rounded-lg" style={`background: ${Theme.colors.starlightSilver}`}>
+        <h2 class="font-heading text-3xl mb-4" style={`color: ${Theme.colors.deepIndigo}`}>
+          Coming Soon
+        </h2>
+        <p class="font-body mb-6" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
+          The library is being curated. Have recommendations? We'd love to hear them.
+        </p>
+        <a href="/community" class="inline-block px-8 py-3 rounded-sm font-body font-medium hover:opacity-80 transition-opacity" style={`background: ${Theme.colors.cosmicPurple}; color: ${Theme.colors.softWhite}`}>
+          Suggest a Text →
+        </a>
+      </div>
+
+    </div>
+  </main>
 </Layout>

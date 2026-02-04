@@ -1,26 +1,134 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Navigation from '../../components/Navigation.astro';
-import LiquidCosmos from '../../components/LiquidCosmos.astro';
+import { Theme } from '@/constants/Theme';
 ---
 
 <Layout>
   <Navigation />
   
-  <main class="min-h-screen relative overflow-hidden flex flex-col items-center justify-center">
-    
-    <!-- The Living Graph Engine (Tier 3: Liquid Shader) -->
-    <LiquidCosmos />
+  <main class="min-h-screen pt-24 pb-16">
+    <div class="max-w-6xl mx-auto px-6">
+      
+      <!-- Hero Section -->
+      <div class="text-center mb-16">
+        <h1 class="font-heading text-5xl md:text-7xl mb-6" style={`color: ${Theme.colors.cosmicPurple}`}>
+          The Paradigm Cosmos
+        </h1>
+        <p class="font-body text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.8`}>
+          Education has many stories. The one we were told isn't the only one. Come see the others.
+        </p>
+      </div>
 
-    <!-- Overlay Content -->
-    <div class="z-10 text-center space-y-8 animate-fade-in opacity-0" style="animation-delay: 0.5s;">
-      <h1 class="text-4xl md:text-6xl font-serif text-starlightSilver drop-shadow-lg">
-        The Paradigm <span class="text-transparent bg-clip-text bg-gradient-to-r from-warmGold to-cosmicPurple">Cosmos</span>
-      </h1>
-      <p class="text-skyBlue/80 font-sans tracking-wide max-w-xl mx-auto">
-        (Visualizing the Interconnected Knowledge Graph)
-      </p>
+      <!-- Introduction -->
+      <div class="prose prose-lg max-w-4xl mx-auto mb-16">
+        <p class="font-body text-lg leading-relaxed" style={`color: ${Theme.colors.deepIndigo}`}>
+          What if the school you know—with its bells, grades, rows of desks—is just <strong>one star</strong> in an infinite sky of educational possibilities?
+        </p>
+        <p class="font-body text-lg leading-relaxed" style={`color: ${Theme.colors.deepIndigo}`}>
+          The <strong>Paradigm Cosmos</strong> is a living constellation of different ways humans have learned, grown, and flourished throughout history and across cultures. From Montessori's prepared environments to Paulo Freire's liberation pedagogy, from ancient gurukula traditions to Reggio Emilia's hundred languages—each paradigm is a world unto itself.
+        </p>
+      </div>
+
+      <!-- Paradigms Grid (Placeholder) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+        
+        <!-- Paradigm Card 1: Montessori -->
+        <div class="border rounded-lg p-8 hover:shadow-lg transition-shadow duration-300" style={`border-color: ${Theme.colors.forestGreen}; background: ${Theme.colors.softWhite}`}>
+          <div class="w-12 h-1 mb-4" style={`background: ${Theme.colors.forestGreen}`}></div>
+          <h3 class="font-heading text-2xl mb-3" style={`color: ${Theme.colors.deepIndigo}`}>
+            Montessori Education
+          </h3>
+          <p class="font-body mb-4" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
+            "The child is not an empty vessel to be filled, but a source to be nurtured."
+          </p>
+          <a href="#" class="font-body text-sm font-medium hover:opacity-70 transition-opacity" style={`color: ${Theme.colors.forestGreen}`}>
+            Explore This Paradigm →
+          </a>
+        </div>
+
+        <!-- Paradigm Card 2: Freire -->
+        <div class="border rounded-lg p-8 hover:shadow-lg transition-shadow duration-300" style={`border-color: ${Theme.colors.emberOrange}; background: ${Theme.colors.softWhite}`}>
+          <div class="w-12 h-1 mb-4" style={`background: ${Theme.colors.emberOrange}`}></div>
+          <h3 class="font-heading text-2xl mb-3" style={`color: ${Theme.colors.deepIndigo}`}>
+            Liberation Pedagogy
+          </h3>
+          <p class="font-body mb-4" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
+            "Education either functions as an instrument to bring about conformity, or it becomes the practice of freedom."
+          </p>
+          <a href="#" class="font-body text-sm font-medium hover:opacity-70 transition-opacity" style={`color: ${Theme.colors.emberOrange}`}>
+            Explore This Paradigm →
+          </a>
+        </div>
+
+        <!-- Paradigm Card 3: Reggio Emilia -->
+        <div class="border rounded-lg p-8 hover:shadow-lg transition-shadow duration-300" style={`border-color: ${Theme.colors.dawnRose}; background: ${Theme.colors.softWhite}`}>
+          <div class="w-12 h-1 mb-4" style={`background: ${Theme.colors.dawnRose}`}></div>
+          <h3 class="font-heading text-2xl mb-3" style={`color: ${Theme.colors.deepIndigo}`}>
+            Reggio Emilia Approach
+          </h3>
+          <p class="font-body mb-4" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
+            "Children have a hundred languages—and the school steals ninety-nine."
+          </p>
+          <a href="#" class="font-body text-sm font-medium hover:opacity-70 transition-opacity" style={`color: ${Theme.colors.dawnRose}`}>
+            Explore This Paradigm →
+          </a>
+        </div>
+
+        <!-- Paradigm Card 4: Gurukula -->
+        <div class="border rounded-lg p-8 hover:shadow-lg transition-shadow duration-300" style={`border-color: ${Theme.colors.warmGold}; background: ${Theme.colors.softWhite}`}>
+          <div class="w-12 h-1 mb-4" style={`background: ${Theme.colors.warmGold}`}></div>
+          <h3 class="font-heading text-2xl mb-3" style={`color: ${Theme.colors.deepIndigo}`}>
+            Gurukula Tradition
+          </h3>
+          <p class="font-body mb-4" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
+            "Learning happens in relationship—between master and disciple, in sacred space."
+          </p>
+          <a href="#" class="font-body text-sm font-medium hover:opacity-70 transition-opacity" style={`color: ${Theme.colors.warmGold}`}>
+            Explore This Paradigm →
+          </a>
+        </div>
+
+        <!-- Paradigm Card 5: Unschooling -->
+        <div class="border rounded-lg p-8 hover:shadow-lg transition-shadow duration-300" style={`border-color: ${Theme.colors.skyBlue}; background: ${Theme.colors.softWhite}`}>
+          <div class="w-12 h-1 mb-4" style={`background: ${Theme.colors.skyBlue}`}></div>
+          <h3 class="font-heading text-2xl mb-3" style={`color: ${Theme.colors.deepIndigo}`}>
+            Unschooling & Self-Directed Learning
+          </h3>
+          <p class="font-body mb-4" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
+            "Real learning is child-led, interest-driven, and happens everywhere."
+          </p>
+          <a href="#" class="font-body text-sm font-medium hover:opacity-70 transition-opacity" style={`color: ${Theme.colors.skyBlue}`}>
+            Explore This Paradigm →
+          </a>
+        </div>
+
+        <!-- Paradigm Card 6: Democratic Schools -->
+        <div class="border rounded-lg p-8 hover:shadow-lg transition-shadow duration-300" style={`border-color: ${Theme.colors.cosmicPurple}; background: ${Theme.colors.softWhite}`}>
+          <div class="w-12 h-1 mb-4" style={`background: ${Theme.colors.cosmicPurple}`}></div>
+          <h3 class="font-heading text-2xl mb-3" style={`color: ${Theme.colors.deepIndigo}`}>
+            Democratic Schools
+          </h3>
+          <p class="font-body mb-4" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
+            "Students and teachers share power. Democracy as lived practice."
+          </p>
+          <a href="#" class="font-body text-sm font-medium hover:opacity-70 transition-opacity" style={`color: ${Theme.colors.cosmicPurple}`}>
+            Explore This Paradigm →
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Call to Action -->
+      <div class="text-center mt-16">
+        <p class="font-body text-lg mb-6" style={`color: ${Theme.colors.deepIndigo}`}>
+          <em>Each paradigm offers a different answer to the question: What does it mean to learn?</em>
+        </p>
+        <p class="font-body text-sm" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.6`}>
+          More paradigms coming soon. This cosmos is still expanding. 🌌
+        </p>
+      </div>
+
     </div>
-
   </main>
 </Layout>

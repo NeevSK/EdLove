@@ -1,35 +1,19 @@
 # CURRENT SPRINT
 ## What's Happening Right Now
 
-**Week of**: [Fill in dates, e.g., Feb 3-9, 2026]  
-**Sprint Focus**: [Fill in main goal, e.g., "Auth flow + database setup"]  
-**Updated**: [Update this date whenever you make changes]
+04/02/2026
+here is what i think today. 
+1. workload sharing plan with multiple agents in antigravity vs github cloud agent
+2. assuming to do a task in github cloud agent, it will take 30 mins we can do more around let say 75 tasks. what exactly we gonna do from github agent 
+3. whether we have leverage using other agents in free version of such as replit or anything(whats out there to help me)
+4. plan for leveraging developer frind's github pro agent. given if we work same repo and even he use the agent it said it will billed by my own account so how we can make him to work in his own forked repo and use agent then push things without making things drift far or later merging comflits. 
+5. anyway to speed up leverage how we wrok based on your own assessment and observations
+6. app specific: 
+6.1 in gurudevi i think in profile section we need two main sections one is for user related things and second is app settings which can add all changes to app done by user
+6.2 need to complete what we have to do next
+6.3 in edlove, i think we need translation there too but i have seen browsers have own transalaters some use google translate etc. need to find optimal one
+6.4 guide me to how to see what we did recently
 
----
-
-## This Week's Focus
-
-**Primary Goal**: [What's the main thing you're building?]
-
-**Tasks**:
-- [ ] [Specific task 1]
-- [ ] [Specific task 2]
-- [ ] [Specific task 3]
-
-**Example**:
-```markdown
-**Primary Goal**: Get authentication working
-
-**Tasks**:
-- [ ] Set up Supabase project
-- [ ] Create users table with RLS policies
-- [ ] Build login screen (email/password)
-- [ ] Build signup screen
-- [ ] Store auth token in MMKV
-- [ ] Test login/logout flow
-```
-
----
 
 ## Changed My Mind Recently
 
@@ -61,8 +45,7 @@
 - How to implement RLS policies for student/teacher/principal roles?
   (Need to ensure students only see their enrolled classrooms)
   
-- Best pattern for trilingual text switching without performance hit?
-  (Should I use i18next or custom solution?)
+
   
 - How to handle offline data when user has no internet for days?
   (Queue mechanism? Timestamp-based sync? Conflict resolution?)

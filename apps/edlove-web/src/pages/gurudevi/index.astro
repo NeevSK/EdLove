@@ -1,12 +1,83 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Navigation from '../../components/Navigation.astro';
+import { Theme } from '@/constants/Theme';
 ---
 
 <Layout>
   <Navigation />
-  <div class="pt-32 text-center">
-    <h1 class="text-4xl font-serif text-deepIndigo">Gurudevi Portal</h1>
-    <p class="mt-4 font-sans text-deepIndigo/60">Where vision becomes practice.</p>
-  </div>
+  
+  <main class="min-h-screen pt-24 pb-16">
+    <div class="max-w-6xl mx-auto px-6">
+      
+      <!-- Hero Section -->
+      <div class="text-center mb-16">
+        <h1 class="font-heading text-5xl md:text-7xl mb-6" style={`color: ${Theme.colors.forestGreen}`}>
+          Gurudevi Portal
+        </h1>
+        <p class="font-body text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.8`}>
+          A sanctuary for Sri Lankan teachers. Your inner world matters.
+        </p>
+      </div>
+
+      <!-- Introduction -->
+      <div class="prose prose-lg max-w-4xl mx-auto mb-16">
+        <p class="font-body text-lg leading-relaxed" style={`color: ${Theme.colors.deepIndigo}`}>
+          <strong>Gurudevi</strong> (ගුරුදෙවී / குருதேவி) is a mobile app designed specifically for Sri Lankan teachers—in Sinhala, Tamil, and English.
+        </p>
+        <p class="font-body text-lg leading-relaxed" style={`color: ${Theme.colors.deepIndigo}`}>
+          It's not about lesson plans or administrative tasks. It's about <em>you</em>. Your thoughts, your frustrations, your reflections. A private space where you can vent, process, and find clarity.
+        </p>
+      </div>
+
+      <!-- Features -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        
+        <div class="text-center p-8 rounded-lg" style={`background: ${Theme.colors.starlightSilver}`}>
+          <div class="text-4xl mb-4">📝</div>
+          <h3 class="font-heading text-xl mb-3" style={`color: ${Theme.colors.deepIndigo}`}>
+            Vent Safely
+          </h3>
+          <p class="font-body text-sm" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
+            Private space to let it all out. No judgment. No performance.
+          </p>
+        </div>
+
+        <div class="text-center p-8 rounded-lg" style={`background: ${Theme.colors.starlightSilver}`}>
+          <div class="text-4xl mb-4">💭</div>
+          <h3 class="font-heading text-xl mb-3" style={`color: ${Theme.colors.deepIndigo}`}>
+            Reflect Deeply
+          </h3>
+          <p class="font-body text-sm" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
+            Tools for reflection. Make sense of your teaching practice.
+          </p>
+        </div>
+
+        <div class="text-center p-8 rounded-lg" style={`background: ${Theme.colors.starlightSilver}`}>
+          <div class="text-4xl mb-4">🌱</div>
+          <h3 class="font-heading text-xl mb-3" style={`color: ${Theme.colors.deepIndigo}`}>
+            Grow Together
+          </h3>
+          <p class="font-body text-sm" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
+            Connect with other teachers (when you're ready).
+          </p>
+        </div>
+
+      </div>
+
+      <!-- CTA -->
+      <div class="text-center p-12 rounded-lg" style={`background: linear-gradient(135deg, ${Theme.colors.forestGreen}15, ${Theme.colors.warmGold}15)`}>
+        <h2 class="font-heading text-3xl mb-4" style={`color: ${Theme.colors.deepIndigo}`}>
+          Coming Soon
+        </h2>
+        <p class="font-body text-lg mb-6 max-w-2xl mx-auto" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.8`}>
+          Gurudevi is currently in development. We're working closely with Sri Lankan teachers to build something that truly serves you.
+        </p>
+        <a href="/community" class="inline-block px-8 py-3 rounded-sm font-body font-medium hover:opacity-80 transition-opacity" style={`background: ${Theme.colors.forestGreen}; color: ${Theme.colors.softWhite}`}>
+          Join the Waitlist →
+        </a>
+      </div>
+
+    </div>
+  </main>
 </Layout>

@@ -25,7 +25,7 @@ import type {
     ContactForm,
     ResourceSubmission,
     User,
-} from '../types/index';
+} from '@/types';
 
 // ============================================================================
 // API CONFIGURATION
