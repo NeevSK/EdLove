@@ -37,7 +37,7 @@
  */
 
 import React, { FC, ReactNode } from 'react';
-import { View, Pressable, Text, StyleSheet } from 'react-native';
+import { View, Pressable, Text, StyleSheet, TextStyle } from 'react-native';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: Theme.typography.h3.fontSize,
-        fontWeight: Theme.typography.h3.fontWeight as any,
+        fontWeight: Theme.typography.h3.fontWeight as TextStyle['fontWeight'],
         letterSpacing: Theme.typography.h3.letterSpacing,
         lineHeight: Theme.typography.h3.lineHeight,
         color: Theme.colors.sacredWhite,
