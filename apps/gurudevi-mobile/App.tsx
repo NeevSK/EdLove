@@ -21,7 +21,7 @@ import LibraryScreen from './src/screens/LibraryScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import LotusPetalFAB from './src/components/LotusPetalFAB';
 
-const Tab = createBottomTabNavigator();
+import TabNavigator from './src/navigation/TabNavigator';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -88,53 +88,7 @@ export default function App() {
         <AuthScreen />
       ) : (
         <NavigationContainer>
-          <Tab.Navigator
-            screenOptions={({ route }) => ({
-              headerShown: false,
-              tabBarStyle: {
-                backgroundColor: Theme.colors.voidIndigo,
-                borderTopWidth: 0,
-                height: 70,
-                paddingBottom: 10,
-                paddingTop: 10,
-              },
-              tabBarActiveTintColor: Theme.colors.sanctuarySaffron,
-              tabBarInactiveTintColor: Theme.colors.dimGray,
-              tabBarIcon: ({ color, size }) => {
-                if (route.name === 'Self') return <Home color={color} size={size} />;
-                if (route.name === 'Classroom') return <School color={color} size={size} />;
-                if (route.name === 'Community') return <Users color={color} size={size} />;
-                if (route.name === 'Library') return <Library color={color} size={size} />;
-                if (route.name === 'Profile') return <User color={color} size={size} />;
-                return null;
-              },
-            })}
-            screenListeners={{
-              state: (e) => {
-                const state = e.data?.state;
-                if (!state || state.index === undefined) return;
-                
-                const routeName = state.routes[state.index]?.name;
-                if (!routeName) return;
-                
-                const tabName = routeName.toLowerCase();
-                const validTabs = ['self', 'classroom', 'community', 'library', 'profile'];
-                if (validTabs.includes(tabName)) {
-                  setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
-                }
-              },
-            }}
-          >
-            <Tab.Screen name="Self" component={SelfScreen} />
-            <Tab.Screen name="Classroom" component={ClassroomScreen} />
-            <Tab.Screen name="Community" component={CommunityScreen} />
-            <Tab.Screen name="Library" component={LibraryScreen} />
-            <Tab.Screen name="Profile" component={ProfileScreen} />
-          </Tab.Navigator>
-          <LotusPetalFAB
-            currentTab={currentTab}
-            onPress={handleFabPress}
-          />
+          <TabNavigator />
         </NavigationContainer>
       )}
     </GluestackUIProvider>
