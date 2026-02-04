@@ -1,3 +1,7 @@
+// ============================================================================
+// SHARED TYPES
+// ============================================================================
+
 export class APIError extends Error {
     constructor(
         message: string,
@@ -8,10 +12,6 @@ export class APIError extends Error {
         this.name = 'APIError';
     }
 }
-
-// ============================================================================
-// SHARED TYPES
-// ============================================================================
 
 export interface Task {
     id: string;
@@ -50,4 +50,54 @@ export interface TeacherNote {
     content: string;
     type: 'venting' | 'reflection' | 'note';
     created_at: string;
+    updated_at: string;
+}
+
+// Attendance types
+export interface AttendanceRecord {
+    id: string;
+    classroom_id: string;
+    student_id: string;
+    status: 'present' | 'absent' | 'late';
+    date: string;
+    created_at: string;
+    updated_at: string;
+}
+
+// Resource types
+export interface ClassroomResource {
+    id: string;
+    classroom_id: string;
+    teacher_id: string;
+    title: string;
+    description?: string;
+    type: 'pdf' | 'link' | 'note';
+    url?: string;
+    content?: string;
+    is_pinned: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+// Group types
+export interface StudentGroup {
+    id: string;
+    classroom_id: string;
+    teacher_id: string;
+    name: string;
+    description?: string;
+    student_ids: string[];
+    color: string;
+    created_at: string;
+    updated_at: string;
+}
+
+// Classroom student types
+export interface ClassroomStudent {
+    id: string;
+    classroom_id: string;
+    student_id: string;
+    full_name: string;
+    roll_number?: number;
+    enrolled_at: string;
 }
