@@ -179,7 +179,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
             // Reset to 1.0 when disabled
             breathingScale.value = withTiming(1.0, { duration: 200 });
         }
-    }, [disabled]); // breathingScale is a stable ref, no need in deps
+    }, [disabled]); // breathingScale, withRepeat, withTiming, and Easing are stable refs, not needed in deps
 
     // ============================================================================
     // ANIMATION 1: BREATHING (Always-on when not disabled)
@@ -206,8 +206,8 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         try {
             await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         } catch (error) {
-            // Haptics may not be available on all devices/simulators
-            console.warn('Haptic feedback unavailable (expected on simulators or devices without haptic support):', error);
+            // Haptics not available on simulators or devices without haptic support
+            console.warn('Haptic feedback not available on this device');
         }
     }, []);
 
