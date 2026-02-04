@@ -118,7 +118,7 @@ export default function AttendanceSheet({
     // Filter students based on search
     const filteredStudents = useMemo(() => {
         if (!searchQuery.trim()) return students;
-        
+
         const query = searchQuery.toLowerCase();
         return students.filter(
             (student) =>
@@ -138,7 +138,7 @@ export default function AttendanceSheet({
     // Render swipeable student row
     const renderStudentRow = ({ item }: { item: StudentAttendance }) => {
         const StatusIcon = STATUS_CONFIG[item.status].icon;
-        
+
         return (
             <Swipeable
                 renderRightActions={() => (
@@ -248,7 +248,7 @@ export default function AttendanceSheet({
                         <Text color={Theme.colors.mistGray} size="sm" mb="$4">
                             {date}
                         </Text>
-                        
+
                         {/* Stats Row */}
                         <HStack space="sm" mb="$4">
                             <Box
@@ -344,8 +344,8 @@ export default function AttendanceSheet({
                         ) : (
                             <FlatList
                                 data={filteredStudents}
-                                renderItem={renderStudentRow}
-                                keyExtractor={(item) => item.id}
+                                renderItem={renderStudentRow as any}
+                                keyExtractor={(item) => (item as any).id}
                                 showsVerticalScrollIndicator={false}
                             />
                         )}

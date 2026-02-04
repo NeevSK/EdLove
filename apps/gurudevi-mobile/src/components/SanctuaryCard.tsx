@@ -52,8 +52,8 @@ import { VStack } from '@gluestack-ui/themed';
 
 interface SanctuaryCardProps {
     title?: string;
-    children: ReactNode;
-    footer?: ReactNode;
+    children: any;
+    footer?: any;
     onPress?: () => void;
     elevated?: boolean;
 }
@@ -128,9 +128,10 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
             )}
 
             {/* Children Content */}
-            <VStack space="md">
+            <View style={{ gap: Theme.spacing.md }}>
+                {/* @ts-ignore */}
                 {children}
-            </VStack>
+            </View>
 
             {/* Footer Section */}
             {footer && (

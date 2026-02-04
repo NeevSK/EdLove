@@ -1,10 +1,18 @@
-/**
- * Shared API Types
- * 
- * Common type definitions used across API modules
- */
+// ============================================================================
+// SHARED TYPES
+// ============================================================================
 
-// Task types
+export class APIError extends Error {
+    constructor(
+        message: string,
+        public code?: string,
+        public details?: any
+    ) {
+        super(message);
+        this.name = 'APIError';
+    }
+}
+
 export interface Task {
     id: string;
     title: string;
@@ -15,7 +23,6 @@ export interface Task {
     updated_at: string;
 }
 
-// Lesson types
 export interface Lesson {
     id: string;
     title: string;
@@ -28,7 +35,6 @@ export interface Lesson {
     updated_at: string;
 }
 
-// Student types
 export interface Student {
     id: string;
     full_name: string;
@@ -38,13 +44,13 @@ export interface Student {
     created_at: string;
 }
 
-// Teacher note types
 export interface TeacherNote {
     id: string;
     teacher_id: string;
     content: string;
     type: 'venting' | 'reflection' | 'note';
     created_at: string;
+    updated_at: string;
 }
 
 // Attendance types

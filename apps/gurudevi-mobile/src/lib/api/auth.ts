@@ -1,11 +1,5 @@
-/**
- * Auth API
- * 
- * API methods for authentication
- */
-
 import { supabase } from '../supabase';
-import { APIError } from './errors';
+import { APIError } from './types';
 
 export const authAPI = {
     /**

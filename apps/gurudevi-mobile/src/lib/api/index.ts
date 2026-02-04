@@ -1,51 +1,40 @@
-/**
- * GURUDEVI API CLIENT
- * 
- * Centralized Supabase API layer
- * All database operations go through here for consistency
- * 
- * Usage:
- *   import { api } from '@/lib/api';
- *   const tasks = await api.tasks.getAll();
- */
-
-// Export error handling
-export { APIError } from './errors';
-
-// Export types
-export type {
-    Task,
-    Lesson,
-    Student,
-    TeacherNote,
-    AttendanceRecord,
-    ClassroomResource,
-    StudentGroup,
-    ClassroomStudent,
-} from './types';
-
-// Import API modules
-import { tasksAPI } from './tasks';
-import { lessonsAPI } from './lessons';
-import { studentsAPI } from './students';
-import { notesAPI } from './notes';
 import { authAPI } from './auth';
+import { tasksAPI, notesAPI } from './teacher';
+import { lessonsAPI, studentsAPI } from './classroom';
+import { selfAPI } from './self';
+import { gradingAPI } from './grading';
+import { schoolAPI } from './school';
+import { communityAPI } from './community';
+
+// New Features from Mission 02 (maintained as separate modules for now)
 import { attendanceAPI } from './attendance';
 import { resourcesAPI } from './resources';
 import { groupsAPI } from './groups';
 import { classroomStudentsAPI } from './classroomStudents';
 
-// Main API export
+// Re-export types for usage in app
+export * from './types';
+
+// Main API Object
 export const api = {
+    // Core Modules (Grouped)
+    auth: authAPI,
     tasks: tasksAPI,
+    notes: notesAPI,
     lessons: lessonsAPI,
     students: studentsAPI,
-    notes: notesAPI,
-    auth: authAPI,
+
+    // New Features
     attendance: attendanceAPI,
     resources: resourcesAPI,
     groups: groupsAPI,
     classroomStudents: classroomStudentsAPI,
+
+    // Placeholders / Future Modules
+    self: selfAPI,
+    grading: gradingAPI,
+    school: schoolAPI,
+    community: communityAPI,
 };
 
 export default api;

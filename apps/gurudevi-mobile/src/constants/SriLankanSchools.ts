@@ -218,7 +218,8 @@ export function getRoleLabel(
  * Get grades for a section
  */
 export function getGradesForSection(section: SectionType): number[] {
-    return SCHOOL_SECTIONS[section]?.grades || [];
+    const sec = SCHOOL_SECTIONS[section] as any;
+    return sec?.grades || [];
 }
 
 /**

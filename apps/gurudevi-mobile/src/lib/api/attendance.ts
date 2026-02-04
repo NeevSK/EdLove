@@ -5,7 +5,7 @@
  */
 
 import { supabase } from '../supabase';
-import { APIError } from './errors';
+import { APIError } from './types';
 import type { AttendanceRecord } from './types';
 
 export const attendanceAPI = {
