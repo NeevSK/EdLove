@@ -236,11 +236,6 @@ function MyScreen() {
 ```
 
 ### Example 3: With Loading State
-  );
-}
-```
-
-### Example 3: With Loading State
 
 ```tsx
 function MyScreen() {

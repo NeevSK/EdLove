@@ -210,11 +210,14 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     // Position for dragging
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
+    // Base position accumulator
+    const baseX = useRef(0);
+    const baseY = useRef(0);
     // State for showing action menu
     const [showActions, setShowActions] = useState(false);
     const actionMenuScale = useSharedValue(0);
     // Track long press
-    const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+    const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [isDragging, setIsDragging] = useState(false);
 
     // Memoize current configuration to avoid unnecessary recalculations
@@ -224,10 +227,10 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     // Pan responder for drag functionality
     const panResponder = useRef(
         PanResponder.create({
-            onStartShouldSetPanResponder: () => true,
+            onStartShouldSetPanResponder: () => false,
             onMoveShouldSetPanResponder: (_, gestureState) => {
-                // Only start dragging if moved more than 10 pixels
-                return Math.abs(gestureState.dx) > 10 || Math.abs(gestureState.dy) > 10;
+                // Only start capturing if in drag mode or moved enough
+                return isDragging || Math.abs(gestureState.dx) > 10 || Math.abs(gestureState.dy) > 10;
             },
             onPanResponderGrant: () => {
                 // Start long press timer
@@ -238,8 +241,8 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
             },
             onPanResponderMove: (_, gestureState) => {
                 if (isDragging) {
-                    translateX.value = gestureState.dx;
-                    translateY.value = gestureState.dy;
+                    translateX.value = baseX.current + gestureState.dx;
+                    translateY.value = baseY.current + gestureState.dy;
                 }
             },
             onPanResponderRelease: (_, gestureState) => {
@@ -250,7 +253,9 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                 }
 
                 if (isDragging) {
-                    // Keep the FAB in its new position
+                    // Update base position for next drag
+                    baseX.current += gestureState.dx;
+                    baseY.current += gestureState.dy;
                     setIsDragging(false);
                 } else {
                     // If not dragging, treat as a tap
@@ -363,6 +368,15 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
             stiffness: 150
         });
     }, [showActions]);
+
+    // Cleanup timer on unmount
+    useEffect(() => {
+        return () => {
+            if (longPressTimer.current) {
+                clearTimeout(longPressTimer.current);
+            }
+        };
+    }, []);
 
     // ============================================================================
     // ANIMATION 3: SCROLL BEHAVIOR (Optional)
