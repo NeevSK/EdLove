@@ -101,3 +101,16 @@ export interface ClassroomStudent {
     roll_number?: number;
     enrolled_at: string;
 }
+
+// Classroom types
+export interface Classroom {
+    id: string;
+    school_id: string;
+    grade_id?: string;
+    teacher_id?: string;
+    name: string;
+    subject?: string;
+    description?: string;
+    created_at: string;
+    updated_at: string;
+}
