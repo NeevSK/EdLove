@@ -111,9 +111,16 @@ export default function App() {
             })}
             screenListeners={{
               state: (e) => {
-                const routeName = e.data?.state?.routes[e.data.state.index]?.name;
-                if (routeName) {
-                  setCurrentTab(routeName.toLowerCase() as 'self' | 'classroom' | 'community' | 'library' | 'profile');
+                const state = e.data?.state;
+                if (!state || state.index === undefined) return;
+                
+                const routeName = state.routes[state.index]?.name;
+                if (!routeName) return;
+                
+                const tabName = routeName.toLowerCase();
+                const validTabs = ['self', 'classroom', 'community', 'library', 'profile'];
+                if (validTabs.includes(tabName)) {
+                  setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
                 }
               },
             }}
