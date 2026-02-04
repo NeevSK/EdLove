@@ -73,13 +73,13 @@ const ErrorMessage: FC<ErrorMessageProps> = ({
                 };
             case 'warning':
                 return {
-                    backgroundColor: `${Theme.colors.amberGlow}33`, // 20% opacity (33 in hex is ~20%)
+                    backgroundColor: `${Theme.colors.amberGlow}33`, // 20% opacity (33 in hex = 51/255)
                     textColor: Theme.colors.amberGlow,
                     Icon: AlertTriangle,
                 };
             case 'severe':
                 return {
-                    backgroundColor: `${Theme.colors.emberRed}33`, // 20% opacity
+                    backgroundColor: `${Theme.colors.emberRed}33`, // 20% opacity (33 in hex = 51/255)
                     textColor: Theme.colors.emberRed,
                     Icon: AlertCircle,
                 };
