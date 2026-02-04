@@ -165,6 +165,11 @@ const styles = StyleSheet.create({
         backgroundColor: Theme.colors.deepIndigo,
         color: Theme.colors.sacredWhite,
     },
+    errorText: {
+        color: Theme.colors.emberRed,
+        fontSize: Theme.typography.fontSize.sm,
+        marginTop: Theme.spacing.xs,
+    },
 });
 
 export default LotusDropdown;

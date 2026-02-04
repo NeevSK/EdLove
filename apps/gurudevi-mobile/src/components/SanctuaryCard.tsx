@@ -52,8 +52,8 @@ import { VStack } from '@gluestack-ui/themed';
 
 interface SanctuaryCardProps {
     title?: string;
-    children: ReactNode;
-    footer?: ReactNode;
+    children: any;
+    footer?: any;
     onPress?: () => void;
     elevated?: boolean;
 }
