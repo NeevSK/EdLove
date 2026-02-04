@@ -34,23 +34,41 @@ export default function ProfileScreen() {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 const { data, error } = await supabase
-                    .from('profiles')
-                    .select('*')
+                    .from('users')  // Fixed: was 'profiles', now 'users'
+                    .select(`
+                        *,
+                        schools (
+                            id,
+                            name,
+                            type,
+                            district
+                        )
+                    `)
                     .eq('id', user.id)
                     .single();
 
-                if (data) setProfile(data);
-                else setProfile({
-                    full_name: user.user_metadata?.full_name || user.email?.split('@')[0],
-                    role: user.user_metadata?.role || 'teacher'
-                }); // Fallback
+                if (data) {
+                    // Map school data to profile for easy access
+                    setProfile({
+                        ...data,
+                        school_name: data.schools?.name || null
+                    });
+                } else {
+                    // Fallback to auth metadata if profile not found
+                    setProfile({
+                        full_name: user.user_metadata?.full_name || user.email?.split('@')[0],
+                        role: user.user_metadata?.role || 'teacher',
+                        school_name: null
+                    });
+                }
             }
         } catch (error) {
-            console.error(error);
+            console.error('Error fetching profile:', error);
         } finally {
             setLoading(false);
         }
     }
+
 
     async function handleLogout() {
         hapticLight();

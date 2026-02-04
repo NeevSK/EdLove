@@ -39,18 +39,18 @@ import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
 // Google icon using react-native-svg
 const GoogleIcon = ({ color = "#FFF", size = 20 }: { color?: string; size?: number }) => (
     <Svg width={size} height={size} viewBox="0 0 20 20" fill="none">
-        <Path d="M19.6 10.227c0-.709-.064-1.39-.182-2.045H10v3.868h5.382a4.6 4.6 0 01-1.996 3.018v2.51h3.232c1.891-1.742 2.982-4.305 2.982-7.35z" fill="#4285F4"/>
-        <Path d="M10 20c2.7 0 4.964-.895 6.618-2.423l-3.232-2.509c-.895.6-2.04.955-3.386.955-2.605 0-4.81-1.76-5.595-4.123H1.064v2.59A9.996 9.996 0 0010 20z" fill="#34A853"/>
-        <Path d="M4.405 11.9c-.2-.6-.314-1.24-.314-1.9 0-.66.114-1.3.314-1.9V5.51H1.064A9.996 9.996 0 000 10c0 1.614.386 3.14 1.064 4.49l3.34-2.59z" fill="#FBBC05"/>
-        <Path d="M10 3.977c1.468 0 2.786.505 3.823 1.496l2.868-2.868C14.959.99 12.695 0 10 0 6.09 0 2.71 2.24 1.064 5.51l3.34 2.59C5.19 5.736 7.395 3.977 10 3.977z" fill="#EA4335"/>
+        <Path d="M19.6 10.227c0-.709-.064-1.39-.182-2.045H10v3.868h5.382a4.6 4.6 0 01-1.996 3.018v2.51h3.232c1.891-1.742 2.982-4.305 2.982-7.35z" fill="#4285F4" />
+        <Path d="M10 20c2.7 0 4.964-.895 6.618-2.423l-3.232-2.509c-.895.6-2.04.955-3.386.955-2.605 0-4.81-1.76-5.595-4.123H1.064v2.59A9.996 9.996 0 0010 20z" fill="#34A853" />
+        <Path d="M4.405 11.9c-.2-.6-.314-1.24-.314-1.9 0-.66.114-1.3.314-1.9V5.51H1.064A9.996 9.996 0 000 10c0 1.614.386 3.14 1.064 4.49l3.34-2.59z" fill="#FBBC05" />
+        <Path d="M10 3.977c1.468 0 2.786.505 3.823 1.496l2.868-2.868C14.959.99 12.695 0 10 0 6.09 0 2.71 2.24 1.064 5.51l3.34 2.59C5.19 5.736 7.395 3.977 10 3.977z" fill="#EA4335" />
     </Svg>
 );
 
 // Apple icon using react-native-svg
 const AppleIcon = ({ color = "#FFF", size = 20 }: { color?: string; size?: number }) => (
     <Svg width={size} height={size} viewBox="0 0 20 20" fill="none">
-        <Path d="M16.23 10.52c-.03-3.08 2.51-4.56 2.63-4.63-1.43-2.1-3.67-2.39-4.46-2.42-1.9-.19-3.71 1.12-4.67 1.12-.97 0-2.46-1.09-4.04-1.06-2.08.03-4 1.21-5.07 3.07-2.16 3.75-.55 9.32 1.55 12.37 1.03 1.49 2.25 3.17 3.86 3.11 1.57-.06 2.16-1.01 4.05-1.01 1.88 0 2.42 1.01 4.04.98 1.67-.03 2.73-1.52 3.75-3.02 1.18-1.74 1.67-3.42 1.7-3.51-.04-.01-3.25-1.25-3.28-4.95z" fill={color}/>
-        <Path d="M13.27 2.74c.85-1.03 1.43-2.47 1.27-3.9-1.23.05-2.72.82-3.6 1.85-.79.92-1.48 2.38-1.29 3.78 1.36.11 2.75-.69 3.62-1.73z" fill={color}/>
+        <Path d="M16.23 10.52c-.03-3.08 2.51-4.56 2.63-4.63-1.43-2.1-3.67-2.39-4.46-2.42-1.9-.19-3.71 1.12-4.67 1.12-.97 0-2.46-1.09-4.04-1.06-2.08.03-4 1.21-5.07 3.07-2.16 3.75-.55 9.32 1.55 12.37 1.03 1.49 2.25 3.17 3.86 3.11 1.57-.06 2.16-1.01 4.05-1.01 1.88 0 2.42 1.01 4.04.98 1.67-.03 2.73-1.52 3.75-3.02 1.18-1.74 1.67-3.42 1.7-3.51-.04-.01-3.25-1.25-3.28-4.95z" fill={color} />
+        <Path d="M13.27 2.74c.85-1.03 1.43-2.47 1.27-3.9-1.23.05-2.72.82-3.6 1.85-.79.92-1.48 2.38-1.29 3.78 1.36.11 2.75-.69 3.62-1.73z" fill={color} />
     </Svg>
 );
 
@@ -69,7 +69,8 @@ export default function AuthScreen() {
         hapticLight();
 
         if (isSignUp) {
-            const { error } = await supabase.auth.signUp({
+            // Step 1: Create auth user
+            const { data: authData, error: authError } = await supabase.auth.signUp({
                 email,
                 password,
                 options: {
@@ -79,14 +80,55 @@ export default function AuthScreen() {
                     }
                 }
             });
-            if (error) {
+
+            if (authError) {
                 hapticError();
-                showToast(error.message, "error");
-            } else {
-                hapticSuccess();
-                showToast(t('auth.checkEmail'), "success");
+                showToast(authError.message, "error");
+                setLoading(false);
+                return;
+            }
+
+            if (authData.user) {
+                try {
+                    // Step 2: Create school (for now, create a default school)
+                    // TODO: Later, replace with invite code system or school selection
+                    const { data: schoolData, error: schoolError } = await supabase
+                        .from('schools')
+                        .insert({
+                            name: role === 'principal'
+                                ? `${fullName}'s School`  // Principal creates their school
+                                : 'Default School',  // Others join default (temporary)
+                            type: 'government',  // Default type
+                        })
+                        .select()
+                        .single();
+
+                    if (schoolError) throw schoolError;
+
+                    // Step 3: Create user profile with school_id
+                    const { error: profileError } = await supabase
+                        .from('users')
+                        .insert({
+                            id: authData.user.id,
+                            email: email,
+                            full_name: fullName,
+                            role: role,
+                            school_id: schoolData.id,
+                            language: 'si',  // Default to Sinhala
+                        });
+
+                    if (profileError) throw profileError;
+
+                    hapticSuccess();
+                    showToast(t('auth.signupSuccess') || 'Account created!', "success");
+                } catch (error: any) {
+                    hapticError();
+                    showToast(error.message || 'Failed to create profile', "error");
+                    console.error('Profile creation error:', error);
+                }
             }
         } else {
+            // Login flow (unchanged)
             const { error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
@@ -104,7 +146,7 @@ export default function AuthScreen() {
     async function handleOAuthSignIn(provider: 'google' | 'apple') {
         setLoading(true);
         hapticLight();
-        
+
         // Redirect URL must match:
         // 1. The deep link scheme configured in app.json
         // 2. Allowed redirect URLs in Supabase dashboard (Authentication -> URL Configuration)
@@ -114,7 +156,7 @@ export default function AuthScreen() {
                 redirectTo: 'gurudevi://auth/callback',
             }
         });
-        
+
         if (error) {
             hapticError();
             const errorKey = provider === 'google' ? 'auth.googleSignInError' : 'auth.appleSignInError';

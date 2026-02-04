@@ -39,7 +39,8 @@
         "orContinueWith": "හෝ මේවා සමඟ ඉදිරියට යන්න",
         "googleSignInError": "Google පිවිසීම අසාර්ථක විය. කරුණාකර නැවත උත්සාහ කරන්න.",
         "appleSignInError": "Apple පිවිසීම අසාර්ථක විය. කරුණාකර නැවත උත්සාහ කරන්න.",
-        "openingBrowser": "විවෘත වෙමින්..."
+        "openingBrowser": "විවෘත වෙමින්...",
+        "signupSuccess": "ගිණුම සාර්ථකව සෑදන ලදී!"
     },
     "tabs": {
         "self": "ස්වයං",
