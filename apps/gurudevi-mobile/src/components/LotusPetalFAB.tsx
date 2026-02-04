@@ -47,15 +47,15 @@ import Animated, {
     SharedValue,
     Extrapolate,
     useSharedValue,
+    Easing,
 } from 'react-native-reanimated';
-import { Easing } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { 
-    Flower2, 
-    Plus, 
-    MessageCircle, 
-    Upload, 
-    Edit 
+import {
+    Flower2,
+    Plus,
+    MessageCircle,
+    Upload,
+    Edit
 } from 'lucide-react-native';
 import Theme from '../constants/Theme';
 
@@ -83,6 +83,7 @@ interface LotusPetalFABProps {
 // CONSTANTS
 // ============================================================================
 
+
 const FAB_SIZE = 64;
 const FAB_HEIGHT = 64; // Make it square for better lotus flower icon
 const ICON_SIZE = 32;
@@ -96,23 +97,23 @@ const SCREEN_HEIGHT = Dimensions.get('window').height;
 type IconComponentType = React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
 
 const fabConfig: Record<TabType, { IconComponent: IconComponentType; label: string }> = {
-    self: { 
+    self: {
         IconComponent: Flower2,
         label: 'Log mood',
     },
-    classroom: { 
+    classroom: {
         IconComponent: Plus,
         label: 'Create lesson',
     },
-    community: { 
+    community: {
         IconComponent: MessageCircle,
         label: 'Post announcement',
     },
-    library: { 
+    library: {
         IconComponent: Upload,
         label: 'Upload resource',
     },
-    profile: { 
+    profile: {
         IconComponent: Edit,
         label: 'Edit profile',
     }
@@ -271,15 +272,15 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     // ============================================================================
     // ANIMATION INITIALIZATION
     // ============================================================================
-    
+
     // Initialize breathing animation in useEffect to avoid restarting on every render
     useEffect(() => {
         if (!disabled) {
             breathingScale.value = 0.95;
             breathingScale.value = withRepeat(
-                withTiming(1.0, { 
-                    duration: 2000, 
-                    easing: Easing.inOut(Easing.ease) 
+                withTiming(1.0, {
+                    duration: 2000,
+                    easing: Easing.inOut(Easing.ease)
                 }),
                 -1, // infinite
                 true // reverse (yoyo effect)
@@ -293,7 +294,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     // ============================================================================
     // ANIMATION 1: BREATHING (Always-on when not disabled)
     // ============================================================================
-    
+
     const breathingStyle = useAnimatedStyle(() => {
         return {
             transform: [{ scale: breathingScale.value }]
@@ -303,7 +304,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     // ============================================================================
     // ANIMATION 2: PRESS RESPONSE
     // ============================================================================
-    
+
     const pressStyle = useAnimatedStyle(() => {
         return {
             transform: [{ scale: pressScale.value }]
@@ -361,6 +362,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         };
     });
 
+
     // Effect to handle action menu scale
     useEffect(() => {
         actionMenuScale.value = withSpring(showActions ? 1 : 0, {
@@ -368,6 +370,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
             stiffness: 150
         });
     }, [showActions]);
+
 
     // Cleanup timer on unmount
     useEffect(() => {
@@ -381,7 +384,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     // ============================================================================
     // ANIMATION 3: SCROLL BEHAVIOR (Optional)
     // ============================================================================
-    
+
     const scrollStyle = useAnimatedStyle(() => {
         if (!scrollY) {
             return {};
@@ -422,6 +425,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     return (
         <Animated.View 
             {...panResponder.panHandlers}
+
             style={[
                 styles.container,
                 breathingStyle,
