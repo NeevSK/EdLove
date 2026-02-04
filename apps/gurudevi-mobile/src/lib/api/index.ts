@@ -11,6 +11,7 @@ import { attendanceAPI } from './attendance';
 import { resourcesAPI } from './resources';
 import { groupsAPI } from './groups';
 import { classroomStudentsAPI } from './classroomStudents';
+import { classroomsAPI } from './classrooms';
 
 // Re-export types for usage in app
 export * from './types';
@@ -29,6 +30,7 @@ export const api = {
     resources: resourcesAPI,
     groups: groupsAPI,
     classroomStudents: classroomStudentsAPI,
+    classrooms: classroomsAPI,
 
     // Placeholders / Future Modules
     self: selfAPI,
