@@ -1,0 +1,193 @@
+# SESSION LEARNINGS & DISCOVERIES
+**Living document - updated as we discover new things**
+
+---
+
+## 🔍 WEB SEARCH FINDINGS
+
+### Sri Lankan Education System (Feb 4, 2026)
+**What we learned**:
+- Traditional system: Percentage marks (0-100)
+- New reforms (2024-2025): GPA system being introduced
+- Grade conversion: A=75-100 (4.0), B=65-74 (3.0), C=55-64 (2.0), etc.
+- Schools are in transition period → Need BOTH systems
+
+**Applied to**: Grading system design (marks + GPA dropdown)
+
+**Source**: Web search "Sri Lanka education GPA system new reforms 2024 2025"
+
+---
+
+### GitHub Copilot Agent Capabilities (Feb 4, 2026)
+**What we learned**:
+- Agent Mode can edit 10+ files at once (NOT just autocomplete!)
+- Has autonomous task execution
+- Uses MCP (Model Context Protocol) for context
+- 300 premium requests/month for Pro (students get free)
+- Can self-heal errors and run terminal commands
+
+**Applied to**: Updated delegation strategy - Agent can build entire features
+
+**Source**: Web search "GitHub Copilot Cloud Agent 2024 2025 capabilities multi-file editing"
+
+**Initial mistake**: I thought Agent was only for single files (WRONG!)
+
+---
+
+## 💡 EFFICIENCY STRATEGIES
+
+### Why Maintain This Doc?
+
+**Problem**: Re-reading files wastes tokens
+**Solution**: Document key learnings here
+
+**Example**:
+- ❌ Search web again: Costs tokens + time
+- ✅ Check learnings.md: Instant recall
+
+### Token Efficiency
+GitHub Copilot Agent token costs:
+- Reading a file: ~100-500 tokens
+- Implementing from memory/doc: ~50-200 tokens
+- Getting it wrong → fixing: ~300-800 tokens total
+
+**Strategy**:
+1. Document findings in learnings.md
+2. Reference this doc before asking Agent
+3. Point Agent to specific sections (not full files)
+
+---
+
+## 🎯 KEY ARCHITECTURAL DECISIONS
+
+### Supabase Multi-Tenant (Not Separate DBs)
+**Decision**: One database, all schools (with school_id)
+**Reason**: Scalability, cost ($25/month vs $1000+/month for 50 schools)
+**Reference**: ARCHITECTURE.md Part 4
+
+---
+
+### Library vs Classroom: HYBRID Approach
+**Decision**: Create lessons in Classroom, save to Library for reuse
+**Reason**: Fast creation + reusability
+**User approved**: Yes (Feb 4, 2026)
+
+---
+
+### Grading: Dual System
+**Decision**: Store marks (0-100), compute GPA on read
+**Reason**: Teacher dropdown selection, supports both old/new systems
+**Conversion**: Documented in grading_system_design.md
+
+---
+
+### BDD vs Current Approach
+**Decision**: Keep architecture-first (BUILD_ORDER.md) for now
+**Reason**: Still in foundation phase, BDD adds overhead
+**Future**: Consider adding BDD for critical flows after v0.1
+
+---
+
+## 🐛 ERRORS WE FIXED
+
+### PowerShell Copy-Item Path Not Found
+**Error**: `Could not find a part of the path`
+**Cause**: Destination folder didn't exist
+**Fix**: Create folder first with `New-Item -ItemType Directory -Force`
+
+**Lesson**: Always create parent directories before copying
+
+---
+
+### Git Push on Wrong Branch
+**Prevention**: Check current branch with `git branch` before pushing
+**Check status**: Use `git status` to see current branch
+
+---
+
+## 🔧 TOOLS & COMMANDS
+
+### Must-Know PowerShell
+```powershell
+New-Item -Path "folder" -ItemType Directory -Force  # Create folder
+Copy-Item "source" "dest"                           # Copy file
+git add path/to/file                                # Stage file
+git commit -m "message"                             # Commit
+git push origin branch-name                         # Push
+```
+
+**Documented in**: powershell_cheatsheet.md
+
+---
+
+## 📚 DOCUMENTATION STRUCTURE
+
+### Project Docs Location
+```
+apps/gurudevi-mobile/Docs v 3.0/
+├── NORTH_STAR.md          # Philosophy (immutable)
+├── ARCHITECTURE.md        # Technical architecture
+├── BUILD_ORDER.md         # Phase-by-phase build plan
+├── DESIGN_SYSTEM.md       # UI/UX specs
+├── Planning/              # Agent-readable planning docs
+│   ├── lotus_fab_plan.md
+│   ├── grading_system_design.md
+│   └── agent_mode_prompts.md
+```
+
+### Brain Artifacts (This Session)
+```
+C:\Users\Naween\.gemini\antigravity\brain\...\
+├── README.md                      # Index of all docs
+├── status_and_action_plan.md     # Project status
+├── immediate_action_plan.md      # All user concerns addressed
+├── grading_system_design.md      # Grading system (copied to repo)
+├── lotus_fab_plan.md             # FAB spec (copied to repo)
+├── agent_mode_prompts.md         # Prompts (copied to repo)
+├── agent_reference_guide.md      # How to use docs with Agent
+├── powershell_cheatsheet.md      # Command reference
+└── learnings.md                  # THIS FILE
+```
+
+---
+
+## 🎨 DESIGN PATTERNS
+
+### Lotus Petal FAB
+**Key lesson**: It's PETAL-SHAPED, not circular!
+- Use SVG path or teardrop borderRadius
+- Breathing animation (4-second cycle)
+- Context-aware (changes per tab)
+
+**Mistake avoided**: Using simple circular FAB
+
+---
+
+## 🚀 AGENT MODE INSIGHTS
+
+### What Works Best
+✅ Reference docs by path: [Planning/lotus_fab_plan.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/Planning/lotus_fab_plan.md)
+✅ Be specific about critical details: "MUST be petal-shaped, not circle"
+✅ Iterate if first attempt wrong: Point to specific section
+
+### Background Processing
+✅ Agent works even when laptop closed!
+✅ Can queue multiple tasks
+✅ Review results later
+
+**User discovery**: "agents work even when i m not infront of laptop" ✅
+
+---
+
+## 📝 NEXT TIME CHECKLIST
+
+Before asking Agent to build component:
+1. ✅ Check if planning doc exists (`Planning/` folder)
+2. ✅ Reference doc in prompt
+3. ✅ Highlight critical details (shape, animation, etc.)
+4. ✅ Run verification checklist after build
+5. ✅ Document any new learnings here
+
+---
+
+**Keep updating this file!** It's your knowledge base 🧠

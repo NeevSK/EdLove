@@ -1,0 +1,35 @@
+# Documentation Consolidation & Sync Strategy
+
+This plan outlines how to move and organize all your research/brain files from the system-managed Gemini directory into your project, while maintaining their chronological and chat-based context.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **User Sovereignty**: This script is provided as a utility in your project. You own it and can change its logic anytime.
+> 
+> **Customization Points**: 
+> - **Folder Naming**: Line 27-31 controls how folders are named (Date + Task Title).
+> - **Filtering**: Line 40-45 controls which files are skipped (e.g., ignoring [.resolved](file:///C:/Users/Naween/.gemini/antigravity/brain/d7e3ed05-2fb9-4b12-97a8-302ab75b8083/task.md.resolved) files).
+
+## Proposed Changes
+
+We will create a consolidation script that does the following:
+1. Loops through each "Session" folder in your Brain directory.
+2. Identifies the primary task or topic of that session (by reading [task.md](file:///C:/Users/Naween/.gemini/antigravity/brain/5e6e289c-3ada-49e0-b3ac-0f69997208eb/task.md)).
+3. Copies all files (including [.resolved](file:///C:/Users/Naween/.gemini/antigravity/brain/d7e3ed05-2fb9-4b12-97a8-302ab75b8083/task.md.resolved) and [task.md](file:///C:/Users/Naween/.gemini/antigravity/brain/5e6e289c-3ada-49e0-b3ac-0f69997208eb/task.md)) into a structured folder in `apps/gurudevi-mobile/Docs v 3.0/brain_archive/`.
+
+### [Documentation]
+
+#### [NEW] [consolidate_docs.ps1](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/consolidate_docs.ps1)
+A PowerShell script to automate the organization and backup of brain files.
+- **Key Logic**: It reads [task.md](file:///C:/Users/Naween/.gemini/antigravity/brain/5e6e289c-3ada-49e0-b3ac-0f69997208eb/task.md) inside each session to name the output folder meaningfully.
+- **Archive Location**: Files go to `apps/gurudevi-mobile/Docs v 3.0/brain_archive/`.
+
+## Verification Plan
+
+### Automated Verification
+- I will run the script once to demonstrate the organization.
+- I will verify that the files in the new `brain_archive` folder match the ones in the system brain folder.
+
+### Manual Verification
+- The user can inspect the `brain_archive` folder to ensure it is organized logically (e.g., folders named like `2026-02-04_Implementing-Auth`).

@@ -1,0 +1,34 @@
+# Supabase Environment Variables Setup
+
+## Current Status
+
+**Important**: The credentials currently in the .env are from a friend's project. We need to replace them with YOUR Supabase credentials.
+
+## Tasks
+
+### Getting Your Credentials
+- [ ] User to retrieve Project URL from Supabase dashboard
+- [ ] User to retrieve Anon/Public Key from Supabase dashboard  
+- [ ] Determine if you need separate projects for gurudevi-mobile and edlove-web
+
+### Gurudevi-Mobile Setup
+- [x] Create [.env](file:///c:/Users/Naween/projects/polymath-platform/apps/edlove-web/.env) file structure
+- [x] Create [.env.example](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/.env.example) template file
+- [x] Update [.gitignore](file:///c:/Users/Naween/projects/polymath-platform/.gitignore) to exclude [.env](file:///c:/Users/Naween/projects/polymath-platform/apps/edlove-web/.env)
+- [x] Update [supabase.ts](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/lib/supabase.ts) to read from environment variables
+- [ ] Replace with YOUR Supabase credentials
+- [ ] Test the app to ensure it connects to YOUR Supabase project
+
+### EdLove-Web Setup (After gurudevi-mobile)
+- [ ] Determine which Supabase project to use (same or different?)
+- [ ] Add YOUR Supabase credentials to edlove-web [.env](file:///c:/Users/Naween/projects/polymath-platform/apps/edlove-web/.env)
+- [ ] Ensure [.env](file:///c:/Users/Naween/projects/polymath-platform/apps/edlove-web/.env) is in [.gitignore](file:///c:/Users/Naween/projects/polymath-platform/.gitignore)
+- [ ] Create [.env.example](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/.env.example) for edlove-web
+- [ ] Test connection
+
+## Notes
+
+- Using `EXPO_PUBLIC_` prefix for Expo environment variables (required for Expo SDK 49+)
+- Currently has placeholder/friend's credentials - MUST REPLACE
+- Added validation to throw helpful error if env vars are missing
+- Created guide: [supabase_setup_guide.md](file:///C:/Users/Naween/.gemini/antigravity/brain/426210bd-da2b-48cd-8376-cb5dc369fc5b/supabase_setup_guide.md) to help find credentials

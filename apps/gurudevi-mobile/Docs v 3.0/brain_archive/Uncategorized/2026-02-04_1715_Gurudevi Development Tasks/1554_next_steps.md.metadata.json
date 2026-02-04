@@ -1,0 +1,5 @@
+{
+  "artifactType": "ARTIFACT_TYPE_OTHER",
+  "summary": "Summary of all changes ready to push and next steps. Lists 7 modified files with 667 insertions, SQL files to run in Supabase (invite_system_schema.sql and sri_lankan_hierarchy_schema.sql), and reorganization tasks including role-based navigation and profile completion UI.",
+  "updatedAt": "2026-02-04T10:24:20.954619500Z"
+}

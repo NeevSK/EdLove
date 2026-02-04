@@ -1,0 +1,5 @@
+{
+  "artifactType": "ARTIFACT_TYPE_OTHER",
+  "summary": "Explanation document addressing user's concerns about path dependence and database schema evolution. Explains why the minimal setup is safe, what can/cannot be changed later, and provides concrete examples of how to safely extend the database as features are added.",
+  "updatedAt": "2026-02-04T08:58:25.020352800Z"
+}

@@ -1,0 +1,6 @@
+{
+  "artifactType": "ARTIFACT_TYPE_WALKTHROUGH",
+  "summary": "Comprehensive walkthrough of Sri Lankan school hierarchy implementation including database schema changes, new school types (1AB, 1C, Type 2, Type 3), organizational structure (sections, grades), updated user roles, flexible signup with personal workspaces, and multilingual constants. Includes SQL files to run, testing instructions, and design decisions.",
+  "updatedAt": "2026-02-04T10:18:57.232766700Z",
+  "version": "2"
+}

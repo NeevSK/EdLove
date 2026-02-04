@@ -1,0 +1,5 @@
+{
+  "artifactType": "ARTIFACT_TYPE_OTHER",
+  "summary": "Template library for writing effective AI agent prompts. Includes ready-to-use templates for foundation work, features, bug fixes, and refactoring. Each template has fill-in-the-blank format with examples from Gurudevi and EdLove projects.",
+  "updatedAt": "2026-02-03T16:19:23.509865500Z"
+}

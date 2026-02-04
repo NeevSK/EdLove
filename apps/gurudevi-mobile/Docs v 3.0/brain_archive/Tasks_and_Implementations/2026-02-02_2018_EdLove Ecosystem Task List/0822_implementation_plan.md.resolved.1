@@ -1,0 +1,25 @@
+# Fresh Start & Reconstruction Plan
+
+## Goal Description
+The goal is to rebuild the platform ("Gurudevi" core) with a "fresh start" approach, discarding the "spiraled" local state and adopting a new (yet to be defined) tech stack/philosophy. We will treat the current `polymath-platform` and the `NeevSK/Gurudevi` repo as a reference for "core" logic ONLY.
+
+## Critical Decisions Needed
+> [!IMPORTANT]
+> **Tech Stack Definition**: You mentioned "almost everything has changed". Please specify the NEW preferred stack.
+> - **Frontend**: Still Next.js? Or Vite/Remix?
+> - **Backend**: Still Fastify? Or Hono/Express/Next.js API Routes?
+> - **Language**: TypeScript (assumed)?
+> - **Database**: ?
+
+> [!WARNING]
+> **Friend's Code**: Since we don't have the friend's "almost full change", we are proceeding with a **clean slate** based on your new philosophy. This means their changes might be hard to merge later.
+
+## Proposed Strategy (The "Fresh Start")
+1.  **Archive/Reference**: Keep `polymath-platform` as read-only reference.
+2.  **New Foundation**: Initialize a new workspace (e.g., `polymath-v2` or similar) with the *new* stack.
+3.  **Port Core Logic**: Manually migrate the "core" business logic from the old repo to the new one, refactoring it to fit the new philosophy.
+
+## Next Steps
+1.  Define the Stack (User Input needed).
+2.  Initialize new project structure.
+

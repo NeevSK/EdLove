@@ -1,0 +1,20 @@
+# EdLove Ecosystem Task List
+
+- [/] Define new "Fresh Start" architecture & stack <!-- id: 3 -->
+    - [x] Analyze "Docs v 3.0" (Mobile Stack) <!-- id: 3.1 -->
+    - [x] Analyze "EdLove Master Design Doc" (Web Stack) <!-- id: 3.2 -->
+    - [x] Confirm Monorepo Strategy with User <!-- id: 3.3 -->
+- [x] Initialize EdLove Ecosystem Monorepo <!-- id: 4 -->
+    - [x] Setup Turborepo & pnpm <!-- id: 4.1 -->
+    - [x] Create `apps/edlove-web` (Astro) <!-- id: 4.2 -->
+    - [x] Create `apps/gurudevi-mobile` (Expo) <!-- id: 4.3 -->
+    - [x] Create `packages/ui` (Gluestack/Shared) <!-- id: 4.4 -->
+- [x] Strategic Consultation <!-- id: 5 -->
+    - [x] Explain Agentic Workflow <!-- id: 5.1 -->
+    - [x] Provide Feedback on EdLove/Gurudevi Vision <!-- id: 5.2 -->
+- [/] Build EdLove Web (The Cosmos) <!-- id: 6 -->
+    - [x] Scaffold "Whole Canvas" Layout (All 6 Domains) <!-- id: 6.1 -->
+    - [x] Implement Landing Page (Paradigm I: Aliveness) <!-- id: 6.2 -->
+    - [/] Refine Aesthetic: "Deep Immersion" (Dark Mode + Bioluminescence) <!-- id: 6.3 -->
+- [-] Build Gurudevi Mobile (Engine) <!-- id: 7 -->
+    - [ ] **WAITING**: Friend's Unpushed Changes <!-- id: 7.1 -->

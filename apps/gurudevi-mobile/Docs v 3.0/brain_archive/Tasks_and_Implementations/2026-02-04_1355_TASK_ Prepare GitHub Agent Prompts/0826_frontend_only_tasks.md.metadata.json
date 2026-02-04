@@ -1,0 +1,5 @@
+{
+  "artifactType": "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
+  "summary": "Frontend-only tasks that can be completed without Supabase setup including reusable components, UI work, design system implementation, and EdLove translation",
+  "updatedAt": "2026-02-04T02:56:06.553629400Z"
+}

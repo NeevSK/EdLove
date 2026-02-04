@@ -1,0 +1,254 @@
+# 🤖 GITHUB AGENT DELEGATION GUIDE
+**Strategic Plan for Maximum Leverage**
+
+---
+
+## 🎯 THE STRATEGY
+
+**GitHub Agent = Fast autocomplete for SIMPLE, SINGLE-FILE tasks**  
+**Antigravity (me) = Complex, multi-file, architecture work**
+
+---
+
+## ✅ DELEGATE TO GITHUB AGENT
+
+### **Category 1: Boilerplate Components** (☁️ Low credit cost)
+
+**What**: Simple components following established patterns
+
+**Example Tasks**:
+```
+1. Create simple button variant
+2. Create card component with basic styling
+3. Create loading spinner
+4. Create empty state component
+```
+
+**Template Prompt**:
+```
+Create a [ComponentName] in src/components/[ComponentName].tsx
+
+Props:
+- title: string
+- onPress: () => void
+- variant: 'primary' | 'secondary'
+
+Styling:
+- Use Theme.colors.sanctuarySaffron for primary
+- Use Theme.spacing.md for padding
+- Use Theme.corners.comfortable for borderRadius
+
+Export as default.
+```
+
+**Credit Usage**: ~1-2 minutes = Minimal credits ✅
+
+---
+
+### **Category 2: Style Tweaks** (☁️ Very low credit cost)
+
+**What**: CSS/styling changes to existing components
+
+**Example Tasks**:
+```
+1. Change button padding from md to lg
+2. Update card background color
+3. Add shadow to component
+4. Adjust spacing between elements
+```
+
+**Template Prompt**:
+```
+In src/components/LotusButton.tsx, update the primary variant styling:
+- Change padding from Theme.spacing.md to Theme.spacing.lg
+- Add shadow: Theme.shadows.medium
+- borderRadius should be Theme.corners.comfortable
+```
+
+**Credit Usage**: ~30 seconds = Tiny credits ✅
+
+---
+
+### **Category 3: Translation Keys** (☁️ Low credit cost)
+
+**What**: Adding i18n translation entries
+
+**Template Prompt**:
+```
+Add these translations to src/i18n/locales/:
+
+en.json - add to "grades" section:
+{
+  "marks": "Marks",
+  "gpa": "GPA",
+  "rank": "Rank"
+}
+
+si.json - add to "grades" section:
+{
+  "marks": "ලකුණු",
+  "gpa": "GPA",
+  "rank": "ශ්‍රේණිය"
+}
+```
+
+**Credit Usage**: ~1 minute = Minimal credits ✅
+
+---
+
+## ❌ DO NOT DELEGATE TO GITHUB AGENT
+
+### **Category A: Multi-File Features** (⚡ Use Antigravity)
+
+**What**: Features spanning multiple files
+
+**Why Not**: GitHub Agent works best on single files.
+
+**Examples**:
+```
+❌ Create complete mood check-in feature
+❌ Set up navigation structure
+❌ Build grading system
+```
+
+**Instead**: Ask Antigravity to create architecture, THEN delegate individual components
+
+---
+
+### **Category B: Architecture Decisions** (⚡ Use Antigravity)
+
+**Examples**:
+```
+❌ How should I structure the grading system?
+❌ Where should lessons be stored?
+❌ What database schema do I need?
+```
+
+---
+
+### **Category C: Complex Logic** (⚡ Use Antigravity)
+
+**Examples**:
+```
+❌ GPA calculation with rank ordering
+❌ Attendance percentage calculation
+❌ RLS policy design
+```
+
+---
+
+## 🔄 OPTIMAL WORKFLOW
+
+### **STEP 1: Plan with Antigravity** (30-60 min, FREE)
+```
+"I want to build the grading system."
+
+→ Antigravity creates:
+  - Architecture document
+  - Component breakdown
+  - List of files to create
+```
+
+### **STEP 2: Delegate Components to GitHub Agent** (5-10 min each, PAID)
+```
+Task 1: "Create LotusButton.tsx..." (5 min)
+Task 2: "Create GradeEntryForm.tsx..." (8 min)
+Task 3: "Add translation keys..." (2 min)
+```
+
+### **STEP 3: Integration with Antigravity** (30 min, FREE)
+```
+"Connect all the components:
+- Wire up state
+- Add navigation
+- Test the flow"
+```
+
+---
+
+## 💰 CREDIT OPTIMIZATION EXAMPLE
+
+### **Building Mood Check-in Feature**
+
+**❌ WASTEFUL**:
+```
+GitHub Agent: "Build complete mood check-in feature"
+Result: Uses many credits, incomplete code
+```
+
+**✅ OPTIMAL**:
+```
+1. Antigravity: Design architecture (FREE)
+2. GitHub Agent: Create MoodSelector.tsx (low credits)
+3. GitHub Agent: Create MoodHistoryCard.tsx (low credits)
+4. Antigravity: Wire up navigation + state (FREE)
+
+Credit Savings: 70%
+```
+
+---
+
+## 📋 QUICK DECISION TREE
+
+```
+Does this involve MORE THAN ONE file?
+├─ YES → Use Antigravity
+└─ NO → Continue...
+
+Is this a DESIGN DECISION?
+├─ YES → Use Antigravity
+└─ NO → Continue...
+
+Is this BOILERPLATE or SIMPLE PATTERN?
+├─ YES → Use GitHub Agent ✅
+└─ NO → Use Antigravity
+```
+
+---
+
+## 📝 READY-TO-USE PROMPT: LotusButton
+
+```
+Create src/components/LotusButton.tsx
+
+A reusable button component.
+
+Props:
+interface LotusButtonProps {
+  title: string;
+  onPress: () => void;
+  variant?: 'primary' | 'secondary' | 'ghost';
+  loading?: boolean;
+  disabled?: boolean;
+}
+
+Styling:
+- primary: background Theme.colors.sanctuarySaffron, text white
+- secondary: transparent background, border sanctuarySaffron
+- ghost: transparent, text dimGray
+- borderRadius: Theme.corners.comfortable
+- padding: Theme.spacing.md
+
+Features:
+- On press: call hapticLight() from '../utils/haptics'
+- If loading: show spinner, disable button
+- If disabled: opacity 0.5
+
+Import: Pressable, Text, Theme, hapticLight
+
+Export as default.
+```
+
+---
+
+## ✅ SUMMARY
+
+**Design with me (FREE) → Build components with GitHub Agent (CHEAP) → Integrate with me (FREE)**
+
+**Use GitHub Agent for**: 20% of work (simple components)  
+**Use Antigravity for**: 80% of work (architecture + integration)  
+**Result**: 80% cost savings + better quality
+
+---
+
+Want me to create ready-to-use prompts for all components?
