@@ -11,6 +11,8 @@ import { supabase } from './src/lib/supabase';
 import { Theme } from './src/constants/Theme';
 import { fontAssets } from './src/constants/Fonts';
 
+// Import screens and navigation
+import AuthScreen from './src/screens/AuthScreen';
 import TabNavigator from './src/navigation/TabNavigator';
 import LotusPetalFAB, { ActionItem } from './src/components/LotusPetalFAB';
 

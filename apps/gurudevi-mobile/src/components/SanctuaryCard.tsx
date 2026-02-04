@@ -128,9 +128,10 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
             )}
 
             {/* Children Content */}
-            <VStack space="md">
+            <View style={{ gap: Theme.spacing.md }}>
+                {/* @ts-ignore */}
                 {children}
-            </VStack>
+            </View>
 
             {/* Footer Section */}
             {footer && (

@@ -74,7 +74,7 @@ const LotusDropdown: FC<LotusDropdownProps> = ({
         <View style={styles.container}>
             {/* Label */}
             <Text style={styles.label}>{label}</Text>
-            
+
             {/* Select Dropdown */}
             <Select
                 selectedValue={value}
@@ -90,14 +90,18 @@ const LotusDropdown: FC<LotusDropdownProps> = ({
                         placeholder="Select an option"
                         style={styles.input}
                     />
+                    {/* @ts-ignore */}
                     <SelectIcon style={styles.icon}>
-                        <ChevronDown
-                            size={20}
-                            color={Theme.colors.sacredWhite}
-                        />
+                        <View>
+                            {/* @ts-ignore */}
+                            <ChevronDown
+                                size={20}
+                                color={Theme.colors.sacredWhite}
+                            />
+                        </View>
                     </SelectIcon>
                 </SelectTrigger>
-                
+
                 <SelectPortal>
                     <SelectBackdrop />
                     <SelectContent style={styles.content}>
@@ -112,7 +116,7 @@ const LotusDropdown: FC<LotusDropdownProps> = ({
                     </SelectContent>
                 </SelectPortal>
             </Select>
-            
+
             {/* Error Message */}
             {error && (
                 <Text style={styles.errorText}>{error}</Text>

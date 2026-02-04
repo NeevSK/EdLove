@@ -147,7 +147,7 @@ export default function ShadowAgentDrawer() {
                                 sx={{
                                     width: 40,
                                     height: 4,
-                                    backgroundColor: Theme.colors.silverSubtle,
+                                    backgroundColor: Theme.colors.pearlGray,
                                     borderRadius: 2,
                                     alignSelf: 'center',
                                     marginBottom: Theme.spacing.lg,

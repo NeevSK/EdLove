@@ -60,7 +60,7 @@ export const colors = {
     shadowLight: 'rgba(0, 0, 0, 0.1)',
     overlayDark: 'rgba(0, 0, 0, 0.6)',
     overlayLight: 'rgba(255, 255, 255, 0.9)',
-};
+} as const;
 
 // ============================================================================
 // TYPOGRAPHY - Readable & Respectful
@@ -129,7 +129,7 @@ export const typography = {
         fontWeight: '600', // fontWeight.semibold
         letterSpacing: 0,
     },
-};
+} as const;
 
 // ============================================================================
 // SPACING - 8px Base Grid

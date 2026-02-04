@@ -41,9 +41,9 @@ interface MoodLotusProps {
 }
 
 const MOOD_STATES = [
-    { value: 1, label: 'Heavy', color: Theme.colors.mudBrown, glow: 0 },
-    { value: 2, label: 'Challenging', color: Theme.colors.earthConnection, glow: 0.1 },
-    { value: 3, label: 'Okay', color: Theme.colors.tealWater, glow: 0.2 },
+    { value: 1, label: 'Heavy', color: Theme.colors.dimGray, glow: 0 },
+    { value: 2, label: 'Challenging', color: Theme.colors.slateGray, glow: 0.1 },
+    { value: 3, label: 'Okay', color: Theme.colors.stoneGray, glow: 0.2 },
     { value: 4, label: 'Good', color: Theme.colors.sageGreen, glow: 0.3 },
     { value: 5, label: 'Flourishing', color: Theme.colors.sanctuarySaffron, glow: 0.5 },
 ];
