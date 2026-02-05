@@ -34,7 +34,7 @@ import Animated, {
     FadeIn,
 } from 'react-native-reanimated';
 import { Mic, Flame } from 'lucide-react-native';
-import { Theme } from '../../constants/Theme';
+import { Theme, typography } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';
 import { hapticLight, hapticMedium } from '../../utils/haptics';
 
@@ -243,8 +243,8 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                             placeholderTextColor={Theme.colors.dimGray}
                             sx={{
                                 textAlignVertical: 'top',
-                                fontSize: Theme.typography.fontSize.lg,
-                                lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.lg,
+                                fontSize: typography.fontSize.lg,
+                                lineHeight: typography.lineHeight.relaxed * typography.fontSize.lg,
                                 minHeight: 160,
                             }}
                         />

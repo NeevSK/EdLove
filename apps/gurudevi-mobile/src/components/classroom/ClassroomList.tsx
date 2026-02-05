@@ -6,7 +6,7 @@
  * - Students: Shows classrooms they're enrolled in
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
     View,
     ScrollView,
@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { Box, Text, Heading, VStack, HStack } from '@gluestack-ui/themed';
 import { BookOpen, Users, ChevronRight } from 'lucide-react-native';
-import { Theme } from '../../constants/Theme';
+import { Theme, typography } from '../../constants/Theme';
 import { api, Classroom } from '../../lib/api';
 import { useUserRole } from '../../hooks/useUserRole';
 import { supabase } from '../../lib/supabase';
@@ -29,6 +29,92 @@ export default function ClassroomList({ onClassroomPress }: ClassroomListProps) 
     const { role } = useUserRole();
     const [classrooms, setClassrooms] = useState<Classroom[]>([]);
     const [loading, setLoading] = useState(true);
+    const styles = useMemo(() => StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: Theme.colors.voidIndigo,
+        },
+        contentContainer: {
+            padding: Theme.spacing.md,
+        },
+        centerContainer: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: Theme.spacing.lg,
+        },
+        loadingText: {
+            fontSize: Theme.typography.fontSize.md,
+            color: Theme.colors.sacredWhite,
+            marginTop: Theme.spacing.sm,
+        },
+        errorText: {
+            fontSize: Theme.typography.fontSize.md,
+            color: Theme.colors.emberRed,
+            textAlign: 'center',
+            marginBottom: Theme.spacing.md,
+        },
+        retryButton: {
+            backgroundColor: Theme.colors.sanctuarySaffron,
+            paddingVertical: Theme.spacing.sm,
+            paddingHorizontal: Theme.spacing.lg,
+            borderRadius: Theme.corners.comfortable,
+        },
+        retryButtonText: {
+            fontSize: Theme.typography.fontSize.md,
+            fontWeight: '600',
+            color: Theme.colors.white,
+        },
+        emptyIcon: {
+            marginBottom: Theme.spacing.md,
+        },
+        emptyTitle: {
+            fontSize: Theme.typography.h3.fontSize,
+            fontWeight: '600',
+            color: Theme.colors.sacredWhite,
+            marginBottom: Theme.spacing.sm,
+        },
+        emptyDescription: {
+            fontSize: Theme.typography.fontSize.md,
+            color: Theme.colors.mistGray,
+            textAlign: 'center',
+            paddingHorizontal: Theme.spacing.lg,
+        },
+        classroomCard: {
+            backgroundColor: Theme.colors.midnightBlue,
+            borderRadius: Theme.corners.generous,
+            padding: Theme.spacing.md,
+            shadowColor: Theme.colors.shadowDark,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+            elevation: 3,
+        },
+        cardContent: {
+            alignItems: 'center',
+        },
+        iconContainer: {
+            backgroundColor: Theme.colors.deepIndigo, // sapphireGlow not found, use deepIndigo or amberGlow?
+            // Actually, let's use a valid one.
+            borderRadius: Theme.corners.full,
+            padding: Theme.spacing.sm,
+        },
+        classroomName: {
+            fontSize: Theme.typography.fontSize.lg,
+            fontWeight: '600',
+            color: Theme.colors.sacredWhite,
+        },
+        classroomSubject: {
+            fontSize: Theme.typography.fontSize.sm,
+            color: Theme.colors.mistGray,
+            marginTop: Theme.spacing.xs,
+        },
+        classroomDescription: {
+            fontSize: Theme.typography.fontSize.xs,
+            color: Theme.colors.dimGray,
+            marginTop: Theme.spacing.xs,
+        },
+    }), []);
     const [error, setError] = useState<string | null>(null);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -176,94 +262,3 @@ export default function ClassroomList({ onClassroomPress }: ClassroomListProps) 
         </ScrollView>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Theme.colors.voidIndigo,
-    },
-    contentContainer: {
-        padding: Theme.spacing.lg,
-    },
-    heading: {
-        fontSize: Theme.typography.fontSize['2xl'],
-        fontWeight: Theme.typography.fontWeight.bold,
-        color: Theme.colors.sanctuarySaffron,
-        marginBottom: Theme.spacing.lg,
-    },
-    classroomCard: {
-        backgroundColor: Theme.colors.midnightBlue,
-        borderRadius: Theme.corners.comfortable,
-        padding: Theme.spacing.md,
-        ...Theme.shadows.md,
-    },
-    cardContent: {
-        alignItems: 'center',
-    },
-    iconContainer: {
-        width: 48,
-        height: 48,
-        borderRadius: Theme.corners.comfortable,
-        backgroundColor: Theme.colors.deepIndigo,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    classroomName: {
-        fontSize: Theme.typography.fontSize.lg,
-        fontWeight: Theme.typography.fontWeight.semibold,
-        color: Theme.colors.sacredWhite,
-    },
-    classroomSubject: {
-        fontSize: Theme.typography.fontSize.md,
-        color: Theme.colors.sanctuarySaffron,
-    },
-    classroomDescription: {
-        fontSize: Theme.typography.fontSize.sm,
-        color: Theme.colors.pearlGray,
-        lineHeight: 20,
-    },
-    centerContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: Theme.colors.voidIndigo,
-        padding: Theme.spacing.xl,
-    },
-    loadingText: {
-        marginTop: Theme.spacing.md,
-        fontSize: Theme.typography.fontSize.md,
-        color: Theme.colors.pearlGray,
-    },
-    errorText: {
-        fontSize: Theme.typography.fontSize.md,
-        color: Theme.colors.emberRed,
-        textAlign: 'center',
-        marginBottom: Theme.spacing.lg,
-    },
-    retryButton: {
-        backgroundColor: Theme.colors.sanctuarySaffron,
-        paddingHorizontal: Theme.spacing.lg,
-        paddingVertical: Theme.spacing.sm,
-        borderRadius: Theme.corners.comfortable,
-    },
-    retryButtonText: {
-        color: Theme.colors.sacredWhite,
-        fontSize: Theme.typography.fontSize.md,
-        fontWeight: Theme.typography.fontWeight.semibold,
-    },
-    emptyIcon: {
-        marginBottom: Theme.spacing.lg,
-    },
-    emptyTitle: {
-        fontSize: Theme.typography.fontSize.xl,
-        fontWeight: Theme.typography.fontWeight.semibold,
-        color: Theme.colors.sacredWhite,
-        marginBottom: Theme.spacing.sm,
-    },
-    emptyDescription: {
-        fontSize: Theme.typography.fontSize.md,
-        color: Theme.colors.pearlGray,
-        textAlign: 'center',
-        lineHeight: 24,
-    },
-});

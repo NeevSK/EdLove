@@ -23,6 +23,7 @@ export const colors = {
     // Warnings & Attention
     amberGlow: '#FFB84D',           // Gentle warnings
     emberRed: '#FF6347',            // Errors (gentle, not harsh)
+    skyBlue: '#87CEEB',             // Sky blue for video resources
 
     // Backgrounds - Light Mode
     creamSilence: '#FFF8E7',        // Primary light background

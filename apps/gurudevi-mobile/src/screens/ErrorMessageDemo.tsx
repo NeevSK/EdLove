@@ -7,7 +7,7 @@
 
 import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet, Text, TextStyle } from 'react-native';
-import ErrorMessage from '../components/ErrorMessage';
+import ErrorMessage from '../components/shared/ErrorMessage';
 import Theme from '../constants/Theme';
 
 export default function ErrorMessageDemo() {
@@ -19,7 +19,7 @@ export default function ErrorMessageDemo() {
         <ScrollView style={styles.container}>
             <View style={styles.section}>
                 <Text style={styles.title}>ErrorMessage Component Demo</Text>
-                
+
                 {/* Gentle Type */}
                 <Text style={styles.sectionTitle}>Gentle (Info)</Text>
                 {showGentle && (

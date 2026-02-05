@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { Theme } from '../constants/Theme';
 import { getGreetingKey } from '../utils/time';
 import { hapticLight } from '../utils/haptics';
-import DailyRhythm from '../components/DailyRhythm';
+import DailyRhythm from '../components/self/DailyRhythm';
 import { MoodLotus, ShadowAgentDrawer, FireJournal } from '../components/self';
 import { supabase } from '../lib/supabase';
 import GlobalHeader from '../components/shared/GlobalHeader';

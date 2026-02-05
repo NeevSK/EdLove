@@ -15,6 +15,7 @@
  * 
  * function MyForm() {
  *   const [category, setCategory] = useState('');
+    const styles = useMemo(() => StyleSheet.create({'');
  *   const options = [
  *     { label: 'Self', value: 'self' },
  *     { label: 'Classroom', value: 'classroom' },
@@ -32,7 +33,7 @@
  * ```
  */
 
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import {
     Select,
@@ -45,7 +46,7 @@ import {
     SelectItem,
 } from '@gluestack-ui/themed';
 import { ChevronDown } from 'lucide-react-native';
-import Theme from '../constants/Theme';
+import { Theme, typography } from '../../constants/Theme';
 
 // ============================================================================
 // TYPES
@@ -70,6 +71,52 @@ const LotusDropdown: FC<LotusDropdownProps> = ({
     onChange,
     error,
 }) => {
+    const styles = useMemo(() => StyleSheet.create({
+        container: {
+            marginBottom: Theme.spacing.md,
+        },
+        label: {
+            fontSize: Theme.typography.fontSize.md,
+            color: Theme.colors.sacredWhite,
+            marginBottom: Theme.spacing.xs,
+            fontWeight: '600',
+        },
+        trigger: {
+            backgroundColor: Theme.colors.midnightBlue,
+            borderRadius: Theme.corners.comfortable,
+            borderWidth: 1,
+            borderColor: Theme.colors.midnightBlue, // Default border
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            // height: 48, // Default height
+        },
+        triggerError: {
+            borderColor: Theme.colors.emberRed,
+        },
+        input: {
+            color: Theme.colors.sacredWhite,
+            flex: 1,
+        },
+        icon: {
+            marginRight: 8,
+        },
+        content: {
+            backgroundColor: Theme.colors.midnightBlue,
+            borderColor: Theme.colors.dimGray,
+            borderWidth: 1,
+            borderRadius: Theme.corners.comfortable,
+        },
+        item: {
+            // backgroundColor: Theme.colors.midnightBlue, // Can't easily style items in Gluestack sometimes, check args
+        },
+        errorText: {
+            fontSize: Theme.typography.fontSize.sm,
+            color: Theme.colors.emberRed,
+            marginTop: Theme.spacing.xs,
+        },
+    }), []);
+
     return (
         <View style={styles.container}>
             {/* Label */}
@@ -124,52 +171,5 @@ const LotusDropdown: FC<LotusDropdownProps> = ({
         </View>
     );
 };
-
-// ============================================================================
-// STYLES
-// ============================================================================
-
-const styles = StyleSheet.create({
-    container: {
-        marginBottom: Theme.spacing.md,
-    },
-    label: {
-        color: Theme.colors.sacredWhite,
-        fontSize: Theme.typography.fontSize.md,
-        fontWeight: Theme.typography.fontWeight.medium,
-        marginBottom: Theme.spacing.sm,
-    },
-    trigger: {
-        backgroundColor: Theme.colors.deepIndigo,
-        borderWidth: 2,
-        borderColor: Theme.colors.dimGray,
-        borderRadius: Theme.corners.comfortable,
-        padding: Theme.spacing.md,
-        minHeight: 50,
-    },
-    triggerError: {
-        borderColor: Theme.colors.emberRed,
-    },
-    input: {
-        color: Theme.colors.sacredWhite,
-        fontSize: Theme.typography.fontSize.md,
-    },
-    icon: {
-        marginRight: 0,
-    },
-    content: {
-        backgroundColor: Theme.colors.deepIndigo,
-        borderRadius: Theme.corners.comfortable,
-    },
-    item: {
-        backgroundColor: Theme.colors.deepIndigo,
-        color: Theme.colors.sacredWhite,
-    },
-    errorText: {
-        color: Theme.colors.emberRed,
-        fontSize: Theme.typography.fontSize.sm,
-        marginTop: Theme.spacing.xs,
-    },
-});
 
 export default LotusDropdown;
