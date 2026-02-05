@@ -8,43 +8,16 @@
  * - Consistent with theme system
  * 
  * Philosophy: Simple, reusable foundation for UI cards
- * 
- * @example
- * ```tsx
- * import SanctuaryCard from './components/SanctuaryCard';
- * 
- * // Simple card with children
- * <SanctuaryCard>
- *   <Text>Card content</Text>
- * </SanctuaryCard>
- * 
- * // Card with title and footer
- * <SanctuaryCard 
- *   title="Morning Reflection"
- *   footer={<Button>Continue</Button>}
- * >
- *   <Text>Your journey begins...</Text>
- * </SanctuaryCard>
- * 
- * // Pressable card with lift animation
- * <SanctuaryCard 
- *   onPress={() => navigate('Details')}
- *   elevated={true}
- * >
- *   <Text>Tap to explore</Text>
- * </SanctuaryCard>
- * ```
  */
 
-import React, { FC, ReactNode } from 'react';
+import React, { FC } from 'react';
 import { View, Pressable, Text, StyleSheet, TextStyle } from 'react-native';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
     withSpring,
 } from 'react-native-reanimated';
-import Theme from '../constants/Theme';
-import { VStack } from '@gluestack-ui/themed';
+import { Theme } from '../../constants/Theme';
 
 // ============================================================================
 // TYPES
