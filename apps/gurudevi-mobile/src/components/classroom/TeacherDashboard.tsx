@@ -27,6 +27,7 @@ export default function TeacherDashboard() {
     const { t } = useTranslation();
     const { teacherName } = useStore();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [stats, setStats] = useState({
         activeClasses: 0,
         totalStudents: 0
@@ -170,6 +171,7 @@ export default function TeacherDashboard() {
                         }}
                         onDataLoaded={handleClassroomsLoaded}
                         isNested={true}
+                        refreshTrigger={refreshTrigger}
                     />
                 </VStack>
             </ScrollView>
@@ -178,8 +180,7 @@ export default function TeacherDashboard() {
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
                 onSuccess={() => {
-                    // Refresh data happens via ClassroomList internal polling/refetch logic or we could trigger it here
-                    // For now, let's assume it refreshes gracefully
+                    setRefreshTrigger(prev => prev + 1);
                 }}
             />
         </VStack>

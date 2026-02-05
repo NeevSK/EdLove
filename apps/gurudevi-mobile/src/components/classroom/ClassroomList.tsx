@@ -26,18 +26,20 @@ interface ClassroomListProps {
     onClassroomPress?: (classroom: Classroom) => void;
     onDataLoaded?: (classrooms: Classroom[]) => void;
     isNested?: boolean;
+    refreshTrigger?: number;
 }
 
 export default function ClassroomList({
     onClassroomPress,
     onDataLoaded,
-    isNested = false
+    isNested = false,
+    refreshTrigger: externalRefreshTrigger = 0
 }: ClassroomListProps) {
     const { role } = useUserRole();
     const [classrooms, setClassrooms] = useState<Classroom[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [internalRefreshTrigger, setInternalRefreshTrigger] = useState(0);
 
     useEffect(() => {
         const fetchClassrooms = async () => {
@@ -72,10 +74,10 @@ export default function ClassroomList({
         };
 
         fetchClassrooms();
-    }, [role, refreshTrigger]);
+    }, [role, internalRefreshTrigger, externalRefreshTrigger]);
 
     const handleRetry = () => {
-        setRefreshTrigger(prev => prev + 1);
+        setInternalRefreshTrigger(prev => prev + 1);
     };
 
     const handleClassroomPress = (classroom: Classroom) => {
