@@ -1,26 +1,36 @@
-<div class="cinematic-bg fixed inset-0 w-full h-full -z-10 bg-deepIndigo overflow-hidden">
+---
+interface Props {
+  showVideo?: boolean;
+}
+
+const { showVideo = false } = Astro.props;
+---
+
+<div class="cinematic-bg fixed inset-0 w-full h-full -z-10 bg-[#FAF7F2] overflow-hidden">
     
-    <!-- Cinematic Overlay: Darkens video slightly so text is readable -->
-    <div class="absolute inset-0 bg-deepIndigo/30 z-10 mix-blend-multiply"></div>
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-deepIndigo/80 z-10"></div>
+    { !showVideo && (
+        <>
+            <div class="absolute inset-0 z-10 bg-white/10"></div>
+            <div class="absolute inset-0 z-10 bg-gradient-to-b from-transparent to-white/10"></div>
+        </>
+    )}
 
     <!-- The "Malick" Projector -->
     <!-- 
       INSTRUCTION: Drop your video file (e.g. 'tree-of-life.mp4') 
       into 'public/assets/' and rename it to 'nature-loop.mp4' 
     -->
-    <video
-        autoplay
-        loop
-        muted
-        playsinline
-        class="w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-100"
-    >
-        <source src="/assets/nature-loop.mp4" type="video/mp4" />
-        
-        <!-- Fallback: If no video is found, we show this Organic Gradient -->
-        <div class="absolute inset-0 bg-gradient-to-br from-[#4A6357] via-[#D4A574] to-[#2D3561]"></div>
-    </video>
+    {showVideo && (
+      <video
+          autoplay
+          loop
+          muted
+          playsinline
+          class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-50 z-0"
+      >
+          <source src="/assets/nature-loop.mp4" type="video/mp4" />
+      </video>
+    )}
 
     <!-- Fallback Gradient (Visible if video fails or keeps loading) -->
     <div class="-z-20 absolute inset-0 bg-gradient-to-br from-forestGreen/40 via-warmGold/20 to-deepIndigo"></div>
@@ -28,14 +38,5 @@
 </div>
 
 <script>
-  if (typeof window !== 'undefined') {
-    window.addEventListener('scroll', () => {
-      const scroll = window.pageYOffset;
-      const bg = document.querySelector('.cinematic-bg');
-      if (bg) {
-        // @ts-ignore
-        bg.style.transform = `translateY(${scroll * 0.3}px)`;
-      }
-    });
-  }
+  // Parallax removed to prevent "sliding" effect
 </script>

@@ -34,7 +34,7 @@ import {
     Upload,
     Edit
 } from 'lucide-react-native';
-import Theme from '../constants/Theme';
+import { Theme } from '../../constants/Theme';
 
 // ============================================================================
 // TYPES
@@ -49,8 +49,9 @@ export interface ActionItem {
 }
 
 interface LotusPetalFABProps {
-    currentTab: TabType;
+    currentTab?: TabType;
     onPress?: () => void;
+    icon?: React.ReactNode;
     actions?: ActionItem[];
     scrollY?: SharedValue<number>;
     disabled?: boolean;
@@ -94,15 +95,16 @@ const fabConfig: Record<TabType, { IconComponent: IconComponentType; label: stri
     }
 };
 
-const LOTUS_IMAGE = require('../../assets/images/lotus_bloom.png');
+const LOTUS_IMAGE = require('../../../assets/images/lotus_bloom.png');
 
 // ============================================================================
 // MAIN COMPONENT
 // ============================================================================
 
 const LotusPetalFAB: FC<LotusPetalFABProps> = ({
-    currentTab,
+    currentTab = 'self',
     onPress,
+    icon,
     actions,
     scrollY,
     disabled = false,
@@ -315,14 +317,12 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                     resizeMode="contain"
                 />
 
-                {/* Optional Icon Overlay - kept subtle or removed based on preference */}
-                {/* The requirement says "No generic icons on top", but we likely need context.
-                    Let's make the context subtle or perhaps just the lotus itself is enough?
-                    For now, I'll keep the icon VERY subtle and blended, or hide it if Art is clear enough.
-                    User said "No generic icons on top". So let's rely on context or a tiny badge?
-                    Actually, let's remove the center icon to respect "No generic icons on top".
-                    We can rely on the Action Menu for labels.
-                */}
+                {/* Optional Icon Overlay */}
+                {icon && (
+                    <View style={styles.iconOverlay}>
+                        {icon}
+                    </View>
+                )}
             </View>
 
             {/* Action Menu */}
@@ -380,6 +380,12 @@ const styles = StyleSheet.create({
         height: '100%',
         zIndex: 2,
         backgroundColor: 'transparent',
+    },
+    iconOverlay: {
+        position: 'absolute',
+        zIndex: 3,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     glow: {
         position: 'absolute',

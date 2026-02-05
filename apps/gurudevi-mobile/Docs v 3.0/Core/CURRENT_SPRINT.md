@@ -1,18 +1,21 @@
 # CURRENT SPRINT
 ## What's Happening Right Now
 
-04/02/2026
-here is what i think today. 
-1. workload sharing plan with multiple agents in antigravity vs github cloud agent
-2. assuming to do a task in github cloud agent, it will take 30 mins we can do more around let say 75 tasks. what exactly we gonna do from github agent 
-3. whether we have leverage using other agents in free version of such as replit or anything(whats out there to help me)
-4. plan for leveraging developer frind's github pro agent. given if we work same repo and even he use the agent it said it will billed by my own account so how we can make him to work in his own forked repo and use agent then push things without making things drift far or later merging comflits. 
-5. anyway to speed up leverage how we wrok based on your own assessment and observations
-6. app specific: 
-6.1 in gurudevi i think in profile section we need two main sections one is for user related things and second is app settings which can add all changes to app done by user
-6.2 need to complete what we have to do next
-6.3 in edlove, i think we need translation there too but i have seen browsers have own transalaters some use google translate etc. need to find optimal one
-6.4 guide me to how to see what we did recently
+05/02/2026
+1. i finished lot of things 04/02/2026
+2. now i m thinking about user roles, price tiers and gift codes(or qr codes) for users and may be potentially rewards mechanisms too. eventhough i have decided on feb 2 i feel we can add subtle non intrusive rewards system to encourage usersa and rewards are inherent human mechanism
+3.0 i need to implement library section and its kind of bespoke to my own vision eventhough teachers might not use it. in library there are several things to be implemented.
+3.1 first it has personal desk for teachers which they create in classroom section and keep in personal desk and i think teachers can get from public library and keep there too
+3.2 in public librarry notes, lesson plans, papers, other books, movies(inspirational - at least trailors), then real stories and photos videos, maps and visualizations, then government or education related circulars, news updates and other important documents
+3.3 teachers can share own things too
+3.4 then some likes or uptoves or most used or famous kind of docs and even here we can give teachers rewards for their contubutions etc
+3.5 then we can have a search bar to search for anything in library based on subjects, grades, interests etc
+
+4.0 in community, what matters to me is fix broken information loop than try to bypass existing chat apps.
+4.1 first one is announcements from principal or teachers then group or community can even react or polls. may be add some forms too
+4.2 anonymous posts, groups or voting or polls, forms etc
+4.3 then we can have a search bar to search for anything in community based on subjects, grades, interests etc
+4.4 then may be add images in first phase is enough and i think we can work based on user feedback
 
 
 ## Changed My Mind Recently

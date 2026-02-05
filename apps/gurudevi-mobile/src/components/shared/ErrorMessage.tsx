@@ -34,11 +34,11 @@
  * ```
  */
 
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { HStack } from '@gluestack-ui/themed';
 import { Info, AlertTriangle, AlertCircle, X } from 'lucide-react-native';
-import Theme from '../constants/Theme';
+import { Theme, typography } from '../../constants/Theme';
 
 // ============================================================================
 // TYPES
@@ -59,6 +59,25 @@ const ErrorMessage: FC<ErrorMessageProps> = ({
     type = 'gentle',
     onDismiss,
 }) => {
+    const styles = useMemo(() => StyleSheet.create({
+        container: {
+            padding: Theme.spacing.md,
+            borderRadius: Theme.corners.comfortable,
+            marginBottom: Theme.spacing.md,
+        },
+        hstack: {
+            alignItems: 'center',
+        },
+        message: {
+            flex: 1,
+            fontSize: typography.fontSize.md,
+            lineHeight: typography.lineHeight.relaxed * typography.fontSize.md,
+        },
+        dismissButton: {
+            padding: Theme.spacing.xs,
+        },
+    }), []);
+
     // ============================================================================
     // TYPE-SPECIFIC CONFIGURATION
     // ============================================================================
@@ -118,23 +137,10 @@ const ErrorMessage: FC<ErrorMessageProps> = ({
 // STYLES
 // ============================================================================
 
-const styles = StyleSheet.create({
-    container: {
-        padding: Theme.spacing.md,
-        borderRadius: Theme.corners.comfortable,
-        marginBottom: Theme.spacing.md,
-    },
-    hstack: {
-        alignItems: 'center',
-    },
-    message: {
-        flex: 1,
-        fontSize: Theme.typography.fontSize.md,
-        lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.md,
-    },
-    dismissButton: {
-        padding: Theme.spacing.xs,
-    },
-});
+// ============================================================================
+// STYLES
+// ============================================================================
+
+
 
 export default ErrorMessage;

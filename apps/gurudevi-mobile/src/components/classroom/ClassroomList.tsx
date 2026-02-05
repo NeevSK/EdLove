@@ -6,7 +6,7 @@
  * - Students: Shows classrooms they're enrolled in
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
     View,
     ScrollView,
@@ -17,6 +17,8 @@ import {
 import { Box, Text, Heading, VStack, HStack } from '@gluestack-ui/themed';
 import { BookOpen, Users, ChevronRight, ClipboardCheck } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
+import { BookOpen, Users, ChevronRight } from 'lucide-react-native';
+import { Theme, typography } from '../../constants/Theme';
 import { api, Classroom } from '../../lib/api';
 import { useUserRole } from '../../hooks/useUserRole';
 import { hapticLight } from '../../utils/haptics';
@@ -38,6 +40,92 @@ export default function ClassroomList({
     const { role } = useUserRole();
     const [classrooms, setClassrooms] = useState<Classroom[]>([]);
     const [loading, setLoading] = useState(true);
+    const styles = useMemo(() => StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: Theme.colors.voidIndigo,
+        },
+        contentContainer: {
+            padding: Theme.spacing.md,
+        },
+        centerContainer: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: Theme.spacing.lg,
+        },
+        loadingText: {
+            fontSize: Theme.typography.fontSize.md,
+            color: Theme.colors.sacredWhite,
+            marginTop: Theme.spacing.sm,
+        },
+        errorText: {
+            fontSize: Theme.typography.fontSize.md,
+            color: Theme.colors.emberRed,
+            textAlign: 'center',
+            marginBottom: Theme.spacing.md,
+        },
+        retryButton: {
+            backgroundColor: Theme.colors.sanctuarySaffron,
+            paddingVertical: Theme.spacing.sm,
+            paddingHorizontal: Theme.spacing.lg,
+            borderRadius: Theme.corners.comfortable,
+        },
+        retryButtonText: {
+            fontSize: Theme.typography.fontSize.md,
+            fontWeight: '600',
+            color: Theme.colors.white,
+        },
+        emptyIcon: {
+            marginBottom: Theme.spacing.md,
+        },
+        emptyTitle: {
+            fontSize: Theme.typography.h3.fontSize,
+            fontWeight: '600',
+            color: Theme.colors.sacredWhite,
+            marginBottom: Theme.spacing.sm,
+        },
+        emptyDescription: {
+            fontSize: Theme.typography.fontSize.md,
+            color: Theme.colors.mistGray,
+            textAlign: 'center',
+            paddingHorizontal: Theme.spacing.lg,
+        },
+        classroomCard: {
+            backgroundColor: Theme.colors.midnightBlue,
+            borderRadius: Theme.corners.generous,
+            padding: Theme.spacing.md,
+            shadowColor: Theme.colors.shadowDark,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+            elevation: 3,
+        },
+        cardContent: {
+            alignItems: 'center',
+        },
+        iconContainer: {
+            backgroundColor: Theme.colors.deepIndigo, // sapphireGlow not found, use deepIndigo or amberGlow?
+            // Actually, let's use a valid one.
+            borderRadius: Theme.corners.full,
+            padding: Theme.spacing.sm,
+        },
+        classroomName: {
+            fontSize: Theme.typography.fontSize.lg,
+            fontWeight: '600',
+            color: Theme.colors.sacredWhite,
+        },
+        classroomSubject: {
+            fontSize: Theme.typography.fontSize.sm,
+            color: Theme.colors.mistGray,
+            marginTop: Theme.spacing.xs,
+        },
+        classroomDescription: {
+            fontSize: Theme.typography.fontSize.xs,
+            color: Theme.colors.dimGray,
+            marginTop: Theme.spacing.xs,
+        },
+    }), []);
     const [error, setError] = useState<string | null>(null);
     const [internalRefreshTrigger, setInternalRefreshTrigger] = useState(0);
 
