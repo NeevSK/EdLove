@@ -1,0 +1,219 @@
+import React, { useState } from 'react';
+import {
+    Modal,
+    ModalBackdrop,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    Heading,
+    VStack,
+    HStack,
+    Box,
+    Text,
+    Input,
+    InputField,
+    Button,
+    ButtonText,
+    FormControl,
+    FormControlLabel,
+    FormControlLabelText,
+    Spinner,
+} from '@gluestack-ui/themed';
+import { Theme } from '../../constants/Theme';
+import { api } from '../../lib/api';
+import { supabase } from '../../lib/supabase';
+import { useTranslation } from 'react-i18next';
+import { hapticLight, hapticSuccess } from '../../utils/haptics';
+
+interface CreateClassroomModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSuccess: (newClass: any) => void;
+}
+
+export default function CreateClassroomModal({
+    isOpen,
+    onClose,
+    onSuccess,
+}: CreateClassroomModalProps) {
+    const { t } = useTranslation();
+    const [name, setName] = useState('');
+    const [subject, setSubject] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleSubmit = async () => {
+        if (!name.trim()) {
+            setError(t('classroom.errorNameRequired') || 'Class name is required');
+            return;
+        }
+
+        setIsSubmitting(true);
+        setError(null);
+        hapticLight();
+
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error('Not authenticated');
+
+            // Fetch user's school_id
+            const { data: userData, error: userError } = await supabase
+                .from('users')
+                .select('school_id')
+                .eq('id', user.id)
+                .single();
+
+            if (userError || !userData?.school_id) {
+                throw new Error('Failed to fetch school information');
+            }
+
+            const newClass = await api.classrooms.create({
+                name: name.trim(),
+                subject: subject.trim() || undefined,
+                school_id: userData.school_id as string,
+                teacher_id: user.id,
+                color_theme: 'blue', // Default theme
+            });
+
+            hapticSuccess();
+            onSuccess(newClass);
+            handleClose();
+        } catch (err: any) {
+            console.error('Failed to create classroom:', err);
+            setError(err.message || 'Failed to create classroom');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleClose = () => {
+        setName('');
+        setSubject('');
+        setError(null);
+        onClose();
+    };
+
+    return (
+        <Modal isOpen={isOpen} onClose={handleClose}>
+            <ModalBackdrop />
+            <ModalContent
+                sx={{
+                    backgroundColor: Theme.colors.midnightBlue,
+                    maxWidth: 400,
+                }}
+            >
+                <ModalHeader>
+                    <Heading color={Theme.colors.sacredWhite} size="lg">
+                        {t('classroom.createTitle') || 'Create New Class'}
+                    </Heading>
+                </ModalHeader>
+
+                <ModalBody>
+                    <VStack space="xl">
+                        {error && (
+                            <Box
+                                sx={{
+                                    padding: Theme.spacing.md,
+                                    backgroundColor: Theme.colors.emberRed + '30',
+                                    borderRadius: Theme.corners.comfortable,
+                                    borderWidth: 1,
+                                    borderColor: Theme.colors.emberRed,
+                                }}
+                            >
+                                <Text color={Theme.colors.emberRed} size="sm">
+                                    {error}
+                                </Text>
+                            </Box>
+                        )}
+
+                        <FormControl isRequired isInvalid={!!error}>
+                            <FormControlLabel>
+                                <FormControlLabelText color={Theme.colors.mistGray}>
+                                    {t('classroom.labelName') || 'Class Name'}
+                                </FormControlLabelText>
+                            </FormControlLabel>
+                            <Input
+                                variant="outline"
+                                size="md"
+                                sx={{
+                                    backgroundColor: Theme.colors.deepIndigo,
+                                    borderColor: Theme.colors.transparent,
+                                }}
+                            >
+                                <InputField
+                                    placeholder={t('classroom.placeholderName') || "e.g., Grade 10 Mathematics"}
+                                    value={name}
+                                    onChangeText={(text) => {
+                                        setName(text);
+                                        if (error) setError(null);
+                                    }}
+                                    color={Theme.colors.sacredWhite}
+                                    placeholderTextColor={Theme.colors.dimGray}
+                                />
+                            </Input>
+                        </FormControl>
+
+                        <FormControl>
+                            <FormControlLabel>
+                                <FormControlLabelText color={Theme.colors.mistGray}>
+                                    {t('classroom.labelSubject') || 'Subject (Optional)'}
+                                </FormControlLabelText>
+                            </FormControlLabel>
+                            <Input
+                                variant="outline"
+                                size="md"
+                                sx={{
+                                    backgroundColor: Theme.colors.deepIndigo,
+                                    borderColor: Theme.colors.transparent,
+                                }}
+                            >
+                                <InputField
+                                    placeholder={t('classroom.placeholderSubject') || "e.g., Mathematics"}
+                                    value={subject}
+                                    onChangeText={setSubject}
+                                    color={Theme.colors.sacredWhite}
+                                    placeholderTextColor={Theme.colors.dimGray}
+                                />
+                            </Input>
+                        </FormControl>
+                    </VStack>
+                </ModalBody>
+
+                <ModalFooter>
+                    <HStack space="md" sx={{ width: '100%' }}>
+                        <Button
+                            variant="outline"
+                            action="secondary"
+                            onPress={handleClose}
+                            sx={{ flex: 1, borderColor: Theme.colors.mistGray }}
+                            isDisabled={isSubmitting}
+                        >
+                            <ButtonText color={Theme.colors.mistGray}>
+                                {t('common.cancel') || 'Cancel'}
+                            </ButtonText>
+                        </Button>
+                        <Button
+                            action="primary"
+                            onPress={handleSubmit}
+                            sx={{
+                                flex: 1,
+                                backgroundColor: Theme.colors.sanctuarySaffron,
+                            }}
+                            isDisabled={isSubmitting || !name.trim()}
+                        >
+                            {isSubmitting ? (
+                                <Spinner color={Theme.colors.sacredWhite} size="small" />
+                            ) : (
+                                <ButtonText color={Theme.colors.sacredWhite}>
+                                    {t('common.create') || 'Create'}
+                                </ButtonText>
+                            )}
+                        </Button>
+                    </HStack>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
+    );
+}
+
