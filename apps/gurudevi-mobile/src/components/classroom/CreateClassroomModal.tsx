@@ -81,7 +81,8 @@ export default function CreateClassroomModal({
             handleClose();
         } catch (err: any) {
             console.error('Failed to create classroom:', err);
-            setError(err.message || 'Failed to create classroom');
+            const detailMsg = err.details?.message || err.details?.details || JSON.stringify(err.details);
+            setError(`${err.message}${err.code ? ` (${err.code})` : ''}${detailMsg ? `: ${detailMsg}` : ''}`);
         } finally {
             setIsSubmitting(false);
         }

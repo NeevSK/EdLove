@@ -14,7 +14,19 @@
         "loading": "Loading...",
         "error": "Error",
         "success": "Success",
-        "greeting": "Ayubowan, {{name}}!"
+        "greeting": "Ayubowan, {{name}}!",
+        "create": "Create"
+    },
+    "greeting": {
+        "ayubowan": "Ayubowan!"
+    },
+    "role": {
+        "teacher": "Teacher",
+        "student": "Student",
+        "principal": "Principal"
+    },
+    "school": {
+        "personal_workspace": "Personal Workspace"
     },
     "auth": {
         "login": "Login",

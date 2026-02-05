@@ -14,7 +14,19 @@
         "loading": "පූරණය වෙමින්...",
         "error": "දෝෂයකි",
         "success": "සාර්ථකයි",
-        "greeting": "ආයුබෝවන්, {{name}}!"
+        "greeting": "ආයුබෝවන්, {{name}}!",
+        "create": "සාදන්න"
+    },
+    "greeting": {
+        "ayubowan": "ආයුබෝවන්!"
+    },
+    "role": {
+        "teacher": "ගුරුවරයා",
+        "student": "ශිෂ්‍යයා",
+        "principal": "විදුහල්පතිවරයා"
+    },
+    "school": {
+        "personal_workspace": "පෞද්ගලික වැඩබිම"
     },
     "auth": {
         "login": "පිවිසෙන්න",
