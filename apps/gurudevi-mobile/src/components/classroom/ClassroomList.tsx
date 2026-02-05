@@ -16,8 +16,6 @@ import {
 } from 'react-native';
 import { Box, Text, Heading, VStack, HStack } from '@gluestack-ui/themed';
 import { BookOpen, Users, ChevronRight, ClipboardCheck } from 'lucide-react-native';
-import { Theme } from '../../constants/Theme';
-import { BookOpen, Users, ChevronRight } from 'lucide-react-native';
 import { Theme, typography } from '../../constants/Theme';
 import { api, Classroom } from '../../lib/api';
 import { useUserRole } from '../../hooks/useUserRole';
@@ -330,93 +328,4 @@ const richStyles = {
     }
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Theme.colors.voidIndigo,
-    },
-    contentContainer: {
-        padding: Theme.spacing.lg,
-    },
-    heading: {
-        fontSize: Theme.typography.fontSize['2xl'],
-        fontWeight: Theme.typography.fontWeight.bold,
-        color: Theme.colors.sanctuarySaffron,
-        marginBottom: Theme.spacing.lg,
-    },
-    classroomCard: {
-        backgroundColor: Theme.colors.midnightBlue,
-        borderRadius: Theme.corners.comfortable,
-        padding: Theme.spacing.md,
-        ...Theme.shadows.md,
-    },
-    cardContent: {
-        alignItems: 'center',
-    },
-    iconContainer: {
-        width: 48,
-        height: 48,
-        borderRadius: Theme.corners.comfortable,
-        backgroundColor: Theme.colors.deepIndigo,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    classroomName: {
-        fontSize: Theme.typography.fontSize.lg,
-        fontWeight: Theme.typography.fontWeight.semibold,
-        color: Theme.colors.sacredWhite,
-    },
-    classroomSubject: {
-        fontSize: Theme.typography.fontSize.md,
-        color: Theme.colors.sanctuarySaffron,
-    },
-    classroomDescription: {
-        fontSize: Theme.typography.fontSize.sm,
-        color: Theme.colors.pearlGray,
-        lineHeight: 20,
-    },
-    centerContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: Theme.colors.voidIndigo,
-        padding: Theme.spacing.xl,
-    },
-    loadingText: {
-        marginTop: Theme.spacing.md,
-        fontSize: Theme.typography.fontSize.md,
-        color: Theme.colors.pearlGray,
-    },
-    errorText: {
-        fontSize: Theme.typography.fontSize.md,
-        color: Theme.colors.emberRed,
-        textAlign: 'center',
-        marginBottom: Theme.spacing.lg,
-    },
-    retryButton: {
-        backgroundColor: Theme.colors.sanctuarySaffron,
-        paddingHorizontal: Theme.spacing.lg,
-        paddingVertical: Theme.spacing.sm,
-        borderRadius: Theme.corners.comfortable,
-    },
-    retryButtonText: {
-        color: Theme.colors.sacredWhite,
-        fontSize: Theme.typography.fontSize.md,
-        fontWeight: Theme.typography.fontWeight.semibold,
-    },
-    emptyIcon: {
-        marginBottom: Theme.spacing.lg,
-    },
-    emptyTitle: {
-        fontSize: Theme.typography.fontSize.xl,
-        fontWeight: Theme.typography.fontWeight.semibold,
-        color: Theme.colors.sacredWhite,
-        marginBottom: Theme.spacing.sm,
-    },
-    emptyDescription: {
-        fontSize: Theme.typography.fontSize.md,
-        color: Theme.colors.pearlGray,
-        textAlign: 'center',
-        lineHeight: 24,
-    },
-});
+
