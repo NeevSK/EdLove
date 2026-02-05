@@ -9,37 +9,28 @@ const links = [
 ];
 ---
 
-<nav class="fixed top-0 w-full z-50 bg-softWhite/90 backdrop-blur-sm border-b border-deepIndigo/10">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between h-16 items-center">
-      <!-- Logo Mark (Home) -->
-      <div class="flex-shrink-0 flex items-center">
-        <a 
-          href="/" 
-          class="font-display font-bold text-xl text-deepIndigo tracking-widest hover:text-warmGold transition-all duration-300 hover:scale-105"
-          title="Return to Paradigm Cosmos (Home)"
-        >
-          EDLOVE.ORG
-        </a>
-      </div>
+<nav class="absolute top-0 left-0 right-0 z-[100] px-6 py-4">
+  <div class="max-w-7xl mx-auto px-6 py-3 rounded-2xl bg-white/60 backdrop-blur-md border border-[#2D3561]/20 flex items-center justify-between shadow-sm">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2 group">
+          <span class="text-2xl filter drop-shadow-sm group-hover:scale-110 transition-transform">🕊️</span>
+          <span class="font-serif text-xl font-bold tracking-tight text-[#2D3561]">EdLove</span>
+      </a>
 
-      <!-- Desktop Menu -->
-      <div class="hidden md:flex space-x-8">
-        {links.map((link) => (
-          <a 
-            href={link.href} 
-            class={`font-sans text-sm font-medium text-deepIndigo/80 transition-colors duration-300 ${link.color}`}
-          >
-            {link.name}
-          </a>
-        ))}
+      <!-- Desktop Links -->
+      <div class="hidden md:flex items-center gap-8">
+          <a href="/cosmos" class="font-sans text-xs uppercase tracking-widest text-[#2D3561]/60 hover:text-[#D4A574] transition-colors">Cosmos</a>
+          <a href="/gurudevi" class="font-sans text-xs uppercase tracking-widest text-[#2D3561]/60 hover:text-[#D4A574] transition-colors">Gurudevi</a>
+          <a href="/library" class="font-sans text-xs uppercase tracking-widest text-[#2D3561]/60 hover:text-[#D4A574] transition-colors">Library</a>
+          <a href="/community" class="font-sans text-xs uppercase tracking-widest text-[#2D3561]/60 hover:text-[#D4A574] transition-colors">Sangha</a>
+          <a href="/resources" class="font-sans text-xs uppercase tracking-widest text-[#2D3561]/60 hover:text-[#D4A574] transition-colors">Resources</a>
       </div>
 
       <!-- Mobile Menu Button -->
       <div class="md:hidden">
         <button 
           id="mobile-menu-button"
-          class="text-deepIndigo hover:text-warmGold transition-colors"
+          class="text-[#2D3561] hover:text-[#D4A574] transition-colors"
           aria-label="Toggle mobile menu"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

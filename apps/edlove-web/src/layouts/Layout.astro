@@ -1,3 +1,11 @@
+---
+import Footer from '../components/Footer.astro';
+import Navigation from '../components/Navigation.astro';
+import SidePanel from '../components/SidePanel.astro';
+import CenterModal from '../components/CenterModal.astro';
+import '../styles/global.css';
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
@@ -14,11 +22,14 @@
 		
 		<title>EdLove | The Educational Transformation Ecosystem</title>
 	</head>
-	<body class="antialiased">
-		<slot />
+	<!-- UPDATED BACKGROUND: Warm, Living Canvas (Sand/Paper tone) to remove darkness -->
+	<body class="antialiased min-h-screen flex flex-col bg-transparent text-[#2D3561]">
+		<Navigation />
+        <SidePanel />
+        <CenterModal />
+		<main class="flex-grow">
+			<slot />
+		</main>
+		<Footer />
 	</body>
 </html>
-
-<script>
-  import '../styles/global.css';
-</script>

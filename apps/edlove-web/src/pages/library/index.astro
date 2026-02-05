@@ -1,77 +1,68 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Navigation from '../../components/Navigation.astro';
-import { Theme } from '@/constants/Theme';
+import CinematicBackground from '../../components/CinematicBackground.astro';
+import ExpandableContent from '../../components/ExpandableContent.astro';
 ---
 
-<Layout>
-  <Navigation />
-  
-  <main class="min-h-screen pt-24 pb-16">
-    <div class="max-w-6xl mx-auto px-6">
-      
-      <div class="text-center mb-16">
-        <h1 class="font-heading text-5xl md:text-7xl mb-6" style={`color: ${Theme.colors.cosmicPurple}`}>
-          Epistemic Core
-        </h1>
-        <p class="font-body text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.8`}>
-          Deep theory. Academic rigor. The philosophical foundations.
-        </p>
-      </div>
+<Layout title="The Library | EdLove">
+    <CinematicBackground />
 
-      <div class="prose prose-lg max-w-4xl mx-auto mb-16">
-        <p class="font-body text-lg leading-relaxed" style={`color: ${Theme.colors.deepIndigo}`}>
-          For those who want to go deeper. Essays, research papers, philosophical frameworks, theoretical perspectives on education.
+    <section class="relative z-10 min-h-screen flex flex-col justify-center items-center text-center px-6 pt-24 pb-12">
+        <h1 class="font-cinzel text-warmGold text-xl md:text-2xl tracking-[0.2em] uppercase mb-4">Domain VI</h1>
+        <h2 class="font-serif text-5xl md:text-7xl text-[#2D3561] mb-6">The Epistemic Core</h2>
+        
+        <p class="font-sans text-lg md:text-xl text-[#2D3561]/80 max-w-3xl mx-auto leading-relaxed mb-12">
+            This is the space for wondering. We explore the <strong>what, why, and how</strong> of education—and the temporal dimensions of these questions. 
+            From philosophy to neuroscience, from ancient history to the future of cognition.
         </p>
-        <p class="font-body text-lg leading-relaxed" style={`color: ${Theme.colors.deepIndigo}`}>
-          This is where we think hard. Where we question assumptions. Where we build the intellectual scaffolding.
-        </p>
-      </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-        <div class="text-center p-8 rounded-lg" style={`background: ${Theme.colors.starlightSilver}`}>
-          <div class="text-4xl mb-4">📚</div>
-          <h3 class="font-heading text-xl mb-3" style={`color: ${Theme.colors.deepIndigo}`}>
-            Core Texts
-          </h3>
-          <p class="font-body text-sm" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
-            Essential readings in educational philosophy
-          </p>
+        <div class="w-full max-w-4xl mx-auto mb-12 transform hover:scale-[1.01] transition-all duration-500 cursor-pointer shadow-[0_0_30px_rgba(212,165,116,0.1)]">
+            <div class="bg-gradient-to-r from-warmGold/20 via-dawnRose/20 to-cosmicPurple/20 border border-[#D4A574]/30 rounded-xl p-8 flex flex-col md:flex-row items-center gap-8 text-left backdrop-blur-md">
+                <div class="text-6xl animate-pulse">⚡</div>
+                <div>
+                    <span class="font-sans text-xs text-[#D4A574] uppercase tracking-widest font-bold">Featured Innovation</span>
+                    <h3 class="font-serif text-3xl md:text-4xl text-[#2D3561] mb-2">Teaning</h3>
+                    <p class="font-sans text-[#2D3561]/80 leading-relaxed">
+                        The Relational Framework for Understanding Educational Transformation. <br/>
+                        Matching impedance between teacher and student.
+                    </p>
+                </div>
+            </div>
         </div>
 
-        <div class="text-center p-8 rounded-lg" style={`background: ${Theme.colors.starlightSilver}`}>
-          <div class="text-4xl mb-4">✍️</div>
-          <h3 class="font-heading text-xl mb-3" style={`color: ${Theme.colors.deepIndigo}`}>
-            Essays
-          </h3>
-          <p class="font-body text-sm" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
-            Original thinking on educational transformation
-          </p>
+        <div class="w-full max-w-4xl mx-auto space-y-4 text-left">
+            <ExpandableContent title="Thinkers" subtitle="The Giants" icon="🧠" mode="panel">
+                <p class="text-xl font-serif text-[#D4A574] mb-4">"We climb on the shoulders of giants to see further."</p>
+                <p>Education has been debated for millennia. Here we profile the visionaries who dared to rethink the transmission of culture.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                    <div>
+                        <strong class="text-[#2D3561]">Maria Montessori</strong>
+                        <p class="text-sm text-[#2D3561]/70">The scientist of childhood. Discovered that freedom within limits leads to discipline.</p>
+                    </div>
+                    <div>
+                        <strong class="text-[#2D3561]">Paulo Freire</strong>
+                        <p class="text-sm text-[#2D3561]/70">The liberator. Taught us that education is either domestication or the practice of freedom.</p>
+                    </div>
+                     <div>
+                        <strong class="text-[#2D3561]">J. Krishnamurti</strong>
+                        <p class="text-sm text-[#2D3561]/70">The seer. Asked us to look at the conditioning of our own minds before we teach others.</p>
+                    </div>
+                </div>
+            </ExpandableContent>
+            
+            <ExpandableContent title="Frameworks" subtitle="Mental Models" icon="📐" mode="panel">
+                <p class="text-xl font-serif text-[#D4A574] mb-4">"Maps of Meaning."</p>
+                <p>We use rigorous intellectual tools to understand the complexity of schools, brains, and societies. This is not just opinion; it is structural analysis.</p>
+                <ul class="list-disc pl-5 mt-4 text-[#2D3561]/70 space-y-2">
+                    <li><strong>Integral Theory (Ken Wilber):</strong> Mapping the subjective, objective, cultural, and systemic dimensions of learning.</li>
+                    <li><strong>Spiral Dynamics:</strong> Understanding the evolution of value systems in students and institutions.</li>
+                    <li><strong>Systems Thinking:</strong> Seeing the feedback loops, delays, and leverage points in the education sector.</li>
+                </ul>
+            </ExpandableContent>
+
+            <ExpandableContent title="Stories" subtitle="Narratives of Change" icon="📖" mode="panel">
+                <p>History is written by the victors, but the future is written by the experimenters. Case studies of schools that broke the mold.</p>
+            </ExpandableContent>
         </div>
-
-        <div class="text-center p-8 rounded-lg" style={`background: ${Theme.colors.starlightSilver}`}>
-          <div class="text-4xl mb-4">🔬</div>
-          <h3 class="font-heading text-xl mb-3" style={`color: ${Theme.colors.deepIndigo}`}>
-            Research
-          </h3>
-          <p class="font-body text-sm" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
-            Evidence-based insights and studies
-          </p>
-        </div>
-      </div>
-
-      <div class="text-center p-12 rounded-lg" style={`background: ${Theme.colors.starlightSilver}`}>
-        <h2 class="font-heading text-3xl mb-4" style={`color: ${Theme.colors.deepIndigo}`}>
-          Coming Soon
-        </h2>
-        <p class="font-body mb-6" style={`color: ${Theme.colors.deepIndigo}; opacity: 0.7`}>
-          The library is being curated. Have recommendations? We'd love to hear them.
-        </p>
-        <a href="/community" class="inline-block px-8 py-3 rounded-sm font-body font-medium hover:opacity-80 transition-opacity" style={`background: ${Theme.colors.cosmicPurple}; color: ${Theme.colors.softWhite}`}>
-          Suggest a Text →
-        </a>
-      </div>
-
-    </div>
-  </main>
+    </section>
 </Layout>

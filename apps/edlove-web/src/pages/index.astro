@@ -1,17 +1,15 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Navigation from '../components/Navigation.astro';
 import CinematicBackground from '../components/CinematicBackground.astro';
 import FloatingParticles from '../components/FloatingParticles.astro';
 ---
 
 <Layout>
-  <Navigation />
   
   <main class="min-h-screen relative overflow-hidden flex flex-col items-center">
     
     <!-- Level 3: The Cinematic Engine (Realism) -->
-    <CinematicBackground />
+    <CinematicBackground showVideo={true} />
     <FloatingParticles />
 
     <!-- Hero Content -->
@@ -21,14 +19,14 @@ import FloatingParticles from '../components/FloatingParticles.astro';
       
 
       <!-- Main Headline -->
-      <h1 class="text-5xl md:text-8xl font-serif text-starlightSilver leading-tight md:leading-[1.1] animate-fade-in opacity-0 drop-shadow-2xl" style="animation-delay: 0.2s;">
+      <h1 class="text-6xl md:text-9xl font-serif text-[#2D3561] leading-tight md:leading-[1.1] animate-fade-in opacity-0" style="animation-delay: 0.2s;">
         The Educational <br/>
         Paradigm <br/>
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-warmGold via-dawnRose to-cosmicPurple drop-shadow-[0_0_20px_rgba(255,215,0,0.6)] animate-pulse">Cosmos</span>
+        <span class="text-[#D4A574] tracking-widest">Cosmos</span>
       </h1>
       
       <!-- Subheadline -->
-      <p class="text-xl md:text-2xl font-sans text-skyBlue/80 max-w-3xl mx-auto leading-relaxed animate-fade-in opacity-0 font-light" style="animation-delay: 0.4s;">
+      <p class="text-xl md:text-2xl font-sans text-[#2D3561]/80 max-w-3xl mx-auto leading-relaxed animate-fade-in opacity-0 font-light mt-8" style="animation-delay: 0.4s;">
         What if the school you know is just one star<br/>in an infinite sky of possibilities?
       </p>
 
@@ -36,7 +34,7 @@ import FloatingParticles from '../components/FloatingParticles.astro';
       <div class="animate-fade-in opacity-0" style="animation-delay: 0.6s;">
         <a 
           href="/sri-lanka" 
-          class="group relative inline-flex items-center gap-3 px-12 py-5 border-2 border-warmGold/40 bg-gradient-to-r from-warmGold/10 to-dawnRose/10 backdrop-blur-xl text-warmGold font-display tracking-widest hover:border-warmGold hover:shadow-[0_0_30px_rgba(255,200,87,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 rounded-sm overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-warmGold/20 before:to-dawnRose/20 before:translate-x-[-100%] before:transition-transform before:duration-500 hover:before:translate-x-0"
+          class="group relative inline-flex items-center gap-3 px-12 py-5 border-2 border-[#D4A574]/40 bg-white/40 backdrop-blur-xl text-[#2D3561] font-display tracking-widest hover:border-[#D4A574] hover:shadow-[0_0_30px_rgba(212,165,116,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 rounded-sm overflow-hidden"
         >
           <span class="relative z-10">EXPLORE THE CURRENT SYSTEM</span>
           <span class="relative z-10 group-hover:translate-x-2 transition-transform duration-300">→</span>
@@ -46,7 +44,7 @@ import FloatingParticles from '../components/FloatingParticles.astro';
 
     <!-- Scroll Indicator -->
     <div class="absolute bottom-10 animate-float opacity-50">
-      <svg class="w-6 h-6 text-deepIndigo" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+      <svg class="w-6 h-6 text-[#D4A574]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
     </div>
 
   </main>
