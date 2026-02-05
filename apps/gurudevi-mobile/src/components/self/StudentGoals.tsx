@@ -125,7 +125,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                 sx={{
                     padding: Theme.spacing.lg,
                     backgroundColor: Theme.colors.deepIndigo,
-                    borderRadius: Theme.corners.medium,
+                    borderRadius: Theme.corners.comfortable,
                     borderLeftWidth: 4,
                     borderLeftColor: Theme.colors.dawnGold,
                 }}
@@ -206,7 +206,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                         sx={{
                             padding: Theme.spacing.md,
                             backgroundColor: Theme.colors.deepIndigo,
-                            borderRadius: Theme.corners.medium,
+                            borderRadius: Theme.corners.comfortable,
                         }}
                     >
                         <VStack space="md">
@@ -249,7 +249,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                         sx={{
                             padding: Theme.spacing.md,
                             backgroundColor: Theme.colors.deepIndigo,
-                            borderRadius: Theme.corners.medium,
+                            borderRadius: Theme.corners.comfortable,
                         }}
                     >
                         <VStack space="md">
@@ -312,7 +312,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                                             sx={{
                                                 padding: Theme.spacing.sm,
                                                 backgroundColor: Theme.colors.voidIndigo,
-                                                borderRadius: Theme.corners.small,
+                                                borderRadius: Theme.corners.tight,
                                             }}
                                         >
                                             <Text color={Theme.colors.mistGray}>➖</Text>
@@ -328,7 +328,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                                             sx={{
                                                 padding: Theme.spacing.sm,
                                                 backgroundColor: Theme.colors.sanctuarySaffron,
-                                                borderRadius: Theme.corners.small,
+                                                borderRadius: Theme.corners.tight,
                                             }}
                                         >
                                             <Text color={Theme.colors.sacredWhite}>➕</Text>

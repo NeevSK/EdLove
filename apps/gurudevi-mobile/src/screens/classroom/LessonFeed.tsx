@@ -152,7 +152,7 @@ export default function LessonFeed({
                             sx={{
                                 padding: Theme.spacing.md,
                                 backgroundColor: Theme.colors.emberRed,
-                                borderRadius: Theme.corners.medium,
+                                borderRadius: Theme.corners.comfortable,
                             }}
                         >
                             <Text color={Theme.colors.sacredWhite}>{error}</Text>
@@ -168,14 +168,14 @@ export default function LessonFeed({
                                     sx={{
                                         padding: Theme.spacing.md,
                                         backgroundColor: Theme.colors.deepIndigo,
-                                        borderRadius: Theme.corners.medium,
+                                        borderRadius: Theme.corners.comfortable,
                                         borderLeftWidth: 4,
                                         borderLeftColor:
                                             item.type === 'lesson'
                                                 ? Theme.colors.sanctuarySaffron
                                                 : isAssignmentLate(item)
-                                                ? Theme.colors.emberRed
-                                                : Theme.colors.sageGreen,
+                                                    ? Theme.colors.emberRed
+                                                    : Theme.colors.sageGreen,
                                     }}
                                 >
                                     <VStack space="sm">
@@ -194,7 +194,7 @@ export default function LessonFeed({
                                                         item.type === 'lesson'
                                                             ? Theme.colors.sanctuarySaffron
                                                             : Theme.colors.sageGreen,
-                                                    borderRadius: Theme.corners.small,
+                                                    borderRadius: Theme.corners.tight,
                                                 }}
                                             >
                                                 <Text
@@ -204,10 +204,10 @@ export default function LessonFeed({
                                                 >
                                                     {item.type === 'lesson'
                                                         ? '📚 ' +
-                                                          (t('lessonFeed.lesson') || 'LESSON')
+                                                        (t('lessonFeed.lesson') || 'LESSON')
                                                         : '📝 ' +
-                                                          (t('lessonFeed.assignment') ||
-                                                              'ASSIGNMENT')}
+                                                        (t('lessonFeed.assignment') ||
+                                                            'ASSIGNMENT')}
                                                 </Text>
                                             </Box>
 
@@ -273,8 +273,8 @@ export default function LessonFeed({
                                                     item.type === 'lesson'
                                                         ? Theme.colors.sanctuarySaffron
                                                         : isAssignmentLate(item)
-                                                        ? Theme.colors.emberRed
-                                                        : Theme.colors.sageGreen,
+                                                            ? Theme.colors.emberRed
+                                                            : Theme.colors.sageGreen,
                                                 marginTop: Theme.spacing.sm,
                                             }}
                                             onPress={() => {

@@ -57,7 +57,7 @@ export default function SubmissionModal({
             Alert.alert(
                 t('submission.photoPlaceholder') || 'Photo Feature',
                 t('submission.photoPlaceholderDesc') ||
-                    'Image picker would be implemented here using expo-image-picker'
+                'Image picker would be implemented here using expo-image-picker'
             );
 
             // Example implementation (commented out):
@@ -92,7 +92,7 @@ export default function SubmissionModal({
             Alert.alert(
                 t('submission.emptyWarning') || 'Empty Submission',
                 t('submission.emptyWarningDesc') ||
-                    'Please add some content or attach a photo before submitting.'
+                'Please add some content or attach a photo before submitting.'
             );
             return;
         }
@@ -125,7 +125,7 @@ export default function SubmissionModal({
             Alert.alert(
                 t('submission.cancelWarning') || 'Discard Changes?',
                 t('submission.cancelWarningDesc') ||
-                    'Your work will be lost. Are you sure?',
+                'Your work will be lost. Are you sure?',
                 [
                     {
                         text: t('common.cancel') || 'Cancel',
@@ -150,7 +150,7 @@ export default function SubmissionModal({
     // Success animation view
     if (showSuccess) {
         return (
-            <Modal isOpen={isOpen} onClose={() => {}}>
+            <Modal isOpen={isOpen} onClose={() => { }}>
                 <ModalBackdrop />
                 <ModalContent
                     sx={{
@@ -225,7 +225,7 @@ export default function SubmissionModal({
                         sx={{
                             padding: Theme.spacing.md,
                             backgroundColor: Theme.colors.deepIndigo,
-                            borderRadius: Theme.corners.medium,
+                            borderRadius: Theme.corners.comfortable,
                         }}
                     >
                         <Text color={Theme.colors.mistGray} size="sm">
@@ -281,7 +281,7 @@ export default function SubmissionModal({
                                     style={{
                                         width: '100%',
                                         height: 200,
-                                        borderRadius: Theme.corners.medium,
+                                        borderRadius: Theme.corners.comfortable,
                                     }}
                                     resizeMode="cover"
                                 />

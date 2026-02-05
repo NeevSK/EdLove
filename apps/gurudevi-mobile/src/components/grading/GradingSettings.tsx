@@ -59,8 +59,8 @@ export default function GradingSettings({
                 flex: 1,
                 backgroundColor: Theme.colors.voidIndigo,
                 padding: Theme.spacing.lg,
-                borderTopLeftRadius: Theme.corners.large,
-                borderTopRightRadius: Theme.corners.large,
+                borderTopLeftRadius: Theme.corners.generous,
+                borderTopRightRadius: Theme.corners.generous,
             }}
         >
             <VStack space="lg">
@@ -94,7 +94,7 @@ export default function GradingSettings({
                                 sx={{
                                     padding: Theme.spacing.md,
                                     backgroundColor: Theme.colors.deepIndigo,
-                                    borderRadius: Theme.corners.medium,
+                                    borderRadius: Theme.corners.comfortable,
                                 }}
                             >
                                 <Radio value="marks">
@@ -126,7 +126,7 @@ export default function GradingSettings({
                                 sx={{
                                     padding: Theme.spacing.md,
                                     backgroundColor: Theme.colors.deepIndigo,
-                                    borderRadius: Theme.corners.medium,
+                                    borderRadius: Theme.corners.comfortable,
                                 }}
                             >
                                 <Radio value="gpa">
@@ -158,7 +158,7 @@ export default function GradingSettings({
                                 sx={{
                                     padding: Theme.spacing.md,
                                     backgroundColor: Theme.colors.deepIndigo,
-                                    borderRadius: Theme.corners.medium,
+                                    borderRadius: Theme.corners.comfortable,
                                 }}
                             >
                                 <Radio value="both">
@@ -193,7 +193,7 @@ export default function GradingSettings({
                     sx={{
                         padding: Theme.spacing.md,
                         backgroundColor: Theme.colors.deepIndigo,
-                        borderRadius: Theme.corners.medium,
+                        borderRadius: Theme.corners.comfortable,
                         justifyContent: 'space-between',
                         alignItems: 'center',
                     }}

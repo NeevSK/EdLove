@@ -183,7 +183,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                             sx={{
                                 padding: Theme.spacing.md,
                                 backgroundColor: Theme.colors.emberRed,
-                                borderRadius: Theme.corners.medium,
+                                borderRadius: Theme.corners.comfortable,
                             }}
                         >
                             <Text color={Theme.colors.sacredWhite}>{error}</Text>
@@ -197,7 +197,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                             sx={{
                                 padding: Theme.spacing.md,
                                 backgroundColor: Theme.colors.deepIndigo,
-                                borderRadius: Theme.corners.medium,
+                                borderRadius: Theme.corners.comfortable,
                                 borderLeftWidth: 4,
                                 borderLeftColor: Theme.colors.sanctuarySaffron,
                             }}
@@ -242,7 +242,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                                             sx={{
                                                 padding: Theme.spacing.sm,
                                                 backgroundColor: Theme.colors.midnightBlue,
-                                                borderRadius: Theme.corners.small,
+                                                borderRadius: Theme.corners.tight,
                                             }}
                                         >
                                             <Text color={Theme.colors.pearlGray}>└─</Text>

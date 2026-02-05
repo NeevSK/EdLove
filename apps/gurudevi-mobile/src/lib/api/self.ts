@@ -101,7 +101,7 @@ export const selfAPI = {
     async getBurnedHistory(userId: string, limit: number = 10): Promise<FireJournalEntry[]> {
         const { data, error } = await supabase
             .from('fire_journal')
-            .select('id, content_preview, created_at')
+            .select('id, user_id, content_preview, is_burned, created_at')
             .eq('user_id', userId)
             .eq('is_burned', true)
             .order('created_at', { ascending: false })
@@ -120,7 +120,7 @@ export const selfAPI = {
     async getTodayMood(userId: string): Promise<MoodLog | null> {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        
+
         const { data, error } = await supabase
             .from('mood_logs')
             .select('*')

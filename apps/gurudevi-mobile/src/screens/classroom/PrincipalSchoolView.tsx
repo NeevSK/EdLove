@@ -126,7 +126,7 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                             sx={{
                                 padding: Theme.spacing.md,
                                 backgroundColor: Theme.colors.emberRed,
-                                borderRadius: Theme.corners.medium,
+                                borderRadius: Theme.corners.comfortable,
                             }}
                         >
                             <Text color={Theme.colors.sacredWhite}>{error}</Text>
@@ -144,7 +144,7 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                                         flex: 1,
                                         padding: Theme.spacing.lg,
                                         backgroundColor: Theme.colors.deepIndigo,
-                                        borderRadius: Theme.corners.medium,
+                                        borderRadius: Theme.corners.comfortable,
                                         borderLeftWidth: 4,
                                         borderLeftColor: Theme.colors.sanctuarySaffron,
                                     }}
@@ -167,7 +167,7 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                                         flex: 1,
                                         padding: Theme.spacing.lg,
                                         backgroundColor: Theme.colors.deepIndigo,
-                                        borderRadius: Theme.corners.medium,
+                                        borderRadius: Theme.corners.comfortable,
                                         borderLeftWidth: 4,
                                         borderLeftColor: Theme.colors.sageGreen,
                                     }}
@@ -193,7 +193,7 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                                         flex: 1,
                                         padding: Theme.spacing.lg,
                                         backgroundColor: Theme.colors.deepIndigo,
-                                        borderRadius: Theme.corners.medium,
+                                        borderRadius: Theme.corners.comfortable,
                                         borderLeftWidth: 4,
                                         borderLeftColor: Theme.colors.twilightPurple,
                                     }}
@@ -216,7 +216,7 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                                         flex: 1,
                                         padding: Theme.spacing.lg,
                                         backgroundColor: Theme.colors.deepIndigo,
-                                        borderRadius: Theme.corners.medium,
+                                        borderRadius: Theme.corners.comfortable,
                                         borderLeftWidth: 4,
                                         borderLeftColor: Theme.colors.amberGlow,
                                     }}

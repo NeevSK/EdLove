@@ -58,7 +58,7 @@ export const classroomsAPI = {
 
         // Extract the classroom objects from the join result with proper typing
         return (data || [])
-            .map((item: ClassroomStudentJoin) => item.classroom)
+            .map((item: any) => item.classroom)
             .filter((classroom): classroom is Classroom => classroom !== null);
     },
 

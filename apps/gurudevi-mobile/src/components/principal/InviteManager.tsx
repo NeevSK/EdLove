@@ -166,7 +166,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                                 {isGenerating
                                     ? t('common.generating') || 'Generating...'
                                     : t('principal.invites.generateTeacher') ||
-                                      '👨‍🏫 Generate Teacher Code'}
+                                    '👨‍🏫 Generate Teacher Code'}
                             </ButtonText>
                         </Button>
 
@@ -182,7 +182,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                                 {isGenerating
                                     ? t('common.generating') || 'Generating...'
                                     : t('principal.invites.generateStudent') ||
-                                      '👨‍🎓 Generate Student Code'}
+                                    '👨‍🎓 Generate Student Code'}
                             </ButtonText>
                         </Button>
                     </VStack>
@@ -205,7 +205,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                             sx={{
                                 padding: Theme.spacing.md,
                                 backgroundColor: Theme.colors.emberRed,
-                                borderRadius: Theme.corners.medium,
+                                borderRadius: Theme.corners.comfortable,
                             }}
                         >
                             <Text color={Theme.colors.sacredWhite}>{error}</Text>
@@ -232,7 +232,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                                         sx={{
                                             padding: Theme.spacing.md,
                                             backgroundColor: Theme.colors.deepIndigo,
-                                            borderRadius: Theme.corners.medium,
+                                            borderRadius: Theme.corners.comfortable,
                                             borderLeftWidth: 4,
                                             borderLeftColor: getRoleBadgeColor(invite.role),
                                         }}
@@ -270,7 +270,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                                                             backgroundColor: getRoleBadgeColor(
                                                                 invite.role
                                                             ),
-                                                            borderRadius: Theme.corners.small,
+                                                            borderRadius: Theme.corners.tight,
                                                         }}
                                                     >
                                                         <Text
@@ -291,7 +291,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                                                         {invite.used
                                                             ? t('principal.invites.used') || 'Used'
                                                             : t('principal.invites.active') ||
-                                                              'Active'}
+                                                            'Active'}
                                                     </Text>
                                                 </HStack>
 

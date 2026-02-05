@@ -178,7 +178,7 @@ export default function AnnouncementsScreen({
                             sx={{
                                 padding: Theme.spacing.md,
                                 backgroundColor: Theme.colors.emberRed,
-                                borderRadius: Theme.corners.medium,
+                                borderRadius: Theme.corners.comfortable,
                             }}
                         >
                             <Text color={Theme.colors.sacredWhite}>{error}</Text>
@@ -202,7 +202,7 @@ export default function AnnouncementsScreen({
                                     sx={{
                                         padding: Theme.spacing.md,
                                         backgroundColor: Theme.colors.twilightPurple,
-                                        borderRadius: Theme.corners.medium,
+                                        borderRadius: Theme.corners.comfortable,
                                         borderLeftWidth: 4,
                                         borderLeftColor: Theme.colors.dawnGold,
                                     }}
@@ -255,7 +255,7 @@ export default function AnnouncementsScreen({
                                     sx={{
                                         padding: Theme.spacing.md,
                                         backgroundColor: Theme.colors.deepIndigo,
-                                        borderRadius: Theme.corners.medium,
+                                        borderRadius: Theme.corners.comfortable,
                                     }}
                                 >
                                     <VStack space="sm">

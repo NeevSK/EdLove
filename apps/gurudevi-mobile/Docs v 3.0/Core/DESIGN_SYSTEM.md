@@ -372,6 +372,12 @@ const easing = {
 
 ## Visual Design
 
+**Assets**:
+*   Use `lotus_bloom.png` (high-res) for the open state.
+*   Use `lotus_bud.png` for closed/resting states if applicable.
+*   **Crucial**: Images must be transparent PNGs. No square backgrounds.
+*   **Glow**: Use a `0.8` opacity circle behind the image for the "Bloom" effect.
+
 ```javascript
 // Lotus Petal FAB Component
 <LotusPetalFAB

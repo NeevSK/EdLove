@@ -157,7 +157,7 @@ export default function ProfileCompletionBar({
             sx={{
                 padding: Theme.spacing.lg,
                 backgroundColor: Theme.colors.deepIndigo,
-                borderRadius: Theme.corners.medium,
+                borderRadius: Theme.corners.comfortable,
                 borderLeftWidth: 4,
                 borderLeftColor: getCompletionColor(),
             }}

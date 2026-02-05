@@ -176,7 +176,7 @@ export default function GradebookScreen({
                         sx={{
                             padding: Theme.spacing.md,
                             backgroundColor: Theme.colors.deepIndigo,
-                            borderRadius: Theme.corners.medium,
+                            borderRadius: Theme.corners.comfortable,
                         }}
                     >
                         <VStack sx={{ flex: 1 }}>
@@ -209,9 +209,9 @@ export default function GradebookScreen({
                             >
                                 {grades.length > 0
                                     ? Math.round(
-                                          grades.reduce((sum, g) => sum + g.marks, 0) /
-                                              grades.length
-                                      )
+                                        grades.reduce((sum, g) => sum + g.marks, 0) /
+                                        grades.length
+                                    )
                                     : 0}
                             </Text>
                         </VStack>
@@ -238,7 +238,7 @@ export default function GradebookScreen({
                                         sortBy === 'rank'
                                             ? Theme.colors.sanctuarySaffron
                                             : Theme.colors.deepIndigo,
-                                    borderRadius: Theme.corners.small,
+                                    borderRadius: Theme.corners.tight,
                                 }}
                             >
                                 <Text
@@ -259,7 +259,7 @@ export default function GradebookScreen({
                                         sortBy === 'marks'
                                             ? Theme.colors.sanctuarySaffron
                                             : Theme.colors.deepIndigo,
-                                    borderRadius: Theme.corners.small,
+                                    borderRadius: Theme.corners.tight,
                                 }}
                             >
                                 <Text
@@ -280,7 +280,7 @@ export default function GradebookScreen({
                                         sortBy === 'name'
                                             ? Theme.colors.sanctuarySaffron
                                             : Theme.colors.deepIndigo,
-                                    borderRadius: Theme.corners.small,
+                                    borderRadius: Theme.corners.tight,
                                 }}
                             >
                                 <Text
@@ -317,7 +317,7 @@ export default function GradebookScreen({
                             sx={{
                                 padding: Theme.spacing.md,
                                 backgroundColor: Theme.colors.emberRed,
-                                borderRadius: Theme.corners.medium,
+                                borderRadius: Theme.corners.comfortable,
                             }}
                         >
                             <Text color={Theme.colors.sacredWhite}>

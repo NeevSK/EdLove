@@ -1,32 +1,39 @@
 import React, { useState, useEffect } from 'react';
+import { ScrollView, RefreshControl } from 'react-native';
 import {
     Box,
     VStack,
-    Text,
     Heading,
-    HStack,
-    Button,
-    ButtonIcon,
-    ButtonText,
     Spinner,
     Center,
-    Pressable,
 } from "@gluestack-ui/themed";
-import { LogOut, Globe } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import { Theme } from '../constants/Theme';
-import { hapticLight, hapticSuccess } from '../utils/haptics';
+import { hapticSuccess } from '../utils/haptics';
+
+// New Components
+import IdentityCard from '../components/profile/IdentityCard';
+import ControlScroll from '../components/profile/ControlScroll';
+import EditProfileModal from '../components/profile/EditProfileModal';
 
 export default function ProfileScreen() {
     const { t, i18n } = useTranslation();
     const [profile, setProfile] = useState<any>(null);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'user' | 'app'>('user');
+    const [refreshing, setRefreshing] = useState(false);
+    const [isEditModalVisible, setEditModalVisible] = useState(false);
+
     const currentLanguage = i18n.language;
 
     useEffect(() => {
         fetchProfile();
+    }, []);
+
+    const onRefresh = React.useCallback(async () => {
+        setRefreshing(true);
+        await fetchProfile();
+        setRefreshing(false);
     }, []);
 
     async function fetchProfile() {
@@ -34,7 +41,7 @@ export default function ProfileScreen() {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 const { data, error } = await supabase
-                    .from('users')  // Fixed: was 'profiles', now 'users'
+                    .from('users')
                     .select(`
                         *,
                         schools (
@@ -48,15 +55,15 @@ export default function ProfileScreen() {
                     .single();
 
                 if (data) {
-                    // Map school data to profile for easy access
                     setProfile({
                         ...data,
                         school_name: data.schools?.name || null
                     });
                 } else {
-                    // Fallback to auth metadata if profile not found
                     setProfile({
+                        id: user.id,
                         full_name: user.user_metadata?.full_name || user.email?.split('@')[0],
+                        email: user.email,
                         role: user.user_metadata?.role || 'teacher',
                         school_name: null
                     });
@@ -69,16 +76,9 @@ export default function ProfileScreen() {
         }
     }
 
-
-    async function handleLogout() {
-        hapticLight();
-        await supabase.auth.signOut();
-    }
-
     async function changeLanguage(lang: 'si' | 'ta' | 'en') {
         hapticSuccess();
         await i18n.changeLanguage(lang);
-        // TODO: Persist language preference to AsyncStorage
     }
 
     if (loading) {
@@ -92,340 +92,49 @@ export default function ProfileScreen() {
     }
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo, padding: Theme.spacing.lg }}>
-            <VStack space="xl" sx={{ marginTop: Theme.spacing['3xl'] }}>
-                {/* Header */}
-                <Heading size="2xl" color={Theme.colors.sanctuarySaffron}>
-                    {t('profile.title')}
-                </Heading>
+        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+            <ScrollView
+                contentContainerStyle={{
+                    padding: Theme.spacing.lg,
+                    paddingTop: 60, // Space for status bar/header
+                }}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        tintColor={Theme.colors.sanctuarySaffron}
+                    />
+                }
+            >
+                <VStack space="2xl">
+                    {/* Header Title */}
+                    <Heading size="2xl" color={Theme.colors.sacredWhite}>
+                        {t('profile.title') || 'Identity'}
+                    </Heading>
 
-                {/* Tab Switcher */}
-                <HStack space="sm">
-                    <Pressable
-                        onPress={() => {
-                            hapticLight();
-                            setActiveTab('user');
-                        }}
-                        sx={{ flex: 1 }}
-                    >
-                        <Box
-                            p={Theme.spacing.md}
-                            sx={{
-                                backgroundColor: activeTab === 'user'
-                                    ? Theme.colors.sanctuarySaffron
-                                    : Theme.colors.transparent,
-                                borderRadius: Theme.corners.comfortable,
-                            }}
-                        >
-                            <Text
-                                textAlign="center"
-                                color={activeTab === 'user' ? Theme.colors.white : Theme.colors.mistGray}
-                                bold={activeTab === 'user'}
-                            >
-                                {t('profile.userSettings')}
-                            </Text>
-                        </Box>
-                    </Pressable>
+                    {/* Identity Card (Front/Back) */}
+                    <Center>
+                        <IdentityCard
+                            profile={profile}
+                            onEdit={() => setEditModalVisible(true)}
+                        />
+                    </Center>
 
-                    <Pressable
-                        onPress={() => {
-                            hapticLight();
-                            setActiveTab('app');
-                        }}
-                        sx={{ flex: 1 }}
-                    >
-                        <Box
-                            p={Theme.spacing.md}
-                            sx={{
-                                backgroundColor: activeTab === 'app'
-                                    ? Theme.colors.sanctuarySaffron
-                                    : Theme.colors.transparent,
-                                borderRadius: Theme.corners.comfortable,
-                            }}
-                        >
-                            <Text
-                                textAlign="center"
-                                color={activeTab === 'app' ? Theme.colors.white : Theme.colors.mistGray}
-                                bold={activeTab === 'app'}
-                            >
-                                {t('profile.appSettings')}
-                            </Text>
-                        </Box>
-                    </Pressable>
-                </HStack>
+                    {/* App Controls (Language, Settings) */}
+                    <ControlScroll
+                        currentLanguage={currentLanguage}
+                        onLanguageChange={changeLanguage}
+                    />
+                </VStack>
+            </ScrollView>
 
-                {/* User Settings Tab */}
-                {activeTab === 'user' && (
-                    <VStack space="xl">
-                        {/* Profile Info Card */}
-                        <Box
-                            p={Theme.spacing.xl}
-                            sx={{
-                                backgroundColor: Theme.colors.midnightBlue,
-                                borderRadius: Theme.corners.generous
-                            }}
-                        >
-                            <VStack space="md">
-                                <VStack space="xs">
-                                    <Text color={Theme.colors.dimGray} size="sm">
-                                        {t('profile.fullName')}
-                                    </Text>
-                                    <Text color={Theme.colors.sacredWhite} size="lg" bold>
-                                        {profile?.full_name || t('profile.guestUser')}
-                                    </Text>
-                                </VStack>
-
-                                <VStack space="xs">
-                                    <Text color={Theme.colors.dimGray} size="sm">
-                                        {t('profile.role')}
-                                    </Text>
-                                    <Text color={Theme.colors.sacredWhite} size="md">
-                                        {t(`auth.${profile?.role || 'teacher'}`)}
-                                    </Text>
-                                </VStack>
-
-                                <VStack space="xs">
-                                    <Text color={Theme.colors.dimGray} size="sm">
-                                        {t('profile.school')}
-                                    </Text>
-                                    <Text color={Theme.colors.sacredWhite} size="md">
-                                        {profile?.school_name || t('profile.notSetYet')}
-                                    </Text>
-                                </VStack>
-                            </VStack>
-                        </Box>
-
-                        {/* Logout Button */}
-                        <Button
-                            size="md"
-                            action="negative"
-                            variant="outline"
-                            onPress={handleLogout}
-                            sx={{
-                                borderColor: Theme.colors.mistGray,
-                                borderRadius: Theme.corners.comfortable,
-                            }}
-                        >
-                            <ButtonIcon as={LogOut} color={Theme.colors.mistGray} />
-                            <ButtonText color={Theme.colors.mistGray}>
-                                {t('profile.logout')}
-                            </ButtonText>
-                        </Button>
-                    </VStack>
-                )}
-
-                {/* App Settings Tab */}
-                {activeTab === 'app' && (
-                    <VStack space="xl">
-                        {/* Language Selector */}
-                        <Box
-                            p={Theme.spacing.xl}
-                            sx={{
-                                backgroundColor: Theme.colors.midnightBlue,
-                                borderRadius: Theme.corners.generous
-                            }}
-                        >
-                            <VStack space="md">
-                                <HStack space="sm" alignItems="center">
-                                    <Globe color={Theme.colors.sanctuarySaffron} size={20} />
-                                    <Text color={Theme.colors.sacredWhite} size="md" bold>
-                                        {t('profile.language')}
-                                    </Text>
-                                </HStack>
-
-                                <HStack space="md">
-                                    {/* Sinhala */}
-                                    <Pressable
-                                        onPress={() => changeLanguage('si')}
-                                        sx={{ flex: 1 }}
-                                    >
-                                        <Box
-                                            p={Theme.spacing.md}
-                                            sx={{
-                                                backgroundColor: currentLanguage === 'si'
-                                                    ? Theme.colors.sanctuarySaffron
-                                                    : Theme.colors.deepIndigo,
-                                                borderRadius: Theme.corners.comfortable,
-                                                borderWidth: 2,
-                                                borderColor: currentLanguage === 'si'
-                                                    ? Theme.colors.sanctuarySaffron
-                                                    : Theme.colors.transparent,
-                                            }}
-                                        >
-                                            <Text
-                                                textAlign="center"
-                                                color={currentLanguage === 'si' ? Theme.colors.white : Theme.colors.mistGray}
-                                                bold={currentLanguage === 'si'}
-                                            >
-                                                සිංහල
-                                            </Text>
-                                        </Box>
-                                    </Pressable>
-
-                                    {/* Tamil */}
-                                    <Pressable
-                                        onPress={() => changeLanguage('ta')}
-                                        sx={{ flex: 1 }}
-                                    >
-                                        <Box
-                                            p={Theme.spacing.md}
-                                            sx={{
-                                                backgroundColor: currentLanguage === 'ta'
-                                                    ? Theme.colors.sanctuarySaffron
-                                                    : Theme.colors.deepIndigo,
-                                                borderRadius: Theme.corners.comfortable,
-                                                borderWidth: 2,
-                                                borderColor: currentLanguage === 'ta'
-                                                    ? Theme.colors.sanctuarySaffron
-                                                    : Theme.colors.transparent,
-                                            }}
-                                        >
-                                            <Text
-                                                textAlign="center"
-                                                color={currentLanguage === 'ta' ? Theme.colors.white : Theme.colors.mistGray}
-                                                bold={currentLanguage === 'ta'}
-                                            >
-                                                தமிழ்
-                                            </Text>
-                                        </Box>
-                                    </Pressable>
-
-                                    {/* English */}
-                                    <Pressable
-                                        onPress={() => changeLanguage('en')}
-                                        sx={{ flex: 1 }}
-                                    >
-                                        <Box
-                                            p={Theme.spacing.md}
-                                            sx={{
-                                                backgroundColor: currentLanguage === 'en'
-                                                    ? Theme.colors.sanctuarySaffron
-                                                    : Theme.colors.deepIndigo,
-                                                borderRadius: Theme.corners.comfortable,
-                                                borderWidth: 2,
-                                                borderColor: currentLanguage === 'en'
-                                                    ? Theme.colors.sanctuarySaffron
-                                                    : Theme.colors.transparent,
-                                            }}
-                                        >
-                                            <Text
-                                                textAlign="center"
-                                                color={currentLanguage === 'en' ? Theme.colors.white : Theme.colors.mistGray}
-                                                bold={currentLanguage === 'en'}
-                                            >
-                                                English
-                                            </Text>
-                                        </Box>
-                                    </Pressable>
-                                </HStack>
-
-                                <Text color={Theme.colors.dimGray} size="xs" textAlign="center">
-                                    {t('profile.languageDesc')}
-                                </Text>
-                            </VStack>
-                        </Box>
-
-                        {/* Theme Toggle - Placeholder */}
-                        <Box
-                            p={Theme.spacing.xl}
-                            sx={{
-                                backgroundColor: Theme.colors.midnightBlue,
-                                borderRadius: Theme.corners.generous
-                            }}
-                        >
-                            <VStack space="sm">
-                                <HStack space="sm" alignItems="center">
-                                    <Text color={Theme.colors.sacredWhite} size="md" bold>
-                                        {t('profile.theme')}
-                                    </Text>
-                                    <Box
-                                        px={Theme.spacing.sm}
-                                        py={Theme.spacing.xs}
-                                        sx={{
-                                            backgroundColor: Theme.colors.sanctuarySaffron,
-                                            borderRadius: Theme.corners.tight,
-                                            opacity: Theme.opacity.medium
-                                        }}
-                                    >
-                                        <Text color={Theme.colors.white} size="xs">
-                                            {t('profile.comingSoon')}
-                                        </Text>
-                                    </Box>
-                                </HStack>
-                                <Text color={Theme.colors.dimGray} size="sm">
-                                    {t('profile.themeDesc')}
-                                </Text>
-                            </VStack>
-                        </Box>
-
-                        {/* Data Saver Mode - Placeholder */}
-                        <Box
-                            p={Theme.spacing.xl}
-                            sx={{
-                                backgroundColor: Theme.colors.midnightBlue,
-                                borderRadius: Theme.corners.generous
-                            }}
-                        >
-                            <VStack space="sm">
-                                <HStack space="sm" alignItems="center">
-                                    <Text color={Theme.colors.sacredWhite} size="md" bold>
-                                        {t('profile.dataSaver')}
-                                    </Text>
-                                    <Box
-                                        px={Theme.spacing.sm}
-                                        py={Theme.spacing.xs}
-                                        sx={{
-                                            backgroundColor: Theme.colors.sanctuarySaffron,
-                                            borderRadius: Theme.corners.tight,
-                                            opacity: Theme.opacity.medium
-                                        }}
-                                    >
-                                        <Text color={Theme.colors.white} size="xs">
-                                            {t('profile.comingSoon')}
-                                        </Text>
-                                    </Box>
-                                </HStack>
-                                <Text color={Theme.colors.dimGray} size="sm">
-                                    {t('profile.dataSaverDesc')}
-                                </Text>
-                            </VStack>
-                        </Box>
-
-                        {/* Accessibility Options - Placeholder */}
-                        <Box
-                            p={Theme.spacing.xl}
-                            sx={{
-                                backgroundColor: Theme.colors.midnightBlue,
-                                borderRadius: Theme.corners.generous
-                            }}
-                        >
-                            <VStack space="sm">
-                                <HStack space="sm" alignItems="center">
-                                    <Text color={Theme.colors.sacredWhite} size="md" bold>
-                                        {t('profile.accessibility')}
-                                    </Text>
-                                    <Box
-                                        px={Theme.spacing.sm}
-                                        py={Theme.spacing.xs}
-                                        sx={{
-                                            backgroundColor: Theme.colors.sanctuarySaffron,
-                                            borderRadius: Theme.corners.tight,
-                                            opacity: Theme.opacity.medium
-                                        }}
-                                    >
-                                        <Text color={Theme.colors.white} size="xs">
-                                            {t('profile.comingSoon')}
-                                        </Text>
-                                    </Box>
-                                </HStack>
-                                <Text color={Theme.colors.dimGray} size="sm">
-                                    {t('profile.accessibilityDesc')}
-                                </Text>
-                            </VStack>
-                        </Box>
-                    </VStack>
-                )}
-            </VStack>
+            {/* Edit Profile Modal */}
+            <EditProfileModal
+                visible={isEditModalVisible}
+                onClose={() => setEditModalVisible(false)}
+                onSave={fetchProfile}
+                currentProfile={profile}
+            />
         </Box>
     );
 }

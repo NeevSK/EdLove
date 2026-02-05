@@ -1,42 +1,18 @@
 /**
  * LOTUS PETAL FAB - Floating Action Button
  * 
- * A petal-shaped (NOT circular!) floating action button with:
- * - Organic petal shape using SVG
+ * A petal-shaped floating action button with:
+ * - Golden Lotus Art image
  * - Breathing animation (4-second cycle)
  * - Context-aware icons per tab
  * - Press animation with haptic feedback
- * - Scroll hide/show behavior (optional)
+ * - Floating bubble physics for dragging
  * 
  * Philosophy: Organic, living UI that breathes with intention
- * 
- * @example
- * ```tsx
- * import LotusPetalFAB from './components/LotusPetalFAB';
- * import { useSharedValue } from 'react-native-reanimated';
- * 
- * function MyScreen() {
- *   const scrollY = useSharedValue(0);
- *   const [currentTab, setCurrentTab] = useState('self');
- * 
- *   return (
- *     <View>
- *       {/* Your screen content *\/}
- *       <LotusPetalFAB
- *         currentTab={currentTab}
- *         onPress={() => console.log('FAB pressed!')}
- *         scrollY={scrollY}
- *         disabled={false}
- *       />
- *     </View>
- *   );
- * }
- * ```
  */
 
 import React, { FC, useMemo, useEffect, useCallback, useState, useRef } from 'react';
 import { View, Pressable, StyleSheet, Text, PanResponder, Dimensions, Image } from 'react-native';
-import Svg, { Path, G } from 'react-native-svg';
 import Animated, {
     useAnimatedStyle,
     withRepeat,
@@ -48,6 +24,7 @@ import Animated, {
     Extrapolate,
     useSharedValue,
     Easing,
+    runOnJS,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import {
@@ -84,14 +61,12 @@ interface LotusPetalFABProps {
 // ============================================================================
 
 
-const FAB_SIZE = 64;
-const FAB_HEIGHT = 64; // Make it square for better lotus flower icon
-const ICON_SIZE = 32;
+const FAB_SIZE = 72; // Slightly larger for the art
+const FAB_HIT_SLOP = 10;
 const ACTION_BUBBLE_SIZE = 48;
-const ACTION_BUBBLE_SPACING = 8;
-const LONG_PRESS_DURATION = 500; // milliseconds
+const ACTION_BUBBLE_SPACING = 12;
+const LONG_PRESS_DURATION = 400; // milliseconds
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 // Context-aware configuration
 type IconComponentType = React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
@@ -119,9 +94,7 @@ const fabConfig: Record<TabType, { IconComponent: IconComponentType; label: stri
     }
 };
 
-// ============================================================================
-// LOTUS FLOWER ICON COMPONENT
-// ============================================================================
+const LOTUS_IMAGE = require('../../assets/images/lotus_bloom.png');
 
 // ============================================================================
 // MAIN COMPONENT
@@ -155,19 +128,28 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     const config = useMemo(() => fabConfig[currentTab], [currentTab]);
     const IconComponent = config.IconComponent;
 
+    // Safe haptic feedback wrapper
+    const triggerHaptic = useCallback(async () => {
+        try {
+            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        } catch (error) {
+            console.warn('Haptic feedback not available');
+        }
+    }, []);
+
     // Pan responder for drag functionality
     const panResponder = useRef(
         PanResponder.create({
-            onStartShouldSetPanResponder: () => true, // Always capture start to check for drag vs tap
+            onStartShouldSetPanResponder: () => true,
             onMoveShouldSetPanResponder: (_, gestureState) => {
-                // Highly sensitive drag detection for "floating" feel
-                return isDragging || Math.abs(gestureState.dx) > 2 || Math.abs(gestureState.dy) > 2;
+                return isDragging || Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5;
             },
             onPanResponderGrant: () => {
-                // Start long press timer
                 longPressTimer.current = setTimeout(() => {
                     setIsDragging(true);
-                    triggerHapticFeedback();
+                    triggerHaptic();
+                    // Slight lift effect
+                    pressScale.value = withSpring(1.1);
                 }, LONG_PRESS_DURATION);
             },
             onPanResponderMove: (_, gestureState) => {
@@ -177,19 +159,20 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                 }
             },
             onPanResponderRelease: (_, gestureState) => {
-                // Clear long press timer
                 if (longPressTimer.current) {
                     clearTimeout(longPressTimer.current);
                     longPressTimer.current = null;
                 }
 
                 if (isDragging) {
-                    // Update base position for next drag
                     baseX.current += gestureState.dx;
                     baseY.current += gestureState.dy;
                     setIsDragging(false);
+                    // Spring back slightly on release (bubble effect)
+                    pressScale.value = withSpring(1.0);
+
+                    // Optional: Snap back if near edge? For now, free floating.
                 } else {
-                    // If not dragging, treat as a tap
                     const moved = Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5;
                     if (!moved) {
                         handlePress();
@@ -203,60 +186,43 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     // ANIMATION INITIALIZATION
     // ============================================================================
 
-    // Initialize breathing animation in useEffect to avoid restarting on every render
     useEffect(() => {
         if (!disabled) {
             breathingScale.value = 0.95;
             breathingScale.value = withRepeat(
-                withTiming(1.0, {
-                    duration: 2000,
+                withTiming(1.02, {
+                    duration: 3000,
                     easing: Easing.inOut(Easing.ease)
                 }),
-                -1, // infinite
-                true // reverse (yoyo effect)
+                -1,
+                true
             );
         } else {
-            // Reset to 1.0 when disabled
             breathingScale.value = withTiming(1.0, { duration: 200 });
         }
-    }, [disabled]); // breathingScale, withRepeat, withTiming, and Easing are stable refs, not needed in deps
+    }, [disabled]);
 
     // ============================================================================
-    // ANIMATION 1: BREATHING (Always-on when not disabled)
+    // ANIMATION STYLES
     // ============================================================================
 
     const breathingStyle = useAnimatedStyle(() => {
         return {
             transform: [{ scale: breathingScale.value }]
         };
-    }); // breathingScale is a stable ref, no need in deps
-
-    // ============================================================================
-    // ANIMATION 2: PRESS RESPONSE
-    // ============================================================================
+    });
 
     const pressStyle = useAnimatedStyle(() => {
         return {
             transform: [{ scale: pressScale.value }]
         };
-    }); // pressScale is a stable ref, no need in deps
-
-    // Safe haptic feedback with error handling
-    const triggerHapticFeedback = useCallback(async () => {
-        try {
-            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        } catch (error) {
-            // Haptics not available on simulators or devices without haptic support
-            console.warn('Haptic feedback not available on this device');
-        }
-    }, []);
+    });
 
     const handlePress = useCallback(() => {
         if (disabled) return;
 
-        // If actions are provided, show action menu
         if (actions && actions.length > 0) {
-            triggerHapticFeedback();
+            triggerHaptic();
             setShowActions(!showActions);
             actionMenuScale.value = withSpring(showActions ? 0 : 1, {
                 damping: 15,
@@ -265,35 +231,23 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
             return;
         }
 
-        // Otherwise, trigger onPress callback
         if (onPress) {
-            // Haptic feedback
-            triggerHapticFeedback();
-
-            // Visual feedback - scale down then spring back
+            triggerHaptic();
             pressScale.value = withSequence(
-                withTiming(0.9, { duration: 100 }),
-                withSpring(1.0, {
-                    damping: 15,
-                    stiffness: 150
-                })
+                withTiming(0.85, { duration: 100 }),
+                withSpring(1.0, { damping: 12, stiffness: 200 })
             );
-
-            // Execute callback
             onPress();
         }
-    }, [disabled, onPress, actions, showActions, triggerHapticFeedback]);
+    }, [disabled, onPress, actions, showActions, triggerHaptic]);
 
-    // Animation for action menu appearance
     const actionMenuStyle = useAnimatedStyle(() => {
         return {
-            transform: [{ scale: actionMenuScale.value }],
+            transform: [{ scale: actionMenuScale.value }, { translateY: -10 }], // Pop up slightly
             opacity: actionMenuScale.value,
         };
     });
 
-
-    // Effect to handle action menu scale
     useEffect(() => {
         actionMenuScale.value = withSpring(showActions ? 1 : 0, {
             damping: 15,
@@ -301,8 +255,6 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         });
     }, [showActions]);
 
-
-    // Cleanup timer on unmount
     useEffect(() => {
         return () => {
             if (longPressTimer.current) {
@@ -311,15 +263,8 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         };
     }, []);
 
-    // ============================================================================
-    // ANIMATION 3: SCROLL BEHAVIOR (Optional)
-    // ============================================================================
-
     const scrollStyle = useAnimatedStyle(() => {
-        if (!scrollY) {
-            return {};
-        }
-
+        if (!scrollY) return {};
         return {
             transform: [{
                 translateY: interpolate(
@@ -336,13 +281,8 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                 Extrapolate.CLAMP
             )
         };
-    }); // scrollY is a stable ref, no need in deps
+    });
 
-    // ============================================================================
-    // RENDER
-    // ============================================================================
-
-    // Animated style for drag position
     const dragStyle = useAnimatedStyle(() => {
         return {
             transform: [
@@ -355,7 +295,6 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     return (
         <Animated.View
             {...panResponder.panHandlers}
-
             style={[
                 styles.container,
                 breathingStyle,
@@ -365,17 +304,25 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                 disabled && styles.disabled
             ]}
         >
-            <View style={styles.pressable}>
-                <View style={styles.petalContainer}>
-                    <Animated.Image
-                        source={require('../../assets/images/lotus_bloom.png')}
-                        style={{
-                            width: FAB_SIZE * 1.5, // Make it bloom slightly larger than container
-                            height: FAB_HEIGHT * 1.5,
-                        }}
-                        resizeMode="contain"
-                    />
-                </View>
+            <View style={styles.contentContainer}>
+                {/* Glow Behind */}
+                <View style={styles.glow} />
+
+                {/* Lotus Image */}
+                <Image
+                    source={LOTUS_IMAGE}
+                    style={styles.lotusImage}
+                    resizeMode="contain"
+                />
+
+                {/* Optional Icon Overlay - kept subtle or removed based on preference */}
+                {/* The requirement says "No generic icons on top", but we likely need context.
+                    Let's make the context subtle or perhaps just the lotus itself is enough?
+                    For now, I'll keep the icon VERY subtle and blended, or hide it if Art is clear enough.
+                    User said "No generic icons on top". So let's rely on context or a tiny badge?
+                    Actually, let's remove the center icon to respect "No generic icons on top".
+                    We can rely on the Action Menu for labels.
+                */}
             </View>
 
             {/* Action Menu */}
@@ -388,13 +335,13 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                             onPress={() => {
                                 action.onPress();
                                 setShowActions(false);
-                                triggerHapticFeedback();
+                                triggerHaptic();
                             }}
                         >
                             <View style={styles.actionBubbleContent}>
                                 {action.icon && (
                                     <action.icon
-                                        size={20}
+                                        size={18}
                                         color={Theme.colors.lotusDeepPink}
                                         strokeWidth={2}
                                     />
@@ -416,32 +363,37 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        bottom: Theme.spacing.md,
-        right: Theme.spacing.md,
+        bottom: Theme.spacing.lg,
+        right: Theme.spacing.lg,
         zIndex: Theme.zIndex.fab,
-        ...Theme.shadows.glow,
-    },
-    pressable: {
-        width: FAB_SIZE,
-        height: FAB_HEIGHT,
-        borderRadius: FAB_SIZE / 2,
-        backgroundColor: 'transparent',
-    },
-    petalContainer: {
-        width: FAB_SIZE,
-        height: FAB_HEIGHT,
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: FAB_SIZE / 2,
     },
-    iconContainer: {
+    contentContainer: {
+        width: FAB_SIZE,
+        height: FAB_SIZE,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    lotusImage: {
+        width: '100%',
+        height: '100%',
+        zIndex: 2,
+        backgroundColor: 'transparent',
+    },
+    glow: {
         position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: [
-            { translateX: -ICON_SIZE / 2 },
-            { translateY: -ICON_SIZE / 2 }
-        ],
+        width: FAB_SIZE * 0.8,
+        height: FAB_SIZE * 0.8,
+        borderRadius: FAB_SIZE,
+        backgroundColor: Theme.colors.sanctuarySaffron,
+        opacity: 0.4,
+        shadowColor: Theme.colors.sanctuarySaffron,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.8,
+        shadowRadius: 20,
+        elevation: 10,
+        zIndex: 1,
     },
     disabled: {
         opacity: 0.5,
@@ -454,22 +406,25 @@ const styles = StyleSheet.create({
     },
     actionBubble: {
         backgroundColor: Theme.colors.voidIndigo,
-        borderRadius: ACTION_BUBBLE_SIZE / 2,
+        borderRadius: 24,
         marginBottom: ACTION_BUBBLE_SPACING,
-        paddingHorizontal: Theme.spacing.md,
-        paddingVertical: Theme.spacing.sm,
+        paddingHorizontal: 16,
+        paddingVertical: 10,
         ...Theme.shadows.md,
-        minWidth: ACTION_BUBBLE_SIZE,
+        minWidth: 100,
+        borderColor: 'rgba(255,255,255,0.1)',
+        borderWidth: 1,
     },
     actionBubbleContent: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: Theme.spacing.sm,
+        justifyContent: 'flex-end',
+        gap: 8,
     },
     actionLabel: {
         color: Theme.colors.sacredWhite,
-        fontSize: Theme.typography.fontSize.sm,
-        fontWeight: Theme.typography.fontWeight.medium as any,
+        fontSize: 14,
+        fontWeight: '600',
     },
 });
 

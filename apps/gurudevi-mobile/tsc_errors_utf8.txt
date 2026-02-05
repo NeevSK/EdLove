@@ -1,0 +1,44 @@
+﻿src/components/classroom/SubmissionModal.tsx(228,57): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/classroom/SubmissionModal.tsx(284,69): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/grading/GradingSettings.tsx(62,52): error TS2339: Property 'large' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/grading/GradingSettings.tsx(63,53): error TS2339: Property 'large' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/grading/GradingSettings.tsx(97,65): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/grading/GradingSettings.tsx(129,65): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/grading/GradingSettings.tsx(161,65): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/grading/GradingSettings.tsx(196,53): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/principal/HierarchyBuilder.tsx(186,61): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/principal/HierarchyBuilder.tsx(200,61): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/principal/HierarchyBuilder.tsx(245,77): error TS2339: Property 'small' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/principal/InviteManager.tsx(208,61): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/principal/InviteManager.tsx(235,73): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/principal/InviteManager.tsx(273,89): error TS2339: Property 'small' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/profile/ProfileCompletionBar.tsx(160,45): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/self/StudentGoals.tsx(128,49): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/self/StudentGoals.tsx(209,57): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/self/StudentGoals.tsx(252,57): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/self/StudentGoals.tsx(315,77): error TS2339: Property 'small' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/components/self/StudentGoals.tsx(331,77): error TS2339: Property 'small' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/lib/api/classrooms.ts(61,18): error TS2345: Argument of type '(item: ClassroomStudentJoin) => Classroom | null' is not assignable to parameter of type '(value: { classroom: { id: any; school_id: any; grade_id: any; teacher_id: any; name: any; subject: any; description: any; created_at: any; updated_at: any; }[]; }, index: number, array: { classroom: { id: any; ... 7 more ...; updated_at: any; }[]; }[]) => Classroom | null'.
+  Types of parameters 'item' and 'value' are incompatible.
+    Type '{ classroom: { id: any; school_id: any; grade_id: any; teacher_id: any; name: any; subject: any; description: any; created_at: any; updated_at: any; }[]; }' is not assignable to type 'ClassroomStudentJoin'.
+      Types of property 'classroom' are incompatible.
+        Type '{ id: any; school_id: any; grade_id: any; teacher_id: any; name: any; subject: any; description: any; created_at: any; updated_at: any; }[]' is missing the following properties from type 'Classroom': id, school_id, name, created_at, updated_at
+src/lib/api/self.ts(114,9): error TS2322: Type '{ id: any; content_preview: any; created_at: any; }[]' is not assignable to type 'FireJournalEntry[]'.
+  Type '{ id: any; content_preview: any; created_at: any; }' is missing the following properties from type 'FireJournalEntry': user_id, is_burned
+src/screens/classroom/LessonFeed.tsx(155,61): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/screens/classroom/LessonFeed.tsx(171,69): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/screens/classroom/LessonFeed.tsx(197,81): error TS2339: Property 'small' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/screens/classroom/PrincipalSchoolView.tsx(129,61): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/screens/classroom/PrincipalSchoolView.tsx(147,69): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/screens/classroom/PrincipalSchoolView.tsx(170,69): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/screens/classroom/PrincipalSchoolView.tsx(196,69): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/screens/classroom/PrincipalSchoolView.tsx(219,69): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/screens/ClassroomScreen.tsx(34,17): error TS2739: Type '{}' is missing the following properties from type 'PrincipalSchoolViewProps': schoolId, userId
+src/screens/community/AnnouncementsScreen.tsx(181,61): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/screens/community/AnnouncementsScreen.tsx(205,69): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/screens/community/AnnouncementsScreen.tsx(258,69): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/screens/grading/GradebookScreen.tsx(179,57): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/screens/grading/GradebookScreen.tsx(241,65): error TS2339: Property 'small' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/screens/grading/GradebookScreen.tsx(262,65): error TS2339: Property 'small' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/screens/grading/GradebookScreen.tsx(283,65): error TS2339: Property 'small' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
+src/screens/grading/GradebookScreen.tsx(320,61): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
