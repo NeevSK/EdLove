@@ -13,7 +13,20 @@
         "done": "Done",
         "loading": "Loading...",
         "error": "Error",
-        "success": "Success"
+        "success": "Success",
+        "greeting": "Ayubowan, {{name}}!",
+        "create": "Create"
+    },
+    "greeting": {
+        "ayubowan": "Ayubowan!"
+    },
+    "role": {
+        "teacher": "Teacher",
+        "student": "Student",
+        "principal": "Principal"
+    },
+    "school": {
+        "personal_workspace": "Personal Workspace"
     },
     "auth": {
         "login": "Login",
@@ -67,6 +80,19 @@
     "classroom": {
         "title": "Classroom",
         "description": "Your learning journey continues here",
+        "dashboardIntro": "Your sanctuary awaits. Manage your classes efficiently.",
+        "createClass": "Create Class",
+        "attendance": "Attendance",
+        "library": "Library",
+        "statActiveClasses": "Active Classes",
+        "statTotalStudents": "Total Students",
+        "yourClassrooms": "Your Classrooms",
+        "createTitle": "Create New Class",
+        "errorNameRequired": "Class name is required",
+        "labelName": "Class Name",
+        "placeholderName": "e.g., Grade 10 Mathematics",
+        "labelSubject": "Subject (Optional)",
+        "placeholderSubject": "e.g., Mathematics",
         "createLesson": "Create Lesson",
         "viewStudents": "View Students",
         "assignments": "Assignments",

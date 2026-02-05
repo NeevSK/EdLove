@@ -15,17 +15,28 @@ import {
     StyleSheet,
 } from 'react-native';
 import { Box, Text, Heading, VStack, HStack } from '@gluestack-ui/themed';
+import { BookOpen, Users, ChevronRight, ClipboardCheck } from 'lucide-react-native';
+import { Theme } from '../../constants/Theme';
 import { BookOpen, Users, ChevronRight } from 'lucide-react-native';
 import { Theme, typography } from '../../constants/Theme';
 import { api, Classroom } from '../../lib/api';
 import { useUserRole } from '../../hooks/useUserRole';
+import { hapticLight } from '../../utils/haptics';
 import { supabase } from '../../lib/supabase';
 
 interface ClassroomListProps {
     onClassroomPress?: (classroom: Classroom) => void;
+    onDataLoaded?: (classrooms: Classroom[]) => void;
+    isNested?: boolean;
+    refreshTrigger?: number;
 }
 
-export default function ClassroomList({ onClassroomPress }: ClassroomListProps) {
+export default function ClassroomList({
+    onClassroomPress,
+    onDataLoaded,
+    isNested = false,
+    refreshTrigger: externalRefreshTrigger = 0
+}: ClassroomListProps) {
     const { role } = useUserRole();
     const [classrooms, setClassrooms] = useState<Classroom[]>([]);
     const [loading, setLoading] = useState(true);
@@ -116,7 +127,7 @@ export default function ClassroomList({ onClassroomPress }: ClassroomListProps) 
         },
     }), []);
     const [error, setError] = useState<string | null>(null);
-    const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [internalRefreshTrigger, setInternalRefreshTrigger] = useState(0);
 
     useEffect(() => {
         const fetchClassrooms = async () => {
@@ -141,6 +152,7 @@ export default function ClassroomList({ onClassroomPress }: ClassroomListProps) 
                 }
 
                 setClassrooms(data);
+                if (onDataLoaded) onDataLoaded(data);
             } catch (err: any) {
                 console.error('Error fetching classrooms:', err);
                 setError(err.message || 'Failed to load classrooms');
@@ -150,10 +162,10 @@ export default function ClassroomList({ onClassroomPress }: ClassroomListProps) 
         };
 
         fetchClassrooms();
-    }, [role, refreshTrigger]);
+    }, [role, internalRefreshTrigger, externalRefreshTrigger]);
 
     const handleRetry = () => {
-        setRefreshTrigger(prev => prev + 1);
+        setInternalRefreshTrigger(prev => prev + 1);
     };
 
     const handleClassroomPress = (classroom: Classroom) => {
@@ -207,47 +219,60 @@ export default function ClassroomList({ onClassroomPress }: ClassroomListProps) 
     }
 
     // Classroom list
-    return (
-        <ScrollView
-            style={styles.container}
-            contentContainerStyle={styles.contentContainer}
-        >
-            <VStack space="md">
-                {classrooms.map((classroom) => (
+    const content = (
+        <VStack space="md">
+            {classrooms.map((classroom) => {
+                const subjectIcon = BookOpen; // Default
+                const studentCount = (classroom as any).student_count || 0;
+
+                return (
                     <TouchableOpacity
                         key={classroom.id}
                         onPress={() => handleClassroomPress(classroom)}
                         activeOpacity={0.7}
                     >
-                        <Box style={styles.classroomCard}>
-                            <HStack space="md" style={styles.cardContent}>
-                                {/* Icon */}
-                                <View style={styles.iconContainer}>
+                        <Box sx={richStyles.classroomCard}>
+                            <HStack space="md" alignItems="center">
+                                {/* Icon Container */}
+                                <Box sx={richStyles.iconContainer}>
                                     <BookOpen
                                         size={24}
                                         color={Theme.colors.sanctuarySaffron}
                                     />
-                                </View>
+                                </Box>
 
                                 {/* Content */}
                                 <VStack flex={1} space="xs">
-                                    <Text style={styles.classroomName}>
+                                    <Text color={Theme.colors.sacredWhite} size="lg" bold>
                                         {classroom.name}
                                     </Text>
-                                    {classroom.subject && (
-                                        <Text style={styles.classroomSubject}>
-                                            {classroom.subject}
+                                    <HStack space="sm" alignItems="center">
+                                        <Text color={Theme.colors.sanctuarySaffron} size="sm" bold>
+                                            {classroom.subject || 'No Subject'}
                                         </Text>
-                                    )}
-                                    {classroom.description && (
-                                        <Text
-                                            style={styles.classroomDescription}
-                                            numberOfLines={2}
-                                        >
-                                            {classroom.description}
-                                        </Text>
-                                    )}
+                                        <Box sx={richStyles.dot} />
+                                        <HStack space="xs" alignItems="center">
+                                            <Users size={14} color={Theme.colors.pearlGray} />
+                                            <Text color={Theme.colors.pearlGray} size="sm">
+                                                {studentCount}
+                                            </Text>
+                                        </HStack>
+                                    </HStack>
                                 </VStack>
+
+                                {/* Quick Record Attendance Button */}
+                                <TouchableOpacity
+                                    onPress={(e) => {
+                                        e.stopPropagation();
+                                        hapticLight();
+                                        // TODO: Navigate to Attendance for this class
+                                        console.log('Open attendance for:', classroom.id);
+                                    }}
+                                >
+                                    <Box sx={richStyles.attendanceAction}>
+                                        <ClipboardCheck size={20} color={Theme.colors.sageGreen} />
+                                    </Box>
+                                </TouchableOpacity>
 
                                 {/* Arrow */}
                                 <ChevronRight
@@ -257,8 +282,141 @@ export default function ClassroomList({ onClassroomPress }: ClassroomListProps) 
                             </HStack>
                         </Box>
                     </TouchableOpacity>
-                ))}
-            </VStack>
+                );
+            })}
+        </VStack>
+    );
+
+    if (isNested) return content;
+
+    return (
+        <ScrollView
+            style={styles.container}
+            contentContainerStyle={styles.contentContainer}
+        >
+            {content}
         </ScrollView>
     );
 }
+
+const richStyles = {
+    classroomCard: {
+        backgroundColor: Theme.colors.midnightBlue,
+        borderRadius: Theme.corners.generous,
+        padding: Theme.spacing.md,
+        borderWidth: 1,
+        borderColor: Theme.colors.deepIndigo,
+        ...Theme.shadows.md,
+    },
+    iconContainer: {
+        width: 50,
+        height: 50,
+        borderRadius: Theme.corners.comfortable,
+        backgroundColor: Theme.colors.deepIndigo,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    dot: {
+        width: 4,
+        height: 4,
+        borderRadius: 2,
+        backgroundColor: Theme.colors.dimGray,
+    },
+    attendanceAction: {
+        padding: Theme.spacing.sm,
+        backgroundColor: Theme.colors.deepIndigo,
+        borderRadius: Theme.corners.comfortable,
+        marginRight: Theme.spacing.xs,
+    }
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: Theme.colors.voidIndigo,
+    },
+    contentContainer: {
+        padding: Theme.spacing.lg,
+    },
+    heading: {
+        fontSize: Theme.typography.fontSize['2xl'],
+        fontWeight: Theme.typography.fontWeight.bold,
+        color: Theme.colors.sanctuarySaffron,
+        marginBottom: Theme.spacing.lg,
+    },
+    classroomCard: {
+        backgroundColor: Theme.colors.midnightBlue,
+        borderRadius: Theme.corners.comfortable,
+        padding: Theme.spacing.md,
+        ...Theme.shadows.md,
+    },
+    cardContent: {
+        alignItems: 'center',
+    },
+    iconContainer: {
+        width: 48,
+        height: 48,
+        borderRadius: Theme.corners.comfortable,
+        backgroundColor: Theme.colors.deepIndigo,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    classroomName: {
+        fontSize: Theme.typography.fontSize.lg,
+        fontWeight: Theme.typography.fontWeight.semibold,
+        color: Theme.colors.sacredWhite,
+    },
+    classroomSubject: {
+        fontSize: Theme.typography.fontSize.md,
+        color: Theme.colors.sanctuarySaffron,
+    },
+    classroomDescription: {
+        fontSize: Theme.typography.fontSize.sm,
+        color: Theme.colors.pearlGray,
+        lineHeight: 20,
+    },
+    centerContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: Theme.colors.voidIndigo,
+        padding: Theme.spacing.xl,
+    },
+    loadingText: {
+        marginTop: Theme.spacing.md,
+        fontSize: Theme.typography.fontSize.md,
+        color: Theme.colors.pearlGray,
+    },
+    errorText: {
+        fontSize: Theme.typography.fontSize.md,
+        color: Theme.colors.emberRed,
+        textAlign: 'center',
+        marginBottom: Theme.spacing.lg,
+    },
+    retryButton: {
+        backgroundColor: Theme.colors.sanctuarySaffron,
+        paddingHorizontal: Theme.spacing.lg,
+        paddingVertical: Theme.spacing.sm,
+        borderRadius: Theme.corners.comfortable,
+    },
+    retryButtonText: {
+        color: Theme.colors.sacredWhite,
+        fontSize: Theme.typography.fontSize.md,
+        fontWeight: Theme.typography.fontWeight.semibold,
+    },
+    emptyIcon: {
+        marginBottom: Theme.spacing.lg,
+    },
+    emptyTitle: {
+        fontSize: Theme.typography.fontSize.xl,
+        fontWeight: Theme.typography.fontWeight.semibold,
+        color: Theme.colors.sacredWhite,
+        marginBottom: Theme.spacing.sm,
+    },
+    emptyDescription: {
+        fontSize: Theme.typography.fontSize.md,
+        color: Theme.colors.pearlGray,
+        textAlign: 'center',
+        lineHeight: 24,
+    },
+});

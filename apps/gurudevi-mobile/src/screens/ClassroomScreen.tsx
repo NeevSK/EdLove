@@ -19,6 +19,7 @@ import PrincipalSchoolView from './classroom/PrincipalSchoolView';
 import SectionHeadView from './classroom/SectionHeadView';
 import GradeHeadView from './classroom/GradeHeadView';
 import ClassroomList from '../components/classroom/ClassroomList';
+import TeacherDashboard from '../components/classroom/TeacherDashboard';
 import GlobalHeader from '../components/shared/GlobalHeader';
 import { useTranslation } from 'react-i18next';
 
@@ -90,11 +91,19 @@ export default function ClassroomScreen() {
     }
 
     // Default view for teachers and students
+    if (role === 'teacher') {
+        return (
+            <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+                <TeacherDashboard />
+            </Box>
+        );
+    }
+
     return (
         <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
             <GlobalHeader
-                title={role === 'teacher' ? (t('classroom.myClasses') || 'My Classes') : (t('classroom.myClassrooms') || 'My Classrooms')}
-                subtitle={role === 'teacher' ? 'Teaching' : 'Enrolled'}
+                title={t('classroom.myClassrooms') || 'My Classrooms'}
+                subtitle="Enrolled"
             />
             <Box sx={{ flex: 1, padding: Theme.spacing.lg }}>
                 <ClassroomList
