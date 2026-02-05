@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { HStack, Box } from '@gluestack-ui/themed';
 import { FileText, Video, Link, File, Heart, Plus, Download } from 'lucide-react-native';
 import SanctuaryCard from '../shared/SanctuaryCard';
 import SanctuaryButton from '../shared/SanctuaryButton';
-import { Theme } from '../../constants/Theme';
+import { Theme, typography } from '../../constants/Theme';
 
 export type ResourceType = 'pdf' | 'video' | 'link' | 'text' | 'doc';
 
@@ -39,6 +39,34 @@ export default function LibraryResourceCard({
 }: LibraryResourceCardProps) {
     const config = TYPE_CONFIG[type] || TYPE_CONFIG.text;
     const Icon = config.icon;
+
+    const styles = useMemo(() => StyleSheet.create({
+        title: {
+            fontSize: Theme.typography.fontSize.md,
+            fontWeight: '600',
+            color: Theme.colors.sacredWhite,
+            marginBottom: 4,
+        },
+        description: {
+            fontSize: Theme.typography.fontSize.sm,
+            color: Theme.colors.mistGray,
+            marginBottom: 8,
+        },
+        typeLabel: {
+            marginTop: 4,
+            fontSize: 10,
+            fontWeight: '700',
+            // Actually config.color is used for icon. Text color should probably match or be white/black depending on bg.
+            // The box bg is deepIndigo (dark). So text should be light.
+            color: Theme.colors.sacredWhite,
+            textAlign: 'center',
+        },
+        badge: {
+            fontSize: 10,
+            fontWeight: '600',
+            color: Theme.colors.lotusWhite,
+        },
+    }), []);
 
     const renderFooter = () => (
         <HStack justifyContent="space-between" alignItems="center" mt="$2">
@@ -116,28 +144,3 @@ export default function LibraryResourceCard({
         </SanctuaryCard>
     );
 }
-
-const styles = StyleSheet.create({
-    title: {
-        color: Theme.colors.sacredWhite,
-        fontSize: Theme.typography.h4.fontSize,
-        fontWeight: '600',
-        marginBottom: 4,
-    },
-    description: {
-        color: Theme.colors.mistGray,
-        fontSize: 14,
-        lineHeight: 20,
-    },
-    typeLabel: {
-        color: Theme.colors.mistGray,
-        fontSize: 10,
-        marginTop: 4,
-        fontWeight: 'bold'
-    },
-    badge: {
-        color: Theme.colors.sanctuarySaffron,
-        fontSize: 10,
-        fontWeight: 'bold'
-    }
-});

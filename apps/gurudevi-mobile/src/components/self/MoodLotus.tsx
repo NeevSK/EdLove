@@ -10,7 +10,7 @@
  * 5 = Full Bloom (Glowing) - Flourishing
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     Box,
     VStack,
@@ -32,7 +32,7 @@ import Animated, {
     Easing,
     runOnJS,
 } from 'react-native-reanimated';
-import { Theme } from '../../constants/Theme';
+import { Theme, typography } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';
 import * as Haptics from 'expo-haptics';
 
@@ -60,6 +60,22 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
     // Animation values
     const scale = useSharedValue(0.8);
     const glowOpacity = useSharedValue(0.2);
+
+    const styles = useMemo(() => StyleSheet.create({
+        lotusImage: {
+            width: 200,
+            height: 200,
+            zIndex: 10,
+        },
+        glow: {
+            position: 'absolute',
+            width: 180,
+            height: 180,
+            borderRadius: 90,
+            zIndex: 0,
+            top: 10,
+        },
+    }), []);
 
     const currentMood = MOOD_STATES[moodValue - 1];
 
@@ -185,7 +201,7 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
                 <Animated.Text
                     style={{
                         marginTop: Theme.spacing.md,
-                        fontSize: Theme.typography.fontSize.xl,
+                        fontSize: typography.fontSize.xl,
                         fontWeight: '600',
                         color: currentMood.color,
                         textAlign: 'center',
@@ -274,25 +290,3 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
         </VStack>
     );
 }
-
-const styles = StyleSheet.create({
-    lotusImage: {
-        width: 200,
-        height: 200,
-        zIndex: 2,
-    },
-    glow: {
-        position: 'absolute',
-        width: 160,
-        height: 160,
-        borderRadius: 80,
-        top: 20,
-        left: 20,
-        zIndex: 1,
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.8,
-        shadowRadius: 40,
-        elevation: 10,
-    }
-});
-

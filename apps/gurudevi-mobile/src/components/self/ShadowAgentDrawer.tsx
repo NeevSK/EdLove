@@ -10,7 +10,7 @@
  * - Fade-in text animation
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     Box,
     VStack,
@@ -27,7 +27,7 @@ import Animated, {
     Easing,
     FadeIn,
 } from 'react-native-reanimated';
-import { Theme } from '../../constants/Theme';
+import { Theme, typography } from '../../constants/Theme';
 import { hapticLight } from '../../utils/haptics';
 
 const THOUGHT_SEEDS = [
@@ -48,6 +48,26 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 export default function ShadowAgentDrawer() {
     const [isOpen, setIsOpen] = useState(false);
     const [currentSeed, setCurrentSeed] = useState('');
+
+    const styles = useMemo(() => StyleSheet.create({
+        orbContainer: {
+            position: 'absolute',
+            bottom: 24,
+            right: 24,
+            zIndex: Theme.zIndex.fab,
+        },
+        orb: {
+            borderRadius: 28,
+        },
+        modalOverlay: {
+            flex: 1,
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            justifyContent: 'flex-end',
+        },
+        drawerContainer: {
+            width: '100%',
+        },
+    }), []);
 
     // Orb breathing animation
     const orbScale = useSharedValue(1);
@@ -202,8 +222,8 @@ export default function ShadowAgentDrawer() {
                                             color={Theme.colors.sacredWhite}
                                             size="xl"
                                             sx={{
-                                                fontWeight: Theme.typography.fontWeight.medium,
-                                                lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.xl,
+                                                fontWeight: typography.fontWeight.medium,
+                                                lineHeight: typography.lineHeight.relaxed * typography.fontSize.xl,
                                             }}
                                         >
                                             {currentSeed}
@@ -269,22 +289,4 @@ export default function ShadowAgentDrawer() {
     );
 }
 
-const styles = StyleSheet.create({
-    orbContainer: {
-        position: 'absolute',
-        bottom: 24,
-        right: 24,
-        zIndex: Theme.zIndex.fab,
-    },
-    orb: {
-        borderRadius: 28,
-    },
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        justifyContent: 'flex-end',
-    },
-    drawerContainer: {
-        width: '100%',
-    },
-});
+

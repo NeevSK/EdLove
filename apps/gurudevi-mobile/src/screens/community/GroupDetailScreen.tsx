@@ -11,7 +11,7 @@ import {
     ButtonText
 } from "@gluestack-ui/themed";
 import { Theme } from '../../constants/Theme';
-import { useCommunity } from '../../hooks/useCommunity';
+import { useCommunity, Group, Post } from '../../hooks/useCommunity';
 import GlobalHeader from '../../components/shared/GlobalHeader';
 import PostCard from '../../components/community/PostCard';
 import { Users, Settings } from 'lucide-react-native';
@@ -25,7 +25,7 @@ export default function GroupDetailScreen({ groupId = '1' }: GroupDetailScreenPr
     const { groups, posts, fetchPosts } = useCommunity();
 
     // In real app we get group from ID
-    const group = groups.find(g => g.id === groupId) || {
+    const group = groups.find((g: Group) => g.id === groupId) || {
         name: 'Science Club',
         description: 'Exploring the universe together.',
         member_count: 42,
@@ -79,7 +79,7 @@ export default function GroupDetailScreen({ groupId = '1' }: GroupDetailScreenPr
                     <Heading size="md" color={Theme.colors.pearlGray} mt="$2">Discussions</Heading>
 
                     <VStack space="md">
-                        {posts.map(post => (
+                        {posts.map((post: Post) => (
                             <PostCard
                                 key={post.id}
                                 {...post}
@@ -89,7 +89,7 @@ export default function GroupDetailScreen({ groupId = '1' }: GroupDetailScreenPr
                                     avatarUrl: post.author_avatar,
                                 }}
                                 createdAt={post.created_at}
-                                reactions={Object.values(post.reactions || {}).reduce((a, b) => a + b, 0)}
+                                reactions={Object.values(post.reactions || {}).reduce((a: number, b: number) => a + b, 0)}
                                 comments={0}
                             />
                         ))}

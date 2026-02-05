@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, RefreshControl } from 'react-native';
+import { ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
 import { Box, VStack, Text, HStack } from "@gluestack-ui/themed";
 import GlobalHeader from '../components/shared/GlobalHeader';
 import LotusPetalFAB from '../components/shared/LotusPetalFAB';
@@ -46,10 +46,11 @@ export default function LibraryScreen() {
             <GlobalHeader
                 title={t('tabs.library') || 'Library'}
                 subtitle="Knowledge Sanctuary"
-                rightAction={{
-                    icon: Search,
-                    onPress: () => { } // Expand search bar
-                }}
+                rightAction={
+                    <TouchableOpacity onPress={() => { }}>
+                        <Search color={Theme.colors.sacredWhite} size={24} />
+                    </TouchableOpacity>
+                }
             />
 
             <VStack space="md" px="$4" py="$4">

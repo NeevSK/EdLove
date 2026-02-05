@@ -116,22 +116,24 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
         <GluestackUIProvider config={config}>
-          {!session ? (
-            <AuthScreen />
-          ) : (
-            <NavigationContainer>
-              <TabNavigator
-                onTabChange={(tabName) => {
-                  setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
-                }}
-              />
-              <LotusPetalFAB
-                currentTab={currentTab}
-                onPress={handleFabPress}
-                actions={getFabActions()}
-              />
-            </NavigationContainer>
-          )}
+          <NavigationContainer>
+            {!session ? (
+              <AuthScreen />
+            ) : (
+              <>
+                <TabNavigator
+                  onTabChange={(tabName: any) => {
+                    setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
+                  }}
+                />
+                <LotusPetalFAB
+                  currentTab={currentTab}
+                  onPress={handleFabPress}
+                  actions={getFabActions()}
+                />
+              </>
+            )}
+          </NavigationContainer>
         </GluestackUIProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
