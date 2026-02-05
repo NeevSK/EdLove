@@ -21,6 +21,7 @@ import { hapticLight } from '../utils/haptics';
 import DailyRhythm from '../components/DailyRhythm';
 import { MoodLotus, ShadowAgentDrawer, FireJournal } from '../components/self';
 import { supabase } from '../lib/supabase';
+import GlobalHeader from '../components/shared/GlobalHeader';
 
 const SUB_FEATURES = [
     { id: 'mood', label: 'Mood Check-in', icon: Flower },
@@ -48,16 +49,9 @@ export default function SelfScreen() {
 
     return (
         <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
-            <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 100 }}>
-                {/* 1. Atmospheric Header */}
-                <VStack space="xs" px={Theme.spacing.xl} pt={Theme.spacing['3xl']} pb={Theme.spacing.lg}>
-                    <Text color={Theme.colors.pearlGray} size="lg" sx={{ opacity: Theme.opacity.heavy }}>
-                        {t(greetingKey)},
-                    </Text>
-                    <Heading color={Theme.colors.sanctuarySaffron} size="4xl" sx={{ lineHeight: '$5xl' }}>
-                        {t('tabs.self')}
-                    </Heading>
-                </VStack>
+            <GlobalHeader showGreeting={true} />
+            <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}>
+                {/* 1. Atmospheric Header Removed (Replaced by GlobalHeader) */}
 
                 {/* 2. Sub-Feature Carousel */}
                 <Box sx={{ height: 100 }}>

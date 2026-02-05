@@ -28,6 +28,7 @@ import { api } from '../../lib/api';
 import { SchoolStats, School } from '../../lib/api/school';
 import HierarchyBuilder from '../../components/principal/HierarchyBuilder';
 import InviteManager from '../../components/principal/InviteManager';
+import GlobalHeader from '../../components/shared/GlobalHeader';
 
 interface PrincipalSchoolViewProps {
     schoolId: string;
@@ -91,23 +92,15 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                 backgroundColor: Theme.colors.voidIndigo,
             }}
         >
+            <GlobalHeader
+                title={t('classroom.schoolOverview') || 'School Overview'}
+                subtitle={school?.name}
+            />
             <ScrollView>
                 <VStack
                     space="lg"
                     sx={{ padding: Theme.spacing.lg }}
                 >
-                    {/* Header */}
-                    <Heading size="2xl" color={Theme.colors.sanctuarySaffron}>
-                        {t('classroom.schoolOverview') || 'School Overview'}
-                    </Heading>
-
-                    {/* School Name */}
-                    {school && (
-                        <Text size="lg" color={Theme.colors.pearlGray}>
-                            {school.name}
-                        </Text>
-                    )}
-
                     {/* Loading State */}
                     {isLoading && (
                         <Box
