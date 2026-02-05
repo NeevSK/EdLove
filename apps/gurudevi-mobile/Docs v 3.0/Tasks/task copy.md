@@ -37,7 +37,14 @@
   - [ ] Manage grades within section
 - [ ] Grade Head view
   - [ ] Show only their grade
-  - [ ] Manage classes in grade
+  - [ ] Resolve Type Safety Issues and Warnings
+    - [x] Fix `SriLankanSchools.ts` types
+    - [x] Fix `permissions.ts` types
+    - [x] Fix `MoodLotus.tsx` colors
+    - [x] Fix `FireJournal.tsx` hooks
+    - [x] Fix Component Type Errors (SanctuaryCard, LotusDropdown) <!-- DEBUGGING CASCADE RESOLVED -->
+- [x] Debug Runtime Error (expo-clipboard missing)
+- [x] Verify Clean Buildrade
 - [ ] Teacher view (current)
   - [ ] Show only assigned classes
 - [ ] Student view
@@ -53,6 +60,12 @@
 - [ ] Integrate with AuthScreen
 - [ ] Generate codes on school creation
 - [ ] QR code generation (optional feature)
+
+### Merge Conflict Resolution (Mission 02)
+- [x] Resolve conflicts in `src/lib/api.ts` (Deleted)
+- [x] Resolve conflicts in `src/lib/api/` (Consolidating modules)
+- [x] Verify Clean Build
+- [x] Merged to `main`
 
 ### Progressive Profiling
 - [x] Created profile_completion table
@@ -78,6 +91,10 @@
 - [x] Create Principal "School" View (Delegated)
 - [x] Role-based Classroom screen branching (Delegated)
 - [x] **Delegated to GitHub Agent via `delegation_packet.md`**
+  - [x] Mission 03: Grading System (API Found: `grading.ts`)
+  - [x] Mission 04: School Hierarchy (API Found: `school.ts`)
+  - [x] Mission 05: Student Experience (API Found: `classroomStudents.ts`)
+  - [x] Mission 06: Community (API Found: `community.ts`)
 
 ## 🟣 PHASE 4: Strategic Consolidation (Completed)
 
