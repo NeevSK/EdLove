@@ -13,7 +13,8 @@
         "done": "முடிந்தது",
         "loading": "ஏற்றுகிறது...",
         "error": "பிழை",
-        "success": "வெற்றி"
+        "success": "வெற்றி",
+        "greeting": "ஆயுபோவன், {{name}}!"
     },
     "auth": {
         "login": "உள்நுழை",
@@ -67,6 +68,19 @@
     "classroom": {
         "title": "வகுப்பு",
         "description": "உங்கள் கற்றல் பயணம் இங்கே தொடர்கிறது",
+        "dashboardIntro": "உங்கள் அமைதியான பணியிடத்திற்கு வரவேற்கிறோம். உங்கள் வகுப்புகளை திறம்பட நிர்வகிக்கவும்.",
+        "createClass": "வகுப்பை உருவாக்கு",
+        "attendance": "வருகை",
+        "library": "நூலகம்",
+        "statActiveClasses": "செயலில் உள்ள வகுப்புகள்",
+        "statTotalStudents": "மொத்த மாணவர்கள்",
+        "yourClassrooms": "உங்கள் வகுப்பறைகள்",
+        "createTitle": "புதிய வகுப்பை உருவாக்கு",
+        "errorNameRequired": "வகுப்பின் பெயர் தேவை",
+        "labelName": "வகுப்பின் பெயர்",
+        "placeholderName": "உதாரணம்: தரம் 10 கணிதம்",
+        "labelSubject": "பாடம் (விருப்பமானது)",
+        "placeholderSubject": "உதாரணம்: கணிதம்",
         "createLesson": "பாடத்தை உருவாக்கு",
         "viewStudents": "மாணவர்களைப் பார்",
         "assignments": "பணிகள்",
