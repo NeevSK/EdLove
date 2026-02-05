@@ -10,8 +10,8 @@ import en from './locales/en.json';
 i18n
     .use(initReactI18next) // Pass i18n down to react-i18next
     .init({
-        // Default language (Sinhala per Core Commitment)
-        lng: 'si',
+        // Default language (English for dev)
+        lng: 'en',
 
         // Fallback language if translation missing
         fallbackLng: 'en',

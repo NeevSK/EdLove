@@ -2,6 +2,7 @@ import 'react-native-url-polyfill/auto';
 import './src/i18n/config'; // Initialize i18n
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { GluestackUIProvider, Box, Spinner, Center } from "@gluestack-ui/themed";
 import { config } from "@gluestack-ui/config";
 import { Home, School, Users, Library, User } from 'lucide-react-native';
@@ -114,23 +115,25 @@ export default function App() {
   }
 
   return (
-    <GluestackUIProvider config={config}>
-      {!session ? (
-        <AuthScreen />
-      ) : (
-        <NavigationContainer>
-          <TabNavigator
-            onTabChange={(tabName) => {
-              setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
-            }}
-          />
-          <LotusPetalFAB
-            currentTab={currentTab}
-            onPress={handleFabPress}
-            actions={getFabActions()}
-          />
-        </NavigationContainer>
-      )}
-    </GluestackUIProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <GluestackUIProvider config={config}>
+        {!session ? (
+          <AuthScreen />
+        ) : (
+          <NavigationContainer>
+            <TabNavigator
+              onTabChange={(tabName) => {
+                setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
+              }}
+            />
+            <LotusPetalFAB
+              currentTab={currentTab}
+              onPress={handleFabPress}
+              actions={getFabActions()}
+            />
+          </NavigationContainer>
+        )}
+      </GluestackUIProvider>
+    </GestureHandlerRootView>
   );
 }
