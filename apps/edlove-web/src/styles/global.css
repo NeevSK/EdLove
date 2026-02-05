@@ -40,10 +40,8 @@
 
 /* Base Styles */
 html {
-  background-color: var(--color-deepIndigo);
-  /* The Void */
-  color: var(--color-softWhite);
-  /* Starlight */
+  background-color: #FAF7F2;
+  color: #2D3561;
   font-family: var(--font-sans);
   scroll-behavior: smooth;
 }

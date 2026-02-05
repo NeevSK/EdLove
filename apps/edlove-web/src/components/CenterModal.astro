@@ -1,0 +1,92 @@
+---
+---
+<div 
+  id="global-center-modal" 
+  class="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300"
+>
+  <!-- Backdrop -->
+  <div 
+    id="modal-backdrop" 
+    class="absolute inset-0 bg-[#0f111a]/80 backdrop-blur-md"
+  ></div>
+
+  <!-- Modal Card -->
+  <div 
+    id="modal-card"
+    class="relative z-10 w-full max-w-3xl bg-[#FAF7F2] border border-[#2D3561]/10 rounded-2xl shadow-2xl transform scale-95 transition-all duration-300 md:mx-6 flex flex-col max-h-[85vh] overflow-hidden"
+  >
+    <!-- Header -->
+    <div class="flex items-center justify-between px-8 py-6 border-b border-[#2D3561]/10 bg-white/40">
+      <div class="flex items-center gap-3">
+          <span id="modal-icon" class="text-3xl"></span>
+          <div>
+            <h2 id="modal-title" class="font-serif text-2xl text-[#2D3561]"></h2>
+            <div id="modal-subtitle" class="font-sans text-xs text-[#D4A574] uppercase tracking-widest font-bold mt-1"></div>
+          </div>
+      </div>
+      <button 
+        id="close-modal-btn"
+        class="p-2 rounded-full hover:bg-[#2D3561]/5 text-[#2D3561]/60 hover:text-[#D4A574] transition-colors"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div id="modal-content" class="p-8 overflow-y-auto prose prose-slate prose-lg max-w-none text-[#2D3561]/90">
+      <!-- Dynamic -->
+    </div>
+  </div>
+</div>
+
+<script>
+  const modalWrapper = document.getElementById('global-center-modal');
+  const backdrop = document.getElementById('modal-backdrop');
+  const card = document.getElementById('modal-card');
+  const closeBtn = document.getElementById('close-modal-btn');
+  
+  const els = {
+    title: document.getElementById('modal-title'),
+    subtitle: document.getElementById('modal-subtitle'),
+    icon: document.getElementById('modal-icon'),
+    content: document.getElementById('modal-content')
+  };
+
+  function openModal(data: any) {
+    if(!modalWrapper || !card) return;
+
+    // Populate
+    if(els.title) els.title.textContent = data.title || '';
+    if(els.subtitle) els.subtitle.textContent = data.subtitle || '';
+    if(els.icon) els.icon.textContent = data.icon || '';
+    if(els.content) els.content.innerHTML = data.content || '';
+
+    // Show
+    modalWrapper.classList.remove('pointer-events-none', 'opacity-0');
+    card.classList.remove('scale-95');
+    card.classList.add('scale-100');
+    
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    if(!modalWrapper || !card) return;
+
+    // Hide
+    modalWrapper.classList.add('pointer-events-none', 'opacity-0');
+    card.classList.remove('scale-100');
+    card.classList.add('scale-95');
+    
+    document.body.style.overflow = '';
+  }
+
+  window.addEventListener('open-center-modal', (e: any) => openModal(e.detail));
+  closeBtn?.addEventListener('click', closeModal);
+  backdrop?.addEventListener('click', closeModal);
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
+</script>

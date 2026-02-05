@@ -1,0 +1,68 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  icon?: string;
+  mode?: 'panel' | 'modal';
+}
+
+const { title, subtitle, icon, mode = 'panel' } = Astro.props;
+---
+
+<!-- 
+  NOW A DUAL-MODE TRIGGER
+  If mode='panel' (default), opens SidePanel (Left).
+  If mode='modal', opens CenterModal.
+-->
+
+<div class="expandable-trigger-wrapper" data-mode={mode}>
+  <button 
+    class="w-full text-left group p-6 rounded-xl bg-white/40 border border-[#2D3561]/20 shadow-sm hover:bg-white/60 hover:border-[#D4A574]/40 hover:shadow-[0_4px_20px_rgba(45,53,97,0.05)] transition-all duration-300 cursor-pointer flex items-center justify-between"
+    data-title={title}
+    data-subtitle={subtitle}
+    data-icon={icon}
+  >
+    <div class="flex items-center gap-4">
+      {icon && <span class="text-3xl filter drop-shadow-sm group-hover:scale-110 transition-transform duration-300">{icon}</span>}
+      <div>
+        <h3 class="font-serif text-xl text-[#2D3561] group-hover:text-[#D4A574] transition-colors duration-300">{title}</h3>
+        {subtitle && <p class="font-sans text-xs text-[#2D3561]/60 uppercase tracking-widest mt-1 font-bold">{subtitle}</p>}
+      </div>
+    </div>
+    
+    <span class="text-[#D4A574] opacity-50 text-sm font-sans uppercase tracking-widest group-hover:translate-x-1 transition-transform">
+        Open
+    </span>
+  </button>
+
+  <!-- Hidden Content Store -->
+  <div class="hidden-content hidden">
+    <slot />
+  </div>
+</div>
+
+<script>
+  // Find all triggers in this component instance
+  
+  const wrappers = document.querySelectorAll('.expandable-trigger-wrapper');
+
+  wrappers.forEach(wrapper => {
+    const btn = wrapper.querySelector('button');
+    const contentDiv = wrapper.querySelector('.hidden-content');
+    const mode = wrapper.getAttribute('data-mode') || 'panel';
+    
+    btn?.addEventListener('click', () => {
+       const eventName = mode === 'modal' ? 'open-center-modal' : 'open-side-panel';
+       
+       const event = new CustomEvent(eventName, {
+           detail: {
+               title: btn.getAttribute('data-title'),
+               subtitle: btn.getAttribute('data-subtitle'),
+               icon: btn.getAttribute('data-icon'),
+               content: contentDiv?.innerHTML
+           }
+       });
+       window.dispatchEvent(event);
+    });
+  });
+</script>
