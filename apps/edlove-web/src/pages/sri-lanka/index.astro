@@ -7,32 +7,43 @@ import ExpandableContent from '../../components/ExpandableContent.astro';
 <Layout title="System of Sri Lanka | EdLove">
     <CinematicBackground />
 
-    <section class="relative z-10 min-h-screen flex flex-col justify-center items-center text-center px-6 pt-24 pb-12">
-        <h1 class="font-cinzel text-warmGold text-xl md:text-2xl tracking-[0.2em] uppercase mb-4">Domain II</h1>
-        <h2 class="font-serif text-5xl md:text-7xl text-[#2D3561] mb-8">System of Sri Lanka</h2>
-        <p class="font-sans text-lg md:text-xl text-[#2D3561]/80 max-w-2xl mx-auto leading-relaxed mb-16">
-            The ground truth. Diagnostic of the official and shadow structures.
-        </p>
+    <main class="relative z-10 pt-48 pb-24 sanctuary-container">
+        <!-- Header: The Ground Truth -->
+        <section class="text-center space-y-12 mb-32 animate-fade-in-up">
+            <div class="space-y-4">
+                <span class="font-sans text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-agedGold)] opacity-60">Domain II</span>
+                <h1 class="text-7xl md:text-9xl font-serif text-[var(--color-midnightInk)] leading-none">System of Sri Lanka</h1>
+            </div>
 
-        <div class="w-full max-w-4xl mx-auto space-y-4 text-left">
+            <div class="h-px w-24 bg-[var(--color-agedGold)]/30 mx-auto"></div>
+
+            <p class="font-serif text-2xl text-[var(--color-midnightInk)]/50 max-w-2xl mx-auto leading-relaxed italic">
+                "The ground truth. <br/> Diagnostic of the official and shadow structures."
+            </p>
+        </section>
+
+        <!-- The Analysis -->
+        <section class="max-w-4xl mx-auto space-y-16">
             
             <ExpandableContent title="The Official Structure" subtitle="Ministry & Schools" icon="🏛️">
-                <ul class="space-y-3 font-sans text-[#2D3561]/70">
-                    <li class="flex items-center gap-3"><span class="text-[#D4A574]">➜</span> Ministry Policies & Frameworks</li>
-                    <li class="flex items-center gap-3"><span class="text-[#D4A574]">➜</span> Provincial & Zonal Administration</li>
-                    <li class="flex items-center gap-3"><span class="text-[#D4A574]">➜</span> School Heterogeneity (National vs. Provincial)</li>
-                </ul>
+                <div class="py-6 space-y-8">
+                     <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"Hierarchy as Infrastructure."</p>
+                     <p class="text-[var(--color-midnightInk)]/80">From national policies to zonal administration. We map the formal grid through which every teacher must navigate.</p>
+                     <ul class="space-y-4 text-sm text-[var(--color-midnightInk)]/60">
+                        <li class="flex items-center gap-4"><span class="w-1.5 h-1.5 bg-[var(--color-agedGold)] rounded-full"></span> Ministry Policies & Frameworks</li>
+                        <li class="flex items-center gap-4"><span class="w-1.5 h-1.5 bg-[var(--color-agedGold)] rounded-full"></span> Provincial & Zonal Administration</li>
+                        <li class="flex items-center gap-4"><span class="w-1.5 h-1.5 bg-[var(--color-agedGold)] rounded-full"></span> School Heterogeneity (National vs. Provincial)</li>
+                    </ul>
+                </div>
             </ExpandableContent>
 
             <ExpandableContent title="The Shadow Structure" subtitle="Tuition & Inequality" icon="🌑">
-                <p class="mb-4">The parallel system where the real competition happens.</p>
-                <ul class="space-y-3 font-sans text-[#2D3561]/70">
-                    <li class="flex items-center gap-3"><span class="text-[#E07A5F]">➜</span> The Tuition Industry (Mass classes)</li>
-                    <li class="flex items-center gap-3"><span class="text-[#E07A5F]">➜</span> Socioeconomic Barriers & Access</li>
-                    <li class="flex items-center gap-3"><span class="text-[#E07A5F]">➜</span> The Hidden Curriculum of Conformity</li>
-                </ul>
+                <div class="py-6 space-y-8">
+                    <p class="text-2xl font-serif text-[#D4A574] italic">"The Parallel Reality."</p>
+                    <p class="text-[#2D3561]/80">Where the real competition happens. An industry built on the gaps of the state, creating profound socioeconomic barriers.</p>
+                </div>
             </ExpandableContent>
 
-        </div>
-    </section>
+        </section>
+    </main>
 </Layout>

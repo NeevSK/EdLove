@@ -6,46 +6,41 @@ import FloatingParticles from '../components/FloatingParticles.astro';
 
 <Layout>
   
-  <main class="min-h-screen relative overflow-hidden flex flex-col items-center">
-    
-    <!-- Level 3: The Cinematic Engine (Realism) -->
+  <div class="relative z-10 min-h-[calc(100vh-var(--spacing-nav-height))] flex flex-col justify-center items-center px-6 overflow-hidden">
+    <!-- Cinematic Background Video/Gradient -->
     <CinematicBackground showVideo={true} />
     <FloatingParticles />
 
-    <!-- Hero Content -->
-    <div class="z-10 max-w-5xl mx-auto px-6 text-center space-y-8 flex flex-col items-center justify-center min-h-screen">
+    <div class="max-w-6xl w-full text-center space-y-16 animate-fade-in-up">
       
-      <!-- Logo Mark -->
-      
+      <div class="space-y-6">
+        <h1 class="text-7xl md:text-[7rem] font-serif text-[var(--color-midnightInk)] leading-[0.9] tracking-tighter opacity-90">
+          EdLove
+        </h1>
+        <p class="font-serif italic text-2xl md:text-3xl text-[var(--color-midnightInk)]/60 tracking-wide">
+           Reimagining Education, With Love.
+        </p>
+      </div>
 
-      <!-- Main Headline -->
-      <h1 class="text-6xl md:text-9xl font-serif text-[#2D3561] leading-tight md:leading-[1.1] animate-fade-in opacity-0" style="animation-delay: 0.2s;">
-        The Educational <br/>
-        Paradigm <br/>
-        <span class="text-[#D4A574] tracking-widest">Cosmos</span>
-      </h1>
-      
-      <!-- Subheadline -->
-      <p class="text-xl md:text-2xl font-sans text-[#2D3561]/80 max-w-3xl mx-auto leading-relaxed animate-fade-in opacity-0 font-light mt-8" style="animation-delay: 0.4s;">
-        What if the school you know is just one star<br/>in an infinite sky of possibilities?
-      </p>
-
-      <!-- CTA -->
-      <div class="animate-fade-in opacity-0" style="animation-delay: 0.6s;">
-        <a 
-          href="/sri-lanka" 
-          class="group relative inline-flex items-center gap-3 px-12 py-5 border-2 border-[#D4A574]/40 bg-white/40 backdrop-blur-xl text-[#2D3561] font-display tracking-widest hover:border-[#D4A574] hover:shadow-[0_0_30px_rgba(212,165,116,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 rounded-sm overflow-hidden"
-        >
-          <span class="relative z-10">EXPLORE THE CURRENT SYSTEM</span>
-          <span class="relative z-10 group-hover:translate-x-2 transition-transform duration-300">→</span>
+      <div class="flex flex-col md:flex-row gap-8 justify-center items-center">
+        <!-- Call to Action -->
+        <a href="/cosmos" class="group relative px-12 py-5 bg-[var(--color-midnightInk)] text-[var(--color-warmPaper)] rounded-full overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-2xl">
+          <span class="relative z-10 font-sans text-xs uppercase tracking-[0.2em] group-hover:tracking-[0.3em] transition-all duration-500">Enter Cosmos</span>
+          <div class="absolute inset-0 bg-[var(--color-agedGold)] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out"></div>
+        </a>
+        
+        <!-- Secondary Link -->
+        <a href="/about" class="group flex items-center gap-3 px-8 py-4 transition-all duration-300">
+           <span class="w-12 h-px bg-[var(--color-midnightInk)]/30 group-hover:w-20 transition-all duration-500"></span>
+           <span class="font-serif text-xl italic text-[var(--color-midnightInk)]/70 group-hover:text-[var(--color-midnightInk)]">Our Vision</span>
         </a>
       </div>
+
     </div>
 
-    <!-- Scroll Indicator -->
-    <div class="absolute bottom-10 animate-float opacity-50">
-      <svg class="w-6 h-6 text-[#D4A574]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+    <!-- Scroll Invitation (Relative to flow, prevents collision) -->
+    <div class="mt-24 opacity-30 animate-bounce">
+        <span class="font-sans text-xs uppercase tracking-[0.4em] text-[var(--color-midnightInk)]">Wisdom Below</span>
     </div>
-
-  </main>
+  </div>
 </Layout>

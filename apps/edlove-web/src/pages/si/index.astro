@@ -1,0 +1,46 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CinematicBackground from '../../components/CinematicBackground.astro';
+import FloatingParticles from '../../components/FloatingParticles.astro';
+---
+
+<Layout>
+  
+  <div class="relative z-10 min-h-[calc(100vh-var(--spacing-nav-height))] flex flex-col justify-center items-center px-6 overflow-hidden">
+    <!-- Cinematic Background Video/Gradient -->
+    <CinematicBackground showVideo={true} />
+    <FloatingParticles />
+
+    <div class="max-w-6xl w-full text-center space-y-16 animate-fade-in-up">
+      
+      <div class="space-y-6">
+        <h1 class="text-7xl md:text-[7rem] font-serif text-[var(--color-midnightInk)] leading-[0.9] tracking-tighter opacity-90">
+          EdLove
+        </h1>
+        <p class="font-serif italic text-2xl md:text-3xl text-[var(--color-midnightInk)]/60 tracking-wide font-sinhala">
+           ආදරයෙන්, අධ්‍යාපනය නව මානයකට.
+        </p>
+      </div>
+
+      <div class="flex flex-col md:flex-row gap-8 justify-center items-center">
+        <!-- Call to Action -->
+        <a href="/cosmos" class="group relative px-12 py-5 bg-[var(--color-midnightInk)] text-[var(--color-warmPaper)] rounded-full overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-2xl">
+          <span class="relative z-10 font-sans text-xs uppercase tracking-[0.2em] group-hover:tracking-[0.3em] transition-all duration-500">Enter Cosmos</span>
+          <div class="absolute inset-0 bg-[var(--color-agedGold)] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out"></div>
+        </a>
+        
+        <!-- Secondary Link -->
+        <a href="/about" class="group flex items-center gap-3 px-8 py-4 transition-all duration-300">
+           <span class="w-12 h-px bg-[var(--color-midnightInk)]/30 group-hover:w-20 transition-all duration-500"></span>
+           <span class="font-serif text-xl italic text-[var(--color-midnightInk)]/70 group-hover:text-[var(--color-midnightInk)]">Our Vision</span>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Scroll Invitation (Relative to flow, prevents collision) -->
+    <div class="mt-24 opacity-30 animate-bounce">
+        <span class="font-sans text-xs uppercase tracking-[0.4em] text-[var(--color-midnightInk)]">Wisdom Below</span>
+    </div>
+  </div>
+</Layout>

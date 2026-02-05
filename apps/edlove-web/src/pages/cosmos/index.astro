@@ -7,61 +7,60 @@ import ExpandableContent from '../../components/ExpandableContent.astro';
 <Layout title="The Paradigm Cosmos | EdLove">
     <CinematicBackground />
 
-    <section class="relative z-10 min-h-screen flex flex-col justify-center items-center text-center px-6 pt-24 pb-12">
-        <h1 class="font-cinzel text-warmGold text-xl md:text-2xl tracking-[0.2em] uppercase mb-4">Domain I</h1>
-        <h2 class="font-serif text-5xl md:text-7xl text-[#2D3561] mb-8">The Paradigm Cosmos</h2>
-        <p class="font-sans text-lg md:text-xl text-[#2D3561]/80 max-w-2xl mx-auto leading-relaxed mb-16">
-            We map the constellations of how learning happens. From the factory floor to the forest floor.
-        </p>
+    <div class="relative z-10 pb-24 sanctuary-container">
+        <!-- Header: The Mapping -->
+        <section class="text-center space-y-12 mb-32 animate-fade-in-up">
+            <div class="space-y-4">
+                <span class="font-sans text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-agedGold)] opacity-60">Domain I</span>
+                <h1 class="text-7xl md:text-9xl font-serif text-[var(--color-midnightInk)] leading-none">The Paradigm Cosmos</h1>
+            </div>
 
-        <div class="w-full max-w-4xl mx-auto space-y-4 text-left">
+            <div class="h-px w-24 bg-[var(--color-agedGold)]/30 mx-auto"></div>
+
+            <p class="font-serif text-2xl text-[var(--color-midnightInk)]/50 max-w-2xl mx-auto leading-relaxed italic">
+                "We map the constellations of how learning happens. <br/> From the factory floor to the forest floor."
+            </p>
+        </section>
+
+        <!-- Narrative Flow: The Content -->
+        <section class="max-w-4xl mx-auto space-y-16">
             
-            <ExpandableContent title="Biological Learning (Animal Wisdom)" subtitle="The Original Paradigm" icon="🐾" mode="panel">
-                <p class="text-xl font-serif text-[#D4A574] mb-4">"Humans are animals, too."</p>
-                <p class="mb-4">We forget this at our peril. For 99% of human history, "education" did not exist. Learning was simply <em>living</em>.</p>
-                <p class="mb-4">Wolves do not have schools. They have the pack and the hunt. Children in hunter-gatherer societies do not have classrooms. They have the forest and the tribe. In this paradigm, learning is:</p>
-                <ul class="list-disc pl-5 space-y-2 mb-4 text-[#2D3561]/80">
-                    <li><strong>Contextual:</strong> You learn to track because you need to eat.</li>
-                    <li><strong>Embodied:</strong> You learn with your hands, your feet, your senses.</li>
-                    <li><strong>Social:</strong> You learn by watching your elders and playing with your peers.</li>
-                </ul>
-                <p class="font-sans text-lg text-[#2D3561]/80">This is the biological substrate of our brains. Every other paradigm is an overlay on top of this fundamental truth.</p>
+            <ExpandableContent title="Biological Learning (Animal Wisdom)" subtitle="The Original Paradigm" icon="🐾">
+                <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80">
+                    <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"Humans are animals, too."</p>
+                    <p>We forget this at our peril. For 99% of human history, "education" did not exist. Learning was simply <em>living</em>.</p>
+                    <p>In this paradigm, learning is contextual, embodied, and social. Every other paradigm is an overlay on top of this fundamental truth.</p>
+                </div>
             </ExpandableContent>
 
-            <ExpandableContent title="Industrial Model (Modern Schooling)" subtitle="The Factory System" icon="🏭" mode="panel">
-                <p class="text-xl font-serif text-[#D4A574] mb-4">"The Factory of Compliance."</p>
-                <p>Born in the 19th century to serve the needs of industrialization. The goal was not wisdom or flourishing; the goal was to produce standardized workers who could follow instructions, tolerate boredom, and read a manual.</p>
-                <p><strong>The Hidden Curriculum:</strong></p>
-                <ul class="list-disc pl-5 space-y-2 mb-4 text-[#2D3561]/80">
-                    <li><strong>Bells:</strong> Conditioning for factory shifts.</li>
-                    <li><strong>Rows:</strong> Isolation and surveillance.</li>
-                    <li><strong>Standardized Testing:</strong> Quality control for human capital.</li>
-                </ul>
-                <p>This model is not "broken"—it is working exactly as it was designed. It is just obsolete.</p>
+            <ExpandableContent title="Industrial Model (Modern Schooling)" subtitle="The Factory System" icon="🏭">
+                <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80">
+                    <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"The Factory of Compliance."</p>
+                    <p>Born to serve the needs of industrialization. The goal was standardized workers who could follow instructions and tolerate boredom. This model is not broken—it is just obsolete.</p>
+                </div>
             </ExpandableContent>
 
-            <ExpandableContent title="Montessori" subtitle="Prepared Environment" icon="🧸" mode="panel">
-                <p class="text-xl font-serif text-[#D4A574] mb-4">"Follow the Child."</p>
-                <p>Maria Montessori, a physician and scientist, observed that children have an innate, driven desire to learn—if the environment supports it.</p>
-                <p>In this paradigm, the teacher is not a lecturer but a gardener. They prepare the soil (the environment) and protect the seed (the child's concentration). The result is autonomy, dignity, and a profound love of work.</p>
+            <ExpandableContent title="Montessori" subtitle="Prepared Environment" icon="🧸">
+                <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80">
+                    <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"Follow the Child."</p>
+                    <p>Maria Montessori discovered that children have an innate desire to learn. Here, the teacher is a gardener, preparing the soil and protecting the seed of concentration.</p>
+                </div>
             </ExpandableContent>
 
-            <ExpandableContent title="Democratic Education" subtitle="Radical Agency" icon="🗳️" mode="panel">
-                <p class="text-xl font-serif text-[#D4A574] mb-4">"No learning without consent."</p>
-                <p>Schools like Sudbury Valley operate on a radical premise: children are people, and people have rights. In these schools, a 6-year-old has the same vote as the principal on school rules and budget.</p>
-                <p>The lesson here is citizenship itself. You do not learn democracy by reading about it in a dictatorship; you learn it by practicing it.</p>
+            <ExpandableContent title="Democratic Education" subtitle="Radical Agency" icon="🗳️">
+                <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80">
+                    <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"No learning without consent."</p>
+                    <p>Children are people with rights. You do not learn democracy by reading about it in a dictatorship; you learn it by practicing it.</p>
+                </div>
             </ExpandableContent>
 
-            <ExpandableContent title="Unschooling" subtitle="Life Learning" icon="🏡" mode="panel">
-                <p class="text-xl font-serif text-[#D4A574] mb-4">"The world is bigger than a building."</p>
-                <p>Rejecting the institution entirely. Unschooling trusts that living a rich, engaged life in the real world provides a superior education to artificial separation.</p>
+             <ExpandableContent title="Indigenous Knowledge Systems" subtitle="Land & Lineage" icon="🌿">
+                <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80">
+                    <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"We are the land."</p>
+                    <p>Knowledge is not an object to be possessed; it is a relationship to be maintained. Integration of spirit and matter across generations.</p>
+                </div>
             </ExpandableContent>
 
-             <ExpandableContent title="Indigenous Knowledge Systems" subtitle="Land & Lineage" icon="🌿" mode="panel">
-                <p class="text-xl font-serif text-[#D4A574] mb-4">"We are the land."</p>
-                <p>Knowledge is not an object to be possessed; it is a relationship to be maintained. Indigenous pedagogies emphasize specific connection to place, responsibility to community, and the integration of spirit and matter.</p>
-            </ExpandableContent>
-
-        </div>
-    </section>
+        </section>
+    </div>
 </Layout>

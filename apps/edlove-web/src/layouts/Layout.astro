@@ -4,6 +4,7 @@ import Navigation from '../components/Navigation.astro';
 import SidePanel from '../components/SidePanel.astro';
 import CenterModal from '../components/CenterModal.astro';
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 ---
 
 <!doctype html>
@@ -15,19 +16,19 @@ import '../styles/global.css';
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
 		
-		<!-- Google Fonts: Libre Baskerville, Inter, Cinzel -->
+		<!-- Google Fonts: Cormorant Garamond & Outfit -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 		
 		<title>EdLove | The Educational Transformation Ecosystem</title>
+		<ClientRouter />
 	</head>
-	<!-- UPDATED BACKGROUND: Warm, Living Canvas (Sand/Paper tone) to remove darkness -->
-	<body class="antialiased min-h-screen flex flex-col bg-transparent text-[#2D3561]">
+	<body class="antialiased min-h-screen flex flex-col bg-transparent text-[var(--color-midnightInk)]">
 		<Navigation />
         <SidePanel />
         <CenterModal />
-		<main class="flex-grow">
+		<main class="flex-grow pt-[var(--spacing-nav-height)]">
 			<slot />
 		</main>
 		<Footer />

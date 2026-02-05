@@ -2,55 +2,55 @@
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="relative z-10 bg-[#FAF7F2] border-t border-[#2D3561]/10 py-16 px-6">
-    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
-        <!-- Brand -->
-        <div class="space-y-4">
-            <div class="flex items-center gap-2">
-                <span class="text-3xl">🕊️</span>
-                <span class="font-serif text-2xl font-bold text-[#2D3561]">EdLove</span>
+<footer class="relative z-10 py-48 mt-48 bg-[var(--color-warmGrey)] border-t border-[var(--color-midnightInk)]/5">
+    <div class="sanctuary-container">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-20">
+            <!-- Brand Part: Icon Only -->
+            <div class="md:col-span-4 space-y-10">
+                <span class="text-4xl">🕊️</span>
+                <p class="font-serif text-2xl text-[var(--color-midnightInk)]/60 leading-relaxed italic">
+                    "For the hands that hold the future."
+                </p>
             </div>
-            <p class="font-sans text-sm text-[#2D3561]/60 leading-relaxed">
-                Transforming the educational landscape of Sri Lanka through philosophy, technology, and community.
+
+            <!-- Links Grid -->
+            <div class="md:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-12">
+                <div>
+                    <span class="font-sans text-sm uppercase tracking-[0.2em] font-bold text-[var(--color-agedGold)] mb-8 block">Exploration</span>
+                    <ul class="space-y-4">
+                        <li><a href="/cosmos" class="font-serif text-lg text-[var(--color-midnightInk)]/80 hover:text-[var(--color-agedGold)] transition-colors">Cosmos</a></li>
+                        <li><a href="/about" class="font-serif text-lg text-[var(--color-midnightInk)]/80 hover:text-[var(--color-agedGold)] transition-colors">Vision</a></li>
+                        <li><a href="/library" class="font-serif text-lg text-[var(--color-midnightInk)]/80 hover:text-[var(--color-agedGold)] transition-colors">Library</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                     <span class="font-sans text-sm uppercase tracking-[0.2em] font-bold text-[var(--color-agedGold)] mb-8 block">Sanctuary</span>
+                     <ul class="space-y-4">
+                         <li><a href="/community" class="font-serif text-lg text-[var(--color-midnightInk)]/80 hover:text-[var(--color-agedGold)] transition-colors">Sangha</a></li>
+                         <li><a href="/resources" class="font-serif text-lg text-[var(--color-midnightInk)]/80 hover:text-[var(--color-agedGold)] transition-colors">Resources</a></li>
+                         <li><a href="/gurudevi" class="font-serif text-lg text-[var(--color-midnightInk)]/80 hover:text-[var(--color-agedGold)] transition-colors">Gurudevi</a></li>
+                     </ul>
+                </div>
+
+                <div class="col-span-2 md:col-span-1">
+                     <span class="font-sans text-sm uppercase tracking-[0.2em] font-bold text-[var(--color-agedGold)] mb-8 block">Presence</span>
+                     <div class="flex gap-6">
+                        <a href="#" class="text-[var(--color-midnightInk)]/40 hover:text-[var(--color-agedGold)] transition-colors">Instagram</a>
+                        <a href="#" class="text-[var(--color-midnightInk)]/40 hover:text-[var(--color-agedGold)] transition-colors">Substack</a>
+                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-32 pt-12 border-t border-[var(--color-midnightInk)]/5 flex flex-col md:flex-row justify-between items-center gap-8">
+            <p class="font-sans text-sm uppercase tracking-[0.2em] font-medium text-[var(--color-midnightInk)]/50">
+                © {currentYear} EdLove Platform • Colombo, Sri Lanka
             </p>
-        </div>
-
-        <!-- Links -->
-        <div>
-            <h4 class="font-serif text-[#2D3561] font-bold mb-6">Explorations</h4>
-            <ul class="space-y-3">
-                <li><a href="/cosmos" class="text-sm text-[#2D3561]/60 hover:text-[#D4A574] transition-colors">The Paradigm Cosmos</a></li>
-                <li><a href="/gurudevi" class="text-sm text-[#2D3561]/60 hover:text-[#D4A574] transition-colors">Gurudevi</a></li>
-                <li><a href="/library" class="text-sm text-[#2D3561]/60 hover:text-[#D4A574] transition-colors">The Library</a></li>
-            </ul>
-        </div>
-
-        <div>
-            <h4 class="font-serif text-[#2D3561] font-bold mb-6">Sangha</h4>
-            <ul class="space-y-3">
-                <li><a href="/community" class="text-sm text-[#2D3561]/60 hover:text-[#D4A574] transition-colors">Join Community</a></li>
-                <li><a href="/resources" class="text-sm text-[#2D3561]/60 hover:text-[#D4A574] transition-colors">Our Ecosystem</a></li>
-                <li><a href="/about" class="text-sm text-[#2D3561]/60 hover:text-[#D4A574] transition-colors">Our Vision</a></li>
-            </ul>
-        </div>
-
-        <div>
-            <h4 class="font-serif text-[#2D3561] font-bold mb-6">Connect</h4>
-            <p class="text-sm text-[#2D3561]/60 mb-4">Stay updated on our progress.</p>
-            <div class="flex gap-4">
-                <a href="#" class="w-10 h-10 rounded-full bg-[#2D3561]/5 border border-[#2D3561]/10 flex items-center justify-center hover:bg-[#D4A574]/20 transition-all">
-                    <span class="text-sm">𝕏</span>
-                </a>
-                <a href="#" class="w-10 h-10 rounded-full bg-[#2D3561]/5 border border-[#2D3561]/10 flex items-center justify-center hover:bg-[#D4A574]/20 transition-all">
-                    <span class="text-sm">📸</span>
-                </a>
+            <div class="flex gap-8">
+                 <a href="/privacy" class="font-sans text-sm uppercase tracking-[0.2em] font-medium text-[var(--color-midnightInk)]/50 hover:text-[var(--color-midnightInk)]">Privacy</a>
+                 <a href="/terms" class="font-sans text-sm uppercase tracking-[0.2em] font-medium text-[var(--color-midnightInk)]/50 hover:text-[var(--color-midnightInk)]">Terms</a>
             </div>
         </div>
-    </div>
-
-    <div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-[#2D3561]/5 text-center">
-        <p class="text-xs text-[#2D3561]/40 uppercase tracking-widest">
-            © {new Date().getFullYear()} EdLove Platform. For the dignity of the Sri Lankan teacher.
-        </p>
     </div>
 </footer>

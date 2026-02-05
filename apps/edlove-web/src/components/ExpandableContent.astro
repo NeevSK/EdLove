@@ -17,21 +17,21 @@ const { title, subtitle, icon, mode = 'panel' } = Astro.props;
 
 <div class="expandable-trigger-wrapper" data-mode={mode}>
   <button 
-    class="w-full text-left group p-6 rounded-xl bg-white/40 border border-[#2D3561]/20 shadow-sm hover:bg-white/60 hover:border-[#D4A574]/40 hover:shadow-[0_4px_20px_rgba(45,53,97,0.05)] transition-all duration-300 cursor-pointer flex items-center justify-between"
+    class="w-full text-left group p-8 rounded-2xl bg-white/40 border border-[var(--color-midnightInk)]/5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:bg-white/60 hover:border-[var(--color-agedGold)]/30 hover:shadow-[0_10px_40px_rgba(212,165,116,0.05)] transition-all duration-500 cursor-pointer flex items-center justify-between overflow-hidden relative shine-effect"
     data-title={title}
     data-subtitle={subtitle}
     data-icon={icon}
   >
-    <div class="flex items-center gap-4">
-      {icon && <span class="text-3xl filter drop-shadow-sm group-hover:scale-110 transition-transform duration-300">{icon}</span>}
+    <div class="flex items-center gap-6 relative z-10">
+      {icon && <span class="text-4xl filter drop-shadow-sm group-hover:scale-110 transition-transform duration-700 ease-out">{icon}</span>}
       <div>
-        <h3 class="font-serif text-xl text-[#2D3561] group-hover:text-[#D4A574] transition-colors duration-300">{title}</h3>
-        {subtitle && <p class="font-sans text-xs text-[#2D3561]/60 uppercase tracking-widest mt-1 font-bold">{subtitle}</p>}
+        <h3 class="font-serif text-3xl text-[var(--color-midnightInk)] group-hover:text-[var(--color-agedGold)] transition-colors duration-500 leading-tight">{title}</h3>
+        {subtitle && <p class="font-sans text-[10px] text-[var(--color-midnightInk)]/40 uppercase tracking-[0.25em] mt-2 font-bold">{subtitle}</p>}
       </div>
     </div>
     
-    <span class="text-[#D4A574] opacity-50 text-sm font-sans uppercase tracking-widest group-hover:translate-x-1 transition-transform">
-        Open
+    <span class="text-[var(--color-agedGold)] opacity-30 text-[10px] font-sans uppercase tracking-[0.3em] group-hover:translate-x-2 transition-transform duration-500 font-bold relative z-10">
+        Reveal
     </span>
   </button>
 
@@ -42,27 +42,40 @@ const { title, subtitle, icon, mode = 'panel' } = Astro.props;
 </div>
 
 <script>
-  // Find all triggers in this component instance
-  
-  const wrappers = document.querySelectorAll('.expandable-trigger-wrapper');
+  function initExpandableContent() {
+    const wrappers = document.querySelectorAll('.expandable-trigger-wrapper');
 
-  wrappers.forEach(wrapper => {
-    const btn = wrapper.querySelector('button');
-    const contentDiv = wrapper.querySelector('.hidden-content');
-    const mode = wrapper.getAttribute('data-mode') || 'panel';
-    
-    btn?.addEventListener('click', () => {
-       const eventName = mode === 'modal' ? 'open-center-modal' : 'open-side-panel';
-       
-       const event = new CustomEvent(eventName, {
-           detail: {
-               title: btn.getAttribute('data-title'),
-               subtitle: btn.getAttribute('data-subtitle'),
-               icon: btn.getAttribute('data-icon'),
-               content: contentDiv?.innerHTML
-           }
-       });
-       window.dispatchEvent(event);
+    wrappers.forEach(wrapper => {
+      // Check if already bound to avoid duplicates in case of partial hydration issues, 
+      // though strict cleanup is better.
+      // Standard pattern: just attach. The elements are fresh if swapper replaces them.
+      // If elements persist, we might double bind.
+      
+      const btn = wrapper.querySelector('button');
+      const contentDiv = wrapper.querySelector('.hidden-content');
+      const mode = wrapper.getAttribute('data-mode') || 'panel';
+      
+      // Cleanup helper to remove potential old listeners? 
+      // Differs per element. Simpler to just ensure we don't attach if "bound".
+      if(btn?.getAttribute('data-bound') === 'true') return;
+      
+      btn?.addEventListener('click', () => {
+         const eventName = mode === 'modal' ? 'open-center-modal' : 'open-side-panel';
+         
+         const event = new CustomEvent(eventName, {
+             detail: {
+                 title: btn.getAttribute('data-title'),
+                 subtitle: btn.getAttribute('data-subtitle'),
+                 icon: btn.getAttribute('data-icon'),
+                 content: contentDiv?.innerHTML
+             }
+         });
+         window.dispatchEvent(event);
+      });
+      
+      btn?.setAttribute('data-bound', 'true');
     });
-  });
+  }
+
+  document.addEventListener('astro:page-load', initExpandableContent);
 </script>

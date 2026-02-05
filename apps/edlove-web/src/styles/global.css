@@ -1,15 +1,18 @@
 /* Import Google Fonts - EdLove Typography */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Libre+Baskerville:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 @import "tailwindcss";
 
 @keyframes float {
-  0%, 100% { 
-    transform: translateY(0px); 
+
+  0%,
+  100% {
+    transform: translateY(0px);
     opacity: 0.2;
   }
-  50% { 
-    transform: translateY(-30px); 
+
+  50% {
+    transform: translateY(-30px);
     opacity: 0.5;
   }
 }
@@ -19,42 +22,109 @@
 }
 
 @theme {
-  /* Sanctuary Palette */
-  --color-deepIndigo: #2D3561;
-  --color-warmGold: #D4A574;
-  --color-softWhite: #F5F1E8;
-  --color-forestGreen: #4A6357;
-  --color-dawnRose: #E8B4B8;
-  --color-skyBlue: #A8C5D6;
+  --color-warmPaper: hsl(38, 40%, 96%);
+  --color-midnightInk: hsl(230, 40%, 15%);
+  --color-agedGold: hsl(35, 50%, 55%);
+  --color-forestSlate: hsl(150, 20%, 40%);
 
-  /* Accents */
-  --color-cosmicPurple: #9B7EBD;
-  --color-emberOrange: #E07A5F;
-  --color-starlightSilver: #E8F4F8;
+  --font-serif: "Cormorant Garamond", serif;
+  --font-sans: "Outfit", sans-serif;
 
-  /* Typography */
-  --font-serif: "Libre Baskerville", serif;
-  --font-sans: "Inter", sans-serif;
-  --font-display: "Cinzel", serif;
+  --spacing-nav-height: 200px;
+  --spacing-section-gap: 60px;
+  --color-warmGrey: hsl(38, 20%, 90%);
 }
 
 /* Base Styles */
 html {
-  background-color: #FAF7F2;
-  color: #2D3561;
+  background-color: var(--color-warmPaper);
+  color: var(--color-midnightInk);
   font-family: var(--font-sans);
   scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
 h1,
 h2,
 h3,
 h4,
-h5,
-h6 {
+.font-serif {
   font-family: var(--font-serif);
-  color: var(--color-warmGold);
-  /* Gold for Titles */
+  font-weight: 500;
+}
+
+/* The Sanctuary Grid */
+.sanctuary-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Animations */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* The Floating Pill - Refined for Operational Identity */
+.floating-pill {
+  /* background managed by component for opacity control */
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(45, 53, 97, 0.1);
+  /* Subtle MidnightInk border */
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03),
+    0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  border-radius: 100px;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-pill:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: var(--color-agedGold);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Micro-Shine */
+.shine-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-effect::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent);
+  transform: rotate(45deg);
+  transition: 0.8s;
+}
+
+.shine-effect:hover::after {
+  left: 100%;
 }
 
 /* Utilities */
