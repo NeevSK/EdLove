@@ -16,6 +16,7 @@ import { hapticSuccess } from '../utils/haptics';
 import IdentityCard from '../components/profile/IdentityCard';
 import ControlScroll from '../components/profile/ControlScroll';
 import EditProfileModal from '../components/profile/EditProfileModal';
+import GlobalHeader from '../components/shared/GlobalHeader';
 
 export default function ProfileScreen() {
     const { t, i18n } = useTranslation();
@@ -93,10 +94,13 @@ export default function ProfileScreen() {
 
     return (
         <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+            <GlobalHeader
+                title={t('profile.title') || 'Identity'}
+                subtitle="Sanctuary Profile"
+            />
             <ScrollView
                 contentContainerStyle={{
                     padding: Theme.spacing.lg,
-                    paddingTop: 60, // Space for status bar/header
                 }}
                 refreshControl={
                     <RefreshControl
@@ -107,11 +111,6 @@ export default function ProfileScreen() {
                 }
             >
                 <VStack space="2xl">
-                    {/* Header Title */}
-                    <Heading size="2xl" color={Theme.colors.sacredWhite}>
-                        {t('profile.title') || 'Identity'}
-                    </Heading>
-
                     {/* Identity Card (Front/Back) */}
                     <Center>
                         <IdentityCard

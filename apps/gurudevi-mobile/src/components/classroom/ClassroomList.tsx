@@ -91,7 +91,7 @@ export default function ClassroomList({ onClassroomPress }: ClassroomListProps) 
         return (
             <View style={styles.centerContainer}>
                 <Text style={styles.errorText}>⚠️ {error}</Text>
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={styles.retryButton}
                     onPress={handleRetry}
                 >
@@ -105,14 +105,14 @@ export default function ClassroomList({ onClassroomPress }: ClassroomListProps) 
     if (classrooms.length === 0) {
         return (
             <View style={styles.centerContainer}>
-                <BookOpen 
-                    size={64} 
+                <BookOpen
+                    size={64}
                     color={Theme.colors.mistGray}
                     style={styles.emptyIcon}
                 />
                 <Text style={styles.emptyTitle}>No Classrooms Yet</Text>
                 <Text style={styles.emptyDescription}>
-                    {role === 'teacher' 
+                    {role === 'teacher'
                         ? "You haven't been assigned to any classrooms yet."
                         : "You haven't enrolled in any classrooms yet."}
                 </Text>
@@ -122,14 +122,10 @@ export default function ClassroomList({ onClassroomPress }: ClassroomListProps) 
 
     // Classroom list
     return (
-        <ScrollView 
+        <ScrollView
             style={styles.container}
             contentContainerStyle={styles.contentContainer}
         >
-            <Heading style={styles.heading}>
-                {role === 'teacher' ? 'My Classes' : 'My Classrooms'}
-            </Heading>
-            
             <VStack space="md">
                 {classrooms.map((classroom) => (
                     <TouchableOpacity
@@ -141,8 +137,8 @@ export default function ClassroomList({ onClassroomPress }: ClassroomListProps) 
                             <HStack space="md" style={styles.cardContent}>
                                 {/* Icon */}
                                 <View style={styles.iconContainer}>
-                                    <BookOpen 
-                                        size={24} 
+                                    <BookOpen
+                                        size={24}
                                         color={Theme.colors.sanctuarySaffron}
                                     />
                                 </View>
@@ -158,7 +154,7 @@ export default function ClassroomList({ onClassroomPress }: ClassroomListProps) 
                                         </Text>
                                     )}
                                     {classroom.description && (
-                                        <Text 
+                                        <Text
                                             style={styles.classroomDescription}
                                             numberOfLines={2}
                                         >
@@ -168,8 +164,8 @@ export default function ClassroomList({ onClassroomPress }: ClassroomListProps) 
                                 </VStack>
 
                                 {/* Arrow */}
-                                <ChevronRight 
-                                    size={20} 
+                                <ChevronRight
+                                    size={20}
                                     color={Theme.colors.mistGray}
                                 />
                             </HStack>

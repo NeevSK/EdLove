@@ -9,6 +9,7 @@ import React from 'react';
 import { Box, Text, Heading, VStack, Center } from "@gluestack-ui/themed";
 import { Theme } from '../../constants/Theme';
 import { useTranslation } from 'react-i18next';
+import GlobalHeader from '../../components/shared/GlobalHeader';
 
 // Shared container styling for role-based views
 const ROLE_VIEW_CONTAINER_STYLE = {
@@ -19,28 +20,23 @@ const ROLE_VIEW_CONTAINER_STYLE = {
 
 export default function SectionHeadView() {
     const { t } = useTranslation();
-    
+
     return (
         <Box sx={ROLE_VIEW_CONTAINER_STYLE}>
             <VStack space="lg">
-                <Heading 
-                    size="2xl" 
-                    color={Theme.colors.sanctuarySaffron}
-                >
-                    {t('classroom.sectionOverview') || 'Section Overview'}
-                </Heading>
-                
+                <GlobalHeader title={t('classroom.sectionOverview') || 'Section Overview'} />
+
                 <Center sx={{ flex: 1, marginTop: Theme.spacing.xl }}>
                     <VStack space="md" alignItems="center">
-                        <Text 
-                            size="lg" 
+                        <Text
+                            size="lg"
                             color={Theme.colors.sacredWhite}
                             textAlign="center"
                         >
                             {t('classroom.sectionHeadWelcome') || 'Welcome, Section Head!'}
                         </Text>
-                        <Text 
-                            size="md" 
+                        <Text
+                            size="md"
                             color={Theme.colors.pearlGray}
                             textAlign="center"
                         >

@@ -19,6 +19,8 @@ import PrincipalSchoolView from './classroom/PrincipalSchoolView';
 import SectionHeadView from './classroom/SectionHeadView';
 import GradeHeadView from './classroom/GradeHeadView';
 import ClassroomList from '../components/classroom/ClassroomList';
+import GlobalHeader from '../components/shared/GlobalHeader';
+import { useTranslation } from 'react-i18next';
 
 // Shared container styling for role-based views
 const ROLE_VIEW_CONTAINER_STYLE = {
@@ -28,6 +30,7 @@ const ROLE_VIEW_CONTAINER_STYLE = {
 };
 
 export default function ClassroomScreen() {
+    const { t } = useTranslation();
     const { role } = useUserRole();
     const [loading, setLoading] = useState(true);
     const [principalData, setPrincipalData] = useState<{ schoolId: string, userId: string } | null>(null);
@@ -88,13 +91,19 @@ export default function ClassroomScreen() {
 
     // Default view for teachers and students
     return (
-        <Box sx={ROLE_VIEW_CONTAINER_STYLE}>
-            <ClassroomList
-                onClassroomPress={(classroom) => {
-                    // TODO: Navigate to classroom details
-                    console.log('Classroom pressed:', classroom);
-                }}
+        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+            <GlobalHeader
+                title={role === 'teacher' ? (t('classroom.myClasses') || 'My Classes') : (t('classroom.myClassrooms') || 'My Classrooms')}
+                subtitle={role === 'teacher' ? 'Teaching' : 'Enrolled'}
             />
+            <Box sx={{ flex: 1, padding: Theme.spacing.lg }}>
+                <ClassroomList
+                    onClassroomPress={(classroom) => {
+                        // TODO: Navigate to classroom details
+                        console.log('Classroom pressed:', classroom);
+                    }}
+                />
+            </Box>
         </Box>
     );
 }

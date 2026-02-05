@@ -1,12 +1,21 @@
 import React from 'react';
-import { Box, Text, Center, Heading } from "@gluestack-ui/themed";
+import { Box, Text, Center } from "@gluestack-ui/themed";
+import GlobalHeader from '../components/shared/GlobalHeader';
+import { Theme } from '../constants/Theme';
+import { useTranslation } from 'react-i18next';
 
 export default function LibraryScreen() {
+    const { t } = useTranslation();
     return (
-        <Box sx={{ flex: 1, backgroundColor: '$backgroundDark950', padding: '$4' }}>
+        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+            <GlobalHeader
+                title={t('tabs.library') || 'Library'}
+                subtitle="Knowledge Sanctuary"
+            />
             <Center sx={{ flex: 1 }}>
-                <Heading color="$orange500">Library</Heading>
-                <Text color="$textDark200">Explore our vast collection of knowledge.</Text>
+                <Text color={Theme.colors.mistGray}>
+                    Explore our vast collection of knowledge.
+                </Text>
             </Center>
         </Box>
     );
