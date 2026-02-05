@@ -4,18 +4,22 @@ import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { GluestackUIProvider, Box, Spinner, Center } from "@gluestack-ui/themed";
-import { config } from "@gluestack-ui/config";
+import { config } from "./gluestack-ui.config";
 import { Home, School, Users, Library, User } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
 import * as Font from 'expo-font';
 import { supabase } from './src/lib/supabase';
 import { Theme } from './src/constants/Theme';
 import { fontAssets } from './src/constants/Fonts';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Import screens and navigation
 import AuthScreen from './src/screens/AuthScreen';
 import TabNavigator from './src/navigation/TabNavigator';
-import LotusPetalFAB, { ActionItem } from './src/components/LotusPetalFAB';
+import LotusPetalFAB, { ActionItem } from './src/components/shared/LotusPetalFAB';
+
+// Create a client
+const queryClient = new QueryClient();
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -58,12 +62,6 @@ export default function App() {
   const handleFabPress = () => {
     // TODO: Implement specific actions for each tab
     console.log(`FAB pressed in ${currentTab} tab`);
-    // Example logic (can be expanded later):
-    // switch (currentTab) {
-    //   case 'self': router.push('/log-mood'); break;
-    //   case 'classroom': router.push('/create-lesson'); break;
-    //   ...
-    // }
   };
 
   // Define context-aware actions for each tab
@@ -116,24 +114,26 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <GluestackUIProvider config={config}>
-        {!session ? (
-          <AuthScreen />
-        ) : (
-          <NavigationContainer>
-            <TabNavigator
-              onTabChange={(tabName) => {
-                setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
-              }}
-            />
-            <LotusPetalFAB
-              currentTab={currentTab}
-              onPress={handleFabPress}
-              actions={getFabActions()}
-            />
-          </NavigationContainer>
-        )}
-      </GluestackUIProvider>
+      <QueryClientProvider client={queryClient}>
+        <GluestackUIProvider config={config}>
+          {!session ? (
+            <AuthScreen />
+          ) : (
+            <NavigationContainer>
+              <TabNavigator
+                onTabChange={(tabName) => {
+                  setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
+                }}
+              />
+              <LotusPetalFAB
+                currentTab={currentTab}
+                onPress={handleFabPress}
+                actions={getFabActions()}
+              />
+            </NavigationContainer>
+          )}
+        </GluestackUIProvider>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }

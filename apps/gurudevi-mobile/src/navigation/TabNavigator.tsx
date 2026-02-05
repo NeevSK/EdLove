@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import LotusPetalFAB from '../components/LotusPetalFAB';
+import LotusPetalFAB from '../components/shared/LotusPetalFAB';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@gluestack-style/react';
 import { Theme } from '../constants/Theme';

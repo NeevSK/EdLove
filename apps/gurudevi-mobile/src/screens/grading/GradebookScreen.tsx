@@ -27,7 +27,7 @@ import { TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { StudentGrade, ClassroomGradingSettings } from '../../types/Grade';
 import { api } from '../../lib/api';
-import GradebookTable from '../../components/GradebookTable';
+import GradebookTable from '../../components/grading/GradebookTable';
 import GradingSettings from '../../components/grading/GradingSettings';
 import Theme from '../../constants/Theme';
 
