@@ -13,7 +13,20 @@
         "done": "අවසන්",
         "loading": "පූරණය වෙමින්...",
         "error": "දෝෂයකි",
-        "success": "සාර්ථකයි"
+        "success": "සාර්ථකයි",
+        "greeting": "ආයුබෝවන්, {{name}}!",
+        "create": "සාදන්න"
+    },
+    "greeting": {
+        "ayubowan": "ආයුබෝවන්!"
+    },
+    "role": {
+        "teacher": "ගුරුවරයා",
+        "student": "ශිෂ්‍යයා",
+        "principal": "විදුහල්පතිවරයා"
+    },
+    "school": {
+        "personal_workspace": "පෞද්ගලික වැඩබිම"
     },
     "auth": {
         "login": "පිවිසෙන්න",
@@ -67,6 +80,19 @@
     "classroom": {
         "title": "පන්තිය",
         "description": "ඔබේ ඉගැන්වීම් ගමන මෙතැනින් විහිදේ",
+        "dashboardIntro": "ඔබේ සන්සුන් වැඩබිමට සාදරයෙන් පිළිගනිමු. ඔබේ පන්ති කාර්යක්ෂමව කළමනාකරණය කරන්න.",
+        "createClass": "පන්තියක් සාදන්න",
+        "attendance": "පැමිණීම",
+        "library": "පුස්තකාලය",
+        "statActiveClasses": "සක්‍රීය පන්ති",
+        "statTotalStudents": "මුළු ශිෂ්‍ය සංඛ්‍යාව",
+        "yourClassrooms": "ඔබේ පන්ති කාමර",
+        "createTitle": "නව පන්තියක් සාදන්න",
+        "errorNameRequired": "පන්තියේ නම අවශ්‍ය වේ",
+        "labelName": "පන්තියේ නම",
+        "placeholderName": "උදා: 10 ශ්‍රේණිය ගණිතය",
+        "labelSubject": "විෂය (විකල්ප)",
+        "placeholderSubject": "උදා: ගණිතය",
         "createLesson": "පාඩමක් සාදන්න",
         "viewStudents": "ශිෂ්‍යයින් බලන්න",
         "assignments": "පැවරුම්",
