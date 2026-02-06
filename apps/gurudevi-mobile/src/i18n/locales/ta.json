@@ -145,7 +145,9 @@
         "yourPedagogyJournal": "உங்கள் தனிப்பட்ட கற்பித்தல் பதிவேடு 📝",
         "exampleInsights": "உதாரண நுண்ணறிவுகள்:",
         "needInspiration": "ஊக்கம் வேண்டுமா? முயற்சிக்கவும்:",
-        "threeGentleThings": "நாளை மென்மையாக்கும் 3 விஷயங்கள் என்ன? 🌙"
+        "threeGentleThings": "நாளை மென்மையாக்கும் 3 விஷயங்கள் என்ன? 🌙",
+        "insightPlaceholder": "இன்று நீங்கள் கண்டுபிடித்த கற்பித்தல் நுண்ணறிவு என்ன?",
+        "momentDescriptionPlaceholder": "மாயா இன்று பின்னங்களை புரிந்து கொண்டாள்! 🎉"
     },
     "classroom": {
         "title": "வகுப்பு",

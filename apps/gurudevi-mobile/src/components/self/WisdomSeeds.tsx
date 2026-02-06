@@ -189,7 +189,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
               }}
             >
               <InputField
-                placeholder="What teaching insight did you discover today?"
+                placeholder={t('self.insightPlaceholder')}
                 value={insight}
                 onChangeText={setInsight}
                 multiline

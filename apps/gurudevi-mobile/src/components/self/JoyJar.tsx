@@ -259,7 +259,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
               }}
             >
               <InputField
-                placeholder={t('self.momentDescription')}
+                placeholder={t('self.momentDescriptionPlaceholder')}
                 value={momentDescription}
                 onChangeText={setMomentDescription}
                 multiline

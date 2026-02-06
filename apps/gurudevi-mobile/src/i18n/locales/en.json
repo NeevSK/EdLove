@@ -145,7 +145,9 @@
         "yourPedagogyJournal": "Your personal pedagogy journal 📝",
         "exampleInsights": "Example insights:",
         "needInspiration": "Need inspiration? Try:",
-        "threeGentleThings": "What 3 things would make tomorrow gentler? 🌙"
+        "threeGentleThings": "What 3 things would make tomorrow gentler? 🌙",
+        "insightPlaceholder": "What teaching insight did you discover today?",
+        "momentDescriptionPlaceholder": "Maya finally understood fractions today! 🎉"
     },
     "classroom": {
         "title": "Classroom",
