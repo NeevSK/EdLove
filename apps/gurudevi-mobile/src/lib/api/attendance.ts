@@ -67,6 +67,7 @@ export const attendanceAPI = {
 
     /**
      * Batch update attendance records
+     * IMPORTANT: All records must belong to the same classroom
      */
     async batchRecord(records: Array<{
         classroom_id: string;
@@ -74,10 +75,18 @@ export const attendanceAPI = {
         status: AttendanceRecord['status'];
         date: string;
     }>): Promise<AttendanceRecord[]> {
-        // Verify authorization for the first classroom (assuming all records are for same classroom)
-        if (records.length > 0) {
-            await requireClassroomAccess(records[0].classroom_id);
+        if (records.length === 0) {
+            return [];
         }
+
+        // Validate all records belong to the same classroom
+        const uniqueClassroomIds = new Set(records.map(r => r.classroom_id));
+        if (uniqueClassroomIds.size > 1) {
+            throw new APIError('All attendance records must belong to the same classroom', 'INVALID_REQUEST');
+        }
+
+        // Verify authorization for the classroom
+        await requireClassroomAccess(records[0].classroom_id);
         
         const { data, error } = await supabase
             .from('attendance')

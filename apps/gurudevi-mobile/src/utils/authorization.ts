@@ -106,7 +106,7 @@ export async function requireStudentAccess(studentId: string) {
     }
     
     // Check if user is a teacher with access to this student
-    // (This assumes teacher has access if student is in any of their classrooms)
+    // Authorization rule: Teachers can access students enrolled in their classrooms
     const { data: classrooms } = await supabase
         .from('classroom_students')
         .select('classroom_id')

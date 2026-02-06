@@ -283,7 +283,7 @@ const ClassroomCard = React.memo(({ classroom, onPress, studentCount }: Classroo
         onPress(classroom);
     }, [classroom, onPress]);
 
-    const handleAttendancePress = useCallback((e: any) => {
+    const handleAttendancePress = useCallback((e: React.TouchEvent | any) => {
         e.stopPropagation();
         hapticLight();
         // TODO: Navigate to Attendance for this class
