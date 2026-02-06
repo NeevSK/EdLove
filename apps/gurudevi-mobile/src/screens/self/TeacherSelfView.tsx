@@ -21,10 +21,9 @@ import {
     Button,
     ButtonText
 } from "@gluestack-ui/themed";
-import { Mic, Send, MessageCircle, Repeat, Sun, FileText, Flower, Flame, Sparkles, Heart, Lightbulb, Calendar, Battery, Moon } from 'lucide-react-native';
+import { Mic, Send, MessageCircle, Repeat, Flower, Flame, Sparkles, Heart, Lightbulb, Calendar, Battery, Moon } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';
-import { getGreetingKey } from '../../utils/time';
 import { hapticLight } from '../../utils/haptics';
 import DailyRhythm from '../../components/self/DailyRhythm';
 import { 
@@ -63,7 +62,6 @@ export default function TeacherSelfView() {
     const [activeFeature, setActiveFeature] = useState('mood');
     const [userId, setUserId] = useState<string | null>(null);
     const [showMoreTools, setShowMoreTools] = useState(false);
-    const greetingKey = getGreetingKey(); // Get i18n key based on time
 
     // Get current user on mount
     React.useEffect(() => {
