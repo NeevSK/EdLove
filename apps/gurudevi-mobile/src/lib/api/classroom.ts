@@ -8,7 +8,7 @@ import { requireTeacherAccess } from '../../utils/authorization';
 
 export const lessonsAPI = {
     /**
-     * Get all lessons for a teacher
+     * Get all lessons for a classroom
      */
     async getAll(teacherId: string): Promise<Lesson[]> {
         // Verify authorization
@@ -17,8 +17,8 @@ export const lessonsAPI = {
         const { data, error } = await supabase
             .from('lessons')
             .select('*')
-            .eq('teacher_id', teacherId)
-            .order('date', { ascending: false });
+            .eq('classroom_id', classroomId)
+            .order('order_index', { ascending: true });
 
         if (error) {
             throw new APIError('Failed to fetch lessons', error.code, error);

@@ -1,16 +1,3 @@
-/**
- * LESSON FEED COMPONENT
- * 
- * Timeline view for students to see lessons and assignments.
- * Features:
- * - Chronological list of lessons and assignments
- * - "Read" button for lessons
- * - "Submit" button for assignments (changes color if late)
- * - Sort by created_at DESC
- * 
- * Mission 05: Student Path
- */
-
 import React, { useState, useEffect } from 'react';
 import {
     VStack,
@@ -22,299 +9,358 @@ import {
     Button,
     ButtonText,
     Spinner,
+    Icon,
 } from '@gluestack-ui/themed';
-import { TouchableOpacity } from 'react-native';
+import { ChevronDown, ChevronUp, FileText, Link as LinkIcon, Edit2, Trash2, Plus } from 'lucide-react-native';
+import { TouchableOpacity, LayoutAnimation } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';
-import { Lesson } from '../../lib/api/types';
+import { Lesson, Assignment, LessonMaterial } from '../../lib/api/types';
 import Theme from '../../constants/Theme';
-
-interface Assignment {
-    id: string;
-    title: string;
-    description?: string;
-    due_date: string;
-    classroom_id: string;
-    created_at: string;
-}
 
 interface LessonFeedProps {
     classroomId: string;
+    isTeacher?: boolean;
     onOpenLesson?: (lessonId: string) => void;
     onOpenAssignment?: (assignmentId: string) => void;
+    onOpenMaterial?: (material: LessonMaterial) => void;
+    onAddMaterial?: (lessonId: string) => void;
+    onAddAssignment?: (lessonId: string) => void;
+    onEditItem?: (item: any, type: 'material' | 'assignment') => void;
+    onDeleteItem?: (id: string, type: 'material' | 'assignment') => void;
+    refreshTrigger?: number;
 }
 
-type FeedItem = (Lesson | Assignment) & { type: 'lesson' | 'assignment' };
-
+interface MonthlyGroup {
+    monthTitle: string;
+    lessonId?: string; // Present if already created in DB
+    materials: LessonMaterial[];
+    assignments: Assignment[];
+}
 export default function LessonFeed({
     classroomId,
+    isTeacher = false,
     onOpenLesson,
     onOpenAssignment,
+    onOpenMaterial,
+    onAddMaterial,
+    onAddAssignment,
+    onEditItem,
+    onDeleteItem,
+    refreshTrigger,
 }: LessonFeedProps) {
     const { t } = useTranslation();
-    const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
+    const getCalendarScaffold = () => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"];
+
+        return monthNames.map(name => ({
+            monthTitle: `${name} ${year}`,
+            materials: [],
+            assignments: [],
+        }));
+    };
+
+    const [monthlyGroups, setMonthlyGroups] = useState<MonthlyGroup[]>(getCalendarScaffold());
+    const [expandedLessons, setExpandedLessons] = useState<Record<string, boolean>>({});
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         loadFeed();
-    }, [classroomId]);
+    }, [classroomId, refreshTrigger]);
+
+    const isCurrentMonth = (title: string) => {
+        const now = new Date();
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"];
+        const currentMonthName = monthNames[now.getMonth()].toLowerCase();
+        const currentYear = now.getFullYear().toString();
+
+        const normalizedTitle = title.toLowerCase();
+        return normalizedTitle.includes(currentMonthName) && normalizedTitle.includes(currentYear);
+    };
 
     const loadFeed = async () => {
         setIsLoading(true);
         setError(null);
         try {
-            // Load lessons
-            const lessons = await api.lessons.getAll(classroomId);
-            const lessonItems: FeedItem[] = lessons.map((lesson) => ({
-                ...lesson,
-                type: 'lesson' as const,
-            }));
+            const [lessons, materials, assignments] = await Promise.all([
+                api.lessons.getAll(classroomId),
+                api.lessonMaterials.getAll(classroomId),
+                api.assignments.getAll(classroomId),
+            ]);
 
-            // In a real app, would also load assignments from assignments API
-            // For now, using lessons only
-            const allItems = [...lessonItems];
+            const now = new Date();
+            const year = now.getFullYear();
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
 
-            // Sort by created_at DESC (newest first)
-            allItems.sort(
-                (a, b) =>
-                    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-            );
+            const calendarGroups: MonthlyGroup[] = monthNames.map((name) => {
+                const monthTitle = `${name} ${year}`;
+                const existingLesson = lessons.find(l => l.title === monthTitle);
 
-            setFeedItems(allItems);
+                return {
+                    monthTitle,
+                    lessonId: existingLesson?.id,
+                    materials: materials.filter(m => m.lesson_id === existingLesson?.id),
+                    assignments: assignments.filter(a => a.lesson_id === existingLesson?.id),
+                };
+            });
+
+            setMonthlyGroups(calendarGroups);
+
+            // Expand current month by default
+            const currentMonthTitle = `${monthNames[now.getMonth()]} ${year}`;
+            if (Object.keys(expandedLessons).length === 0) {
+                setExpandedLessons({ [currentMonthTitle]: true });
+            }
         } catch (err: any) {
             console.error('Failed to load feed:', err);
-            setError(err.message || 'Failed to load feed');
+            setError(err.message || 'Failed to load feed data');
+            // Keep the scaffolded groups so teacher can still see the months
         } finally {
             setIsLoading(false);
         }
     };
 
-    const isAssignmentLate = (item: FeedItem): boolean => {
-        if (item.type === 'assignment' && 'due_date' in item) {
-            return new Date(item.due_date) < new Date();
-        }
-        return false;
+
+    const toggleLesson = (lessonId: string) => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setExpandedLessons(prev => ({
+            ...prev,
+            [lessonId]: !prev[lessonId],
+        }));
     };
 
-    const formatDate = (dateString: string): string => {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffMs = now.getTime() - date.getTime();
-        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-        if (diffDays === 0) {
-            return t('lessonFeed.today') || 'Today';
-        } else if (diffDays === 1) {
-            return t('lessonFeed.yesterday') || 'Yesterday';
-        } else if (diffDays < 7) {
-            return t('lessonFeed.daysAgo', { count: diffDays }) || `${diffDays} days ago`;
-        } else {
-            return date.toLocaleDateString();
-        }
-    };
-
-    return (
+    const renderMaterialCard = (material: LessonMaterial) => (
         <Box
+            key={material.id}
             sx={{
-                flex: 1,
-                backgroundColor: Theme.colors.voidIndigo,
+                padding: Theme.spacing.md,
+                backgroundColor: Theme.colors.deepIndigo,
+                borderRadius: Theme.corners.comfortable,
+                marginBottom: Theme.spacing.sm,
+                borderLeftWidth: 4,
+                borderLeftColor: Theme.colors.sanctuarySaffron,
             }}
         >
+            <HStack space="md" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                <TouchableOpacity onPress={() => onOpenMaterial?.(material)} style={{ flex: 1 }}>
+                    <HStack space="sm" sx={{ alignItems: 'center' }}>
+                        {material.type === 'pdf' ? (
+                            <FileText size={20} color={Theme.colors.sanctuarySaffron} />
+                        ) : (
+                            <LinkIcon size={20} color={Theme.colors.amberGlow} />
+                        )}
+                        <VStack>
+                            <Text color={Theme.colors.sacredWhite} size="md" sx={{ fontWeight: '600' }}>
+                                {material.title}
+                            </Text>
+                            <Text color={Theme.colors.mistGray} size="xs">
+                                {material.type.toUpperCase()}
+                            </Text>
+                        </VStack>
+                    </HStack>
+                </TouchableOpacity>
+
+                {isTeacher && (
+                    <HStack space="md">
+                        <TouchableOpacity onPress={() => onEditItem?.(material, 'material')}>
+                            <Edit2 size={18} color={Theme.colors.mistGray} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => onDeleteItem?.(material.id, 'material')}>
+                            <Trash2 size={18} color={Theme.colors.emberRed} />
+                        </TouchableOpacity>
+                    </HStack>
+                )}
+            </HStack>
+        </Box>
+    );
+
+    const renderAssignmentCard = (assignment: Assignment) => (
+        <Box
+            key={assignment.id}
+            sx={{
+                padding: Theme.spacing.md,
+                backgroundColor: Theme.colors.voidIndigo,
+                borderRadius: Theme.corners.comfortable,
+                marginBottom: Theme.spacing.sm,
+                borderLeftWidth: 4,
+                borderLeftColor: Theme.colors.sageGreen,
+            }}
+        >
+            <HStack space="md" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                <TouchableOpacity onPress={() => onOpenAssignment?.(assignment.id)} style={{ flex: 1 }}>
+                    <VStack space="xs">
+                        <HStack space="xs" sx={{ alignItems: 'center' }}>
+                            <Box sx={{ padding: 4, backgroundColor: Theme.colors.sageGreen, borderRadius: 4 }}>
+                                <Text color={Theme.colors.sacredWhite} size="xs" sx={{ fontWeight: '700' }}>ASSIGNMENT</Text>
+                            </Box>
+                            {assignment.due_date && (
+                                <Text color={Theme.colors.amberGlow} size="xs">
+                                    Due: {new Date(assignment.due_date).toLocaleDateString()}
+                                </Text>
+                            )}
+                        </HStack>
+                        <Text color={Theme.colors.sacredWhite} size="md" sx={{ fontWeight: '600' }}>
+                            {assignment.title}
+                        </Text>
+                    </VStack>
+                </TouchableOpacity>
+
+                {isTeacher && (
+                    <HStack space="md">
+                        <TouchableOpacity onPress={() => onEditItem?.(assignment, 'assignment')}>
+                            <Edit2 size={18} color={Theme.colors.mistGray} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => onDeleteItem?.(assignment.id, 'assignment')}>
+                            <Trash2 size={18} color={Theme.colors.emberRed} />
+                        </TouchableOpacity>
+                    </HStack>
+                )}
+            </HStack>
+        </Box>
+    );
+
+    return (
+        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
             <ScrollView>
                 <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
-                    {/* Header */}
                     <Heading size="2xl" color={Theme.colors.sanctuarySaffron}>
-                        {t('lessonFeed.title') || 'My Learning Path'}
+                        {t('classroom.learningPath') || 'Learning Path'}
                     </Heading>
 
-                    {/* Loading State */}
-                    {isLoading && (
-                        <Box
-                            sx={{
-                                padding: Theme.spacing.xl,
-                                alignItems: 'center',
-                            }}
-                        >
-                            <Spinner color={Theme.colors.sanctuarySaffron} />
-                            <Text
-                                color={Theme.colors.pearlGray}
-                                sx={{ marginTop: Theme.spacing.md }}
-                            >
-                                {t('common.loading') || 'Loading...'}
+                    {error && (
+                        <Box sx={{
+                            padding: Theme.spacing.md,
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderRadius: Theme.corners.comfortable,
+                            marginBottom: Theme.spacing.md,
+                            borderWidth: 1,
+                            borderColor: Theme.colors.emberRed
+                        }}>
+                            <Text color={Theme.colors.emberRed} size="sm" textAlign="center">
+                                {error}
                             </Text>
                         </Box>
                     )}
 
-                    {/* Error State */}
-                    {error && !isLoading && (
-                        <Box
-                            sx={{
-                                padding: Theme.spacing.md,
-                                backgroundColor: Theme.colors.emberRed,
-                                borderRadius: Theme.corners.comfortable,
-                            }}
-                        >
-                            <Text color={Theme.colors.sacredWhite}>{error}</Text>
-                        </Box>
+                    {isLoading && (
+                        <HStack space="sm" sx={{ justifyContent: 'center', padding: 10 }}>
+                            <Spinner size="small" color={Theme.colors.sanctuarySaffron} />
+                            <Text color={Theme.colors.mistGray} size="xs">Checking for updates...</Text>
+                        </HStack>
                     )}
 
-                    {/* Feed Items */}
-                    {!isLoading && !error && feedItems.length > 0 && (
-                        <VStack space="md">
-                            {feedItems.map((item) => (
+                    {monthlyGroups.map(({ monthTitle, lessonId, materials, assignments }) => (
+                        <Box key={monthTitle} sx={{ marginBottom: Theme.spacing.md }}>
+                            <TouchableOpacity onPress={() => toggleLesson(monthTitle)}>
                                 <Box
-                                    key={item.id}
                                     sx={{
                                         padding: Theme.spacing.md,
                                         backgroundColor: Theme.colors.deepIndigo,
                                         borderRadius: Theme.corners.comfortable,
-                                        borderLeftWidth: 4,
-                                        borderLeftColor:
-                                            item.type === 'lesson'
-                                                ? Theme.colors.sanctuarySaffron
-                                                : isAssignmentLate(item)
-                                                    ? Theme.colors.emberRed
-                                                    : Theme.colors.sageGreen,
+                                        borderBottomWidth: expandedLessons[monthTitle] ? 1 : 0,
+                                        borderBottomColor: Theme.colors.voidIndigo,
+                                        borderWidth: isCurrentMonth(monthTitle) ? 1 : 0,
+                                        borderColor: isCurrentMonth(monthTitle) ? Theme.colors.sanctuarySaffron : 'transparent',
                                     }}
                                 >
-                                    <VStack space="sm">
-                                        {/* Type Badge & Date */}
-                                        <HStack
-                                            sx={{
-                                                justifyContent: 'space-between',
-                                                alignItems: 'center',
-                                            }}
-                                        >
-                                            <Box
-                                                sx={{
-                                                    paddingHorizontal: Theme.spacing.sm,
-                                                    paddingVertical: Theme.spacing.xs,
-                                                    backgroundColor:
-                                                        item.type === 'lesson'
-                                                            ? Theme.colors.sanctuarySaffron
-                                                            : Theme.colors.sageGreen,
-                                                    borderRadius: Theme.corners.tight,
-                                                }}
-                                            >
-                                                <Text
-                                                    color={Theme.colors.sacredWhite}
-                                                    size="xs"
-                                                    sx={{ fontWeight: '600' }}
-                                                >
-                                                    {item.type === 'lesson'
-                                                        ? '📚 ' +
-                                                        (t('lessonFeed.lesson') || 'LESSON')
-                                                        : '📝 ' +
-                                                        (t('lessonFeed.assignment') ||
-                                                            'ASSIGNMENT')}
-                                                </Text>
-                                            </Box>
-
-                                            <Text color={Theme.colors.mistGray} size="xs">
-                                                {formatDate(item.created_at)}
-                                            </Text>
-                                        </HStack>
-
-                                        {/* Title */}
-                                        <Text
-                                            color={Theme.colors.sacredWhite}
-                                            size="lg"
-                                            sx={{ fontWeight: '700' }}
-                                        >
-                                            {item.title}
-                                        </Text>
-
-                                        {/* Description */}
-                                        {item.description && (
-                                            <Text color={Theme.colors.pearlGray} size="sm">
-                                                {item.description.length > 100
-                                                    ? item.description.substring(0, 100) + '...'
-                                                    : item.description}
-                                            </Text>
-                                        )}
-
-                                        {/* Due Date (for assignments) */}
-                                        {item.type === 'assignment' && 'due_date' in item && (
+                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <VStack>
                                             <HStack space="xs" sx={{ alignItems: 'center' }}>
-                                                <Text
-                                                    color={
-                                                        isAssignmentLate(item)
-                                                            ? Theme.colors.emberRed
-                                                            : Theme.colors.amberGlow
-                                                    }
-                                                    size="sm"
-                                                    sx={{ fontWeight: '600' }}
-                                                >
-                                                    {t('lessonFeed.dueDate') || 'Due:'}
-                                                </Text>
-                                                <Text
-                                                    color={
-                                                        isAssignmentLate(item)
-                                                            ? Theme.colors.emberRed
-                                                            : Theme.colors.pearlGray
-                                                    }
-                                                    size="sm"
-                                                >
-                                                    {new Date(item.due_date).toLocaleDateString()}
-                                                </Text>
-                                                {isAssignmentLate(item) && (
-                                                    <Text color={Theme.colors.emberRed} size="sm">
-                                                        ({t('lessonFeed.late') || 'LATE'})
-                                                    </Text>
+                                                <Heading size="md" color={isCurrentMonth(monthTitle) ? Theme.colors.sanctuarySaffron : Theme.colors.pearlGray}>
+                                                    {monthTitle}
+                                                </Heading>
+                                                {isCurrentMonth(monthTitle) && (
+                                                    <Box sx={{
+                                                        backgroundColor: Theme.colors.sanctuarySaffron,
+                                                        paddingHorizontal: 6,
+                                                        paddingVertical: 2,
+                                                        borderRadius: 4,
+                                                        marginLeft: 8
+                                                    }}>
+                                                        <Text color={Theme.colors.white} size="2xs" bold>CURRENT</Text>
+                                                    </Box>
                                                 )}
                                             </HStack>
+                                            <Text size="xs" color={Theme.colors.mistGray}>
+                                                {materials.length} Materials • {assignments.length} Assignments
+                                            </Text>
+                                        </VStack>
+                                        {expandedLessons[monthTitle] ? (
+                                            <ChevronUp color={Theme.colors.sanctuarySaffron} />
+                                        ) : (
+                                            <ChevronDown color={Theme.colors.mistGray} />
+                                        )}
+                                    </HStack>
+                                </Box>
+                            </TouchableOpacity>
+
+                            {expandedLessons[monthTitle] && (
+                                <Box
+                                    sx={{
+                                        padding: Theme.spacing.md,
+                                        backgroundColor: Theme.colors.midnightBlue,
+                                        borderBottomLeftRadius: Theme.corners.comfortable,
+                                        borderBottomRightRadius: Theme.corners.comfortable,
+                                    }}
+                                >
+                                    <VStack space="md">
+                                        {/* Material Section */}
+                                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <Text color={Theme.colors.mistGray} size="sm" sx={{ fontWeight: '700' }}>
+                                                ACADEMIC MATERIALS
+                                            </Text>
+                                            {isTeacher && (
+                                                <TouchableOpacity onPress={() => onAddMaterial?.(lessonId || monthTitle)}>
+                                                    <HStack space="xs" alignItems="center">
+                                                        <Plus size={16} color={Theme.colors.sanctuarySaffron} />
+                                                        <Text color={Theme.colors.sanctuarySaffron} size="xs" bold>ADD</Text>
+                                                    </HStack>
+                                                </TouchableOpacity>
+                                            )}
+                                        </HStack>
+
+                                        {materials.length === 0 ? (
+                                            <Text color={Theme.colors.dimGray} size="sm" italic sx={{ textAlign: 'center', py: 10 }}>
+                                                No materials added yet
+                                            </Text>
+                                        ) : (
+                                            materials.map(renderMaterialCard)
                                         )}
 
-                                        {/* Action Button */}
-                                        <Button
-                                            sx={{
-                                                backgroundColor:
-                                                    item.type === 'lesson'
-                                                        ? Theme.colors.sanctuarySaffron
-                                                        : isAssignmentLate(item)
-                                                            ? Theme.colors.emberRed
-                                                            : Theme.colors.sageGreen,
-                                                marginTop: Theme.spacing.sm,
-                                            }}
-                                            onPress={() => {
-                                                if (item.type === 'lesson') {
-                                                    onOpenLesson?.(item.id);
-                                                } else {
-                                                    onOpenAssignment?.(item.id);
-                                                }
-                                            }}
-                                        >
-                                            <ButtonText color={Theme.colors.sacredWhite}>
-                                                {item.type === 'lesson'
-                                                    ? t('lessonFeed.read') || '📖 Read Lesson'
-                                                    : t('lessonFeed.submit') || '✍️ Submit Work'}
-                                            </ButtonText>
-                                        </Button>
+                                        {/* Assignment Section */}
+                                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginTop: Theme.spacing.md }}>
+                                            <Text color={Theme.colors.mistGray} size="sm" sx={{ fontWeight: '700' }}>
+                                                ASSIGNMENTS
+                                            </Text>
+                                            {isTeacher && (
+                                                <TouchableOpacity onPress={() => onAddAssignment?.(lessonId || monthTitle)}>
+                                                    <HStack space="xs" alignItems="center">
+                                                        <Plus size={16} color={Theme.colors.sageGreen} />
+                                                        <Text color={Theme.colors.sageGreen} size="xs" bold>ADD</Text>
+                                                    </HStack>
+                                                </TouchableOpacity>
+                                            )}
+                                        </HStack>
+
+                                        {assignments.length === 0 ? (
+                                            <Text color={Theme.colors.dimGray} size="sm" italic sx={{ textAlign: 'center', py: 10 }}>
+                                                No assignments linked yet
+                                            </Text>
+                                        ) : (
+                                            assignments.map(renderAssignmentCard)
+                                        )}
+
                                     </VStack>
                                 </Box>
-                            ))}
-                        </VStack>
-                    )}
-
-                    {/* Empty State */}
-                    {!isLoading && !error && feedItems.length === 0 && (
-                        <Box
-                            sx={{
-                                padding: Theme.spacing.xl,
-                                alignItems: 'center',
-                            }}
-                        >
-                            <Text
-                                size="lg"
-                                color={Theme.colors.pearlGray}
-                                textAlign="center"
-                            >
-                                {t('lessonFeed.noContent') ||
-                                    'No lessons or assignments yet. Check back soon!'}
-                            </Text>
+                            )}
                         </Box>
-                    )}
+                    ))}
                 </VStack>
             </ScrollView>
         </Box>

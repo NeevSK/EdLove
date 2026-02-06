@@ -11,6 +11,8 @@ import { libraryAPI } from './library';
 import { attendanceAPI } from './attendance';
 import { resourcesAPI } from './resources';
 import { groupsAPI } from './groups';
+import { lessonMaterialsAPI } from './lessonMaterials';
+import { assignmentsAPI } from './assignments';
 import { classroomStudentsAPI } from './classroomStudents';
 import { classroomsAPI } from './classrooms';
 
@@ -31,6 +33,8 @@ export const api = {
     attendance: attendanceAPI,
     resources: resourcesAPI,
     groups: groupsAPI,
+    lessonMaterials: lessonMaterialsAPI,
+    assignments: assignmentsAPI,
     classroomStudents: classroomStudentsAPI,
     classrooms: classroomsAPI,
 

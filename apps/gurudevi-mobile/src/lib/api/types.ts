@@ -25,14 +25,12 @@ export interface Task {
 
 export interface Lesson {
     id: string;
+    classroom_id: string;
     title: string;
-    description?: string;
-    teacher_id: string;
-    class_id?: string;
-    date: string;
-    notes?: string;
+    content?: string;
+    order_index: number;
+    published_at?: string;
     created_at: string;
-    updated_at: string;
 }
 
 export interface Student {
@@ -60,6 +58,20 @@ export interface AttendanceRecord {
     student_id: string;
     status: 'present' | 'absent' | 'late';
     date: string;
+    created_at: string;
+    updated_at: string;
+}
+
+// Lesson Material types (Academic Content)
+export interface LessonMaterial {
+    id: string;
+    classroom_id: string;
+    lesson_id?: string; // Link to specific "Month"
+    title: string;
+    type: 'pdf' | 'link' | 'note';
+    url?: string;
+    content?: string;
+    is_pinned: boolean;
     created_at: string;
     updated_at: string;
 }
@@ -101,6 +113,19 @@ export interface ClassroomStudent {
     roll_number?: number;
     notes?: string;
     enrolled_at: string;
+}
+
+// Assignment types
+export interface Assignment {
+    id: string;
+    classroom_id: string;
+    lesson_id?: string; // Link to specific "Month"
+    title: string;
+    description?: string;
+    due_date?: string;
+    max_points?: number;
+    created_at: string;
+    updated_at: string;
 }
 
 // Classroom types
