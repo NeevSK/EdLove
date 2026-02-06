@@ -114,7 +114,7 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
                 const newLesson = await api.lessons.create({
                     classroom_id: classroomId,
                     title: targetLessonId,
-                    description: `Materials for ${targetLessonId}`,
+                    content: `Materials for ${targetLessonId}`,
                     order_index: 0, // Should be calculated but 0 is fine for now
                 });
                 targetLessonId = newLesson.id;
