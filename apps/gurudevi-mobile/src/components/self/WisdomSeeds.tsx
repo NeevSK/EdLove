@@ -149,11 +149,11 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
                     size="md"
                     textAlign="center"
                   >
-                    Your personal pedagogy journal 📝
+                    {t('self.yourPedagogyJournal')}
                   </Text>
                   <VStack space="xs" mt="$4">
                     <Text color={Theme.colors.dimGray} size="sm" bold>
-                      Example insights:
+                      {t('self.exampleInsights')}
                     </Text>
                     {wisdomPrompts.map((prompt, idx) => (
                       <Text
@@ -203,7 +203,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
           {/* Quick prompts */}
           <Box>
             <Text color={Theme.colors.dimGray} size="xs" mb="$2">
-              Need inspiration? Try:
+              {t('self.needInspiration')}
             </Text>
             <VStack space="xs">
               {wisdomPrompts.slice(0, 3).map((prompt, idx) => (

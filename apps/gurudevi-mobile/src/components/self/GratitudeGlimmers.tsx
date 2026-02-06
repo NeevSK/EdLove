@@ -157,7 +157,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
                     size="md"
                     textAlign="center"
                   >
-                    What made you smile today? 💫
+                    {t('self.whatSmiledToday')}
                   </Text>
                 </Box>
               )}

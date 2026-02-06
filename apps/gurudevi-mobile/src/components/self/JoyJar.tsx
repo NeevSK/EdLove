@@ -166,7 +166,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
                     size="md"
                     textAlign="center"
                   >
-                    Start capturing those breakthrough moments ✨
+                    {t('self.startCapturing')}
                   </Text>
                 </Box>
               )}
@@ -190,7 +190,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
               }}
             >
               <InputField
-                placeholder="Maya, Arjun..."
+                placeholder={t('self.exampleStudent')}
                 value={studentName}
                 onChangeText={setStudentName}
                 color={Theme.colors.sacredWhite}

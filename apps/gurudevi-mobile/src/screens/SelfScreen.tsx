@@ -240,7 +240,7 @@ export default function SelfScreen() {
                                     color={showMoreTools ? Theme.colors.white : Theme.colors.mistGray}
                                     textAlign="center"
                                 >
-                                    {showMoreTools ? 'Less' : t('self.moreTools')}
+                                    {showMoreTools ? t('self.lessTools') : t('self.moreTools')}
                                 </Text>
                             </VStack>
                         </Pressable>

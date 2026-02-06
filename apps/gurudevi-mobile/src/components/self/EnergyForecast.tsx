@@ -160,14 +160,14 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
               {energyLevels[todayForecast.energy_level - 1].label}
             </Text>
             <Text color={Theme.colors.mistGray} size="sm">
-              Checked today at {new Date(todayForecast.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              {t('self.checkedToday')} {new Date(todayForecast.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </Text>
             <Pressable
               onPress={() => setTodayForecast(null)}
               mt="$2"
             >
               <Text color={Theme.colors.dimGray} size="sm" underline>
-                Update forecast
+                {t('self.updateForecast')}
               </Text>
             </Pressable>
           </VStack>
@@ -175,14 +175,14 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
       ) : (
         <VStack space="md">
           <Text color={Theme.colors.mistGray} size="md" textAlign="center">
-            How's your capacity today?
+            {t('self.capacityToday')}
           </Text>
           
           {energyLevels.map((energy) => (
             <Pressable
               key={energy.level}
               onPress={() => handleSelectEnergy(energy.level as any)}
-              isDisabled={loading}
+              disabled={loading}
             >
               <HStack
                 space="md"
@@ -261,7 +261,7 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
           }}
         >
           <Text color={Theme.colors.mistGray} size="sm" textAlign="center">
-            💭 Remember: Your energy naturally fluctuates. This helps you plan accordingly.
+            💭 {t('self.energyReminder')}
           </Text>
         </Box>
       )}

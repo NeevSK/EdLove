@@ -35,7 +35,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
     {
       id: 'breathe',
       title: t('self.breathe'),
-      description: 'Take three deep breaths. Feel your shoulders drop.',
+      description: t('self.breatheDesc'),
       duration: 30
     },
     {
@@ -44,7 +44,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
       input: true,
       value: wentWell,
       setValue: setWentWell,
-      placeholder: 'One thing that went well...'
+      placeholder: t('self.oneThingWentWell')
     },
     {
       id: 'release',
@@ -52,7 +52,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
       input: true,
       value: toRelease,
       setValue: setToRelease,
-      placeholder: 'One thing to let go of...'
+      placeholder: t('self.oneThingRelease')
     },
     {
       id: 'intent',
@@ -60,7 +60,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
       input: true,
       value: tomorrowIntent,
       setValue: setTomorrowIntent,
-      placeholder: 'One gentle intention for tomorrow...'
+      placeholder: t('self.gentleIntentTomorrow')
     }
   ];
 
@@ -125,14 +125,14 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                 bold
                 textAlign="center"
               >
-                Wind-down complete
+                {t('self.windDownComplete')}
               </Text>
               <Text
                 color={Theme.colors.mistGray}
                 size="md"
                 textAlign="center"
               >
-                You've transitioned from teacher to human. Rest well tonight.
+                {t('self.windDownCompleteDesc')}
               </Text>
             </VStack>
 
@@ -149,7 +149,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                   }}
                 >
                   <Text color={Theme.colors.dimGray} size="xs" mb="$1">
-                    Went well:
+                    {t('self.wentWell')}
                   </Text>
                   <Text color={Theme.colors.sacredWhite} size="sm">
                     {wentWell}
@@ -168,7 +168,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                   }}
                 >
                   <Text color={Theme.colors.dimGray} size="xs" mb="$1">
-                    Tomorrow's intention:
+                    {t('self.tomorrowIntentLabel')}
                   </Text>
                   <Text color={Theme.colors.sacredWhite} size="sm">
                     {tomorrowIntent}
@@ -188,7 +188,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
               }}
             >
               <ButtonText color={Theme.colors.mistGray}>
-                Start another wind-down
+                {t('self.startAnother')}
               </ButtonText>
             </Button>
           </VStack>
@@ -215,7 +215,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
       <VStack space="xs">
         <HStack justifyContent="space-between">
           <Text color={Theme.colors.mistGray} size="xs">
-            Step {currentStep + 1} of {steps.length}
+            {t('self.step')} {currentStep + 1} {t('self.stepOf')} {steps.length}
           </Text>
           <Text color={Theme.colors.mistGray} size="xs">
             {Math.round(progress)}%
@@ -296,7 +296,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                 <Text fontSize="$4xl">🌙</Text>
               </Box>
               <Text color={Theme.colors.mistGray} size="sm" textAlign="center">
-                30 seconds of deep breathing...
+                {t('self.breatheInstructions')}
               </Text>
             </VStack>
           )}
@@ -317,7 +317,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
           }}
         >
           <ButtonText color={Theme.colors.mistGray}>
-            Back
+            {t('common.back')}
           </ButtonText>
         </Button>
         <Button
@@ -334,7 +334,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
           }}
         >
           <ButtonText>
-            {currentStep === steps.length - 1 ? 'Complete' : 'Next'}
+            {currentStep === steps.length - 1 ? t('common.complete') : t('common.next')}
           </ButtonText>
         </Button>
       </HStack>

@@ -264,7 +264,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                 size="md"
                 textAlign="center"
               >
-                What 3 things would make tomorrow gentler? 🌙
+                {t('self.threeGentleThings')}
               </Text>
             </Box>
           )}
