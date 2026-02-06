@@ -15,13 +15,11 @@ import { Theme } from '../constants/Theme';
 import { supabase } from '../lib/supabase';
 
 // Import role-specific views
-import PrincipalSchoolView from './classroom/PrincipalSchoolView';
-import SectionHeadView from './classroom/SectionHeadView';
-import GradeHeadView from './classroom/GradeHeadView';
-import ClassroomList from '../components/classroom/ClassroomList';
-import TeacherDashboard from '../components/classroom/TeacherDashboard';
+import { PrincipalSchoolView, SectionHeadView, GradeHeadView } from './classroom';
+import { ClassroomList, TeacherDashboard } from '../components/classroom';
 import GlobalHeader from '../components/shared/GlobalHeader';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 
 // Shared container styling for role-based views
 const ROLE_VIEW_CONTAINER_STYLE = {
@@ -32,6 +30,7 @@ const ROLE_VIEW_CONTAINER_STYLE = {
 
 export default function ClassroomScreen() {
     const { t } = useTranslation();
+    const navigation = useNavigation<any>();
     const { role } = useUserRole();
     const [loading, setLoading] = useState(true);
     const [principalData, setPrincipalData] = useState<{ schoolId: string, userId: string } | null>(null);
@@ -108,8 +107,13 @@ export default function ClassroomScreen() {
             <Box sx={{ flex: 1, padding: Theme.spacing.lg }}>
                 <ClassroomList
                     onClassroomPress={(classroom) => {
-                        // TODO: Navigate to classroom details
-                        console.log('Classroom pressed:', classroom);
+                        navigation.navigate('Classroom' as any, {
+                            screen: 'ClassroomDetails',
+                            params: {
+                                classroomId: classroom.id,
+                                classroomName: classroom.name
+                            }
+                        });
                     }}
                 />
             </Box>

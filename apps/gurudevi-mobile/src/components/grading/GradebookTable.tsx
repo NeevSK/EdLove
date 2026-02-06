@@ -20,7 +20,7 @@ import { FlatList, ListRenderItemInfo } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { StudentGrade, ClassroomGradingSettings } from '../../types/Grade';
 import { marksToGPA, calculateRanks } from '../../utils/grading';
-import Theme from '../../constants/Theme';
+import { Theme } from '../../constants/Theme';
 
 interface GradebookTableProps {
     grades: StudentGrade[];

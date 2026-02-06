@@ -15,7 +15,12 @@ export const classroomStudentsAPI = {
     async getAll(classroomId: string): Promise<ClassroomStudent[]> {
         const { data, error } = await supabase
             .from('classroom_students')
-            .select('*')
+            .select(`
+                *,
+                student:users!student_id (
+                    full_name
+                )
+            `)
             .eq('classroom_id', classroomId)
             .order('roll_number', { ascending: true });
 
@@ -23,7 +28,10 @@ export const classroomStudentsAPI = {
             throw new APIError('Failed to fetch classroom students', error.code, error);
         }
 
-        return data || [];
+        return (data || []).map(item => ({
+            ...item,
+            full_name: (item.student as any)?.full_name || 'Unknown Student'
+        }));
     },
 
     /**
@@ -32,7 +40,8 @@ export const classroomStudentsAPI = {
     async add(
         classroomId: string,
         studentId: string,
-        rollNumber?: number
+        rollNumber?: number,
+        notes?: string
     ): Promise<ClassroomStudent> {
         const { data, error } = await supabase
             .from('classroom_students')
@@ -41,6 +50,7 @@ export const classroomStudentsAPI = {
                     classroom_id: classroomId,
                     student_id: studentId,
                     roll_number: rollNumber,
+                    notes: notes,
                 },
             ])
             .select()
@@ -48,6 +58,29 @@ export const classroomStudentsAPI = {
 
         if (error) {
             throw new APIError('Failed to add student to classroom', error.code, error);
+        }
+
+        return data;
+    },
+
+    /**
+     * Update a student's enrollment details
+     */
+    async update(
+        classroomId: string,
+        studentId: string,
+        updates: { roll_number?: number; notes?: string }
+    ): Promise<ClassroomStudent> {
+        const { data, error } = await supabase
+            .from('classroom_students')
+            .update(updates)
+            .eq('classroom_id', classroomId)
+            .eq('student_id', studentId)
+            .select()
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to update classroom student', error.code, error);
         }
 
         return data;

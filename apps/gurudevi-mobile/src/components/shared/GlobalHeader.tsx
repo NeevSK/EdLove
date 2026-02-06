@@ -7,6 +7,7 @@
  * - Contextual Titles
  * - Role & School Subtitles
  * - Consistent Sanctuary Styling
+ * - Back button support
  */
 
 import React from 'react';
@@ -15,13 +16,15 @@ import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';
 import { useUserRole } from '../../hooks/useUserRole';
 import { useStore } from '../../store/useStore';
+import { ChevronLeft } from 'lucide-react-native';
+import { Pressable } from 'react-native';
 
 interface GlobalHeaderProps {
     title?: string;
     showGreeting?: boolean;
     subtitle?: string;
     rightAction?: any;
-    showBackButton?: boolean;
+    showBack?: boolean;
     onBack?: () => void;
 }
 
@@ -30,18 +33,12 @@ export default function GlobalHeader({
     showGreeting = false,
     subtitle,
     rightAction,
+    showBack = false,
+    onBack,
 }: GlobalHeaderProps) {
     const { t } = useTranslation();
     const { role, schoolType } = useUserRole();
     const teacherName = useStore(state => state.teacherName);
-
-    // Get time-based greeting
-    const getGreeting = () => {
-        const hour = new Date().getHours();
-        if (hour < 12) return t('greeting.morning') || 'Good Morning';
-        if (hour < 18) return t('greeting.afternoon') || 'Good Afternoon';
-        return t('greeting.evening') || 'Good Evening';
-    };
 
     // Get role display text
     const getRoleText = () => {
@@ -69,42 +66,50 @@ export default function GlobalHeader({
             <HStack
                 sx={{
                     justifyContent: 'space-between',
-                    alignItems: 'flex-start'
+                    alignItems: 'center'
                 }}
             >
-                <VStack space="xs" sx={{ flex: 1 }}>
-                    {showGreeting ? (
-                        <>
-                            <Text
-                                color={Theme.colors.sanctuarySaffron}
-                                size="sm"
-                                sx={{ fontStyle: 'italic' }}
-                            >
-                                {t('greeting.ayubowan') || 'Ayubowan'} 🙏
-                            </Text>
+                <HStack space="md" alignItems="center" sx={{ flex: 1 }}>
+                    {showBack && (
+                        <Pressable onPress={onBack} style={{ marginRight: Theme.spacing.xs }}>
+                            <ChevronLeft color={Theme.colors.sanctuarySaffron} size={28} />
+                        </Pressable>
+                    )}
+                    <VStack space="xs" sx={{ flex: 1 }}>
+                        {showGreeting ? (
+                            <>
+                                <Text
+                                    color={Theme.colors.sanctuarySaffron}
+                                    size="sm"
+                                    sx={{ fontStyle: 'italic' }}
+                                >
+                                    {t('greeting.ayubowan') || 'Ayubowan'} 🙏
+                                </Text>
+                                <Heading
+                                    size="xl"
+                                    color={Theme.colors.sacredWhite}
+                                    sx={{ lineHeight: 32 }}
+                                >
+                                    {teacherName}
+                                </Heading>
+                            </>
+                        ) : (
                             <Heading
                                 size="xl"
                                 color={Theme.colors.sacredWhite}
-                                sx={{ lineHeight: 32 }}
+                                sx={{ lineHeight: 36 }}
                             >
-                                {teacherName}
+                                {title}
                             </Heading>
-                        </>
-                    ) : (
-                        <Heading
-                            size="xl"
-                            color={Theme.colors.sacredWhite}
-                        >
-                            {title}
-                        </Heading>
-                    )}
+                        )}
 
-                    {(subtitle || showGreeting) && (
-                        <Text color={Theme.colors.mistGray} size="sm">
-                            {subtitle || `${getRoleText()} • ${schoolType ? t(`school.${schoolType}`) : 'School'}`}
-                        </Text>
-                    )}
-                </VStack>
+                        {(subtitle || showGreeting) && (
+                            <Text color={Theme.colors.mistGray} size="sm">
+                                {subtitle || `${getRoleText()} • ${schoolType ? t(`school.${schoolType}`) : 'School'}`}
+                            </Text>
+                        )}
+                    </VStack>
+                </HStack>
 
                 {rightAction && (
                     <Box sx={{ marginLeft: Theme.spacing.md }}>

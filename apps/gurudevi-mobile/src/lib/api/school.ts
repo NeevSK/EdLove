@@ -269,6 +269,24 @@ export const schoolAPI = {
     },
 
     /**
+     * Get all students in a school
+     */
+    async getStudentsBySchool(schoolId: string): Promise<any[]> {
+        const { data, error } = await supabase
+            .from('users')
+            .select('id, full_name, role')
+            .eq('school_id', schoolId)
+            .eq('role', 'student')
+            .order('full_name', { ascending: true });
+
+        if (error) {
+            throw new APIError('Failed to fetch school students', error.code, error);
+        }
+
+        return data || [];
+    },
+
+    /**
      * Get school details
      */
     async getSchool(schoolId: string): Promise<School> {
