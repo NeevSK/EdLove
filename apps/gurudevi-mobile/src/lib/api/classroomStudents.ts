@@ -30,8 +30,62 @@ export const classroomStudentsAPI = {
 
         return (data || []).map(item => ({
             ...item,
-            full_name: (item.student as any)?.full_name || 'Unknown Student'
+            full_name: (item.student as any)?.full_name || item.full_name || 'Unregistered Student'
         }));
+    },
+
+    /**
+     * Add a shadow student (manual entry)
+     */
+    async addShadowStudent(
+        classroomId: string,
+        fullName: string,
+        rollNumber?: number,
+        notes?: string
+    ): Promise<ClassroomStudent> {
+        const { data, error } = await supabase
+            .from('classroom_students')
+            .insert([
+                {
+                    classroom_id: classroomId,
+                    full_name: fullName,
+                    roll_number: rollNumber,
+                    notes: notes,
+                },
+            ])
+            .select()
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to add shadow student', error.code, error);
+        }
+
+        return data;
+    },
+
+    /**
+     * Claim a shadow student record using an invite code
+     */
+    async claimStudent(inviteCode: string): Promise<ClassroomStudent> {
+        const user = await supabase.auth.getUser();
+        if (!user.data.user) throw new APIError('Authentication required to claim record');
+
+        const { data, error } = await supabase
+            .from('classroom_students')
+            .update({
+                student_id: user.data.user.id,
+                claimed_at: new Date().toISOString()
+            })
+            .eq('invite_code', inviteCode)
+            .is('student_id', null)
+            .select()
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to claim student record', error.code, error);
+        }
+
+        return data;
     },
 
     /**

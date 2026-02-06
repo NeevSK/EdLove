@@ -15,11 +15,27 @@ import {
     Edit2,
     Trash2,
     Plus,
+    QrCode,
 } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { ClassroomStudent, api } from '../../lib/api';
 import { hapticLight, hapticMedium } from '../../utils/haptics';
 import { AddStudentModal } from './AddStudentModal';
+import {
+    Modal,
+    ModalBackdrop,
+    ModalContent,
+    ModalHeader,
+    ModalCloseButton,
+    ModalBody,
+    Heading,
+    Icon,
+    CloseIcon,
+    Button,
+    ButtonText,
+} from '@gluestack-ui/themed';
+import QRCode from 'react-native-qrcode-svg';
+import * as Clipboard from 'expo-clipboard';
 
 interface StudentListProps {
     classroomId: string;
@@ -31,6 +47,7 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<ClassroomStudent | null>(null);
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
+    const [studentForQr, setStudentForQr] = useState<ClassroomStudent | null>(null);
 
     const handleRemoveStudent = async (studentId: string) => {
         try {
@@ -52,6 +69,16 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
         setIsAddModalOpen(true);
     };
 
+    const handleShowQr = (student: ClassroomStudent) => {
+        hapticLight();
+        setStudentForQr(student);
+    };
+
+    const copyToClipboard = async (text: string) => {
+        await Clipboard.setStringAsync(text);
+        hapticLight();
+    };
+
     return (
         <VStack sx={{ flex: 1 }}>
             <ScrollView contentContainerStyle={{ padding: Theme.spacing.md }}>
@@ -69,9 +96,15 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                                     borderRadius: Theme.corners.comfortable,
                                     padding: Theme.spacing.md,
                                     borderWidth: 1,
-                                    borderColor: Theme.colors.deepIndigo,
+                                    borderColor: student.student_id ? Theme.colors.deepIndigo : Theme.colors.amberGlow,
+                                    opacity: student.student_id ? 1 : 0.9,
                                 }}
                             >
+                                {!student.student_id && (
+                                    <Box sx={{ position: 'absolute', top: -8, right: 12, backgroundColor: Theme.colors.amberGlow, paddingHorizontal: 6, borderRadius: 4 }}>
+                                        <Text size="xs" color="black" fontWeight="$bold">UNCLAIMED</Text>
+                                    </Box>
+                                )}
                                 <HStack justifyContent="space-between" alignItems="center">
                                     <HStack space="md" alignItems="center">
                                         <Box
@@ -101,17 +134,24 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                                     </HStack>
 
                                     <HStack space="sm">
+                                        {!student.student_id && student.invite_code && (
+                                            <Pressable onPress={() => handleShowQr(student)}>
+                                                <Box sx={{ padding: Theme.spacing.xs }}>
+                                                    <QrCode size={18} color={Theme.colors.sanctuarySaffron} />
+                                                </Box>
+                                            </Pressable>
+                                        )}
                                         <Pressable onPress={() => handleEditStudent(student)}>
                                             <Box sx={{ padding: Theme.spacing.xs }}>
                                                 <Edit2 size={18} color={Theme.colors.mistGray} />
                                             </Box>
                                         </Pressable>
                                         <Pressable
-                                            onPress={() => handleRemoveStudent(student.student_id)}
-                                            disabled={isDeleting === student.student_id}
+                                            onPress={() => handleRemoveStudent(student.student_id || '')}
+                                            disabled={isDeleting === (student.student_id || student.id)}
                                         >
                                             <Box sx={{ padding: Theme.spacing.xs }}>
-                                                {isDeleting === student.student_id ? (
+                                                {isDeleting === (student.student_id || student.id) ? (
                                                     <ActivityIndicator size="small" color={Theme.colors.emberRed} />
                                                 ) : (
                                                     <Trash2 size={18} color={Theme.colors.emberRed} />
@@ -167,6 +207,44 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                 classroomId={classroomId}
                 studentToEdit={selectedStudent}
             />
+
+            {/* View QR Modal for Shadow Students */}
+            <Modal isOpen={!!studentForQr} onClose={() => setStudentForQr(null)} size="md">
+                <ModalBackdrop />
+                <ModalContent sx={{ backgroundColor: Theme.colors.midnightBlue, borderColor: Theme.colors.deepIndigo, borderWidth: 1 }}>
+                    <ModalHeader>
+                        <Heading color={Theme.colors.sacredWhite}>Invite Student</Heading>
+                        <ModalCloseButton>
+                            <Icon as={CloseIcon} color={Theme.colors.mistGray} />
+                        </ModalCloseButton>
+                    </ModalHeader>
+                    <ModalBody>
+                        <VStack space="lg" alignItems="center" pb="$6">
+                            <Box sx={{ padding: Theme.spacing.lg, backgroundColor: 'white', borderRadius: Theme.corners.generous }}>
+                                <QRCode
+                                    value={studentForQr?.invite_code || ''}
+                                    size={180}
+                                    color="black"
+                                    backgroundColor="white"
+                                />
+                            </Box>
+                            <VStack space="xs" alignItems="center">
+                                <Heading size="sm" color={Theme.colors.sacredWhite}>{studentForQr?.full_name}</Heading>
+                                <Text color={Theme.colors.mistGray} size="xs">Individual Invite Code</Text>
+                                <Pressable onPress={() => copyToClipboard(studentForQr?.invite_code || '')}>
+                                    <Text color={Theme.colors.sanctuarySaffron} fontWeight="$bold">{studentForQr?.invite_code}</Text>
+                                </Pressable>
+                            </VStack>
+                            <Button
+                                onPress={() => setStudentForQr(null)}
+                                sx={{ backgroundColor: Theme.colors.deepIndigo, width: '100%' }}
+                            >
+                                <ButtonText>Close</ButtonText>
+                            </Button>
+                        </VStack>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </VStack>
     );
 }

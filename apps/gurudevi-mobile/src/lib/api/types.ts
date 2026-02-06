@@ -108,10 +108,12 @@ export interface StudentGroup {
 export interface ClassroomStudent {
     id: string;
     classroom_id: string;
-    student_id: string;
-    full_name: string;
+    student_id?: string | null;
+    full_name?: string | null; // For shadow students or joined from user table
     roll_number?: number;
     notes?: string;
+    invite_code?: string;
+    claimed_at?: string;
     enrolled_at: string;
 }
 
