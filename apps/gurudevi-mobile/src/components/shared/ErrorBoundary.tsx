@@ -7,7 +7,9 @@ import SanctuaryButton from './SanctuaryButton';
 
 interface Props {
     children: ReactNode;
+    name: string;  // Name for tracking which boundary caught the error
     fallback?: ReactNode;
+    onError?: (error: Error, errorInfo: ErrorInfo) => void;
 }
 
 interface State {
@@ -26,7 +28,18 @@ export default class ErrorBoundary extends Component<Props, State> {
     }
 
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-        console.error("Uncaught error:", error, errorInfo);
+        console.error(`Error in ${this.props.name}:`, error, errorInfo);
+        
+        // Call custom error handler if provided
+        this.props.onError?.(error, errorInfo);
+        
+        // TODO: Send to error tracking service (e.g., Sentry)
+        // Sentry.captureException(error, { 
+        //     contexts: { 
+        //         react: errorInfo,
+        //         boundary: { name: this.props.name }
+        //     } 
+        // });
     }
 
     private handleReset = () => {
@@ -77,6 +90,9 @@ export default class ErrorBoundary extends Component<Props, State> {
                                     marginTop: Theme.spacing.lg,
                                     width: '100%'
                                 }}>
+                                    <Text color={Theme.colors.dimGray} size="xs" mb="$1">
+                                        Boundary: {this.props.name}
+                                    </Text>
                                     <Text color={Theme.colors.emberRed} size="xs" fontFamily="monospace">
                                         {this.state.error.toString()}
                                     </Text>

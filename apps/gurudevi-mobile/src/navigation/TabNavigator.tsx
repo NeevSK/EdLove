@@ -21,6 +21,7 @@ import ClassroomScreen from '../screens/ClassroomScreen';
 import CommunityScreen from '../screens/CommunityScreen';
 import LibraryScreen from '../screens/LibraryScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import ErrorBoundary from '../components/shared/ErrorBoundary';
 
 const Tab = createBottomTabNavigator();
 
@@ -85,19 +86,23 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         {/* 1. Self Tab */}
         <Tab.Screen
           name="Self"
-          component={SelfScreen}
           options={{
             tabBarLabel: t('tabs.self'),
             tabBarIcon: ({ color, size }) => (
               <User color={color} size={size} />
             ),
           }}
-        />
+        >
+          {() => (
+            <ErrorBoundary name="Self Screen">
+              <SelfScreen />
+            </ErrorBoundary>
+          )}
+        </Tab.Screen>
 
         {/* 2. Classroom Tab (Dynamic Name) */}
         <Tab.Screen
           name="Classroom"
-          component={ClassroomScreen}
           options={{
             tabBarLabel: getClassroomLabel(),
             tabBarIcon: ({ color, size }) => (
@@ -106,43 +111,64 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
                 : <BookOpen color={color} size={size} />
             ),
           }}
-        />
+        >
+          {() => (
+            <ErrorBoundary name="Classroom Screen">
+              <ClassroomScreen />
+            </ErrorBoundary>
+          )}
+        </Tab.Screen>
 
         {/* 3. Community Tab */}
         <Tab.Screen
           name="Community"
-          component={CommunityScreen}
           options={{
             tabBarLabel: t('tabs.community'),
             tabBarIcon: ({ color, size }) => (
               <Users color={color} size={size} />
             ),
           }}
-        />
+        >
+          {() => (
+            <ErrorBoundary name="Community Screen">
+              <CommunityScreen />
+            </ErrorBoundary>
+          )}
+        </Tab.Screen>
 
         {/* 4. Library Tab */}
         <Tab.Screen
           name="Library"
-          component={LibraryScreen}
           options={{
             tabBarLabel: t('tabs.library'),
             tabBarIcon: ({ color, size }) => (
               <Library color={color} size={size} />
             ),
           }}
-        />
+        >
+          {() => (
+            <ErrorBoundary name="Library Screen">
+              <LibraryScreen />
+            </ErrorBoundary>
+          )}
+        </Tab.Screen>
 
         {/* 5. Profile Tab */}
         <Tab.Screen
           name="Profile"
-          component={ProfileScreen}
           options={{
             tabBarLabel: t('tabs.profile'),
             tabBarIcon: ({ color, size }) => (
               <User color={color} size={size} />
             ),
           }}
-        />
+        >
+          {() => (
+            <ErrorBoundary name="Profile Screen">
+              <ProfileScreen />
+            </ErrorBoundary>
+          )}
+        </Tab.Screen>
       </Tab.Navigator>
 
       {/* Global Lotus FAB */}
