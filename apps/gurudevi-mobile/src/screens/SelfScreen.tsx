@@ -13,7 +13,7 @@ import {
     Button,
     ButtonText
 } from "@gluestack-ui/themed";
-import { Mic, Send, MessageCircle, Repeat, Sun, FileText, Flower, Flame, Sparkles, Heart, Lightbulb, Calendar, Battery } from 'lucide-react-native';
+import { Mic, Send, MessageCircle, Repeat, Sun, FileText, Flower, Flame, Sparkles, Heart, Lightbulb, Calendar, Battery, Moon } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../constants/Theme';
 import { getGreetingKey } from '../utils/time';
@@ -27,7 +27,8 @@ import {
     GratitudeGlimmers,
     WisdomSeeds,
     TomorrowPrep,
-    EnergyForecast
+    EnergyForecast,
+    WindDownRitual
 } from '../components/self';
 import { supabase } from '../lib/supabase';
 import GlobalHeader from '../components/shared/GlobalHeader';
@@ -45,6 +46,7 @@ const MORE_TOOLS_FEATURES = [
     { id: 'wisdom', label: 'Wisdom Seeds', icon: Lightbulb, category: 'discover', eroi: 7 },
     { id: 'tomorrowPrep', label: "Tomorrow's Prep", icon: Calendar, category: 'discover', eroi: 9 },
     { id: 'energyForecast', label: 'Energy Check', icon: Battery, category: 'contextual', eroi: 6 },
+    { id: 'windDown', label: 'Wind Down', icon: Moon, category: 'contextual', eroi: 8 },
     { id: 'venting', label: 'Venting Space', icon: MessageCircle, category: 'discover', eroi: 10 },
 ];
 
@@ -84,6 +86,8 @@ export default function SelfScreen() {
                 return <TomorrowPrep userId={userId ?? undefined} />;
             case 'energyForecast':
                 return <EnergyForecast userId={userId ?? undefined} />;
+            case 'windDown':
+                return <WindDownRitual userId={userId ?? undefined} />;
             case 'venting':
                 return (
                     <VStack space="lg" sx={{ flex: 1 }}>

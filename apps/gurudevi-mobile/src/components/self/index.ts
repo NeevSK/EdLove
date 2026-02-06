@@ -11,3 +11,4 @@ export { default as GratitudeGlimmers } from './GratitudeGlimmers';
 export { default as WisdomSeeds } from './WisdomSeeds';
 export { default as TomorrowPrep } from './TomorrowPrep';
 export { default as EnergyForecast } from './EnergyForecast';
+export { default as WindDownRitual } from './WindDownRitual';
