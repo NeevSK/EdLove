@@ -15,14 +15,13 @@ import { Theme } from '../constants/Theme';
 import { supabase } from '../lib/supabase';
 import { QrCode } from 'lucide-react-native';
 import { Pressable } from 'react-native';
-import { ClaimInviteModal } from '../components/classroom/ClaimInviteModal';
 import { ClassroomStudent, api } from '../lib/api';
 import { hapticLight } from '../utils/haptics';
 import { useStore } from '../store/useStore';
 
 // Import role-specific views
 import { PrincipalSchoolView, SectionHeadView, GradeHeadView } from './classroom';
-import { ClassroomList, TeacherDashboard } from '../components/classroom';
+import { ClassroomList, TeacherDashboard, ClaimInviteModal } from '../components/classroom';
 import GlobalHeader from '../components/shared/GlobalHeader';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
