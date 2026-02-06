@@ -50,7 +50,20 @@ export default function LessonFeed({
     refreshTrigger,
 }: LessonFeedProps) {
     const { t } = useTranslation();
-    const [monthlyGroups, setMonthlyGroups] = useState<MonthlyGroup[]>([]);
+    const getCalendarScaffold = () => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"];
+
+        return monthNames.map(name => ({
+            monthTitle: `${name} ${year}`,
+            materials: [],
+            assignments: [],
+        }));
+    };
+
+    const [monthlyGroups, setMonthlyGroups] = useState<MonthlyGroup[]>(getCalendarScaffold());
     const [expandedLessons, setExpandedLessons] = useState<Record<string, boolean>>({});
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -80,13 +93,12 @@ export default function LessonFeed({
                 api.assignments.getAll(classroomId),
             ]);
 
-            // Generate 12 months for the current year
             const now = new Date();
             const year = now.getFullYear();
             const monthNames = ["January", "February", "March", "April", "May", "June",
                 "July", "August", "September", "October", "November", "December"];
 
-            const calendarGroups: MonthlyGroup[] = monthNames.map((name, index) => {
+            const calendarGroups: MonthlyGroup[] = monthNames.map((name) => {
                 const monthTitle = `${name} ${year}`;
                 const existingLesson = lessons.find(l => l.title === monthTitle);
 
@@ -102,14 +114,13 @@ export default function LessonFeed({
 
             // Expand current month by default
             const currentMonthTitle = `${monthNames[now.getMonth()]} ${year}`;
-            const currentMonthIndex = calendarGroups.findIndex(g => g.monthTitle === currentMonthTitle);
-
-            if (currentMonthIndex !== -1) {
-                setExpandedLessons({ [calendarGroups[currentMonthIndex].monthTitle]: true });
+            if (Object.keys(expandedLessons).length === 0) {
+                setExpandedLessons({ [currentMonthTitle]: true });
             }
         } catch (err: any) {
             console.error('Failed to load feed:', err);
-            setError(err.message || 'Failed to load feed');
+            setError(err.message || 'Failed to load feed data');
+            // Keep the scaffolded groups so teacher can still see the months
         } finally {
             setIsLoading(false);
         }
@@ -222,22 +233,29 @@ export default function LessonFeed({
                         {t('classroom.learningPath') || 'Learning Path'}
                     </Heading>
 
-                    {isLoading && (
-                        <VStack space="md" sx={{ alignItems: 'center', padding: 40 }}>
-                            <Spinner color={Theme.colors.sanctuarySaffron} />
-                            <Text color={Theme.colors.mistGray}>Loading path...</Text>
-                        </VStack>
-                    )}
-
-                    {!isLoading && monthlyGroups.length === 0 && (
-                        <Box sx={{ padding: 40, alignItems: 'center' }}>
-                            <Text color={Theme.colors.mistGray} textAlign="center">
-                                No monthly modules created yet.
+                    {error && (
+                        <Box sx={{
+                            padding: Theme.spacing.md,
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderRadius: Theme.corners.comfortable,
+                            marginBottom: Theme.spacing.md,
+                            borderWidth: 1,
+                            borderColor: Theme.colors.emberRed
+                        }}>
+                            <Text color={Theme.colors.emberRed} size="sm" textAlign="center">
+                                {error}
                             </Text>
                         </Box>
                     )}
 
-                    {!isLoading && monthlyGroups.map(({ monthTitle, lessonId, materials, assignments }) => (
+                    {isLoading && (
+                        <HStack space="sm" sx={{ justifyContent: 'center', padding: 10 }}>
+                            <Spinner size="small" color={Theme.colors.sanctuarySaffron} />
+                            <Text color={Theme.colors.mistGray} size="xs">Checking for updates...</Text>
+                        </HStack>
+                    )}
+
+                    {monthlyGroups.map(({ monthTitle, lessonId, materials, assignments }) => (
                         <Box key={monthTitle} sx={{ marginBottom: Theme.spacing.md }}>
                             <TouchableOpacity onPress={() => toggleLesson(monthTitle)}>
                                 <Box

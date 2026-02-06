@@ -94,6 +94,7 @@
         "labelSubject": "Subject (Optional)",
         "placeholderSubject": "e.g., Mathematics",
         "createLesson": "Create Lesson",
+        "learningPath": "Learning Path",
         "viewStudents": "View Students",
         "assignments": "Assignments",
         "resources": "Resources"
