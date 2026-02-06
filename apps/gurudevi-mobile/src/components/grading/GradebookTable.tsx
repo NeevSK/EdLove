@@ -215,7 +215,7 @@ const GradeRow = React.memo(({
             </Text>
         </Box>
         <Box sx={{ flex: 2 }}>
-            <>{renderGradeDisplay(grade)}</>
+            {renderGradeDisplay(grade)}
         </Box>
         {showRanks && (
             <Box sx={{ flex: 1, alignItems: 'center' }}>
