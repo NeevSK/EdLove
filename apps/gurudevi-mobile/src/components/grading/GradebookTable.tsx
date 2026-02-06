@@ -172,11 +172,6 @@ export default function GradebookTable({
                     initialNumToRender={15}
                     maxToRenderPerBatch={10}
                     windowSize={5}
-                    getItemLayout={(data, index) => ({
-                        length: 60, // Approximate row height
-                        offset: 60 * index,
-                        index,
-                    })}
                 />
             </VStack>
         </Box>
