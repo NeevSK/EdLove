@@ -320,7 +320,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                 {/* Optional Icon Overlay */}
                 {icon && (
                     <View style={styles.iconOverlay}>
-                        {icon}
+                        <>{icon}</>
                     </View>
                 )}
             </View>
