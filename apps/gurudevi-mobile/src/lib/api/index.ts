@@ -18,7 +18,7 @@ import { classroomsAPI } from './classrooms';
 
 // Re-export types for usage in app
 export * from './types';
-export * from '../types/Community';
+export * from '../../types/Community';
 
 // Main API Object
 export const api = {
