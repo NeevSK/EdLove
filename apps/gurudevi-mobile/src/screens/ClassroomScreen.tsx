@@ -9,14 +9,19 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Box, Text, Center, Heading, Spinner } from "@gluestack-ui/themed";
+import { Box, Text, Center, Heading, Spinner, HStack, VStack } from "@gluestack-ui/themed";
 import { useUserRole } from '../hooks/useUserRole';
 import { Theme } from '../constants/Theme';
 import { supabase } from '../lib/supabase';
+import { QrCode } from 'lucide-react-native';
+import { Pressable } from 'react-native';
+import { ClassroomStudent, api } from '../lib/api';
+import { hapticLight } from '../utils/haptics';
+import { useStore } from '../store/useStore';
 
 // Import role-specific views
 import { PrincipalSchoolView, SectionHeadView, GradeHeadView } from './classroom';
-import { ClassroomList, TeacherDashboard } from '../components/classroom';
+import { ClassroomList, TeacherDashboard, ClaimInviteModal } from '../components/classroom';
 import GlobalHeader from '../components/shared/GlobalHeader';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
@@ -34,6 +39,8 @@ export default function ClassroomScreen() {
     const { role } = useUserRole();
     const [loading, setLoading] = useState(true);
     const [principalData, setPrincipalData] = useState<{ schoolId: string, userId: string } | null>(null);
+    const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     useEffect(() => {
         if (role === 'principal') {
@@ -103,9 +110,29 @@ export default function ClassroomScreen() {
             <GlobalHeader
                 title={t('classroom.myClassrooms') || 'My Classrooms'}
                 subtitle="Enrolled"
+                rightAction={(
+                    <Pressable
+                        onPress={() => {
+                            hapticLight();
+                            setIsClaimModalOpen(true);
+                        }}
+                    >
+                        <HStack space="xs" alignItems="center" sx={{
+                            backgroundColor: Theme.colors.sanctuarySaffron,
+                            paddingHorizontal: 12,
+                            paddingVertical: 6,
+                            borderRadius: Theme.corners.comfortable,
+                            ...Theme.shadows.sm
+                        }}>
+                            <QrCode size={16} color="white" />
+                            <Text color="white" size="xs" bold>Claim Invite</Text>
+                        </HStack>
+                    </Pressable>
+                )}
             />
             <Box sx={{ flex: 1, padding: Theme.spacing.lg }}>
                 <ClassroomList
+                    refreshTrigger={refreshTrigger}
                     onClassroomPress={(classroom) => {
                         navigation.navigate('Classroom' as any, {
                             screen: 'ClassroomDetails',
@@ -117,6 +144,15 @@ export default function ClassroomScreen() {
                     }}
                 />
             </Box>
+
+            <ClaimInviteModal
+                isOpen={isClaimModalOpen}
+                onClose={() => setIsClaimModalOpen(false)}
+                onSuccess={() => {
+                    setIsClaimModalOpen(false);
+                    setRefreshTrigger(prev => prev + 1);
+                }}
+            />
         </Box>
     );
 }
