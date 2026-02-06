@@ -78,19 +78,22 @@ export default function CommunityPresence({ compact = false }: CommunityPresence
             // Query for users who have been active in the last 5 minutes
             const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
             
-            const { data, error } = await supabase
+            const { count, error } = await supabase
                 .from('users')
                 .select('id', { count: 'exact', head: true })
                 .eq('role', 'teacher')
                 .gte('last_seen_at', fiveMinutesAgo);
 
-            if (!error && data !== null) {
-                setOnlineCount(data.length || 0);
+            if (!error && count !== null) {
+                setOnlineCount(count);
+            } else {
+                // If query fails, don't show misleading data
+                setOnlineCount(0);
             }
         } catch (error) {
             console.error('Error fetching online teachers:', error);
-            // Set a friendly fallback number
-            setOnlineCount(Math.floor(Math.random() * 30) + 20); // Random 20-50
+            // On error, show 0 rather than fake data
+            setOnlineCount(0);
         } finally {
             setIsLoading(false);
         }

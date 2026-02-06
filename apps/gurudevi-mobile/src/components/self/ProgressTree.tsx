@@ -87,7 +87,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
     const fetchInteractionCount = async () => {
         try {
             // Count all meaningful interactions across different tables
-            const [moodLogs, fireJournal, dailyRhythm] = await Promise.all([
+            const [moodLogs, fireJournal] = await Promise.all([
                 supabase
                     .from('mood_logs')
                     .select('id', { count: 'exact', head: true })

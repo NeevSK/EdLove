@@ -397,12 +397,13 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                     </Button>
                 )}
 
-                {recordingState === 'recorded' && (
+                {(recordingState === 'recorded' || recordingState === 'playing') && (
                     <HStack space="md" justifyContent="center">
                         <Button
                             size="md"
                             variant="outline"
                             onPress={discardRecording}
+                            isDisabled={recordingState === 'playing'}
                             sx={{
                                 borderRadius: Theme.corners.full,
                                 borderColor: Theme.colors.dimGray,
@@ -420,6 +421,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                             size="md"
                             variant="outline"
                             onPress={playRecording}
+                            isDisabled={recordingState === 'playing'}
                             sx={{
                                 borderRadius: Theme.corners.full,
                                 borderColor: Theme.colors.sanctuarySaffron,
@@ -438,6 +440,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                         <Button
                             size="md"
                             onPress={saveRecording}
+                            isDisabled={recordingState === 'playing'}
                             sx={{
                                 borderRadius: Theme.corners.full,
                                 backgroundColor: Theme.colors.sageGreen,
