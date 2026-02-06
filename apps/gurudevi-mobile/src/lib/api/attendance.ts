@@ -7,12 +7,16 @@
 import { supabase } from '../supabase';
 import { APIError } from './types';
 import type { AttendanceRecord } from './types';
+import { requireClassroomAccess } from '../../utils/authorization';
 
 export const attendanceAPI = {
     /**
      * Get attendance records for a classroom on a specific date
      */
     async getByDate(classroomId: string, date: string): Promise<AttendanceRecord[]> {
+        // Verify authorization - user must have access to classroom
+        await requireClassroomAccess(classroomId);
+        
         const { data, error } = await supabase
             .from('attendance')
             .select('*')
@@ -35,6 +39,9 @@ export const attendanceAPI = {
         status: AttendanceRecord['status'],
         date: string
     ): Promise<AttendanceRecord> {
+        // Verify authorization - teacher must have access to classroom
+        await requireClassroomAccess(classroomId);
+        
         const { data, error } = await supabase
             .from('attendance')
             .upsert(
@@ -67,6 +74,11 @@ export const attendanceAPI = {
         status: AttendanceRecord['status'];
         date: string;
     }>): Promise<AttendanceRecord[]> {
+        // Verify authorization for the first classroom (assuming all records are for same classroom)
+        if (records.length > 0) {
+            await requireClassroomAccess(records[0].classroom_id);
+        }
+        
         const { data, error } = await supabase
             .from('attendance')
             .upsert(records, {
