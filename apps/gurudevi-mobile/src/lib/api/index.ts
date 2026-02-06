@@ -5,6 +5,7 @@ import { selfAPI } from './self';
 import { gradingAPI } from './grading';
 import { schoolAPI } from './school';
 import { communityAPI } from './community';
+import { libraryAPI } from './library';
 
 // New Features from Mission 02 (maintained as separate modules for now)
 import { attendanceAPI } from './attendance';
@@ -17,6 +18,7 @@ import { classroomsAPI } from './classrooms';
 
 // Re-export types for usage in app
 export * from './types';
+export * from '../types/Community';
 
 // Main API Object
 export const api = {
@@ -36,11 +38,14 @@ export const api = {
     classroomStudents: classroomStudentsAPI,
     classrooms: classroomsAPI,
 
-    // Placeholders / Future Modules
+    // Community & Library (Educational Ecology Features)
+    community: communityAPI,
+    library: libraryAPI,
+
+    // Other Modules
     self: selfAPI,
     grading: gradingAPI,
     school: schoolAPI,
-    community: communityAPI,
 };
 
 export default api;

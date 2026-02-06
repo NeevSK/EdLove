@@ -17,6 +17,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AuthScreen from './src/screens/AuthScreen';
 import TabNavigator from './src/navigation/TabNavigator';
 import LotusPetalFAB, { ActionItem } from './src/components/shared/LotusPetalFAB';
+import ErrorBoundary from './src/components/shared/ErrorBoundary';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -116,24 +117,30 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
         <GluestackUIProvider config={config}>
-          <NavigationContainer>
-            {!session ? (
-              <AuthScreen />
-            ) : (
-              <>
-                <TabNavigator
-                  onTabChange={(tabName: any) => {
-                    setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
-                  }}
-                />
-                <LotusPetalFAB
-                  currentTab={currentTab}
-                  onPress={handleFabPress}
-                  actions={getFabActions()}
-                />
-              </>
-            )}
-          </NavigationContainer>
+          <ErrorBoundary name="App Root">
+            <NavigationContainer>
+              {!session ? (
+                <ErrorBoundary name="Auth Screen">
+                  <AuthScreen />
+                </ErrorBoundary>
+              ) : (
+                <ErrorBoundary name="Main App">
+                  <>
+                    <TabNavigator
+                      onTabChange={(tabName: any) => {
+                        setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
+                      }}
+                    />
+                    <LotusPetalFAB
+                      currentTab={currentTab}
+                      onPress={handleFabPress}
+                      actions={getFabActions()}
+                    />
+                  </>
+                </ErrorBoundary>
+              )}
+            </NavigationContainer>
+          </ErrorBoundary>
         </GluestackUIProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>

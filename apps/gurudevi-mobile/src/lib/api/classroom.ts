@@ -1,5 +1,6 @@
 import { supabase } from '../supabase';
 import { APIError, Lesson, Student } from './types';
+import { requireTeacherAccess } from '../../utils/authorization';
 
 // ============================================================================
 // LESSONS API
@@ -9,7 +10,10 @@ export const lessonsAPI = {
     /**
      * Get all lessons for a classroom
      */
-    async getAll(classroomId: string): Promise<Lesson[]> {
+    async getAll(teacherId: string): Promise<Lesson[]> {
+        // Verify authorization
+        await requireTeacherAccess(teacherId);
+        
         const { data, error } = await supabase
             .from('lessons')
             .select('*')
@@ -27,6 +31,9 @@ export const lessonsAPI = {
      * Get lessons for a specific date
      */
     async getByDate(teacherId: string, date: string): Promise<Lesson[]> {
+        // Verify authorization
+        await requireTeacherAccess(teacherId);
+        
         const { data, error } = await supabase
             .from('lessons')
             .select('*')
@@ -44,6 +51,9 @@ export const lessonsAPI = {
      * Create a new lesson
      */
     async create(lesson: Omit<Lesson, 'id' | 'created_at' | 'updated_at'>): Promise<Lesson> {
+        // Verify authorization
+        await requireTeacherAccess(lesson.teacher_id);
+        
         const { data, error } = await supabase
             .from('lessons')
             .insert([lesson])
@@ -61,6 +71,20 @@ export const lessonsAPI = {
      * Update a lesson
      */
     async update(id: string, updates: Partial<Lesson>): Promise<Lesson> {
+        // First get the lesson to check ownership
+        const { data: lesson, error: fetchError } = await supabase
+            .from('lessons')
+            .select('teacher_id')
+            .eq('id', id)
+            .single();
+        
+        if (fetchError || !lesson) {
+            throw new APIError('Lesson not found', 'NOT_FOUND');
+        }
+        
+        // Verify authorization
+        await requireTeacherAccess(lesson.teacher_id);
+        
         const { data, error } = await supabase
             .from('lessons')
             .update(updates)
@@ -79,6 +103,20 @@ export const lessonsAPI = {
      * Delete a lesson
      */
     async delete(id: string): Promise<void> {
+        // First get the lesson to check ownership
+        const { data: lesson, error: fetchError } = await supabase
+            .from('lessons')
+            .select('teacher_id')
+            .eq('id', id)
+            .single();
+        
+        if (fetchError || !lesson) {
+            throw new APIError('Lesson not found', 'NOT_FOUND');
+        }
+        
+        // Verify authorization
+        await requireTeacherAccess(lesson.teacher_id);
+        
         const { error } = await supabase
             .from('lessons')
             .delete()
