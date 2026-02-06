@@ -58,6 +58,17 @@ export default function LessonFeed({
         loadFeed();
     }, [classroomId, refreshTrigger]);
 
+    const isCurrentMonth = (title: string) => {
+        const now = new Date();
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"];
+        const currentMonthName = monthNames[now.getMonth()].toLowerCase();
+        const currentYear = now.getFullYear().toString();
+
+        const normalizedTitle = title.toLowerCase();
+        return normalizedTitle.includes(currentMonthName) && normalizedTitle.includes(currentYear);
+    };
+
     const loadFeed = async () => {
         setIsLoading(true);
         setError(null);
@@ -79,9 +90,14 @@ export default function LessonFeed({
 
             setMonthlyGroups(groups);
 
-            // Expand latest month by default
-            if (groups.length > 0) {
-                setExpandedLessons({ [groups[groups.length - 1].lesson.id]: true });
+            // Expand current month by default
+            const currentMonthId = groups.find(g => isCurrentMonth(g.lesson.title))?.lesson.id;
+            const latestMonthId = groups.length > 0 ? groups[groups.length - 1].lesson.id : null;
+
+            if (currentMonthId) {
+                setExpandedLessons({ [currentMonthId]: true });
+            } else if (latestMonthId) {
+                setExpandedLessons({ [latestMonthId]: true });
             }
         } catch (err: any) {
             console.error('Failed to load feed:', err);
@@ -90,6 +106,7 @@ export default function LessonFeed({
             setIsLoading(false);
         }
     };
+
 
     const toggleLesson = (lessonId: string) => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -222,13 +239,28 @@ export default function LessonFeed({
                                         borderRadius: Theme.corners.comfortable,
                                         borderBottomWidth: expandedLessons[lesson.id] ? 1 : 0,
                                         borderBottomColor: Theme.colors.voidIndigo,
+                                        borderWidth: isCurrentMonth(lesson.title) ? 1 : 0,
+                                        borderColor: isCurrentMonth(lesson.title) ? Theme.colors.sanctuarySaffron : 'transparent',
                                     }}
                                 >
                                     <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                                         <VStack>
-                                            <Heading size="md" color={Theme.colors.sanctuarySaffron}>
-                                                {lesson.title}
-                                            </Heading>
+                                            <HStack space="xs" sx={{ alignItems: 'center' }}>
+                                                <Heading size="md" color={isCurrentMonth(lesson.title) ? Theme.colors.sanctuarySaffron : Theme.colors.pearlGray}>
+                                                    {lesson.title}
+                                                </Heading>
+                                                {isCurrentMonth(lesson.title) && (
+                                                    <Box sx={{
+                                                        backgroundColor: Theme.colors.sanctuarySaffron,
+                                                        paddingHorizontal: 6,
+                                                        paddingVertical: 2,
+                                                        borderRadius: 4,
+                                                        marginLeft: 8
+                                                    }}>
+                                                        <Text color={Theme.colors.white} size="2xs" bold>CURRENT</Text>
+                                                    </Box>
+                                                )}
+                                            </HStack>
                                             <Text size="xs" color={Theme.colors.mistGray}>
                                                 {materials.length} Materials • {assignments.length} Assignments
                                             </Text>

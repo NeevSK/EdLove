@@ -24,15 +24,15 @@ import {
     Users,
     BookOpen,
     FileText,
+    Plus,
 } from 'lucide-react-native';
-import { Theme } from '../constants/Theme';
+import Theme from '../constants/Theme';
 import { useTranslation } from 'react-i18next';
 import { hapticLight } from '../utils/haptics';
 import { api, Classroom, ClassroomStudent } from '../lib/api';
 import GlobalHeader from '../components/shared/GlobalHeader';
 import { StudentList } from '../components/classroom';
 import { LessonFeed, ContentLibrary } from './classroom';
-import { Plus } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ClassroomStackParamList } from '../types/navigation';
 
@@ -259,10 +259,31 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
                     />
                 )}
                 {activeTab === 'resources' && (
-                    <ContentLibrary
-                    // Resources tab for physical equipment
-                    // Need to ensure ContentLibrary supports this separation
-                    />
+                    <Center sx={{ flex: 1, padding: 40 }}>
+                        <Box sx={{
+                            padding: Theme.spacing.xl,
+                            backgroundColor: Theme.colors.midnightBlue,
+                            borderRadius: Theme.corners.generous,
+                            alignItems: 'center',
+                            width: '100%'
+                        }}>
+                            <Box sx={{
+                                width: 64,
+                                height: 64,
+                                borderRadius: 32,
+                                backgroundColor: Theme.colors.deepIndigo,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: 16
+                            }}>
+                                <Plus size={32} color={Theme.colors.mistGray} />
+                            </Box>
+                            <Heading color={Theme.colors.sacredWhite} size="lg" mb="$2">Equipment Resources</Heading>
+                            <Text color={Theme.colors.mistGray} textAlign="center">
+                                Physical equipment and classroom resource management is coming soon.
+                            </Text>
+                        </Box>
+                    </Center>
                 )}
             </Box>
 
