@@ -32,7 +32,8 @@ interface LessonFeedProps {
 }
 
 interface MonthlyGroup {
-    lesson: Lesson;
+    monthTitle: string;
+    lessonId?: string; // Present if already created in DB
     materials: LessonMaterial[];
     assignments: Assignment[];
 }
@@ -79,25 +80,32 @@ export default function LessonFeed({
                 api.assignments.getAll(classroomId),
             ]);
 
-            const groups: MonthlyGroup[] = lessons.map(lesson => ({
-                lesson,
-                materials: materials.filter(m => m.lesson_id === lesson.id),
-                assignments: assignments.filter(a => a.lesson_id === lesson.id),
-            }));
+            // Generate 12 months for the current year
+            const now = new Date();
+            const year = now.getFullYear();
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
 
-            // Sort by order_index
-            groups.sort((a, b) => a.lesson.order_index - b.lesson.order_index);
+            const calendarGroups: MonthlyGroup[] = monthNames.map((name, index) => {
+                const monthTitle = `${name} ${year}`;
+                const existingLesson = lessons.find(l => l.title === monthTitle);
 
-            setMonthlyGroups(groups);
+                return {
+                    monthTitle,
+                    lessonId: existingLesson?.id,
+                    materials: materials.filter(m => m.lesson_id === existingLesson?.id),
+                    assignments: assignments.filter(a => a.lesson_id === existingLesson?.id),
+                };
+            });
+
+            setMonthlyGroups(calendarGroups);
 
             // Expand current month by default
-            const currentMonthId = groups.find(g => isCurrentMonth(g.lesson.title))?.lesson.id;
-            const latestMonthId = groups.length > 0 ? groups[groups.length - 1].lesson.id : null;
+            const currentMonthTitle = `${monthNames[now.getMonth()]} ${year}`;
+            const currentMonthIndex = calendarGroups.findIndex(g => g.monthTitle === currentMonthTitle);
 
-            if (currentMonthId) {
-                setExpandedLessons({ [currentMonthId]: true });
-            } else if (latestMonthId) {
-                setExpandedLessons({ [latestMonthId]: true });
+            if (currentMonthIndex !== -1) {
+                setExpandedLessons({ [calendarGroups[currentMonthIndex].monthTitle]: true });
             }
         } catch (err: any) {
             console.error('Failed to load feed:', err);
@@ -229,27 +237,27 @@ export default function LessonFeed({
                         </Box>
                     )}
 
-                    {!isLoading && monthlyGroups.map(({ lesson, materials, assignments }) => (
-                        <Box key={lesson.id} sx={{ marginBottom: Theme.spacing.md }}>
-                            <TouchableOpacity onPress={() => toggleLesson(lesson.id)}>
+                    {!isLoading && monthlyGroups.map(({ monthTitle, lessonId, materials, assignments }) => (
+                        <Box key={monthTitle} sx={{ marginBottom: Theme.spacing.md }}>
+                            <TouchableOpacity onPress={() => toggleLesson(monthTitle)}>
                                 <Box
                                     sx={{
                                         padding: Theme.spacing.md,
                                         backgroundColor: Theme.colors.deepIndigo,
                                         borderRadius: Theme.corners.comfortable,
-                                        borderBottomWidth: expandedLessons[lesson.id] ? 1 : 0,
+                                        borderBottomWidth: expandedLessons[monthTitle] ? 1 : 0,
                                         borderBottomColor: Theme.colors.voidIndigo,
-                                        borderWidth: isCurrentMonth(lesson.title) ? 1 : 0,
-                                        borderColor: isCurrentMonth(lesson.title) ? Theme.colors.sanctuarySaffron : 'transparent',
+                                        borderWidth: isCurrentMonth(monthTitle) ? 1 : 0,
+                                        borderColor: isCurrentMonth(monthTitle) ? Theme.colors.sanctuarySaffron : 'transparent',
                                     }}
                                 >
                                     <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                                         <VStack>
                                             <HStack space="xs" sx={{ alignItems: 'center' }}>
-                                                <Heading size="md" color={isCurrentMonth(lesson.title) ? Theme.colors.sanctuarySaffron : Theme.colors.pearlGray}>
-                                                    {lesson.title}
+                                                <Heading size="md" color={isCurrentMonth(monthTitle) ? Theme.colors.sanctuarySaffron : Theme.colors.pearlGray}>
+                                                    {monthTitle}
                                                 </Heading>
-                                                {isCurrentMonth(lesson.title) && (
+                                                {isCurrentMonth(monthTitle) && (
                                                     <Box sx={{
                                                         backgroundColor: Theme.colors.sanctuarySaffron,
                                                         paddingHorizontal: 6,
@@ -265,7 +273,7 @@ export default function LessonFeed({
                                                 {materials.length} Materials • {assignments.length} Assignments
                                             </Text>
                                         </VStack>
-                                        {expandedLessons[lesson.id] ? (
+                                        {expandedLessons[monthTitle] ? (
                                             <ChevronUp color={Theme.colors.sanctuarySaffron} />
                                         ) : (
                                             <ChevronDown color={Theme.colors.mistGray} />
@@ -274,7 +282,7 @@ export default function LessonFeed({
                                 </Box>
                             </TouchableOpacity>
 
-                            {expandedLessons[lesson.id] && (
+                            {expandedLessons[monthTitle] && (
                                 <Box
                                     sx={{
                                         padding: Theme.spacing.md,
@@ -290,39 +298,46 @@ export default function LessonFeed({
                                                 ACADEMIC MATERIALS
                                             </Text>
                                             {isTeacher && (
-                                                <TouchableOpacity onPress={() => onAddMaterial?.(lesson.id)}>
-                                                    <HStack space="xs" sx={{ alignItems: 'center' }}>
+                                                <TouchableOpacity onPress={() => onAddMaterial?.(lessonId || monthTitle)}>
+                                                    <HStack space="xs" alignItems="center">
                                                         <Plus size={16} color={Theme.colors.sanctuarySaffron} />
-                                                        <Text color={Theme.colors.sanctuarySaffron} size="xs">Add</Text>
+                                                        <Text color={Theme.colors.sanctuarySaffron} size="xs" bold>ADD</Text>
                                                     </HStack>
                                                 </TouchableOpacity>
                                             )}
                                         </HStack>
+
                                         {materials.length === 0 ? (
-                                            <Text color={Theme.colors.pearlGray} size="xs" italic>No materials for this month.</Text>
+                                            <Text color={Theme.colors.dimGray} size="sm" italic sx={{ textAlign: 'center', py: 10 }}>
+                                                No materials added yet
+                                            </Text>
                                         ) : (
                                             materials.map(renderMaterialCard)
                                         )}
 
                                         {/* Assignment Section */}
-                                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginTop: Theme.spacing.sm }}>
+                                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginTop: Theme.spacing.md }}>
                                             <Text color={Theme.colors.mistGray} size="sm" sx={{ fontWeight: '700' }}>
                                                 ASSIGNMENTS
                                             </Text>
                                             {isTeacher && (
-                                                <TouchableOpacity onPress={() => onAddAssignment?.(lesson.id)}>
-                                                    <HStack space="xs" sx={{ alignItems: 'center' }}>
+                                                <TouchableOpacity onPress={() => onAddAssignment?.(lessonId || monthTitle)}>
+                                                    <HStack space="xs" alignItems="center">
                                                         <Plus size={16} color={Theme.colors.sageGreen} />
-                                                        <Text color={Theme.colors.sageGreen} size="xs">Add</Text>
+                                                        <Text color={Theme.colors.sageGreen} size="xs" bold>ADD</Text>
                                                     </HStack>
                                                 </TouchableOpacity>
                                             )}
                                         </HStack>
+
                                         {assignments.length === 0 ? (
-                                            <Text color={Theme.colors.pearlGray} size="xs" italic>No assignments for this month.</Text>
+                                            <Text color={Theme.colors.dimGray} size="sm" italic sx={{ textAlign: 'center', py: 10 }}>
+                                                No assignments linked yet
+                                            </Text>
                                         ) : (
                                             assignments.map(renderAssignmentCard)
                                         )}
+
                                     </VStack>
                                 </Box>
                             )}

@@ -106,10 +106,24 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
         if (!formTitle.trim() || !activeLessonId) return;
         setIsSubmitting(true);
         try {
+            let targetLessonId = activeLessonId;
+
+            // If activeLessonId is actually the month title (virtual lesson)
+            // we need to create the lesson record first
+            if (!targetLessonId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+                const newLesson = await api.lessons.create({
+                    classroom_id: classroomId,
+                    title: targetLessonId,
+                    description: `Materials for ${targetLessonId}`,
+                    order_index: 0, // Should be calculated but 0 is fine for now
+                });
+                targetLessonId = newLesson.id;
+            }
+
             if (contentType === 'material') {
                 await api.lessonMaterials.create({
                     classroom_id: classroomId,
-                    lesson_id: activeLessonId,
+                    lesson_id: targetLessonId,
                     title: formTitle,
                     type: formType,
                     url: (formType === 'pdf' || formType === 'link') ? formUrl : undefined,
@@ -119,7 +133,7 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
             } else {
                 await api.assignments.create({
                     classroom_id: classroomId,
-                    lesson_id: activeLessonId,
+                    lesson_id: targetLessonId,
                     title: formTitle,
                     description: formDescription,
                     due_date: formDueDate || undefined,
