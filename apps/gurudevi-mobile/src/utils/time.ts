@@ -121,12 +121,15 @@ export function isThisWeek(date: Date): boolean {
 
 /**
  * Get sanctuary time theme
- * Returns theme hints based on time of day (for future use)
+ * Returns theme hints based on time of day for time-aware UI
  */
 export function getSanctuaryTimeTheme(): {
     timeOfDay: TimeOfDay;
     primaryColor: string;
+    backgroundColor: string;
+    textColor: string;
     description: string;
+    warmth: number; // 0-1, for adjusting color temperature
 } {
     const timeOfDay = getTimeOfDay();
 
@@ -134,22 +137,34 @@ export function getSanctuaryTimeTheme(): {
         dawn: {
             timeOfDay: 'dawn' as TimeOfDay,
             primaryColor: '#FFD700', // dawnGold
-            description: 'First light, gentle awakening'
+            backgroundColor: '#0f0f1e', // voidIndigo
+            textColor: '#FFF8F0', // sacredWhite
+            description: 'First light, gentle awakening',
+            warmth: 0.3
         },
         day: {
             timeOfDay: 'day' as TimeOfDay,
             primaryColor: '#E67E22', // sanctuarySaffron
-            description: 'Full energy, active teaching'
+            backgroundColor: '#0f0f1e', // voidIndigo
+            textColor: '#FFF8F0', // sacredWhite
+            description: 'Full energy, active teaching',
+            warmth: 0
         },
         evening: {
             timeOfDay: 'evening' as TimeOfDay,
             primaryColor: '#DB7093', // lotusDeepPink
-            description: 'Winding down, reflection'
+            backgroundColor: '#120f1a', // Slightly warmer voidIndigo
+            textColor: '#FFF8F0', // sacredWhite
+            description: 'Winding down, reflection',
+            warmth: 0.5
         },
         night: {
             timeOfDay: 'night' as TimeOfDay,
             primaryColor: '#9966CC', // twilightPurple
-            description: 'Rest, preparation for tomorrow'
+            backgroundColor: '#1a0f1e', // Warmer, softer voidIndigo
+            textColor: '#FFEFD5', // Warmer sacredWhite (papaya whip)
+            description: 'Rest, preparation for tomorrow',
+            warmth: 0.8
         }
     };
 

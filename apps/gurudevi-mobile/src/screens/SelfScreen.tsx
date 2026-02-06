@@ -13,19 +13,20 @@ import {
     Button,
     ButtonText
 } from "@gluestack-ui/themed";
-import { Mic, Send, MessageCircle, Repeat, Sun, FileText, Flower, Flame } from 'lucide-react-native';
+import { Mic, Send, MessageCircle, Repeat, Sun, FileText, Flower, Flame, Sprout } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../constants/Theme';
-import { getGreetingKey } from '../utils/time';
+import { getGreetingKey, getSanctuaryTimeTheme } from '../utils/time';
 import { hapticLight } from '../utils/haptics';
 import DailyRhythm from '../components/self/DailyRhythm';
-import { MoodLotus, ShadowAgentDrawer, FireJournal } from '../components/self';
+import { MoodLotus, ShadowAgentDrawer, FireJournal, CommunityPresence, ProgressTree } from '../components/self';
 import { supabase } from '../lib/supabase';
 import GlobalHeader from '../components/shared/GlobalHeader';
 
 const SUB_FEATURES = [
     { id: 'mood', label: 'Mood Check-in', icon: Flower },
     { id: 'fire', label: 'Fire Journal', icon: Flame },
+    { id: 'progress', label: 'Growth', icon: Sprout },
     { id: 'rhythm', label: 'Daily Rhythm', icon: Repeat },
     { id: 'venting', label: 'Venting Space', icon: MessageCircle },
 ];
@@ -35,6 +36,7 @@ export default function SelfScreen() {
     const [activeFeature, setActiveFeature] = useState('mood');
     const [userId, setUserId] = useState<string | null>(null);
     const greetingKey = getGreetingKey(); // Get i18n key based on time
+    const timeTheme = getSanctuaryTimeTheme(); // Get time-aware theme
 
     // Get current user on mount
     React.useEffect(() => {
@@ -48,10 +50,15 @@ export default function SelfScreen() {
     }, []);
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+        <Box sx={{ flex: 1, backgroundColor: timeTheme.backgroundColor }}>
             <GlobalHeader showGreeting={true} />
             <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}>
                 {/* 1. Atmospheric Header Removed (Replaced by GlobalHeader) */}
+
+                {/* Community Presence - Shows online teachers */}
+                <Box px="$6" mb="$4">
+                    <CommunityPresence compact={true} />
+                </Box>
 
                 {/* 2. Sub-Feature Carousel */}
                 <Box sx={{ height: 100 }}>
@@ -119,6 +126,10 @@ export default function SelfScreen() {
 
                         {activeFeature === 'fire' && (
                             <FireJournal userId={userId ?? undefined} />
+                        )}
+
+                        {activeFeature === 'progress' && (
+                            <ProgressTree userId={userId ?? undefined} />
                         )}
 
                         {activeFeature === 'rhythm' && (

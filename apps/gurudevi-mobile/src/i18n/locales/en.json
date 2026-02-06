@@ -75,7 +75,10 @@
         "speakTruth": "What's on your mind...",
         "unburden": "Unburden",
         "newInsight": "New Insight",
-        "shadowPrep": "Preparing for tomorrow..."
+        "shadowPrep": "Preparing for tomorrow...",
+        "mood": "Mood Check-in",
+        "fire": "Fire Journal",
+        "progress": "Growth"
     },
     "classroom": {
         "title": "Classroom",
