@@ -1,7 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import ClassroomScreen from '../screens/ClassroomScreen';
-import ClassroomDetailsScreen from '../screens/ClassroomDetailsScreen';
+import { ClassroomScreen, ClassroomDetailsScreen } from '../screens';
 import { Theme } from '../constants/Theme';
 
 import { ClassroomStackParamList } from '../types/navigation';

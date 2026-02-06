@@ -19,9 +19,10 @@ import { Users, Settings } from 'lucide-react-native';
 // Mock params for now, in real nav this comes from route
 interface GroupDetailScreenProps {
     groupId?: string; // Should come from route.params
+    navigation?: any;
 }
 
-export default function GroupDetailScreen({ groupId = '1' }: GroupDetailScreenProps) {
+export default function GroupDetailScreen({ groupId = '1', navigation }: GroupDetailScreenProps) {
     const { groups, posts, fetchPosts } = useCommunity();
 
     // In real app we get group from ID
@@ -38,7 +39,11 @@ export default function GroupDetailScreen({ groupId = '1' }: GroupDetailScreenPr
 
     return (
         <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
-            <GlobalHeader title={group.name} showBackButton />
+            <GlobalHeader
+                title={group.name}
+                showBack={true}
+                onBack={() => navigation.goBack()}
+            />
             <ScrollView>
                 {/* Cover Area */}
                 <Box h={150} sx={{ backgroundColor: Theme.colors.deepIndigo }}>

@@ -19,9 +19,9 @@ import {
     ScrollView,
 } from '@gluestack-ui/themed';
 import { useTranslation } from 'react-i18next';
-import { StudentGrade } from '../types/Grade';
-import { marksToGPA } from '../utils/grading';
-import Theme from '../constants/Theme';
+import { StudentGrade } from '../../types/Grade';
+import { marksToGPA } from '../../utils/grading';
+import { Theme } from '../../constants/Theme';
 
 interface ReportCardProps {
     studentName: string;
@@ -123,7 +123,7 @@ export default function ReportCard({
                     ) : (
                         grades.map((grade) => {
                             const { grade: letterGrade, gpa } = marksToGPA(grade.marks);
-                            const assignmentName = grade.assignment_id 
+                            const assignmentName = grade.assignment_id
                                 ? (assignmentNames[grade.assignment_id] || t('grades.assignment'))
                                 : t('grades.assignment');
 

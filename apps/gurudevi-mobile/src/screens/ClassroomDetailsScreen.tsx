@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { hapticLight } from '../utils/haptics';
 import { api, Classroom, ClassroomStudent } from '../lib/api';
 import GlobalHeader from '../components/shared/GlobalHeader';
-import StudentList from '../components/classroom/StudentList';
+import { StudentList } from '../components/classroom';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ClassroomStackParamList } from '../types/navigation';
 

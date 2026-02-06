@@ -15,11 +15,8 @@ import { Theme } from '../constants/Theme';
 import { supabase } from '../lib/supabase';
 
 // Import role-specific views
-import PrincipalSchoolView from './classroom/PrincipalSchoolView';
-import SectionHeadView from './classroom/SectionHeadView';
-import GradeHeadView from './classroom/GradeHeadView';
-import ClassroomList from '../components/classroom/ClassroomList';
-import TeacherDashboard from '../components/classroom/TeacherDashboard';
+import { PrincipalSchoolView, SectionHeadView, GradeHeadView } from './classroom';
+import { ClassroomList, TeacherDashboard } from '../components/classroom';
 import GlobalHeader from '../components/shared/GlobalHeader';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';

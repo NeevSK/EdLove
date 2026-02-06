@@ -18,10 +18,12 @@ import ClassroomStackNavigator from './ClassroomStackNavigator';
 import { useUserRole } from '../hooks/useUserRole';
 
 // Screens
-import SelfScreen from '../screens/SelfScreen';
-import CommunityScreen from '../screens/CommunityScreen';
-import LibraryScreen from '../screens/LibraryScreen';
-import ProfileScreen from '../screens/ProfileScreen';
+import {
+  SelfScreen,
+  CommunityScreen,
+  LibraryScreen,
+  ProfileScreen
+} from '../screens';
 
 const Tab = createBottomTabNavigator();
 
