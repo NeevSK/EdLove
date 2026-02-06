@@ -37,6 +37,7 @@ import { UserRole } from '../types/User';
 import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
 import { useStore } from '../store/useStore';
 import { SchoolType } from '../constants/SriLankanSchools';
+import { validators, validateForm } from '../utils/validators';
 
 // Google icon using react-native-svg
 const GoogleIcon = ({ color = "#FFF", size = 20 }: { color?: string; size?: number }) => (
@@ -64,9 +65,46 @@ export default function AuthScreen() {
     const [role, setRole] = useState<UserRole>('teacher'); // Default to teacher
     const [loading, setLoading] = useState(false);
     const [isSignUp, setIsSignUp] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const toast = useToast();
 
     async function handleAuth() {
+        // Validate inputs before proceeding
+        const validationRules: Record<string, (value: any) => any> = isSignUp
+            ? {
+                email: validators.email,
+                password: validators.password,
+                fullName: (value: string) => validators.nonEmpty(value, 'Full name'),
+            }
+            : {
+                email: validators.email,
+                password: (value: string) => validators.nonEmpty(value, 'Password'),
+            };
+
+        const { isValid, errors: validationErrors } = validateForm(
+            { email, password, fullName },
+            validationRules
+        );
+
+        if (!isValid) {
+            setErrors(validationErrors);
+            hapticError();
+            
+            // Determine which error message to prioritize for the toast in a deterministic way
+            const errorFieldOrder = isSignUp ? ['email', 'password', 'fullName'] : ['email', 'password'];
+            const firstErrorMessage =
+                errorFieldOrder
+                    .map((field) => validationErrors[field])
+                    .find((message) => Boolean(message)) ||
+                'Please fix the errors';
+            
+            showToast(firstErrorMessage, 'error');
+            return;
+        }
+
+        // Clear errors
+        setErrors({});
+        
         setLoading(true);
         hapticLight();
 
@@ -250,8 +288,9 @@ export default function AuthScreen() {
                             <Input
                                 variant="outline"
                                 size="lg"
+                                isInvalid={!!errors.fullName}
                                 sx={{
-                                    borderColor: Theme.colors.mistGray,
+                                    borderColor: errors.fullName ? Theme.colors.emberRed : Theme.colors.mistGray,
                                     borderRadius: Theme.corners.comfortable,
                                     backgroundColor: Theme.colors.deepIndigo,
                                 }}
@@ -259,11 +298,21 @@ export default function AuthScreen() {
                                 <InputField
                                     placeholder={t('auth.fullName')}
                                     value={fullName}
-                                    onChangeText={setFullName}
+                                    onChangeText={(text) => {
+                                        setFullName(text);
+                                        if (errors.fullName) {
+                                            setErrors(prev => ({ ...prev, fullName: '' }));
+                                        }
+                                    }}
                                     color={Theme.colors.sacredWhite}
                                     placeholderTextColor={Theme.colors.dimGray}
                                 />
                             </Input>
+                            {errors.fullName && (
+                                <Text color={Theme.colors.emberRed} size="xs">
+                                    {errors.fullName}
+                                </Text>
+                            )}
                         </VStack>
                     )}
 
@@ -275,8 +324,9 @@ export default function AuthScreen() {
                         <Input
                             variant="outline"
                             size="lg"
+                            isInvalid={!!errors.email}
                             sx={{
-                                borderColor: Theme.colors.mistGray,
+                                borderColor: errors.email ? Theme.colors.emberRed : Theme.colors.mistGray,
                                 borderRadius: Theme.corners.comfortable,
                                 backgroundColor: Theme.colors.deepIndigo,
                             }}
@@ -284,13 +334,23 @@ export default function AuthScreen() {
                             <InputField
                                 placeholder={t('auth.email')}
                                 value={email}
-                                onChangeText={setEmail}
+                                onChangeText={(text) => {
+                                    setEmail(text);
+                                    if (errors.email) {
+                                        setErrors(prev => ({ ...prev, email: '' }));
+                                    }
+                                }}
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                                 color={Theme.colors.sacredWhite}
                                 placeholderTextColor={Theme.colors.dimGray}
                             />
                         </Input>
+                        {errors.email && (
+                            <Text color={Theme.colors.emberRed} size="xs">
+                                {errors.email}
+                            </Text>
+                        )}
                     </VStack>
 
                     {/* Password */}
@@ -301,8 +361,9 @@ export default function AuthScreen() {
                         <Input
                             variant="outline"
                             size="lg"
+                            isInvalid={!!errors.password}
                             sx={{
-                                borderColor: Theme.colors.mistGray,
+                                borderColor: errors.password ? Theme.colors.emberRed : Theme.colors.mistGray,
                                 borderRadius: Theme.corners.comfortable,
                                 backgroundColor: Theme.colors.deepIndigo,
                             }}
@@ -310,12 +371,22 @@ export default function AuthScreen() {
                             <InputField
                                 placeholder={t('auth.password')}
                                 value={password}
-                                onChangeText={setPassword}
+                                onChangeText={(text) => {
+                                    setPassword(text);
+                                    if (errors.password) {
+                                        setErrors(prev => ({ ...prev, password: '' }));
+                                    }
+                                }}
                                 secureTextEntry
                                 color={Theme.colors.sacredWhite}
                                 placeholderTextColor={Theme.colors.dimGray}
                             />
                         </Input>
+                        {errors.password && (
+                            <Text color={Theme.colors.emberRed} size="xs">
+                                {errors.password}
+                            </Text>
+                        )}
                     </VStack>
 
                     {/* Role Selection (Sign Up Only) */}

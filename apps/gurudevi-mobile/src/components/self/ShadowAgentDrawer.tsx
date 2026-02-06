@@ -43,11 +43,39 @@ const THOUGHT_SEEDS = [
     "What are you grateful for in this moment?",
 ];
 
+// Contextual suggestions based on time and patterns
+const CONTEXTUAL_SUGGESTIONS = [
+    {
+        condition: 'working_long',
+        message: "You've been working for a while. Time to rest?",
+        emoji: '🌙'
+    },
+    {
+        condition: 'late_night',
+        message: "It's getting late. Your rest matters too.",
+        emoji: '🌜'
+    },
+    {
+        condition: 'early_morning',
+        message: "Early start today. Remember to breathe.",
+        emoji: '🌅'
+    },
+    {
+        condition: 'midday',
+        message: "How's your energy? A pause can help.",
+        emoji: '☕'
+    },
+];
+
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function ShadowAgentDrawer() {
     const [isOpen, setIsOpen] = useState(false);
     const [currentSeed, setCurrentSeed] = useState('');
+    const [contextualSuggestion, setContextualSuggestion] = useState<{
+        message: string;
+        emoji: string;
+    } | null>(null);
 
     const styles = useMemo(() => StyleSheet.create({
         orbContainer: {
@@ -106,6 +134,23 @@ export default function ShadowAgentDrawer() {
         // Pick a random thought seed
         const randomSeed = THOUGHT_SEEDS[Math.floor(Math.random() * THOUGHT_SEEDS.length)];
         setCurrentSeed(randomSeed);
+        
+        // Determine contextual suggestion based on time
+        const hour = new Date().getHours();
+        let suggestion = null;
+        
+        if (hour >= 22 || hour < 5) {
+            // Late night
+            suggestion = CONTEXTUAL_SUGGESTIONS.find(s => s.condition === 'late_night');
+        } else if (hour >= 5 && hour < 8) {
+            // Early morning
+            suggestion = CONTEXTUAL_SUGGESTIONS.find(s => s.condition === 'early_morning');
+        } else if (hour >= 11 && hour < 14) {
+            // Midday
+            suggestion = CONTEXTUAL_SUGGESTIONS.find(s => s.condition === 'midday');
+        }
+        
+        setContextualSuggestion(suggestion || null);
         setIsOpen(true);
     };
 
@@ -193,6 +238,45 @@ export default function ShadowAgentDrawer() {
                                         A quiet companion for reflection
                                     </Text>
                                 </Animated.View>
+
+                                {/* Contextual Suggestion */}
+                                {contextualSuggestion && (
+                                    <Animated.View
+                                        entering={FadeIn.duration(Theme.motion.gentle).delay(Theme.motion.quick)}
+                                    >
+                                        <Box
+                                            sx={{
+                                                backgroundColor: Theme.colors.midnightBlue,
+                                                padding: Theme.spacing.lg,
+                                                borderRadius: Theme.corners.comfortable,
+                                                borderWidth: 1,
+                                                borderColor: Theme.colors.twilightPurple,
+                                            }}
+                                        >
+                                            <Text
+                                                color={Theme.colors.dimGray}
+                                                size="xs"
+                                                sx={{
+                                                    textTransform: 'uppercase',
+                                                    letterSpacing: 1,
+                                                    marginBottom: Theme.spacing.sm,
+                                                }}
+                                            >
+                                                Gentle Reminder
+                                            </Text>
+                                            <Text
+                                                color={Theme.colors.pearlGray}
+                                                size="lg"
+                                                sx={{
+                                                    fontWeight: typography.fontWeight.medium,
+                                                    lineHeight: typography.lineHeight.relaxed * typography.fontSize.lg,
+                                                }}
+                                            >
+                                                {contextualSuggestion.emoji} {contextualSuggestion.message}
+                                            </Text>
+                                        </Box>
+                                    </Animated.View>
+                                )}
 
                                 {/* Thought Seed */}
                                 <Animated.View

@@ -21,6 +21,8 @@ import {
     SliderTrack,
     SliderFilledTrack,
     SliderThumb,
+    Button,
+    ButtonText,
 } from '@gluestack-ui/themed';
 import { StyleSheet, Image, Platform } from 'react-native';
 import Animated, {
@@ -32,9 +34,11 @@ import Animated, {
     Easing,
     runOnJS,
 } from 'react-native-reanimated';
+import { Wind } from 'lucide-react-native';
 import { Theme, typography } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';
 import * as Haptics from 'expo-haptics';
+import BreathGuide from './BreathGuide';
 
 interface MoodLotusProps {
     userId?: string;
@@ -56,6 +60,7 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
     const [moodValue, setMoodValue] = useState(3);
     const [isSaving, setIsSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
+    const [showBreathGuide, setShowBreathGuide] = useState(false);
 
     // Animation values
     const scale = useSharedValue(0.8);
@@ -160,15 +165,44 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
 
     return (
         <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
-            {/* Header */}
-            <VStack space="xs">
-                <Heading color={Theme.colors.sacredWhite} size="lg">
-                    Mood Check-in
-                </Heading>
-                <Text color={Theme.colors.mistGray} size="sm">
-                    How is your inner lotus today?
-                </Text>
-            </VStack>
+            {showBreathGuide ? (
+                <VStack space="md">
+                    <Button
+                        size="sm"
+                        variant="link"
+                        onPress={() => setShowBreathGuide(false)}
+                        sx={{ alignSelf: 'flex-start' }}
+                    >
+                        <ButtonText color={Theme.colors.mistGray}>← Back to Mood</ButtonText>
+                    </Button>
+                    <BreathGuide onComplete={() => setShowBreathGuide(false)} />
+                </VStack>
+            ) : (
+                <>
+                    {/* Header */}
+                    <HStack justifyContent="space-between" alignItems="center">
+                        <VStack space="xs" sx={{ flex: 1 }}>
+                            <Heading color={Theme.colors.sacredWhite} size="lg">
+                                Mood Check-in
+                            </Heading>
+                            <Text color={Theme.colors.mistGray} size="sm">
+                                How is your inner lotus today?
+                            </Text>
+                        </VStack>
+                        <Button
+                            size="sm"
+                            variant="link"
+                            onPress={() => setShowBreathGuide(true)}
+                            sx={{
+                                backgroundColor: Theme.colors.deepIndigo,
+                                borderRadius: Theme.corners.comfortable,
+                                paddingHorizontal: Theme.spacing.md,
+                                paddingVertical: Theme.spacing.sm,
+                            }}
+                        >
+                            <Wind color={Theme.colors.lotusDeepPink} size={16} />
+                        </Button>
+                    </HStack>
 
             {/* Lotus Visualization */}
             <Box
@@ -287,6 +321,8 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
                     </Text>
                 )}
             </Box>
+            </>
+            )}
         </VStack>
     );
 }

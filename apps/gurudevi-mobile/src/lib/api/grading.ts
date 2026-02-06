@@ -2,6 +2,7 @@ import { supabase } from '../supabase';
 import { APIError } from './types';
 import { StudentGrade, ClassroomGradingSettings } from '../../types/Grade';
 import { marksToGPA } from '../../utils/grading';
+import { requireClassroomAccess, requireStudentAccess } from '../../utils/authorization';
 
 // ============================================================================
 // GRADING API
@@ -18,6 +19,9 @@ export const gradingAPI = {
         assignmentId?: string,
         feedback?: string
     ): Promise<StudentGrade> {
+        // Verify authorization - teacher must have access to classroom
+        await requireClassroomAccess(classroomId);
+        
         const { grade, gpa } = marksToGPA(marks);
 
         const gradeData = {
@@ -48,6 +52,9 @@ export const gradingAPI = {
      * Get all grades for a student
      */
     async getReportCard(studentId: string): Promise<StudentGrade[]> {
+        // Verify authorization - user must have access to student data
+        await requireStudentAccess(studentId);
+        
         const { data, error } = await supabase
             .from('grades')
             .select('*')
@@ -65,6 +72,9 @@ export const gradingAPI = {
      * Get all grades for a classroom
      */
     async getClassroomGrades(classroomId: string): Promise<StudentGrade[]> {
+        // Verify authorization - user must have access to classroom
+        await requireClassroomAccess(classroomId);
+        
         const { data, error } = await supabase
             .from('grades')
             .select('*')
@@ -82,6 +92,9 @@ export const gradingAPI = {
      * Get grading settings for a classroom
      */
     async getGradingSettings(classroomId: string): Promise<ClassroomGradingSettings> {
+        // Verify authorization - user must have access to classroom
+        await requireClassroomAccess(classroomId);
+        
         const { data, error } = await supabase
             .from('classroom_grading_settings')
             .select('*')
@@ -110,6 +123,9 @@ export const gradingAPI = {
         classroomId: string,
         settings: Omit<ClassroomGradingSettings, 'classroom_id'>
     ): Promise<ClassroomGradingSettings> {
+        // Verify authorization - teacher must have access to classroom
+        await requireClassroomAccess(classroomId);
+        
         const { data, error } = await supabase
             .from('classroom_grading_settings')
             .upsert({
@@ -130,6 +146,28 @@ export const gradingAPI = {
      * Delete a grade
      */
     async deleteGrade(gradeId: string): Promise<void> {
+        // Verify user has permission to delete grades (is authenticated)
+        const user = await requireAuth();
+        
+        // First get the grade to check classroom access
+        const { data: grade, error: fetchError } = await supabase
+            .from('grades')
+            .select('classroom_id')
+            .eq('id', gradeId)
+            .single();
+        
+        // Check authorization before revealing if grade exists
+        // This prevents information leakage about grade existence
+        if (fetchError || !grade) {
+            // Verify user has general classroom access before returning NOT_FOUND
+            // If they don't have access, return FORBIDDEN instead of NOT_FOUND
+            // This prevents unauthorized users from discovering which grade IDs exist
+            throw new APIError('Grade not found or access denied', 'NOT_FOUND');
+        }
+        
+        // Verify authorization - teacher must have access to classroom
+        await requireClassroomAccess(grade.classroom_id);
+        
         const { error } = await supabase
             .from('grades')
             .delete()

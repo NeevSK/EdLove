@@ -1,0 +1,332 @@
+/**
+ * SLEEP TRACKER
+ * Morning check-in: "How was your sleep?"
+ * Simple, gentle way to track sleep quality
+ * 
+ * Philosophy:
+ * - Asked only in the morning (5am - 11am)
+ * - Simple scale (1-5) with meaningful labels
+ * - No pressure, just awareness
+ * - Helps teachers understand rest patterns
+ */
+
+import React, { useState, useEffect } from 'react';
+import {
+    Box,
+    VStack,
+    HStack,
+    Text,
+    Heading,
+    Slider,
+    SliderTrack,
+    SliderFilledTrack,
+    SliderThumb,
+    Button,
+    ButtonText,
+} from '@gluestack-ui/themed';
+import Animated, {
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
+    withRepeat,
+    withTiming,
+    Easing,
+} from 'react-native-reanimated';
+import { Moon, Sun, Cloud, Stars } from 'lucide-react-native';
+import { Theme, typography } from '../../constants/Theme';
+import { supabase } from '../../lib/supabase';
+import { hapticLight } from '../../utils/haptics';
+
+interface SleepTrackerProps {
+    userId?: string;
+}
+
+const SLEEP_QUALITY = [
+    { value: 1, label: 'Restless', emoji: '😰', color: Theme.colors.emberRed, description: 'Barely slept' },
+    { value: 2, label: 'Poor', emoji: '😔', color: Theme.colors.amberGlow, description: 'Tossed and turned' },
+    { value: 3, label: 'Okay', emoji: '😐', color: Theme.colors.stoneGray, description: 'Got some rest' },
+    { value: 4, label: 'Good', emoji: '😊', color: Theme.colors.sageGreen, description: 'Slept well' },
+    { value: 5, label: 'Excellent', emoji: '😌', color: Theme.colors.sanctuarySaffron, description: 'Deeply rested' },
+];
+
+export default function SleepTracker({ userId }: SleepTrackerProps) {
+    const [sleepQuality, setSleepQuality] = useState(3);
+    const [hasLoggedToday, setHasLoggedToday] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+
+    // Animation values
+    const moonScale = useSharedValue(1);
+    const starsOpacity = useSharedValue(0.6);
+
+    const currentQuality = SLEEP_QUALITY[sleepQuality - 1];
+
+    useEffect(() => {
+        if (userId) {
+            checkTodayLog();
+        }
+
+        // Gentle breathing animation
+        moonScale.value = withRepeat(
+            withTiming(1.1, {
+                duration: 3000,
+                easing: Easing.inOut(Easing.ease),
+            }),
+            -1,
+            true
+        );
+
+        starsOpacity.value = withRepeat(
+            withTiming(1, {
+                duration: 2000,
+                easing: Easing.inOut(Easing.ease),
+            }),
+            -1,
+            true
+        );
+    }, [userId]);
+
+    const checkTodayLog = async () => {
+        try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const { data, error } = await supabase
+                .from('sleep_logs')
+                .select('quality')
+                .eq('user_id', userId)
+                .gte('created_at', today.toISOString())
+                .single();
+
+            if (data && !error) {
+                setHasLoggedToday(true);
+                setSleepQuality(data.quality);
+            }
+        } catch (error) {
+            console.error('Error checking sleep log:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const saveSleepLog = async () => {
+        if (!userId) return;
+
+        setIsSaving(true);
+        try {
+            const { error } = await supabase
+                .from('sleep_logs')
+                .insert([
+                    {
+                        user_id: userId,
+                        quality: sleepQuality,
+                        created_at: new Date().toISOString(),
+                    },
+                ]);
+
+            if (error) {
+                console.error('Failed to save sleep log:', error);
+            } else {
+                hapticLight();
+                setHasLoggedToday(true);
+            }
+        } catch (error) {
+            console.error('Error saving sleep log:', error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const moonStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: moonScale.value }],
+    }));
+
+    const starsStyle = useAnimatedStyle(() => ({
+        opacity: starsOpacity.value,
+    }));
+
+    const hour = new Date().getHours();
+    const isMorning = hour >= 5 && hour < 11;
+
+    if (!isMorning && !hasLoggedToday) {
+        return (
+            <VStack space="lg" sx={{ padding: Theme.spacing.lg, alignItems: 'center' }}>
+                <Text color={Theme.colors.mistGray} size="md" textAlign="center">
+                    Sleep tracking is available in the morning (5am - 11am)
+                </Text>
+                <Text style={{ fontSize: 48 }}>🌙</Text>
+            </VStack>
+        );
+    }
+
+    if (isLoading) {
+        return null;
+    }
+
+    return (
+        <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
+            {/* Header */}
+            <VStack space="xs">
+                <Heading color={Theme.colors.sacredWhite} size="lg">
+                    How was your sleep?
+                </Heading>
+                <Text color={Theme.colors.mistGray} size="sm">
+                    Understanding your rest helps you care for yourself
+                </Text>
+            </VStack>
+
+            {/* Sleep visualization */}
+            <Box
+                sx={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: Theme.spacing.xl,
+                    backgroundColor: Theme.colors.deepIndigo,
+                    borderRadius: Theme.corners.comfortable,
+                    minHeight: 200,
+                    position: 'relative',
+                }}
+            >
+                {/* Animated stars */}
+                <Animated.View
+                    style={[
+                        starsStyle,
+                        {
+                            position: 'absolute',
+                            top: 20,
+                            right: 30,
+                        },
+                    ]}
+                >
+                    <Stars color={Theme.colors.twilightPurple} size={24} />
+                </Animated.View>
+
+                {/* Moon/Sun based on quality */}
+                <Animated.View style={moonStyle}>
+                    <Text style={{ fontSize: 96 }}>
+                        {currentQuality.emoji}
+                    </Text>
+                </Animated.View>
+
+                <Text
+                    color={currentQuality.color}
+                    size="2xl"
+                    sx={{
+                        fontWeight: typography.fontWeight.semibold,
+                        marginTop: Theme.spacing.md,
+                    }}
+                >
+                    {currentQuality.label}
+                </Text>
+                <Text
+                    color={Theme.colors.mistGray}
+                    size="sm"
+                    sx={{ fontStyle: 'italic' }}
+                >
+                    {currentQuality.description}
+                </Text>
+            </Box>
+
+            {/* Slider */}
+            {!hasLoggedToday && (
+                <>
+                    <Box sx={{ paddingHorizontal: Theme.spacing.md }}>
+                        <Slider
+                            value={sleepQuality}
+                            onChange={(value) => {
+                                hapticLight();
+                                setSleepQuality(value);
+                            }}
+                            minValue={1}
+                            maxValue={5}
+                            step={1}
+                            size="lg"
+                            orientation="horizontal"
+                        >
+                            <SliderTrack sx={{ height: 12, borderRadius: 6, backgroundColor: Theme.colors.midnightBlue }}>
+                                <SliderFilledTrack
+                                    sx={{
+                                        backgroundColor: currentQuality.color,
+                                    }}
+                                />
+                            </SliderTrack>
+                            <SliderThumb
+                                sx={{
+                                    backgroundColor: currentQuality.color,
+                                    borderWidth: 4,
+                                    borderColor: Theme.colors.sacredWhite,
+                                    width: 36,
+                                    height: 36,
+                                }}
+                            />
+                        </Slider>
+
+                        {/* Labels */}
+                        <HStack
+                            justifyContent="space-between"
+                            sx={{ marginTop: Theme.spacing.md }}
+                        >
+                            <Text color={Theme.colors.dimGray} size="xs">
+                                Restless
+                            </Text>
+                            <Text color={Theme.colors.dimGray} size="xs">
+                                Excellent
+                            </Text>
+                        </HStack>
+                    </Box>
+
+                    {/* Save button */}
+                    <Button
+                        size="lg"
+                        onPress={saveSleepLog}
+                        isDisabled={isSaving}
+                        sx={{
+                            borderRadius: Theme.corners.full,
+                            backgroundColor: currentQuality.color,
+                        }}
+                    >
+                        <ButtonText>
+                            {isSaving ? 'Saving...' : 'Log Sleep Quality'}
+                        </ButtonText>
+                    </Button>
+                </>
+            )}
+
+            {hasLoggedToday && (
+                <Box
+                    sx={{
+                        padding: Theme.spacing.md,
+                        backgroundColor: Theme.colors.midnightBlue,
+                        borderRadius: Theme.corners.comfortable,
+                        alignItems: 'center',
+                    }}
+                >
+                    <Text color={Theme.colors.sageGreen} size="md">
+                        ✓ Sleep logged for today
+                    </Text>
+                    <Text color={Theme.colors.mistGray} size="xs" sx={{ marginTop: Theme.spacing.xs }}>
+                        You can update tomorrow morning
+                    </Text>
+                </Box>
+            )}
+
+            {/* Info */}
+            <Box
+                sx={{
+                    padding: Theme.spacing.md,
+                    backgroundColor: Theme.colors.deepIndigo,
+                    borderRadius: Theme.corners.comfortable,
+                }}
+            >
+                <Text
+                    color={Theme.colors.mistGray}
+                    size="xs"
+                    textAlign="center"
+                    sx={{ fontStyle: 'italic' }}
+                >
+                    💤 Rest is sacred. Your wellbeing matters.
+                </Text>
+            </Box>
+        </VStack>
+    );
+}
