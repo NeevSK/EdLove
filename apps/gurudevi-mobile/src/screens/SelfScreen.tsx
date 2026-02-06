@@ -13,19 +13,22 @@ import {
     Button,
     ButtonText
 } from "@gluestack-ui/themed";
-import { Mic, Send, MessageCircle, Repeat, Sun, FileText, Flower, Flame } from 'lucide-react-native';
+import { Mic, Send, MessageCircle, Repeat, Sun, FileText, Flower, Flame, Sprout, Moon, Bell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../constants/Theme';
-import { getGreetingKey } from '../utils/time';
+import { getGreetingKey, getSanctuaryTimeTheme } from '../utils/time';
 import { hapticLight } from '../utils/haptics';
 import DailyRhythm from '../components/self/DailyRhythm';
-import { MoodLotus, ShadowAgentDrawer, FireJournal } from '../components/self';
+import { MoodLotus, ShadowAgentDrawer, FireJournal, CommunityPresence, ProgressTree, VoiceJournaling, SleepTracker, RemindersManager } from '../components/self';
 import { supabase } from '../lib/supabase';
 import GlobalHeader from '../components/shared/GlobalHeader';
 
 const SUB_FEATURES = [
     { id: 'mood', label: 'Mood Check-in', icon: Flower },
+    { id: 'sleep', label: 'Sleep', icon: Moon },
     { id: 'fire', label: 'Fire Journal', icon: Flame },
+    { id: 'progress', label: 'Growth', icon: Sprout },
+    { id: 'reminders', label: 'Reminders', icon: Bell },
     { id: 'rhythm', label: 'Daily Rhythm', icon: Repeat },
     { id: 'venting', label: 'Venting Space', icon: MessageCircle },
 ];
@@ -35,6 +38,7 @@ export default function SelfScreen() {
     const [activeFeature, setActiveFeature] = useState('mood');
     const [userId, setUserId] = useState<string | null>(null);
     const greetingKey = getGreetingKey(); // Get i18n key based on time
+    const timeTheme = getSanctuaryTimeTheme(); // Get time-aware theme
 
     // Get current user on mount
     React.useEffect(() => {
@@ -48,10 +52,15 @@ export default function SelfScreen() {
     }, []);
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+        <Box sx={{ flex: 1, backgroundColor: timeTheme.backgroundColor }}>
             <GlobalHeader showGreeting={true} />
             <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}>
                 {/* 1. Atmospheric Header Removed (Replaced by GlobalHeader) */}
+
+                {/* Community Presence - Shows online teachers */}
+                <Box px="$6" mb="$4">
+                    <CommunityPresence compact={true} />
+                </Box>
 
                 {/* 2. Sub-Feature Carousel */}
                 <Box sx={{ height: 100 }}>
@@ -117,8 +126,20 @@ export default function SelfScreen() {
                             <MoodLotus userId={userId ?? undefined} />
                         )}
 
+                        {activeFeature === 'sleep' && (
+                            <SleepTracker userId={userId ?? undefined} />
+                        )}
+
                         {activeFeature === 'fire' && (
                             <FireJournal userId={userId ?? undefined} />
+                        )}
+
+                        {activeFeature === 'progress' && (
+                            <ProgressTree userId={userId ?? undefined} />
+                        )}
+
+                        {activeFeature === 'reminders' && (
+                            <RemindersManager userId={userId ?? undefined} />
                         )}
 
                         {activeFeature === 'rhythm' && (
@@ -126,62 +147,7 @@ export default function SelfScreen() {
                         )}
 
                         {activeFeature === 'venting' && (
-                            <VStack space="lg" sx={{ flex: 1 }}>
-                                <VStack space="xs">
-                                    <Heading color={Theme.colors.sacredWhite} size="lg">{t('self.venting')}</Heading>
-                                    <Text color={Theme.colors.mistGray} size="sm">{t('self.ventingDesc')}</Text>
-                                </VStack>
-
-                                <Box
-                                    sx={{
-                                        flex: 1,
-                                        backgroundColor: Theme.colors.deepIndigo,
-                                        borderRadius: Theme.corners.comfortable,
-                                        padding: Theme.spacing.md,
-                                        minHeight: 150
-                                    }}
-                                >
-                                    <Input variant="outline" size="md" sx={{ borderWidth: 0, flex: 1 }}>
-                                        <InputField
-                                            placeholder={t('self.speakTruth')}
-                                            multiline
-                                            color={Theme.colors.sacredWhite}
-                                            placeholderTextColor={Theme.colors.dimGray}
-                                            sx={{ textAlignVertical: 'top' }}
-                                        />
-                                    </Input>
-                                </Box>
-
-                                <HStack space="md" justifyContent="flex-end">
-                                    <Button
-                                        size="md"
-                                        variant="link"
-                                        action="primary"
-                                        onPress={hapticLight}
-                                        sx={{
-                                            borderRadius: Theme.corners.full,
-                                            width: 44,
-                                            height: 44,
-                                            backgroundColor: Theme.colors.deepIndigo
-                                        }}
-                                    >
-                                        <Mic color={Theme.colors.sanctuarySaffron} size={20} />
-                                    </Button>
-                                    <Button
-                                        size="md"
-                                        action="primary"
-                                        onPress={hapticLight}
-                                        sx={{
-                                            borderRadius: Theme.corners.full,
-                                            backgroundColor: Theme.colors.sanctuarySaffron,
-                                            paddingHorizontal: Theme.spacing.md
-                                        }}
-                                    >
-                                        <ButtonText color={Theme.colors.white} mr="$2">{t('self.unburden')}</ButtonText>
-                                        <Send color={Theme.colors.white} size={16} />
-                                    </Button>
-                                </HStack>
-                            </VStack>
+                            <VoiceJournaling userId={userId ?? undefined} />
                         )}
                     </Box>
                 </Box>

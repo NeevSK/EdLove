@@ -57,6 +57,14 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
     const scale = useSharedValue(1);
     const translateY = useSharedValue(0);
     const rotation = useSharedValue(0);
+    
+    // Ember particles animation values
+    const ember1Y = useSharedValue(0);
+    const ember2Y = useSharedValue(0);
+    const ember3Y = useSharedValue(0);
+    const ember1Opacity = useSharedValue(0);
+    const ember2Opacity = useSharedValue(0);
+    const ember3Opacity = useSharedValue(0);
 
     // Cleanup timeouts on unmount
     useEffect(() => {
@@ -80,6 +88,22 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
             ],
         };
     });
+
+    // Ember particle styles
+    const ember1Style = useAnimatedStyle(() => ({
+        opacity: ember1Opacity.value,
+        transform: [{ translateY: ember1Y.value }],
+    }));
+
+    const ember2Style = useAnimatedStyle(() => ({
+        opacity: ember2Opacity.value,
+        transform: [{ translateY: ember2Y.value }],
+    }));
+
+    const ember3Style = useAnimatedStyle(() => ({
+        opacity: ember3Opacity.value,
+        transform: [{ translateY: ember3Y.value }],
+    }));
 
     const handleBurn = async () => {
         if (!content.trim()) return;
@@ -157,6 +181,39 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
             withTiming(-5, { duration: 350 })
         );
 
+        // Animate embers floating upward
+        // Ember 1 - left side
+        ember1Opacity.value = withSequence(
+            withTiming(0.8, { duration: 100 }),
+            withTiming(0, { duration: 1200 })
+        );
+        ember1Y.value = withTiming(-150, {
+            duration: 1300,
+            easing: Easing.out(Easing.ease),
+        });
+
+        // Ember 2 - center
+        ember2Opacity.value = withSequence(
+            withTiming(0, { duration: 200 }), // Delay start
+            withTiming(0.9, { duration: 100 }),
+            withTiming(0, { duration: 1100 })
+        );
+        ember2Y.value = withTiming(-180, {
+            duration: 1400,
+            easing: Easing.out(Easing.ease),
+        });
+
+        // Ember 3 - right side
+        ember3Opacity.value = withSequence(
+            withTiming(0, { duration: 300 }), // Delay start
+            withTiming(0.7, { duration: 100 }),
+            withTiming(0, { duration: 1000 })
+        );
+        ember3Y.value = withTiming(-160, {
+            duration: 1400,
+            easing: Easing.out(Easing.ease),
+        });
+
         // Reset after animation completes
         burnTimeoutRef.current = setTimeout(() => {
             resetAfterBurn();
@@ -173,6 +230,14 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
         scale.value = withSpring(1);
         translateY.value = withSpring(0);
         rotation.value = withSpring(0);
+        
+        // Reset ember positions
+        ember1Y.value = 0;
+        ember2Y.value = 0;
+        ember3Y.value = 0;
+        ember1Opacity.value = 0;
+        ember2Opacity.value = 0;
+        ember3Opacity.value = 0;
 
         // Hide success message after delay
         successTimeoutRef.current = setTimeout(() => {
@@ -215,42 +280,95 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                 </Animated.View>
             )}
 
-            {/* Text Input Area */}
-            <Animated.View style={containerStyle}>
-                <Box
-                    sx={{
-                        backgroundColor: Theme.colors.deepIndigo,
-                        borderRadius: Theme.corners.comfortable,
-                        padding: Theme.spacing.md,
-                        minHeight: 200,
-                    }}
-                >
-                    <Input
-                        variant="outline"
-                        size="md"
-                        sx={{
-                            borderWidth: 0,
-                            flex: 1,
-                        }}
-                        isDisabled={isBurning}
-                    >
-                        <InputField
-                            placeholder="Write what you need to release..."
-                            multiline
-                            value={content}
-                            onChangeText={setContent}
-                            color={Theme.colors.sacredWhite}
-                            placeholderTextColor={Theme.colors.dimGray}
-                            sx={{
-                                textAlignVertical: 'top',
-                                fontSize: typography.fontSize.lg,
-                                lineHeight: typography.lineHeight.relaxed * typography.fontSize.lg,
-                                minHeight: 160,
-                            }}
+            {/* Text Input Area with Ember Particles */}
+            <Box sx={{ position: 'relative' }}>
+                {/* Floating Embers */}
+                {isBurning && (
+                    <>
+                        <Animated.View
+                            style={[
+                                ember1Style,
+                                {
+                                    position: 'absolute',
+                                    left: '20%',
+                                    top: 100,
+                                    width: 8,
+                                    height: 8,
+                                    borderRadius: 4,
+                                    backgroundColor: Theme.colors.emberRed,
+                                    zIndex: 10,
+                                },
+                            ]}
                         />
-                    </Input>
-                </Box>
-            </Animated.View>
+                        <Animated.View
+                            style={[
+                                ember2Style,
+                                {
+                                    position: 'absolute',
+                                    left: '50%',
+                                    top: 80,
+                                    width: 6,
+                                    height: 6,
+                                    borderRadius: 3,
+                                    backgroundColor: Theme.colors.sanctuarySaffron,
+                                    zIndex: 10,
+                                },
+                            ]}
+                        />
+                        <Animated.View
+                            style={[
+                                ember3Style,
+                                {
+                                    position: 'absolute',
+                                    left: '70%',
+                                    top: 110,
+                                    width: 7,
+                                    height: 7,
+                                    borderRadius: 3.5,
+                                    backgroundColor: Theme.colors.amberGlow,
+                                    zIndex: 10,
+                                },
+                            ]}
+                        />
+                    </>
+                )}
+                
+                <Animated.View style={containerStyle}>
+                    <Box
+                        sx={{
+                            backgroundColor: Theme.colors.deepIndigo,
+                            borderRadius: Theme.corners.comfortable,
+                            padding: Theme.spacing.md,
+                            minHeight: 200,
+                        }}
+                    >
+                        <Input
+                            variant="outline"
+                            size="md"
+                            sx={{
+                                borderWidth: 0,
+                                flex: 1,
+                            }}
+                            isDisabled={isBurning}
+                        >
+                            <InputField
+                                placeholder="Write what you need to release..."
+                                multiline
+                                value={content}
+                                onChangeText={setContent}
+                                color={Theme.colors.sacredWhite}
+                                placeholderTextColor={Theme.colors.dimGray}
+                                sx={{
+                                    textAlignVertical: 'top',
+                                    fontSize: typography.fontSize.lg,
+                                    lineHeight: typography.lineHeight.relaxed * typography.fontSize.lg,
+                                    minHeight: 160,
+                                }}
+                            />
+                        </Input>
+                    </Box>
+                </Animated.View>
+            </Box>
 
             {/* Action Buttons */}
             <HStack space="md" justifyContent="flex-end">
