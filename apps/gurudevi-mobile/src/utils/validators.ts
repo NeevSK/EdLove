@@ -139,15 +139,18 @@ export const validators = {
 
     /**
      * Validates phone number (Sri Lankan format)
+     * Sri Lankan mobile numbers: 10 digits total with leading 0 (e.g., 0771234567)
+     * Or 12 characters with +94 prefix (e.g., +94771234567)
      */
     phoneNumber: (phone: string): ValidationResult => {
-        // Sri Lankan phone: +94XXXXXXXXX or 0XXXXXXXXX
-        const regex = /^(\+94|0)[0-9]{9}$/;
+        // Sri Lankan phone: +94XXXXXXXXX (12 chars) or 0XXXXXXXXX (10 digits)
+        const regex = /^(\+94[0-9]{9}|0[0-9]{9})$/;
         if (!phone || phone.trim().length === 0) {
             return { isValid: false, error: 'Phone number is required' };
         }
-        if (!regex.test(phone.replace(/\s/g, ''))) {
-            return { isValid: false, error: 'Invalid phone number format' };
+        const cleanPhone = phone.replace(/\s/g, '');
+        if (!regex.test(cleanPhone)) {
+            return { isValid: false, error: 'Invalid phone number format. Use +94XXXXXXXXX or 0XXXXXXXXX' };
         }
         return { isValid: true };
     },

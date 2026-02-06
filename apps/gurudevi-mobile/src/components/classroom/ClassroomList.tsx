@@ -14,6 +14,7 @@ import {
     ActivityIndicator,
     StyleSheet,
     ListRenderItemInfo,
+    GestureResponderEvent,
 } from 'react-native';
 import { Box, Text, Heading, VStack, HStack } from '@gluestack-ui/themed';
 import { BookOpen, Users, ChevronRight, ClipboardCheck } from 'lucide-react-native';
@@ -283,7 +284,7 @@ const ClassroomCard = React.memo(({ classroom, onPress, studentCount }: Classroo
         onPress(classroom);
     }, [classroom, onPress]);
 
-    const handleAttendancePress = useCallback((e: React.TouchEvent | any) => {
+    const handleAttendancePress = useCallback((e: GestureResponderEvent) => {
         e.stopPropagation();
         hapticLight();
         // TODO: Navigate to Attendance for this class

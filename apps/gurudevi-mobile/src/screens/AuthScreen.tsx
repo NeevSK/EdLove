@@ -89,7 +89,16 @@ export default function AuthScreen() {
         if (!isValid) {
             setErrors(validationErrors);
             hapticError();
-            showToast(Object.values(validationErrors)[0] || 'Please fix the errors', 'error');
+            
+            // Determine which error message to prioritize for the toast in a deterministic way
+            const errorFieldOrder = isSignUp ? ['email', 'password', 'fullName'] : ['email', 'password'];
+            const firstErrorMessage =
+                errorFieldOrder
+                    .map((field) => validationErrors[field])
+                    .find((message) => Boolean(message)) ||
+                'Please fix the errors';
+            
+            showToast(firstErrorMessage, 'error');
             return;
         }
 

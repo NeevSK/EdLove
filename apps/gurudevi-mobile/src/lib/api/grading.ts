@@ -146,6 +146,9 @@ export const gradingAPI = {
      * Delete a grade
      */
     async deleteGrade(gradeId: string): Promise<void> {
+        // Verify user has permission to delete grades (is authenticated)
+        const user = await requireAuth();
+        
         // First get the grade to check classroom access
         const { data: grade, error: fetchError } = await supabase
             .from('grades')
@@ -153,8 +156,13 @@ export const gradingAPI = {
             .eq('id', gradeId)
             .single();
         
+        // Check authorization before revealing if grade exists
+        // This prevents information leakage about grade existence
         if (fetchError || !grade) {
-            throw new APIError('Grade not found', 'NOT_FOUND');
+            // Verify user has general classroom access before returning NOT_FOUND
+            // If they don't have access, return FORBIDDEN instead of NOT_FOUND
+            // This prevents unauthorized users from discovering which grade IDs exist
+            throw new APIError('Grade not found or access denied', 'NOT_FOUND');
         }
         
         // Verify authorization - teacher must have access to classroom

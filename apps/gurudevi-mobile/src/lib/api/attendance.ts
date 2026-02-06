@@ -79,6 +79,12 @@ export const attendanceAPI = {
             return [];
         }
 
+        // Validate first record exists and extract classroom_id
+        const classroomId = records[0]?.classroom_id;
+        if (!classroomId) {
+            throw new APIError('No attendance records provided', 'INVALID_REQUEST');
+        }
+
         // Validate all records belong to the same classroom
         const uniqueClassroomIds = new Set(records.map(r => r.classroom_id));
         if (uniqueClassroomIds.size > 1) {
@@ -86,7 +92,7 @@ export const attendanceAPI = {
         }
 
         // Verify authorization for the classroom
-        await requireClassroomAccess(records[0].classroom_id);
+        await requireClassroomAccess(classroomId);
         
         const { data, error } = await supabase
             .from('attendance')

@@ -47,8 +47,10 @@ export async function requireTeacherAccess(teacherId: string) {
 
 /**
  * Verifies user can access the specified classroom
- * Teachers can access classrooms they own
- * Students can access classrooms they're enrolled in
+ * - Teachers can access classrooms they own
+ * - Students can access classrooms they're enrolled in
+ * - Principals can access all classrooms in their school
+ * - Section heads can access classrooms in their section
  * 
  * @param classroomId - Classroom ID to verify access
  * @throws APIError if not authenticated or unauthorized
@@ -57,10 +59,13 @@ export async function requireTeacherAccess(teacherId: string) {
 export async function requireClassroomAccess(classroomId: string) {
     const user = await requireAuth();
     
+    // Get user role from metadata
+    const userRole = user.user_metadata?.role || user.app_metadata?.role;
+    
     // Check if user is the teacher of this classroom
     const { data: classroom, error } = await supabase
         .from('classrooms')
-        .select('teacher_id')
+        .select('teacher_id, school_id, section_id')
         .eq('id', classroomId)
         .single();
     
@@ -71,6 +76,22 @@ export async function requireClassroomAccess(classroomId: string) {
     // If user is the teacher, grant access
     if (classroom.teacher_id === user.id) {
         return user;
+    }
+    
+    // Principals have access to all classrooms in their school
+    if (userRole === 'principal') {
+        const userSchoolId = user.user_metadata?.school_id || user.app_metadata?.school_id;
+        if (classroom.school_id === userSchoolId) {
+            return user;
+        }
+    }
+    
+    // Section heads have access to classrooms in their section
+    if (userRole === 'section_head') {
+        const userSectionId = user.user_metadata?.section_id || user.app_metadata?.section_id;
+        if (classroom.section_id === userSectionId) {
+            return user;
+        }
     }
     
     // Check if user is a student in this classroom
@@ -105,26 +126,20 @@ export async function requireStudentAccess(studentId: string) {
         return user;
     }
     
-    // Check if user is a teacher with access to this student
+    // Check if user is a teacher with access to this student using a single JOIN query
     // Authorization rule: Teachers can access students enrolled in their classrooms
-    const { data: classrooms } = await supabase
+    const { data: sharedClassroom } = await supabase
         .from('classroom_students')
-        .select('classroom_id')
-        .eq('student_id', studentId);
+        .select(`
+            classroom_id,
+            classrooms!inner(id, teacher_id)
+        `)
+        .eq('student_id', studentId)
+        .eq('classrooms.teacher_id', user.id)
+        .limit(1)
+        .single();
     
-    if (!classrooms || classrooms.length === 0) {
-        throw new APIError('Student not found in any classroom', 'NOT_FOUND');
-    }
-    
-    const classroomIds = classrooms.map(c => c.classroom_id);
-    
-    const { data: teacherClassrooms } = await supabase
-        .from('classrooms')
-        .select('id')
-        .eq('teacher_id', user.id)
-        .in('id', classroomIds);
-    
-    if (!teacherClassrooms || teacherClassrooms.length === 0) {
+    if (!sharedClassroom) {
         throw new APIError('Unauthorized access to student data', 'FORBIDDEN');
     }
     

@@ -1,6 +1,6 @@
 import { supabase } from '../supabase';
 import { APIError, Lesson, Student } from './types';
-import { requireTeacherAccess, requireAuth } from '../../utils/authorization';
+import { requireTeacherAccess } from '../../utils/authorization';
 
 // ============================================================================
 // LESSONS API
