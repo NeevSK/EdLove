@@ -9,18 +9,18 @@
  * - Wrapped in SanctuaryCard for consistent styling
  */
 
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import {
     VStack,
     HStack,
     Text,
     Box,
-    ScrollView,
 } from '@gluestack-ui/themed';
+import { FlatList, ListRenderItemInfo } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { StudentGrade, ClassroomGradingSettings } from '../types/Grade';
-import { marksToGPA, calculateRanks } from '../utils/grading';
-import Theme from '../constants/Theme';
+import { StudentGrade, ClassroomGradingSettings } from '../../types/Grade';
+import { marksToGPA, calculateRanks } from '../../utils/grading';
+import Theme from '../../constants/Theme';
 
 interface GradebookTableProps {
     grades: StudentGrade[];
@@ -40,14 +40,17 @@ export default function GradebookTable({
     const gradesWithRanks = show_ranks ? calculateRanks(grades) : grades;
 
     // Sort by rank (if available) or by marks
-    const sortedGrades = [...gradesWithRanks].sort((a, b) => {
-        if (show_ranks && a.rank && b.rank) {
-            return a.rank - b.rank;
-        }
-        return b.marks - a.marks;
-    });
+    const sortedGrades = useMemo(() => 
+        [...gradesWithRanks].sort((a, b) => {
+            if (show_ranks && a.rank && b.rank) {
+                return a.rank - b.rank;
+            }
+            return b.marks - a.marks;
+        }),
+        [gradesWithRanks, show_ranks]
+    );
 
-    const renderGradeDisplay = (grade: StudentGrade) => {
+    const renderGradeDisplay = useCallback((grade: StudentGrade) => {
         const { grade: letterGrade, gpa } = marksToGPA(grade.marks);
 
         if (grading_mode === 'marks') {
@@ -88,7 +91,31 @@ export default function GradebookTable({
                 </Text>
             </VStack>
         );
-    };
+    }, [grading_mode, t]);
+
+    // Memoized row renderer
+    const renderGradeRow = useCallback(({ item: grade, index }: ListRenderItemInfo<StudentGrade>) => (
+        <GradeRow
+            grade={grade}
+            index={index}
+            totalItems={sortedGrades.length}
+            studentName={studentNames[grade.student_id] || t('grades.unknownStudent')}
+            showRanks={show_ranks}
+            renderGradeDisplay={renderGradeDisplay}
+        />
+    ), [sortedGrades.length, studentNames, show_ranks, t, renderGradeDisplay]);
+
+    // Key extractor
+    const keyExtractor = useCallback((item: StudentGrade) => item.id, []);
+
+    // Empty component
+    const EmptyComponent = useCallback(() => (
+        <Box p="$8" alignItems="center">
+            <Text color={Theme.colors.slateGray} textAlign="center">
+                {t('grades.noGrades')}
+            </Text>
+        </Box>
+    ), [t]);
 
     return (
         <Box
@@ -134,60 +161,90 @@ export default function GradebookTable({
                     )}
                 </HStack>
 
-                {/* Table Body */}
-                <ScrollView showsVerticalScrollIndicator={false}>
-                    <VStack>
-                        {sortedGrades.length === 0 ? (
-                            <Box p="$8" alignItems="center">
-                                <Text color={Theme.colors.slateGray} textAlign="center">
-                                    {t('grades.noGrades')}
-                                </Text>
-                            </Box>
-                        ) : (
-                            sortedGrades.map((grade, index) => (
-                                <HStack
-                                    key={grade.id}
-                                    space="md"
-                                    p="$4"
-                                    sx={{
-                                        borderBottomWidth: index < sortedGrades.length - 1 ? 1 : 0,
-                                        borderBottomColor: Theme.colors.sandStone,
-                                    }}
-                                >
-                                    <Box sx={{ flex: 2 }}>
-                                        <Text color={Theme.colors.charcoalTruth}>
-                                            {studentNames[grade.student_id] || t('grades.unknownStudent')}
-                                        </Text>
-                                    </Box>
-                                    <Box sx={{ flex: 2 }}>
-                                        {renderGradeDisplay(grade)}
-                                    </Box>
-                                    {show_ranks && (
-                                        <Box sx={{ flex: 1, alignItems: 'center' }}>
-                                            <Box
-                                                px="$2"
-                                                py="$1"
-                                                sx={{
-                                                    backgroundColor: Theme.colors.sanctuarySaffron,
-                                                    borderRadius: Theme.corners.tight,
-                                                }}
-                                            >
-                                                <Text
-                                                    size="sm"
-                                                    bold
-                                                    color={Theme.colors.white}
-                                                >
-                                                    #{grade.rank}
-                                                </Text>
-                                            </Box>
-                                        </Box>
-                                    )}
-                                </HStack>
-                            ))
-                        )}
-                    </VStack>
-                </ScrollView>
+                {/* Table Body with FlatList */}
+                <FlatList
+                    data={sortedGrades}
+                    renderItem={renderGradeRow}
+                    keyExtractor={keyExtractor}
+                    ListEmptyComponent={EmptyComponent}
+                    showsVerticalScrollIndicator={false}
+                    // Performance optimizations
+                    initialNumToRender={15}
+                    maxToRenderPerBatch={10}
+                    windowSize={5}
+                    getItemLayout={(data, index) => ({
+                        length: 60, // Approximate row height
+                        offset: 60 * index,
+                        index,
+                    })}
+                />
             </VStack>
         </Box>
     );
 }
+
+// Memoized GradeRow component
+interface GradeRowProps {
+    grade: StudentGrade;
+    index: number;
+    totalItems: number;
+    studentName: string;
+    showRanks: boolean;
+    renderGradeDisplay: (grade: StudentGrade) => React.ReactNode;
+}
+
+const GradeRow = React.memo(({ 
+    grade, 
+    index, 
+    totalItems, 
+    studentName, 
+    showRanks,
+    renderGradeDisplay 
+}: GradeRowProps) => (
+    <HStack
+        space="md"
+        p="$4"
+        sx={{
+            borderBottomWidth: index < totalItems - 1 ? 1 : 0,
+            borderBottomColor: Theme.colors.sandStone,
+        }}
+    >
+        <Box sx={{ flex: 2 }}>
+            <Text color={Theme.colors.charcoalTruth}>
+                {studentName}
+            </Text>
+        </Box>
+        <Box sx={{ flex: 2 }}>
+            <>{renderGradeDisplay(grade)}</>
+        </Box>
+        {showRanks && (
+            <Box sx={{ flex: 1, alignItems: 'center' }}>
+                <Box
+                    px="$2"
+                    py="$1"
+                    sx={{
+                        backgroundColor: Theme.colors.sanctuarySaffron,
+                        borderRadius: Theme.corners.tight,
+                    }}
+                >
+                    <Text
+                        size="sm"
+                        bold
+                        color={Theme.colors.white}
+                    >
+                        #{grade.rank}
+                    </Text>
+                </Box>
+            </Box>
+        )}
+    </HStack>
+), (prevProps, nextProps) => {
+    // Custom comparison for better performance
+    return (
+        prevProps.grade.id === nextProps.grade.id &&
+        prevProps.grade.marks === nextProps.grade.marks &&
+        prevProps.grade.rank === nextProps.grade.rank &&
+        prevProps.studentName === nextProps.studentName &&
+        prevProps.showRanks === nextProps.showRanks
+    );
+});

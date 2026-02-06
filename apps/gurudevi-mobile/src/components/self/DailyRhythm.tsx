@@ -342,7 +342,7 @@ function DailyRhythmContent() {
 
 export default function DailyRhythm() {
     return (
-        <ErrorBoundary>
+        <ErrorBoundary name="Daily Rhythm">
             <DailyRhythmContent />
         </ErrorBoundary>
     );

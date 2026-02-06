@@ -19,9 +19,9 @@ import {
     ScrollView,
 } from '@gluestack-ui/themed';
 import { useTranslation } from 'react-i18next';
-import { StudentGrade } from '../types/Grade';
-import { marksToGPA } from '../utils/grading';
-import Theme from '../constants/Theme';
+import { StudentGrade } from '../../types/Grade';
+import { marksToGPA } from '../../utils/grading';
+import Theme from '../../constants/Theme';
 
 interface ReportCardProps {
     studentName: string;

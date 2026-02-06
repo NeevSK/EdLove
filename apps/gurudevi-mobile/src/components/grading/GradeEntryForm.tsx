@@ -25,8 +25,8 @@ import {
     ButtonText,
 } from '@gluestack-ui/themed';
 import { useTranslation } from 'react-i18next';
-import { marksToGPA } from '../utils/grading';
-import Theme from '../constants/Theme';
+import { marksToGPA } from '../../utils/grading';
+import Theme from '../../constants/Theme';
 
 interface GradeEntryFormProps {
     studentName: string;
