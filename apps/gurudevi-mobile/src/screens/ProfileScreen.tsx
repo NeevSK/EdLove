@@ -1,22 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, RefreshControl } from 'react-native';
+import { ScrollView, RefreshControl, Alert } from 'react-native';
 import {
     Box,
     VStack,
+    HStack,
     Heading,
     Spinner,
     Center,
+    Button,
+    ButtonText,
 } from "@gluestack-ui/themed";
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import { Theme } from '../constants/Theme';
-import { hapticSuccess } from '../utils/haptics';
+import { hapticSuccess, hapticLight, hapticError } from '../utils/haptics';
 
+import { LogOut } from 'lucide-react-native';
 // New Components
 import IdentityCard from '../components/profile/IdentityCard';
 import ControlScroll from '../components/profile/ControlScroll';
 import EditProfileModal from '../components/profile/EditProfileModal';
 import GlobalHeader from '../components/shared/GlobalHeader';
+import UserStatsCard from '../components/profile/UserStatsCard';
+import SupportSection from '../components/profile/SupportSection';
+import { Modal, TouchableOpacity } from 'react-native';
+import { X, Phone, Globe, MapPin, QrCode } from 'lucide-react-native';
 
 export default function ProfileScreen() {
     const { t, i18n } = useTranslation();
@@ -24,6 +32,7 @@ export default function ProfileScreen() {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [isEditModalVisible, setEditModalVisible] = useState(false);
+    const [isFullScreen, setIsFullScreen] = useState(false);
 
     const currentLanguage = i18n.language;
 
@@ -82,6 +91,37 @@ export default function ProfileScreen() {
         await i18n.changeLanguage(lang);
     }
 
+    async function handleLogout() {
+        hapticLight();
+        Alert.alert(
+            t('profile.logoutConfirmTitle') || 'Log Out',
+            t('profile.logoutConfirmMessage') || 'Are you sure you want to sign out?',
+            [
+                {
+                    text: t('common.cancel') || 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: t('profile.logout') || 'Log Out',
+                    style: 'destructive',
+                    onPress: async () => {
+                        setLoading(true);
+                        try {
+                            const { error } = await supabase.auth.signOut();
+                            if (error) throw error;
+                            // State will be cleared by Auth listener in App.tsx or similar
+                        } catch (error) {
+                            console.error('Error signing out:', error);
+                            hapticError();
+                        } finally {
+                            setLoading(false);
+                        }
+                    },
+                },
+            ]
+        );
+    }
+
     if (loading) {
         return (
             <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
@@ -101,6 +141,7 @@ export default function ProfileScreen() {
             <ScrollView
                 contentContainerStyle={{
                     padding: Theme.spacing.lg,
+                    paddingBottom: 100, // Extra padding for scrolling
                 }}
                 refreshControl={
                     <RefreshControl
@@ -116,14 +157,46 @@ export default function ProfileScreen() {
                         <IdentityCard
                             profile={profile}
                             onEdit={() => setEditModalVisible(true)}
+                            onExpand={() => setIsFullScreen(true)}
                         />
                     </Center>
+
+                    {/* Stats & Gamification */}
+                    <UserStatsCard
+                        role={profile?.role || 'student'}
+                        stats={{
+                            classesTaught: 12, // Mock data for now
+                            studentsCount: 145,
+                            guruPoints: 850
+                        }}
+                    />
 
                     {/* App Controls (Language, Settings) */}
                     <ControlScroll
                         currentLanguage={currentLanguage}
                         onLanguageChange={changeLanguage}
                     />
+
+                    {/* Logout Button */}
+                    <Button
+                        size="xl"
+                        variant="outline"
+                        action="negative"
+                        onPress={handleLogout}
+                        sx={{
+                            borderColor: Theme.colors.emberRed,
+                            borderWidth: 1,
+                            borderRadius: Theme.corners.comfortable,
+                            marginTop: Theme.spacing.md
+                        }}
+                    >
+                        <ButtonText color={Theme.colors.emberRed}>
+                            {t('profile.logout') || 'Log Out'}
+                        </ButtonText>
+                        <LogOut size={20} color={Theme.colors.emberRed} style={{ marginLeft: 8 }} />
+                    </Button>
+
+                    <SupportSection />
                 </VStack>
             </ScrollView>
 
@@ -134,6 +207,83 @@ export default function ProfileScreen() {
                 onSave={fetchProfile}
                 currentProfile={profile}
             />
+
+            {/* Full Screen Profile Modal */}
+            <Modal
+                animationType="slide"
+                visible={isFullScreen}
+                onRequestClose={() => setIsFullScreen(false)}
+                presentationStyle="pageSheet"
+            >
+                <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+                    {/* Header */}
+                    <VStack p={Theme.spacing.lg} pt={Theme.spacing.xl} space="md">
+                        <HStack justifyContent="space-between" alignItems="center">
+                            <Heading color={Theme.colors.sanctuarySaffron} size="xl">
+                                Detailed Profile
+                            </Heading>
+                            <TouchableOpacity onPress={() => setIsFullScreen(false)} style={{ padding: 8 }}>
+                                <X size={24} color={Theme.colors.mistGray} />
+                            </TouchableOpacity>
+                        </HStack>
+                    </VStack>
+
+                    <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg, paddingBottom: 50 }}>
+                        <VStack space="2xl">
+                            {/* Large Identity Card Repetition or Just Info */}
+                            <Center>
+                                <IdentityCard
+                                    profile={profile}
+                                    onEdit={() => setEditModalVisible(true)}
+                                // No expand button here
+                                />
+                            </Center>
+
+                            {/* Detailed Info Section */}
+                            <Box sx={{ backgroundColor: Theme.colors.deepIndigo, padding: Theme.spacing.lg, borderRadius: Theme.corners.comfortable }}>
+                                <Heading color={Theme.colors.sacredWhite} size="sm" mb="$4">
+                                    Contact & School Info
+                                </Heading>
+                                <VStack space="md">
+                                    <HStack space="md" alignItems="center">
+                                        <MapPin size={18} color={Theme.colors.mistGray} />
+                                        <VStack>
+                                            <Text color={Theme.colors.dimGray} size="xs">School</Text>
+                                            <Text color={Theme.colors.sacredWhite}>{profile?.school_name || 'Not assigned'}</Text>
+                                        </VStack>
+                                    </HStack>
+                                    <HStack space="md" alignItems="center">
+                                        <Globe size={18} color={Theme.colors.mistGray} />
+                                        <VStack>
+                                            <Text color={Theme.colors.dimGray} size="xs">Email</Text>
+                                            <Text color={Theme.colors.sacredWhite}>{profile?.email}</Text>
+                                        </VStack>
+                                    </HStack>
+                                    <HStack space="md" alignItems="center">
+                                        <Phone size={18} color={Theme.colors.mistGray} />
+                                        <VStack>
+                                            <Text color={Theme.colors.dimGray} size="xs">Phone</Text>
+                                            <Text color={Theme.colors.sacredWhite}>{profile?.phone || '+94 7X XXX XXXX'}</Text>
+                                        </VStack>
+                                    </HStack>
+                                </VStack>
+                            </Box>
+
+                            {/* Stats Again (Optional) */}
+                            <UserStatsCard role={profile?.role || 'student'} />
+
+                            {/* QR Code Large View */}
+                            <Box sx={{ backgroundColor: 'white', padding: Theme.spacing.xl, borderRadius: Theme.corners.comfortable, alignItems: 'center' }}>
+                                <Heading color="black" size="md" mb="$4">My Identity QR</Heading>
+                                <QrCode size={200} color="black" />
+                                <Text color="gray" size="sm" mt="$2" textAlign="center">
+                                    Scan to share contact info
+                                </Text>
+                            </Box>
+                        </VStack>
+                    </ScrollView>
+                </Box>
+            </Modal>
         </Box>
     );
 }

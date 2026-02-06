@@ -10,8 +10,9 @@
  * - grade_head: Grade-level access (specific grade)
  * - teacher: Class-level access, can create lessons, manage classrooms
  * - student: Can view lessons, submit assignments
+ * - developer: Full access for development and testing
  */
-export type UserRole = 'principal' | 'section_head' | 'grade_head' | 'teacher' | 'student';
+export type UserRole = 'principal' | 'section_head' | 'grade_head' | 'teacher' | 'student' | 'developer';
 
 /**
  * User Profile Interface

@@ -21,6 +21,16 @@ import {
     ButtonText,
     ScrollView,
     Spinner,
+    useToast,
+    Toast,
+    ToastTitle,
+    Modal,
+    ModalBackdrop,
+    ModalContent,
+    ModalHeader,
+    ModalCloseButton,
+    ModalBody,
+    Heading as ModalHeading,
 } from '@gluestack-ui/themed';
 import { TouchableOpacity, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +38,8 @@ import { api } from '../../lib/api';
 import { InviteCode } from '../../lib/api/school';
 import Theme from '../../constants/Theme';
 import * as Clipboard from 'expo-clipboard';
+import { Copy, RefreshCw, Users, Shield, QrCode } from 'lucide-react-native';
+import QRCodeGenerator from '../shared/QRCodeGenerator';
 
 interface InviteManagerProps {
     schoolId: string;
@@ -41,6 +53,8 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
     const [isLoading, setIsLoading] = useState(true);
     const [isGenerating, setIsGenerating] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const toast = useToast();
+    const [qrCodeData, setQrCodeData] = useState<{ code: string, role: string } | null>(null);
 
     useEffect(() => {
         loadInviteCodes();
@@ -77,12 +91,19 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
     const handleCopyCode = async (code: string) => {
         try {
             await Clipboard.setStringAsync(code);
-            Alert.alert(
-                t('principal.invites.copied') || 'Copied!',
-                t('principal.invites.copiedMessage') || `Code ${code} copied to clipboard`
-            );
+            toast.show({
+                placement: 'top',
+                render: ({ id }) => {
+                    return (
+                        <Toast nativeID={id} action="success" variant="solid">
+                            <ToastTitle>{t('principal.invites.copied') || 'Copied!'}</ToastTitle>
+                        </Toast>
+                    );
+                },
+            });
         } catch (err) {
             console.error('Failed to copy code:', err);
+            Alert.alert('Error', 'Failed to copy code to clipboard.');
         }
     };
 
@@ -224,94 +245,107 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                             </Text>
 
                             {inviteCodes.map((invite) => (
-                                <TouchableOpacity
+                                <Box
                                     key={invite.code}
-                                    onPress={() => handleCopyCode(invite.code)}
+                                    sx={{
+                                        padding: Theme.spacing.md,
+                                        backgroundColor: Theme.colors.deepIndigo,
+                                        borderRadius: Theme.corners.comfortable,
+                                        borderLeftWidth: 4,
+                                        borderLeftColor: getRoleBadgeColor(invite.role),
+                                    }}
                                 >
-                                    <Box
+                                    <HStack
                                         sx={{
-                                            padding: Theme.spacing.md,
-                                            backgroundColor: Theme.colors.deepIndigo,
-                                            borderRadius: Theme.corners.comfortable,
-                                            borderLeftWidth: 4,
-                                            borderLeftColor: getRoleBadgeColor(invite.role),
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
                                         }}
                                     >
-                                        <HStack
-                                            sx={{
-                                                justifyContent: 'space-between',
-                                                alignItems: 'center',
-                                            }}
-                                        >
-                                            <VStack space="xs" sx={{ flex: 1 }}>
-                                                {/* Code */}
-                                                <HStack space="sm" sx={{ alignItems: 'center' }}>
+                                        <VStack space="xs" sx={{ flex: 1 }}>
+                                            {/* Code */}
+                                            <HStack space="sm" sx={{ alignItems: 'center' }}>
+                                                <Text
+                                                    color={Theme.colors.sacredWhite}
+                                                    sx={{
+                                                        fontWeight: '700',
+                                                        fontSize: 20,
+                                                        fontFamily: 'monospace',
+                                                    }}
+                                                >
+                                                    {invite.code}
+                                                </Text>
+                                                <HStack space="xs">
+                                                    <Button
+                                                        size="xs"
+                                                        variant="link"
+                                                        action="secondary"
+                                                        onPress={() => handleCopyCode(invite.code)}
+                                                    >
+                                                        <Copy size={14} color={Theme.colors.mistGray} />
+                                                    </Button>
+                                                    <Button
+                                                        size="xs"
+                                                        variant="link"
+                                                        action="secondary"
+                                                        onPress={() => setQrCodeData({ code: invite.code, role: invite.role })}
+                                                    >
+                                                        <QrCode size={14} color={Theme.colors.mistGray} />
+                                                    </Button>
+                                                </HStack>
+                                            </HStack>
+
+
+
+                                            {/* Role Badge */}
+                                            <HStack space="sm" sx={{ alignItems: 'center' }}>
+                                                <Box
+                                                    sx={{
+                                                        paddingHorizontal: Theme.spacing.sm,
+                                                        paddingVertical: Theme.spacing.xs,
+                                                        backgroundColor: getRoleBadgeColor(
+                                                            invite.role
+                                                        ),
+                                                        borderRadius: Theme.corners.tight,
+                                                    }}
+                                                >
                                                     <Text
                                                         color={Theme.colors.sacredWhite}
-                                                        sx={{
-                                                            fontWeight: '700',
-                                                            fontSize: 20,
-                                                            fontFamily: 'monospace',
-                                                        }}
-                                                    >
-                                                        {invite.code}
-                                                    </Text>
-                                                    <Text color={Theme.colors.mistGray}>
-                                                        📋
-                                                    </Text>
-                                                </HStack>
-
-                                                {/* Role Badge */}
-                                                <HStack space="sm" sx={{ alignItems: 'center' }}>
-                                                    <Box
-                                                        sx={{
-                                                            paddingHorizontal: Theme.spacing.sm,
-                                                            paddingVertical: Theme.spacing.xs,
-                                                            backgroundColor: getRoleBadgeColor(
-                                                                invite.role
-                                                            ),
-                                                            borderRadius: Theme.corners.tight,
-                                                        }}
-                                                    >
-                                                        <Text
-                                                            color={Theme.colors.sacredWhite}
-                                                            size="xs"
-                                                            sx={{ fontWeight: '600' }}
-                                                        >
-                                                            {getRoleIcon(invite.role)}{' '}
-                                                            {invite.role.toUpperCase()}
-                                                        </Text>
-                                                    </Box>
-
-                                                    {/* Status */}
-                                                    <Text
-                                                        color={Theme.colors.mistGray}
                                                         size="xs"
+                                                        sx={{ fontWeight: '600' }}
                                                     >
-                                                        {invite.used
-                                                            ? t('principal.invites.used') || 'Used'
-                                                            : t('principal.invites.active') ||
-                                                            'Active'}
+                                                        {getRoleIcon(invite.role)}{' '}
+                                                        {invite.role.toUpperCase()}
                                                     </Text>
-                                                </HStack>
+                                                </Box>
 
-                                                {/* Created Date */}
-                                                <Text color={Theme.colors.mistGray} size="xs">
-                                                    {t('principal.invites.createdAt') ||
-                                                        'Created:'}{' '}
-                                                    {new Date(
-                                                        invite.created_at
-                                                    ).toLocaleDateString()}
+                                                {/* Status */}
+                                                <Text
+                                                    color={Theme.colors.mistGray}
+                                                    size="xs"
+                                                >
+                                                    {invite.used
+                                                        ? t('principal.invites.used') || 'Used'
+                                                        : t('principal.invites.active') ||
+                                                        'Active'}
                                                 </Text>
-                                            </VStack>
+                                            </HStack>
 
-                                            {/* Copy Hint */}
+                                            {/* Created Date */}
                                             <Text color={Theme.colors.mistGray} size="xs">
-                                                {t('principal.invites.tapToCopy') || 'Tap to copy'}
+                                                {t('principal.invites.createdAt') ||
+                                                    'Created:'}{' '}
+                                                {new Date(
+                                                    invite.created_at
+                                                ).toLocaleDateString()}
                                             </Text>
-                                        </HStack>
-                                    </Box>
-                                </TouchableOpacity>
+                                        </VStack>
+
+                                        {/* Copy Hint */}
+                                        <Text color={Theme.colors.mistGray} size="xs">
+                                            {t('principal.invites.tapToCopy') || 'Tap to copy'}
+                                        </Text>
+                                    </HStack>
+                                </Box>
                             ))}
                         </VStack>
                     )}
@@ -336,6 +370,6 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                     )}
                 </VStack>
             </ScrollView>
-        </Box>
+        </Box >
     );
 }

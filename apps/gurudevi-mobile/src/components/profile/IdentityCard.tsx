@@ -17,7 +17,8 @@ import Animated, {
     withTiming,
     Easing,
 } from 'react-native-reanimated';
-import { QrCode, ShieldCheck, Edit3 } from 'lucide-react-native';
+import { ShieldCheck, Edit3 } from 'lucide-react-native';
+import QRCodeGenerator from '../shared/QRCodeGenerator';
 import { Theme } from '../../constants/Theme';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';
 
@@ -28,9 +29,10 @@ const CARD_HEIGHT = 220;
 interface IdentityCardProps {
     profile: any;
     onEdit?: () => void;
+    onExpand?: () => void;
 }
 
-export default function IdentityCard({ profile, onEdit }: IdentityCardProps) {
+export default function IdentityCard({ profile, onEdit, onExpand }: IdentityCardProps) {
     const isFlipped = useSharedValue(0); // 0 = front, 1 = back
     const [flipState, setFlipState] = useState(false);
 
@@ -133,7 +135,13 @@ export default function IdentityCard({ profile, onEdit }: IdentityCardProps) {
                                     e.stopPropagation();
                                     onEdit?.();
                                 }}
-                                style={{ marginTop: 8 }}
+                                style={{
+                                    marginTop: 8,
+                                    // Increase touch target
+                                    padding: 8,
+                                    margin: -8,
+                                    zIndex: 10
+                                }}
                             >
                                 <HStack
                                     space="xs"
@@ -149,6 +157,25 @@ export default function IdentityCard({ profile, onEdit }: IdentityCardProps) {
                         </VStack>
                     </HStack>
 
+                    {/* Expand Button (Top Right) */}
+                    <Pressable
+                        onPress={(e) => {
+                            e.stopPropagation();
+                            onExpand?.();
+                        }}
+                        style={{
+                            position: 'absolute',
+                            top: 10,
+                            right: 10,
+                            padding: 8,
+                            zIndex: 10
+                        }}
+                    >
+                        <Text color={Theme.colors.mistGray} size="xs" bold>
+                            EXPAND ↗
+                        </Text>
+                    </Pressable>
+
                     {/* Decorative Elements */}
                     <Image
                         source={require('../../assets/images/lotus_bloom.png')}
@@ -161,8 +188,11 @@ export default function IdentityCard({ profile, onEdit }: IdentityCardProps) {
                 <Animated.View style={[styles.cardCommon, styles.cardBack, backStyle]}>
                     <Box style={styles.glassLayer} />
                     <Center h="100%">
-                        <Box p={Theme.spacing.lg} bg="white" borderRadius={Theme.corners.comfortable}>
-                            <QrCode size={120} color="black" />
+                        <Box p={Theme.spacing.md} bg="white" borderRadius={Theme.corners.comfortable}>
+                            <QRCodeGenerator
+                                value={profile?.id || 'gurudevi-guest'}
+                                size={120}
+                            />
                         </Box>
                         <Text color={Theme.colors.sacredWhite} mt={Theme.spacing.md} bold>
                             Scan to Connect
@@ -170,7 +200,7 @@ export default function IdentityCard({ profile, onEdit }: IdentityCardProps) {
                     </Center>
                 </Animated.View>
             </Box>
-        </Pressable>
+        </Pressable >
     );
 }
 
