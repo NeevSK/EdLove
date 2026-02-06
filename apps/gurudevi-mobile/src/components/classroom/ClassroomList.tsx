@@ -6,13 +6,14 @@
  * - Students: Shows classrooms they're enrolled in
  */
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import {
     View,
-    ScrollView,
+    FlatList,
     TouchableOpacity,
     ActivityIndicator,
     StyleSheet,
+    ListRenderItemInfo,
 } from 'react-native';
 import { Box, Text, Heading, VStack, HStack } from '@gluestack-ui/themed';
 import { BookOpen, Users, ChevronRight, ClipboardCheck } from 'lucide-react-native';
@@ -166,11 +167,30 @@ export default function ClassroomList({
         setInternalRefreshTrigger(prev => prev + 1);
     };
 
-    const handleClassroomPress = (classroom: Classroom) => {
+    const handleClassroomPress = useCallback((classroom: Classroom) => {
         if (onClassroomPress) {
             onClassroomPress(classroom);
         }
-    };
+    }, [onClassroomPress]);
+
+    // Memoized classroom card renderer
+    const renderClassroomCard = useCallback(({ item: classroom }: ListRenderItemInfo<Classroom>) => {
+        const studentCount = (classroom as any).student_count || 0;
+
+        return (
+            <ClassroomCard
+                classroom={classroom}
+                onPress={handleClassroomPress}
+                studentCount={studentCount}
+            />
+        );
+    }, [handleClassroomPress]);
+
+    // Key extractor for FlatList
+    const keyExtractor = useCallback((item: Classroom) => item.id, []);
+
+    // Item separator
+    const ItemSeparator = useCallback(() => <View style={{ height: Theme.spacing.md }} />, []);
 
     // Loading state
     if (loading) {
@@ -216,86 +236,118 @@ export default function ClassroomList({
         );
     }
 
-    // Classroom list
-    const content = (
-        <VStack space="md">
-            {classrooms.map((classroom) => {
-                const subjectIcon = BookOpen; // Default
-                const studentCount = (classroom as any).student_count || 0;
-
-                return (
-                    <TouchableOpacity
+    // Classroom list with FlatList
+    if (isNested) {
+        // For nested use, return VStack for compatibility
+        return (
+            <VStack space="md">
+                {classrooms.map((classroom) => (
+                    <ClassroomCard
                         key={classroom.id}
-                        onPress={() => handleClassroomPress(classroom)}
-                        activeOpacity={0.7}
-                    >
-                        <Box sx={richStyles.classroomCard}>
-                            <HStack space="md" alignItems="center">
-                                {/* Icon Container */}
-                                <Box sx={richStyles.iconContainer}>
-                                    <BookOpen
-                                        size={24}
-                                        color={Theme.colors.sanctuarySaffron}
-                                    />
-                                </Box>
-
-                                {/* Content */}
-                                <VStack flex={1} space="xs">
-                                    <Text color={Theme.colors.sacredWhite} size="lg" bold>
-                                        {classroom.name}
-                                    </Text>
-                                    <HStack space="sm" alignItems="center">
-                                        <Text color={Theme.colors.sanctuarySaffron} size="sm" bold>
-                                            {classroom.subject || 'No Subject'}
-                                        </Text>
-                                        <Box sx={richStyles.dot} />
-                                        <HStack space="xs" alignItems="center">
-                                            <Users size={14} color={Theme.colors.pearlGray} />
-                                            <Text color={Theme.colors.pearlGray} size="sm">
-                                                {studentCount}
-                                            </Text>
-                                        </HStack>
-                                    </HStack>
-                                </VStack>
-
-                                {/* Quick Record Attendance Button */}
-                                <TouchableOpacity
-                                    onPress={(e) => {
-                                        e.stopPropagation();
-                                        hapticLight();
-                                        // TODO: Navigate to Attendance for this class
-                                        console.log('Open attendance for:', classroom.id);
-                                    }}
-                                >
-                                    <Box sx={richStyles.attendanceAction}>
-                                        <ClipboardCheck size={20} color={Theme.colors.sageGreen} />
-                                    </Box>
-                                </TouchableOpacity>
-
-                                {/* Arrow */}
-                                <ChevronRight
-                                    size={20}
-                                    color={Theme.colors.mistGray}
-                                />
-                            </HStack>
-                        </Box>
-                    </TouchableOpacity>
-                );
-            })}
-        </VStack>
-    );
-
-    if (isNested) return content;
+                        classroom={classroom}
+                        onPress={handleClassroomPress}
+                        studentCount={(classroom as any).student_count || 0}
+                    />
+                ))}
+            </VStack>
+        );
+    }
 
     return (
-        <ScrollView
+        <FlatList
+            data={classrooms}
+            renderItem={renderClassroomCard}
+            keyExtractor={keyExtractor}
+            ItemSeparatorComponent={ItemSeparator}
             style={styles.container}
             contentContainerStyle={styles.contentContainer}
-        >
-            {content}
-        </ScrollView>
+            // Performance optimizations
+            initialNumToRender={10}
+            maxToRenderPerBatch={10}
+            windowSize={5}
+            removeClippedSubviews={true}
+        />
     );
 }
+
+// Memoized ClassroomCard component for better performance
+interface ClassroomCardProps {
+    classroom: Classroom;
+    onPress: (classroom: Classroom) => void;
+    studentCount: number;
+}
+
+const ClassroomCard = React.memo(({ classroom, onPress, studentCount }: ClassroomCardProps) => {
+    const handlePress = useCallback(() => {
+        hapticLight();
+        onPress(classroom);
+    }, [classroom, onPress]);
+
+    const handleAttendancePress = useCallback((e: any) => {
+        e.stopPropagation();
+        hapticLight();
+        // TODO: Navigate to Attendance for this class
+        console.log('Open attendance for:', classroom.id);
+    }, [classroom.id]);
+
+    return (
+        <TouchableOpacity
+            onPress={handlePress}
+            activeOpacity={0.7}
+        >
+            <Box sx={richStyles.classroomCard}>
+                <HStack space="md" alignItems="center">
+                    {/* Icon Container */}
+                    <Box sx={richStyles.iconContainer}>
+                        <BookOpen
+                            size={24}
+                            color={Theme.colors.sanctuarySaffron}
+                        />
+                    </Box>
+
+                    {/* Content */}
+                    <VStack flex={1} space="xs">
+                        <Text color={Theme.colors.sacredWhite} size="lg" bold>
+                            {classroom.name}
+                        </Text>
+                        <HStack space="sm" alignItems="center">
+                            <Text color={Theme.colors.sanctuarySaffron} size="sm" bold>
+                                {classroom.subject || 'No Subject'}
+                            </Text>
+                            <Box sx={richStyles.dot} />
+                            <HStack space="xs" alignItems="center">
+                                <Users size={14} color={Theme.colors.pearlGray} />
+                                <Text color={Theme.colors.pearlGray} size="sm">
+                                    {studentCount}
+                                </Text>
+                            </HStack>
+                        </HStack>
+                    </VStack>
+
+                    {/* Quick Record Attendance Button */}
+                    <TouchableOpacity onPress={handleAttendancePress}>
+                        <Box sx={richStyles.attendanceAction}>
+                            <ClipboardCheck size={20} color={Theme.colors.sageGreen} />
+                        </Box>
+                    </TouchableOpacity>
+
+                    {/* Arrow */}
+                    <ChevronRight
+                        size={20}
+                        color={Theme.colors.mistGray}
+                    />
+                </HStack>
+            </Box>
+        </TouchableOpacity>
+    );
+}, (prevProps, nextProps) => {
+    // Custom comparison for better performance
+    return (
+        prevProps.classroom.id === nextProps.classroom.id &&
+        prevProps.classroom.updated_at === nextProps.classroom.updated_at &&
+        prevProps.studentCount === nextProps.studentCount
+    );
+});
 
 const richStyles = {
     classroomCard: {
