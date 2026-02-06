@@ -395,7 +395,7 @@ export function AddStudentModal({
                         )}
                     </VStack>
                 </ModalBody>
-                {studentToEdit && activeTab === 'manual' && (
+                {studentToEdit && activeTab === 'search' && (
                     <ModalFooter>
                         <Button
                             onPress={handleUpdateStudent}
