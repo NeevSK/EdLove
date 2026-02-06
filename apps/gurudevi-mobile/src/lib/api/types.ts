@@ -99,6 +99,7 @@ export interface ClassroomStudent {
     student_id: string;
     full_name: string;
     roll_number?: number;
+    notes?: string;
     enrolled_at: string;
 }
 

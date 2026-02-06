@@ -22,9 +22,11 @@ import { useStore } from '../../store/useStore';
 import { hapticLight } from '../../utils/haptics';
 import ClassroomList from './ClassroomList';
 import CreateClassroomModal from './CreateClassroomModal';
+import { useNavigation } from '@react-navigation/native';
 
 export default function TeacherDashboard() {
     const { t } = useTranslation();
+    const navigation = useNavigation<any>();
     const { teacherName } = useStore();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -166,8 +168,11 @@ export default function TeacherDashboard() {
 
                     <ClassroomList
                         onClassroomPress={(classroom) => {
-                            // TODO: Navigate to classroom details
-                            console.log('Classroom pressed:', classroom);
+                            hapticLight();
+                            navigation.navigate('ClassroomDetails', {
+                                classroomId: classroom.id,
+                                classroomName: classroom.name
+                            });
                         }}
                         onDataLoaded={handleClassroomsLoaded}
                         isNested={true}

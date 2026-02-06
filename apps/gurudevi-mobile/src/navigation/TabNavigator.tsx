@@ -3,7 +3,6 @@ import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import LotusPetalFAB from '../components/shared/LotusPetalFAB';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '@gluestack-style/react';
 import { Theme } from '../constants/Theme';
 
 // Icons
@@ -15,21 +14,16 @@ import {
   Library
 } from 'lucide-react-native';
 
+import ClassroomStackNavigator from './ClassroomStackNavigator';
+import { useUserRole } from '../hooks/useUserRole';
+
 // Screens
 import SelfScreen from '../screens/SelfScreen';
-import ClassroomScreen from '../screens/ClassroomScreen';
 import CommunityScreen from '../screens/CommunityScreen';
 import LibraryScreen from '../screens/LibraryScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
-
-// Role Hook (Placeholder until implemented)
-const useUserRole = () => {
-  // TODO: Connect to Store
-  // Returns 'principal' | 'section_head' | 'teacher' | 'student'
-  return { role: 'teacher' as string };
-};
 
 interface TabNavigatorProps {
   onTabChange?: (tabName: string) => void;
@@ -97,7 +91,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         {/* 2. Classroom Tab (Dynamic Name) */}
         <Tab.Screen
           name="Classroom"
-          component={ClassroomScreen}
+          component={ClassroomStackNavigator}
           options={{
             tabBarLabel: getClassroomLabel(),
             tabBarIcon: ({ color, size }) => (
