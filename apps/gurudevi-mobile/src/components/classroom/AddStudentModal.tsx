@@ -76,7 +76,7 @@ export default function AddStudentModal({
         try {
             setLoading(true);
             // Get user's school ID first
-            const { data: { user } } = await api.auth.getCurrentUser();
+            const user = await api.auth.getUser();
             if (!user) return;
 
             const userData = await api.auth.getUserProfile(user.id);
@@ -158,7 +158,7 @@ export default function AddStudentModal({
                                 >
                                     <HStack space="xs" alignItems="center">
                                         <UserPlus size={16} color={activeTab === 'manual' ? Theme.colors.white : Theme.colors.mistGray} />
-                                        <Text color={activeTab === 'manual' ? Theme.colors.white : Theme.colors.mistGray} size="sm" bold>Manual</Text>
+                                        <Text color={activeTab === 'manual' ? Theme.colors.white : Theme.colors.mistGray} size="sm" fontWeight="$bold">Manual</Text>
                                     </HStack>
                                 </Pressable>
                                 <Pressable
@@ -173,7 +173,7 @@ export default function AddStudentModal({
                                 >
                                     <HStack space="xs" alignItems="center">
                                         <QrCode size={16} color={activeTab === 'qr' ? Theme.colors.white : Theme.colors.mistGray} />
-                                        <Text color={activeTab === 'qr' ? Theme.colors.white : Theme.colors.mistGray} size="sm" bold>Join QR</Text>
+                                        <Text color={activeTab === 'qr' ? Theme.colors.white : Theme.colors.mistGray} size="sm" fontWeight="$bold">Join QR</Text>
                                     </HStack>
                                 </Pressable>
                             </HStack>
@@ -183,7 +183,7 @@ export default function AddStudentModal({
                             <VStack space="md">
                                 {studentToEdit ? (
                                     <Box sx={{ padding: Theme.spacing.md, backgroundColor: Theme.colors.deepIndigo, borderRadius: Theme.corners.comfortable }}>
-                                        <Text color={Theme.colors.sacredWhite} bold>{studentToEdit.full_name}</Text>
+                                        <Text color={Theme.colors.sacredWhite} fontWeight="$bold">{studentToEdit.full_name}</Text>
                                         <Text size="xs" color={Theme.colors.mistGray}>Role: Student</Text>
                                     </Box>
                                 ) : (
@@ -266,7 +266,7 @@ export default function AddStudentModal({
                                     />
                                 </Box>
                                 <VStack space="xs" alignItems="center">
-                                    <Text color={Theme.colors.sacredWhite} bold>Classroom Join Code</Text>
+                                    <Text color={Theme.colors.sacredWhite} fontWeight="$bold">Classroom Join Code</Text>
                                     <Pressable onPress={copyToClipboard}>
                                         <Text color={Theme.colors.sanctuarySaffron} size="sm">{classroomId}</Text>
                                     </Pressable>

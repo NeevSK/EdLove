@@ -4,10 +4,7 @@ import ClassroomScreen from '../screens/ClassroomScreen';
 import ClassroomDetailsScreen from '../screens/ClassroomDetailsScreen';
 import { Theme } from '../constants/Theme';
 
-export type ClassroomStackParamList = {
-    ClassroomList: undefined;
-    ClassroomDetails: { classroomId: string; classroomName: string };
-};
+import { ClassroomStackParamList } from '../types/navigation';
 
 const Stack = createNativeStackNavigator<ClassroomStackParamList>();
 

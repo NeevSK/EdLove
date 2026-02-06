@@ -65,6 +65,20 @@ export const authAPI = {
         return data;
     },
 
+    async getUserProfile(userId: string) {
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', userId)
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to fetch user profile', error.code, error);
+        }
+
+        return data;
+    },
+
     /**
      * Sign out
      */

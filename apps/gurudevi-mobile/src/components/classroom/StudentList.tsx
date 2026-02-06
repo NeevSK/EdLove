@@ -84,12 +84,12 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                                                 alignItems: 'center',
                                             }}
                                         >
-                                            <Text color={Theme.colors.sanctuarySaffron} bold>
+                                            <Text color={Theme.colors.sanctuarySaffron} fontWeight="$bold">
                                                 {student.roll_number || '#'}
                                             </Text>
                                         </Box>
                                         <VStack>
-                                            <Text color={Theme.colors.sacredWhite} bold>
+                                            <Text color={Theme.colors.sacredWhite} fontWeight="$bold">
                                                 {student.full_name}
                                             </Text>
                                             {student.notes && (

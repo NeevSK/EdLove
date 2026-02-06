@@ -169,9 +169,12 @@ export default function TeacherDashboard() {
                     <ClassroomList
                         onClassroomPress={(classroom) => {
                             hapticLight();
-                            navigation.navigate('ClassroomDetails', {
-                                classroomId: classroom.id,
-                                classroomName: classroom.name
+                            navigation.navigate('Classroom' as any, {
+                                screen: 'ClassroomDetails',
+                                params: {
+                                    classroomId: classroom.id,
+                                    classroomName: classroom.name
+                                }
                             });
                         }}
                         onDataLoaded={handleClassroomsLoaded}

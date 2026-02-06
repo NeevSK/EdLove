@@ -110,9 +110,12 @@ export default function ClassroomScreen() {
             <Box sx={{ flex: 1, padding: Theme.spacing.lg }}>
                 <ClassroomList
                     onClassroomPress={(classroom) => {
-                        navigation.navigate('ClassroomDetails', {
-                            classroomId: classroom.id,
-                            classroomName: classroom.name
+                        navigation.navigate('Classroom' as any, {
+                            screen: 'ClassroomDetails',
+                            params: {
+                                classroomId: classroom.id,
+                                classroomName: classroom.name
+                            }
                         });
                     }}
                 />

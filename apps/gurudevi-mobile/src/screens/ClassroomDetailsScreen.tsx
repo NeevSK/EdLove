@@ -21,8 +21,12 @@ import { hapticLight } from '../utils/haptics';
 import { api, Classroom, ClassroomStudent } from '../lib/api';
 import GlobalHeader from '../components/shared/GlobalHeader';
 import StudentList from '../components/classroom/StudentList';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { ClassroomStackParamList } from '../types/navigation';
 
-export default function ClassroomDetailsScreen({ route, navigation }: any) {
+type Props = NativeStackScreenProps<ClassroomStackParamList, 'ClassroomDetails'>;
+
+export default function ClassroomDetailsScreen({ route, navigation }: Props) {
     const { classroomId, classroomName } = route.params;
     const { t } = useTranslation();
     const [classroom, setClassroom] = useState<Classroom | null>(null);
@@ -79,7 +83,7 @@ export default function ClassroomDetailsScreen({ route, navigation }: any) {
                 />
                 <Text
                     size="xs"
-                    bold={activeTab === id}
+                    fontWeight={activeTab === id ? "$bold" : "$normal"}
                     color={activeTab === id ? Theme.colors.sacredWhite : Theme.colors.mistGray}
                 >
                     {label}
@@ -101,12 +105,12 @@ export default function ClassroomDetailsScreen({ route, navigation }: any) {
             <Box sx={{ padding: Theme.spacing.lg, backgroundColor: Theme.colors.midnightBlue }}>
                 <HStack space="xl">
                     <VStack>
-                        <Text size="xs" color={Theme.colors.mistGray} bold sx={{ textTransform: 'uppercase' }}>Students</Text>
-                        <Text size="2xl" color={Theme.colors.sacredWhite} bold>{students.length}</Text>
+                        <Text size="xs" color={Theme.colors.mistGray} fontWeight="$bold" sx={{ textTransform: 'uppercase' }}>Students</Text>
+                        <Text size="2xl" color={Theme.colors.sacredWhite} fontWeight="$bold">{students.length}</Text>
                     </VStack>
                     <VStack>
-                        <Text size="xs" color={Theme.colors.mistGray} bold sx={{ textTransform: 'uppercase' }}>Subject</Text>
-                        <Text size="lg" color={Theme.colors.sanctuarySaffron} bold>{classroom?.subject || 'N/A'}</Text>
+                        <Text size="xs" color={Theme.colors.mistGray} fontWeight="$bold" sx={{ textTransform: 'uppercase' }}>Subject</Text>
+                        <Text size="lg" color={Theme.colors.sanctuarySaffron} fontWeight="$bold">{classroom?.subject || 'N/A'}</Text>
                     </VStack>
                 </HStack>
             </Box>
