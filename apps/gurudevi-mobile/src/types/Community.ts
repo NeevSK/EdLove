@@ -8,10 +8,12 @@
 // ============================================================================
 
 export type PostType = 'question' | 'resource' | 'feedback' | 'announcement' | 'discussion';
-export type PostVisibility = 'class' | 'grade' | 'school' | 'teachers_only';
+export type PostVisibility = 'class' | 'grade' | 'school' | 'teachers_only' | 'public';
 export type Urgency = 'low' | 'medium' | 'high';
 export type FeedbackStatus = 'pending' | 'under_review' | 'approved' | 'implemented' | 'declined';
-export type UserRole = 'student' | 'teacher' | 'principal' | 'section_head';
+export type UserRole = 'student' | 'teacher' | 'principal' | 'section_head' | 'admin' | 'founder';
+export type GroupType = 'class' | 'grade' | 'subject' | 'club' | 'general' | 'teachers_only' | 'admin_only';
+export type GroupJoinPolicy = 'open' | 'approval_required' | 'invite_only' | 'restricted';
 
 export interface CommunityPost {
   id: string;
@@ -408,4 +410,101 @@ export interface Notification {
   reference_type?: string;
   is_read: boolean;
   created_at: string;
+}
+
+// ============================================================================
+// GROUP TYPES (Community Groups)
+// ============================================================================
+
+export interface CommunityGroup {
+  id: string;
+  name: string;
+  description: string;
+  type: GroupType;
+  join_policy: GroupJoinPolicy;
+  
+  // Visibility & Access
+  visibility: PostVisibility;
+  allowed_roles?: UserRole[]; // If specified, only these roles can see/join
+  
+  // Membership
+  member_count: number;
+  max_members?: number;
+  is_member: boolean;
+  is_admin: boolean;
+  is_moderator: boolean;
+  
+  // Group Settings
+  allow_posts: boolean;
+  allow_announcements: boolean;
+  require_post_approval: boolean;
+  
+  // Metadata
+  image_url?: string;
+  cover_image_url?: string;
+  tags: string[];
+  school_id?: string; // Optional - for school-specific groups
+  creator_id: string;
+  creator_name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GroupMember {
+  id: string;
+  group_id: string;
+  user_id: string;
+  user_name: string;
+  user_role: UserRole;
+  user_avatar?: string;
+  
+  // Member role in group
+  is_admin: boolean;
+  is_moderator: boolean;
+  
+  // Status
+  status: 'active' | 'pending' | 'banned';
+  joined_at: string;
+}
+
+export interface GroupJoinRequest {
+  id: string;
+  group_id: string;
+  user_id: string;
+  user_name: string;
+  user_role: UserRole;
+  message?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  created_at: string;
+  reviewed_at?: string;
+  reviewed_by?: string;
+}
+
+export interface GroupFilters {
+  type?: GroupType;
+  visibility?: PostVisibility;
+  join_policy?: GroupJoinPolicy;
+  school_id?: string;
+  tags?: string[];
+  search?: string;
+  user_is_member?: boolean;
+  user_can_join?: boolean;
+  limit?: number;
+  offset?: number;
+}
+
+export interface CreateGroupInput {
+  name: string;
+  description: string;
+  type: GroupType;
+  join_policy: GroupJoinPolicy;
+  visibility: PostVisibility;
+  allowed_roles?: UserRole[];
+  allow_posts?: boolean;
+  allow_announcements?: boolean;
+  require_post_approval?: boolean;
+  max_members?: number;
+  image_url?: string;
+  tags?: string[];
+  school_id?: string;
 }
