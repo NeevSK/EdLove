@@ -90,7 +90,7 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                     ) : (
                         students.map((student) => (
                             <Box
-                                key={student.student_id}
+                                key={student.id}
                                 sx={{
                                     backgroundColor: Theme.colors.midnightBlue,
                                     borderRadius: Theme.corners.comfortable,
@@ -147,11 +147,11 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                                             </Box>
                                         </Pressable>
                                         <Pressable
-                                            onPress={() => handleRemoveStudent(student.student_id || '')}
-                                            disabled={isDeleting === (student.student_id || student.id)}
+                                            onPress={() => handleRemoveStudent(student.id)}
+                                            disabled={isDeleting === student.id}
                                         >
                                             <Box sx={{ padding: Theme.spacing.xs }}>
-                                                {isDeleting === (student.student_id || student.id) ? (
+                                                {isDeleting === student.id ? (
                                                     <ActivityIndicator size="small" color={Theme.colors.emberRed} />
                                                 ) : (
                                                     <Trash2 size={18} color={Theme.colors.emberRed} />

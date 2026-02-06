@@ -109,7 +109,7 @@ export function AddStudentModal({
                     notes
                 );
                 setCreatedShadow(shadow);
-                hapticSuccess();
+                hapticLight(); // Changed from hapticSuccess to hapticLight as per instruction
             } else if (studentId) {
                 await api.classroomStudents.add(classroomId, studentId, parseInt(rollNumber) || undefined, notes);
                 hapticSuccess();
@@ -127,7 +127,7 @@ export function AddStudentModal({
         if (!studentToEdit) return;
         try {
             setIsSubmitting(true);
-            await api.classroomStudents.update(classroomId, studentToEdit.student_id, {
+            await api.classroomStudents.updateById(studentToEdit.id, {
                 roll_number: parseInt(rollNumber) || undefined,
                 notes: notes,
             });

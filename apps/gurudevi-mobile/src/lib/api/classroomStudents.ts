@@ -118,7 +118,29 @@ export const classroomStudentsAPI = {
     },
 
     /**
-     * Update a student's enrollment details
+     * Update an enrollment record by its ID
+     */
+    async updateById(
+        id: string,
+        updates: { roll_number?: number; notes?: string }
+    ): Promise<ClassroomStudent> {
+        const { data, error } = await supabase
+            .from('classroom_students')
+            .update(updates)
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to update classroom student', error.code, error);
+        }
+
+        return data;
+    },
+
+    /**
+     * Update a student's enrollment details (by student ID and classroom ID)
+     * Legacy method - prefer updateById if record ID is available
      */
     async update(
         classroomId: string,
@@ -141,14 +163,13 @@ export const classroomStudentsAPI = {
     },
 
     /**
-     * Remove a student from a classroom
+     * Remove an enrollment record by its ID
      */
-    async remove(classroomId: string, studentId: string): Promise<void> {
+    async remove(id: string): Promise<void> {
         const { error } = await supabase
             .from('classroom_students')
             .delete()
-            .eq('classroom_id', classroomId)
-            .eq('student_id', studentId);
+            .eq('id', id);
 
         if (error) {
             throw new APIError('Failed to remove student from classroom', error.code, error);
