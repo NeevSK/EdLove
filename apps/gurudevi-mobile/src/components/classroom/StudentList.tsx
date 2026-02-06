@@ -53,7 +53,7 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
         try {
             hapticMedium();
             setIsDeleting(studentId);
-            await api.classroomStudents.remove(classroomId, studentId);
+            await api.classroomStudents.remove(studentId);
             onRefresh();
         } catch (error) {
             console.error('Failed to remove student:', error);
