@@ -78,7 +78,9 @@
         "shadowPrep": "Preparing for tomorrow...",
         "mood": "Mood Check-in",
         "fire": "Fire Journal",
-        "progress": "Growth"
+        "progress": "Growth",
+        "sleep": "Sleep",
+        "reminders": "Reminders"
     },
     "classroom": {
         "title": "Classroom",

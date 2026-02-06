@@ -13,20 +13,22 @@ import {
     Button,
     ButtonText
 } from "@gluestack-ui/themed";
-import { Mic, Send, MessageCircle, Repeat, Sun, FileText, Flower, Flame, Sprout } from 'lucide-react-native';
+import { Mic, Send, MessageCircle, Repeat, Sun, FileText, Flower, Flame, Sprout, Moon, Bell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../constants/Theme';
 import { getGreetingKey, getSanctuaryTimeTheme } from '../utils/time';
 import { hapticLight } from '../utils/haptics';
 import DailyRhythm from '../components/self/DailyRhythm';
-import { MoodLotus, ShadowAgentDrawer, FireJournal, CommunityPresence, ProgressTree, VoiceJournaling } from '../components/self';
+import { MoodLotus, ShadowAgentDrawer, FireJournal, CommunityPresence, ProgressTree, VoiceJournaling, SleepTracker, RemindersManager } from '../components/self';
 import { supabase } from '../lib/supabase';
 import GlobalHeader from '../components/shared/GlobalHeader';
 
 const SUB_FEATURES = [
     { id: 'mood', label: 'Mood Check-in', icon: Flower },
+    { id: 'sleep', label: 'Sleep', icon: Moon },
     { id: 'fire', label: 'Fire Journal', icon: Flame },
     { id: 'progress', label: 'Growth', icon: Sprout },
+    { id: 'reminders', label: 'Reminders', icon: Bell },
     { id: 'rhythm', label: 'Daily Rhythm', icon: Repeat },
     { id: 'venting', label: 'Venting Space', icon: MessageCircle },
 ];
@@ -124,12 +126,20 @@ export default function SelfScreen() {
                             <MoodLotus userId={userId ?? undefined} />
                         )}
 
+                        {activeFeature === 'sleep' && (
+                            <SleepTracker userId={userId ?? undefined} />
+                        )}
+
                         {activeFeature === 'fire' && (
                             <FireJournal userId={userId ?? undefined} />
                         )}
 
                         {activeFeature === 'progress' && (
                             <ProgressTree userId={userId ?? undefined} />
+                        )}
+
+                        {activeFeature === 'reminders' && (
+                            <RemindersManager userId={userId ?? undefined} />
                         )}
 
                         {activeFeature === 'rhythm' && (
