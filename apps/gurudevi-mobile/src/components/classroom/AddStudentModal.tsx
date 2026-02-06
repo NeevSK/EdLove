@@ -41,7 +41,7 @@ interface AddStudentModalProps {
     studentToEdit?: ClassroomStudent | null;
 }
 
-export default function AddStudentModal({
+export function AddStudentModal({
     isOpen,
     onClose,
     onSuccess,

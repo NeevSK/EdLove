@@ -19,7 +19,7 @@ import {
 import { Theme } from '../../constants/Theme';
 import { ClassroomStudent, api } from '../../lib/api';
 import { hapticLight, hapticMedium } from '../../utils/haptics';
-import AddStudentModal from './AddStudentModal';
+import { AddStudentModal } from './AddStudentModal';
 
 interface StudentListProps {
     classroomId: string;
