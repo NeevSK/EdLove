@@ -28,6 +28,7 @@ import { api } from '../../lib/api';
 import { SchoolStats, School } from '../../lib/api/school';
 import HierarchyBuilder from '../../components/principal/HierarchyBuilder';
 import InviteManager from '../../components/principal/InviteManager';
+import ResourceNeedsDashboard from '../../components/principal/ResourceNeedsDashboard';
 import GlobalHeader from '../../components/shared/GlobalHeader';
 
 interface PrincipalSchoolViewProps {
@@ -227,6 +228,13 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                                 </Box>
                             </HStack>
                         </VStack>
+                    )}
+
+                    {/* Resource Needs Dashboard - Primary Focus */}
+                    {!isLoading && (
+                        <Box sx={{ marginTop: Theme.spacing.lg }}>
+                            <ResourceNeedsDashboard schoolId={schoolId} />
+                        </Box>
                     )}
 
                     {/* Quick Actions */}
