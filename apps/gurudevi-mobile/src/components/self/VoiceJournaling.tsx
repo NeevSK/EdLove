@@ -32,7 +32,7 @@ import Animated, {
     cancelAnimation,
 } from 'react-native-reanimated';
 import { Mic, Square, Play, Trash2, Check } from 'lucide-react-native';
-import { Audio } from 'expo-av';
+import { useAudioRecorder, useAudioPlayer, AudioModule, RecordingPresets, useAudioPlayerStatus, setAudioModeAsync } from 'expo-audio';
 import { Theme, typography } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';
 import { hapticLight, hapticMedium } from '../../utils/haptics';
@@ -46,26 +46,29 @@ type RecordingState = 'idle' | 'recording' | 'recorded' | 'playing';
 
 export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingProps) {
     const [recordingState, setRecordingState] = useState<RecordingState>('idle');
-    const [recording, setRecording] = useState<Audio.Recording | null>(null);
-    const [sound, setSound] = useState<Audio.Sound | null>(null);
     const [recordingDuration, setRecordingDuration] = useState(0);
-    const [hasPermission, setHasPermission] = useState(false);
+    const [recordingUri, setRecordingUri] = useState<string | null>(null);
+
+    // Expo Audio Hooks
+    const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+    const [playerSource, setPlayerSource] = useState<string | null>(null);
+    const player = useAudioPlayer(playerSource);
+    const playerStatus = useAudioPlayerStatus(player);
 
     // Animation values
     const pulseScale = useSharedValue(1);
     const waveHeight = useSharedValue(20);
 
     useEffect(() => {
-        requestPermissions();
+        // Just set up audio mode if needed, permissions are handled by expo-audio recorder
+        setAudioModeAsync({
+            playsInSilentMode: true,
+            interruptionMode: 'doNotMix',
+            allowsRecording: true,
+        });
 
         return () => {
-            // Cleanup
-            if (recording) {
-                recording.stopAndUnloadAsync();
-            }
-            if (sound) {
-                sound.unloadAsync();
-            }
+            // Cleanup happens via hooks
         };
     }, []);
 
@@ -109,36 +112,21 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
         }
     }, [recordingState]);
 
-    const requestPermissions = async () => {
-        try {
-            const { status } = await Audio.requestPermissionsAsync();
-            setHasPermission(status === 'granted');
-
-            if (status === 'granted') {
-                await Audio.setAudioModeAsync({
-                    allowsRecordingIOS: true,
-                    playsInSilentModeIOS: true,
-                });
-            }
-        } catch (error) {
-            console.error('Error requesting audio permissions:', error);
+    // Handle playback finish
+    useEffect(() => {
+        if (playerStatus.didJustFinish) {
+            setRecordingState('recorded');
         }
-    };
+    }, [playerStatus.didJustFinish]);
 
     const startRecording = async () => {
-        if (!hasPermission) {
-            await requestPermissions();
-            return;
-        }
-
         try {
+            const permission = await AudioModule.requestRecordingPermissionsAsync();
+            if (!permission.granted) return;
+
             hapticMedium();
-
-            const { recording: newRecording } = await Audio.Recording.createAsync(
-                Audio.RecordingOptionsPresets.HIGH_QUALITY
-            );
-
-            setRecording(newRecording);
+            await recorder.prepareToRecordAsync();
+            recorder.record();
             setRecordingState('recording');
             setRecordingDuration(0);
         } catch (error) {
@@ -147,11 +135,10 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
     };
 
     const stopRecording = async () => {
-        if (!recording) return;
-
         try {
             hapticMedium();
-            await recording.stopAndUnloadAsync();
+            await recorder.stop();
+            setRecordingUri(recorder.uri);
             setRecordingState('recorded');
         } catch (error) {
             console.error('Failed to stop recording:', error);
@@ -159,39 +146,22 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
     };
 
     const playRecording = async () => {
-        if (!recording) return;
+        if (!recordingUri) return;
 
         try {
-            const uri = recording.getURI();
-            if (!uri) return;
-
-            const { sound: newSound } = await Audio.Sound.createAsync({ uri });
-            setSound(newSound);
+            setPlayerSource(recordingUri);
             setRecordingState('playing');
-
-            await newSound.playAsync();
-
-            // When playback finishes
-            newSound.setOnPlaybackStatusUpdate((status) => {
-                if (status.isLoaded && status.didJustFinish) {
-                    setRecordingState('recorded');
-                }
-            });
+            player.play();
         } catch (error) {
             console.error('Failed to play recording:', error);
         }
     };
 
     const saveRecording = async () => {
-        if (!recording || !userId) return;
+        if (!recordingUri || !userId) return;
 
         try {
             hapticMedium();
-
-            // In a real implementation, you would:
-            // 1. Upload the audio file to storage
-            // 2. Save metadata to database
-            // For now, we just save metadata
 
             const { error } = await supabase
                 .from('voice_journals')
@@ -200,14 +170,12 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                         user_id: userId,
                         duration_seconds: recordingDuration,
                         created_at: new Date().toISOString(),
-                        // file_url would go here after upload
                     },
                 ]);
 
             if (error) {
                 console.error('Failed to save voice journal:', error);
             } else {
-                // Success!
                 resetRecording();
                 onComplete?.();
             }
@@ -222,14 +190,8 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
     };
 
     const resetRecording = () => {
-        if (recording) {
-            recording.stopAndUnloadAsync();
-        }
-        if (sound) {
-            sound.unloadAsync();
-        }
-        setRecording(null);
-        setSound(null);
+        setRecordingUri(null);
+        setPlayerSource(null);
         setRecordingState('idle');
         setRecordingDuration(0);
     };
@@ -247,26 +209,6 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
         const secs = seconds % 60;
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
-
-    if (!hasPermission) {
-        return (
-            <VStack space="lg" sx={{ padding: Theme.spacing.lg, alignItems: 'center' }}>
-                <Text color={Theme.colors.mistGray} size="md" textAlign="center">
-                    Microphone permission is needed for voice journaling
-                </Text>
-                <Button
-                    size="md"
-                    onPress={requestPermissions}
-                    sx={{
-                        backgroundColor: Theme.colors.sanctuarySaffron,
-                        borderRadius: Theme.corners.full,
-                    }}
-                >
-                    <ButtonText>Grant Permission</ButtonText>
-                </Button>
-            </VStack>
-        );
-    }
 
     return (
         <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>

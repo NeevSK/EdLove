@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import LotusPetalFAB from '../components/shared/LotusPetalFAB';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../constants/Theme';
+import ErrorBoundary from '../components/shared/ErrorBoundary';
 
 // Icons
 import {
@@ -98,7 +99,6 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         {/* 2. Classroom Tab (Dynamic Name) */}
         <Tab.Screen
           name="Classroom"
-          component={ClassroomStackNavigator}
           options={{
             tabBarLabel: getClassroomLabel(),
             tabBarIcon: ({ color, size }) => (
@@ -109,8 +109,8 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           }}
         >
           {() => (
-            <ErrorBoundary name="Classroom Screen">
-              <ClassroomScreen />
+            <ErrorBoundary name="Classroom Tab">
+              <ClassroomStackNavigator />
             </ErrorBoundary>
           )}
         </Tab.Screen>

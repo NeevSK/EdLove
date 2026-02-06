@@ -59,6 +59,8 @@
     "tabs": {
         "self": "Self",
         "classroom": "Classroom",
+        "school": "School",
+        "section": "Section",
         "community": "Community",
         "library": "Library",
         "profile": "Profile"
