@@ -19,7 +19,7 @@ import { Theme } from '../constants/Theme';
 import { getGreetingKey, getSanctuaryTimeTheme } from '../utils/time';
 import { hapticLight } from '../utils/haptics';
 import DailyRhythm from '../components/self/DailyRhythm';
-import { MoodLotus, ShadowAgentDrawer, FireJournal, CommunityPresence, ProgressTree } from '../components/self';
+import { MoodLotus, ShadowAgentDrawer, FireJournal, CommunityPresence, ProgressTree, VoiceJournaling } from '../components/self';
 import { supabase } from '../lib/supabase';
 import GlobalHeader from '../components/shared/GlobalHeader';
 
@@ -137,62 +137,7 @@ export default function SelfScreen() {
                         )}
 
                         {activeFeature === 'venting' && (
-                            <VStack space="lg" sx={{ flex: 1 }}>
-                                <VStack space="xs">
-                                    <Heading color={Theme.colors.sacredWhite} size="lg">{t('self.venting')}</Heading>
-                                    <Text color={Theme.colors.mistGray} size="sm">{t('self.ventingDesc')}</Text>
-                                </VStack>
-
-                                <Box
-                                    sx={{
-                                        flex: 1,
-                                        backgroundColor: Theme.colors.deepIndigo,
-                                        borderRadius: Theme.corners.comfortable,
-                                        padding: Theme.spacing.md,
-                                        minHeight: 150
-                                    }}
-                                >
-                                    <Input variant="outline" size="md" sx={{ borderWidth: 0, flex: 1 }}>
-                                        <InputField
-                                            placeholder={t('self.speakTruth')}
-                                            multiline
-                                            color={Theme.colors.sacredWhite}
-                                            placeholderTextColor={Theme.colors.dimGray}
-                                            sx={{ textAlignVertical: 'top' }}
-                                        />
-                                    </Input>
-                                </Box>
-
-                                <HStack space="md" justifyContent="flex-end">
-                                    <Button
-                                        size="md"
-                                        variant="link"
-                                        action="primary"
-                                        onPress={hapticLight}
-                                        sx={{
-                                            borderRadius: Theme.corners.full,
-                                            width: 44,
-                                            height: 44,
-                                            backgroundColor: Theme.colors.deepIndigo
-                                        }}
-                                    >
-                                        <Mic color={Theme.colors.sanctuarySaffron} size={20} />
-                                    </Button>
-                                    <Button
-                                        size="md"
-                                        action="primary"
-                                        onPress={hapticLight}
-                                        sx={{
-                                            borderRadius: Theme.corners.full,
-                                            backgroundColor: Theme.colors.sanctuarySaffron,
-                                            paddingHorizontal: Theme.spacing.md
-                                        }}
-                                    >
-                                        <ButtonText color={Theme.colors.white} mr="$2">{t('self.unburden')}</ButtonText>
-                                        <Send color={Theme.colors.white} size={16} />
-                                    </Button>
-                                </HStack>
-                            </VStack>
+                            <VoiceJournaling userId={userId ?? undefined} />
                         )}
                     </Box>
                 </Box>

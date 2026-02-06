@@ -9,3 +9,4 @@ export { default as FireJournal } from './FireJournal';
 export { default as CommunityPresence } from './CommunityPresence';
 export { default as ProgressTree } from './ProgressTree';
 export { default as BreathGuide } from './BreathGuide';
+export { default as VoiceJournaling } from './VoiceJournaling';
