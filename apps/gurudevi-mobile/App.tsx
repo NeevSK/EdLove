@@ -43,7 +43,7 @@ export default function App() {
       if (userProfile) {
         useStore.getState().setUserRole(userProfile.role as UserRole);
 
-        // Fetch school type
+        // Fetch school type if school_id exists, otherwise clear it
         if (userProfile.school_id) {
           const { data: schoolData } = await supabase
             .from('schools')
@@ -54,6 +54,9 @@ export default function App() {
           if (schoolData) {
             useStore.getState().setSchoolType(schoolData.type as SchoolType);
           }
+        } else {
+          // Clear school type if user has no school
+          useStore.getState().setSchoolType(null);
         }
       }
     } catch (error) {
@@ -98,6 +101,11 @@ export default function App() {
       // Fetch user role when auth state changes
       if (session?.user) {
         await fetchAndSetUserProfile(session.user.id);
+      } else {
+        // Clear session-derived state when user signs out or session expires
+        const { setUserRole, setSchoolType } = useStore.getState();
+        setUserRole(null);
+        setSchoolType(null);
       }
     });
 

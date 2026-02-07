@@ -66,12 +66,13 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                 allowsEditing: true,
                 aspect: [1, 1],
                 quality: 0.5,
-                base64: true,
             });
 
-            if (!result.canceled && result.assets && result.assets[0].base64) {
-                setAvatarUrl(result.assets[0].uri); // Optimistic update
-                uploadAvatar(result.assets[0]);
+            if (!result.canceled && result.assets && result.assets[0]) {
+                // Show the image optimistically in UI
+                setAvatarUrl(result.assets[0].uri);
+                // Note: Upload will be handled when user saves the profile
+                // The actual upload to Supabase Storage should happen in handleSave
             }
         } catch (error) {
             console.error('Error picking image:', error);
@@ -79,21 +80,10 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
         }
     };
 
-    const uploadAvatar = async (asset: ImagePicker.ImagePickerAsset) => {
-        if (!currentProfile?.id || !asset.base64) return;
-
-        // Note: In a real app, this would use supabase.storage.upload
-        // For now, we'll just simulate success or update the profile if we have a bucket
-        // Since we can't guarantee 'avatars' bucket exists, we might skipping actual upload
-        // or just treating the local change as "done" for the session.
-
-        // However, if we want to persist, assuming we have a base64 string, 
-        // we can try to update the 'avatar_url' field directly if it supports data URIs (not recommended for DB)
-        // OR standard Supabase storage.
-
-        // Let's assume for this task we just show the UI capability
-        console.log('Image picked:', asset.uri);
-    };
+    // Remove unused uploadAvatar function
+    // const uploadAvatar = async (asset: ImagePicker.ImagePickerAsset) => {
+    //     // This function is no longer needed as upload will be handled in handleSave
+    // };
 
     const handleSave = async () => {
         if (!currentProfile?.id) return;
@@ -108,10 +98,19 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                 bio: bio
             };
 
-            // Update avatar URL if changed (handle both new uploads and updates)
-            if (avatarUrl && avatarUrl !== (currentProfile?.avatar_url || null)) {
+            // Only update avatar if it's a remote URL (already uploaded to Supabase Storage)
+            // Don't persist local file:// URIs to the database
+            if (avatarUrl && 
+                avatarUrl !== (currentProfile?.avatar_url || null) && 
+                (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://'))) {
                 updates.avatar_url = avatarUrl;
             }
+            // TODO: Implement actual Supabase Storage upload for local file URIs
+            // Example flow:
+            // if (avatarUrl && avatarUrl.startsWith('file://')) {
+            //     const uploadedUrl = await uploadToSupabaseStorage(avatarUrl);
+            //     updates.avatar_url = uploadedUrl;
+            // }
 
             // Only update role if changed
             if (selectedRole && selectedRole !== currentProfile.role) {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
-import { Box, VStack, Text, HStack, Pressable } from "@gluestack-ui/themed";
+import { Box, VStack, Text, Pressable } from "@gluestack-ui/themed";
 import GlobalHeader from '../components/shared/GlobalHeader';
 import LotusPetalFAB from '../components/shared/LotusPetalFAB';
 import LibraryResourceCard, { ResourceType } from '../components/library/LibraryResourceCard';
@@ -29,6 +29,7 @@ export default function LibraryScreen() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [showSearchBar, setShowSearchBar] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState<typeof LIBRARY_CATEGORIES[number]>('All');
 
     // Mocking addition
     const [resources, setResources] = useState<any[]>(MOCK_RESOURCES);
@@ -41,9 +42,25 @@ export default function LibraryScreen() {
         Linking.openURL(url).catch(err => console.error("Couldn't load page", err));
     };
 
-    const filteredResources = resources.filter(r =>
-        r.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Filter by search query and category
+    const filteredResources = resources.filter(r => {
+        const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
+        
+        // Category filtering
+        if (selectedCategory === 'All') {
+            return matchesSearch;
+        }
+        
+        const categoryMap: Record<string, string[]> = {
+            'PDFs': ['pdf'],
+            'Videos': ['video'],
+            'Docs': ['doc'],
+            'Links': ['link', 'text']
+        };
+        
+        const types = categoryMap[selectedCategory] || [];
+        return matchesSearch && types.includes(r.type);
+    });
 
     return (
         <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
@@ -88,18 +105,32 @@ export default function LibraryScreen() {
                             contentContainerStyle={{ gap: 12 }}
                         >
                             {LIBRARY_CATEGORIES.map((category) => (
-                                <Pressable key={category}>
+                                <Pressable 
+                                    key={category}
+                                    onPress={() => setSelectedCategory(category)}
+                                >
                                     <Box
                                         sx={{
                                             paddingHorizontal: Theme.spacing.lg,
                                             paddingVertical: Theme.spacing.sm,
-                                            backgroundColor: Theme.colors.deepIndigo,
+                                            backgroundColor: selectedCategory === category 
+                                                ? Theme.colors.sanctuarySaffron 
+                                                : Theme.colors.deepIndigo,
                                             borderRadius: Theme.corners.comfortable,
                                             borderWidth: 1,
-                                            borderColor: Theme.colors.sanctuarySaffron
+                                            borderColor: selectedCategory === category 
+                                                ? Theme.colors.sanctuarySaffron 
+                                                : Theme.colors.dimGray
                                         }}
                                     >
-                                        <Text color={Theme.colors.sacredWhite} size="sm" bold>
+                                        <Text 
+                                            color={selectedCategory === category 
+                                                ? Theme.colors.white 
+                                                : Theme.colors.sacredWhite
+                                            } 
+                                            size="sm" 
+                                            bold={selectedCategory === category}
+                                        >
                                             {category}
                                         </Text>
                                     </Box>
