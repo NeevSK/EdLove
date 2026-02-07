@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
-import { Box, VStack, Text, HStack } from "@gluestack-ui/themed";
+import { Box, VStack, Text, HStack, Pressable } from "@gluestack-ui/themed";
 import GlobalHeader from '../components/shared/GlobalHeader';
 import LotusPetalFAB from '../components/shared/LotusPetalFAB';
 import LibraryResourceCard, { ResourceType } from '../components/library/LibraryResourceCard';
@@ -25,6 +25,7 @@ export default function LibraryScreen() {
     const [searchQuery, setSearchQuery] = useState('');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [showSearchBar, setShowSearchBar] = useState(false);
 
     // Mocking addition
     const [resources, setResources] = useState<any[]>(MOCK_RESOURCES);
@@ -47,20 +48,24 @@ export default function LibraryScreen() {
                 title={t('tabs.library') || 'Library'}
                 subtitle="Knowledge Sanctuary"
                 rightAction={
-                    <TouchableOpacity onPress={() => { }}>
+                    <TouchableOpacity onPress={() => setShowSearchBar(!showSearchBar)}>
                         <Search color={Theme.colors.sacredWhite} size={24} />
                     </TouchableOpacity>
                 }
             />
 
-            <VStack space="md" px="$4" py="$4">
-                <SanctuaryInput
-                    placeholder="Search resources..."
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                    leftIcon={Search}
-                />
-            </VStack>
+            {/* Collapsible Search Bar */}
+            {showSearchBar && (
+                <VStack space="md" px="$4" py="$4">
+                    <SanctuaryInput
+                        placeholder="Search resources..."
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        leftIcon={Search}
+                        autoFocus
+                    />
+                </VStack>
+            )}
 
             <ScrollView
                 contentContainerStyle={{ padding: Theme.spacing.md, paddingBottom: 100 }}
@@ -68,27 +73,61 @@ export default function LibraryScreen() {
                     <RefreshControl refreshing={refreshing} onRefresh={() => setRefreshing(false)} tintColor={Theme.colors.sanctuarySaffron} />
                 }
             >
-                {filteredResources.length === 0 ? (
-                    <EmptyState
-                        icon={BookOpen}
-                        title="Library is Empty"
-                        description="Be the first to add knowledge to the sanctuary."
-                    />
-                ) : (
-                    <VStack space="md">
-                        {filteredResources.map((res) => (
-                            <LibraryResourceCard
-                                key={res.id}
-                                title={res.title}
-                                type={res.type as ResourceType}
-                                isPublic={res.isPublic}
-                                onPress={() => handleOpenResource(res.url)}
-                                onLike={() => console.log('Like', res.id)}
-                                onaddToDesk={() => console.log('Add to desk', res.id)}
-                            />
-                        ))}
+                {/* Horizontal Carousel for Resource Categories */}
+                <VStack space="xl">
+                    <VStack space="sm">
+                        <Text color={Theme.colors.sacredWhite} size="lg" bold>
+                            Categories
+                        </Text>
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={{ gap: 12 }}
+                        >
+                            {['All', 'PDFs', 'Videos', 'Docs', 'Links'].map((category) => (
+                                <Pressable key={category}>
+                                    <Box
+                                        sx={{
+                                            paddingHorizontal: Theme.spacing.lg,
+                                            paddingVertical: Theme.spacing.sm,
+                                            backgroundColor: Theme.colors.deepIndigo,
+                                            borderRadius: Theme.corners.comfortable,
+                                            borderWidth: 1,
+                                            borderColor: Theme.colors.sanctuarySaffron
+                                        }}
+                                    >
+                                        <Text color={Theme.colors.sacredWhite} size="sm" bold>
+                                            {category}
+                                        </Text>
+                                    </Box>
+                                </Pressable>
+                            ))}
+                        </ScrollView>
                     </VStack>
-                )}
+
+                    {/* Resources List */}
+                    {filteredResources.length === 0 ? (
+                        <EmptyState
+                            icon={BookOpen}
+                            title="Library is Empty"
+                            description="Be the first to add knowledge to the sanctuary."
+                        />
+                    ) : (
+                        <VStack space="md">
+                            {filteredResources.map((res) => (
+                                <LibraryResourceCard
+                                    key={res.id}
+                                    title={res.title}
+                                    type={res.type as ResourceType}
+                                    isPublic={res.isPublic}
+                                    onPress={() => handleOpenResource(res.url)}
+                                    onLike={() => console.log('Like', res.id)}
+                                    onaddToDesk={() => console.log('Add to desk', res.id)}
+                                />
+                            ))}
+                        </VStack>
+                    )}
+                </VStack>
             </ScrollView>
 
             <LotusPetalFAB
