@@ -29,7 +29,7 @@ import {
     Divider,
     Spinner,
 } from "@gluestack-ui/themed";
-import { ChevronDown } from 'lucide-react-native';
+import { ChevronDown, QrCode } from 'lucide-react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
