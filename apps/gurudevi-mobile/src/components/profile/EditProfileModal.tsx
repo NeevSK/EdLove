@@ -108,8 +108,8 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                 bio: bio
             };
 
-            // Update avatar URL if changed
-            if (avatarUrl && avatarUrl !== currentProfile.avatar_url) {
+            // Update avatar URL if changed (handle both new uploads and updates)
+            if (avatarUrl && avatarUrl !== (currentProfile?.avatar_url || null)) {
                 updates.avatar_url = avatarUrl;
             }
 

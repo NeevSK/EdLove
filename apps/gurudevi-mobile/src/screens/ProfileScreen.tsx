@@ -138,37 +138,21 @@ export default function ProfileScreen() {
                     text: 'Delete Forever',
                     style: 'destructive',
                     onPress: async () => {
-                        // Second confirmation for safety
-                        Alert.alert(
-                            'Final Confirmation',
-                            'Type DELETE to confirm account deletion',
-                            [
-                                {
-                                    text: 'Cancel',
-                                    style: 'cancel',
-                                },
-                                {
-                                    text: 'Confirm',
-                                    style: 'destructive',
-                                    onPress: async () => {
-                                        setLoading(true);
-                                        try {
-                                            // Note: Account deletion should be handled server-side
-                                            // For now, just show the intent. In production, call an API endpoint
-                                            console.log('Account deletion requested');
-                                            hapticSuccess();
-                                            // Would sign out after deletion
-                                            await supabase.auth.signOut();
-                                        } catch (error) {
-                                            console.error('Error deleting account:', error);
-                                            hapticError();
-                                        } finally {
-                                            setLoading(false);
-                                        }
-                                    },
-                                },
-                            ]
-                        );
+                        setLoading(true);
+                        try {
+                            // Note: Account deletion should be handled server-side via API
+                            // For now, inform user that feature is not yet available
+                            Alert.alert(
+                                'Feature Not Available',
+                                'Account deletion will be available soon. Please contact support if you need immediate assistance.',
+                                [{ text: 'OK' }]
+                            );
+                        } catch (error) {
+                            console.error('Error deleting account:', error);
+                            hapticError();
+                        } finally {
+                            setLoading(false);
+                        }
                     },
                 },
             ]

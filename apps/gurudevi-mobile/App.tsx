@@ -31,6 +31,36 @@ export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [currentTab, setCurrentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
 
+  // Extract user profile fetching logic to avoid duplication
+  const fetchAndSetUserProfile = async (userId: string) => {
+    try {
+      const { data: userProfile } = await supabase
+        .from('users')
+        .select('role, school_id')
+        .eq('id', userId)
+        .single();
+
+      if (userProfile) {
+        useStore.getState().setUserRole(userProfile.role as UserRole);
+
+        // Fetch school type
+        if (userProfile.school_id) {
+          const { data: schoolData } = await supabase
+            .from('schools')
+            .select('type')
+            .eq('id', userProfile.school_id)
+            .single();
+
+          if (schoolData) {
+            useStore.getState().setSchoolType(schoolData.type as SchoolType);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
+  };
+
   // Load custom fonts
   useEffect(() => {
     async function loadFonts() {
@@ -53,32 +83,7 @@ export default function App() {
       
       // Fetch user role and school type when session is restored
       if (session?.user) {
-        try {
-          const { data: userProfile } = await supabase
-            .from('users')
-            .select('role, school_id')
-            .eq('id', session.user.id)
-            .single();
-
-          if (userProfile) {
-            useStore.getState().setUserRole(userProfile.role as UserRole);
-
-            // Fetch school type
-            if (userProfile.school_id) {
-              const { data: schoolData } = await supabase
-                .from('schools')
-                .select('type')
-                .eq('id', userProfile.school_id)
-                .single();
-
-              if (schoolData) {
-                useStore.getState().setSchoolType(schoolData.type as SchoolType);
-              }
-            }
-          }
-        } catch (error) {
-          console.error('Error fetching user profile:', error);
-        }
+        await fetchAndSetUserProfile(session.user.id);
       }
       
       setLoading(false);
@@ -92,32 +97,7 @@ export default function App() {
       
       // Fetch user role when auth state changes
       if (session?.user) {
-        try {
-          const { data: userProfile } = await supabase
-            .from('users')
-            .select('role, school_id')
-            .eq('id', session.user.id)
-            .single();
-
-          if (userProfile) {
-            useStore.getState().setUserRole(userProfile.role as UserRole);
-
-            // Fetch school type
-            if (userProfile.school_id) {
-              const { data: schoolData } = await supabase
-                .from('schools')
-                .select('type')
-                .eq('id', userProfile.school_id)
-                .single();
-
-              if (schoolData) {
-                useStore.getState().setSchoolType(schoolData.type as SchoolType);
-              }
-            }
-          }
-        } catch (error) {
-          console.error('Error fetching user profile:', error);
-        }
+        await fetchAndSetUserProfile(session.user.id);
       }
     });
 

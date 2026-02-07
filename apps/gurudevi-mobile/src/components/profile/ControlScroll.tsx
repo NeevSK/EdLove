@@ -233,7 +233,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                         </VStack>
 
                         <Text color={Theme.colors.dimGray} size="xs" mt={Theme.spacing.lg} textAlign="center">
-                            Auto mode switches to softer colors in the evening (8 PM - 6 AM)
+                            Auto mode adjusts theme based on time of day (evening: 8 PM - 6 AM)
                         </Text>
                     </Box>
                 </Box>

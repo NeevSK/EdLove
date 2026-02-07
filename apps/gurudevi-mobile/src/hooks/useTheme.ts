@@ -20,6 +20,7 @@ interface UseThemeReturn {
 /**
  * Determines if current time should use dark theme
  * Dark mode active between 8 PM and 6 AM (but colors remain muted, not pure dark)
+ * Note: Uses device local time, which may vary if user travels across timezones
  */
 function shouldUseDarkMode(): boolean {
     const hour = new Date().getHours();

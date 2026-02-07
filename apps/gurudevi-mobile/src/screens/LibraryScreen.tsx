@@ -20,6 +20,9 @@ const MOCK_RESOURCES = [
     { id: '3', title: 'Physics Notes', type: 'doc', isPublic: true, url: 'https://docs.google.com/doc' },
 ];
 
+// Library categories for filtering
+const LIBRARY_CATEGORIES = ['All', 'PDFs', 'Videos', 'Docs', 'Links'] as const;
+
 export default function LibraryScreen() {
     const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState('');
@@ -84,7 +87,7 @@ export default function LibraryScreen() {
                             showsHorizontalScrollIndicator={false}
                             contentContainerStyle={{ gap: 12 }}
                         >
-                            {['All', 'PDFs', 'Videos', 'Docs', 'Links'].map((category) => (
+                            {LIBRARY_CATEGORIES.map((category) => (
                                 <Pressable key={category}>
                                     <Box
                                         sx={{
