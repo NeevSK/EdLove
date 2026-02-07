@@ -125,7 +125,7 @@ export default function LibraryScreen() {
                                     >
                                         <Text 
                                             color={selectedCategory === category 
-                                                ? Theme.colors.white 
+                                                ? Theme.colors.white  // Pure white for high contrast on saffron
                                                 : Theme.colors.sacredWhite
                                             } 
                                             size="sm" 

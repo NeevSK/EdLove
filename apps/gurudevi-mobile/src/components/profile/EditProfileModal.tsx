@@ -195,7 +195,9 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                             <Camera size={16} color={Theme.colors.sanctuarySaffron} />
                                         </Pressable>
                                     </Box>
-                                    <Text color={Theme.colors.mistGray} size="xs" mt="$2">Tap camera to change</Text>
+                                    <Text color={Theme.colors.mistGray} size="xs" mt="$2">
+                                        Tap camera to change (upload feature coming soon)
+                                    </Text>
                                 </Center>
 
                                 {/* Name Input */}
