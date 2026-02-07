@@ -34,7 +34,7 @@ import {
     Button,
     ButtonText,
 } from '@gluestack-ui/themed';
-import QRCode from 'react-native-qrcode-svg';
+import QRCodeGenerator from '../shared/QRCodeGenerator';
 import * as Clipboard from 'expo-clipboard';
 
 interface StudentListProps {
@@ -221,7 +221,7 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                     <ModalBody>
                         <VStack space="lg" alignItems="center" pb="$6">
                             <Box sx={{ padding: Theme.spacing.lg, backgroundColor: 'white', borderRadius: Theme.corners.generous }}>
-                                <QRCode
+                                <QRCodeGenerator
                                     value={studentForQr?.invite_code || ''}
                                     size={180}
                                     color="black"

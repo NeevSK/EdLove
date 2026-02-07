@@ -19,6 +19,7 @@ import { hapticSuccess, hapticLight, hapticError } from '../utils/haptics';
 import { LogOut } from 'lucide-react-native';
 // New Components
 import IdentityCard from '../components/profile/IdentityCard';
+import QRCodeGenerator from '../components/shared/QRCodeGenerator';
 import ControlScroll from '../components/profile/ControlScroll';
 import EditProfileModal from '../components/profile/EditProfileModal';
 import GlobalHeader from '../components/shared/GlobalHeader';
@@ -276,7 +277,12 @@ export default function ProfileScreen() {
                             {/* QR Code Large View */}
                             <Box sx={{ backgroundColor: 'white', padding: Theme.spacing.xl, borderRadius: Theme.corners.comfortable, alignItems: 'center' }}>
                                 <Heading color="black" size="md" mb="$4">My Identity QR</Heading>
-                                <QrCode size={200} color="black" />
+                                <QRCodeGenerator
+                                    value={profile?.id || 'gurudevi-guest'}
+                                    size={200}
+                                    color="black"
+                                    backgroundColor="white"
+                                />
                                 <Text color="gray" size="sm" mt="$2" textAlign="center">
                                     Scan to share contact info
                                 </Text>

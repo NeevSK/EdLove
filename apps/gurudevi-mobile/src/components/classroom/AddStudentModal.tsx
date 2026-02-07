@@ -30,7 +30,7 @@ import { Search, QrCode, UserPlus, Info, Plus } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { api, ClassroomStudent } from '../../lib/api';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';
-import QRCode from 'react-native-qrcode-svg';
+import QRCodeGenerator from '../shared/QRCodeGenerator';
 import * as Clipboard from 'expo-clipboard';
 
 interface AddStudentModalProps {
@@ -215,7 +215,7 @@ export function AddStudentModal({
                         {createdShadow ? (
                             <VStack space="lg" alignItems="center" py="$4">
                                 <Box sx={{ padding: Theme.spacing.lg, backgroundColor: 'white', borderRadius: Theme.corners.generous }}>
-                                    <QRCode
+                                    <QRCodeGenerator
                                         value={createdShadow.invite_code || ''}
                                         size={180}
                                         color="black"
@@ -364,7 +364,7 @@ export function AddStudentModal({
                         ) : (
                             <VStack space="lg" alignItems="center" py="$4">
                                 <Box sx={{ padding: Theme.spacing.lg, backgroundColor: 'white', borderRadius: Theme.corners.generous }}>
-                                    <QRCode
+                                    <QRCodeGenerator
                                         value={classroomId}
                                         size={200}
                                         color="black"

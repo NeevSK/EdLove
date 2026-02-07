@@ -22,40 +22,31 @@ export default function QRCodeGenerator({
 }: QRCodeGeneratorProps) {
     if (!value) return null;
 
-    // Memoize the QR Code generation to avoid re-computation on every render
-    const qrMatrix = useMemo(() => {
+    // Generate QR Code Matrix
+    const matrix = useMemo(() => {
         try {
             const qr = QRCode.create(value, { errorCorrectionLevel: 'M' });
-            return qr.modules.data; // Flattened array of 0s and 1s? No, it's a Uint8Array row-major
-            // Actually, newer qrcode versions return a `modules` object with `data`, `size`, etc.
-            // Let's check structure or assume standard qrcode lib behavior.
-
-            // QRCode.create returns a QRCode object.
-            // qr.modules is a BitMatrix.
-            // qr.modules.size is the dimension (e.g. 21, 25...)
-            // qr.modules.data is a Uint8Array. 
-            // qr.modules.isDark(row, col) helper exists? No, usually .get(row, col)
-
-            // Let's implement a robust matrix parser.
+            return qr.modules;
         } catch (e) {
             console.error("QR Generation Error", e);
             return null;
         }
     }, [value]);
 
-    if (!qrMatrix) return null;
+    if (!matrix) return null;
 
-    // Re-generate using create again to get the full object because useMemo above didn't return dimensions
-    const qr = QRCode.create(value, { errorCorrectionLevel: 'M' });
-    const modules = qr.modules;
-    const sizeCells = modules.size;
+    const sizeCells = matrix.size;
     const cellSize = size / sizeCells;
 
     // Generate rectangles
     const rects = [];
+    const data = matrix.data; // Uint8Array
+
     for (let row = 0; row < sizeCells; row++) {
         for (let col = 0; col < sizeCells; col++) {
-            if (modules.get(row, col)) {
+            // Safe access using formula: index = row * size + col
+            // The qrcode library uses row-major order
+            if (data[row * sizeCells + col]) {
                 rects.push(
                     <Rect
                         key={`${row}-${col}`}
