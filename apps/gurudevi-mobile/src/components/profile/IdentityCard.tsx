@@ -157,24 +157,26 @@ export default function IdentityCard({ profile, onEdit, onExpand }: IdentityCard
                         </VStack>
                     </HStack>
 
-                    {/* Expand Button (Top Right) */}
-                    <Pressable
-                        onPress={(e) => {
-                            e.stopPropagation();
-                            onExpand?.();
-                        }}
-                        style={{
-                            position: 'absolute',
-                            top: 10,
-                            right: 10,
-                            padding: 8,
-                            zIndex: 10
-                        }}
-                    >
-                        <Text color={Theme.colors.mistGray} size="xs" bold>
-                            EXPAND ↗
-                        </Text>
-                    </Pressable>
+                    {/* Expand Button (Top Right) - Only show if onExpand prop is provided */}
+                    {onExpand && (
+                        <Pressable
+                            onPress={(e) => {
+                                e.stopPropagation();
+                                onExpand();
+                            }}
+                            style={{
+                                position: 'absolute',
+                                top: 10,
+                                right: 10,
+                                padding: 8,
+                                zIndex: 10
+                            }}
+                        >
+                            <Text color={Theme.colors.mistGray} size="xs" bold>
+                                EXPAND ↗
+                            </Text>
+                        </Pressable>
+                    )}
 
                     {/* Decorative Elements */}
                     <Image

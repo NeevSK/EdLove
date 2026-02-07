@@ -42,6 +42,8 @@ interface EditProfileModalProps {
 
 export default function EditProfileModal({ visible, onClose, onSave, currentProfile }: EditProfileModalProps) {
     const [fullName, setFullName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [bio, setBio] = useState('');
     const [loading, setLoading] = useState(false);
     const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -50,6 +52,8 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
     useEffect(() => {
         if (currentProfile) {
             setFullName(currentProfile.full_name || '');
+            setPhone(currentProfile.phone || '');
+            setBio(currentProfile.bio || '');
             setSelectedRole(currentProfile.role);
             setAvatarUrl(currentProfile.avatar_url);
         }
@@ -98,7 +102,16 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
         hapticLight();
 
         try {
-            const updates: any = { full_name: fullName };
+            const updates: any = { 
+                full_name: fullName,
+                phone: phone,
+                bio: bio
+            };
+
+            // Update avatar URL if changed
+            if (avatarUrl && avatarUrl !== currentProfile.avatar_url) {
+                updates.avatar_url = avatarUrl;
+            }
 
             // Only update role if changed
             if (selectedRole && selectedRole !== currentProfile.role) {
@@ -202,6 +215,49 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                             onChangeText={setFullName}
                                             placeholder="Enter your name"
                                             placeholderTextColor={Theme.colors.stoneGray}
+                                        />
+                                    </Input>
+                                </VStack>
+
+                                {/* Phone Input */}
+                                <VStack space="xs">
+                                    <Text color={Theme.colors.dimGray} size="sm">Phone Number</Text>
+                                    <Input
+                                        size="xl"
+                                        variant="outline"
+                                        style={styles.input}
+                                        isInvalid={false}
+                                        isDisabled={loading}
+                                    >
+                                        <InputField
+                                            color={Theme.colors.sacredWhite}
+                                            value={phone}
+                                            onChangeText={setPhone}
+                                            placeholder="+94 XX XXX XXXX"
+                                            placeholderTextColor={Theme.colors.stoneGray}
+                                            keyboardType="phone-pad"
+                                        />
+                                    </Input>
+                                </VStack>
+
+                                {/* Bio Input */}
+                                <VStack space="xs">
+                                    <Text color={Theme.colors.dimGray} size="sm">Bio</Text>
+                                    <Input
+                                        size="xl"
+                                        variant="outline"
+                                        style={[styles.input, { height: 100 }]}
+                                        isInvalid={false}
+                                        isDisabled={loading}
+                                    >
+                                        <InputField
+                                            color={Theme.colors.sacredWhite}
+                                            value={bio}
+                                            onChangeText={setBio}
+                                            placeholder="Tell us about yourself..."
+                                            placeholderTextColor={Theme.colors.stoneGray}
+                                            multiline
+                                            numberOfLines={4}
                                         />
                                     </Input>
                                 </VStack>

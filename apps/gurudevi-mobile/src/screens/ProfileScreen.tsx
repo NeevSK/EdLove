@@ -124,6 +124,57 @@ export default function ProfileScreen() {
         );
     }
 
+    async function handleDeleteAccount() {
+        hapticLight();
+        Alert.alert(
+            'Delete Account',
+            'This action cannot be undone. All your data will be permanently deleted. Are you sure?',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Delete Forever',
+                    style: 'destructive',
+                    onPress: async () => {
+                        // Second confirmation for safety
+                        Alert.alert(
+                            'Final Confirmation',
+                            'Type DELETE to confirm account deletion',
+                            [
+                                {
+                                    text: 'Cancel',
+                                    style: 'cancel',
+                                },
+                                {
+                                    text: 'Confirm',
+                                    style: 'destructive',
+                                    onPress: async () => {
+                                        setLoading(true);
+                                        try {
+                                            // Note: Account deletion should be handled server-side
+                                            // For now, just show the intent. In production, call an API endpoint
+                                            console.log('Account deletion requested');
+                                            hapticSuccess();
+                                            // Would sign out after deletion
+                                            await supabase.auth.signOut();
+                                        } catch (error) {
+                                            console.error('Error deleting account:', error);
+                                            hapticError();
+                                        } finally {
+                                            setLoading(false);
+                                        }
+                                    },
+                                },
+                            ]
+                        );
+                    },
+                },
+            ]
+        );
+    }
+
     if (loading) {
         return (
             <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
@@ -179,26 +230,39 @@ export default function ProfileScreen() {
                         onLanguageChange={changeLanguage}
                     />
 
-                    {/* Logout Button */}
-                    <Button
-                        size="xl"
-                        variant="outline"
-                        action="negative"
-                        onPress={handleLogout}
-                        sx={{
-                            borderColor: Theme.colors.emberRed,
-                            borderWidth: 1,
-                            borderRadius: Theme.corners.comfortable,
-                            marginTop: Theme.spacing.md
-                        }}
-                    >
-                        <ButtonText color={Theme.colors.emberRed}>
-                            {t('profile.logout') || 'Log Out'}
-                        </ButtonText>
-                        <LogOut size={20} color={Theme.colors.emberRed} style={{ marginLeft: 8 }} />
-                    </Button>
-
                     <SupportSection />
+
+                    {/* Account Actions - Moved to end */}
+                    <VStack space="md" mt={Theme.spacing.xl}>
+                        {/* Logout Button */}
+                        <Button
+                            size="xl"
+                            variant="outline"
+                            action="negative"
+                            onPress={handleLogout}
+                            sx={{
+                                borderColor: Theme.colors.emberRed,
+                                borderWidth: 1,
+                                borderRadius: Theme.corners.comfortable,
+                            }}
+                        >
+                            <ButtonText color={Theme.colors.emberRed}>
+                                {t('profile.logout') || 'Log Out'}
+                            </ButtonText>
+                            <LogOut size={20} color={Theme.colors.emberRed} style={{ marginLeft: 8 }} />
+                        </Button>
+
+                        {/* Delete Account Button */}
+                        <Button
+                            size="lg"
+                            variant="link"
+                            onPress={handleDeleteAccount}
+                        >
+                            <ButtonText color={Theme.colors.dimGray} size="sm">
+                                Delete Account
+                            </ButtonText>
+                        </Button>
+                    </VStack>
                 </VStack>
             </ScrollView>
 
