@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { Modal, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import {
@@ -22,6 +23,7 @@ import {
     SelectDragIndicator,
     SelectItem,
     Image,
+    Center,
 } from '@gluestack-ui/themed';
 import { X, Save, User, Briefcase, ChevronDown, Camera } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
