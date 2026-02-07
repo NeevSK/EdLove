@@ -27,7 +27,15 @@
         "principal": "Principal"
     },
     "school": {
-        "personal_workspace": "Personal Workspace"
+        "personal_workspace": "Personal Workspace",
+        "1AB": "National School (1AB)",
+        "1C": "Provincial School (1C)",
+        "Type_2": "Type 2 (Up to O/L)",
+        "Type_3": "Type 3 (Primary)",
+        "semi_government": "Semi-Government",
+        "private": "Private School",
+        "international": "International School",
+        "pirivena": "Pirivena"
     },
     "auth": {
         "login": "Login",
@@ -194,6 +202,7 @@
         "statActiveClasses": "Active Classes",
         "statTotalStudents": "Total Students",
         "yourClassrooms": "Your Classrooms",
+        "myClassrooms": "My Classrooms",
         "createTitle": "Create New Class",
         "errorNameRequired": "Class name is required",
         "labelName": "Class Name",
@@ -228,6 +237,9 @@
         "guestUser": "Guest User",
         "logout": "Logout",
         "language": "Language",
+        "appLanguage": "App Language",
+        "logoutConfirmTitle": "Log Out",
+        "logoutConfirmMessage": "Are you sure you want to sign out?",
         "languageDesc": "Choose your preferred language",
         "quote": "Your influence as a teacher blooms here",
         "settings": "Settings",

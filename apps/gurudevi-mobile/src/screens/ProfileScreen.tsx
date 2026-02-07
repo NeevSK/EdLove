@@ -9,6 +9,7 @@ import {
     Center,
     Button,
     ButtonText,
+    Text
 } from "@gluestack-ui/themed";
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
