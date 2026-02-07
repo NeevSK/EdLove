@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Modal } from 'react-native';
 import {
     Box,
     VStack,
@@ -7,11 +7,13 @@ import {
     Text,
     Pressable,
     Divider,
+    Heading,
 } from '@gluestack-ui/themed';
-import { Globe, Moon, Database, ChevronRight, Check } from 'lucide-react-native';
+import { Globe, Moon, Database, ChevronRight, Check, X, Sun, Zap } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';
+import { useTheme, ThemeMode } from '../../hooks/useTheme';
 
 interface ControlScrollProps {
     currentLanguage: string;
@@ -20,6 +22,69 @@ interface ControlScrollProps {
 
 export default function ControlScroll({ currentLanguage, onLanguageChange }: ControlScrollProps) {
     const { t } = useTranslation();
+    const { themeMode, setThemeMode } = useTheme();
+    const [showThemeModal, setShowThemeModal] = useState(false);
+
+    const getThemeLabel = (mode: ThemeMode) => {
+        switch (mode) {
+            case 'light': return 'Light Mode';
+            case 'dark': return 'Dark Mode';
+            case 'auto': return 'Auto (Time-based)';
+        }
+    };
+
+    const renderThemeOption = (mode: ThemeMode, icon: any, label: string, description: string) => {
+        const isActive = themeMode === mode;
+        const IconComponent = icon;
+        
+        return (
+            <Pressable
+                onPress={() => {
+                    if (!isActive) {
+                        hapticSuccess();
+                        setThemeMode(mode);
+                        setShowThemeModal(false);
+                    }
+                }}
+            >
+                <Box
+                    sx={{
+                        padding: Theme.spacing.md,
+                        backgroundColor: isActive ? 'rgba(230, 126, 34, 0.1)' : Theme.colors.deepIndigo,
+                        borderRadius: Theme.corners.comfortable,
+                        borderWidth: 1,
+                        borderColor: isActive ? Theme.colors.sanctuarySaffron : 'transparent',
+                    }}
+                >
+                    <HStack justifyContent="space-between" alignItems="center">
+                        <HStack space="md" alignItems="center">
+                            <Box
+                                sx={{
+                                    width: 36,
+                                    height: 36,
+                                    borderRadius: 12,
+                                    backgroundColor: isActive ? 'rgba(230, 126, 34, 0.2)' : 'rgba(255,255,255,0.05)',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                <IconComponent size={20} color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.mistGray} />
+                            </Box>
+                            <VStack>
+                                <Text color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.sacredWhite} bold={isActive}>
+                                    {label}
+                                </Text>
+                                <Text color={Theme.colors.dimGray} size="xs">
+                                    {description}
+                                </Text>
+                            </VStack>
+                        </HStack>
+                        {isActive && <Check size={20} color={Theme.colors.sanctuarySaffron} />}
+                    </HStack>
+                </Box>
+            </Pressable>
+        );
+    };
 
     const renderLanguageItem = (lang: 'si' | 'ta' | 'en', label: string) => {
         const isActive = currentLanguage === lang;
@@ -94,21 +159,22 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                 </Text>
 
                 <Box style={styles.sectionContainer}>
-                    {/* Theme (Placeholder) */}
-                    <Pressable onPress={hapticLight}>
+                    {/* Theme Selector */}
+                    <Pressable onPress={() => {
+                        hapticLight();
+                        setShowThemeModal(true);
+                    }}>
                         <HStack p={Theme.spacing.md} justifyContent="space-between" alignItems="center">
                             <HStack space="md" alignItems="center">
                                 <Box style={[styles.iconBox, { backgroundColor: 'rgba(142, 68, 173, 0.1)' }]}>
                                     <Moon size={20} color="#9B59B6" />
                                 </Box>
                                 <VStack>
-                                    <Text color={Theme.colors.sacredWhite}>Dark Mode</Text>
-                                    <Text color={Theme.colors.dimGray} size="xs">System Default</Text>
+                                    <Text color={Theme.colors.sacredWhite}>Theme</Text>
+                                    <Text color={Theme.colors.dimGray} size="xs">{getThemeLabel(themeMode)}</Text>
                                 </VStack>
                             </HStack>
-                            <Box style={styles.comingSoonBadge}>
-                                <Text color={Theme.colors.midnightBlue} size="2xs" bold>SOON</Text>
-                            </Box>
+                            <ChevronRight size={20} color={Theme.colors.mistGray} />
                         </HStack>
                     </Pressable>
 
@@ -133,6 +199,45 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                     </Pressable>
                 </Box>
             </VStack>
+
+            {/* Theme Selection Modal */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={showThemeModal}
+                onRequestClose={() => setShowThemeModal(false)}
+            >
+                <Box sx={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' }}>
+                    <Box
+                        sx={{
+                            backgroundColor: Theme.colors.voidIndigo,
+                            borderTopLeftRadius: Theme.corners.generous,
+                            borderTopRightRadius: Theme.corners.generous,
+                            padding: Theme.spacing.xl,
+                            paddingBottom: 40,
+                        }}
+                    >
+                        <HStack justifyContent="space-between" alignItems="center" mb={Theme.spacing.xl}>
+                            <Heading color={Theme.colors.sacredWhite} size="lg">
+                                Choose Theme
+                            </Heading>
+                            <Pressable onPress={() => setShowThemeModal(false)} p={Theme.spacing.xs}>
+                                <X color={Theme.colors.mistGray} size={24} />
+                            </Pressable>
+                        </HStack>
+
+                        <VStack space="md">
+                            {renderThemeOption('light', Sun, 'Light Mode', 'Always use light colors')}
+                            {renderThemeOption('dark', Moon, 'Dark Mode', 'Always use dark colors')}
+                            {renderThemeOption('auto', Zap, 'Auto (Time-based)', 'Changes based on time of day')}
+                        </VStack>
+
+                        <Text color={Theme.colors.dimGray} size="xs" mt={Theme.spacing.lg} textAlign="center">
+                            Auto mode adjusts theme based on time of day (evening: 8 PM - 6 AM)
+                        </Text>
+                    </Box>
+                </Box>
+            </Modal>
         </VStack>
     );
 }

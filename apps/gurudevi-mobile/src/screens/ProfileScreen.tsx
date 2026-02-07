@@ -124,6 +124,41 @@ export default function ProfileScreen() {
         );
     }
 
+    async function handleDeleteAccount() {
+        hapticLight();
+        Alert.alert(
+            'Delete Account',
+            'This action cannot be undone. All your data will be permanently deleted. Are you sure?',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Delete Forever',
+                    style: 'destructive',
+                    onPress: async () => {
+                        setLoading(true);
+                        try {
+                            // Note: Account deletion should be handled server-side via API
+                            // For now, inform user that feature is not yet available
+                            Alert.alert(
+                                'Feature Not Available',
+                                'Account deletion will be available soon. Please contact support if you need immediate assistance.',
+                                [{ text: 'OK' }]
+                            );
+                        } catch (error) {
+                            console.error('Error deleting account:', error);
+                            hapticError();
+                        } finally {
+                            setLoading(false);
+                        }
+                    },
+                },
+            ]
+        );
+    }
+
     if (loading) {
         return (
             <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
@@ -179,26 +214,39 @@ export default function ProfileScreen() {
                         onLanguageChange={changeLanguage}
                     />
 
-                    {/* Logout Button */}
-                    <Button
-                        size="xl"
-                        variant="outline"
-                        action="negative"
-                        onPress={handleLogout}
-                        sx={{
-                            borderColor: Theme.colors.emberRed,
-                            borderWidth: 1,
-                            borderRadius: Theme.corners.comfortable,
-                            marginTop: Theme.spacing.md
-                        }}
-                    >
-                        <ButtonText color={Theme.colors.emberRed}>
-                            {t('profile.logout') || 'Log Out'}
-                        </ButtonText>
-                        <LogOut size={20} color={Theme.colors.emberRed} style={{ marginLeft: 8 }} />
-                    </Button>
-
                     <SupportSection />
+
+                    {/* Account Actions - Moved to end */}
+                    <VStack space="md" mt={Theme.spacing.xl}>
+                        {/* Logout Button */}
+                        <Button
+                            size="xl"
+                            variant="outline"
+                            action="negative"
+                            onPress={handleLogout}
+                            sx={{
+                                borderColor: Theme.colors.emberRed,
+                                borderWidth: 1,
+                                borderRadius: Theme.corners.comfortable,
+                            }}
+                        >
+                            <ButtonText color={Theme.colors.emberRed}>
+                                {t('profile.logout') || 'Log Out'}
+                            </ButtonText>
+                            <LogOut size={20} color={Theme.colors.emberRed} style={{ marginLeft: 8 }} />
+                        </Button>
+
+                        {/* Delete Account Button */}
+                        <Button
+                            size="lg"
+                            variant="link"
+                            onPress={handleDeleteAccount}
+                        >
+                            <ButtonText color={Theme.colors.dimGray} size="sm">
+                                Delete Account
+                            </ButtonText>
+                        </Button>
+                    </VStack>
                 </VStack>
             </ScrollView>
 

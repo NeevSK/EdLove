@@ -12,6 +12,9 @@ import { supabase } from './src/lib/supabase';
 import { Theme } from './src/constants/Theme';
 import { fontAssets } from './src/constants/Fonts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useStore } from './src/store/useStore';
+import { UserRole } from './src/types/User';
+import { SchoolType } from './src/constants/SriLankanSchools';
 
 // Import screens and navigation
 import AuthScreen from './src/screens/AuthScreen';
@@ -27,6 +30,39 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [currentTab, setCurrentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
+
+  // Extract user profile fetching logic to avoid duplication
+  const fetchAndSetUserProfile = async (userId: string) => {
+    try {
+      const { data: userProfile } = await supabase
+        .from('users')
+        .select('role, school_id')
+        .eq('id', userId)
+        .single();
+
+      if (userProfile) {
+        useStore.getState().setUserRole(userProfile.role as UserRole);
+
+        // Fetch school type if school_id exists, otherwise clear it
+        if (userProfile.school_id) {
+          const { data: schoolData } = await supabase
+            .from('schools')
+            .select('type')
+            .eq('id', userProfile.school_id)
+            .single();
+
+          if (schoolData) {
+            useStore.getState().setSchoolType(schoolData.type as SchoolType);
+          }
+        } else {
+          // Clear school type if user has no school
+          useStore.getState().setSchoolType(null);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
+  };
 
   // Load custom fonts
   useEffect(() => {
@@ -45,16 +81,32 @@ export default function App() {
 
   useEffect(() => {
     // Check initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
+      
+      // Fetch user role and school type when session is restored
+      if (session?.user) {
+        await fetchAndSetUserProfile(session.user.id);
+      }
+      
       setLoading(false);
     });
 
     // Listen for auth changes
     // This handles OAuth callback when user returns from Google/Apple authentication
     // via the deep link: gurudevi://auth/callback
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
+      
+      // Fetch user role when auth state changes
+      if (session?.user) {
+        await fetchAndSetUserProfile(session.user.id);
+      } else {
+        // Clear session-derived state when user signs out or session expires
+        const { setUserRole, setSchoolType } = useStore.getState();
+        setUserRole(null);
+        setSchoolType(null);
+      }
     });
 
     return () => subscription.unsubscribe();
