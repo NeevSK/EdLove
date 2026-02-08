@@ -41,7 +41,7 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
     }
 
     const isMotivation = type === 'motivation';
-    const title = isMotivation ? '✨ Daily Motivation' : '💡 Did You Know?';
+    const title = isMotivation ? 'Daily Motivation' : 'Did You Know?';
     const emoji = isMotivation ? '✨' : '💡';
 
     // Truncate content if not expanded

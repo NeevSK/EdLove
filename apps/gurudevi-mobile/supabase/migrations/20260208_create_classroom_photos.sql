@@ -31,8 +31,8 @@ CREATE POLICY principal_read_shared_photos ON classroom_photos
       SELECT 1 FROM users u
       WHERE u.id = auth.uid() 
       AND u.role IN ('principal', 'section_head', 'grade_head')
-      AND u.school = (
-        SELECT school FROM users WHERE id = classroom_photos.teacher_id
+      AND u.school_id = (
+        SELECT school_id FROM users WHERE id = classroom_photos.teacher_id
       )
     )
   );

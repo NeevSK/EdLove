@@ -20,7 +20,7 @@ import {
 } from '@gluestack-ui/themed';
 import { Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { Camera, X, Check, Edit2 } from 'lucide-react-native';
+import { Camera, X, Check } from 'lucide-react-native';
 import TextRecognition from '@react-native-ml-kit/text-recognition';
 import { Theme } from '../../constants/Theme';
 import { hapticLight, hapticSuccess, hapticError } from '../../utils/haptics';
@@ -38,7 +38,6 @@ interface OCRScannerProps {
 
 export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerProps) {
     const [imageUri, setImageUri] = useState<string | null>(null);
-    const [isProcessing, setIsProcessing] = useState(false);
     const [scannedText, setScannedText] = useState<string>('');
     const [parsedStudents, setParsedStudents] = useState<ScannedStudent[]>([]);
     const [step, setStep] = useState<'capture' | 'processing' | 'review'>('capture');

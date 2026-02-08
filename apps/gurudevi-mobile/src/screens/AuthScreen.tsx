@@ -119,14 +119,15 @@ export default function AuthScreen() {
         hapticLight();
 
         if (isSignUp) {
-            // Step 1: Create auth user
+            // Step 1: Create auth user with minimal metadata
+            // Note: full_name and role will be collected in onboarding
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email,
                 password,
                 options: {
                     data: {
-                        full_name: fullName,
-                        role: role,
+                        full_name: 'User', // Placeholder, will be updated in onboarding
+                        role: 'teacher',   // Default placeholder
                     }
                 }
             });
@@ -140,31 +141,10 @@ export default function AuthScreen() {
 
             if (authData.user) {
                 try {
-                    // Step 2: Create school based on role
-                    let schoolName;
-                    let schoolType;
-
-                    if (role === 'principal') {
-                        // Principal creates an official school
-                        schoolName = `${fullName}'s School`;
-                        schoolType = '1AB'; // Default to 1AB (can be changed later)
-                    } else if (role === 'section_head' || role === 'grade_head') {
-                        // TODO: Section/Grade heads should join existing schools via invite code
-                        // For now, create a personal workspace until invite system is implemented
-                        schoolName = `${fullName}'s Workspace`;
-                        schoolType = 'personal_workspace';
-                    } else if (inviteCode) {
-                        // Implement invite code joining logic here
-                        // For this demo, we'll just log it and proceed as personal
-                        console.log('Joining with code:', inviteCode);
-                        schoolName = `${fullName}'s Workspace (Joined)`;
-                        schoolType = 'personal_workspace';
-                    } else {
-                        // Teachers/students create a personal workspace
-                        // They can join a real school later via invite code
-                        schoolName = `${fullName}'s Workspace`;
-                        schoolType = 'personal_workspace';
-                    }
+                    // Step 2: Create a temporary personal workspace
+                    // Real school/role will be set during onboarding
+                    const schoolName = 'Personal Workspace';
+                    const schoolType = 'personal_workspace';
 
                     const { data: schoolData, error: schoolError } = await supabase
                         .from('schools')
@@ -280,7 +260,7 @@ export default function AuthScreen() {
         hapticLight();
 
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: 'gurudevi://auth/callback',
+            redirectTo: 'gurudevi://auth/callback', // Uses existing auth callback deep link
         });
 
         if (error) {

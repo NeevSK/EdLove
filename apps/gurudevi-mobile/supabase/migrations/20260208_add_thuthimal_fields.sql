@@ -18,8 +18,8 @@ COMMENT ON COLUMN users.is_thuthimal IS 'Whether Pro subscription is a Thuthimal
 COMMENT ON COLUMN users.thuthimal_gifter IS 'Name of person/organization who gifted the subscription (can be "Anonymous")';
 COMMENT ON COLUMN users.thuthimal_gifted_at IS 'When the Thuthimal gift was given';
 
--- Update existing Pro users (if any) to have the flag
-UPDATE users SET is_pro = true WHERE is_pro IS NULL;
+-- Set safe default for existing users (false = free tier)
+UPDATE users SET is_pro = false WHERE is_pro IS NULL;
 
 -- Example: Manually gift Thuthimal to a teacher (for Alpha testing)
 -- UPDATE users 

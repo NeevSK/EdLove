@@ -440,7 +440,7 @@ From Alpha launch:
 
 ## 🔗 Resources
 
-- **Full PRD:** `/apps/edlove-web/Docs/11_COMPLETE_PRD.md`
+- **Full PRD:** `/apps/gurudevi-mobile/GURUDEVI_COMPLETE_PRD.md`
 - **Alpha Requirements:** `/apps/gurudevi-mobile/ALPHA_REQUIREMENTS.md`
 - **App Analysis:** `/apps/gurudevi-mobile/COMPREHENSIVE_APP_ANALYSIS.md`
 - **Quick Reference:** `/apps/gurudevi-mobile/QUICK_REFERENCE.md`

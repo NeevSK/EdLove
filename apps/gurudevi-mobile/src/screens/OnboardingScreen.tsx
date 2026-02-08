@@ -29,15 +29,12 @@ import {
     SelectDragIndicator,
     SelectItem,
 } from '@gluestack-ui/themed';
-import { Dimensions } from 'react-native';
-import { ChevronRight, ChevronDown, X } from 'lucide-react-native';
+import { ChevronRight, ChevronDown } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../constants/Theme';
 import { UserRole } from '../types/User';
 import { supabase } from '../lib/supabase';
 import { hapticLight, hapticSuccess } from '../utils/haptics';
-
-const { width } = Dimensions.get('window');
 
 interface OnboardingScreenProps {
     onComplete: (name: string, role: UserRole) => void;
@@ -49,7 +46,6 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
     const [name, setName] = useState('');
     const [role, setRole] = useState<UserRole>('teacher');
     const toast = useToast();
-    const scrollViewRef = useRef<ScrollView>(null);
 
     const screens = [
         // Screen 0: Name (NOT skippable)
