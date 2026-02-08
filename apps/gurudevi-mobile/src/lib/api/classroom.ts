@@ -181,4 +181,29 @@ export const studentsAPI = {
             throw new APIError('Failed to delete student', error.code, error);
         }
     },
+
+    /**
+     * Bulk create multiple students at once
+     * Used for OCR scanning or manual bulk entry
+     */
+    async bulkCreate(
+        students: Array<Omit<Student, 'id' | 'created_at'>>,
+        classroomId?: string
+    ): Promise<Student[]> {
+        // Add classroom_id to all students if provided
+        const studentsToInsert = classroomId
+            ? students.map(s => ({ ...s, classroom_id: classroomId }))
+            : students;
+
+        const { data, error } = await supabase
+            .from('students')
+            .insert(studentsToInsert)
+            .select();
+
+        if (error) {
+            throw new APIError('Failed to bulk create students', error.code, error);
+        }
+
+        return data || [];
+    },
 };
