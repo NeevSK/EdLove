@@ -39,6 +39,7 @@ import {
 } from '../../components/self';
 import { supabase } from '../../lib/supabase';
 import GlobalHeader from '../../components/shared/GlobalHeader';
+import DailyContentCard from '../../components/self/DailyContentCard';
 
 // Progressive Architecture: Core features always visible, others in "More Tools"
 const CORE_FEATURES = [
@@ -164,6 +165,12 @@ export default function TeacherSelfView() {
         <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
             <GlobalHeader showGreeting={true} />
             <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}>
+                {/* Daily Content Section */}
+                <Box px="$6" mb="$4">
+                    <DailyContentCard type="motivation" />
+                    <DailyContentCard type="did_you_know" />
+                </Box>
+
                 {/* Sub-Feature Carousel */}
                 <Box sx={{ height: 100 }}>
                     <ScrollView
