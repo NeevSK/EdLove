@@ -84,19 +84,15 @@ export default function AuthScreen() {
 
     async function handleAuth() {
         // Validate inputs before proceeding
-        const validationRules: Record<string, (value: any) => any> = isSignUp
-            ? {
-                email: validators.email,
-                password: validators.password,
-                fullName: (value: string) => validators.nonEmpty(value, 'Full name'),
-            }
-            : {
-                email: validators.email,
-                password: (value: string) => validators.nonEmpty(value, 'Password'),
-            };
+        const validationRules: Record<string, (value: any) => any> = {
+            email: validators.email,
+            password: isSignUp 
+                ? validators.password 
+                : (value: string) => validators.nonEmpty(value, 'Password'),
+        };
 
         const { isValid, errors: validationErrors } = validateForm(
-            { email, password, fullName },
+            { email, password },
             validationRules
         );
 
@@ -274,6 +270,30 @@ export default function AuthScreen() {
         // The loading state will be cleared when auth state changes via onAuthStateChange in App.tsx
     }
 
+    async function handleForgotPassword() {
+        if (!email) {
+            showToast(t('auth.enterEmailFirst') || 'Please enter your email address first', 'error');
+            return;
+        }
+
+        setLoading(true);
+        hapticLight();
+
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: 'gurudevi://auth/reset-password',
+        });
+
+        if (error) {
+            hapticError();
+            showToast(t('auth.resetPasswordError') || 'Failed to send reset email', 'error');
+        } else {
+            hapticSuccess();
+            showToast(t('auth.resetPasswordSent') || 'Password reset email sent! Check your inbox.', 'success');
+        }
+
+        setLoading(false);
+    }
+
     function showToast(message: string, action: "error" | "success") {
         toast.show({
             placement: "bottom",
@@ -289,6 +309,63 @@ export default function AuthScreen() {
         <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo, padding: Theme.spacing.xl }}>
             <Center sx={{ flex: 1 }}>
                 <VStack space="lg" sx={{ width: '100%', maxWidth: 400 }}>
+                    {/* Login/Signup Toggle at Top */}
+                    <HStack 
+                        space="xs" 
+                        justifyContent="center" 
+                        mb={Theme.spacing.sm}
+                        sx={{
+                            backgroundColor: Theme.colors.deepIndigo,
+                            borderRadius: Theme.corners.full,
+                            padding: 4,
+                        }}
+                    >
+                        <Pressable 
+                            onPress={() => {
+                                hapticLight();
+                                setIsSignUp(false);
+                            }}
+                            style={{
+                                flex: 1,
+                                paddingVertical: 8,
+                                paddingHorizontal: 16,
+                                borderRadius: 20,
+                                backgroundColor: !isSignUp ? Theme.colors.sanctuarySaffron : 'transparent',
+                            }}
+                        >
+                            <Text 
+                                color={!isSignUp ? Theme.colors.white : Theme.colors.mistGray} 
+                                size="sm" 
+                                fontWeight="$semibold"
+                                textAlign="center"
+                            >
+                                {t('auth.login')}
+                            </Text>
+                        </Pressable>
+                        <Pressable 
+                            onPress={() => {
+                                hapticLight();
+                                setIsSignUp(true);
+                            }}
+                            style={{
+                                flex: 1,
+                                paddingVertical: 8,
+                                paddingHorizontal: 16,
+                                borderRadius: 20,
+                                backgroundColor: isSignUp ? Theme.colors.sanctuarySaffron : 'transparent',
+                            }}
+                        >
+                            <Text 
+                                color={isSignUp ? Theme.colors.white : Theme.colors.mistGray} 
+                                size="sm" 
+                                fontWeight="$semibold"
+                                textAlign="center"
+                            >
+                                {t('auth.signup')}
+                            </Text>
+                        </Pressable>
+                    </HStack>
+
                     {/* Heading */}
                     <VStack space="xs" mb={Theme.spacing.lg}>
                         <Heading color={Theme.colors.sanctuarySaffron} size="3xl" textAlign="center">
@@ -299,42 +376,7 @@ export default function AuthScreen() {
                         </Text>
                     </VStack>
 
-                    {/* Full Name (Sign Up Only) */}
-                    {isSignUp && (
-                        <VStack space="xs">
-                            <Text color={Theme.colors.sacredWhite} size="sm">
-                                {t('auth.fullName')}
-                            </Text>
-                            <Input
-                                variant="outline"
-                                size="lg"
-                                isInvalid={!!errors.fullName}
-                                sx={{
-                                    borderColor: errors.fullName ? Theme.colors.emberRed : Theme.colors.mistGray,
-                                    borderRadius: Theme.corners.comfortable,
-                                    backgroundColor: Theme.colors.deepIndigo,
-                                }}
-                            >
-                                <InputField
-                                    placeholder={t('auth.fullName')}
-                                    value={fullName}
-                                    onChangeText={(text) => {
-                                        setFullName(text);
-                                        if (errors.fullName) {
-                                            setErrors(prev => ({ ...prev, fullName: '' }));
-                                        }
-                                    }}
-                                    color={Theme.colors.sacredWhite}
-                                    placeholderTextColor={Theme.colors.dimGray}
-                                />
-                            </Input>
-                            {errors.fullName && (
-                                <Text color={Theme.colors.emberRed} size="xs">
-                                    {errors.fullName}
-                                </Text>
-                            )}
-                        </VStack>
-                    )}
+                    {/* Remove Full Name from signup - will be in onboarding */}
 
                     {/* Email */}
                     <VStack space="xs">
@@ -407,54 +449,20 @@ export default function AuthScreen() {
                                 {errors.password}
                             </Text>
                         )}
+                        
+                        {/* Forgot Password Link */}
+                        {!isSignUp && (
+                            <Pressable onPress={handleForgotPassword} alignSelf="flex-end" mt="$2">
+                                <Text color={Theme.colors.sanctuarySaffron} size="sm">
+                                    {t('auth.forgotPassword') || 'Forgot Password?'}
+                                </Text>
+                            </Pressable>
+                        )}
                     </VStack>
 
-                    {/* Role Selection (Sign Up Only) */}
+                    {/* Remove Role Selection - will be in onboarding */}
+                    {/* Invite Code (optional for signup) */}
                     {isSignUp && (
-                        <VStack space="md">
-                            <VStack space="xs">
-                                <Text color={Theme.colors.sacredWhite} size="sm">
-                                    {t('auth.role')}
-                                </Text>
-                                <Select
-                                    selectedValue={role}
-                                    onValueChange={(value) => setRole(value as UserRole)}
-                                >
-                                    <SelectTrigger
-                                        variant="outline"
-                                        size="lg"
-                                        sx={{
-                                            borderColor: Theme.colors.mistGray,
-                                            borderRadius: Theme.corners.comfortable,
-                                            backgroundColor: Theme.colors.deepIndigo,
-                                        }}
-                                    >
-                                        <SelectInput
-                                            placeholder={t('auth.role')}
-                                            color={Theme.colors.sacredWhite}
-                                        />
-                                        <SelectIcon mr="$3" as={ChevronDown} color={Theme.colors.mistGray} />
-                                    </SelectTrigger>
-                                    <SelectPortal>
-                                        <SelectBackdrop />
-                                        <SelectContent>
-                                            <SelectDragIndicatorWrapper>
-                                                <SelectDragIndicator />
-                                            </SelectDragIndicatorWrapper>
-                                            <SelectItem label={t('auth.principal')} value="principal" />
-                                            <SelectItem label={t('auth.sectionHead') || 'Section Head'} value="section_head" />
-                                            <SelectItem label={t('auth.gradeHead') || 'Grade Head'} value="grade_head" />
-                                            <SelectItem label={t('auth.teacher')} value="teacher" />
-                                            <SelectItem label={t('auth.student')} value="student" />
-                                            {/* Hidden/Dev option could be added here, but explicit is fine for now */}
-                                            <SelectItem label="Founder/Developer" value="developer" />
-                                        </SelectContent>
-                                    </SelectPortal>
-                                </Select>
-                            </VStack>
-
-                            {/* Invite Code Input */}
-                            <VStack space="xs">
                                 <Text color={Theme.colors.sacredWhite} size="sm">
                                     {t('auth.inviteCode') || 'Invite Code (Optional)'}
                                 </Text>
@@ -547,7 +555,8 @@ export default function AuthScreen() {
                             </HStack>
                         </Button>
 
-                        {/* Apple Sign In */}
+                        {/* Apple Sign In - Commented out for Alpha */}
+                        {/* 
                         <Button
                             size="lg"
                             onPress={() => handleOAuthSignIn('apple')}
@@ -570,22 +579,10 @@ export default function AuthScreen() {
                                 </ButtonText>
                             </HStack>
                         </Button>
+                        */}
                     </VStack>
 
-                    {/* Toggle Sign Up / Login */}
-                    <HStack space="xs" justifyContent="center" mt={Theme.spacing.md}>
-                        <Text color={Theme.colors.mistGray} size="sm">
-                            {isSignUp ? t('auth.alreadyHaveAccount') : t('auth.newToGurudevi')}
-                        </Text>
-                        <Pressable onPress={() => {
-                            hapticLight();
-                            setIsSignUp(!isSignUp);
-                        }}>
-                            <Text color={Theme.colors.sanctuarySaffron} size="sm" fontWeight="$semibold">
-                                {isSignUp ? t('auth.login') : t('auth.createAccount')}
-                            </Text>
-                        </Pressable>
-                    </HStack>
+                    {/* Bottom toggle removed - now at top */}
                 </VStack>
             </Center>
 
