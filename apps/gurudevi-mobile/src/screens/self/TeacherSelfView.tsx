@@ -40,6 +40,7 @@ import {
 import { supabase } from '../../lib/supabase';
 import GlobalHeader from '../../components/shared/GlobalHeader';
 import DailyContentCard from '../../components/self/DailyContentCard';
+import ThuthimalBadge from '../../components/profile/ThuthimalBadge';
 
 // Progressive Architecture: Core features always visible, others in "More Tools"
 const CORE_FEATURES = [
@@ -63,13 +64,25 @@ export default function TeacherSelfView() {
     const [activeFeature, setActiveFeature] = useState('mood');
     const [userId, setUserId] = useState<string | null>(null);
     const [showMoreTools, setShowMoreTools] = useState(false);
+    const [userProfile, setUserProfile] = useState<any>(null);
 
-    // Get current user on mount
+    // Get current user and profile on mount
     React.useEffect(() => {
         const fetchUser = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 setUserId(user.id);
+                
+                // Fetch full profile for Thuthimal status
+                const { data: profile } = await supabase
+                    .from('users')
+                    .select('is_thuthimal, thuthimal_gifter, thuthimal_gifted_at')
+                    .eq('id', user.id)
+                    .single();
+                
+                if (profile) {
+                    setUserProfile(profile);
+                }
             }
         };
         fetchUser();
@@ -165,6 +178,17 @@ export default function TeacherSelfView() {
         <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
             <GlobalHeader showGreeting={true} />
             <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}>
+                {/* Thuthimal Badge (Compact) */}
+                {userProfile?.is_thuthimal && (
+                    <Box px="$6" mb="$3" alignItems="flex-end">
+                        <ThuthimalBadge
+                            gifterName={userProfile.thuthimal_gifter}
+                            giftedAt={userProfile.thuthimal_gifted_at}
+                            compact={true}
+                        />
+                    </Box>
+                )}
+
                 {/* Daily Content Section */}
                 <Box px="$6" mb="$4">
                     <DailyContentCard type="motivation" />

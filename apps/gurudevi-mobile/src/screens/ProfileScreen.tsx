@@ -25,6 +25,7 @@ import EditProfileModal from '../components/profile/EditProfileModal';
 import GlobalHeader from '../components/shared/GlobalHeader';
 import UserStatsCard from '../components/profile/UserStatsCard';
 import SupportSection from '../components/profile/SupportSection';
+import ThuthimalBadge from '../components/profile/ThuthimalBadge';
 import { Modal, TouchableOpacity } from 'react-native';
 import { X, Phone, Globe, MapPin, QrCode } from 'lucide-react-native';
 
@@ -197,6 +198,17 @@ export default function ProfileScreen() {
                             onExpand={() => setIsFullScreen(true)}
                         />
                     </Center>
+
+                    {/* Thuthimal Badge (if gifted Pro subscription) */}
+                    {profile?.is_thuthimal && (
+                        <Box px={Theme.spacing.md}>
+                            <ThuthimalBadge
+                                gifterName={profile.thuthimal_gifter}
+                                giftedAt={profile.thuthimal_gifted_at}
+                                compact={false}
+                            />
+                        </Box>
+                    )}
 
                     {/* Stats & Gamification */}
                     <UserStatsCard
