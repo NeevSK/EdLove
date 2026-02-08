@@ -190,9 +190,9 @@ export const studentsAPI = {
         students: Array<Omit<Student, 'id' | 'created_at'>>,
         classroomId?: string
     ): Promise<Student[]> {
-        // Add classroom_id to all students if provided
+        // Add class_id to all students if provided
         const studentsToInsert = classroomId
-            ? students.map(s => ({ ...s, classroom_id: classroomId }))
+            ? students.map(s => ({ ...s, class_id: classroomId }))
             : students;
 
         const { data, error } = await supabase
