@@ -14,8 +14,8 @@ This update integrates a comprehensive Product Requirements Document (PRD) into 
 
 ## 📚 New Documentation Files
 
-### 1. **11_COMPLETE_PRD.md** (Main Document)
-**Location:** `/apps/edlove-web/Docs/11_COMPLETE_PRD.md`  
+### 1. **GURUDEVI_COMPLETE_PRD.md** (Main Document)
+**Location:** `/apps/gurudevi-mobile/GURUDEVI_COMPLETE_PRD.md`  
 **Size:** 850+ lines, comprehensive product specification
 
 **What it contains:**
