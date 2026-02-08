@@ -4,7 +4,8 @@
 **Phase 1 Target**: v1.0 (Fully realized at launch)  
 **URL**: `edlove.org/gurudevi`  
 **Accent Color**: Ember Orange `#E07A5F`  
-**Last Updated**: February 3, 2026
+**Last Updated**: February 8, 2026  
+**See also**: 11_COMPLETE_PRD.md for comprehensive implementation details
 
 ---
 
@@ -20,20 +21,20 @@ When someone arrives here, they should feel: *"This isn't just another app. This
 
 ## WHAT GURUDEVI IS
 
-Gurudevi is a **mobile application** (currently in development) designed as an **Educational Ecology Support System** operating at the teacher and school level.
+Gurudevi is a **mobile application** (in active development) designed as an **Educational Ecology Support System** operating at the teacher and school level.
 
 The name means "Divine Teacher" — not because the app is divine, but because it honors the sacred nature of teaching as care work (see 01_PHILOSOPHY).
 
 ### Core Identity
 - **For**: Teachers and schools within the present Sri Lankan government schooling system
 - **Platform**: Mobile app (iOS + Android)
-- **Status**: In development
+- **Status**: In active development (Alpha approaching)
 - **Philosophy**: Operationalizes the edlove vision. Makes educational ecology thinking practical and usable for working teachers.
 
 ### What It Does (Educational Ecology Support)
 Gurudevi supports teachers in seeing and working with education as an **ecology** — a living system with interconnected parts — rather than as a set of isolated tasks.
 
-Key functions (to be expanded as app develops):
+Key functions:
 - **Ecological awareness**: Helps teachers see the system they're working within — the pressures, the enabling conditions, the connections
 - **Support system**: Provides teachers with tools, resources, and frameworks to navigate their reality with more clarity
 - **School-level tools**: Not just individual teacher support — tools that work at the school level, for collective change
@@ -42,7 +43,82 @@ Key functions (to be expanded as app develops):
 ### What Makes It Different From Other EdTech
 Most education apps tell teachers what to do. Gurudevi helps teachers **see more clearly** — the system they're in, the forces acting on them, and the space they actually have to make meaningful change.
 
-It is not a lesson planner. It is not a grading tool. It is an **ecology lens** for education.
+It is not just a lesson planner or grading tool. It is an **ecology lens** for education that includes:
+
+---
+
+## KEY INNOVATIONS
+
+### Thuthimal (තුතිමල්) — The Gratitude Economy
+
+**A unique feature that embeds gratitude into the platform's economic model.**
+
+**The Concept:**
+- Sinhala word meaning "Flower of Gratitude"
+- Anyone can gift Pro subscriptions to teachers as an act of honor
+- Past students, alumni associations, or grateful communities can support their teachers
+- Recognizes teaching as sacred work deserving reciprocal care across time
+
+**How It Works:**
+- When someone gifts a Pro subscription, the teacher receives a Thuthimal badge
+- Display: "Your Pro subscription is a gift of gratitude (තුතිමල්) from [name or anonymous]"
+- Creates a culture of honoring educators beyond transactional payments
+
+**Philosophy:**
+This is not just a payment model. It's a gratitude economy that:
+- Honors the long-term impact teachers have
+- Allows past students to give back
+- Makes visible the debt of care we owe educators
+- Transforms subscription economics into gift economics
+
+*See 11_COMPLETE_PRD.md Section 1.2 for full details*
+
+---
+
+### Five-Section Architecture
+
+**A stable, ecological structure that adapts to every user's role.**
+
+Gurudevi doesn't have scattered features. It has **five stable sections** (ecological zones) that remain constant, but their *meaning* adapts based on who you are:
+
+#### 1️⃣ **Self** — The Inner Ecology
+Your private space for reflection, mood tracking, journaling, personal growth. Nothing here is visible to others unless you explicitly share it.
+
+*Teacher sees*: Daily motivation, teaching reflections, energy forecasts, gratitude practice  
+*Student sees*: Goal tracking, mood logs, learning reflections  
+*Principal sees*: Leadership reflections, institutional awareness tracking
+
+#### 2️⃣ **Classroom** — The Immediate Operational Ecology
+Your closest sphere of responsibility. The meaning changes by role.
+
+*Teacher sees*: Their class (students, lessons, attendance, assignments)  
+*Student sees*: Their learning space (enrolled classes, assignments, grades)  
+*Principal sees*: Their school (all classes, teachers, school-wide patterns)
+
+The interface adapts. Same section name. Different scale.
+
+#### 3️⃣ **Community** — The Relational Ecology
+Peer connections, discussion spaces, shared challenges. Horizontal learning.
+
+*Everyone sees*: Groups they're part of, discussions, peer support
+
+#### 4️⃣ **Library** — The Knowledge Ecology
+Shared resources, teaching materials, research, community contributions.
+
+*Everyone sees*: Curated resources, browsable by subject/grade, teacher contributions
+
+#### 5️⃣ **Profile** — Identity & Boundaries
+Manage your role, preferences, settings. Where you define how you see the system.
+
+*Everyone sees*: Role selector, preferences, Thuthimal badge (if applicable), profile completion
+
+**Why This Matters:**
+- Consistent navigation (always 5 sections)
+- Role-sensitive behavior (each section adapts)
+- Progressive complexity (simple surface, depth available)
+- No overwhelming feature sprawl
+
+*See 11_COMPLETE_PRD.md Section 1.3 for complete architecture details*
 
 ---
 

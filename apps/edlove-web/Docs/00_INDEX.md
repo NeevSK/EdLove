@@ -59,6 +59,7 @@ When you need to remember why we're building this — read 01_PHILOSOPHY first.
 | 08_Domain_V.md | Sangha | The community layer | v0.1 Sketch |
 | 09_Domain_VI.md | Epistemic Core | The intellectual backbone | ✅ Active |
 | 10_ROADMAP.md | The Timeline | Phases, weeks, checklists, metrics | ✅ Active |
+| 11_COMPLETE_PRD.md | Complete PRD | Comprehensive Gurudevi product requirements & implementation guide | ✅ Active |
 
 ---
 
@@ -86,11 +87,15 @@ These 9 points are the **non-negotiables**. Everything else can change. These ca
 Feed it: **00_INDEX** + **02_DESIGN** + **03_TECH** + the specific **Domain doc** you're building.  
 That's it. Clean. Focused. No noise.
 
+### When building Gurudevi mobile app:
+Feed it: **00_INDEX** + **11_COMPLETE_PRD** + **03_TECH** + **06_Domain_III**.  
+The Complete PRD has all mobile app requirements, features, and implementation details.
+
 ### When writing content:
 Feed it: **00_INDEX** + **01_PHILOSOPHY** + **02_DESIGN** (voice section) + the specific **Domain doc**.
 
 ### When planning or deciding:
-Read: **01_PHILOSOPHY** first. Then **10_ROADMAP**. Then whatever domain is relevant.
+Read: **01_PHILOSOPHY** first. Then **10_ROADMAP** or **11_COMPLETE_PRD** (for Gurudevi). Then whatever domain is relevant.
 
 ### When something feels off:
 Check against **01_PHILOSOPHY**. The guiding questions live there. If something doesn't pass those questions, it doesn't belong.
