@@ -25,6 +25,7 @@ import { hapticLight } from '../../utils/haptics';
 import { ShadowAgentDrawer, EnergyForecast } from '../../components/self';
 import { supabase } from '../../lib/supabase';
 import GlobalHeader from '../../components/shared/GlobalHeader';
+import DailyContentCard from '../../components/self/DailyContentCard';
 
 // Principal-specific core features
 const PRINCIPAL_CORE_FEATURES = [
@@ -208,6 +209,12 @@ export default function PrincipalSelfView() {
         <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
             <GlobalHeader showGreeting={true} />
             <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}>
+                {/* Daily Content Section */}
+                <Box px="$6" mb="$4">
+                    <DailyContentCard type="motivation" />
+                    <DailyContentCard type="did_you_know" />
+                </Box>
+
                 {/* Feature Carousel */}
                 <Box sx={{ height: 100 }}>
                     <ScrollView

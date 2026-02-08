@@ -2,6 +2,8 @@
 
 The digital sanctuary for educational transformation.
 
+---
+
 ## 🌟 The Structure
 This monorepo houses the two lungs of the ecosystem:
 
@@ -10,12 +12,33 @@ This monorepo houses the two lungs of the ecosystem:
 - **Stack**: Astro, Svelte, Tailwind
 - **Purpose**: The public portal, design philosophy, and "What Could Be".
 - **Run**: `cd apps/edlove-web && pnpm dev`
+- **Docs**: See `apps/edlove-web/Docs/` for philosophy, design, and domain documentation
 
 ### 2. [Gurudevi Mobile](apps/gurudevi-mobile) (`apps/gurudevi-mobile`)
 > **"The Operational Engine"**
 - **Stack**: Expo SDK 54, React Native 0.81, Gluestack, Supabase
 - **Purpose**: The mobile app for teachers, students, and principals.
 - **Run**: `cd apps/gurudevi-mobile && pnpm start`
+- **Docs**: See `apps/gurudevi-mobile/` for complete mobile app documentation
+- **Status**: 73% Alpha-ready
+
+---
+
+## 📖 Documentation
+
+### EdLove (Umbrella Organization)
+- **[01_PHILOSOPHY.md](apps/edlove-web/Docs/01_PHILOSOPHY.md)** - "Education as Care Work" foundation
+- **[02_DESIGN.md](apps/edlove-web/Docs/02_DESIGN.md)** - Design system and aesthetics
+- **[06_Domain_III.md](apps/edlove-web/Docs/06_Domain_III.md)** - Gurudevi as a domain (high-level)
+- See `apps/edlove-web/Docs/` for complete constellation
+
+### Gurudevi Mobile App
+- **[GURUDEVI_PRD_SUMMARY.md](apps/gurudevi-mobile/GURUDEVI_PRD_SUMMARY.md)** - Start here! Quick overview
+- **[GURUDEVI_COMPLETE_PRD.md](apps/gurudevi-mobile/GURUDEVI_COMPLETE_PRD.md)** - Complete product specification
+- **[ALPHA_REQUIREMENTS.md](apps/gurudevi-mobile/ALPHA_REQUIREMENTS.md)** - Implementation checklist
+- **[GURUDEVI_NEXT_ACTIONS.md](apps/gurudevi-mobile/GURUDEVI_NEXT_ACTIONS.md)** - 2-week task list
+- **[COMPREHENSIVE_APP_ANALYSIS.md](apps/gurudevi-mobile/COMPREHENSIVE_APP_ANALYSIS.md)** - Technical architecture
+- See `apps/gurudevi-mobile/Docs v 3.0/` for detailed documentation
 
 ---
 
@@ -25,6 +48,12 @@ This monorepo houses the two lungs of the ecosystem:
    - Web: `pnpm --filter edlove-web dev`
    - Mobile: `pnpm --filter gurudevi-mobile start`
 
+---
+
 ## 📂 Archives
 - `apps/_archive-web`: Previous Next.js iteration
 - `apps/_archive-api`: Previous Fastify iteration
+
+---
+
+**"Education born from Love, built with Love."** 🙏

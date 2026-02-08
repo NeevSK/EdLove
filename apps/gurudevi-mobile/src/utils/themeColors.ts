@@ -100,3 +100,10 @@ export function getThemeColors(isDark: boolean): ThemeColors {
  *     );
  * }
  */
+
+// Export base colors for direct access
+export const themeColors = {
+    primary: baseColors.sanctuarySaffron,
+    secondary: baseColors.sageGreen,
+    tertiary: baseColors.midnightBlue,
+};

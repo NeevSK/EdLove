@@ -54,11 +54,13 @@ When you need to remember why we're building this — read 01_PHILOSOPHY first.
 | 03_TECH.md | The Build Guide | Stack, hosting, file structure, AI workflow | ✅ Active |
 | 04_Domain_I.md | Paradigm Cosmos | The widest exploration of education | ✅ Active |
 | 05_Domain_II.md | Sri Lanka | The local ground truth | ✅ Active |
-| 06_Domain_III.md | Gurudevi | The flagship tool portal | ✅ Active |
+| 06_Domain_III.md | Gurudevi | The flagship tool portal (high-level) | ✅ Active |
 | 07_Domain_IV.md | Resources | Coordination of education resources | v0.1 Sketch |
 | 08_Domain_V.md | Sangha | The community layer | v0.1 Sketch |
 | 09_Domain_VI.md | Epistemic Core | The intellectual backbone | ✅ Active |
 | 10_ROADMAP.md | The Timeline | Phases, weeks, checklists, metrics | ✅ Active |
+
+**Note**: Gurudevi mobile app detailed documentation is in `/apps/gurudevi-mobile/`
 
 ---
 
@@ -85,6 +87,13 @@ These 9 points are the **non-negotiables**. Everything else can change. These ca
 ### When building with Cursor AI:
 Feed it: **00_INDEX** + **02_DESIGN** + **03_TECH** + the specific **Domain doc** you're building.  
 That's it. Clean. Focused. No noise.
+
+### When building Gurudevi mobile app:
+See documentation in `/apps/gurudevi-mobile/`:
+- **GURUDEVI_PRD_SUMMARY.md** - Quick overview
+- **GURUDEVI_COMPLETE_PRD.md** - Full specification
+- **COMPREHENSIVE_APP_ANALYSIS.md** - Technical architecture
+- Also reference: **01_PHILOSOPHY** + **06_Domain_III** (for high-level context)
 
 ### When writing content:
 Feed it: **00_INDEX** + **01_PHILOSOPHY** + **02_DESIGN** (voice section) + the specific **Domain doc**.
