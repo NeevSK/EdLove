@@ -280,7 +280,7 @@ export default function AuthScreen() {
         hapticLight();
 
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: 'gurudevi://auth/reset-password',
+            redirectTo: 'gurudevi://auth/callback',
         });
 
         if (error) {
