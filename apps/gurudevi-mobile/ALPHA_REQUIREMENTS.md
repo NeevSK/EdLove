@@ -6,7 +6,7 @@
 **Distribution:** Invite-only, closed testing  
 **Target:** Principals → Teachers (max 3 invites per principal)
 
-**Full Documentation:** See `/apps/edlove-web/Docs/11_COMPLETE_PRD.md`
+**Full Documentation:** See `/apps/gurudevi-mobile/GURUDEVI_COMPLETE_PRD.md`
 
 ---
 
