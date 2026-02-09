@@ -25,10 +25,8 @@ function shouldUseDarkMode(): boolean {
 }
 
 export function useTheme(): UseThemeReturn {
-    const { themeMode, setThemeMode: setStoredThemeMode } = useStore(state => ({
-        themeMode: state.themeMode || 'light',
-        setThemeMode: state.setThemeMode
-    }));
+    const themeMode = useStore(state => state.themeMode || 'light');
+    const setStoredThemeMode = useStore(state => state.setThemeMode);
 
     const [isDark, setIsDark] = useState(false);
 
@@ -36,7 +34,7 @@ export function useTheme(): UseThemeReturn {
         // Calculate actual theme based on mode
         if (themeMode === 'auto') {
             setIsDark(shouldUseDarkMode());
-            
+
             // Update every minute when in auto mode to catch time changes
             const interval = setInterval(() => {
                 setIsDark(shouldUseDarkMode());

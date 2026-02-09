@@ -443,27 +443,27 @@ export default function AuthScreen() {
                     {/* Remove Role Selection - will be in onboarding */}
                     {/* Invite Code (optional for signup) */}
                     {isSignUp && (
-                                <Text color={Theme.colors.sacredWhite} size="sm">
-                                    {t('auth.inviteCode') || 'Invite Code (Optional)'}
-                                </Text>
-                                <Input
-                                    variant="outline"
-                                    size="lg"
-                                    sx={{
-                                        borderColor: Theme.colors.mistGray,
-                                        borderRadius: Theme.corners.comfortable,
-                                        backgroundColor: Theme.colors.deepIndigo,
-                                    }}
-                                >
-                                    <InputField
-                                        placeholder="Enter or Scan Code"
-                                        value={inviteCode}
-                                        onChangeText={setInviteCode}
-                                        color={Theme.colors.sacredWhite}
-                                        placeholderTextColor={Theme.colors.dimGray}
-                                    />
-                                </Input>
-                            </VStack>
+                        <VStack space="xs">
+                            <Text color={Theme.colors.sacredWhite} size="sm">
+                                {t('auth.inviteCode') || 'Invite Code (Optional)'}
+                            </Text>
+                            <Input
+                                variant="outline"
+                                size="lg"
+                                sx={{
+                                    borderColor: Theme.colors.mistGray,
+                                    borderRadius: Theme.corners.comfortable,
+                                    backgroundColor: Theme.colors.deepIndigo,
+                                }}
+                            >
+                                <InputField
+                                    placeholder="Enter or Scan Code"
+                                    value={inviteCode}
+                                    onChangeText={setInviteCode}
+                                    color={Theme.colors.sacredWhite}
+                                    placeholderTextColor={Theme.colors.dimGray}
+                                />
+                            </Input>
                         </VStack>
                     )}
 
