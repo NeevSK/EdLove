@@ -30,11 +30,13 @@ A school platform for Sri Lankan schools that embodies sanctuary aesthetics.
 - Principals have redefined role (supportive not punitive)
 
 **Product Reality**:
+- **NOT an LMS** in the corporate sense (it's an ecology)
 - NOT a meditation app
 - NOT a temple/spiritual app
 - NOT just a wellbeing tool
 
 **Sanctuary is the AESTHETIC, not the product category.**
+
 
 ---
 
@@ -256,7 +258,11 @@ When spiraling, check against this list. If you're considering these, you've dri
 
 **Why**: Teachers don't need gamification, they need tools and sanctuary. Gamification is exhausting, not energizing.
 
+**Thuthimal (The Alternative)**:
+We replace competitive gamification with a "Gratitude Economy". Subscriptions are gifted through තුතිමල් (flowers of gratitude) from those who have been impacted by the teacher's work. This honors the sacred bond of education rather than tracking user behavior.
+
 **Exception**: Gentle acknowledgment of growth (like tree growing) is acceptable, but never comparative or pressure-inducing.
+
 
 ---
 

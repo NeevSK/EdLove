@@ -173,7 +173,7 @@ Different content types need different visual languages:
 **The one color that appears in EVERY context.**
 
 ```css
---color-gold: #D4A574;
+--color-gold: #e7cb16ff;
 ```
 
 **Purpose:**

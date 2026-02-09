@@ -1,21 +1,13 @@
-/**
- * GRADING SYSTEM TYPE DEFINITIONS
- * 
- * Defines types for the Gurudevi dual grading system.
- * Supports both traditional marks (0-100) and GPA-based grading.
- */
-
 export interface StudentGrade {
   id: string;
   student_id: string;
   classroom_id: string;
-  assignment_id?: string; // Optional: Links grade to specific assignment
-  marks: number; // 0-100 (always stored)
-  grade?: 'A' | 'B' | 'C' | 'D' | 'E' | 'S' | 'F';
-  gpa?: number;
-  rank?: number;
+  assignment_id?: string;
+  marks: number;
+  grade: string;
+  gpa: number;
   feedback?: string;
-  graded_at: Date;
+  graded_at: string;
 }
 
 export interface ClassroomGradingSettings {

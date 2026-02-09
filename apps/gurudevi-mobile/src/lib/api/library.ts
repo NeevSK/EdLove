@@ -8,6 +8,11 @@ import {
   CreateResourceInput,
   CreateCollectionInput,
 } from '../../types/Community';
+import {
+  requireAuth,
+  requireClassroomAccess,
+  requireStudentAccess
+} from '../../utils/authorization';
 
 // ============================================================================
 // LIBRARY API - Resource Management for Educational Ecology
@@ -25,9 +30,9 @@ export const libraryAPI = {
     let query = supabase
       .from('library_resources')
       .select(`
-        *,
-        creator:users!library_resources_creator_id_fkey(full_name),
-        verified_by_user:users!library_resources_verified_by_fkey(full_name)
+  *,
+  creator: users!library_resources_creator_id_fkey(full_name),
+    verified_by_user: users!library_resources_verified_by_fkey(full_name)
       `);
 
     // Apply filters
@@ -48,7 +53,7 @@ export const libraryAPI = {
       query = query.overlaps('grades', filters.grades);
     }
     if (filters.search) {
-      query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
+      query = query.or(`title.ilike.% ${filters.search}%, description.ilike.% ${filters.search}% `);
     }
 
     // Sorting
@@ -90,9 +95,9 @@ export const libraryAPI = {
     const { data, error } = await supabase
       .from('library_resources')
       .select(`
-        *,
-        creator:users!library_resources_creator_id_fkey(full_name),
-        verified_by_user:users!library_resources_verified_by_fkey(full_name)
+  *,
+  creator: users!library_resources_creator_id_fkey(full_name),
+    verified_by_user: users!library_resources_verified_by_fkey(full_name)
       `)
       .eq('id', id)
       .single();
@@ -147,9 +152,9 @@ export const libraryAPI = {
         },
       ])
       .select(`
-        *,
-        creator:users!library_resources_creator_id_fkey(full_name)
-      `)
+      *,
+      creator: users!library_resources_creator_id_fkey(full_name)
+        `)
       .single();
 
     if (error) {
@@ -172,9 +177,9 @@ export const libraryAPI = {
       .eq('id', id)
       .select(`
         *,
-        creator:users!library_resources_creator_id_fkey(full_name),
-        verified_by_user:users!library_resources_verified_by_fkey(full_name)
-      `)
+        creator: users!library_resources_creator_id_fkey(full_name),
+          verified_by_user: users!library_resources_verified_by_fkey(full_name)
+            `)
       .single();
 
     if (error) {
@@ -358,10 +363,10 @@ export const libraryAPI = {
       })
       .eq('id', resourceId)
       .select(`
-        *,
-        creator:users!library_resources_creator_id_fkey(full_name),
-        verified_by_user:users!library_resources_verified_by_fkey(full_name)
-      `)
+            *,
+            creator: users!library_resources_creator_id_fkey(full_name),
+              verified_by_user: users!library_resources_verified_by_fkey(full_name)
+                `)
       .single();
 
     if (error) {
@@ -382,11 +387,11 @@ export const libraryAPI = {
     const { data, error } = await supabase
       .from('resource_engagements')
       .select(`
-        resource:library_resources!resource_engagements_resource_id_fkey(
+resource: library_resources!resource_engagements_resource_id_fkey(
           *,
-          creator:users!library_resources_creator_id_fkey(full_name)
-        )
-      `)
+  creator: users!library_resources_creator_id_fkey(full_name)
+)
+  `)
       .eq('user_id', userId)
       .eq('engagement_type', 'bookmark')
       .order('created_at', { ascending: false });
@@ -395,11 +400,18 @@ export const libraryAPI = {
       throw new APIError('Failed to fetch bookmarked resources', error.code, error);
     }
 
-    return (data || []).map(item => ({
-      ...item.resource,
-      creator_name: item.resource.creator?.full_name || 'Unknown',
-      has_bookmarked: true,
-    }));
+    return (data || [])
+      .map(item => {
+        const resource = Array.isArray(item.resource) ? item.resource[0] : item.resource;
+        if (!resource) return null;
+
+        return {
+          ...resource,
+          creator_name: resource.creator?.full_name || 'Unknown',
+          has_bookmarked: true,
+        } as LibraryResource;
+      })
+      .filter((r): r is LibraryResource => r !== null);
   },
 
   // ========================================================================
@@ -413,8 +425,8 @@ export const libraryAPI = {
     let query = supabase
       .from('resource_collections')
       .select(`
-        *,
-        creator:users!resource_collections_creator_id_fkey(full_name)
+  *,
+  creator: users!resource_collections_creator_id_fkey(full_name)
       `);
 
     if (filters.subject) query = query.eq('subject', filters.subject);
@@ -424,7 +436,7 @@ export const libraryAPI = {
       query = query.overlaps('grades', filters.grades);
     }
     if (filters.search) {
-      query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
+      query = query.or(`name.ilike.% ${filters.search}%, description.ilike.% ${filters.search}% `);
     }
 
     query = query.order('created_at', { ascending: false });
@@ -472,9 +484,9 @@ export const libraryAPI = {
     const { data, error } = await supabase
       .from('resource_collections')
       .select(`
-        *,
-        creator:users!resource_collections_creator_id_fkey(full_name)
-      `)
+  *,
+  creator: users!resource_collections_creator_id_fkey(full_name)
+    `)
       .eq('id', id)
       .single();
 
@@ -531,8 +543,8 @@ export const libraryAPI = {
         },
       ])
       .select(`
-        *,
-        creator:users!resource_collections_creator_id_fkey(full_name)
+    *,
+    creator: users!resource_collections_creator_id_fkey(full_name)
       `)
       .single();
 
@@ -624,9 +636,9 @@ export const libraryAPI = {
         },
       ])
       .select(`
-        *,
-        creator:users!resource_collections_creator_id_fkey(full_name)
-      `)
+  *,
+  creator: users!resource_collections_creator_id_fkey(full_name)
+    `)
       .single();
 
     if (error) {

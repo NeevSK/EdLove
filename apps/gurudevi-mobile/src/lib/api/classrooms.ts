@@ -6,6 +6,12 @@
 
 import { supabase } from '../supabase';
 import { APIError, Classroom } from './types';
+import {
+    requireTeacherAccess,
+    requireStudentAccess,
+    requireSchoolAccess,
+    requireClassroomAccess
+} from '../../utils/authorization';
 
 // Interface for the join result from classroom_students query
 interface ClassroomStudentJoin {
@@ -17,6 +23,7 @@ export const classroomsAPI = {
      * Get all classrooms for a teacher
      */
     async getByTeacher(teacherId: string): Promise<Classroom[]> {
+        await requireTeacherAccess(teacherId);
         const { data, error } = await supabase
             .from('classrooms')
             .select('*')
@@ -35,6 +42,7 @@ export const classroomsAPI = {
      * Fetches through the classroom_students linking table
      */
     async getByStudent(studentId: string): Promise<Classroom[]> {
+        await requireStudentAccess(studentId);
         const { data, error } = await supabase
             .from('classroom_students')
             .select(`
@@ -58,7 +66,10 @@ export const classroomsAPI = {
 
         // Extract the classroom objects from the join result with proper typing
         return (data || [])
-            .map((item: any) => item.classroom)
+            .map((item: any) => {
+                const classroom = Array.isArray(item.classroom) ? item.classroom[0] : item.classroom;
+                return classroom;
+            })
             .filter((classroom): classroom is Classroom => classroom !== null);
     },
 
@@ -67,6 +78,7 @@ export const classroomsAPI = {
      * Used by principals to see all classrooms
      */
     async getBySchool(schoolId: string): Promise<Classroom[]> {
+        await requireSchoolAccess(schoolId);
         const { data, error } = await supabase
             .from('classrooms')
             .select('*')
@@ -84,6 +96,7 @@ export const classroomsAPI = {
      * Get a single classroom by ID
      */
     async getById(id: string): Promise<Classroom> {
+        await requireClassroomAccess(id);
         const { data, error } = await supabase
             .from('classrooms')
             .select('*')

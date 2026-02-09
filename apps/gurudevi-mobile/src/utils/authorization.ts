@@ -21,11 +21,11 @@ import { APIError } from '../lib/api/types';
  */
 export async function requireAuth() {
     const { data: { session }, error } = await supabase.auth.getSession();
-    
+
     if (error || !session) {
         throw new APIError('Not authenticated', 'UNAUTHENTICATED');
     }
-    
+
     return session.user;
 }
 
@@ -37,11 +37,11 @@ export async function requireAuth() {
  */
 export async function requireTeacherAccess(teacherId: string) {
     const user = await requireAuth();
-    
+
     if (user.id !== teacherId) {
         throw new APIError('Unauthorized access to teacher data', 'FORBIDDEN');
     }
-    
+
     return user;
 }
 
@@ -58,26 +58,26 @@ export async function requireTeacherAccess(teacherId: string) {
  */
 export async function requireClassroomAccess(classroomId: string) {
     const user = await requireAuth();
-    
+
     // Get user role from metadata
     const userRole = user.user_metadata?.role || user.app_metadata?.role;
-    
+
     // Check if user is the teacher of this classroom
     const { data: classroom, error } = await supabase
         .from('classrooms')
         .select('teacher_id, school_id, section_id')
         .eq('id', classroomId)
         .single();
-    
+
     if (error || !classroom) {
         throw new APIError('Classroom not found', 'NOT_FOUND');
     }
-    
+
     // If user is the teacher, grant access
     if (classroom.teacher_id === user.id) {
         return user;
     }
-    
+
     // Principals have access to all classrooms in their school
     if (userRole === 'principal') {
         const userSchoolId = user.user_metadata?.school_id || user.app_metadata?.school_id;
@@ -85,7 +85,7 @@ export async function requireClassroomAccess(classroomId: string) {
             return user;
         }
     }
-    
+
     // Section heads have access to classrooms in their section
     if (userRole === 'section_head') {
         const userSectionId = user.user_metadata?.section_id || user.app_metadata?.section_id;
@@ -93,7 +93,7 @@ export async function requireClassroomAccess(classroomId: string) {
             return user;
         }
     }
-    
+
     // Check if user is a student in this classroom
     const { data: enrollment } = await supabase
         .from('classroom_students')
@@ -101,11 +101,11 @@ export async function requireClassroomAccess(classroomId: string) {
         .eq('classroom_id', classroomId)
         .eq('student_id', user.id)
         .single();
-    
+
     if (!enrollment) {
         throw new APIError('Unauthorized access to classroom', 'FORBIDDEN');
     }
-    
+
     return user;
 }
 
@@ -120,12 +120,12 @@ export async function requireClassroomAccess(classroomId: string) {
  */
 export async function requireStudentAccess(studentId: string) {
     const user = await requireAuth();
-    
+
     // Students can only access their own data
     if (user.id === studentId) {
         return user;
     }
-    
+
     // Check if user is a teacher with access to this student using a single JOIN query
     // Authorization rule: Teachers can access students enrolled in their classrooms
     const { data: sharedClassroom } = await supabase
@@ -138,10 +138,36 @@ export async function requireStudentAccess(studentId: string) {
         .eq('classrooms.teacher_id', user.id)
         .limit(1)
         .single();
-    
+
     if (!sharedClassroom) {
         throw new APIError('Unauthorized access to student data', 'FORBIDDEN');
     }
-    
+
     return user;
 }
+
+/**
+ * Verifies user can access the specified school's data
+ * Principals can access their own school
+ * 
+ * @param schoolId - School ID to verify access
+ * @throws APIError if not authenticated or unauthorized
+ * @returns Current user
+ */
+export async function requireSchoolAccess(schoolId: string) {
+    const user = await requireAuth();
+    const userRole = user.user_metadata?.role || user.app_metadata?.role;
+    const userSchoolId = user.user_metadata?.school_id || user.app_metadata?.school_id;
+
+    if (userRole === 'principal' && userSchoolId === schoolId) {
+        return user;
+    }
+
+    // Teachers can also access their own school data (e.g. for school-wide announcements)
+    if (userRole === 'teacher' && userSchoolId === schoolId) {
+        return user;
+    }
+
+    throw new APIError('Unauthorized access to school data', 'FORBIDDEN');
+}
+

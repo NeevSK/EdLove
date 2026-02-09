@@ -1,5 +1,6 @@
 import { supabase } from '../supabase';
 import { APIError, Task, TeacherNote } from './types';
+import { requireTeacherAccess } from '../../utils/authorization';
 
 // ============================================================================
 // TASKS API
@@ -10,6 +11,7 @@ export const tasksAPI = {
      * Get all tasks for a teacher
      */
     async getAll(teacherId: string): Promise<Task[]> {
+        await requireTeacherAccess(teacherId);
         const { data, error } = await supabase
             .from('tasks')
             .select('*')
@@ -27,6 +29,7 @@ export const tasksAPI = {
      * Create a new task
      */
     async create(title: string, teacherId: string, description?: string): Promise<Task> {
+        await requireTeacherAccess(teacherId);
         const { data, error } = await supabase
             .from('tasks')
             .insert([
@@ -65,6 +68,17 @@ export const tasksAPI = {
      * Update task details
      */
     async update(id: string, updates: Partial<Task>): Promise<Task> {
+        // First verify owner
+        const { data: task } = await supabase
+            .from('tasks')
+            .select('teacher_id')
+            .eq('id', id)
+            .single();
+
+        if (task) {
+            await requireTeacherAccess(task.teacher_id);
+        }
+
         const { data, error } = await supabase
             .from('tasks')
             .update(updates)
@@ -103,6 +117,7 @@ export const notesAPI = {
      * Get all notes for a teacher
      */
     async getAll(teacherId: string, type?: TeacherNote['type']): Promise<TeacherNote[]> {
+        await requireTeacherAccess(teacherId);
         let query = supabase
             .from('teacher_notes')
             .select('*')
@@ -130,6 +145,7 @@ export const notesAPI = {
         content: string,
         type: TeacherNote['type'] = 'note'
     ): Promise<TeacherNote> {
+        await requireTeacherAccess(teacherId);
         const { data, error } = await supabase
             .from('teacher_notes')
             .insert([

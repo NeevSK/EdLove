@@ -1,6 +1,6 @@
 import { supabase } from '../supabase';
 import { APIError, Lesson, Student } from './types';
-import { requireTeacherAccess } from '../../utils/authorization';
+import { requireTeacherAccess, requireClassroomAccess, requireAuth } from '../../utils/authorization';
 
 // ============================================================================
 // LESSONS API
@@ -11,6 +11,7 @@ export const lessonsAPI = {
      * Get all lessons for a classroom
      */
     async getAll(classroomId: string): Promise<Lesson[]> {
+        await requireClassroomAccess(classroomId);
         const { data, error } = await supabase
             .from('lessons')
             .select('*')
@@ -25,6 +26,7 @@ export const lessonsAPI = {
     },
 
     async getByDate(classroomId: string, date: string): Promise<Lesson[]> {
+        await requireClassroomAccess(classroomId);
         const { data, error } = await supabase
             .from('lessons')
             .select('*')
@@ -43,6 +45,7 @@ export const lessonsAPI = {
      * Create a new lesson
      */
     async create(lesson: Omit<Lesson, 'id' | 'created_at' | 'updated_at'>): Promise<Lesson> {
+        await requireClassroomAccess(lesson.classroom_id);
         const { data, error } = await supabase
             .from('lessons')
             .insert([lesson])
@@ -60,6 +63,17 @@ export const lessonsAPI = {
      * Update a lesson
      */
     async update(id: string, updates: Partial<Lesson>): Promise<Lesson> {
+        // First get lesson to find classroom_id
+        const { data: lesson } = await supabase
+            .from('lessons')
+            .select('classroom_id')
+            .eq('id', id)
+            .single();
+
+        if (lesson) {
+            await requireClassroomAccess(lesson.classroom_id);
+        }
+
         const { data, error } = await supabase
             .from('lessons')
             .update(updates)
@@ -98,6 +112,14 @@ export const studentsAPI = {
      * Get all students (optionally by class)
      */
     async getAll(classId?: string): Promise<Student[]> {
+        if (classId) {
+            await requireClassroomAccess(classId);
+        } else {
+            // If no classId, user must be authenticated. 
+            // RLS will handle the rest, but we should at least check session.
+            await requireAuth();
+        }
+
         let query = supabase
             .from('students')
             .select('*')

@@ -1,5 +1,6 @@
 import { supabase } from '../supabase';
 import { APIError } from './types';
+import { requireAuth } from '../../utils/authorization';
 
 // ============================================================================
 // SELF API (Wellbeing & Reflection)
@@ -26,6 +27,11 @@ export const selfAPI = {
      * Log a mood entry for the current user
      */
     async logMood(userId: string, score: number, note?: string): Promise<MoodLog> {
+        const user = await requireAuth();
+        if (user.id !== userId) {
+            throw new APIError('Unauthorized: Cannot log mood for another user', 'FORBIDDEN');
+        }
+
         // Validate mood score (1-5)
         if (score < 1 || score > 5) {
             throw new APIError('Mood score must be between 1 and 5', 'INVALID_SCORE');
@@ -43,6 +49,7 @@ export const selfAPI = {
             .select()
             .single();
 
+
         if (error) {
             throw new APIError('Failed to log mood', error.code, error);
         }
@@ -54,6 +61,11 @@ export const selfAPI = {
      * Get mood history for a user
      */
     async getMoodHistory(userId: string, limit: number = 30): Promise<MoodLog[]> {
+        const user = await requireAuth();
+        if (user.id !== userId) {
+            throw new APIError('Unauthorized: Cannot view another user\'s mood history', 'FORBIDDEN');
+        }
+
         const { data, error } = await supabase
             .from('mood_logs')
             .select('*')
@@ -73,6 +85,11 @@ export const selfAPI = {
      * Content is stored with only a preview for privacy
      */
     async burnJournal(userId: string, content: string): Promise<FireJournalEntry> {
+        const user = await requireAuth();
+        if (user.id !== userId) {
+            throw new APIError('Unauthorized: Cannot burn journal for another user', 'FORBIDDEN');
+        }
+
         // Only store preview (first 50 characters) for privacy
         const contentPreview = content.substring(0, 50);
 
@@ -99,6 +116,11 @@ export const selfAPI = {
      * Get burned journal history (for statistics, not content)
      */
     async getBurnedHistory(userId: string, limit: number = 10): Promise<FireJournalEntry[]> {
+        const user = await requireAuth();
+        if (user.id !== userId) {
+            throw new APIError('Unauthorized: Cannot view another user\'s journal history', 'FORBIDDEN');
+        }
+
         const { data, error } = await supabase
             .from('fire_journal')
             .select('id, user_id, content_preview, is_burned, created_at')
@@ -106,6 +128,7 @@ export const selfAPI = {
             .eq('is_burned', true)
             .order('created_at', { ascending: false })
             .limit(limit);
+
 
         if (error) {
             throw new APIError('Failed to fetch burned history', error.code, error);
@@ -118,6 +141,11 @@ export const selfAPI = {
      * Get today's mood (if logged)
      */
     async getTodayMood(userId: string): Promise<MoodLog | null> {
+        const user = await requireAuth();
+        if (user.id !== userId) {
+            throw new APIError('Unauthorized: Cannot view another user\'s today mood', 'FORBIDDEN');
+        }
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 

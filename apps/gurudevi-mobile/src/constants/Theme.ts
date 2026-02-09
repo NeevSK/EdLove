@@ -159,6 +159,9 @@ export const typography = {
 // ============================================================================
 
 export const spacing = {
+    small: 8,    // Alias for sm
+    medium: 16,   // Alias for md
+    large: 24,    // Alias for lg
     xs: 4,       // Tight spacing (icon padding, small gaps)
     sm: 8,       // Small spacing (between related items)
     md: 16,      // Standard spacing (DEFAULT - most common)
@@ -168,16 +171,21 @@ export const spacing = {
     '3xl': 64,   // Massive spacing (hero sections)
 };
 
+
 // ============================================================================
 // CORNER RADIUS - Organic, Never Sharp
 // ============================================================================
 
 export const corners = {
+    small: 8,          // Alias for tight
+    medium: 16,        // Alias for comfortable
+    large: 24,         // Alias for generous
     tight: 8,          // Small elements (chips, badges)
     comfortable: 16,   // Buttons, inputs (DEFAULT)
     generous: 24,      // Cards, modals
     full: 9999,        // Circular (FAB, avatars) - use large number for full rounding
 };
+
 
 // ============================================================================
 // SHADOWS - Soft & Sanctuary
