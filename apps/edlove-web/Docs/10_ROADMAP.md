@@ -10,7 +10,7 @@
 
 ```
 PHASE 1: THE FOUNDATION (Weeks 1–6)
-├── Build and launch the complete site
+├── Build and launch EdLove.org (the main house)
 ├── Domains I, II, III, VI at v1.0
 ├── Domains IV, V at v0.1
 └── Go live at edlove.org
@@ -21,19 +21,22 @@ PHASE 2: THE COMMUNITY (Weeks 7–12)
 ├── Content library expands
 └── First community events
 
-PHASE 3: THE ECOSYSTEM (Months 4–6)
-├── Gurudevi app launches (integrates with edlove)
-├── Domain II research deepens (community-contributed)
-├── Domain IV evolves toward automation
-└── All six domains fully alive
+PHASE 3: THE ECOSYSTEM EXPANSION (Months 4–6)
+├── Gurudevi app launches (mobile)
+├── Domain II research deepens
+├── Possible: Begin gurudevi.edlove.org (web companion)
+├── Possible: Begin intuitui.edlove.org (professional site)
+└── All six domains of EdLove fully alive
 
 PHASE 4: THE GROWTH (Months 7–12)
-├── Scale content (100+ library pieces)
+├── Scale EdLove content (100+ library pieces)
 ├── Expand paradigm cosmos (15+ paradigms)
-├── Local hubs form
+├── Subdomain sites mature if built
 ├── Partnerships and grants
 └── Year 1 review
 ```
+
+**Note**: This roadmap focuses on **EdLove.org** (Phase 1 priority). Subdomains (gurudevi.edlove.org, intuitui.edlove.org, neevsk.edlove.org) are acknowledged as part of the ecosystem but documented separately when building begins.
 
 ---
 

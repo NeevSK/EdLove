@@ -95,6 +95,76 @@ If we add Plausible later: $10.25/month. Still nothing.
 
 ---
 
+## SUBDOMAIN STRATEGY
+
+### The Ecosystem Architecture
+
+EdLove.org is the main site (this constellation documents it).
+
+Three additional sites exist as **subdomains** temporarily:
+
+| Subdomain | Purpose | Future Home |
+|-----------|---------|-------------|
+| gurudevi.edlove.org | Teacher sanctuary web companion | gurudevi.lk (when funded) |
+| intuitui.edlove.org | Systems intelligence studio | intuituilabs.lk (when funded) |
+| neevsk.edlove.org | Personal portfolio/writing | neevsk.lk or stays subdomain |
+
+### Why Subdomains (Temporarily)
+
+**Economic reality:**
+- Separate `.lk` domains cost money (~$15-30/year each)
+- Current priority: build EdLove.org first
+- Subdomains are free and professional
+
+**Technical benefits:**
+- Easy to set up (just DNS configuration)
+- Can deploy independently (separate Astro projects)
+- Professional URLs (gurudevi.edlove.org looks legitimate)
+- Easy migration later (301 redirects preserve SEO)
+
+### Hosting Configuration
+
+**Monorepo structure:**
+```
+/apps
+  /edlove-web → deploys to edlove.org
+  /gurudevi-web → deploys to gurudevi.edlove.org  
+  /intuitui-web → deploys to intuitui.edlove.org
+  /neevsk-web → deploys to neevsk.edlove.org
+```
+
+**Deployment (Cloudflare Pages or Vercel):**
+- Each subdomain is a separate deploy
+- Point each to correct `/apps/[name]` directory
+- Configure custom domains in hosting dashboard
+
+**DNS Configuration:**
+```
+A record: edlove.org → Hosting IP
+CNAME: gurudevi.edlove.org → hosting-provider.com
+CNAME: intuitui.edlove.org → hosting-provider.com
+CNAME: neevsk.edlove.org → hosting-provider.com
+```
+
+### Migration Path (Future)
+
+When funding allows:
+1. Register new domain (e.g., gurudevi.lk)
+2. Add to hosting as additional domain
+3. Set up 301 redirects (gurudevi.edlove.org → gurudevi.lk)
+4. Keep redirects active forever (SEO, bookmarks)
+
+### Documentation Strategy
+
+**EdLove.org = this constellation** (complete, ready to build)
+
+**Subdomains = documented separately when building begins:**
+- Full strategy docs created only when ready to build
+- For now: See `11_SUBDOMAIN_NOTES.md` for brief context
+- Keeps focus on Phase 1 priority (EdLove.org)
+
+---
+
 ## FILE STRUCTURE
 
 This is the exact project layout. Every file has a purpose. Nothing extra.

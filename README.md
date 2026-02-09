@@ -27,6 +27,7 @@ This monorepo houses the two lungs of the ecosystem:
 ## 📖 Documentation
 
 ### EdLove (Umbrella Organization)
+- **[00_INDEX.md](apps/edlove-web/Docs/00_INDEX.md)** - **Start Here.** The Master Map & Constellation.
 - **[01_PHILOSOPHY.md](apps/edlove-web/Docs/01_PHILOSOPHY.md)** - "Education as Care Work" foundation
 - **[02_DESIGN.md](apps/edlove-web/Docs/02_DESIGN.md)** - Design system and aesthetics
 - **[06_Domain_III.md](apps/edlove-web/Docs/06_Domain_III.md)** - Gurudevi as a domain (high-level)

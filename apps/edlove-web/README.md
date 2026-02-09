@@ -1,46 +1,74 @@
-# Astro Starter Kit: Basics
+# EDLOVE.ORG
 
-```sh
-pnpm create astro@latest -- --template basics
-```
+> **"The digital sanctuary for educational transformation."**
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+This is the codebase for **edlove.org** — the public face of the EdLove ecosystem. It is built to be not just a website, but an experience that embodies "Education as Care Work."
 
-## 🚀 Project Structure
+---
 
-Inside of your Astro project, you'll see the following folders and files:
+## 🌟 The Philosophy
+
+This project is driven by a deep philosophical commitment. Before contributing, please read the core documents:
+
+- **[01_PHILOSOPHY.md](Docs/01_PHILOSOPHY.md)**: The "Why". Education as care work, topological invariants.
+- **[02_DESIGN.md](Docs/02_DESIGN.md)**: The "How". Cinematic realism, organic protocols, the "Malick effect".
+- **[00_INDEX.md](Docs/00_INDEX.md)**: The Map. Start here to navigate the entire documentation constellation.
+
+---
+
+## 🗺️ Documentation Constellation
+
+All documentation for this project lives in the `Docs/` directory.
+
+| Document | Purpose |
+|----------|---------|
+| **[00_INDEX.md](Docs/00_INDEX.md)** | **Start Here.** The master map of all docs. |
+| **[01_PHILOSOPHY.md](Docs/01_PHILOSOPHY.md)** | Core principles and "topological invariants". |
+| **[02_DESIGN.md](Docs/02_DESIGN.md)** | Design system, voice, and aesthetic guidelines. |
+| **[03_TECH.md](Docs/03_TECH.md)** | Technical stack, architecture, and build guide. |
+| **[04_Domain_I.md](Docs/04_Domain_I.md)** | The "Paradigm Cosmos" domain. |
+| **[05_Domain_II.md](Docs/05_Domain_II.md)** | The "Sri Lanka" domain. |
+| **[06_Domain_III.md](Docs/06_Domain_III.md)** | The "Gurudevi" domain. |
+| **[10_ROADMAP.md](Docs/10_ROADMAP.md)** | Timeline and execution plan. |
+
+---
+
+## 🛠️ Development
+
+This project is built with **Astro**, **Svelte**, and **Tailwind CSS**.
+
+### Prerequisites
+
+- Node.js (Latest LTS recommended)
+- pnpm (Preferred package manager)
+
+### Commands
+
+Run these from the `apps/edlove-web` directory:
+
+| Command | Action |
+|---------|--------|
+| `pnpm install` | Install dependencies |
+| `pnpm dev` | Start local development server at `localhost:4321` |
+| `pnpm build` | Build for production |
+| `pnpm preview` | Preview the production build locally |
+
+---
+
+## 🏗️ Project Structure
 
 ```text
 /
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
+├── public/           # Static assets
+├── src/
+│   ├── assets/       # Processed assets (images, fonts)
+│   ├── components/   # Reusable UI components (Astro/Svelte)
+│   ├── layouts/      # Page layouts
+│   └── pages/        # File-based routing
+├── Docs/             # 📖 The Constellation (Documentation)
 └── package.json
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+---
 
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+*"Education born from Love, built with Love."*

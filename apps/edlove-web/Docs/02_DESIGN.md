@@ -1,375 +1,690 @@
 # EDLOVE.ORG — 02 DESIGN
-## The Aesthetic Law | How It Looks, Feels, Speaks
+## The Contextual Design System | How It Looks, Feels, Speaks
 
 **Role in Constellation**: The aesthetic constitution. Feed this to Cursor whenever you build anything visual.  
-**Last Updated**: February 3, 2026
+**Last Updated**: February 7, 2026
 
 ---
 
 ## THE DESIGN PHILOSOPHY
 
-Edlove is not a website that happens to be beautiful. It is a **beautiful experience** that happens to be a website.
+*"Form is message. Design is not decoration—it is the teaching itself, made visible."*
 
-Every visual choice is a philosophical statement. The colors say something. The spacing says something. The way text moves on screen says something. The way silence (whitespace) is used says something.
+Edlove.org is not a website that happens to be beautiful. It is a **sanctuary built through design**. Every visual choice is a philosophical statement.
 
-**The signature tension**: Professional yet soulful and alive. This is not a contradiction — it is the defining quality. Like a great film: precise AND emotional. Structured AND breathing.
+### The Core Principle: Contextual, Not Monoculture
 
-### The Cinematic References (The Protocol)
+**We do not impose one aesthetic everywhere.**
 
-These are not suggestions. They are the aesthetic DNA:
+Different content types need different visual languages:
+- The **Cosmos** (paradigm mapping) needs cosmic, ethereal, spacious
+- The **Diagnostics** (Sri Lanka system) needs stark, clear, data-driven
+- The **Library** (epistemic core) needs scholarly, warm, readable
+- The **Community** (Sangha) needs intimate, communal, inviting
 
-- **Tree of Life (Terrence Malick)**: Organic, cosmic, intimate. Nature and infinity coexisting. Light filtering through leaves. The feeling of being small and sacred simultaneously.
-- **Upstream Color**: Dreamlike but grounded. Texture and sensation over plot. The feeling of something deeply felt but hard to articulate.
-- **Columbus (Paolo Sorrentino)**: Architectural precision. Careful framing. Modernist structure that holds emotion without crushing it. The grid that sets the soul free.
-- **Duke of Burgundy / Taste of Things**: Tactile, sensory, intimate. You can almost feel the texture of the page. Warmth without sentimentality.
+**This is permaculture, not monoculture:**
+- Diversity within coherence (many forms, one foundation)
+- Context-responsive (each space gets what it needs)
+- Resilient and generative (not fragile and extractive)
 
-**What this means in practice**: The interface should feel like a well-made film, not a SaaS dashboard. Quiet. Considered. Every frame intentional.
+### The Ontological Ground
 
----
+**Separation creates binaries:**
+- Form vs. Content
+- Medium vs. Message
+- Structure vs. Agency
 
-## COLOR PALETTE
+**Integration heals splits:**
+- Form ⟺ Content (mutually constitutive, inseparable)
+- Every page: form aligned with content
+- We approach wholeness through design
 
-### Primary (The Core)
-These three colors define edlove. Everything else serves them.
+**We cannot return to the womb (the Real is lost).**  
+**But we can build sanctuaries where integration is possible.**  
+**Where paradigms coexist. Where beauty serves. Where breathing happens.**
 
-| Name | Hex | RGB | Use |
-|------|-----|-----|-----|
-| Deep Indigo | `#2D3561` | 45, 53, 97 | Wisdom, depth. Primary text on light. Headers. Navigation. |
-| Warm Gold | `#D4A574` | 212, 165, 116 | Love, light. Accents, highlights, CTAs, active states. |
-| Soft White | `#F5F1E8` | 245, 241, 232 | Space, breath. Primary background. Not pure white — warm. |
-
-### Secondary (The Environment)
-Used for supporting elements, category colors, subtle differentiation.
-
-| Name | Hex | Use |
-|------|-----|-----|
-| Forest Green | `#4A6357` | Grounding. Nature themes. Indigenous content. Success states. |
-| Dawn Rose | `#E8B4B8` | Tenderness. Community elements. Stories. Emotional content. |
-| Sky Blue | `#A8C5D6` | Possibility. Future scenarios. Epistemic content. Links. |
-
-### Accents (The Sparks)
-Used sparingly. For interactive moments, highlights, special elements.
-
-| Name | Hex | Use |
-|------|-----|-----|
-| Cosmic Purple | `#9B7EBD` | Paradigm Cosmos elements. Philosophical content. |
-| Ember Orange | `#E07A5F` | Gurudevi. Action elements. Urgent CTAs. |
-| Starlight Silver | `#E8F4F8` | Subtle backgrounds. Cards. Hover states. |
-
-### Dark Mode (Future)
-| Name | Hex | Use |
-|------|-----|-----|
-| Deep Night | `#1A1C2E` | Dark mode background |
-| Soft Cream | `#E8E4DB` | Dark mode text |
-
-### Color Rules
-- **Never use pure white (#FFFFFF) or pure black (#000000)** as backgrounds or primary text. Always the warm versions.
-- **Contrast ratio**: All text must meet WCAG AA minimum (4.5:1 for normal text, 3:1 for large text).
-- **Gold is sacred**: Use it for moments that matter. Not everywhere. Not casually.
-- **Backgrounds breathe**: Use generous space between colored elements. Let Soft White do its work.
+**Brick by brick.**
 
 ---
 
-## TYPOGRAPHY
+## PART I: FOUNDATION SYSTEM
 
-### The Type System
+*What's shared across ALL contexts on EdLove.org*
 
-| Role | Font Family | Weight | Where |
-|------|------------|--------|-------|
-| Display / Hero | Cinzel | 400, 600 | Homepage hero. Opening quotes. Key moments. Ceremonial. |
-| Headings | Libre Baskerville | 400, 700 | All H1–H3. Dignified, literary, timeless. |
-| Body | Inter | 300, 400, 500 | All body text. Clean, readable, modern. |
-| Captions / Meta | Inter | 400 italic | Dates, authors, labels. Subtle. |
-| Code / Technical | JetBrains Mono | 400 | Any code blocks or technical content. |
+### Typography
 
-### Type Scale (Responsive)
+**Typography = voice made visible.**
 
-| Element | Desktop | Tablet | Mobile |
-|---------|---------|--------|--------|
-| Display (Hero) | 64px | 48px | 36px |
-| H1 | 48px | 36px | 28px |
-| H2 | 36px | 28px | 24px |
-| H3 | 24px | 20px | 18px |
-| Body Large | 18px | 17px | 16px |
-| Body | 16px | 16px | 15px |
-| Caption | 13px | 13px | 12px |
-
-### Line Heights
-- Display / H1: 1.1
-- H2 / H3: 1.3
-- Body: 1.7 (generous — this is a reading experience, not a data table)
-- Caption: 1.4
-
-### Letter Spacing
-- Display: -0.02em (tight, elegant)
-- Headings: -0.01em
-- Body: 0 (natural)
-- Captions: 0.04em (slightly open)
-
-### Typography Rules
-- **Body text is never smaller than 15px** on any device. Reading comfort is non-negotiable.
-- **Line length (measure)**: 55–75 characters for body text. Not wider. Reading science is clear on this.
-- **Paragraphs breathe**: Generous spacing between paragraphs (1.5–2× line height).
-- **Libre Baskerville for emotion. Inter for clarity.** Know which one the moment needs.
-- **Cinzel is rare.** Use it like gold — only for the most ceremonial moments. The opening line. The key quote. The domain name in the logo.
-
----
-
-## SPACING SYSTEM
-
-Based on an 8px base unit. Everything is a multiple.
-
-| Token | Value | Use |
-|-------|-------|-----|
-| `space-xs` | 4px | Tight internal spacing (icon + label) |
-| `space-sm` | 8px | Small gaps (between related items) |
-| `space-md` | 16px | Default spacing (between elements) |
-| `space-lg` | 32px | Section breathing room |
-| `space-xl` | 64px | Between major sections |
-| `space-2xl` | 128px | Hero sections. Page breathers. |
-| `space-3xl` | 192px | Full-page breathing moments |
-
-**The rule**: When in doubt, add MORE space. Edlove breathes. It is never cramped. Whitespace is not empty — it is intentional silence.
-
----
-
-## BORDERS, SHADOWS, AND SHAPES
-
-### Border Radius
-| Token | Value | Use |
-|-------|-------|-----|
-| `radius-sm` | 4px | Subtle. Buttons, inputs. |
-| `radius-md` | 8px | Cards, containers. |
-| `radius-lg` | 16px | Feature cards, modals. |
-| `radius-full` | 9999px | Pills, avatars, circular elements. |
-
-**Never sharp corners (0px) on user-facing elements.** Edlove is organic, not industrial.
-
-### Shadows
-Soft, layered. Never harsh.
-
-| Token | Value | Use |
-|-------|-------|-----|
-| `shadow-sm` | `0 1px 3px rgba(45,53,97,0.08)` | Subtle lift. Cards at rest. |
-| `shadow-md` | `0 4px 12px rgba(45,53,97,0.10)` | Cards on hover. Dropdowns. |
-| `shadow-lg` | `0 8px 32px rgba(45,53,97,0.12)` | Modals. Feature elements. |
-| `shadow-glow` | `0 0 24px rgba(212,165,116,0.25)` | Gold glow. Special moments. Active states. |
-
-**Rule**: Shadows are whispers, not shouts. They suggest depth — they don't demand attention.
-
----
-
-## COMPONENT PATTERNS
-
-### Navigation
-- Fixed header, minimal height (56–64px)
-- Logo left. Domain links center (desktop) or hamburger (mobile). Search icon right.
-- Background: Soft White with subtle bottom border or very faint shadow.
-- On scroll: Slight background opacity shift (glass morphism effect, subtle).
-- The six domain links are always visible on desktop. They are the skeleton. The user always knows where they are.
-- Active domain: Warm Gold underline or text color shift.
-
-### Cards
-- Background: Pure Soft White or Starlight Silver.
-- Border: 1px solid with very low opacity Deep Indigo (0.08).
-- Radius: `radius-md` (8px).
-- Shadow: `shadow-sm` at rest.
-- Hover: Gentle lift — shadow becomes `shadow-md`, very slight Y translate (-2px). Transition: 300ms ease.
-- Internal padding: `space-lg` (32px).
-- Structure: Image (if any) → Title (Libre Baskerville) → 2–3 sentence summary (Inter) → Tag or link.
-
-### Buttons
-
-**Primary (CTA)**:
-- Background: Warm Gold (`#D4A574`)
-- Text: Deep Indigo (`#2D3561`)
-- Radius: `radius-sm` (4px)
-- Padding: 12px 28px
-- Font: Inter 500, 15px
-- Hover: Slightly darker gold, shadow-sm
-- This is the most important button style. Use it for the one thing you most want users to do on a page.
-
-**Secondary (Outline)**:
-- Background: Transparent
-- Border: 1.5px solid Deep Indigo (0.4 opacity)
-- Text: Deep Indigo
-- Hover: Background becomes Starlight Silver
-
-**Ghost (Subtle)**:
-- No background, no border
-- Text: Deep Indigo with Sky Blue on hover
-- Used for navigation links, "learn more" style actions
-
-### Scrollytelling Sections
-- Full viewport height (100vh or slightly less)
-- Parallax background (subtle — 0.3–0.5 speed ratio)
-- Text fades in based on scroll position (not instant — smooth, contemplative)
-- Progress indicator: A thin vertical line on the right edge (desktop), or subtle dots. Very quiet.
-- **The Malick Effect**: Some sections scroll slower. Not everything moves at the same speed. Contemplation is built into the motion.
-
-### Data Visualizations (Domain II)
-- Colors from the palette only
-- Clear, generous labels
-- Interactive tooltips (on hover/tap) — not cluttered with data by default
-- Mobile: Stacks vertically. Never horizontal scroll on mobile.
-- Accessible: Not color-only encoding. Use patterns or labels too.
-
-### Forms (Email signup, Resource forms)
-- Inputs: 1px border, Soft White background, `radius-sm`
-- Focus: Border becomes Warm Gold. Subtle glow shadow.
-- Labels: Above the input, Inter 400 14px, Deep Indigo.
-- Placeholder text: 60% opacity.
-- Submit button: Primary button style.
-- **Never overwhelming.** One or two fields max per form. If more is needed — a wizard, not a wall.
-
----
-
-## VOICE AND TONE
-
-### The Core Principles
-- **Tender but truthful**: Don't sugarcoat systemic problems. But approach with compassion, not anger.
-- **Poetic but practical**: Beautiful language that still tells you something real and actionable.
-- **Inclusive**: Accessible to teachers, students, parents, policymakers. Not just academics.
-- **Non-jargon default**: Explain complex ideas simply. Without dumbing down. There is a difference.
-- **Questions over statements**: Where possible, invite the reader to think rather than telling them what to think.
-
-### Voice Examples (The Edlove Way)
-
-**❌ Academic voice:**
-"The hegemonic discourse of standardized assessment perpetuates epistemic violence against marginalized pedagogical traditions."
-
-**✅ Edlove voice:**
-"When we measure all children by the same test, we tell most of them they're failing. What if learning isn't meant to be standardized?"
-
----
-
-**❌ Corporate voice:**
-"Our platform leverages AI-driven analytics to optimize educational outcomes across diverse stakeholder ecosystems."
-
-**✅ Edlove voice:**
-"We built a tool to help teachers see each student fully. Not as a number. As a person."
-
----
-
-**❌ Preachy voice:**
-"Traditional schools are destroying our children's souls and we must act NOW!"
-
-**✅ Edlove voice:**
-"Many of us carry wounds from school. What if we could create learning spaces that heal instead of harm?"
-
----
-
-**❌ Flat/boring voice:**
-"This page contains information about educational paradigms and their historical development."
-
-**✅ Edlove voice:**
-"Education has many stories. The one we were told isn't the only one. Come see the others."
-
-### Tone by Context
-
-| Context | Tone |
-|---------|------|
-| Homepage / Entry | Warm, inviting, slightly poetic. Like a gentle hand on the shoulder. |
-| Paradigm Cosmos | Wonder. Curiosity. "Have you ever considered..." |
-| Sri Lanka System | Honest, clear, respectful. No judgment. Just truth. |
-| Gurudevi | Practical, warm, teacher-centric. "We're here to support you." |
-| Library / Research | Thoughtful, deep, accessible. Scholarly without being cold. |
-| Resources | Helpful, clear, action-oriented. "Here's how to do this." |
-| Community | Human, warm, open. "You're not alone in this." |
-| Error states | Gentle. Never blame the user. "Something went sideways — let's try again." |
-
----
-
-## THE ALIVENESS PRINCIPLE
-
-This is the design constraint that separates edlove from every other education website:
-
-**The site must feel alive.**
-
-Not just beautiful. Not just well-designed. **Alive.** Like it's breathing. Like it knows you're there. Like it responds to your presence.
-
-### What Aliveness Looks Like In Practice:
-
-- **Subtle ambient motion**: Particles drifting. Soft gradients shifting slowly. Nothing aggressive. Just the feeling that something is moving, breathing, living.
-- **Responsive to presence**: Elements react gently when you scroll near them. Not jumping — easing in. Like a flower turning toward light.
-- **Texture and warmth**: Typography has weight and character. Backgrounds aren't flat — they have subtle texture or depth. It feels like something you could touch.
-- **Unhurried pacing**: Not everything happens instantly. Some transitions take a beat longer than you'd expect. This creates a feeling of calm, of intention.
-- **Sound (optional, always opt-in)**: Subtle ambient soundscapes available. Page turning. Wind. Water. Never forced. Always a choice.
-- **Personalization**: The site remembers. If you told it your story, it remembers. It greets you differently on return. Small things. Human things.
-
-### What Aliveness Is NOT:
-- Not flashy animations that distract
-- Not auto-playing video or sound
-- Not infinite scroll designed to trap attention
-- Not pop-ups or aggressive CTAs
-- Not "gamification" or manipulation patterns
-
-**Aliveness is the opposite of manipulation. It is the feeling of being in a space that cares about you.**
-
----
-
-## CSS VARIABLES (Quick Reference for Cursor)
+#### Font Families
 
 ```css
-:root {
-  /* Colors - Primary */
-  --color-indigo: #2D3561;
-  --color-gold: #D4A574;
-  --color-white: #F5F1E8;
+/* Heading Font */
+--font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+/* Why: Clean, readable, excellent multilingual support (Sinhala/Tamil critical) */
+/* Usage: All headings (h1-h6), display text, navigation */
 
-  /* Colors - Secondary */
-  --color-green: #4A6357;
-  --color-rose: #E8B4B8;
-  --color-blue: #A8C5D6;
+/* Body Font */
+--font-body: 'Lora', 'Georgia', 'Times New Roman', serif;
+/* Why: Readable serif, warm, scholarly but approachable */
+/* Usage: Paragraphs, long-form content, articles */
 
-  /* Colors - Accents */
-  --color-purple: #9B7EBD;
-  --color-ember: #E07A5F;
-  --color-silver: #E8F4F8;
+/* Monospace (Code/Data) */
+--font-mono: 'Fira Code', 'Courier New', monospace;
+/* Why: Clear, professional, good for technical content */
+/* Usage: Code blocks, data tables only */
+```
 
-  /* Colors - Dark Mode */
-  --color-night: #1A1C2E;
-  --color-cream: #E8E4DB;
+#### Type Scale (Modular Scale: 1.250 - Major Third)
 
-  /* Typography */
-  --font-display: 'Cinzel', serif;
-  --font-heading: 'Libre Baskerville', serif;
-  --font-body: 'Inter', sans-serif;
-  --font-code: 'JetBrains Mono', monospace;
+**Base size: 16px (1rem)**
 
-  /* Spacing */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 32px;
-  --space-xl: 64px;
-  --space-2xl: 128px;
-  --space-3xl: 192px;
+```css
+--text-xs: 0.64rem;    /* 10px - metadata, footnotes */
+--text-sm: 0.8rem;     /* 13px - captions, labels */
+--text-base: 1rem;     /* 16px - body text */
+--text-lg: 1.25rem;    /* 20px - lead paragraphs */
+--text-xl: 1.563rem;   /* 25px - h4 */
+--text-2xl: 1.953rem;  /* 31px - h3 */
+--text-3xl: 2.441rem;  /* 39px - h2 */
+--text-4xl: 3.052rem;  /* 49px - h1 */
+--text-5xl: 3.815rem;  /* 61px - display, hero */
+```
 
-  /* Border Radius */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 16px;
-  --radius-full: 9999px;
+**Why this scale:**
+- Harmonious ratios (1.25x between steps)
+- Clear hierarchy
+- Readable on mobile
 
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(45,53,97,0.08);
-  --shadow-md: 0 4px 12px rgba(45,53,97,0.10);
-  --shadow-lg: 0 8px 32px rgba(45,53,97,0.12);
-  --shadow-glow: 0 0 24px rgba(212,165,116,0.25);
+#### Font Weights
 
-  /* Transitions */
-  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
-  --duration-fast: 200ms;
-  --duration-default: 300ms;
-  --duration-slow: 500ms;
-  --duration-contemplative: 800ms;
+```css
+--font-weight-light: 300;
+--font-weight-normal: 400;
+--font-weight-medium: 500;
+--font-weight-semibold: 600;
+--font-weight-bold: 700;
+```
+
+**Default usage:**
+- Headings: 600 (semibold)
+- Body: 400 (normal)
+- Emphasis: 600 (not bold - too harsh)
+- Light: 300 (cosmic context, ethereal moments)
+
+#### Line Height & Letter Spacing
+
+```css
+/* Line Heights */
+--leading-tight: 1.25;      /* Headings */
+--leading-snug: 1.375;      /* Subheadings */
+--leading-normal: 1.5;      /* Body text (optimal) */
+--leading-relaxed: 1.625;   /* Long-form reading */
+--leading-loose: 2;         /* Poetry, special moments */
+
+/* Letter Spacing */
+--tracking-tight: -0.025em;   /* Large headings */
+--tracking-normal: 0;         /* Body text */
+--tracking-wide: 0.025em;     /* Labels */
+--tracking-wider: 0.05em;     /* Cosmic aesthetic */
+--tracking-widest: 0.1em;     /* Display moments */
+```
+
+---
+
+### Spacing & Rhythm
+
+**Space = breath.**
+
+#### Spacing Scale (Base: 8px)
+
+```css
+--space-0: 0;
+--space-1: 0.5rem;   /* 8px - tight spacing */
+--space-2: 1rem;     /* 16px - element padding */
+--space-3: 1.5rem;   /* 24px - component spacing */
+--space-4: 2rem;     /* 32px - section padding */
+--space-5: 2.5rem;   /* 40px - larger gaps */
+--space-6: 3rem;     /* 48px - major breaks */
+--space-7: 4rem;     /* 64px - section dividers */
+--space-8: 6rem;     /* 96px - hero sections */
+--space-9: 8rem;     /* 128px - rare, extreme */
+--space-10: 12rem;   /* 192px - very rare */
+```
+
+#### Content Width & Containers
+
+```css
+--content-xs: 20rem;    /* 320px - minimal */
+--content-sm: 30rem;    /* 480px - narrow */
+--content-md: 45rem;    /* 720px - optimal prose (60-75 chars) */
+--content-lg: 65rem;    /* 1040px - wide content */
+--content-xl: 80rem;    /* 1280px - full width */
+--content-full: 100%;   /* Edge to edge */
+```
+
+**Default for long-form text:** `max-width: var(--content-md)` (720px)
+
+**Why:** Optimal reading is 60-75 characters per line. Eyes don't strain.
+
+---
+
+### The Gold Thread
+
+**The one color that appears in EVERY context.**
+
+```css
+--color-gold: #D4A574;
+```
+
+**Purpose:**
+- Connects all contexts (you always see gold somewhere)
+- Represents love, warmth, value
+- Used for: CTAs, highlights, active states, special moments
+
+**Usage rules:**
+- Present on every page (even if subtle)
+- Never overwhelming (accents, not primaries)
+- Sacred (use intentionally, not casually)
+
+---
+
+### Animation Principles
+
+**Movement = life.**
+
+#### Core Principles
+- **Subtle, not aggressive** (gentle, breathing, alive)
+- **Purposeful** (every animation serves the content)
+- **Performant** (GPU-accelerated, 60fps)
+- **Optional** (respects `prefers-reduced-motion`)
+
+#### Animation Durations
+
+```css
+--duration-instant: 100ms;      /* Hover feedback */
+--duration-fast: 200ms;         /* Quick transitions */
+--duration-normal: 300ms;       /* Default */
+--duration-slow: 500ms;         /* Emphasis */
+--duration-slower: 800ms;       /* Contemplative */
+--duration-slowest: 1200ms;     /* Breathing, cosmic */
+```
+
+#### Easing Functions
+
+```css
+--ease-in: cubic-bezier(0.4, 0, 1, 1);
+--ease-out: cubic-bezier(0, 0, 0.2, 1);
+--ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+--ease-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+```
+
+#### Respecting Motion Preferences
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 ```
 
 ---
 
-*"Beauty is not decoration. It is philosophy made visible."*
+### Navigation & Footer
 
-**Last Updated**: February 3, 2026  
-**Status**: Active. Feed to Cursor for all visual work.
+**Always present. Always consistent (in structure, not necessarily color).**
+
+#### Navigation Structure
+
+```html
+<nav>
+  <a href="/">EdLove</a> (logo/home)
+  <ul>
+    <li><a href="/cosmos">Cosmos</a></li>
+    <li><a href="/sri-lanka">Sri Lanka</a></li>
+    <li><a href="/gurudevi">Gurudevi</a></li>
+    <li><a href="/resources">Resources</a></li>
+    <li><a href="/community">Community</a></li>
+    <li><a href="/library">Library</a></li>
+  </ul>
+  <button>Search</button>
+</nav>
+```
+
+**Design rules:**
+- Fixed header or static (decide per context)
+- Six domain links always visible (desktop)
+- Hamburger on mobile
+- Colors shift by context (cosmic = blues, diagnostic = grays, etc.)
+- Gold thread appears (active link or subtle accent)
+
+#### Footer Structure
+
+```html
+<footer>
+  <section>
+    <h3>EdLove</h3>
+    <p>Education born from Love, built with Love</p>
+  </section>
+  <section>
+    <h4>Domains</h4>
+    <ul>[Six domain links]</ul>
+  </section>
+  <section>
+    <h4>Connect</h4>
+    <ul>[Email, social if any]</ul>
+  </section>
+  <small>© 2026 EdLove.org</small>
+</footer>
+```
+
+**Design rules:**
+- Simple, informative, not bloated
+- Colors shift by context
+- Gold thread appears somewhere
+- Always readable
+
+---
+
+### Accessibility (Non-Negotiable)
+
+**Building for everyone means:**
+
+✅ **Color contrast** — WCAG AA minimum (4.5:1 normal text, 3:1 large)  
+✅ **Keyboard navigation** — All interactive elements accessible without mouse  
+✅ **Focus states** — Visible (gold outline)  
+✅ **Semantic HTML** — `<nav>`, `<main>`, `<article>`, `<section>`, etc.  
+✅ **Alt text** — All images described  
+✅ **ARIA labels** — Where needed (icons, ambiguous elements)  
+✅ **Heading hierarchy** — Logical (H1 → H2 → H3, no skips)  
+✅ **Text resizable** — Works at 200% zoom  
+✅ **Motion respect** — `prefers-reduced-motion` honored  
+
+**Test with:**
+- Lighthouse (90+ accessibility score)
+- Keyboard only (unplug mouse, navigate site)
+- Screen reader (NVDA, VoiceOver, JAWS)
+
+---
+
+## PART II: CONTEXTUAL AESTHETICS
+
+*How design shifts based on content type*
+
+### Context 1: Cosmic (Paradigm Mapping)
+
+**Used in:** `/cosmos` and paradigm pages
+
+**Purpose:** To feel infinite, universal, exploratory. This is the widest lens — education across all life, all time.
+
+#### Color Palette
+
+```css
+/* Cosmic Colors */
+--cosmic-primary: #0A1F3D;      /* Deep space blue */
+--cosmic-secondary: #1E3A5F;    /* Cosmic blue */
+--cosmic-accent: #4A90E2;       /* Star blue */
+--cosmic-light: #E8F4F8;        /* Starlight */
+--cosmic-text: #FFFFFF;         /* White on dark */
+--cosmic-gold: #D4A574;         /* Gold thread */
+```
+
+#### Visual Elements
+
+- **Background:** Deep blues, black, gradient (night sky feel)
+- **Imagery:** Stars, cosmos, infinite space, abstract (NOT earth-bound)
+- **Animations:** Slow drift, particle systems, gentle float
+- **Density:** Spacious (lots of whitespace/blackspace)
+- **Typography:** Light weights (300), wide tracking, ethereal
+
+#### Example Component (Cosmic Hero)
+
+```css
+.cosmic-hero {
+  background: linear-gradient(180deg, #0A1F3D 0%, #1E3A5F 100%);
+  color: var(--cosmic-text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.cosmic-hero::before {
+  /* Particle background */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(2px 2px at 20% 30%, white, transparent),
+                    radial-gradient(2px 2px at 60% 70%, white, transparent),
+                    radial-gradient(1px 1px at 50% 50%, white, transparent);
+  opacity: 0.4;
+  animation: cosmic-drift 60s linear infinite;
+}
+
+@keyframes cosmic-drift {
+  from { transform: translateY(0); }
+  to { transform: translateY(-20px); }
+}
+
+.cosmic-hero h1 {
+  font-size: var(--text-5xl);
+  font-weight: var(--font-weight-light);
+  letter-spacing: var(--tracking-wider);
+  text-align: center;
+}
+```
+
+---
+
+### Context 2: Diagnostic (System Analysis)
+
+**Used in:** `/sri-lanka` and diagnostic pages
+
+**Purpose:** To feel clear, honest, data-driven. This is ground truth — showing systems as they are.
+
+#### Color Palette
+
+```css
+/* Diagnostic Colors */
+--diagnostic-bg: #F5F5F5;         /* Neutral gray */
+--diagnostic-primary: #2C3E50;    /* Dark gray-blue */
+--diagnostic-accent: #3498DB;     /* Info blue */
+--diagnostic-warning: #E74C3C;    /* Data red (discrepancies) */
+--diagnostic-success: #27AE60;    /* Data green (strengths) */
+--diagnostic-gold: #D4A574;       /* Gold thread */
+```
+
+#### Visual Elements
+
+- **Background:** Light grays, whites, clean
+- **Imagery:** Data visualizations, charts, diagrams, infographics
+- **Animations:** Snap into place, reveal on scroll (not drift)
+- **Density:** Tighter (information-rich but not cramped)
+- **Typography:** Normal weights (400, 600), clear hierarchy
+
+#### Example Component (Data Visualization)
+
+```css
+.diagnostic-chart {
+  background: white;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 8px;
+  padding: var(--space-4);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.diagnostic-chart h3 {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--diagnostic-primary);
+  margin-bottom: var(--space-3);
+}
+
+/* Data bars animate in */
+.diagnostic-bar {
+  background: var(--diagnostic-accent);
+  height: 24px;
+  border-radius: 4px;
+  animation: bar-grow 0.6s ease-out forwards;
+  transform-origin: left;
+}
+
+@keyframes bar-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+```
+
+---
+
+### Context 3: Library (Epistemic Core)
+
+**Used in:** `/library` and all article pages
+
+**Purpose:** To feel scholarly, warm, readable. This is deep knowledge — inviting long-form engagement.
+
+#### Color Palette
+
+```css
+/* Library Colors */
+--library-bg: #FAF9F6;           /* Warm paper white */
+--library-primary: #2D3561;      /* Deep indigo (our original) */
+--library-accent: #A8C5D6;       /* Sky blue */
+--library-text: #333333;         /* Warm black */
+--library-gold: #D4A574;         /* Gold thread */
+```
+
+#### Visual Elements
+
+- **Background:** Warm whites, soft creams (like paper)
+- **Imagery:** Book-like, thoughtful photography, thinker portraits
+- **Animations:** Fade in, gentle (not distracting from reading)
+- **Density:** Medium (generous margins, breathing room for text)
+- **Typography:** Lora (serif) for body, comfortable line-height (1.625)
+
+#### Example Component (Article Layout)
+
+```css
+.library-article {
+  max-width: var(--content-md); /* 720px */
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+  background: var(--library-bg);
+}
+
+.library-article h1 {
+  font-size: var(--text-4xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--library-primary);
+  margin-bottom: var(--space-4);
+  line-height: var(--leading-tight);
+}
+
+.library-article p {
+  font-family: var(--font-body); /* Lora */
+  font-size: var(--text-lg); /* 20px - generous for reading */
+  line-height: var(--leading-relaxed); /* 1.625 */
+  color: var(--library-text);
+  margin-bottom: var(--space-4);
+}
+
+/* Pull quotes */
+.library-article blockquote {
+  border-left: 4px solid var(--library-gold);
+  padding-left: var(--space-4);
+  font-style: italic;
+  font-size: var(--text-xl);
+  color: var(--library-primary);
+  margin: var(--space-6) 0;
+}
+```
+
+---
+
+### Context 4: Community (Sangha)
+
+**Used in:** `/community` and community pages
+
+**Purpose:** To feel warm, inviting, human. This is gathering space — where people find each other.
+
+#### Color Palette
+
+```css
+/* Community Colors */
+--community-bg: #FFF8F0;          /* Warm cream */
+--community-primary: #4A6357;     /* Forest green */
+--community-accent: #E8B4B8;      /* Dawn rose */
+--community-text: #2D2D2D;        /* Soft black */
+--community-gold: #D4A574;        /* Gold thread */
+```
+
+#### Visual Elements
+
+- **Background:** Warm creams, soft earth tones
+- **Imagery:** People, gathering, hands, circles (communal)
+- **Animations:** Gentle pulse, breathing, welcoming
+- **Density:** Intimate (cozy but not cramped)
+- **Typography:** Warm, approachable, medium weights
+
+#### Example Component (Community Card)
+
+```css
+.community-card {
+  background: white;
+  border: 2px solid var(--community-accent);
+  border-radius: 12px;
+  padding: var(--space-5);
+  transition: transform var(--duration-normal) var(--ease-out),
+              box-shadow var(--duration-normal) var(--ease-out);
+}
+
+.community-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(212, 165, 116, 0.2);
+}
+
+.community-card h3 {
+  color: var(--community-primary);
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-3);
+}
+
+.community-card p {
+  color: var(--community-text);
+  line-height: var(--leading-relaxed);
+}
+```
+
+---
+
+### Context 5: Gurudevi Pointer
+
+**Used in:** `/gurudevi` page only
+
+**Purpose:** To hint at sanctuary while remaining within EdLove. This is a gateway, not the destination.
+
+#### Color Palette
+
+```css
+/* Gurudevi Pointer (Transitional) */
+--gurudevi-pointer-bg: linear-gradient(180deg, #1E3A5F 0%, #1E5A5A 100%);
+--gurudevi-pointer-text: #FFFFFF;
+--gurudevi-pointer-accent: #008B8B; /* Teal hint */
+--gurudevi-pointer-gold: #D4A574;   /* Gold thread */
+```
+
+#### Visual Elements
+
+- **Background:** Gradient (cosmic blue → sanctuary teal)
+- **Imagery:** Small lotus preview (foreshadowing)
+- **Animations:** Gentle pulse (lotus breathing)
+- **Density:** Light (this is just a pointer, not full page)
+- **Typography:** Clear, simple, inviting
+
+---
+
+## PART III: IMPLEMENTATION GUIDANCE
+
+### For Cursor AI Development
+
+When building a page, specify both **foundation + context**:
+
+**Example prompt:**
+```
+Build the /cosmos landing page using the EdLove design system.
+
+Foundation (all pages):
+- Typography: Inter headings, Lora body
+- Spacing: 8px base scale
+- Gold thread present
+- Accessible (WCAG AA, keyboard nav, semantic HTML)
+
+Context (cosmic specific):
+- Colors: Deep blues (#0A1F3D, #1E3A5F), white text
+- Background: Gradient with particle animation
+- Typography: Light weights (300), wide tracking
+- Spacious layout
+- Slow drift animations
+
+Component: Cosmic hero section with centered text and particle background.
+```
+
+### Component Adaptation Pattern
+
+Components shift appearance based on context:
+
+```css
+/* Base Button (Foundation) */
+.button {
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-semibold);
+  padding: var(--space-2) var(--space-4);
+  border-radius: 8px;
+  transition: all var(--duration-normal) var(--ease-out);
+  cursor: pointer;
+}
+
+/* Cosmic Context */
+.context-cosmic .button {
+  background: transparent;
+  border: 2px solid var(--cosmic-accent);
+  color: var(--cosmic-text);
+}
+
+.context-cosmic .button:hover {
+  background: var(--cosmic-accent);
+  box-shadow: 0 0 20px rgba(74, 144, 226, 0.4);
+}
+
+/* Library Context */
+.context-library .button {
+  background: var(--library-primary);
+  border: none;
+  color: white;
+}
+
+.context-library .button:hover {
+  background: var(--library-gold);
+  color: var(--library-primary);
+}
+```
+
+---
+
+## PART IV: THE DEEPER WHY
+
+### This Isn't Just Technical
+
+This design system is:
+
+**Ontological** — Responding to separation, approaching wholeness through integration
+
+**Ethical** — Permaculture not monoculture, context-responsive not imposed
+
+**Pedagogical** — Form is message, design teaches what content describes
+
+**Sacred** — Building sanctuary, brick by brick, with reverence
+
+### The Design Enacts The Philosophy
+
+- Separation creates binaries (form vs. content)
+- Integration heals splits (form ⟺ content)
+- Contexts honor specificity (not one-size-fits-all)
+- Foundation provides coherence (gold thread, shared DNA)
+
+**We cannot return to the womb (the Real is lost).**
+
+**But we can build spaces where breathing is possible.**
+
+**Where paradigms coexist. Where beauty serves. Where love lives.**
+
+---
+
+*"Form is message. Design is the teaching itself, made visible."*
+
+**Last Updated**: February 7, 2026  
+**Status**: Active. Feed to Cursor for all visual work on EdLove.org.  
+**Note**: Other sites (gurudevi.edlove.org, etc.) will have their own contextual aesthetics documented when building begins.

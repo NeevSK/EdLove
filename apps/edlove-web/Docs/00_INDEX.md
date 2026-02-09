@@ -50,17 +50,16 @@ When you need to remember why we're building this — read 01_PHILOSOPHY first.
 |------|------|---------------|--------|
 | 00_INDEX.md | The Navigator | This file. Map of everything. | ✅ Active |
 | 01_PHILOSOPHY.md | The Root | WHY edlove exists. Core principles. Topological invariants. | ✅ Active |
-| 02_DESIGN.md | The Aesthetic Law | Colors, typography, voice, components, the "feel" | ✅ Active |
-| 03_TECH.md | The Build Guide | Stack, hosting, file structure, AI workflow | ✅ Active |
+| 02_DESIGN.md | Contextual Design System | Foundation + contextual aesthetics for EdLove.org | ✅ Active |
+| 03_TECH.md | The Build Guide | Stack, hosting, file structure, AI workflow, subdomains | ✅ Active |
 | 04_Domain_I.md | Paradigm Cosmos | The widest exploration of education | ✅ Active |
 | 05_Domain_II.md | Sri Lanka | The local ground truth | ✅ Active |
-| 06_Domain_III.md | Gurudevi | The flagship tool portal (high-level) | ✅ Active |
+| 06_Domain_III.md | Gurudevi | The flagship tool pointer page | ✅ Active |
 | 07_Domain_IV.md | Resources | Coordination of education resources | v0.1 Sketch |
 | 08_Domain_V.md | Sangha | The community layer | v0.1 Sketch |
 | 09_Domain_VI.md | Epistemic Core | The intellectual backbone | ✅ Active |
 | 10_ROADMAP.md | The Timeline | Phases, weeks, checklists, metrics | ✅ Active |
-
-**Note**: Gurudevi mobile app detailed documentation is in `/apps/gurudevi-mobile/`
+| 11_SUBDOMAIN_NOTES.md | Ecosystem Context | Brief notes on the three subdomains | 📝 Placeholder |
 
 ---
 
@@ -82,18 +81,35 @@ These 9 points are the **non-negotiables**. Everything else can change. These ca
 
 ---
 
+## THE ECOSYSTEM CONTEXT
+
+**EdLove.org is the main house** — six domains, fully documented here.
+
+**Three subdomains exist as temporary homes** within the edlove.org domain:
+- **gurudevi.edlove.org** — Teacher sanctuary web companion (full site, eventually migrates to gurudevi.lk)
+- **intuitui.edlove.org** — Systems intelligence studio / professional practice (eventually migrates to intuituilabs.lk)
+- **neevsk.edlove.org** — Personal portfolio, writing, CV (Neev's own space)
+
+**Why subdomains temporarily:**
+- Economic reality (separate domains cost money)
+- Shows ecosystem connection
+- Professional and functional
+- Easy migration when revenue flows
+
+**Documentation strategy:**
+- **This constellation documents EdLove.org** (the priority, Phase 1)
+- **Subdomains documented separately** when ready to build (not now)
+- See `11_SUBDOMAIN_NOTES.md` for brief context
+
+**Focus:** Build the main house first. Subdomains later.
+
+---
+
 ## HOW TO USE THIS CONSTELLATION
 
 ### When building with Cursor AI:
 Feed it: **00_INDEX** + **02_DESIGN** + **03_TECH** + the specific **Domain doc** you're building.  
 That's it. Clean. Focused. No noise.
-
-### When building Gurudevi mobile app:
-See documentation in `/apps/gurudevi-mobile/`:
-- **GURUDEVI_PRD_SUMMARY.md** - Quick overview
-- **GURUDEVI_COMPLETE_PRD.md** - Full specification
-- **COMPREHENSIVE_APP_ANALYSIS.md** - Technical architecture
-- Also reference: **01_PHILOSOPHY** + **06_Domain_III** (for high-level context)
 
 ### When writing content:
 Feed it: **00_INDEX** + **01_PHILOSOPHY** + **02_DESIGN** (voice section) + the specific **Domain doc**.
