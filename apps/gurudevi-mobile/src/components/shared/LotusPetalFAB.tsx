@@ -55,6 +55,7 @@ interface LotusPetalFABProps {
     actions?: ActionItem[];
     scrollY?: SharedValue<number>;
     disabled?: boolean;
+    bottomInset?: number; // New prop for safe area handling
 }
 
 // ============================================================================
@@ -108,6 +109,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     actions,
     scrollY,
     disabled = false,
+    bottomInset = Theme.spacing.lg, // Default value if not provided
 }) => {
     // Shared value for press animation
     const pressScale = useSharedValue(1);
@@ -294,17 +296,20 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         };
     });
 
+    const containerStyle = useMemo(() => [
+        styles.container,
+        { bottom: bottomInset }, // Override bottom with prop
+        breathingStyle,
+        pressStyle,
+        scrollStyle,
+        dragStyle,
+        disabled && styles.disabled
+    ], [bottomInset, breathingStyle, pressStyle, scrollStyle, dragStyle, disabled]);
+
     return (
         <Animated.View
             {...panResponder.panHandlers}
-            style={[
-                styles.container,
-                breathingStyle,
-                pressStyle,
-                scrollStyle,
-                dragStyle,
-                disabled && styles.disabled
-            ]}
+            style={containerStyle}
         >
             <View style={styles.contentContainer}>
                 {/* Glow Behind */}
@@ -363,7 +368,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        bottom: Theme.spacing.lg,
+        // bottom set dynamically
         right: Theme.spacing.lg,
         zIndex: Theme.zIndex.fab,
         alignItems: 'center',

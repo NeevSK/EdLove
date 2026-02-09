@@ -14,7 +14,12 @@
 
 export const colors = {
     // Primary Actions & Highlights
-    sanctuarySaffron: '#E67E22',    // Primary action color (warm, energizing)
+    // Gurudevi Gold - The Master Thread (Brand)
+    gurudeviBlue: '#3B82F6',        // Electric Cyber Blue (Focus)
+    gurudeviViolet: '#8B5CF6',      // Deep Insight (Wisdom)
+
+    sanctuarySaffron: '#E67E22',  // Primary actions, warmth
+    templeGold: '#fdd925ff',        // Elevated moments, achievements
 
     // Success & Growth
     sageGreen: '#8FBC8F',           // Success states, gentle growth
@@ -25,41 +30,58 @@ export const colors = {
     emberRed: '#FF6347',            // Errors (gentle, not harsh)
     skyBlue: '#87CEEB',             // Sky blue for video resources
 
-    // Backgrounds - Light Mode
-    creamSilence: '#FFF8E7',        // Primary light background
-    lotusWhite: '#FAF5F0',          // Secondary light background
-    sandStone: '#E8DCC8',           // Tertiary light background
+    // Backgrounds - Light Mode (Porcelain & Ice)
+    creamSilence: '#F8FAFC',        // Porcelain
+    lotusWhite: '#F1F5F9',          // Ice White (secondary)
+    sandStone: '#E2E8F0',           // Cool Stone (tertiary)
 
-    // Backgrounds - Dark Mode (primary)
-    voidIndigo: '#0f0f1e',          // Primary dark background
-    deepIndigo: '#1a1a2e',          // Secondary dark background
-    midnightBlue: '#16213e',        // Card/elevated surfaces
+    // Backgrounds - Dark Mode (Bioluminescence)
+    voidIndigo: '#020617',          // Midnight (Deep Void)
+    deepIndigo: '#0F172A',          // Deep Navy (Layer 2)
+    midnightBlue: '#1E293B',        // Card/elevated surfaces (Lighter Navy)
 
     // Text Colors - Light Mode
-    charcoalTruth: '#2C3E50',       // Primary text on light
-    slateGray: '#546E7A',           // Secondary text on light
-    stoneGray: '#90A4AE',           // Tertiary text on light
+    charcoalTruth: '#0F172A',       // Deep Navy Ink
+    slateGray: '#64748B',           // Slate
+    stoneGray: '#94A3B8',           // Light Slate (tertiary)
 
     // Text Colors - Dark Mode
-    sacredWhite: '#FFF8F0',         // Primary text on dark
-    pearlGray: '#E0E0E0',           // Secondary text on dark
-    mistGray: '#B0B0B0',            // Tertiary text on dark
-    dimGray: '#666666',             // Disabled text
+    sacredWhite: '#F8FAFC',         // Porcelain White
+    starlightGray: '#94A3B8',       // Starlight Grey (Alias for pearlGray)
+    pearlGray: '#94A3B8',           // Starlight Grey
+    mistGray: '#64748B',            // Dimmed Text
+    dimGray: '#475569',             // Disabled Text
 
-    // Specialty Colors
+    // Specialty Colors (Legacy/Accents)
     lotusDeepPink: '#DB7093',       // Lotus flower accent
     twilightPurple: '#9966CC',      // Evening/night mode accent
     dawnGold: '#FFD700',            // Morning/dawn accent
 
     // Functional Colors
     transparent: 'transparent',
-    white: '#FFFFFF',               // Use sparingly (pure white harsh on eyes)
-    black: '#000000',               // Use sparingly (pure black harsh on eyes)
+    white: '#FFFFFF',
+    black: '#000000',
+
+    // Glass System
+    glass: {
+        dark: {
+            surface: 'rgba(15, 23, 42, 0.6)',
+            border: 'rgba(255, 255, 255, 0.1)',
+            highlight: 'rgba(255, 255, 255, 0.05)',
+        },
+        light: {
+            surface: 'rgba(255, 255, 255, 0.7)',
+            border: 'rgba(255, 255, 255, 0.6)',
+            highlight: 'rgba(255, 255, 255, 0.4)',
+        }
+    },
 
     // Overlays & Shadows
     shadowDark: 'rgba(0, 0, 0, 0.3)',
-    shadowLight: 'rgba(0, 0, 0, 0.1)',
-    overlayDark: 'rgba(0, 0, 0, 0.6)',
+    shadowLight: 'rgba(148, 163, 184, 0.3)', // Cool Grey for light mode
+    shadowFocus: 'rgba(59, 130, 246, 0.25)', // Blue Lift
+    shadowAmbient: 'rgba(59, 130, 246, 0.15)', // Blue Ambience
+    overlayDark: 'rgba(2, 6, 23, 0.8)',
     overlayLight: 'rgba(255, 255, 255, 0.9)',
 } as const;
 
@@ -171,44 +193,44 @@ export const shadows = {
     },
 
     sm: {
-        shadowColor: colors.black,
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-        elevation: 1,
+        shadowColor: colors.shadowAmbient,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.5,
+        shadowRadius: 4,
+        elevation: 2,
     },
 
     md: {
-        shadowColor: colors.black,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
+        shadowColor: colors.shadowAmbient,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.6,
+        shadowRadius: 8,
+        elevation: 4,
     },
 
     lg: {
-        shadowColor: colors.black,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 8,
-        elevation: 5,
+        shadowColor: colors.shadowAmbient, // Blue ambience
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.8,
+        shadowRadius: 16,
+        elevation: 8,
     },
 
     xl: {
-        shadowColor: colors.black,
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.2,
-        shadowRadius: 16,
-        elevation: 8,
+        shadowColor: colors.shadowFocus, // Stronger glow
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.8, // Higher opacity because the color is subtle blue
+        shadowRadius: 24,
+        elevation: 12,
     },
 
     // Glowing effect (for FAB, special elements)
     glow: {
         shadowColor: colors.sanctuarySaffron,
         shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.3,
-        shadowRadius: 12,
-        elevation: 5,
+        shadowOpacity: 0.6,
+        shadowRadius: 20,
+        elevation: 10,
     },
 };
 

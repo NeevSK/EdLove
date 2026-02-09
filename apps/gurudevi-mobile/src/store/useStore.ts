@@ -10,9 +10,9 @@ interface AppState {
     teacherName: string;
     setTeacherName: (name: string) => void;
     userRole: UserRole | null;
-    setUserRole: (role: UserRole) => void;
+    setUserRole: (role: UserRole | null) => void;
     schoolType: SchoolType | null;
-    setSchoolType: (type: SchoolType) => void;
+    setSchoolType: (type: SchoolType | null) => void;
     themeMode: ThemeMode;
     setThemeMode: (mode: ThemeMode) => void;
 }

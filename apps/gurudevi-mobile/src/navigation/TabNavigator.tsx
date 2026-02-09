@@ -1,6 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LotusPetalFAB from '../components/shared/LotusPetalFAB';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../constants/Theme';
@@ -36,6 +37,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   const { t } = useTranslation();
   const { role } = useUserRole();
   const [currentTab, setCurrentTab] = React.useState<any>('self');
+  const insets = useSafeAreaInsets(); // Get safe area insets
 
   // Dynamic Label Logic
   const getClassroomLabel = () => {
@@ -66,17 +68,28 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           headerShown: false,
           tabBarStyle: {
             backgroundColor: Theme.colors.midnightBlue,
-            borderTopColor: Theme.colors.deepIndigo,
-            height: 60,
-            paddingBottom: 8,
+            borderTopColor: Theme.colors.glass.dark.border, // Use glass border token
+            borderTopWidth: 1,
+            height: 60 + insets.bottom, // Dynamic height including safe area
+            paddingBottom: insets.bottom > 0 ? insets.bottom : 8, // Adjust padding
             paddingTop: 8,
+            position: 'absolute', // Floating effect if desired, but sticking to bottom for now
+            bottom: 0,
+            left: 0,
+            right: 0,
+            elevation: 0, // Remove default elevation
           },
           tabBarActiveTintColor: Theme.colors.sanctuarySaffron,
           tabBarInactiveTintColor: Theme.colors.mistGray,
           tabBarLabelStyle: {
             fontSize: 12,
             fontFamily: 'Inter_500Medium',
+            marginBottom: insets.bottom > 0 ? 0 : 4,
           },
+          tabBarBackground: () => (
+            // Optional: Add BlurView here for glass tab bar
+            <View style={{ flex: 1, backgroundColor: Theme.colors.midnightBlue }} />
+          ),
         }}
       >
         {/* 1. Self Tab */}
@@ -174,6 +187,8 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           console.log(`Lotus FAB Pressed on ${currentTab}`);
           // Future: Trigger specific actions here
         }}
+        // Pass bottom inset to FAB to lift it above tab bar
+        bottomInset={60 + insets.bottom + 16}
       />
     </View>
   );

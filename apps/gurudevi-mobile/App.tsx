@@ -3,6 +3,7 @@ import './src/i18n/config'; // Initialize i18n
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GluestackUIProvider, Box, Spinner, Center } from "@gluestack-ui/themed";
 import { config } from "./gluestack-ui.config";
 import { Home, School, Users, Library, User } from 'lucide-react-native';
@@ -41,7 +42,7 @@ export default function App() {
         .single();
 
       if (userProfile) {
-        useStore.getState().setUserRole(userProfile.role as UserRole);
+        useStore.getState().setUserRole(userProfile.role as UserRole | null);
 
         // Fetch school type if school_id exists, otherwise clear it
         if (userProfile.school_id) {
@@ -52,7 +53,7 @@ export default function App() {
             .single();
 
           if (schoolData) {
-            useStore.getState().setSchoolType(schoolData.type as SchoolType);
+            useStore.getState().setSchoolType(schoolData.type as SchoolType | null);
           }
         } else {
           // Clear school type if user has no school
@@ -83,12 +84,12 @@ export default function App() {
     // Check initial session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
-      
+
       // Fetch user role and school type when session is restored
       if (session?.user) {
         await fetchAndSetUserProfile(session.user.id);
       }
-      
+
       setLoading(false);
     });
 
@@ -97,7 +98,7 @@ export default function App() {
     // via the deep link: gurudevi://auth/callback
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
-      
+
       // Fetch user role when auth state changes
       if (session?.user) {
         await fetchAndSetUserProfile(session.user.id);
@@ -167,34 +168,36 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryClientProvider client={queryClient}>
-        <GluestackUIProvider config={config}>
-          <ErrorBoundary name="App Root">
-            <NavigationContainer>
-              {!session ? (
-                <ErrorBoundary name="Auth Screen">
-                  <AuthScreen />
-                </ErrorBoundary>
-              ) : (
-                <ErrorBoundary name="Main App">
-                  <>
-                    <TabNavigator
-                      onTabChange={(tabName: any) => {
-                        setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
-                      }}
-                    />
-                    <LotusPetalFAB
-                      currentTab={currentTab}
-                      onPress={handleFabPress}
-                      actions={getFabActions()}
-                    />
-                  </>
-                </ErrorBoundary>
-              )}
-            </NavigationContainer>
-          </ErrorBoundary>
-        </GluestackUIProvider>
-      </QueryClientProvider>
+      <SafeAreaProvider>
+        <QueryClientProvider client={queryClient}>
+          <GluestackUIProvider config={config}>
+            <ErrorBoundary name="App Root">
+              <NavigationContainer>
+                {!session ? (
+                  <ErrorBoundary name="Auth Screen">
+                    <AuthScreen />
+                  </ErrorBoundary>
+                ) : (
+                  <ErrorBoundary name="Main App">
+                    <>
+                      <TabNavigator
+                        onTabChange={(tabName: any) => {
+                          setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
+                        }}
+                      />
+                      <LotusPetalFAB
+                        currentTab={currentTab}
+                        onPress={handleFabPress}
+                        actions={getFabActions()}
+                      />
+                    </>
+                  </ErrorBoundary>
+                )}
+              </NavigationContainer>
+            </ErrorBoundary>
+          </GluestackUIProvider>
+        </QueryClientProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }

@@ -33,8 +33,8 @@ export default function SanctuaryButton({
         if (variant === 'outline' || variant === 'ghost' || variant === 'link') return 'transparent';
 
         switch (action) {
-            case 'primary': return Theme.colors.sanctuarySaffron;
-            case 'secondary': return Theme.colors.deepIndigo;
+            case 'primary': return Theme.colors.sanctuarySaffron; // Gold
+            case 'secondary': return Theme.colors.gurudeviBlue;   // Blue
             case 'negative': return Theme.colors.emberRed;
             case 'positive': return Theme.colors.sageGreen;
             default: return Theme.colors.sanctuarySaffron;
@@ -42,11 +42,15 @@ export default function SanctuaryButton({
     };
 
     const getTextColor = () => {
-        if (variant === 'solid') return Theme.colors.sacredWhite;
+        // Solid buttons usually have light text
+        if (variant === 'solid') {
+            // Exception: If background is very light? No, our primary colors are dark/rich enough.
+            return Theme.colors.sacredWhite;
+        }
 
         switch (action) {
             case 'primary': return Theme.colors.sanctuarySaffron;
-            case 'secondary': return Theme.colors.pearlGray;
+            case 'secondary': return Theme.colors.gurudeviBlue;
             case 'negative': return Theme.colors.emberRed;
             case 'positive': return Theme.colors.sageGreen;
             default: return Theme.colors.sanctuarySaffron;
@@ -58,7 +62,7 @@ export default function SanctuaryButton({
 
         switch (action) {
             case 'primary': return Theme.colors.sanctuarySaffron;
-            case 'secondary': return Theme.colors.pearlGray;
+            case 'secondary': return Theme.colors.gurudeviBlue;
             case 'negative': return Theme.colors.emberRed;
             case 'positive': return Theme.colors.sageGreen;
             default: return Theme.colors.sanctuarySaffron;
@@ -84,7 +88,7 @@ export default function SanctuaryButton({
                     transform: [{ scale: 0.98 }]
                 },
                 // Custom handling for 'secondary' styling that might conflict with Gluestack defaults
-                ...(variant === 'solid' && action === 'secondary' ? { backgroundColor: Theme.colors.deepIndigo } : {})
+                ...(variant === 'solid' && action === 'secondary' ? { backgroundColor: Theme.colors.gurudeviBlue } : {})
             }}
         >
             {isLoading ? (
