@@ -24,7 +24,10 @@
     "role": {
         "teacher": "ගුරුවරයා",
         "student": "ශිෂ්‍යයා",
-        "principal": "විදුහල්පතිවරයා"
+        "principal": "විදුහල්පතිවරයා",
+        "developer": "සංවර්ධක",
+        "admin": "පරිපාලක",
+        "founder": "නිර්මාතෘ"
     },
     "school": {
         "personal_workspace": "පෞද්ගලික වැඩබිම"

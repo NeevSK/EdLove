@@ -14,3 +14,13 @@ export function marksToGPA(marks: number): { grade: string, gpa: number } {
   if (marks >= 35) return { grade: 'S', gpa: 1.0 };
   return { grade: 'F', gpa: 0.0 };
 }
+/**
+ * Calculates ranks based on marks
+ */
+export function calculateRanks(grades: any[]): any[] {
+  const sorted = [...grades].sort((a, b) => b.marks - a.marks);
+  return grades.map(grade => {
+    const rank = sorted.findIndex(s => s.id === grade.id) + 1;
+    return { ...grade, rank };
+  });
+}

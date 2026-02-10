@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { useStore, ThemeMode } from '../store/useStore';
+export type { ThemeMode };
 
 interface UseThemeReturn {
     themeMode: ThemeMode;

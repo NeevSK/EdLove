@@ -30,6 +30,7 @@ interface SanctuaryInputProps {
     isDisabled?: boolean;
     multiline?: boolean;
     numberOfLines?: number;
+    autoFocus?: boolean;
 }
 
 export default function SanctuaryInput({
@@ -46,7 +47,8 @@ export default function SanctuaryInput({
     helperText,
     isDisabled = false,
     multiline = false,
-    numberOfLines = 1
+    numberOfLines = 1,
+    autoFocus = false
 }: SanctuaryInputProps) {
     const hasError = isInvalid || !!error;
 
@@ -96,6 +98,7 @@ export default function SanctuaryInput({
                     placeholder={placeholder}
                     value={value}
                     onChangeText={onChangeText}
+                    autoFocus={autoFocus}
                     type={type}
                     color={Theme.colors.sacredWhite}
                     placeholderTextColor={Theme.colors.slateGray}

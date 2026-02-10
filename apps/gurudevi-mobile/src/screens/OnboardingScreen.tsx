@@ -278,10 +278,10 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
     ];
 
     const currentScreenData = screens[currentScreen];
-    const canProceed = currentScreen === 0 
-        ? name.trim().length > 0 
-        : currentScreen === 1 
-            ? role !== '' 
+    const canProceed = currentScreen === 0
+        ? name.trim().length > 0
+        : currentScreen === 1
+            ? !!role
             : true;
 
     const handleNext = () => {
@@ -407,8 +407,8 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                         onPress={handleNext}
                         isDisabled={!canProceed}
                         sx={{
-                            backgroundColor: canProceed 
-                                ? Theme.colors.sanctuarySaffron 
+                            backgroundColor: canProceed
+                                ? Theme.colors.sanctuarySaffron
                                 : Theme.colors.mistGray,
                             borderRadius: Theme.corners.comfortable,
                             minWidth: 100,

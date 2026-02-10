@@ -27,6 +27,7 @@ export const colors = {
 
     // Warnings & Attention
     amberGlow: '#FFB84D',           // Gentle warnings
+    emberOrange: '#D35400',         // Strong warnings/secondary actions
     emberRed: '#FF6347',            // Errors (gentle, not harsh)
     skyBlue: '#87CEEB',             // Sky blue for video resources
 
@@ -55,6 +56,8 @@ export const colors = {
     // Specialty Colors (Legacy/Accents)
     lotusDeepPink: '#DB7093',       // Lotus flower accent
     twilightPurple: '#9966CC',      // Evening/night mode accent
+    twilightBlue: '#6A5ACD',        // Relational ecology accent
+    lavenderMist: '#E6E6FA',        // Knowledge ecology accent
     dawnGold: '#FFD700',            // Morning/dawn accent
 
     // Functional Colors

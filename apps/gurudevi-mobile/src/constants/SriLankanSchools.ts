@@ -149,6 +149,30 @@ export const USER_ROLES = {
         level: 5,
         navigationTab: 'classroom', // Shows own class only
     },
+    developer: {
+        key: 'developer',
+        en: 'Developer',
+        si: 'සංවර්ධක',
+        ta: 'உருவாக்குபவர்',
+        level: 0, // System level
+        navigationTab: 'profile',
+    },
+    admin: {
+        key: 'admin',
+        en: 'Admin',
+        si: 'පරිපාලක',
+        ta: 'நிர்வாகි',
+        level: 0, // System level
+        navigationTab: 'profile',
+    },
+    founder: {
+        key: 'founder',
+        en: 'Founder',
+        si: 'නිර්මාතෘ',
+        ta: 'நிறுவனர்',
+        level: 0, // System level
+        navigationTab: 'profile',
+    },
 } as const;
 
 export type UserRole = keyof typeof USER_ROLES;

@@ -11,7 +11,9 @@ export type PostType = 'question' | 'resource' | 'feedback' | 'announcement' | '
 export type PostVisibility = 'class' | 'grade' | 'school' | 'teachers_only' | 'public';
 export type Urgency = 'low' | 'medium' | 'high';
 export type FeedbackStatus = 'pending' | 'under_review' | 'approved' | 'implemented' | 'declined';
-export type UserRole = 'student' | 'teacher' | 'principal' | 'section_head' | 'admin' | 'founder';
+import { UserRole } from './User';
+
+export type { UserRole };
 export type GroupType = 'class' | 'grade' | 'subject' | 'club' | 'general' | 'teachers_only' | 'admin_only';
 export type GroupJoinPolicy = 'open' | 'approval_required' | 'invite_only' | 'restricted';
 
@@ -112,13 +114,13 @@ export interface CreateCommentInput {
 // LIBRARY RESOURCE TYPES
 // ============================================================================
 
-export type ResourceType = 
-  | 'pdf' 
-  | 'video' 
-  | 'link' 
-  | 'note' 
-  | 'lesson_plan' 
-  | 'activity' 
+export type ResourceType =
+  | 'pdf'
+  | 'video'
+  | 'link'
+  | 'note'
+  | 'lesson_plan'
+  | 'activity'
   | 'assessment'
   | 'project'
   | 'book';
@@ -261,7 +263,7 @@ export interface CreateCollectionInput {
 // CONTRIBUTION & RECOGNITION TYPES
 // ============================================================================
 
-export type ContributionType = 
+export type ContributionType =
   | 'question_answered'
   | 'resource_shared'
   | 'resource_endorsed'
@@ -391,7 +393,7 @@ export interface FeedbackPulseResponse {
 // NOTIFICATION TYPES
 // ============================================================================
 
-export type NotificationType = 
+export type NotificationType =
   | 'question_answered'
   | 'comment_reply'
   | 'official_answer_marked'
@@ -422,23 +424,23 @@ export interface CommunityGroup {
   description: string;
   type: GroupType;
   join_policy: GroupJoinPolicy;
-  
+
   // Visibility & Access
   visibility: PostVisibility;
   allowed_roles?: UserRole[]; // If specified, only these roles can see/join
-  
+
   // Membership
   member_count: number;
   max_members?: number;
   is_member: boolean;
   is_admin: boolean;
   is_moderator: boolean;
-  
+
   // Group Settings
   allow_posts: boolean;
   allow_announcements: boolean;
   require_post_approval: boolean;
-  
+
   // Metadata
   image_url?: string;
   cover_image_url?: string;
@@ -457,11 +459,11 @@ export interface GroupMember {
   user_name: string;
   user_role: UserRole;
   user_avatar?: string;
-  
+
   // Member role in group
   is_admin: boolean;
   is_moderator: boolean;
-  
+
   // Status
   status: 'active' | 'pending' | 'banned';
   joined_at: string;
