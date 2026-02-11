@@ -8,14 +8,12 @@ import React, { useState } from 'react';
 import {
     Box,
     VStack,
-    HStack,
     Text,
     Heading,
     ScrollView,
     Pressable
 } from "@/ui";
 import { Sparkles, Compass, Zap, Lightbulb, Globe, Heart } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';
 import { hapticLight } from '../../utils/haptics';
 import { MoodLotus, ShadowAgentDrawer, EnergyForecast, WisdomSeeds } from '../../components/self';
@@ -38,7 +36,6 @@ const FOUNDER_MORE_TOOLS = [
 ];
 
 export default function FounderSelfView() {
-    const { t } = useTranslation();
     const [activeFeature, setActiveFeature] = useState('vision');
     const [userId, setUserId] = useState<string | null>(null);
     const [showMoreTools, setShowMoreTools] = useState(false);
