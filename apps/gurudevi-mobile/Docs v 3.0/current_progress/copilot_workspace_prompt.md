@@ -5,43 +5,67 @@
 ---
 
 ## Title
-🚀 FULL UI Abstraction Layer Migration - All ~50+ Files
+🚀 UNIFIED WHOLE CODEBASE REFACTOR - UI Abstraction & Type Stability
 
 ## Description
 
 ### Context
-We've implemented a UI Abstraction Layer (`src/ui/index.ts`) to solve TypeScript stack overflow issues and optimize bundle size for low-end Android devices (2GB RAM, spotty 3G/4G in Sri Lankan schools). The abstraction layer uses direct imports from Gluestack UI components instead of the aggregate index.
+We are executing a fundamental architectural shift for the `gurudevi-mobile` app. Our goal is a **UNIFIED WHOLE CODEBASE REFACTOR** to solve TypeScript stack overflow issues, optimize bundle size for low-end devices (2GB RAM), and establish a clean, future-proof component architecture.
 
-**Already Migrated** ✅:
-- `App.tsx`
-- `src/screens/OnboardingScreen.tsx`
+**The Strategy**: Centralize ALL UI dependencies in `src/ui/index.ts` using direct sub-module imports, bypassing the heavy Gluestack aggregate index.
 
-**Scope: MIGRATE ALL REMAINING FILES** (~50+ files across the entire `src/` directory)
+### Scope: TOTAL CODEBASE REFACTOR
+**MIGRATE EVERY SINGLE FILE** in the `apps/gurudevi-mobile` directory (~60+ files) that uses Gluestack UI components.
 
-This includes:
-- All screens (`src/screens/**/*.tsx`)
-- All components (`src/components/**/*.tsx`)
-- All hooks (`src/hooks/**/*.ts`)
-- Any other files importing from `@gluestack-ui/themed`
+This is NOT just a search-and-replace; it is a project-wide audit to ensure:
+1. **Zero Direct Imports**: No file is allowed to import from `@gluestack-ui/themed` directly.
+2. **Total UI Abstraction**: Every UI primitive (Box, Text, Button, etc.) MUST come from `@/ui`.
+3. **Type Consistency**: Ensure that all files using our new store (`src/store/useStore.ts`) and mocks (`src/__tests__/mocks/supabase.ts`) are type-consistent with the new architecture.
 
-**Exclude**:
-- `src/ui/index.ts` (this IS the abstraction layer, don't touch it)
-- Test files (`*.test.tsx`, `*.steps.tsx`) - migrate these too, but they're lower priority
+### Target Files
+- All screens: `src/screens/**/*.tsx`
+- All components: `src/components/**/*.tsx`
+- All hooks: `src/hooks/**/*.ts`
+- Root entry points: `App.tsx`, `index.ts` (if applicable)
+- Test files: `src/__tests__/**/*.tsx`, `src/features/**/*.steps.tsx`
+- Any other `.ts` or `.tsx` file in the project.
 
-### Task
-**Migrate EVERY file in `src/` that imports from `@gluestack-ui/themed` to use `@/ui` imports instead.**
+### Pattern to Enforce
 
-### Pattern to Follow
+**STRICT RULE**: Only `src/ui/index.ts` can touch `@gluestack-ui/themed`.
 
-**BEFORE** (❌ Don't do this):
+**CORRECT**:
 ```tsx
-import { Box, Button, Text, VStack } from '@gluestack-ui/themed';
+import { Box, VStack, Button, Text } from '@/ui';
 ```
 
-**AFTER** (✅ Do this):
+**FORBIDDEN**:
 ```tsx
-import { Box, Button, Text, VStack } from '@/ui';
+import { Box } from '@gluestack-ui/themed';
 ```
+
+### Critical Implementation Rules
+
+1. **Inventory Management**: Before migration, scan the codebase for ALL Gluestack components currently in use.
+2. **Populate Abstraction Layer**: If a component (e.g., `Actionsheet`, `Fab`, `Progress`) is missing from `src/ui/index.ts`, add it using the direct import pattern:
+   ```typescript
+   export { ComponentName } from '@gluestack-ui/themed/build/components/ComponentName';
+   ```
+3. **Group & Document**: Organize `src/ui/index.ts` into logical sections (Layout, Typography, Forms, Overlays, etc.) and update `src/ui/README.md`.
+4. **No Logic Changes**: This is a structural refactor. Do not modify business logic or styles unless necessary for type stability.
+
+### Verification & Stability Goals
+
+1. **Targeted TSC Passing**: Verify that each directory (screens, components, hooks) passes `npx tsc --noEmit --skipLibCheck`.
+2. **BDD Regression Testing**: Run `npm test`. All existing features (Auth, Invitations) MUST pass 100%.
+3. **Path Alias Integrity**: Ensure all imports use the `@/` alias for internal project paths.
+
+### Suggested Execution Path
+
+1. **Phase 1: Component Audit**: Identify every single Gluestack component used in the project and ensure it's in `src/ui/index.ts`.
+2. **Phase 2: Global Migration**: Systematically update ALL files to use `@/ui`.
+3. **Phase 3: Type & Store Alignment**: Ensure the store and supabase mocks are correctly utilized in the refactored files.
+4. **Phase 4: Final Verification**: Run targeted builds and BDD tests.
 
 ### Critical Rules
 
