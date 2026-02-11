@@ -1,0 +1,33 @@
+# Debugging ProfileScreen Error (ReadOnlyText)
+
+## Problem Description
+The [ProfileScreen](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/ProfileScreen.tsx#29-290) crashes with `TypeError: Cannot call a class as a function` pointing to `ReadOnlyText`. The stack trace indicates this comes from a file `.../dom/nodes/ReadOnlyText.js`, which strongly suggests the `xmldom` library (or similar DOM polyfill) is involved.
+
+This error typically happens when a plain JavaScript class (like a DOM node) is rendered as a React component: `<ReadOnlyText />`. React tries to call it as a function, but it's a class.
+
+## Root Cause Analysis
+- **Suspect**: `react-native-qrcode-svg`.
+- **Reasoning**: [IdentityCard.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/profile/IdentityCard.tsx) uses [QRCodeGenerator](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/shared/QRCodeGenerator.tsx#15-42), which uses `react-native-qrcode-svg`. This library often depends on standard DOM interfaces to generate SVG paths. If it accidentally exposes or renders a DOM node class instead of a React component/element, this error occurs.
+- **Evidence**: [ProfileScreen](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/ProfileScreen.tsx#29-290) renders [IdentityCard](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/profile/IdentityCard.tsx#35-206). Stack trace shows `ReadOnlyText` in the component tree. `grep` confirmed `ReadOnlyText` is not in `src`.
+
+## User Review Required
+> [!IMPORTANT]
+> I will temporarily disable the QR Code generation to confirm this hypothesis. If the app stops crashing, we know the culprit.
+
+## Proposed Changes
+
+### apps/gurudevi-mobile
+
+#### [MODIFY] [IdentityCard.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/profile/IdentityCard.tsx)
+- Temporarily comment out `<QRCodeGenerator />` usage.
+
+## Verification Plan
+
+### Manual Verification
+1.  Run `pnpm start`.
+2.  Navigate to [ProfileScreen](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/ProfileScreen.tsx#29-290).
+3.  Verify the app does not crash.
+4.  If confirmed, I will investigate a permanent fix (e.g., pinning `xmldom` version, upgrading `react-native-qrcode-svg`, or using a different library).
+
+### Automated Tests
+- None applicable for this specific runtime crash debugging.

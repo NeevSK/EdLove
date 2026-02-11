@@ -1,0 +1,53 @@
+# Implementation Plan - Onboarding & Home Logic Refinement
+
+## Goal
+To refine the user experience during onboarding and the initial home screen visit.
+1.  Allow users to skip the rest of the onboarding process from any optional screen and go directly to Home.
+2.  Display a "Warm Welcome" message on the Home screen **only** immediately after the first onboarding completion.
+3.  Ensure the Mood Check is visible on the Home screen (Student Self View).
+
+## Proposed Changes
+
+### 1. Store Update ([src/store/useStore.ts](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/store/useStore.ts))
+*   **Modify**: Add `justFinishedOnboarding` boolean flag and its setter to the global store.
+    *   This flag denotes that the user has *just* completed onboarding and hasn't seen the welcome message yet.
+    *   It should be persisted (handled by existing `persist` middleware) to survive the app reload that happens on auth state change if any, although for state transitions it's safer.
+
+### 2. App Logic ([App.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/App.tsx))
+*   **Modify**: In the `onComplete` prop passed to [OnboardingScreen](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/OnboardingScreen.tsx#43-433), set `justFinishedOnboarding` to `true` along with `onboardingCompleted`.
+
+### 3. Onboarding Screen ([src/screens/OnboardingScreen.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/OnboardingScreen.tsx))
+*   **Modify**: Update [handleSkip](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/OnboardingScreen.tsx#300-309) function.
+    *   **Current Behavior**: Moves to the next screen.
+    *   **New Behavior**: Calls [handleComplete()](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/OnboardingScreen.tsx#310-342) to finish onboarding and navigate to Home immediately.
+    *   **Visual**: Update "Skip" text to "Skip to Home" for clarity (optional, but good UX). user said "skip button", so maybe keep it simple or explicit. I'll stick to "Skip" action changing but maybe keep text or change to "Skip All". Let's keep "Skip" but change behavior.
+
+### 4. Home Screen ([src/screens/self/StudentSelfView.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/self/StudentSelfView.tsx))
+*   **Modify**:
+    *   Connect to `useStore` to read `justFinishedOnboarding`.
+    *   Implement a **Welcome Dialog/Modal**.
+        *   Shows "Welcome to Gurudevi".
+        *   Have a "Start Journey" button.
+    *   **Logic**:
+        *   If `justFinishedOnboarding` is true: Show the Welcome Modal.
+        *   When user dismisses Modal: Set `justFinishedOnboarding` to false.
+    *   Ensure `MoodLotus` is the default view behind the modal.
+
+## Verification Plan
+
+### Manual Verification Instructions
+1.  **Reset App State** (if possible, or log out/clear storage).
+2.  **Start Onboarding**:
+    *   Enter Name and Role.
+    *   Click "Next".
+    *   On "Welcome" screen (Screen 3), click "Skip".
+3.  **Verify Navigation**:
+    *   App should navigate to Home Screen immediately.
+4.  **Verify Welcome Message**:
+    *   Home screen should show the "Warm Welcome" modal/message.
+    *   Dismiss the message.
+    *   Mood Check (Lotus) should be visible.
+5.  **Verify Persistence**:
+    *   Reload the app.
+    *   Welcome message should **not** appear again.
+    *   Mood Check should still be visible.

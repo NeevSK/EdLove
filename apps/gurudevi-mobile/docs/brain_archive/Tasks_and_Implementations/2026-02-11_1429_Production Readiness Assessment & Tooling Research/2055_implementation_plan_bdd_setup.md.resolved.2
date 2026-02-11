@@ -1,0 +1,43 @@
+# Pure BDD Infrastructure Setup - Implementation Plan
+
+## Goal
+Set up a robust environment for Pure BDD using `jest-cucumber` so that features can be defined in plain English and verified against the UI components and logic.
+
+## Proposed Changes
+
+### [gurudevi-mobile]
+
+#### [MODIFY] [package.json](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/package.json)
+- Add `test` and `test:watch` scripts.
+- Ensure all BDD dependencies are correctly listed in `devDependencies`.
+
+#### [NEW] [jest.config.js](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/jest.config.js)
+- Configure Jest to support Expo, React Native, and `jest-cucumber`.
+- Map `.feature` files to be recognized as test sources.
+
+#### [NEW] [features/invitation_welcome.feature](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/features/invitation_welcome.feature)
+- Implement the Gherkin version of the drafted "Invitation Welcome Flow" spec.
+
+#### [NEW] [__tests__/steps/invitation_welcome.steps.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/__tests__/steps/invitation_welcome.steps.tsx)
+- Create the "Glue Code" (Step Definitions) that connects Gherkin steps to UI component testing using `react-native-testing-library`.
+
+#### [NEW] Directory Structure
+- `apps/gurudevi-mobile/src/features/` (Gherkin files)
+- `apps/gurudevi-mobile/src/__tests__/steps/` (Step Definitions)
+- `apps/gurudevi-mobile/src/__tests__/mocks/` (Mocks for Supabase/MMKV)
+
+## 4. React 19 & RN 0.81 Compatibility
+
+We are using bleeding-edge versions of React and React Native. Standard testing libraries may have peer dependency conflicts.
+
+**Strategy**:
+- Use `react-test-renderer` version `19.0.0` to match React 19.
+- Use `@testing-library/react-native` version `^13.0.0` which is designed for newer React versions.
+- If `pnpm` errors on peer dependencies, we will use the `packageExtensions` or `pnpm.overrides` field in the root [package.json](file:///c:/Users/Naween/projects/polymath-platform/package.json) to force compatibility.
+
+## Step-by-Step Execution
+1. **Manual Dependency Injection**: Updated [apps/gurudevi-mobile/package.json](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/package.json) with strict versions.
+2. **Root Install**: Run `pnpm install` from the monorepo root to update the lockfile.
+3. **Jest Configuration**: Finalize [jest.config.js](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/jest.config.js) and add `jest-setup.ts`.
+4. **Environment Mocking**: Create mocks for `react-native-mmkv` and `@supabase/supabase-js`.
+5. **Skeleton Creation**: Create a "HelloWorld.feature" to verify the Gherkin-to-Jest bridge.

@@ -1,0 +1,5 @@
+# Task: Fix TypeScript Error in VoiceJournaling.tsx
+
+- [ ] Research `expo-audio` API for recording [/]
+- [ ] Update `VoiceJournaling.tsx` with correct method names [ ]
+- [ ] Verify fix by checking for lint errors or running a build [ ]

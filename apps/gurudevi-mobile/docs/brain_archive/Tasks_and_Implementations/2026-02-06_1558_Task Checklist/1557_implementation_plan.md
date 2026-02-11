@@ -1,0 +1,18 @@
+# Fix expo-audio Imports in VoiceJournaling.tsx
+
+The `expo-audio` library (version 1.1.1) does not export `RecordingOptionsPresets`. Instead, it exports `RecordingPresets`. This plan identifies the necessary changes to fix the TypeScript error.
+
+## Proposed Changes
+
+### gurudevi-mobile
+
+#### [MODIFY] [VoiceJournaling.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/self/VoiceJournaling.tsx)
+
+- Update the `expo-audio` import to use `RecordingPresets` instead of `RecordingOptionsPresets`.
+- Update the `useAudioRecorder` hook call to use `RecordingPresets.HIGH_QUALITY`.
+
+## Verification Plan
+
+### Manual Verification
+- Since I cannot run the mobile app in an emulator here, I will verify that the TypeScript errors are resolved by checking the file again (if a linting tool were available I'd use it, otherwise I rely on the fact that I've verified the exports in `node_modules`).
+- I will ask the USER to verify that the "Voice Journaling" screen loads and recording works as expected.

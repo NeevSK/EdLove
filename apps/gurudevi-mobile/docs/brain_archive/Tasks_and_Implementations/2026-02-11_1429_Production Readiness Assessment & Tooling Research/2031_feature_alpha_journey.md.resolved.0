@@ -1,0 +1,35 @@
+# Feature: Alpha Invitation & Community Onboarding Journey
+
+**Goal**: As the founder, I want a multi-stage onboarding system where Principals seed schools and Teachers join a dual-layered community (Global + School).
+
+## Scenario: Principal joins via Founder Link (Initial Setup)
+  **Given** the app is in "Alpha/Invite-Only" mode
+  **And** I have a "Founder/Dev" invitation link
+  **When** I sign up as a "Principal"
+  **Then** the system should automatically add me to the "Alpha Pathfinders" (Global Testing Group)
+  **And** I should see a welcome message: "Welcome to the Alpha Pathfinder community! You are helping us seed the sanctuary for testing purposes."
+  **And** in the "School" section, I should see a button to "Create your School"
+
+## Scenario: Principal creates School Group
+  **Given** I am a Principal who has joined the "Alpha Pathfinders"
+  **When** I "Create my School" named "Royal College"
+  **Then** the system should create a "Royal College" community group
+  **And** I should be set as the "Admin" of this school group
+  **And** I should be automatically joined to this "Royal College" group
+  **And** I should be offered to "Copy Teacher Invitation Link"
+
+## Scenario: Teacher joins via Principal Link (Dual Community Join)
+  **Given** I am a new user scanning an invitation QR for "Royal College"
+  **When** I complete the onboarding flow as a "Teacher"
+  **Then** the system should automatically add me to BOTH:
+    1. The "Alpha Pathfinders" (Global Testing Group)
+    2. The "Royal College" (School Group)
+  **And** in my "Classroom" section, I should see "Royal College"
+  **And** I should see a "Create your first Classroom" prompt
+
+## Scenario: Global Community Visibility
+  **Given** I am any authenticated Alpha user (Founder, Principal, or Teacher)
+  **When** I open the "Community" section
+  **Then** I should see the "Alpha Pathfinders" group as the top/universal tile
+  **And** I should see my specific "School Group" (e.g., Royal College) alongside it
+  **And** all posts in "Alpha Pathfinders" should have a "Testing Purpose" badge

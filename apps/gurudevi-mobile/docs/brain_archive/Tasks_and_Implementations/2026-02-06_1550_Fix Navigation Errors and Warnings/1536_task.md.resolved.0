@@ -1,0 +1,10 @@
+# Fix Navigation Errors and Warnings
+
+- [ ] Investigate "Render Error" for 'Classroom' screen <!-- id: 0 -->
+    - [ ] Find where 'Classroom' screen is defined <!-- id: 1 -->
+    - [ ] Fix the conflicting props (component vs children) <!-- id: 2 -->
+- [ ] Investigate Terminal Warnings <!-- id: 3 -->
+    - [ ] Read terminal output <!-- id: 4 -->
+    - [ ] Identify actionable warnings <!-- id: 5 -->
+    - [ ] Fix warnings <!-- id: 6 -->
+- [ ] Verify Fixes <!-- id: 7 -->

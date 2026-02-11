@@ -1,0 +1,36 @@
+# Profile Enhancements Walkthrough
+
+I have enhanced the User Profile section with the following features:
+
+## 1. Role Management
+- Added `developer` (Founder/Development Admin) role to [UserRole](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/types/User.ts#15-16) type.
+- Implemented a **Role Selector** in the "Edit Profile" modal (visible for testing) to switch roles without re-logging.
+
+## 2. Profile Expansion
+- **Full Screen Mode**: Tapping "EXPAND" on the Identity Card opens a detailed modal.
+- **Identity Card Logic**: Added "Expand" button and updated flip logic.
+- **Detailed View**: Shows extended contact info (School, Email, Phone) and a large QR code.
+
+## 3. QR Code Integration
+- **Unified Component**: Created [QRCodeGenerator](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/shared/QRCodeGenerator.tsx#14-41) for consistent QR rendering.
+- **Mobile Scanner**: Implemented [ScannerModal](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/shared/ScannerModal.tsx#15-108) using `expo-camera` to scan QR codes.
+- **Identity QR**: Back of Identity Card now displays user's unique ID as a QR code.
+- **Invite QR**: Principals can generate QR codes; Users can scan them to join.
+- **Scan to Join**: Added "Scan Invite Code" button to [AuthScreen](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/AuthScreen.tsx#62-601) that opens the camera.
+
+## 4. User Stats & Gamification
+- Created [UserStatsCard](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/profile/UserStatsCard.tsx#26-124) component.
+- Dynamically displays stats based on role (e.g., "Classes Taught" for teachers, "Streak" for students).
+- Added visual "Guru Level" progress bar placeholder.
+
+## 5. Help & Support
+- Added [SupportSection](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/profile/SupportSection.tsx#13-70) with links to Contact Support, FAQs, and Report Issue.
+
+## verification
+- **Logout**: Verified `signOut` logic is attached to the Logout button.
+- **UI Components**: Verified `gluestack-ui` components ([Modal](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/shared/ScannerModal.tsx#15-108), `Button`, `HStack`, etc.) are correctly imported and used.
+- **Dependencies**: Added `expo-image-picker` and `expo-camera`.
+    - `npm install expo-image-picker expo-camera`
+
+## Screenshots
+(Placeholder for actual screenshots)

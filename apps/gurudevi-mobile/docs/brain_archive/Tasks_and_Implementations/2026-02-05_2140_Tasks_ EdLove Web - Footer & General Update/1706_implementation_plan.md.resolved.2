@@ -1,0 +1,73 @@
+# Implementation Plan - EdLove Web Footer
+
+## Goal Description
+Implement a "premium" looking footer for the EdLove web application. This footer will serve as the navigational anchor for legal and informational pages ("About Us", "Privacy", "Terms of Use") and include a "Built with 💖" attribution, adhering to the project's cinematic and soulful aesthetic.
+
+## User Review Required
+> [!NOTE] 
+> I will be creating a new branch `feature/edlove-footer` from `main` before applying these changes.
+
+## Proposed Changes
+
+### apps/edlove-web/src/components
+
+#### [NEW] [Footer.astro](file:///c:/Users/Naween/projects/polymath-platform/apps/edlove-web/src/components/Footer.astro)
+- Create a new Astro component for the Footer.
+- **Structure**:
+  - Container with `deep-indigo` background (or similar dark theme color).
+  - Grid layout for links:
+    - **About Us**
+    - **Privacy Policy**
+    - **Terms of Use**
+  - Bottom section for "Built with 💖" and copyright.
+- **Styling**: Use Tailwind CSS to match the design system (fonts `Libre Baskerville` for headings, `Inter` for text).
+
+### apps/edlove-web/src/layouts
+
+#### [MODIFY] [Layout.astro](file:///c:/Users/Naween/projects/polymath-platform/apps/edlove-web/src/layouts/Layout.astro)
+- Import `Footer` from `../components/Footer.astro`.
+- Render `<Footer />` after the `<slot />` (main content).
+- Ensure the main content takes up remaining height so the footer sits at the bottom (using `flex-col` and `min-h-screen` if not already present, or sticky footer).
+
+## Verification Plan
+
+### Automated Tests
+- Run `npm run build` within `apps/edlove-web` to ensure no build errors.
+
+### Manual Verification
+- Start the dev server: `npm run dev`.
+- Visually inspect the footer on the homepage.
+- Check responsiveness (mobile/desktop).
+- Verify all links are present (even if they point to `#` or separate pages for now).
+
+## Content & Visual Refinement Plan
+
+### Video Visibility Fix
+- **Issue**: `nature-loop.mp4` is invisible/behind black background.
+- **Fix**: 
+  - Verify file exists at `public/assets/nature-loop.mp4`.
+  - Adjust `z-index` in `CinematicBackground.astro`.
+  - Ensure fallback gradients don't obscure the video.
+
+### Gurudevi Landing Page (`src/pages/gurudevi/index.astro`)
+- **Source**: `apps/gurudevi-mobile/Docs v 3.0/Core/NORTH_STAR.md` & `gurudevi_design_framework.md`.
+- **Content**:
+  - **Hero**: "Divine Teacher" concept, Lotus metaphor.
+  - **Philosophy**: Lotus stages (Mud, Water, Bloom).
+  - **Features**: 5 Pillars (Self, Classroom, Community, Library, Profile).
+  - **Commitments**: Privacy, Trilingual, Offline-first.
+  - **Visuals**: Use "Lotus Palette" colors (`#F4C2C2`, `#5D4E37`, etc.).
+  - **Call to Action**: "Coming Soon" for Android & iOS.
+    - specialized "Join Waitlist" section.
+    - Badges for Play Store / App Store (grayed out or "Pre-register").
+
+### Other Pages Content
+- **Cosmos (`src/pages/cosmos/index.astro`)**: Add placeholder text about "The Paradigm Cosmos" and list the 5 initial paradigms (Industrial, Montessori, etc.).
+- **Sri Lanka (`src/pages/sri-lanka/index.astro`)**: Add placeholder content about "System of Sri Lanka", Official vs Shadow structure.
+- **Library (`src/pages/library/index.astro`)**: Add "Epistemic Core" intro, list categories (Thinkers, Paradigms, Frameworks).
+- **Resources (`src/pages/resources/index.astro`)**: Vision statement and "How It Works".
+- **Community (`src/pages/community/index.astro`)**: Vision statement and "Join the Founding Community".
+
+### Global Layout
+- Ensure consistent margins/padding (cinematic spacing).
+- Verify navigation and footer alignment across all pages.

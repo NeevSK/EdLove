@@ -1,0 +1,34 @@
+# Surgical React Version Synchronization
+
+## Goal
+Resolve the "Incompatible React versions" crash by unifying the entire monorepo on React 19.1.0, which is the version required by the Expo SDK 54 / React Native 0.81 renderer.
+
+## User Review Required
+> [!IMPORTANT]
+> **Why we need an override:**
+> Even though we are using "in-built" packages, `@react-navigation` and other tools now have a peer dependency on React `^19.2.0`. However, the Native Renderer shipped inside Expo SDK 54 is strictly `19.1.0`. 
+>
+> To resolve this conflict, we must use a `pnpm.overrides` to force these libraries back to `19.1.0`. Without this, the app will continue to crash on launch.
+
+## Proposed Changes
+
+### [Monorepo Root]
+
+#### [MODIFY] [package.json](file:///c:/Users/Naween/projects/polymath-platform/package.json)
+- Add `pnpm.overrides` to pin `react`, `react-dom`, and `@types/react` to `19.1.0`.
+- Ensure `react-native-renderer` (if pulled separately) is also pinned.
+
+### [gurudevi-mobile]
+
+#### [MODIFY] [package.json](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/package.json)
+- Ensure `react` is explicitly `19.1.0`.
+
+## Verification Plan
+
+### Automated Tests
+- **Version Check**: Run `pnpm why react -r` to confirm NO version other than `19.1.0` exists in the tree.
+- **BDD Harness**: Run `pnpm test` to ensure the testing tools (Jest 30, RNTL 14 Beta) still function with React 19.1.0.
+
+### Manual Verification
+- **App Launch**: Start the app with `npx expo start --clear` and verify the red screen error is gone.
+- **Navigation Test**: Click through the app to ensure React Navigation works correctly with the forced 19.1.0 version.

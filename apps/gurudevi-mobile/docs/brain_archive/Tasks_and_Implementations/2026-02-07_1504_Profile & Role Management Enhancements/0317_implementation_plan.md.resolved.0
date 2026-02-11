@@ -1,0 +1,71 @@
+# Profile & Role Management Enhancements Plan
+
+## Goal Description
+Enhance the Profile section of the Gurudevi mobile app to improve user experience and functionality. Key goals include adding logout capability, improving the profile card UI (larger edit touch area, full-screen mode), integrating QR codes for ID and invitations, and adding role management features for testing and administration.
+
+## User Review Required
+> [!IMPORTANT]
+> **Role Management Security**: The requested "Role Dropdown" for testing allows effortless role switching. This strictly for DEVELOPMENT/TESTING environments or specific admin users. I will implement this behind a dev-flag or specific admin check to prevent unauthorized role escalation in production.
+
+> [!NOTE]
+> **QR Code Integration**: We will use a standard QR code library (`react-native-qrcode-svg`) to generate codes.
+
+## Proposed Changes
+
+### Profile Section
+#### [MODIFY] [ProfileScreen.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/ProfileScreen.tsx)
+- Add "Logout" button/action in `ControlScroll` or a new section.
+- Implement `signOut` logic using Supabase.
+- Add `fullScreen` state to toggle [IdentityCard](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/profile/IdentityCard.tsx#33-176) full-screen mode.
+
+#### [MODIFY] [IdentityCard.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/profile/IdentityCard.tsx)
+- Increase touch area for the "Edit" button.
+- Add "Full Screen" toggle/expand icon or gesture.
+- In Full Screen mode:
+    - Show QR Code (flippable or separate tab).
+    - Display more detailed user info.
+    - Enable "Edit Photo" functionality.
+
+#### [MODIFY] [EditProfileModal.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/profile/EditProfileModal.tsx)
+- Add "Edit Photo" section (using `expo-image-picker` if available, or just UI placeholder for now if deps needed).
+- Add "Role Selector" (Dropdown) - **Visible only for Dev/Admin**.
+
+### Role Management
+#### [MODIFY] [useUserRole.ts](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/hooks/useUserRole.ts)
+- Ensure it supports the new "Founder/Development Admin" role.
+
+#### [MODIFY] [ProfileScreen.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/ProfileScreen.tsx)
+- Add role switching logic for testing (modifies local state/context or updates user metadata if in dev mode).
+
+### QR Code Integration
+#### [NEW] [QRCodeGenerator.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/shared/QRCodeGenerator.tsx)
+- Create a reusable component to generate QR codes using `react-native-qrcode-svg`.
+- Input: User ID, Invite Code, or generic string.
+
+#### [MODIFY] [AuthScreen.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/AuthScreen.tsx)
+- Add option to "Scan QR" for sign-up/login (UI only first, logic if scanner lib exists).
+
+## Verification Plan
+
+### Automated Tests
+- Run existing tests if any.
+
+### Manual Verification
+1.  **Logout**:
+    - Go to Profile.
+    - Click Logout.
+    - Verify redirection to Auth screen.
+2.  **Edit Button**:
+    - Tap around the Edit icon.
+    - Verify it opens the Edit Modal easily.
+3.  **Full Screen Profile**:
+    - Tap Expand/Card.
+    - Verify full-screen view opens.
+    - Verify QR code is visible.
+    - Verify additional details are shown.
+4.  **Role Switching**:
+    - (As Admin/Dev) Open Edit Modal.
+    - Change Role.
+    - Verify UI updates to reflect new role immediately.
+5.  **QR Code**:
+    - Verify QR code generates correctly for the logged-in user.

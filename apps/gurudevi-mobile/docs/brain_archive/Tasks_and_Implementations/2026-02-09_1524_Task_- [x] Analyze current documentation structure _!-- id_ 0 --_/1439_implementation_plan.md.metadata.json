@@ -1,0 +1,5 @@
+{
+  "artifactType": "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
+  "summary": "Implementation plan for reorganizing the documentation in `apps/gurudevi-mobile`. This involves moving redundant root documents into a structured directory inside `Docs v 3.0` and creating a single 'Active Status' file.",
+  "updatedAt": "2026-02-09T09:09:03.095693Z"
+}

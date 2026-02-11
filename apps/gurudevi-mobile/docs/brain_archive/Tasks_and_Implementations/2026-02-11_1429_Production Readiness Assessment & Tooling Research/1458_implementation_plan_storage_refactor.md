@@ -1,0 +1,32 @@
+# Hybrid Fail-safe Persistence Implementation Plan
+
+The current storage implementation uses an "In-Memory" fallback if `react-native-mmkv` fails. This is risky for production as it causes data loss on app reloads. This plan introduces a persistent fallback using `AsyncStorage`.
+
+## Proposed Changes
+
+### [gurudevi-mobile]
+
+#### [MODIFY] [storage.ts](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/lib/storage.ts)
+- Implement `HybridStorage` class.
+- **Boot Sequence**:
+  1. Attempt to initialize MMKV.
+  2. If MMKV fails, initialize an "AsyncStorage Proxy".
+  3. Load all necessary keys from `AsyncStorage` into memory at startup to keep the `getString`/`getBoolean` methods synchronous (matching the current interface).
+- **Interface Consistency**: Maintain the existing `StorageInterface` so no other files need to change their logic.
+
+## Verification Plan
+
+### Automated Tests
+1. **Mock Failure Test**:
+   - Manually trigger a failure in the MMKV initialization block within `storage.ts`.
+   - Verify that the app still loads and can 'set' and 'get' data.
+   - Verify that data persists after a simulated reload (using `AsyncStorage`'s native persistence).
+2. **TSC Check**:
+   - Run `npx tsc` after the refactor to ensure no breaks in types.
+
+### Manual Verification
+1. **iOS Simulator**:
+   - Run the app on an iOS simulator (where native modules can sometimes be finicky).
+   - Check the console logs for "✅ MMKV initialized" or "⚠️ Falling back to AsyncStorage".
+2. **Expo Go (If applicable)**:
+   - Verify that the app still functions in Expo Go by using the AsyncStorage fallback.
