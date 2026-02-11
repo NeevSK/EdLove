@@ -10,8 +10,7 @@ import {
     Text,
     Button,
     ButtonText,
-    VStack,
-    Box
+    VStack
 } from '@/ui';
 import { Theme } from '../../constants/Theme';
 import { useTranslation } from 'react-i18next';

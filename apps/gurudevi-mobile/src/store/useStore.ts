@@ -40,6 +40,14 @@ export const useStore = create<AppState>()(
         {
             name: 'gurudevi-storage',
             storage: createJSONStorage(() => AsyncStorage),
+            partialize: (state) => ({
+                teacherName: state.teacherName,
+                userRole: state.userRole,
+                schoolType: state.schoolType,
+                themeMode: state.themeMode,
+                onboardingCompleted: state.onboardingCompleted,
+                // justFinishedOnboarding is NOT persisted - it's session-only
+            }),
         }
     )
 );

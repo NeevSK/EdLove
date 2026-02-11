@@ -8,17 +8,15 @@ import React, { useState } from 'react';
 import {
     Box,
     VStack,
-    HStack,
     Text,
     Heading,
     ScrollView,
     Pressable
 } from "@/ui";
-import { Shield, Settings, Activity, Cpu, Database, Layout } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
+import { Shield, Settings, Activity, Database, Layout, Heart } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { hapticLight } from '../../utils/haptics';
-import { MoodLotus, ShadowAgentDrawer, EnergyForecast } from '../../components/self';
+import { MoodLotus, ShadowAgentDrawer } from '../../components/self';
 import { supabase } from '../../lib/supabase';
 import GlobalHeader from '../../components/shared/GlobalHeader';
 import DailyContentCard from '../../components/self/DailyContentCard';
@@ -37,10 +35,7 @@ const ADMIN_MORE_TOOLS = [
     { id: 'ui', label: 'UI Harmony', icon: Layout, category: 'discover' },
 ];
 
-import { Heart } from 'lucide-react-native';
-
 export default function AdminSelfView() {
-    const { t } = useTranslation();
     const [activeFeature, setActiveFeature] = useState('balance');
     const [userId, setUserId] = useState<string | null>(null);
     const [showMoreTools, setShowMoreTools] = useState(false);
