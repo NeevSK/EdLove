@@ -28,6 +28,8 @@ import { MoodLotus, ShadowAgentDrawer } from '../../components/self';
 import { supabase } from '../../lib/supabase';
 import GlobalHeader from '../../components/shared/GlobalHeader';
 import DailyContentCard from '../../components/self/DailyContentCard';
+import WelcomeModal from '../../components/self/WelcomeModal';
+import { useStore } from '../../store/useStore';
 
 // Student-specific core features
 const STUDENT_CORE_FEATURES = [
@@ -46,6 +48,8 @@ export default function StudentSelfView() {
     const [activeFeature, setActiveFeature] = useState('mood');
     const [userId, setUserId] = useState<string | null>(null);
     const [showMoreTools, setShowMoreTools] = useState(false);
+    const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
+    const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
 
     React.useEffect(() => {
         const fetchUser = async () => {
@@ -289,6 +293,10 @@ export default function StudentSelfView() {
             </ScrollView>
 
             <ShadowAgentDrawer />
+            <WelcomeModal
+                isOpen={justFinishedOnboarding}
+                onClose={() => setJustFinishedOnboarding(false)}
+            />
         </Box>
     );
 }

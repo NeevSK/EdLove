@@ -17,6 +17,8 @@ interface AppState {
     setThemeMode: (mode: ThemeMode) => void;
     onboardingCompleted: boolean;
     setOnboardingCompleted: (completed: boolean) => void;
+    justFinishedOnboarding: boolean;
+    setJustFinishedOnboarding: (justFinished: boolean) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -32,6 +34,8 @@ export const useStore = create<AppState>()(
             setThemeMode: (mode) => set({ themeMode: mode }),
             onboardingCompleted: false,
             setOnboardingCompleted: (completed) => set({ onboardingCompleted: completed }),
+            justFinishedOnboarding: false,
+            setJustFinishedOnboarding: (justFinished) => set({ justFinishedOnboarding: justFinished }),
         }),
         {
             name: 'gurudevi-storage',

@@ -188,6 +188,7 @@ export default function App() {
                       store.setTeacherName(name);
                       store.setUserRole(role);
                       store.setOnboardingCompleted(true);
+                      store.setJustFinishedOnboarding(true);
                     }} />
                   </ErrorBoundary>
                 ) : (

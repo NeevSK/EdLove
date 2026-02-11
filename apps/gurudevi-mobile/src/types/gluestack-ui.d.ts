@@ -70,9 +70,10 @@ declare module '@gluestack-ui/themed/build/components/FormControl' {
     export const FormControlLabelText: any;
 }
 declare module '@gluestack-ui/themed/build/components/Divider' { export const Divider: any; }
-declare module '@gluestack-ui/themed/build/components/Icons' { export const CloseIcon: any; }
-declare module '@gluestack-ui/themed/build/components/Icon' { export const Icon: any; }
-declare module '@gluestack-ui/themed/build/components/Modal' {
+declare module '@gluestack-ui/themed/build/components/Icons' {
+    export const Icon: any;
+    export const CloseIcon: any;
+} declare module '@gluestack-ui/themed/build/components/Modal' {
     export const Modal: any;
     export const ModalBackdrop: any;
     export const ModalContent: any;

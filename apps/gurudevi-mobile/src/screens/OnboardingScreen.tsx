@@ -88,7 +88,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                 <VStack space="lg" mt="$6">
                     <Select
                         selectedValue={role}
-                        onValueChange={(value) => {
+                        onValueChange={(value: string) => {
                             hapticLight();
                             setRole(value as UserRole);
                         }}
@@ -300,11 +300,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
     const handleSkip = () => {
         if (!currentScreenData.skippable) return;
         hapticLight();
-        if (currentScreen < screens.length - 1) {
-            setCurrentScreen(currentScreen + 1);
-        } else {
-            handleComplete();
-        }
+        handleComplete();
     };
 
     const handleComplete = async () => {
@@ -331,7 +327,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
             console.error('Error completing onboarding:', error);
             toast.show({
                 placement: 'bottom',
-                render: ({ id }) => (
+                render: ({ id }: { id: string }) => (
                     <Toast nativeID={id} action="error" variant="solid">
                         <ToastTitle>Failed to complete onboarding. Please try again.</ToastTitle>
                     </Toast>

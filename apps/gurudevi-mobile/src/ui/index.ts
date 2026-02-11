@@ -114,8 +114,7 @@ export {
     ModalCloseButton
 } from '@gluestack-ui/themed/build/components/Modal';
 
-export { Icon } from '@gluestack-ui/themed/build/components/Icon';
-export { CloseIcon } from '@gluestack-ui/themed/build/components/Icons';
+export { Icon, CloseIcon } from '@gluestack-ui/themed/build/components/Icons';
 export { Image } from '@gluestack-ui/themed/build/components/Image';
 export { FlatList } from '@gluestack-ui/themed/build/components/FlatList';
 export { SectionList } from '@gluestack-ui/themed/build/components/SectionList';
