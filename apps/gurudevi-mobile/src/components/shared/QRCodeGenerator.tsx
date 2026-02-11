@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import Svg, { Rect, Defs, ClipPath } from 'react-native-svg';
 import { View, StyleSheet } from 'react-native';
-import { Text } from '@gluestack-ui/themed';
+import { Text } from '@/ui';
 import QRCode from 'qrcode';
 import { Theme } from '../../constants/Theme';
 

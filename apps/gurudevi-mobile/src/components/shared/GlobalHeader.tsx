@@ -11,7 +11,7 @@
  */
 
 import React from 'react';
-import { Box, HStack, VStack, Text, Heading } from '@gluestack-ui/themed';
+import { Box, HStack, VStack, Text, Heading } from '@/ui';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';
 import { useUserRole } from '../../hooks/useUserRole';

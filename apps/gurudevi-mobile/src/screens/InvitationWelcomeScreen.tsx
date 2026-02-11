@@ -1,4 +1,4 @@
-import { VStack, Heading, Text, Button, ButtonText, Box, useToast, Toast, ToastTitle, ToastDescription } from '@gluestack-ui/themed';
+import { VStack, Heading, Text, Button, ButtonText, Box, useToast, Toast, ToastTitle, ToastDescription } from '@/ui';
 import { Theme } from '../constants/Theme';
 import { supabase } from '../lib/supabase';
 import { useNavigation } from '@react-navigation/native';

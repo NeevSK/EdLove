@@ -11,7 +11,7 @@ import {
     Box,
     InputSlot,
     InputIcon
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { AlertCircle } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 

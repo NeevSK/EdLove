@@ -84,6 +84,13 @@ export {
     FormControlLabelText
 } from '@gluestack-ui/themed/build/components/FormControl';
 
+export {
+    Textarea,
+    TextareaInput
+} from '@gluestack-ui/themed/build/components/Textarea';
+
+export { Switch } from '@gluestack-ui/themed/build/components/Switch';
+
 // ============================================================================
 // Avatar Components
 // ============================================================================

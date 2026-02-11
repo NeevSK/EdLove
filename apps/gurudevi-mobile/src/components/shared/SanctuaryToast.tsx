@@ -7,7 +7,7 @@ import Animated, {
     runOnJS
 } from 'react-native-reanimated';
 import { StyleSheet, TouchableOpacity } from 'react-native';
-import { Box, Text, HStack } from '@gluestack-ui/themed';
+import { Box, Text, HStack } from '@/ui';
 import { CheckCircle, AlertCircle, Info, X } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 

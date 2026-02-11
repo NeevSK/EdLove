@@ -21,7 +21,7 @@ import {
     ButtonText,
     ScrollView,
     Spinner,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { Theme } from '../../constants/Theme';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';
