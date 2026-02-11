@@ -52,9 +52,10 @@ To understand the project's evolution, read the documents in this order.
 | **Auth System** | `gurudevi_final_invitation_auth_system.md` | ✅ **DONE** | Integrated with Supabase + Passwordless flows. |
 | **Daily Content** | `ALPHA_PROGRESS_FEB8.md` | ✅ **DONE** | API & UI complete. |
 | **Thuthimal Badges** | `ALPHA_PROGRESS_FEB8.md` | ✅ **DONE** | Logic implemented. |
-| **Onboarding** | `onboarding_design.md` | ✅ **DONE** | 5-screen flow implemented and synced. |
+| **Onboarding** | `onboarding_design.md` | ✅ **DONE** | 5-screen flow with "Skip to Home" logic. |
+| **Welcome System**| `walkthrough_onboarding_refinement.md` | ✅ **DONE** | Role-specific Welcome Modals for all 5 personas. |
 | **UI Abstraction** | `walkthrough_ui_abstraction.md` | ✅ **DONE** | 100% migration to `@/ui`. Resolves TS stack overflow. |
-| **BDD Testing** | `TESTING_STRATEGY.md` | ✅ **LIVE** | infrastructure setup with `jest-cucumber`. 100% pass on Invite/Auth flows. |
+| **BDD Testing** | `TESTING_STRATEGY.md` | ✅ **LIVE** | infrastructure setup. 100% pass on Invite/Auth/Onboarding flows. |
 | **Student Bulk Create** | `GURUDEVI_NEXT_ACTIONS.md` | 🔄 **Started** | OCR functionality pending. |
 
 ### ⛔ Beta Blockers (Technical Debt)

@@ -114,10 +114,10 @@ export {
     ModalCloseButton
 } from '@gluestack-ui/themed/build/components/Modal';
 
-export { Icon, CloseIcon } from '@gluestack-ui/themed/build/components/Icons';
-export { Image } from '@gluestack-ui/themed/build/components/Image';
-export { FlatList } from '@gluestack-ui/themed/build/components/FlatList';
-export { SectionList } from '@gluestack-ui/themed/build/components/SectionList';
+
+// Note: For icons, use lucide-react-native directly (e.g., import { X, Menu } from 'lucide-react-native')
+// Note: For images, use React Native's Image or expo-image directly
+export { FlatList, SectionList } from 'react-native';
 
 export {
     Checkbox,
