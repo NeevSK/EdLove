@@ -1,0 +1,171 @@
+# Database State Comparison Report
+
+**Generated:** 2026-02-11  
+**Database Audit Date:** 2026-02-11
+
+## Executive Summary
+
+✅ **Good News:** Your Supabase database is well-populated with **25+ tables** across all major feature areas.  
+⚠️ **Issue:** Migration tracking was not maintained, so exact migration history is unknown.  
+✅ **Solution:** We can reconstruct what's been applied by comparing deployed tables with migration file contents.
+
+---
+
+## Deployed Tables (From Audit)
+
+Based on the foreign key relationships you provided, these tables exist in your Supabase database:
+
+### Core Foundation Tables (5)
+- ✅ `schools` - Multi-tenant root
+- ✅ `users` - User profiles
+- ✅ `subscriptions` - Subscription tracking
+- ✅ `grades` - Grade levels
+- ✅ `sections` - School sections
+
+### Authentication & Onboarding (2)
+- ✅ `invite_codes` - Invite system
+- ✅ `profile_completion` - Profile tracking
+
+### Classroom Management (4)
+- ✅ `classrooms` - Classroom entities
+- ✅ `classroom_students` - Student enrollment
+- ✅ `lessons` - Lesson content
+- ✅ `assignments` - Assignments
+- ✅ `submissions` - Student submissions
+
+### Self/Wellbeing Features (2)
+- ✅ `mood_logs` - Mood tracking
+- ✅ `fire_journal` - Venting journal
+
+### Community Features (4)
+- ✅ `announcements` - School announcements
+- ✅ `community_groups` - Community groups
+- ✅ `community_group_members` - Group membership
+- ✅ `community_posts` - Post content
+- ✅ `community_reactions` - Reactions/likes
+
+### Library System (3)
+- ✅ `library_items` - Library resources
+- ✅ `library_collections` - User collections
+- ✅ `library_collection_items` - Collection items
+
+### Gamification & Pricing (3)
+- ✅ `user_rewards` - User rewards/points
+- ✅ `gift_codes` - Gift/promo codes
+- ✅ `pricing_subscriptions` - Pricing tier subscriptions
+
+**Total: 25 tables deployed**
+
+---
+
+## Migration Files Analysis
+
+### Migrations Likely Applied ✅
+
+Based on table existence, these migrations appear to have been applied:
+
+| Migration File | Confidence | Evidence |
+|----------------|------------|----------|
+| [1427_minimal_schema.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/brain_archive/Uncategorized/2026-02-04_1715_Gurudevi%20Development%20Tasks/1427_minimal_schema.sql) | **HIGH** | `schools`, `users`, `subscriptions` tables exist |
+| [1559_sri_lankan_hierarchy_schema_fixed.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/brain_archive/Uncategorized/2026-02-04_1715_Gurudevi%20Development%20Tasks/1559_sri_lankan_hierarchy_schema_fixed.sql) | **HIGH** | `sections`, `grades` exist; `users` has `section_id`, `grade_id` FK |
+| [1559_invite_system_schema_fixed.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/brain_archive/Uncategorized/2026-02-04_1715_Gurudevi%20Development%20Tasks/1559_invite_system_schema_fixed.sql) | **HIGH** | `invite_codes`, `profile_completion` exist |
+| [20260205_features_schema.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260205_features_schema.sql) | **HIGH** | `classrooms`, `lessons`, `assignments`, `submissions`, `mood_logs`, `fire_journal`, `announcements` exist |
+| [20260205_community_library_gamification.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260205_community_library_gamification.sql) | **HIGH** | `community_groups`, `community_posts`, `library_items`, etc. exist |
+| [20260205_auto_create_user.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260205_auto_create_user.sql) | **MEDIUM** | Would need to check triggers to confirm |
+
+### Migrations Possibly Applied ⚠️
+
+These might have been applied but need verification:
+
+| Migration File | Confidence | Verification Needed |
+|----------------|------------|---------------------|
+| [20260206_add_lesson_materials.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260206_add_lesson_materials.sql) | **UNKNOWN** | Check if `lesson_materials` table exists |
+| [20260208_create_classroom_photos.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260208_create_classroom_photos.sql) | **UNKNOWN** | Check if `classroom_photos` table exists |
+| [20260208_add_daily_content.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260208_add_daily_content.sql) | **UNKNOWN** | Check for daily content tables |
+| [20260208_add_thuthimal_fields.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260208_add_thuthimal_fields.sql) | **UNKNOWN** | Check specific columns in users table |
+| [20260208_add_onboarding_fields.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260208_add_onboarding_fields.sql) | **UNKNOWN** | Check specific columns in users table |
+| [20260208_enhance_invitations.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260208_enhance_invitations.sql) | **UNKNOWN** | Check invite_codes columns |
+| [20260206_progressive_features.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260206_progressive_features.sql) | **UNKNOWN** | Check for feature flags table |
+| [20260206_update_classroom_students.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260206_update_classroom_students.sql) | **UNKNOWN** | Check classroom_students columns |
+| [20260207_shadow_enrollment.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260207_shadow_enrollment.sql) | **UNKNOWN** | Check for shadow enrollment table |
+
+### RLS Fix Migrations (Likely Applied)
+
+| Migration File | Status |
+|----------------|--------|
+| [20260205_NUCLEAR_RLS_FIX.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260205_NUCLEAR_RLS_FIX.sql) | Likely applied (part of iterative fixes) |
+| [20260205_fix_rls_recursion.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260205_fix_rls_recursion.sql) | Likely applied |
+| [20260205_fix_school_permissions.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260205_fix_school_permissions.sql) | Likely applied |
+| [20260207_FINAL_RLS_FIX.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260207_FINAL_RLS_FIX.sql) | Possibly the last one applied |
+| [20260207_fix_enrollment_rls.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260207_fix_enrollment_rls.sql) | Possibly applied |
+| [fix_recursion.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/fix_recursion.sql) | Status unknown |
+
+---
+
+## Missing Information
+
+To complete the comparison, we need to check for:
+
+### Additional Tables
+Run this query in Supabase SQL Editor:
+```sql
+SELECT table_name 
+FROM information_schema.tables 
+WHERE table_schema = 'public'
+ORDER BY table_name;
+```
+
+This will show ALL tables, not just those with foreign keys.
+
+### Column Details
+For tables that might have been altered by later migrations, check:
+```sql
+SELECT table_name, column_name, data_type
+FROM information_schema.columns
+WHERE table_schema = 'public'
+  AND table_name IN ('users', 'invite_codes', 'classrooms', 'classroom_students')
+ORDER BY table_name, ordinal_position;
+```
+
+---
+
+## Recommendations
+
+### 1. ✅ Your Database is in Good Shape
+You have substantial infrastructure deployed. Most core migrations have been applied.
+
+### 2. 📋 Update Migration Status
+Update [migration_status.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migration_status.md) to mark confirmed migrations as ✅ applied.
+
+### 3. 🔍 Verify Recent Migrations
+The February 6-8 migrations (lesson materials, photos, daily content, etc.) need verification. Run the queries above to check.
+
+### 4. 🗄️ Archive Old Files
+As you requested, create `supabase/old/` folder and move:
+- Archived schema files from docs
+- Any superseded migration files
+- Keep only the canonical migration history
+
+### 5. 🚫 Don't Re-Apply Core Migrations
+**Do NOT re-run:**
+- [minimal_schema.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/brain_archive/Uncategorized/2026-02-04_1715_Gurudevi%20Development%20Tasks/1427_minimal_schema.sql)
+- [sri_lankan_hierarchy_schema_fixed.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/brain_archive/Uncategorized/2026-02-04_1715_Gurudevi%20Development%20Tasks/1559_sri_lankan_hierarchy_schema_fixed.sql)  
+- [invite_system_schema_fixed.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/brain_archive/Uncategorized/2026-02-04_1715_Gurudevi%20Development%20Tasks/1559_invite_system_schema_fixed.sql)
+- [features_schema.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260205_features_schema.sql)
+- [community_library_gamification.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260205_community_library_gamification.sql)
+
+These are already applied and would cause errors.
+
+### 6. ✨ Apply Missing Migrations Only
+Once we verify which Feb 6-8 migrations are missing, apply only those.
+
+---
+
+## Next Steps
+
+1. Run the two SQL queries above to get complete table and column lists
+2. Share results with me
+3. I'll pinpoint exactly which migrations remain to be applied
+4. We'll update [migration_status.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migration_status.md) with accurate status
+5. Clean up and archive old files
+6. Apply any missing migrations

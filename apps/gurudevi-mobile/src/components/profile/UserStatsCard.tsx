@@ -9,7 +9,7 @@ import {
 } from '@/ui';
 import { Theme } from '../../constants/Theme';
 import { UserRole } from '../../types/User';
-import { Trophy, Users, BookOpen, Clock, Star, ShieldCheck } from 'lucide-react-native';
+import { Trophy, Users, BookOpen, Clock, Star, Shield } from 'lucide-react-native';
 
 interface UserStatsCardProps {
     role: UserRole;
@@ -70,7 +70,7 @@ export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
                     items: [
                         { label: 'Uptime', value: '99.9%', icon: Clock, color: Theme.colors.sageGreen },
                         { label: 'Users', value: '1.2k', icon: Users, color: Theme.colors.sanctuarySaffron },
-                        { label: 'Alerts', value: 0, icon: ShieldCheck, color: Theme.colors.emberRed },
+                        { label: 'Alerts', value: 0, icon: Shield, color: Theme.colors.emberRed },
                     ],
                     progressLabel: 'System Archon',
                     progressValue: 95

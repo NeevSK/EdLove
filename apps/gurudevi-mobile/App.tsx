@@ -18,7 +18,7 @@ import { UserRole } from './src/types/User';
 import { SchoolType } from './src/constants/SriLankanSchools';
 
 // Import screens and navigation
-import AuthScreen from './src/screens/AuthScreen';
+import WelcomeScreen from './src/screens/WelcomeScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import TabNavigator from './src/navigation/TabNavigator';
 import LotusPetalFAB, { ActionItem } from './src/components/shared/LotusPetalFAB';
@@ -178,17 +178,19 @@ export default function App() {
             <ErrorBoundary name="App Root">
               <NavigationContainer>
                 {!session ? (
-                  <ErrorBoundary name="Auth Screen">
-                    <AuthScreen />
+                  <ErrorBoundary name="Welcome Screen">
+                    <WelcomeScreen />
                   </ErrorBoundary>
                 ) : !onboardingCompleted ? (
                   <ErrorBoundary name="Onboarding Screen">
                     <OnboardingScreen onComplete={(name: string, role: any) => {
+                      console.log('Onboarding complete callback triggered in App.tsx', { name, role });
                       const store = useStore.getState();
                       store.setTeacherName(name);
                       store.setUserRole(role);
                       store.setOnboardingCompleted(true);
                       store.setJustFinishedOnboarding(true);
+                      console.log('App Store updated: onboardingCompleted is now', useStore.getState().onboardingCompleted);
                     }} />
                   </ErrorBoundary>
                 ) : (

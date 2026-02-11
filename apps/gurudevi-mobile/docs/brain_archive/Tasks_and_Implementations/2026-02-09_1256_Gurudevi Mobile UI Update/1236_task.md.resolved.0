@@ -1,0 +1,8 @@
+# Gurudevi Mobile UI Update
+
+- [ ] Explore existing `apps/gurudevi-mobile` UI code <!-- id: 0 -->
+    - [ ] Check navigation/layout structure <!-- id: 1 -->
+    - [ ] Check theme/color definitions <!-- id: 2 -->
+    - [ ] Check key components (Card, Buttons) <!-- id: 3 -->
+- [ ] Compare with "Glass Sanctuary" spec <!-- id: 4 -->
+- [ ] Provide opinion and feedback to user <!-- id: 5 -->

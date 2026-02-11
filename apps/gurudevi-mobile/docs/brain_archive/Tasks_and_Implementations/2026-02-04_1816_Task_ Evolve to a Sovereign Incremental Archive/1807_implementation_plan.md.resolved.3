@@ -1,0 +1,35 @@
+# Documentation Consolidation & Sync Strategy
+
+This plan outlines how to move and organize all your research/brain files from the system-managed Gemini directory into your project, while maintaining their chronological and chat-based context.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Multi-Category Sorting**: Files are sorted into: Tasks, Planning, Learning, and Vision.
+> 
+> **Chronological Order**: 
+> 1. **Folders**: Names are prefixed with `yyyy-MM-dd` (e.g., `2026-02-04_Auth-Setup`).
+> 2. **Files**: Filenames are prefixed with `HH-mm` (e.g., `14-30_task.md`) to ensure they sort by time in your file explorer.
+
+## Proposed Changes
+
+We will create a consolidation script that does the following:
+1. Loops through each "Session" folder in your Brain directory.
+2. Identifies the primary task or topic of that session (by reading [task.md](file:///C:/Users/Naween/.gemini/antigravity/brain/ed5e0757-6cdd-4eaa-928b-7096a381c2a9/task.md)).
+3. Copies all files (including [.resolved](file:///C:/Users/Naween/.gemini/antigravity/brain/d7e3ed05-2fb9-4b12-97a8-302ab75b8083/task.md.resolved) and [task.md](file:///C:/Users/Naween/.gemini/antigravity/brain/ed5e0757-6cdd-4eaa-928b-7096a381c2a9/task.md)) into a structured folder in `apps/gurudevi-mobile/Docs v 3.0/brain_archive/`.
+
+### [Documentation]
+
+#### [MODIFY] [consolidate_docs.ps1](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/consolidate_docs.ps1)
+Updated to handle the four-category sorting logic.
+- **Categorization Logic**: Uses keyword matching on file names (e.g., `*walkthrough*` -> `Learning`).
+- **Archive Structure**: `brain_archive / [Category] / [Session_Name] / [Files]`.
+
+## Verification Plan
+
+### Automated Verification
+- I will run the script once to demonstrate the organization.
+- I will verify that the files in the new `brain_archive` folder match the ones in the system brain folder.
+
+### Manual Verification
+- The user can inspect the `brain_archive` folder to ensure it is organized logically (e.g., folders named like `2026-02-04_Implementing-Auth`).

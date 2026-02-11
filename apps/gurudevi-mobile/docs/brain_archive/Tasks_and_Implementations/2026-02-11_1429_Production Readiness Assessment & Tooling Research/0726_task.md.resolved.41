@@ -1,0 +1,67 @@
+# Production Readiness Assessment & Tooling Research
+
+## Completed
+- [x] List all documentation files in `apps/gurudevi-mobile`
+- [x] Read and categorize documents (Alpha, Beta, Actions, Implementation, Progress)
+- [x] Determine chronological order of documents and their relevance
+- [x] Create a consolidated `documentation_audit.md` (or similar) artifact
+- [x] Provide a holistic summary of the project status based on analysis
+- [x] Analyze contents of `apps/gurudevi-mobile/docs/tasks`
+- [x] Update `PROJECT_STATUS_REPORT.md` with findings from new docs
+- [x] Check/create `apps/gurudevi-mobile/current_progress` folder
+- [x] Save `PROJECT_STATUS_REPORT.md` to `current_progress`
+- [x] Create `DAILY_REFERENCES.md` index in `current_progress`
+- [x] Identify and propose other documents for `current_progress`
+- [x] Create comprehensive Production Readiness Report
+- [x] Create Tools & Platforms Comparison Guide
+- [x] Create/Update Architecture & Tech Stack document
+- [x] Add Zero-Cost Strategy for Beta ($0 budget)
+- [x] Research Media Storage: Cloudinary vs Supabase Storage (Free tiers)
+- [x] Create Hybrid Persistence Implementation Plan (Fail-safe for iOS)
+- [x] Move documents to `apps/gurudevi-mobile/Docs v 3.0/current_progress`
+
+## Execution Phase 1: The Build & Foundation
+- [x] Blockers: Configure tsconfig.json for React Native (jsx, skipLibCheck, etc.)
+- [x] Blockers: Isolate source of TypeScript stack overflow via binary search (Testing layers individually)
+- [x] Blockers: Fix identified circular dependency or recursive type (Structural fixes + node stack size workaround)
+- [x] Blockers: Resolve remaining structural and type discrepancies (UserRole unification, missing Theme properties)
+- [x] Blockers: Finalize zero-error build (ScreenWrapper, dailyContent API, LibraryScreen)
+- [x] Version Control: Create stable branch and commit current progress
+- [x] **Synchronization & Recovery**
+    - [x] Pin React 19.1.0 / RN 0.81.5 across monorepo
+    - [x] Purge React 19.2.4 version bloat
+    - [x] Restore Expo core suite (Linking, Router, Image, Constants)
+    - [x] Clean terminal logs & verify bundling
+- [/] **Design Discovery**: Behavioral Flow Mapping
+    - [x] Stage 1: The Canal of Initiation (Onboarding & Entry)
+    - [x] Stage 2: Ecological Layer Refinement (Growth & Governance)
+- [x] Testing: Set up **Pure BDD** infrastructure (Gherkin + jest-cucumber)
+- [/] Feature: Implement Ecological Portals (QR Discovery) [Drafted - Review Needed]
+- [/] Feature: Implement School Branding (Logo Upload) [Drafted - Review Needed]
+- [/] Feature: Implement Group Prioritization (Pinning/Archiving) [Drafted - Review Needed]
+- [/] Telemetry: Integrate PostHog (Minimal setup)
+- [/] Security/Validation: Implement Zod for Auth/Onboarding flows
+- [ ] Feature Work: Start Onboarding/Invite implementation
+- [ ] Feature Work: Start Onboarding/Invite implementation with 'Mixed' quality (A11y/Tests as we go) (Jest, React Native Testing Library, Detox, etc.)
+
+## Production Readiness Research
+- [x] Review existing architecture docs (COMPREHENSIVE_APP_ANALYSIS.md, SECURITY_ARCHITECTURE_REVIEW.md)
+- [x] Research testing frameworks and tools (Jest, React Native Testing Library, Detox, etc.)
+- [x] Research telemetry/analytics tools with free tiers (Sentry, Firebase, PostHog, etc.)
+- [x] Research security tools and best practices
+- [x] Research error handling patterns and tools
+- [x] Research accessibility testing tools
+- [x] Research- [x] Configure Jest for Expo & React Native (support for React 19)
+- [x] Create initial feature file (`src/features/invitation_welcome.feature`)
+- [x] Implement Step Definitions (`src/__tests__/steps/invitation_welcome.steps.tsx`)
+- [x] Setup global mocks (Supabase, Expo, Gluestack)
+- [x] Verify BDD tests pass (Web-First Strategy)
+- [x] Feature: Implement Invitation Acceptance Logic (Supabase Integration)
+- [x] Verify Acceptance Logic via BDD
+- [ ] Create remaining planned features
+- [x] Create comprehensive Production Readiness Report
+- [x] Create Tools & Platforms Comparison Guide
+- [x] Create/Update Architecture & Tech Stack document
+- [x] Add Veteran Architect Radar & Radar Strategy
+- [ ] Implement Unified Error Handling logic (Phase 1: Interceptors)
+- [x] Move documents to `apps/gurudevi-mobile/Docs v 3.0/current_progress`

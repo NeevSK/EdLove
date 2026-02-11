@@ -1,0 +1,84 @@
+# Implementation Plan - Onboarding & Home Logic Refinement
+
+## Goal
+To refine the user experience during onboarding using the **Triple-Helix BDD** approach, ensuring seamless transition to the Home screen and proper Welcome/Mood flow.
+
+## 1. Triple-Helix: Behavior (The Soul)
+We will define the behavior in [features/onboarding_journey.feature](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/features/onboarding_journey.feature).
+
+```gherkin
+Feature: Onboarding Journey
+  As a new user
+  I want to complete or skip onboarding
+  So that I can access the main application features
+
+  Scenario: User skips onboarding
+    Given I am on the "Welcome to Gurudevi" screen
+    When I press the "Skip" button
+    Then I should be navigated to the Home Screen
+    And my onboarding status should be marked as completed
+    And I should see the "Warm Welcome" modal
+
+  Scenario: User completes onboarding normally
+    Given I am on the last onboarding screen
+    When I press the "Complete" button
+    Then I should be navigated to the Home Screen
+    And I should see the "Warm Welcome" modal
+
+  Scenario: Returning user (already onboarded)
+    Given I have previously completed onboarding
+    When I open the app
+    Then I should be on the Home Screen
+    And I should NOT see the "Warm Welcome" modal
+    And I should see the Mood Check
+```
+
+## 2. Triple-Helix: Structure (The Bone)
+We will implement the logic to support this behavior.
+
+### A. schema & Types Update
+*   **Audit**: Confirmed `users` table has `onboarding_completed` (via [20260208_add_onboarding_fields.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/20260208_add_onboarding_fields.sql)).
+*   **Gap Fix**: Update [src/types/User.ts](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/types/User.ts) to include:
+    ```typescript
+    onboarding_completed?: boolean;
+    onboarding_completed_at?: string;
+    ```
+
+### B. Store Update ([src/store/useStore.ts](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/store/useStore.ts))
+*   Add `justFinishedOnboarding` boolean flag (persisted). 
+    *   `true` when `onComplete` is called in [OnboardingScreen](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/OnboardingScreen.tsx#43-429).
+    *   `false` when Welcome Modal is dismissed.
+
+### C. App Logic ([App.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/App.tsx))
+*   Update `onComplete` callback to set `justFinishedOnboarding: true`.
+
+### D. Onboarding Screen ([src/screens/OnboardingScreen.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/OnboardingScreen.tsx))
+*   Modify [handleSkip](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/OnboardingScreen.tsx#300-305) to call [handleComplete](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/OnboardingScreen.tsx#306-338) (skip to end) instead of `nextSlide`.
+*   Update button text/icon if needed.
+
+### E. Home Screen Views (`src/screens/self/*.tsx`)
+*   Implement [WelcomeModal](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/self/WelcomeModal.tsx#25-72) integration in:
+    *   [StudentSelfView.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/self/StudentSelfView.tsx) (Completed)
+    *   [TeacherSelfView.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/self/TeacherSelfView.tsx)
+    *   [PrincipalSelfView.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/self/PrincipalSelfView.tsx)
+*   Logic for all:
+    *   Check `useStore.justFinishedOnboarding` on mount.
+    *   If true -> Show Modal.
+    *   On Dismiss -> Set store flag false.
+
+## 3. Triple-Helix: Environment (The Specs)
+*   **Database**: `public.users` table updates are already verified via SQL migration.
+*   **Device**: Haptics must trigger on Skip/Complete.
+
+## Verification Plan
+
+### Automated BDD Tests
+Run `npm test` to execute the Gherkin scenarios.
+*   **New Test File**: `__tests__/features/onboarding_journey.steps.tsx`
+*   **Mocking**: Mock `supabase.auth.getUser` and `supabase.from('users').update` to verify the DB call happens even on skip.
+
+### Manual Verification
+1.  **Fresh Install / Reset**: Clear app data.
+2.  **Run Scenario**: Login -> Enter Name/Role -> Click Next -> Click Skip.
+3.  **Expect**: Immediate Home Screen + "Welcome" Modal.
+4.  **Reload**: Restart app -> Expect Home Screen + No Modal + Mood Lotus.

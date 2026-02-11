@@ -1,0 +1,5 @@
+# Task Checklist
+
+- [x] Research `expo-audio` API for recording options
+- [x] Fix `RecordingPresets` usage in [VoiceJournaling.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/self/VoiceJournaling.tsx)
+- [x] Verify the fix

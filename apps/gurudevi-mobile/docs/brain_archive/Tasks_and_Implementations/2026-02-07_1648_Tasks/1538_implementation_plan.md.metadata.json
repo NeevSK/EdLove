@@ -1,0 +1,6 @@
+{
+  "artifactType": "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
+  "summary": "Implementation plan for replacing broken specific native gallery scanner with a universal JS-based solution.",
+  "updatedAt": "2026-02-07T10:53:46.170516Z",
+  "version": "2"
+}

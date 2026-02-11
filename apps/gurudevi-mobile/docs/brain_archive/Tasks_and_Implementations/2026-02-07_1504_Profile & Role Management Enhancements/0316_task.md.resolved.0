@@ -1,0 +1,22 @@
+# Profile & Role Management Enhancements
+
+- [ ] Exploration & Planning
+    - [ ] Locate existing Profile code <!-- id: 0 -->
+    - [ ] Analyze current Role/Auth implementation <!-- id: 1 -->
+    - [ ] Create Implementation Plan <!-- id: 2 -->
+- [ ] Profile Section Basics
+    - [ ] Implement Logout functionality <!-- id: 3 -->
+    - [ ] Improve Edit button touch area (UI/UX) <!-- id: 4 -->
+- [ ] Role Management
+    - [ ] Add "Founder/Development Admin" role <!-- id: 5 -->
+    - [ ] Implement Role Dropdown for testing (switch roles without re-login) <!-- id: 6 -->
+- [ ] Profile Expansion & Editing
+    - [ ] Implement Full-screen Profile view <!-- id: 7 -->
+    - [ ] Add Editable Photo functionality <!-- id: 8 -->
+    - [ ] Add detailed sections to Profile <!-- id: 9 -->
+- [ ] QR Code Integration
+    - [ ] Integrate QR Code generation for User ID <!-- id: 10 -->
+    - [ ] Implement QR for Schools/Classes/Groups <!-- id: 11 -->
+    - [ ] Explore/Implement QR usage in Sign-up/Invitations <!-- id: 12 -->
+- [ ] Additional Enhancements
+    - [ ] Brainstorm and implement other useful Profile/Settings features <!-- id: 13 -->

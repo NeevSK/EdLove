@@ -1,0 +1,35 @@
+# Fix Expanded View QR & Enhance Scanner
+
+## Problem Description
+1.  **Expanded Profile View**: The user sees a "different old qr" in the full-screen profile view. This is because the code uses the `QrCode` *icon* from `lucide-react-native` instead of the [QRCodeGenerator](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/shared/QRCodeGenerator.tsx#16-80) component.
+2.  **Scanner Limitations**: The user wants to scan from the gallery and scan "anywhere" (implying the current UI/UX is too restrictive or they want to scan static images).
+
+## Proposed Changes
+
+### apps/gurudevi-mobile
+
+#### [MODIFY] [ProfileScreen.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/ProfileScreen.tsx)
+- Import [QRCodeGenerator](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/shared/QRCodeGenerator.tsx#16-80).
+- In the `isFullScreen` modal, replace `<QrCode size={200} ... />` with `<QRCodeGenerator value={profile?.id} size={200} ... />`.
+
+#### [MODIFY] [ScannerModal.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/shared/ScannerModal.tsx)
+- Import `launchImageLibraryAsync` from `expo-image-picker`.
+- Import `BarCodeScanner` from `expo-barcode-scanner` (Need to install).
+- Add a "Gallery" button to the scanner controls.
+- Implement `pickImage` function:
+    - Pick image.
+    - Call `BarCodeScanner.scanFromURLAsync(uri)` to decode.
+    - If successful, call `onScan`.
+- Update UI:
+    - Make the scan frame larger or visual-only (scanning is already full-screen).
+    - Add the gallery button icon (e.g., [Image](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/profile/EditProfileModal.tsx#58-77) or `Gallery` icon).
+
+## Dependencies
+- [NEW] `expo-barcode-scanner`: Required for `scanFromURLAsync` utility to decode static images.
+
+## Verification Plan
+1.  **Expanded View**: Open Profile -> Expand -> Verify correct QR code (not generic icon).
+2.  **Scanner**:
+    - Open Scanner.
+    - Test scanning a real QR code (camera).
+    - Test "Gallery" button -> Pick a QR screenshot -> Verify it decodes.

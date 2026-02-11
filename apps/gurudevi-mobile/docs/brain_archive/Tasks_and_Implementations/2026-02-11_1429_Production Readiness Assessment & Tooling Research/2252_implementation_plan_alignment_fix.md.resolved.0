@@ -1,0 +1,39 @@
+# Battle-Tested Alignment & Resolution Fix
+
+## Goal
+Resolve the `UnableToResolveError: expo-linking` crash and eliminate remaining dependency warnings to achieve a 100% green launch. 
+
+## User Review Required
+> [!NOTE]
+> **Minimalist Fix:**
+> Instead of installing new packages (respecting your instruction), I will swap `expo-linking` for the built-in [react-native](file:///c:/Users/Naween/projects/polymath-platform/node_modules/.bin/react-native) Linking module. This solves the crash without adding bloat.
+>
+> **Version Alignment:**
+> I am aligning `@types/react` and `react-native-worklets` to the versions specifically requested by your terminal output to remove the last remaining warnings.
+
+## Proposed Changes
+
+### [gurudevi-mobile]
+
+#### [MODIFY] [LibraryScreen.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/LibraryScreen.tsx)
+- Change `import * as Linking from 'expo-linking'` to `import { Linking } from 'react-native'`.
+- Remove `import { useRouter } from 'expo-router'`.
+
+#### [MODIFY] [package.json](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/package.json)
+- Pin `react-native-worklets` to `0.5.1` (matching terminal request).
+
+### [Monorepo Root]
+
+#### [MODIFY] [package.json](file:///c:/Users/Naween/projects/polymath-platform/package.json)
+- Update `pnpm.overrides` for `@types/react` to `19.1.10`.
+- Update `pnpm.overrides` for `@types/react-dom` to `19.1.1`.
+
+## Verification Plan
+
+### Automated Tests
+- **Runtime Check**: Run `pnpm start --clear` and verify:
+  1. No red screen `UnableToResolveError`.
+  2. No terminal warnings about version mismatches.
+
+### Manual Verification
+- **Library Test**: Navigate to the Library tab and click a resource to verify `Linking.openURL` still works.
