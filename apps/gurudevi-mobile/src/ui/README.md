@@ -42,11 +42,21 @@ import { Button } from '@gluestack-ui/themed';
 - `Textarea`, `TextareaInput`
 - `Switch`
 
-### Avatar
-- `Avatar`, `AvatarFallbackText`, `AvatarImage`
+### 🪟 Overlays & Modals
+- `Modal`
+- `ModalBackdrop`
+- `ModalContent`
+- `ModalHeader`
+- `ModalBody`
+- `ModalFooter`
+- `ModalCloseButton`
 
-### Modal
-- `Modal`, `ModalBackdrop`, `ModalContent`, `ModalHeader`, `ModalBody`, `ModalFooter`
+### 🎨 Icons & Media
+- `Icon`
+- `CloseIcon`
+- `Avatar`
+- `AvatarFallbackText`
+- `AvatarImage`
 
 ### Toast & Notifications
 - `Toast`, `ToastTitle`, `ToastDescription`, `useToast`

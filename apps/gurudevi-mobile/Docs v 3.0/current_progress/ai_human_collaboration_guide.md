@@ -57,7 +57,12 @@ In AI-Human collaboration, this manifests as **Gaming the Tests**:
 ## 5. The Great "Web vs. Native" Gotcha
 
 In a hybrid environment like Expo (React Native + Web), testing is the most significant hurdle.
-- **The Fix**: We adopted a **Web-First BDD strategy**. By using standard HTML-based mocks during tests, we bypass native-only invariant checks while still verifying the core business and UI logic.
+
+### The Invariant Trap
+React Native components (like `View` and `Text`) behave differently in a Jest environment than standard HTML elements. 
+- **The Error**: `Invariant Violation: Text strings must be rendered within a <Text> component.`
+- **The Cause**: Passing a string directly to a mock component that renders as a `div` or doesn't correctly wrap children in a native `Text` component.
+- **The Fix**: We adopted a **Web-First BDD strategy**. By using `@testing-library/react` and mocking UI components as standard HTML tags during tests, we bypass native-only invariant checks while still verifying the core business and UI logic.
 
 ---
 
@@ -73,10 +78,24 @@ In a hybrid environment like Expo (React Native + Web), testing is the most sign
 - **Goal-Seek without Guardrails**: Don't let "Green Tests" justify bad architecture.
 - **Ignore the "How"**: If the AI takes a suboptimal path, backtrack and add a technical constraint to the requirement.
 - **Mix Environments**: Stick to the Web-First pattern for universal component logic.
+- **Bypass Abstraction**: Never import directly from `@gluestack-ui/themed` in screen or component files. Always use `@/ui`.
 
 ---
 
-## 7. The Power of Reports (.txt vs. Console)
+## 7. UI Abstraction Pattern (`@/ui`)
+
+To prevent TypeScript stack overflow and optimize bundle size, we use a mandatory UI Abstraction Layer.
+
+**The Workflow**:
+1. Human or AI identifies a need for a new UI component.
+2. AI checks if it exists in `src/ui/index.ts`.
+3. If not, AI adds it via direct sub-module import: `export { Component } from '@gluestack-ui/themed/build/components/Component'`.
+4. AI adds the corresponding member to `src/types/gluestack-ui.d.ts` as `any` to keep the TS compiler efficient.
+5. AI uses the component via `@/ui` in the application code.
+
+---
+
+## 8. The Power of Reports (.txt vs. Console)
 
 For an AI developer, the terminal is a "blind spot." **Always pipe test results to a `.txt` file** (`npm test > report.txt 2>&1`). This ensures the AI has a persistent, readable log of why a failure occurred, capturing `console.log` and DOM dumps that a standard test runner might hide.
 

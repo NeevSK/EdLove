@@ -38,10 +38,11 @@ export {
 } from '@gluestack-ui/themed/build/components/Toast';
 
 // ============================================================================
-// Typography
+// Typography & Presentation
 // ============================================================================
 export { Text } from '@gluestack-ui/themed/build/components/Text';
 export { Heading } from '@gluestack-ui/themed/build/components/Heading';
+export { Divider } from '@gluestack-ui/themed/build/components/Divider';
 
 // ============================================================================
 // Form Components
@@ -115,6 +116,33 @@ export {
 
 export { Icon } from '@gluestack-ui/themed/build/components/Icon';
 export { CloseIcon } from '@gluestack-ui/themed/build/components/Icons';
+export { Image } from '@gluestack-ui/themed/build/components/Image';
+export { FlatList } from '@gluestack-ui/themed/build/components/FlatList';
+export { SectionList } from '@gluestack-ui/themed/build/components/SectionList';
+
+export {
+    Checkbox,
+    CheckboxIndicator,
+    CheckboxIcon,
+    CheckboxLabel,
+    CheckboxGroup,
+} from '@gluestack-ui/themed/build/components/Checkbox';
+
+export {
+    Actionsheet,
+    ActionsheetBackdrop,
+    ActionsheetContent,
+    ActionsheetItem,
+    ActionsheetItemText,
+    ActionsheetDragIndicator,
+    ActionsheetDragIndicatorWrapper,
+} from '@gluestack-ui/themed/build/components/Actionsheet';
+
+export {
+    Fab,
+    FabLabel,
+    FabIcon,
+} from '@gluestack-ui/themed/build/components/Fab';
 
 // ============================================================================
 // Provider (special case - keep from main export)

@@ -82,6 +82,11 @@
   "i18n": {
     "react-i18next": "^13.5.0",
     "i18next": "^23.7.0"
+  },
+  "testing": {
+    "jest-cucumber": "^4.5.0",
+    "@testing-library/react": "^16.1.0",
+    "react-native-web": "^0.19.13"
   }
 }
 ```
@@ -178,6 +183,11 @@ Bottom Navigation (WhatsApp-style):
 - ✅ React 19 compatible
 - ✅ Perfect for Sinhala/Tamil fonts (custom font support)
 - ✅ Sanctuary aesthetics easy to build
+
+**Architectural Decision: UI Abstraction Layer (`@/ui`)**
+- 🚨 **Mandatory**: All UI components MUST be imported from `@/ui` (e.g., `import { Box } from '@/ui'`).
+- **Reasoning**: Solves TypeScript stack overflow by using direct sub-module imports and enables aggressive tree-shaking for low-end devices.
+- **Enforcement**: Direct imports from `@gluestack-ui/themed` are restricted to the abstraction layer itself.
 - ❌ Tamagui: React 19 incompatible (as of Feb 2026)
 
 ### **Animations**:

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
-import { Box, VStack, Text, Pressable } from "@gluestack-ui/themed";
+import { Box, VStack, Text, Pressable } from "@/ui";
 import GlobalHeader from '../components/shared/GlobalHeader';
 import LotusPetalFAB from '../components/shared/LotusPetalFAB';
 import LibraryResourceCard, { ResourceType } from '../components/library/LibraryResourceCard';
@@ -45,19 +45,19 @@ export default function LibraryScreen() {
     // Filter by search query and category
     const filteredResources = resources.filter(r => {
         const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
-        
+
         // Category filtering
         if (selectedCategory === 'All') {
             return matchesSearch;
         }
-        
+
         const categoryMap: Record<string, string[]> = {
             'PDFs': ['pdf'],
             'Videos': ['video'],
             'Docs': ['doc'],
             'Links': ['link', 'text']
         };
-        
+
         const types = categoryMap[selectedCategory] || [];
         return matchesSearch && types.includes(r.type);
     });
@@ -105,7 +105,7 @@ export default function LibraryScreen() {
                             contentContainerStyle={{ gap: 12 }}
                         >
                             {LIBRARY_CATEGORIES.map((category) => (
-                                <Pressable 
+                                <Pressable
                                     key={category}
                                     onPress={() => setSelectedCategory(category)}
                                 >
@@ -113,22 +113,22 @@ export default function LibraryScreen() {
                                         sx={{
                                             paddingHorizontal: Theme.spacing.lg,
                                             paddingVertical: Theme.spacing.sm,
-                                            backgroundColor: selectedCategory === category 
-                                                ? Theme.colors.sanctuarySaffron 
+                                            backgroundColor: selectedCategory === category
+                                                ? Theme.colors.sanctuarySaffron
                                                 : Theme.colors.deepIndigo,
                                             borderRadius: Theme.corners.comfortable,
                                             borderWidth: 1,
-                                            borderColor: selectedCategory === category 
-                                                ? Theme.colors.sanctuarySaffron 
+                                            borderColor: selectedCategory === category
+                                                ? Theme.colors.sanctuarySaffron
                                                 : Theme.colors.dimGray
                                         }}
                                     >
-                                        <Text 
-                                            color={selectedCategory === category 
+                                        <Text
+                                            color={selectedCategory === category
                                                 ? Theme.colors.white  // Pure white for high contrast on saffron
                                                 : Theme.colors.sacredWhite
-                                            } 
-                                            size="sm" 
+                                            }
+                                            size="sm"
                                             bold={selectedCategory === category}
                                         >
                                             {category}

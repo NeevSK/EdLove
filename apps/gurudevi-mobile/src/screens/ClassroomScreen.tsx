@@ -9,12 +9,11 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Box, Text, Center, Heading, Spinner, HStack, VStack } from "@gluestack-ui/themed";
+import { Box, Text, Center, Heading, Spinner, HStack, VStack, Pressable } from "@/ui";
 import { useUserRole } from '../hooks/useUserRole';
 import { Theme } from '../constants/Theme';
 import { supabase } from '../lib/supabase';
 import { QrCode } from 'lucide-react-native';
-import { Pressable } from 'react-native';
 import { ClassroomStudent, api } from '../lib/api';
 import { hapticLight } from '../utils/haptics';
 import { useStore } from '../store/useStore';

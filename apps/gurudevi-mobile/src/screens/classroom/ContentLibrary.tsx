@@ -28,7 +28,7 @@ import {
     InputField,
     Textarea,
     TextareaInput,
-} from "@gluestack-ui/themed";
+} from "@/ui";
 import {
     FileText,
     Link as LinkIcon,
@@ -153,7 +153,7 @@ export default function ContentLibrary() {
 
     const addResource = () => {
         hapticLight();
-        
+
         if (!newResourceTitle.trim()) {
             return;
         }
@@ -179,7 +179,7 @@ export default function ContentLibrary() {
         };
 
         setResources((prev) => [newResource, ...prev]);
-        
+
         // Reset form
         setNewResourceTitle('');
         setNewResourceDescription('');
@@ -237,7 +237,7 @@ export default function ContentLibrary() {
                                 </Text>
                             </VStack>
                         </HStack>
-                        
+
                         {/* Pin indicator */}
                         {resource.isPinned && (
                             <Box
@@ -280,7 +280,7 @@ export default function ContentLibrary() {
                                 />
                             </Box>
                         </Pressable>
-                        
+
                         {resource.type === 'link' && resource.url && (
                             <Pressable onPress={() => hapticLight()}>
                                 <Box
@@ -294,7 +294,7 @@ export default function ContentLibrary() {
                                 </Box>
                             </Pressable>
                         )}
-                        
+
                         <Pressable onPress={() => deleteResource(resource.id)}>
                             <Box
                                 sx={{
@@ -392,7 +392,7 @@ export default function ContentLibrary() {
                             Add Resource
                         </Heading>
                     </ModalHeader>
-                    
+
                     <ModalBody>
                         <VStack space="md">
                             {/* Resource Type Selection */}
@@ -537,7 +537,7 @@ export default function ContentLibrary() {
                             )}
                         </VStack>
                     </ModalBody>
-                    
+
                     <ModalFooter>
                         <HStack space="sm">
                             <Button
