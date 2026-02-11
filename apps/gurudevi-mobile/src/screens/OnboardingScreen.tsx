@@ -28,7 +28,7 @@ import {
     SelectDragIndicatorWrapper,
     SelectDragIndicator,
     SelectItem,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { ChevronRight, ChevronDown } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../constants/Theme';
@@ -115,6 +115,10 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                                 <SelectDragIndicatorWrapper>
                                     <SelectDragIndicator />
                                 </SelectDragIndicatorWrapper>
+                                <SelectItem label={t('auth.founder') || 'Founder'} value="founder" />
+                                <SelectItem label={t('auth.admin') || 'Admin'} value="admin" />
+                                <SelectItem label={t('auth.founder') || 'Founder'} value="founder" />
+                                <SelectItem label={t('auth.admin') || 'Admin'} value="admin" />
                                 <SelectItem label={t('auth.principal') || 'Principal'} value="principal" />
                                 <SelectItem label={t('auth.sectionHead') || 'Section Head'} value="section_head" />
                                 <SelectItem label={t('auth.gradeHead') || 'Grade Head'} value="grade_head" />
