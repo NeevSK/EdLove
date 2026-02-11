@@ -109,8 +109,12 @@ export {
     ModalContent,
     ModalHeader,
     ModalBody,
-    ModalFooter
+    ModalFooter,
+    ModalCloseButton
 } from '@gluestack-ui/themed/build/components/Modal';
+
+export { Icon } from '@gluestack-ui/themed/build/components/Icon';
+export { CloseIcon } from '@gluestack-ui/themed/build/components/Icons';
 
 // ============================================================================
 // Provider (special case - keep from main export)
