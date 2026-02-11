@@ -17,7 +17,7 @@ import {
     useToast,
     Toast,
     ToastTitle,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera, X, Check } from 'lucide-react-native';

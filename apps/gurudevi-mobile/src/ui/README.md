@@ -39,6 +39,8 @@ import { Button } from '@gluestack-ui/themed';
 - `Button`, `ButtonText`, `ButtonSpinner`, `ButtonIcon`
 - `Select`, `SelectTrigger`, `SelectInput`, `SelectIcon`, `SelectPortal`, `SelectBackdrop`, `SelectContent`, `SelectDragIndicatorWrapper`, `SelectDragIndicator`, `SelectItem`
 - `FormControl`, `FormControlError`, `FormControlErrorIcon`, `FormControlErrorText`, `FormControlHelper`, `FormControlHelperText`, `FormControlLabel`, `FormControlLabelText`
+- `Textarea`, `TextareaInput`
+- `Switch`
 
 ### Avatar
 - `Avatar`, `AvatarFallbackText`, `AvatarImage`

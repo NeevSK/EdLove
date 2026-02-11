@@ -8,7 +8,7 @@ import {
     Pressable,
     Divider,
     Heading,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { Globe, Moon, Database, ChevronRight, Check, X, Sun, Zap } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';

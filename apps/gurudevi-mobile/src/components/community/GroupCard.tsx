@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Box, HStack, VStack, Text } from '@gluestack-ui/themed';
+import { Box, HStack, VStack, Text } from '@/ui';
 import { Users, Lock, Globe } from 'lucide-react-native';
 import SanctuaryCard from '../shared/SanctuaryCard';
 import { Theme } from '../../constants/Theme';

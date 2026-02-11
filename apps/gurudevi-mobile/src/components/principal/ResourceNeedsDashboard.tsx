@@ -16,7 +16,7 @@ import {
     Text,
     Heading,
     Spinner,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { Package, Lightbulb, Users, BookOpen, Wifi, AlertCircle } from 'lucide-react-native';
 import { Theme, typography } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';

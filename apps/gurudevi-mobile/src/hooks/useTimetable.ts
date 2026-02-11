@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
-import { useToast } from '@gluestack-ui/themed';
+import { useToast } from '@/ui';
 import { Alert } from 'react-native';
 
 export interface Period {

@@ -31,7 +31,7 @@ import {
     ModalBody,
     ModalFooter,
     Spinner,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';

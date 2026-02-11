@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Box, HStack, VStack, Text, Avatar, AvatarFallbackText, AvatarImage } from '@gluestack-ui/themed';
+import { Box, HStack, VStack, Text, Avatar, AvatarFallbackText, AvatarImage } from '@/ui';
 import { MoreHorizontal, Heart, MessageCircle, Share2, BarChart2 } from 'lucide-react-native';
 import SanctuaryCard from '../shared/SanctuaryCard';
 import { Theme } from '../../constants/Theme';

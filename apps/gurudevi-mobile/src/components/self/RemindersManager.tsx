@@ -29,7 +29,7 @@ import {
     ModalCloseButton,
     ModalBody,
     ModalFooter,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { Plus, Trash2, Edit, Bell, Droplet, Clock } from 'lucide-react-native';
 import { Theme, typography } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';

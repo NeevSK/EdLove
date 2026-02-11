@@ -9,7 +9,7 @@ import {
     Box,
     HStack,
     Text,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,

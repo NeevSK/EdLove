@@ -23,7 +23,7 @@ import {
     TextareaInput,
     Button,
     ButtonText,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { useTranslation } from 'react-i18next';
 import { marksToGPA } from '../../utils/grading';
 import { Theme } from '../../constants/Theme';

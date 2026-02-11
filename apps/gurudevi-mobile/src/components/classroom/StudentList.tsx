@@ -7,7 +7,7 @@ import {
     Pressable,
     ScrollView,
     Center,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { ActivityIndicator } from 'react-native';
 import {
     User,
@@ -33,7 +33,7 @@ import {
     CloseIcon,
     Button,
     ButtonText,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import QRCodeGenerator from '../shared/QRCodeGenerator';
 import * as Clipboard from 'expo-clipboard';
 
