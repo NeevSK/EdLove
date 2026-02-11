@@ -26,6 +26,8 @@ import { ShadowAgentDrawer, EnergyForecast } from '../../components/self';
 import { supabase } from '../../lib/supabase';
 import GlobalHeader from '../../components/shared/GlobalHeader';
 import DailyContentCard from '../../components/self/DailyContentCard';
+import WelcomeModal from '../../components/self/WelcomeModal';
+import { useStore } from '../../store/useStore';
 
 // Principal-specific core features
 const PRINCIPAL_CORE_FEATURES = [
@@ -45,6 +47,8 @@ export default function PrincipalSelfView() {
     const [activeFeature, setActiveFeature] = useState('energy');
     const [userId, setUserId] = useState<string | null>(null);
     const [showMoreTools, setShowMoreTools] = useState(false);
+    const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
+    const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
 
     React.useEffect(() => {
         const fetchUser = async () => {
@@ -320,6 +324,10 @@ export default function PrincipalSelfView() {
             </ScrollView>
 
             <ShadowAgentDrawer />
+            <WelcomeModal
+                isOpen={justFinishedOnboarding}
+                onClose={() => setJustFinishedOnboarding(false)}
+            />
         </Box>
     );
 }

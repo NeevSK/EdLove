@@ -17,6 +17,8 @@ interface AppState {
     setThemeMode: (mode: ThemeMode) => void;
     onboardingCompleted: boolean;
     setOnboardingCompleted: (completed: boolean) => void;
+    justFinishedOnboarding: boolean;
+    setJustFinishedOnboarding: (justFinished: boolean) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -32,10 +34,20 @@ export const useStore = create<AppState>()(
             setThemeMode: (mode) => set({ themeMode: mode }),
             onboardingCompleted: false,
             setOnboardingCompleted: (completed) => set({ onboardingCompleted: completed }),
+            justFinishedOnboarding: false,
+            setJustFinishedOnboarding: (justFinished) => set({ justFinishedOnboarding: justFinished }),
         }),
         {
             name: 'gurudevi-storage',
             storage: createJSONStorage(() => AsyncStorage),
+            partialize: (state) => ({
+                teacherName: state.teacherName,
+                userRole: state.userRole,
+                schoolType: state.schoolType,
+                themeMode: state.themeMode,
+                onboardingCompleted: state.onboardingCompleted,
+                // justFinishedOnboarding is NOT persisted - it's session-only
+            }),
         }
     )
 );
