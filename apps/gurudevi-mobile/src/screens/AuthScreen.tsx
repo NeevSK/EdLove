@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import {
     Box,
@@ -86,8 +85,8 @@ export default function AuthScreen() {
         // Validate inputs before proceeding
         const validationRules: Record<string, (value: any) => any> = {
             email: validators.email,
-            password: isSignUp 
-                ? validators.password 
+            password: isSignUp
+                ? validators.password
                 : (value: string) => validators.nonEmpty(value, 'Password'),
         };
 
@@ -134,6 +133,13 @@ export default function AuthScreen() {
 
             if (authError) {
                 hapticError();
+                // Check if user already exists
+                if (authError.message.toLowerCase().includes('already registered')) {
+                    showToast(t('auth.accountExistsNudge') || 'You already have an account! Switching to login...', 'success');
+                    setIsSignUp(false);
+                    setLoading(false);
+                    return;
+                }
                 showToast(authError.message, "error");
                 setLoading(false);
                 return;
@@ -290,9 +296,9 @@ export default function AuthScreen() {
             <Center sx={{ flex: 1 }}>
                 <VStack space="lg" sx={{ width: '100%', maxWidth: 400 }}>
                     {/* Login/Signup Toggle at Top */}
-                    <HStack 
-                        space="xs" 
-                        justifyContent="center" 
+                    <HStack
+                        space="xs"
+                        justifyContent="center"
                         mb={Theme.spacing.sm}
                         sx={{
                             backgroundColor: Theme.colors.deepIndigo,
@@ -300,7 +306,7 @@ export default function AuthScreen() {
                             padding: 4,
                         }}
                     >
-                        <Pressable 
+                        <Pressable
                             onPress={() => {
                                 hapticLight();
                                 setIsSignUp(false);
@@ -313,16 +319,16 @@ export default function AuthScreen() {
                                 backgroundColor: !isSignUp ? Theme.colors.sanctuarySaffron : 'transparent',
                             }}
                         >
-                            <Text 
-                                color={!isSignUp ? Theme.colors.white : Theme.colors.mistGray} 
-                                size="sm" 
+                            <Text
+                                color={!isSignUp ? Theme.colors.white : Theme.colors.mistGray}
+                                size="sm"
                                 fontWeight="$semibold"
                                 textAlign="center"
                             >
                                 {t('auth.login')}
                             </Text>
                         </Pressable>
-                        <Pressable 
+                        <Pressable
                             onPress={() => {
                                 hapticLight();
                                 setIsSignUp(true);
@@ -335,9 +341,9 @@ export default function AuthScreen() {
                                 backgroundColor: isSignUp ? Theme.colors.sanctuarySaffron : 'transparent',
                             }}
                         >
-                            <Text 
-                                color={isSignUp ? Theme.colors.white : Theme.colors.mistGray} 
-                                size="sm" 
+                            <Text
+                                color={isSignUp ? Theme.colors.white : Theme.colors.mistGray}
+                                size="sm"
                                 fontWeight="$semibold"
                                 textAlign="center"
                             >
@@ -376,7 +382,7 @@ export default function AuthScreen() {
                             <InputField
                                 placeholder={t('auth.email')}
                                 value={email}
-                                onChangeText={(text) => {
+                                onChangeText={(text: string) => {
                                     setEmail(text);
                                     if (errors.email) {
                                         setErrors(prev => ({ ...prev, email: '' }));
@@ -413,7 +419,7 @@ export default function AuthScreen() {
                             <InputField
                                 placeholder={t('auth.password')}
                                 value={password}
-                                onChangeText={(text) => {
+                                onChangeText={(text: string) => {
                                     setPassword(text);
                                     if (errors.password) {
                                         setErrors(prev => ({ ...prev, password: '' }));
@@ -429,7 +435,7 @@ export default function AuthScreen() {
                                 {errors.password}
                             </Text>
                         )}
-                        
+
                         {/* Forgot Password Link */}
                         {!isSignUp && (
                             <Pressable onPress={handleForgotPassword} alignSelf="flex-end" mt="$2">
@@ -459,7 +465,7 @@ export default function AuthScreen() {
                                 <InputField
                                     placeholder="Enter or Scan Code"
                                     value={inviteCode}
-                                    onChangeText={setInviteCode}
+                                    onChangeText={(text: string) => setInviteCode(text)}
                                     color={Theme.colors.sacredWhite}
                                     placeholderTextColor={Theme.colors.dimGray}
                                 />
