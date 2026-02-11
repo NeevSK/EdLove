@@ -14,18 +14,18 @@
 // ============================================================================
 // Layout Components
 // ============================================================================
-export { Box } from '@gluestack-ui/themed/build/components/Box';
-export { Center } from '@gluestack-ui/themed/build/components/Center';
-export { HStack } from '@gluestack-ui/themed/build/components/HStack';
-export { VStack } from '@gluestack-ui/themed/build/components/VStack';
-export { View } from '@gluestack-ui/themed/build/components/View';
-export { ScrollView } from '@gluestack-ui/themed/build/components/ScrollView';
-export { Pressable } from '@gluestack-ui/themed/build/components/Pressable';
+export { Box } from '@gluestack-ui/themed';
+export { Center } from '@gluestack-ui/themed';
+export { HStack } from '@gluestack-ui/themed';
+export { VStack } from '@gluestack-ui/themed';
+export { View } from '@gluestack-ui/themed';
+export { ScrollView } from '@gluestack-ui/themed';
+export { Pressable } from '@gluestack-ui/themed';
 
 // ============================================================================
 // Loading States
 // ============================================================================
-export { Spinner } from '@gluestack-ui/themed/build/components/Spinner';
+export { Spinner } from '@gluestack-ui/themed';
 
 // ============================================================================
 // Toast & Notifications
@@ -35,14 +35,14 @@ export {
     ToastTitle,
     ToastDescription,
     useToast
-} from '@gluestack-ui/themed/build/components/Toast';
+} from '@gluestack-ui/themed';
 
 // ============================================================================
 // Typography & Presentation
 // ============================================================================
-export { Text } from '@gluestack-ui/themed/build/components/Text';
-export { Heading } from '@gluestack-ui/themed/build/components/Heading';
-export { Divider } from '@gluestack-ui/themed/build/components/Divider';
+export { Text } from '@gluestack-ui/themed';
+export { Heading } from '@gluestack-ui/themed';
+export { Divider } from '@gluestack-ui/themed';
 
 // ============================================================================
 // Form Components
@@ -52,14 +52,14 @@ export {
     InputField,
     InputSlot,
     InputIcon
-} from '@gluestack-ui/themed/build/components/Input';
+} from '@gluestack-ui/themed';
 
 export {
     Button,
     ButtonText,
     ButtonSpinner,
     ButtonIcon
-} from '@gluestack-ui/themed/build/components/Button';
+} from '@gluestack-ui/themed';
 
 export {
     Select,
@@ -72,7 +72,7 @@ export {
     SelectDragIndicatorWrapper,
     SelectDragIndicator,
     SelectItem
-} from '@gluestack-ui/themed/build/components/Select';
+} from '@gluestack-ui/themed';
 
 export {
     FormControl,
@@ -83,14 +83,14 @@ export {
     FormControlHelperText,
     FormControlLabel,
     FormControlLabelText
-} from '@gluestack-ui/themed/build/components/FormControl';
+} from '@gluestack-ui/themed';
 
 export {
     Textarea,
     TextareaInput
-} from '@gluestack-ui/themed/build/components/Textarea';
+} from '@gluestack-ui/themed';
 
-export { Switch } from '@gluestack-ui/themed/build/components/Switch';
+export { Switch } from '@gluestack-ui/themed';
 
 // ============================================================================
 // Avatar Components
@@ -99,7 +99,7 @@ export {
     Avatar,
     AvatarFallbackText,
     AvatarImage
-} from '@gluestack-ui/themed/build/components/Avatar';
+} from '@gluestack-ui/themed';
 
 // ============================================================================
 // Modal Components
@@ -112,13 +112,13 @@ export {
     ModalBody,
     ModalFooter,
     ModalCloseButton
-} from '@gluestack-ui/themed/build/components/Modal';
+} from '@gluestack-ui/themed';
 
-export { Icon } from '@gluestack-ui/themed/build/components/Icon';
-export { CloseIcon } from '@gluestack-ui/themed/build/components/Icons';
-export { Image } from '@gluestack-ui/themed/build/components/Image';
-export { FlatList } from '@gluestack-ui/themed/build/components/FlatList';
-export { SectionList } from '@gluestack-ui/themed/build/components/SectionList';
+export { Icon } from '@gluestack-ui/themed';
+export { CloseIcon } from '@gluestack-ui/themed';
+export { Image } from '@gluestack-ui/themed';
+export { FlatList } from '@gluestack-ui/themed';
+export { SectionList } from '@gluestack-ui/themed';
 
 export {
     Checkbox,
@@ -126,7 +126,7 @@ export {
     CheckboxIcon,
     CheckboxLabel,
     CheckboxGroup,
-} from '@gluestack-ui/themed/build/components/Checkbox';
+} from '@gluestack-ui/themed';
 
 export {
     Actionsheet,
@@ -136,13 +136,13 @@ export {
     ActionsheetItemText,
     ActionsheetDragIndicator,
     ActionsheetDragIndicatorWrapper,
-} from '@gluestack-ui/themed/build/components/Actionsheet';
+} from '@gluestack-ui/themed';
 
 export {
     Fab,
     FabLabel,
     FabIcon,
-} from '@gluestack-ui/themed/build/components/Fab';
+} from '@gluestack-ui/themed';
 
 // ============================================================================
 // Provider (special case - keep from main export)
