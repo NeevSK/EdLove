@@ -1,5 +1,5 @@
 import React from 'react';
-import { VStack, Text, Center, Box } from '@gluestack-ui/themed';
+import { VStack, Text, Center, Box } from '@/ui';
 import { Theme } from '../../constants/Theme';
 import { LucideIcon } from 'lucide-react-native';
 import SanctuaryButton from './SanctuaryButton';

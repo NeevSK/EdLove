@@ -17,7 +17,7 @@ import {
     Pressable,
     Input,
     InputField
-} from "@gluestack-ui/themed";
+} from "@/ui";
 import { Battery, Activity, BookOpen, Users, Lightbulb, Calendar } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';
@@ -71,7 +71,7 @@ export default function PrincipalSelfView() {
                                 {t('principal.schoolPulseDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -97,7 +97,7 @@ export default function PrincipalSelfView() {
                                 {t('principal.decisionJournalDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -129,7 +129,7 @@ export default function PrincipalSelfView() {
                                 {t('principal.staffWellbeingDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -155,7 +155,7 @@ export default function PrincipalSelfView() {
                                 {t('principal.leadershipWisdomDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -181,7 +181,7 @@ export default function PrincipalSelfView() {
                                 {t('principal.monthlyReflectionDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -201,8 +201,8 @@ export default function PrincipalSelfView() {
         }
     };
 
-    const allFeatures = showMoreTools 
-        ? [...PRINCIPAL_CORE_FEATURES, ...PRINCIPAL_MORE_TOOLS] 
+    const allFeatures = showMoreTools
+        ? [...PRINCIPAL_CORE_FEATURES, ...PRINCIPAL_MORE_TOOLS]
         : PRINCIPAL_CORE_FEATURES;
 
     return (

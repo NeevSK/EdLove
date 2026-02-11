@@ -6,7 +6,7 @@ import {
     HStack,
     Text,
     Heading,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { Theme } from '../../constants/Theme';
 import { LifeBuoy, MessageCircle, AlertTriangle, ChevronRight } from 'lucide-react-native';
 

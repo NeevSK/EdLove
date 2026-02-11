@@ -1,5 +1,0 @@
-﻿src/components/grading/GradingSettings.tsx(196,53): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
-src/screens/grading/GradebookScreen.tsx(179,57): error TS2339: Property 'medium' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
-src/screens/grading/GradebookScreen.tsx(241,65): error TS2339: Property 'small' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
-src/screens/grading/GradebookScreen.tsx(262,65): error TS2339: Property 'small' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.
-src/screens/grading/GradebookScreen.tsx(283,65): error TS2339: Property 'small' does not exist on type '{ tight: number; comfortable: number; generous: number; full: number; }'.

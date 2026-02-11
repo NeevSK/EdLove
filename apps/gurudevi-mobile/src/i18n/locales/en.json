@@ -24,7 +24,10 @@
     "role": {
         "teacher": "Teacher",
         "student": "Student",
-        "principal": "Principal"
+        "principal": "Principal",
+        "developer": "Developer",
+        "admin": "Admin",
+        "founder": "Founder"
     },
     "school": {
         "personal_workspace": "Personal Workspace",

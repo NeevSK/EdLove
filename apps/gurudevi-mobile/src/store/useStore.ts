@@ -15,6 +15,8 @@ interface AppState {
     setSchoolType: (type: SchoolType | null) => void;
     themeMode: ThemeMode;
     setThemeMode: (mode: ThemeMode) => void;
+    onboardingCompleted: boolean;
+    setOnboardingCompleted: (completed: boolean) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -28,6 +30,8 @@ export const useStore = create<AppState>()(
             setSchoolType: (type) => set({ schoolType: type }),
             themeMode: 'light', // Default to light theme
             setThemeMode: (mode) => set({ themeMode: mode }),
+            onboardingCompleted: false,
+            setOnboardingCompleted: (completed) => set({ onboardingCompleted: completed }),
         }),
         {
             name: 'gurudevi-storage',

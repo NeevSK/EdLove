@@ -12,7 +12,7 @@
  * - student: Can view lessons, submit assignments
  * - developer: Full access for development and testing
  */
-export type UserRole = 'principal' | 'section_head' | 'grade_head' | 'teacher' | 'student' | 'developer';
+export type UserRole = 'principal' | 'section_head' | 'grade_head' | 'teacher' | 'student' | 'developer' | 'admin' | 'founder';
 
 /**
  * User Profile Interface

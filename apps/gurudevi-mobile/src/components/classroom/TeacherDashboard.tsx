@@ -8,7 +8,7 @@ import {
     ScrollView,
     Pressable,
     Icon,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import {
     Plus,
     ClipboardCheck,

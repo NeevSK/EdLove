@@ -15,7 +15,7 @@ import {
     HStack,
     Text,
     Box,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { FlatList, ListRenderItemInfo } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { StudentGrade, ClassroomGradingSettings } from '../../types/Grade';
@@ -40,7 +40,7 @@ export default function GradebookTable({
     const gradesWithRanks = show_ranks ? calculateRanks(grades) : grades;
 
     // Sort by rank (if available) or by marks
-    const sortedGrades = useMemo(() => 
+    const sortedGrades = useMemo(() =>
         [...gradesWithRanks].sort((a, b) => {
             if (show_ranks && a.rank && b.rank) {
                 return a.rank - b.rank;
@@ -185,16 +185,16 @@ interface GradeRowProps {
     totalItems: number;
     studentName: string;
     showRanks: boolean;
-    renderGradeDisplay: (grade: StudentGrade) => React.ReactNode;
+    renderGradeDisplay: (grade: StudentGrade) => React.ReactElement | null;
 }
 
-const GradeRow = React.memo(({ 
-    grade, 
-    index, 
-    totalItems, 
-    studentName, 
+const GradeRow = React.memo(({
+    grade,
+    index,
+    totalItems,
+    studentName,
     showRanks,
-    renderGradeDisplay 
+    renderGradeDisplay
 }: GradeRowProps) => (
     <HStack
         space="md"
@@ -210,7 +210,7 @@ const GradeRow = React.memo(({
             </Text>
         </Box>
         <Box sx={{ flex: 2 }}>
-            {renderGradeDisplay(grade)}
+            <>{renderGradeDisplay(grade)}</>
         </Box>
         {showRanks && (
             <Box sx={{ flex: 1, alignItems: 'center' }}>

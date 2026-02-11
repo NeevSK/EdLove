@@ -16,7 +16,7 @@ import {
     VStack,
     Text,
     Heading,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,

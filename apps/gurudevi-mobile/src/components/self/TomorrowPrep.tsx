@@ -14,7 +14,7 @@ import {
   CheckboxIndicator,
   CheckboxIcon,
   CheckIcon
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { Calendar, Plus, Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';

@@ -138,8 +138,9 @@
 - Library: 20 curated resources, basic upload
 - Profile: Settings, language toggle
 - Multi-language (Si/Ta/En)
-- Pricing tiers (free/pro/premium structure, PayHere integration)
-- Lotus petal FAB (floating action button)
+- [x] UI Abstraction Layer & 100% Migration (Completed Feb 11)
+- [ ] Pricing tiers (free/pro/premium structure, PayHere integration)
+- [ ] Lotus petal FAB (floating action button)
 
 **v1.0** (Future):
 - Offline mode (SQLite + Drizzle sync)

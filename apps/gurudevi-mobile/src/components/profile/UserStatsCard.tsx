@@ -6,10 +6,10 @@ import {
     Text,
     Progress,
     ProgressFilledTrack,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { Theme } from '../../constants/Theme';
 import { UserRole } from '../../types/User';
-import { Trophy, Users, BookOpen, Clock, Star } from 'lucide-react-native';
+import { Trophy, Users, BookOpen, Clock, Star, ShieldCheck } from 'lucide-react-native';
 
 interface UserStatsCardProps {
     role: UserRole;
@@ -52,6 +52,28 @@ export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
                     ],
                     progressLabel: 'Level 3 Scholar',
                     progressValue: 45
+                };
+            case 'founder':
+                return {
+                    title: 'Eternal Guardian',
+                    items: [
+                        { label: 'Wisdom', value: 'Guardian', icon: Star, color: Theme.colors.sanctuarySaffron },
+                        { label: 'Impact', value: 'Global', icon: Users, color: Theme.colors.sageGreen },
+                        { label: 'Points', value: '∞', icon: Trophy, color: '#FFD700' },
+                    ],
+                    progressLabel: 'Founding Spirit',
+                    progressValue: 100
+                };
+            case 'admin':
+                return {
+                    title: 'Sanctuary Health',
+                    items: [
+                        { label: 'Uptime', value: '99.9%', icon: Clock, color: Theme.colors.sageGreen },
+                        { label: 'Users', value: '1.2k', icon: Users, color: Theme.colors.sanctuarySaffron },
+                        { label: 'Alerts', value: 0, icon: ShieldCheck, color: Theme.colors.emberRed },
+                    ],
+                    progressLabel: 'System Archon',
+                    progressValue: 95
                 };
             default:
                 return {

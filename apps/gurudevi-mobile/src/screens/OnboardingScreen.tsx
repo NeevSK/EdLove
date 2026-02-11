@@ -28,7 +28,7 @@ import {
     SelectDragIndicatorWrapper,
     SelectDragIndicator,
     SelectItem,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { ChevronRight, ChevronDown } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../constants/Theme';
@@ -115,6 +115,8 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                                 <SelectDragIndicatorWrapper>
                                     <SelectDragIndicator />
                                 </SelectDragIndicatorWrapper>
+                                <SelectItem label={t('auth.founder') || 'Founder'} value="founder" />
+                                <SelectItem label={t('auth.admin') || 'Admin'} value="admin" />
                                 <SelectItem label={t('auth.principal') || 'Principal'} value="principal" />
                                 <SelectItem label={t('auth.sectionHead') || 'Section Head'} value="section_head" />
                                 <SelectItem label={t('auth.gradeHead') || 'Grade Head'} value="grade_head" />
@@ -278,10 +280,10 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
     ];
 
     const currentScreenData = screens[currentScreen];
-    const canProceed = currentScreen === 0 
-        ? name.trim().length > 0 
-        : currentScreen === 1 
-            ? role !== '' 
+    const canProceed = currentScreen === 0
+        ? name.trim().length > 0
+        : currentScreen === 1
+            ? !!role
             : true;
 
     const handleNext = () => {
@@ -407,8 +409,8 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                         onPress={handleNext}
                         isDisabled={!canProceed}
                         sx={{
-                            backgroundColor: canProceed 
-                                ? Theme.colors.sanctuarySaffron 
+                            backgroundColor: canProceed
+                                ? Theme.colors.sanctuarySaffron
                                 : Theme.colors.mistGray,
                             borderRadius: Theme.corners.comfortable,
                             minWidth: 100,

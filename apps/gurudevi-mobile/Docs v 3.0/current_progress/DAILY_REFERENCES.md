@@ -22,6 +22,12 @@ It contains links to the **definitive source of truth** for the Gurudevi Mobile 
 
 *   📊 **[Project Status Report](./PROJECT_STATUS_REPORT.md)**
     *   *High-level overview of where we stand (Updated Feb 10).*
+*   🏗️ **[Production Readiness Report](./PRODUCTION_READINESS.md)**
+    *   *Complete guide for testing, observability, security, a11y, i18n (NEW - Feb 10).*
+*   🏛️ **[Architecture & Tech Stack](./ARCHITECTURE_TECH_STACK.md)**
+    *   *Consolidated technical reference (NEW - Feb 10).*
+*   🦅 **[Veteran Architect Radar](./VETERAN_RADAR.md)**
+    *   *Senior architectural insights and error strategy (NEW - Feb 10).*
 *   🐞 **[Action Items & Bug Tracker](../ACTION_ITEMS.md)**
     *   *The active "Fix-It" list. Current focus: TypeScript Errors.*
 *   📈 **[Alpha Progress Log](../ALPHA_PROGRESS_FEB8.md)**

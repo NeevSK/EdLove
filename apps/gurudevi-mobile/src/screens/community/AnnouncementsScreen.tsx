@@ -31,7 +31,7 @@ import {
     ModalFooter,
     Spinner,
     Switch,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';
 import { AnnouncementWithAuthor } from '../../lib/api/community';

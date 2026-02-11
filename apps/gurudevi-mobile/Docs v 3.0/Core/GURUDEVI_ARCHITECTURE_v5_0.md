@@ -19,7 +19,11 @@
 ### 2.1 Multi-Tenant Foundation
 One database serves all schools, isolated via `school_id` and PostgreSQL Row-Level Security (RLS). This ensures cross-school collaboration (Library sharing) while preserving institutional privacy.
 
-### 2.2 Shared Reality (The 5 Tabs)
+### 2.2 Component Architecture
+- **UI Abstraction Layer**: All screens and features must import UI components from `@/ui`.
+- **Atomic Design**: Components are exported via `src/ui/index.ts` using direct sub-module imports for optimal tree-shaking.
+
+### 2.3 Shared Reality (The 5 Tabs)
 1. **Self**: Inner ecology (wellbeing, reflection).
 2. **Classroom**: Operational ecology (lesson planning, grading, attendance).
 3. **Community**: Relational ecology (teacher forums, school announcements).

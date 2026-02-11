@@ -17,7 +17,7 @@ import {
     Heading,
     Box,
     ScrollView,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { useTranslation } from 'react-i18next';
 import { StudentGrade } from '../../types/Grade';
 import { marksToGPA } from '../../utils/grading';

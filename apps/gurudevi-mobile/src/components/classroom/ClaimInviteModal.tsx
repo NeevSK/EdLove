@@ -22,7 +22,7 @@ import {
     FormControlLabel,
     FormControlLabelText,
     Spinner,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { QrCode, CheckCircle2 } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { api } from '../../lib/api';

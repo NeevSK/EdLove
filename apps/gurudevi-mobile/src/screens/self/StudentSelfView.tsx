@@ -19,7 +19,7 @@ import {
     InputField,
     Button,
     ButtonText
-} from "@gluestack-ui/themed";
+} from "@/ui";
 import { Target, BookOpen, Flower, TrendingUp, Brain } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';
@@ -72,7 +72,7 @@ export default function StudentSelfView() {
                                 {t('student.dailyGoalsDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -98,7 +98,7 @@ export default function StudentSelfView() {
                                 {t('student.studyRhythmDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -124,7 +124,7 @@ export default function StudentSelfView() {
                                 {t('student.learningReflectionDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -150,7 +150,7 @@ export default function StudentSelfView() {
                                 {t('student.myProgressDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -170,8 +170,8 @@ export default function StudentSelfView() {
         }
     };
 
-    const allFeatures = showMoreTools 
-        ? [...STUDENT_CORE_FEATURES, ...STUDENT_MORE_TOOLS] 
+    const allFeatures = showMoreTools
+        ? [...STUDENT_CORE_FEATURES, ...STUDENT_MORE_TOOLS]
         : STUDENT_CORE_FEATURES;
 
     return (

@@ -32,7 +32,7 @@ import {
     Toast,
     ToastTitle,
     Icon
-} from "@gluestack-ui/themed";
+} from "@/ui";
 import { Maximize2, Plus, Edit2, Clock, Trash, ChevronDown } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { useTimetable, Period } from '../../hooks/useTimetable';

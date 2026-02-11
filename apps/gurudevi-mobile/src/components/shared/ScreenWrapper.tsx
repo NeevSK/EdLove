@@ -52,7 +52,7 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({ children, noPadding = fal
                     !noPadding && styles.defaultPadding
                 ]}
             >
-                {children}
+                <>{children}</>
             </View>
         </View>
     );

@@ -17,6 +17,9 @@
 - Animation principles
 - Lotus petal companion (FAB) behavior
 - Interaction patterns
+- Technical Implementation: UI Abstraction Layer (`@/ui`)
+- Verification: Behavior-Driven Development (BDD) via `jest-cucumber`
+- [Comprehensive Analysis: Triple-Helix BDD Architecture](./TRIPLE_HELIX_BDD_ANALYSIS.md)
 
 **This Document Does NOT Contain**:
 - Architecture decisions (see ARCHITECTURE.md)

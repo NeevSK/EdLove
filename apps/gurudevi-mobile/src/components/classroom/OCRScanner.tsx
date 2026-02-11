@@ -17,7 +17,7 @@ import {
     useToast,
     Toast,
     ToastTitle,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera, X, Check } from 'lucide-react-native';
@@ -63,7 +63,7 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
         if (!hasPermission) return;
 
         hapticLight();
-        
+
         const result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: false,
@@ -79,7 +79,7 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
     // Pick image from gallery
     const handlePickImage = async () => {
         hapticLight();
-        
+
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: false,
@@ -94,22 +94,21 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
 
     // Process image with ML Kit Text Recognition
     const processImage = async (uri: string) => {
-        setIsProcessing(true);
         setStep('processing');
 
         try {
             // Recognize text from image
             const result = await TextRecognition.recognize(uri);
-            
+
             if (!result || !result.text) {
                 throw new Error('No text detected in image');
             }
 
             setScannedText(result.text);
-            
+
             // Parse the recognized text
             const students = parseStudentData(result.text);
-            
+
             if (students.length === 0) {
                 throw new Error('No student data could be parsed from the image');
             }
@@ -117,7 +116,7 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
             setParsedStudents(students);
             setStep('review');
             hapticSuccess();
-            
+
             toast.show({
                 placement: 'bottom',
                 render: ({ id }) => (
@@ -129,7 +128,7 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
         } catch (error) {
             console.error('OCR Error:', error);
             hapticError();
-            
+
             toast.show({
                 placement: 'bottom',
                 render: ({ id }) => (
@@ -138,12 +137,10 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
                     </Toast>
                 ),
             });
-            
+
             // Go back to capture
             setStep('capture');
             setImageUri(null);
-        } finally {
-            setIsProcessing(false);
         }
     };
 
@@ -160,10 +157,10 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
 
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
-            
+
             // Skip header lines
             if (
-                line.toLowerCase().includes('name') || 
+                line.toLowerCase().includes('name') ||
                 line.toLowerCase().includes('index') ||
                 line.toLowerCase().includes('no.') ||
                 line.toLowerCase().includes('නම') || // Sinhala for "name"
@@ -192,7 +189,7 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
                 // First part is name, last part that looks like a number is index
                 const possibleIndex = spaceSplit.find(part => /\d+/.test(part));
                 const name = spaceSplit[0];
-                
+
                 if (possibleIndex && name) {
                     students.push({
                         name: name,
@@ -206,13 +203,13 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
             // Pattern 3: Line has both text and numbers - try to split
             const hasNumbers = /\d+/.test(line);
             const hasText = /[a-zA-Z\u0D80-\u0DFF\u0B80-\u0BFF]{3,}/.test(line); // Latin, Sinhala, Tamil
-            
+
             if (hasNumbers && hasText) {
                 // Extract first continuous text as name
                 const nameMatch = line.match(/^([a-zA-Z\u0D80-\u0DFF\u0B80-\u0BFF\s]+)/);
                 // Extract first number sequence as index
                 const indexMatch = line.match(/(\d+)/);
-                
+
                 if (nameMatch && indexMatch) {
                     students.push({
                         name: nameMatch[1].trim(),
@@ -261,11 +258,11 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
     return (
         <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
             {/* Header */}
-            <HStack 
-                px="$6" 
-                pt="$12" 
-                pb="$4" 
-                justifyContent="space-between" 
+            <HStack
+                px="$6"
+                pt="$12"
+                pb="$4"
+                justifyContent="space-between"
                 alignItems="center"
                 borderBottomWidth={1}
                 borderBottomColor={Theme.colors.mistGray}
@@ -314,9 +311,9 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
                         </VStack>
 
                         {/* Tips */}
-                        <VStack 
-                            space="sm" 
-                            p="$4" 
+                        <VStack
+                            space="sm"
+                            p="$4"
                             sx={{
                                 backgroundColor: Theme.colors.deepIndigo,
                                 borderRadius: Theme.corners.comfortable,
@@ -443,7 +440,7 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
                             >
                                 <ButtonText color={Theme.colors.sacredWhite}>Try Again</ButtonText>
                             </Button>
-                            
+
                             <Button
                                 size="lg"
                                 onPress={handleConfirm}

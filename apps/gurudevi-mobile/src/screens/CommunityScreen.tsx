@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, RefreshControl } from 'react-native';
-import { Box, VStack, HStack, Text, Pressable, Spinner, useToast, Toast, ToastTitle } from "@gluestack-ui/themed";
+import { Box, VStack, HStack, Text, Pressable, Spinner, useToast, Toast, ToastTitle } from "@/ui";
 import GlobalHeader from '../components/shared/GlobalHeader';
 import LotusPetalFAB from '../components/shared/LotusPetalFAB';
 import PostCard from '../components/community/PostCard';
