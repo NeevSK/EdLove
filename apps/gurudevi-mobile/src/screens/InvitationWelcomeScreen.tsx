@@ -1,4 +1,4 @@
-import { VStack, Heading, Text, Button, ButtonText, Box } from '@gluestack-ui/themed';
+import { VStack, Heading, Text, Button, ButtonText, Box, useToast, Toast, ToastTitle, ToastDescription } from '@gluestack-ui/themed';
 import { Theme } from '../constants/Theme';
 import { supabase } from '../lib/supabase';
 import { useNavigation } from '@react-navigation/native';
@@ -14,6 +14,7 @@ interface InvitationWelcomeScreenProps {
 
 export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScreenProps) {
     const navigation = useNavigation<any>();
+    const toast = useToast();
     const role = route?.params?.role || 'User';
     const schoolName = route?.params?.schoolName || 'the Sanctuary';
 
@@ -33,7 +34,21 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
                     })
                     .eq('id', session.user.id);
 
-                if (error) throw error;
+                if (error) {
+                    console.error('Database update error:', error);
+                    toast.show({
+                        placement: 'top',
+                        render: ({ id }) => (
+                            <Toast nativeID={id} action="error" variant="solid">
+                                <ToastTitle>Failed to join</ToastTitle>
+                                <ToastDescription>
+                                    Unable to update your profile. Please try again.
+                                </ToastDescription>
+                            </Toast>
+                        ),
+                    });
+                    return;
+                }
             }
 
             // Navigate to Main screen on success (or if no session for demo)
@@ -41,6 +56,17 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
             navigation.navigate('Main');
         } catch (error) {
             console.error('Error joining sanctuary:', error);
+            toast.show({
+                placement: 'top',
+                render: ({ id }) => (
+                    <Toast nativeID={id} action="error" variant="solid">
+                        <ToastTitle>Error</ToastTitle>
+                        <ToastDescription>
+                            An unexpected error occurred. Please try again.
+                        </ToastDescription>
+                    </Toast>
+                ),
+            });
         }
     };
 

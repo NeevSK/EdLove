@@ -41,7 +41,6 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
     const [scannedText, setScannedText] = useState<string>('');
     const [parsedStudents, setParsedStudents] = useState<ScannedStudent[]>([]);
     const [step, setStep] = useState<'capture' | 'processing' | 'review'>('capture');
-    const [isProcessing, setIsProcessing] = useState(false);
     const toast = useToast();
 
     // Request camera permissions
@@ -95,7 +94,6 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
 
     // Process image with ML Kit Text Recognition
     const processImage = async (uri: string) => {
-        setIsProcessing(true);
         setStep('processing');
 
         try {
@@ -143,8 +141,6 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
             // Go back to capture
             setStep('capture');
             setImageUri(null);
-        } finally {
-            setIsProcessing(false);
         }
     };
 

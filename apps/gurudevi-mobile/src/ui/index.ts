@@ -85,6 +85,27 @@ export {
 } from '@gluestack-ui/themed/build/components/FormControl';
 
 // ============================================================================
+// Avatar Components
+// ============================================================================
+export {
+    Avatar,
+    AvatarFallbackText,
+    AvatarImage
+} from '@gluestack-ui/themed/build/components/Avatar';
+
+// ============================================================================
+// Modal Components
+// ============================================================================
+export {
+    Modal,
+    ModalBackdrop,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter
+} from '@gluestack-ui/themed/build/components/Modal';
+
+// ============================================================================
 // Provider (special case - keep from main export)
 // ============================================================================
 export { GluestackUIProvider } from '@gluestack-ui/themed';
