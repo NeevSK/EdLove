@@ -8,7 +8,7 @@ import Animated, {
     Easing,
     withSequence
 } from 'react-native-reanimated';
-import { Text, VStack, Center } from '@gluestack-ui/themed';
+import { Text, VStack, Center } from '@/ui';
 import { Theme } from '../../constants/Theme';
 import { Flower } from 'lucide-react-native';
 

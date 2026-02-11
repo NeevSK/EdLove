@@ -21,7 +21,7 @@ import {
     InputField,
     Button,
     ButtonText,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { StyleSheet } from 'react-native';
 import Animated, {
     useAnimatedStyle,

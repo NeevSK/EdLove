@@ -1,6 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Box, VStack, Text, Heading, Center } from '@gluestack-ui/themed';
+import { Box, VStack, Text, Heading, Center } from '@/ui';
 import { AlertTriangle, RefreshCw } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import SanctuaryButton from './SanctuaryButton';

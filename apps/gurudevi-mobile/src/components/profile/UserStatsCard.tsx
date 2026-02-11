@@ -6,7 +6,7 @@ import {
     Text,
     Progress,
     ProgressFilledTrack,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { Theme } from '../../constants/Theme';
 import { UserRole } from '../../types/User';
 import { Trophy, Users, BookOpen, Clock, Star, ShieldCheck } from 'lucide-react-native';

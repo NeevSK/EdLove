@@ -7,7 +7,18 @@ import {
     Pressable,
     ScrollView,
     Center,
-} from '@gluestack-ui/themed';
+    Modal,
+    ModalBackdrop,
+    ModalContent,
+    ModalHeader,
+    ModalCloseButton,
+    ModalBody,
+    Heading,
+    Icon,
+    CloseIcon,
+    Button,
+    ButtonText,
+} from '@/ui';
 import { ActivityIndicator } from 'react-native';
 import {
     User,
@@ -21,19 +32,6 @@ import { Theme } from '../../constants/Theme';
 import { ClassroomStudent, api } from '../../lib/api';
 import { hapticLight, hapticMedium } from '../../utils/haptics';
 import { AddStudentModal } from './AddStudentModal';
-import {
-    Modal,
-    ModalBackdrop,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    Heading,
-    Icon,
-    CloseIcon,
-    Button,
-    ButtonText,
-} from '@gluestack-ui/themed';
 import QRCodeGenerator from '../shared/QRCodeGenerator';
 import * as Clipboard from 'expo-clipboard';
 

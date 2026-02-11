@@ -16,7 +16,7 @@ import {
     VStack,
     Text,
     Pressable,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { Modal, StyleSheet, Dimensions } from 'react-native';
 import Animated, {
     useAnimatedStyle,

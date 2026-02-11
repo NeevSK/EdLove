@@ -25,7 +25,7 @@ import {
     Center,
     Spinner,
     FlatList,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { Search, QrCode, UserPlus, Info, Plus } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { api, ClassroomStudent } from '../../lib/api';

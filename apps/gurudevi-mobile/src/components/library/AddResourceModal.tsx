@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, ModalBackdrop, ModalContent, ModalHeader, ModalBody, ModalFooter, Heading, VStack, HStack, Text, Input, InputField } from '@gluestack-ui/themed';
+import { Modal, ModalBackdrop, ModalContent, ModalHeader, ModalBody, ModalFooter, Heading, VStack, HStack, Text, Input, InputField } from '@/ui';
 import SanctuaryButton from '../shared/SanctuaryButton';
 import { Theme } from '../../constants/Theme';
 import { ResourceType } from './LibraryResourceCard';

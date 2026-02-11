@@ -8,7 +8,7 @@ import {
     Image,
     Pressable,
     Center,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,

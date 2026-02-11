@@ -24,7 +24,7 @@ import {
     SelectItem,
     Image,
     Center,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { X, Save, User, Briefcase, ChevronDown, Camera } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';

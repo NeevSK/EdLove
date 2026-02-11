@@ -15,7 +15,7 @@ import {
     HStack,
     Text,
     Box,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { FlatList, ListRenderItemInfo } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { StudentGrade, ClassroomGradingSettings } from '../../types/Grade';

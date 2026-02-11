@@ -10,7 +10,7 @@ import {
   Button,
   ButtonText,
   ScrollView
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { Lightbulb, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';

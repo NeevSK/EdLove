@@ -17,7 +17,17 @@ export function marksToGPA(marks: number): { grade: string, gpa: number } {
 /**
  * Calculates ranks based on marks
  */
-export function calculateRanks(grades: any[]): any[] {
+export interface GradeWithMarks {
+  id: string;
+  marks: number;
+  [key: string]: any;
+}
+
+export interface GradeWithRank extends GradeWithMarks {
+  rank: number;
+}
+
+export function calculateRanks(grades: GradeWithMarks[]): GradeWithRank[] {
   const sorted = [...grades].sort((a, b) => b.marks - a.marks);
   return grades.map(grade => {
     const rank = sorted.findIndex(s => s.id === grade.id) + 1;

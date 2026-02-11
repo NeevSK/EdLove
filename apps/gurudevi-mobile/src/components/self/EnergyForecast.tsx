@@ -6,7 +6,7 @@ import {
   Text,
   Heading,
   Pressable
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { Battery, BatteryLow, BatteryMedium, BatteryFull } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';

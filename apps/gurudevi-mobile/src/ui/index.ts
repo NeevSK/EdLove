@@ -84,6 +84,38 @@ export {
     FormControlLabelText
 } from '@gluestack-ui/themed/build/components/FormControl';
 
+export {
+    Textarea,
+    TextareaInput
+} from '@gluestack-ui/themed/build/components/Textarea';
+
+export { Switch } from '@gluestack-ui/themed/build/components/Switch';
+
+// ============================================================================
+// Avatar Components
+// ============================================================================
+export {
+    Avatar,
+    AvatarFallbackText,
+    AvatarImage
+} from '@gluestack-ui/themed/build/components/Avatar';
+
+// ============================================================================
+// Modal Components
+// ============================================================================
+export {
+    Modal,
+    ModalBackdrop,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    ModalCloseButton
+} from '@gluestack-ui/themed/build/components/Modal';
+
+export { Icon } from '@gluestack-ui/themed/build/components/Icon';
+export { CloseIcon } from '@gluestack-ui/themed/build/components/Icons';
+
 // ============================================================================
 // Provider (special case - keep from main export)
 // ============================================================================

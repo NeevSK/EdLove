@@ -25,7 +25,9 @@ expo-env.d.ts
 npm-debug.*
 yarn-debug.*
 yarn-error.*
-*.txt
+# TypeScript compiler output logs (intentionally specific to avoid ignoring project docs/notes)
+tsc_output*.txt
+tsc_errors*.txt
 *.log
 
 # macOS

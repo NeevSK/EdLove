@@ -21,7 +21,7 @@ import {
     Button,
     ButtonText,
     Pressable,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { StyleSheet, Platform } from 'react-native';
 import Animated, {
     useAnimatedStyle,

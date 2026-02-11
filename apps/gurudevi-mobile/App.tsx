@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GluestackUIProvider, Box, Spinner, Center } from '@/ui';
+import { GluestackUIProvider, Spinner, Center } from '@/ui';
 import { config } from "./gluestack-ui.config";
 import { Home, School, Users, Library, User } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
@@ -44,7 +44,7 @@ export default function App() {
         .single();
 
       if (userProfile) {
-        const { setUserRole, setSchoolType, setOnboardingCompleted } = useStore.getState();
+        const { setUserRole, setOnboardingCompleted } = useStore.getState();
         setUserRole(userProfile.role as UserRole | null);
         setOnboardingCompleted(!!userProfile.onboarding_completed);
 

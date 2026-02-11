@@ -19,7 +19,7 @@ import {
     useToast,
     Toast,
     ToastTitle,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { X, Plus, Trash2, Save } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';

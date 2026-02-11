@@ -15,7 +15,7 @@ import {
     useToast,
     Toast,
     ToastTitle,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { ArrowRight, HelpCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../constants/Theme';

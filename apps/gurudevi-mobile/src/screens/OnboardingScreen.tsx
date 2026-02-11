@@ -117,8 +117,6 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                                 </SelectDragIndicatorWrapper>
                                 <SelectItem label={t('auth.founder') || 'Founder'} value="founder" />
                                 <SelectItem label={t('auth.admin') || 'Admin'} value="admin" />
-                                <SelectItem label={t('auth.founder') || 'Founder'} value="founder" />
-                                <SelectItem label={t('auth.admin') || 'Admin'} value="admin" />
                                 <SelectItem label={t('auth.principal') || 'Principal'} value="principal" />
                                 <SelectItem label={t('auth.sectionHead') || 'Section Head'} value="section_head" />
                                 <SelectItem label={t('auth.gradeHead') || 'Grade Head'} value="grade_head" />

@@ -11,7 +11,7 @@ import {
   ButtonText,
   Progress,
   ProgressFilledTrack
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { Moon, CheckCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';

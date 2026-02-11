@@ -9,8 +9,7 @@ import {
     Button,
     ButtonText,
     Spinner,
-    Icon,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { ChevronDown, ChevronUp, FileText, Link as LinkIcon, Edit2, Trash2, Plus } from 'lucide-react-native';
 import { TouchableOpacity, LayoutAnimation } from 'react-native';
 import { useTranslation } from 'react-i18next';
