@@ -1,0 +1,22 @@
+﻿  console.log
+    Successfully joined: Teacher at Galle International School
+
+      at log (src/screens/InvitationWelcomeScreen.tsx:38:21)
+
+node.exe : PASS Web src/__tests__/steps/invitation_welcome.steps.tsx
+At C:\Users\Naween\AppData\Roaming\npm\pnpm.ps1:24 char:5
++     & "node$exe"  "$basedir/node_modules/pnpm/bin/pnpm.cjs" $args
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (PASS Web src/__...lcome.steps.tsx 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  Invitation Welcome Flow
+    ΓêÜ Arriving via Teacher invitation (39 ms)
+    ΓêÜ Accepting an invitation (36 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       2 passed, 2 total
+Snapshots:   0 total
+Time:        2.629 s
+Ran all test suites matching src/__tests__/steps/invitation_welcome.steps.tsx.
