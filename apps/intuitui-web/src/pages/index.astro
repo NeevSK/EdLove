@@ -3,14 +3,14 @@ import MainLayout from '../layouts/MainLayout.astro';
 import SystemsGrid from '../components/SystemsGrid.astro';
 ---
 
-<MainLayout title="Intuitui Labs | Systems Intelligence">
+<MainLayout title="Intuitui Labs | Systems Intelligence" theme="home">
 	<section class="space-y-24">
 		<!-- Hero Section -->
 		<div class="max-w-3xl space-y-8">
 			<p class="mono-label">Systems Intelligence Studio</p>
 			<h1 class="text-6xl md:text-8xl font-bold leading-[0.9] tracking-tighter">
 				Designing <br/> 
-				<span class="text-brand-secondary">Systems</span> <br/>
+				<span class="text-brand-sky">Systems</span> <br/>
 				That Breathe.
 			</h1>
 			<p class="text-xl md:text-2xl text-brand-secondary font-light max-w-2xl">
@@ -57,10 +57,15 @@ import SystemsGrid from '../components/SystemsGrid.astro';
 					Intuitui Labs operates at the intersection of symbolic culture and material infrastructure. We don't just build apps; we design the systems that allow organizations and ecosystems to flourish with dignity.
 				</p>
 				<ul class="space-y-4">
-					{['Education Systems', 'SME Modernization', 'Agriculture & Ecology', 'Knowledge Infrastructure'].map(item => (
+					{[
+						{ name: 'Education Systems', color: 'bg-brand-sky' },
+						{ name: 'SME Modernization', color: 'bg-brand-primary' },
+						{ name: 'Agriculture & Ecology', color: 'bg-brand-leaf' },
+						{ name: 'Knowledge Infrastructure', color: 'bg-brand-secondary' }
+					].map(item => (
 						<li class="flex items-center gap-4 text-sm font-mono group">
-							<span class="w-2 h-px bg-black/20 group-hover:w-4 group-hover:bg-brand-accent transition-all"></span>
-							{item}
+							<span class={`w-2 h-px ${item.color} group-hover:w-4 transition-all opacity-40 group-hover:opacity-100`}></span>
+							{item.name}
 						</li>
 					))}
 				</ul>

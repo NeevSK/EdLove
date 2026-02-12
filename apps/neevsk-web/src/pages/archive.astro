@@ -2,12 +2,18 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Navigation from '../components/Navigation.astro';
 import RealitySwitch from '../components/RealitySwitch.astro';
+import { getCollection } from 'astro:content';
 
-const entries = [
-	{ date: "2026.02.12", title: "Decoherence as a Lifestyle", category: "Essays" },
-	{ date: "2026.01.25", title: "The Soul of the Machine", category: "Philosophy" },
-	{ date: "2025.12.10", title: "Cybernetic Feedback Loops in Ecology", category: "Notes" },
-];
+const archiveEntries = await getCollection('archive', ({ data }) => !data.draft);
+archiveEntries.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+
+const formatDate = (date: Date) => {
+    return date.toLocaleDateString('en-CA', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).replace(/-/g, '.');
+};
 ---
 
 <BaseLayout title="Archive">
@@ -17,26 +23,33 @@ const entries = [
 		<Navigation />
 		
 		<header class="mt-24 mb-24">
-			<h1 class="text-xs uppercase tracking-[0.8em] font-mono text-ink/40 dark:text-tungsten/40 mb-6">Digital Archive</h1>
-			<p class="text-4xl font-serif dark:font-mono leading-tight">
+			<h1 class="text-xs uppercase tracking-[0.8em] font-mono text-[var(--text-main)]/40 mb-6">Digital Archive</h1>
+			<p class="text-5xl font-serif dark:font-mono leading-tight tracking-tight">
 				A collection of uncollapsed thoughts and epistemic artifacts.
 			</p>
 		</header>
 
 		<div class="space-y-4">
-			{entries.map(entry => (
-				<div class="group flex gap-8 py-6 border-b border-ink/5 dark:border-tungsten/5 hover:bg-ink/[0.01] dark:hover:bg-tungsten/[0.01] transition-colors">
-					<span class="text-[10px] font-mono opacity-30 mt-1.5">{entry.date}</span>
+			{archiveEntries.map(entry => (
+				<a href={`/archive/${entry.slug}`} class="group flex gap-8 py-8 border-b border-[var(--text-main)]/5 hover:bg-[var(--text-main)]/[0.01] transition-all duration-300">
+					<span class="text-[10px] font-mono opacity-30 mt-2">{formatDate(entry.data.publishDate)}</span>
 					<div class="flex-1">
-						<h2 class="text-xl font-serif dark:font-mono group-hover:text-flame dark:group-hover:text-glow-blue transition-colors">
-							{entry.title}
+						<h2 class="text-2xl font-serif dark:font-mono group-hover:text-[var(--accent-secondary)] transition-colors">
+							{entry.data.title}
 						</h2>
-						<span class="text-[10px] uppercase tracking-widest font-mono opacity-40 mt-1 block">//{entry.category}</span>
+						<div class="flex gap-4 items-center mt-2">
+							<span class="text-[10px] uppercase tracking-widest font-mono opacity-40">//{entry.data.subtitle || 'Fragment'}</span>
+							{entry.data.tags.map(tag => (
+								<span class="text-[8px] uppercase tracking-widest font-mono bg-[var(--text-main)]/5 px-2 py-0.5 rounded-full opacity-30 group-hover:opacity-60 transition-opacity">
+									{tag}
+								</span>
+							))}
+						</div>
 					</div>
-					<div class="hidden md:block opacity-0 group-hover:opacity-20 transition-opacity">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+					<div class="hidden md:flex items-center opacity-0 group-hover:opacity-40 transition-opacity translate-x-4 group-hover:translate-x-0 duration-500">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
 					</div>
-				</div>
+				</a>
 			))}
 		</div>
 	</main>

@@ -9,16 +9,16 @@
   --font-body: 'Lora', 'Georgia', 'Times New Roman', serif;
   --font-mono: 'Fira Code', 'Courier New', monospace;
 
-  /* Type Scale (Modular Scale: 1.250) */
-  --text-xs: 0.64rem;
-  --text-sm: 0.8rem;
-  --text-base: 1.1rem;
-  --text-lg: 1.25rem;
-  --text-xl: 1.563rem;
-  --text-2xl: 1.953rem;
-  --text-3xl: 2.441rem;
-  --text-4xl: 3.052rem;
-  --text-5xl: 3.815rem;
+  /* Type Scale (Universal Balance - Phase III) */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.4rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 1.8rem;
+  --text-4xl: 2.1rem;
+  --text-5xl: 2.4rem;
 
   /* Font Weights */
   --font-weight-light: 300;
@@ -148,6 +148,16 @@ p {
   --theme-accent: #E8B4B8;
   --theme-gold: #D4A574;
   background: var(--theme-bg);
+  color: var(--theme-text);
+}
+
+/* Gurudevi Context */
+.context-gurudevi {
+  --theme-bg: #1E3A5F;
+  --theme-text: #FFFFFF;
+  --theme-accent: #008B8B;
+  --theme-gold: #D4A574;
+  background: linear-gradient(180deg, #1E3A5F 0%, #1E5A5A 100%);
   color: var(--theme-text);
 }
 

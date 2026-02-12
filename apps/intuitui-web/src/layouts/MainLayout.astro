@@ -4,9 +4,36 @@ import '../styles/global.css';
 interface Props {
 	title: string;
 	description?: string;
+	theme?: 'home' | 'about' | 'projects' | 'studio' | 'default';
 }
 
-const { title, description = "Intuitui Labs - Systems Intelligence & Humane Innovation Studio" } = Astro.props;
+const { title, description = "Intuitui Labs - Systems Intelligence & Humane Innovation Studio", theme = 'default' } = Astro.props;
+
+// Theme-specific background configurations with parallax weights
+const themes = {
+	home: [
+		{ color: 'bg-brand-sky/5', shape: 'w-[70%] h-[80%] -top-[20%] -left-[10%] -rotate-12', parallax: 0.1 },
+		{ color: 'bg-brand-leaf/5', shape: 'w-[60%] h-[70%] -bottom-[20%] -right-[10%] rotate-6', parallax: -0.15 },
+		{ color: 'bg-brand-sky/3', shape: 'w-[40%] h-[50%] top-1/4 left-1/2 -rotate-45', parallax: 0.05 }
+	],
+	about: [
+		{ color: 'bg-brand-leaf/3', shape: 'w-[100%] h-[40%] -top-[10%] left-0 rotate-2', parallax: 0.2 },
+		{ color: 'bg-brand-primary/2', shape: 'w-[50%] h-[100%] top-0 -left-[10%] -rotate-6', parallax: -0.1 },
+		{ color: 'bg-brand-leaf/5', shape: 'w-[30%] h-[30%] bottom-20 right-20 rotate-45', parallax: 0.3 }
+	],
+	projects: [
+		{ color: 'bg-brand-sky/10', shape: 'w-[120%] h-[30%] top-[40%] -left-[10%] rotate-12', parallax: 0.15 },
+		{ color: 'bg-brand-primary/5', shape: 'w-[40%] h-[80%] -top-[10%] right-[10%] -rotate-12', parallax: -0.05 }
+	],
+	studio: [
+		{ color: 'bg-brand-primary/5', shape: 'w-[100%] h-[1px] top-1/4 left-0 rotate-1', parallax: 0.4 },
+		{ color: 'bg-brand-primary/5', shape: 'w-[100%] h-[1px] top-2/3 left-0 -rotate-1', parallax: 0.6 },
+		{ color: 'bg-brand-sky/5', shape: 'w-[30%] h-[60%] top-0 right-0 -rotate-12', parallax: 0.2 }
+	],
+	default: []
+};
+
+const currentBackground = themes[theme] || themes.default;
 ---
 
 <!doctype html>
@@ -22,11 +49,24 @@ const { title, description = "Intuitui Labs - Systems Intelligence & Humane Inno
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
 	</head>
-	<body class="systems-grid min-h-screen selection:bg-brand-primary selection:text-white">
+	<body class="min-h-screen relative overflow-x-hidden selection:bg-brand-primary selection:text-white">
+		<!-- Dynamic Background Zones -->
+		<div class="fixed inset-0 -z-20 pointer-events-none" id="bg-container">
+			{currentBackground.map(zone => (
+				<div 
+					class={`absolute transform-gpu transition-transform duration-700 ease-out ${zone.color} ${zone.shape}`}
+					style={`--parallax: ${zone.parallax}; transform: translateY(calc(var(--scroll-y, 0) * var(--parallax) * 1px)) rotate(var(--tw-rotate, 0deg));`}
+				></div>
+			))}
+		</div>
+
+		<!-- Systems Grid Overlay -->
+		<div class="fixed inset-0 -z-10 systems-grid pointer-events-none opacity-40"></div>
+
 		<nav class="fixed top-0 left-0 right-0 z-50 border-b border-black/5 bg-white/70 backdrop-blur-md">
 			<div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
 				<a href="/" class="group flex items-center gap-3">
-					<div class="w-2 h-2 bg-brand-accent rounded-full group-hover:scale-125 transition-transform"></div>
+					<div class="w-2 h-2 bg-linear-to-br from-brand-sky to-brand-leaf rounded-full group-hover:scale-125 transition-transform"></div>
 					<span class="font-mono font-bold tracking-tighter text-lg">intuitui.labs</span>
 				</a>
 				<div class="flex items-center gap-8 text-sm font-medium">
@@ -59,5 +99,16 @@ const { title, description = "Intuitui Labs - Systems Intelligence & Humane Inno
 				</div>
 			</div>
 		</footer>
+
+		<script>
+			// Track scroll position and update CSS variable
+			const updateScroll = () => {
+				const scrollY = window.scrollY;
+				document.body.style.setProperty('--scroll-y', scrollY.toString());
+			};
+
+			window.addEventListener('scroll', updateScroll, { passive: true });
+			updateScroll(); // Initial call
+		</script>
 	</body>
 </html>

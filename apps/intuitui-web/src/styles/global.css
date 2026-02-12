@@ -1,10 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-    --color-brand-background: #fafafa;
+    --color-brand-background: #fffdf2;
     --color-brand-primary: #1e293b;
-    --color-brand-secondary: #64748b;
-    --color-brand-accent: #020617;
+    --color-brand-secondary: #475569;
+    --color-brand-accent: #0f172a;
+    --color-brand-sky: #0ea5e9;
+    --color-brand-leaf: #22c55e;
 
     --font-sans: "Outfit", "Inter", system-ui, sans-serif;
     --font-mono: "JetBrains Mono", "Fira Code", monospace;
@@ -12,7 +14,7 @@
 
 :root {
     --color-primary: #1e293b;
-    --color-secondary: #fafafa;
+    --color-secondary: #fffdf2;
 }
 
 body {
@@ -37,6 +39,6 @@ h6 {
 
 /* Custom Grid Utility */
 .systems-grid {
-    background-image: radial-gradient(circle, #e2e8f0 1px, transparent 1px);
+    background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
     background-size: 32px 32px;
 }

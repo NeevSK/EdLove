@@ -2,7 +2,7 @@
 import MainLayout from '../layouts/MainLayout.astro';
 ---
 
-<MainLayout title="About | Intuitui Labs">
+<MainLayout title="About | Intuitui Labs" theme="about">
 	<div class="max-w-4xl space-y-24">
 		<section class="space-y-8">
 			<p class="mono-label">Strategic Identity</p>
@@ -34,16 +34,41 @@ import MainLayout from '../layouts/MainLayout.astro';
 			</div>
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-black/5 border border-black/5">
 				{[
-					{ title: "Systems & Insights", desc: "Research, sensemaking, and opportunity mapping." },
-					{ title: "Design & Transformation", desc: "Intervention design and systems architecture." },
-					{ title: "Applied Technology", desc: "AI tools, automation, and micro-app development." },
-					{ title: "Communication & Culture", desc: "Storytelling, diagrams, and clarity artifacts." }
+					{ title: "Systems & Insights", desc: "Research, sensemaking, and opportunity mapping.", color: "group-hover:text-brand-sky" },
+					{ title: "Design & Transformation", desc: "Intervention design and systems architecture.", color: "group-hover:text-brand-leaf" },
+					{ title: "Applied Technology", desc: "AI tools, automation, and micro-app development.", color: "group-hover:text-brand-primary" },
+					{ title: "Communication & Culture", desc: "Storytelling, diagrams, and clarity artifacts.", color: "group-hover:text-brand-secondary" }
 				].map(unit => (
 					<div class="bg-brand-background p-10 space-y-4 hover:bg-white transition-colors group">
-						<h3 class="text-xl font-bold group-hover:text-brand-accent">{unit.title}</h3>
+						<h3 class={`text-xl font-bold transition-colors ${unit.color}`}>{unit.title}</h3>
 						<p class="text-sm text-brand-secondary">{unit.desc}</p>
 					</div>
 				))}
+			</div>
+		</section>
+
+		<section class="space-y-12">
+			<div class="flex items-end justify-between border-b border-black/5 pb-4">
+				<h2 class="text-sm font-mono uppercase tracking-[0.2em]">Leadership</h2>
+				<span class="text-[10px] opacity-30 font-mono">03 // FOUNDER</span>
+			</div>
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-24 items-start">
+				<div class="space-y-6">
+					<h3 class="text-3xl font-bold tracking-tight">Neev</h3>
+					<p class="mono-label !opacity-100 text-brand-secondary">Founder & Systems Lead</p>
+					<div class="space-y-4 text-brand-secondary leading-relaxed">
+						<p>
+							With a background in systems intelligence and research, Neev established Intuitui Labs to bridge the gap between abstract innovation and human reality.
+						</p>
+						<p>
+							His work focuses on designing "humane" technology—systems that prioritize dignity, clarity, and sustainable growth for Sri Lankan communities and enterprises.
+						</p>
+					</div>
+				</div>
+				<div class="aspect-[4/5] bg-black/[0.03] border border-black/5 flex items-center justify-center relative overflow-hidden grayscale">
+					<div class="absolute inset-0 opacity-10 systems-grid"></div>
+					<div class="text-[10px] font-mono opacity-20 rotate-90">IMG_STUDIO_CORE_LEAD</div>
+				</div>
 			</div>
 		</section>
 

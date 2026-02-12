@@ -2,29 +2,34 @@
 
 @theme {
     --font-serif: "Lora", serif;
+    --font-sans: "Inter", sans-serif;
     --font-mono: "Space Mono", monospace;
 
-    --color-tungsten: #fafaf9;
+    --color-paper: #fbfaf8;
     --color-ink: #1c1917;
     --color-void: #020617;
-    --color-glow-blue: #06b6d4;
-    --color-glow-red: #f43f5e;
-    --color-flame: #f59e0b;
+    --color-plasma: #6366f1;
+    --color-embers: #f43f5e;
+    --color-gold: #d4a574;
 }
 
 @layer base {
     :root {
-        --bg-main: var(--color-tungsten);
+        --bg-main: var(--color-paper);
         --text-main: var(--color-ink);
-        --accent-main: var(--color-flame);
+        --accent-main: var(--color-ink);
+        --accent-secondary: var(--color-gold);
         --font-primary: var(--font-serif);
+        --font-secondary: var(--font-sans);
     }
 
     :root.dark {
         --bg-main: var(--color-void);
-        --text-main: var(--color-tungsten);
-        --accent-main: var(--color-glow-blue);
+        --text-main: var(--color-paper);
+        --accent-main: var(--color-paper);
+        --accent-secondary: var(--color-plasma);
         --font-primary: var(--font-mono);
+        --font-secondary: var(--font-mono);
     }
 
     body {

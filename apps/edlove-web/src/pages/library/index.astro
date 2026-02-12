@@ -2,6 +2,13 @@
 import Layout from '../../layouts/Layout.astro';
 import CinematicBackground from '../../components/CinematicBackground.astro';
 import ExpandableContent from '../../components/ExpandableContent.astro';
+import { getCollection, render } from 'astro:content';
+
+const libraryEntries = await getCollection('library', ({ data }) => !data.draft);
+
+const thinkers = libraryEntries.filter(e => e.data.type === 'Thinker').sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+const frameworks = libraryEntries.filter(e => e.data.type === 'Framework').sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+const stories = libraryEntries.filter(e => e.data.type === 'Story').sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 ---
 
 <Layout title="The Library | EdLove">
@@ -11,61 +18,72 @@ import ExpandableContent from '../../components/ExpandableContent.astro';
         <!-- Header: The Core -->
         <section class="text-center space-y-12 mb-32 animate-fade-in-up">
             <div class="space-y-4">
-                <span class="font-sans text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-agedGold)] opacity-60">Domain VI</span>
-                <h1 class="text-7xl md:text-9xl font-serif text-[var(--color-midnightInk)] leading-none">The Epistemic Core</h1>
+                <span class="font-heading text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-gold)] opacity-60">Domain VI</span>
+                <h1 class="text-6xl md:text-8xl font-heading font-bold text-[var(--color-midnightInk)] leading-none">The Epistemic Core</h1>
             </div>
 
-            <div class="h-px w-24 bg-[var(--color-agedGold)]/30 mx-auto"></div>
+            <div class="h-px w-24 bg-[var(--color-gold)]/30 mx-auto"></div>
 
-            <p class="font-serif text-2xl text-[var(--color-midnightInk)]/50 max-w-3xl mx-auto leading-relaxed italic">
+            <p class="font-body text-2xl text-[var(--color-midnightInk)]/50 max-w-3xl mx-auto leading-relaxed italic">
                 "Where we explore the temporal dimensions of wisdom. <br/> From ancient history to the future of cognition."
             </p>
         </section>
 
-        <!-- Featured Reflection -->
-        <section class="max-w-4xl mx-auto mb-32">
-             <div class="floating-pill p-12 border border-[var(--color-agedGold)]/20 flex flex-col md:flex-row items-center gap-12 group">
-                <div class="text-7xl group-hover:scale-110 transition-transform duration-700">⚡</div>
-                <div class="space-y-4">
-                    <span class="font-sans text-[10px] uppercase tracking-widest font-bold text-[var(--color-agedGold)]">Deep Thought</span>
-                    <h3 class="font-serif text-4xl text-[var(--color-midnightInk)]">The Resonant Student</h3>
-                    <p class="font-sans text-[var(--color-midnightInk)]/60 leading-relaxed font-light">
-                        Exploring the physics of "Teaning"—matching impedance between teacher and student in a high-noise administrative environment.
-                    </p>
+        <!-- Dynamic Collection -->
+        <section class="max-w-4xl mx-auto space-y-24">
+            
+            <!-- Thinkers -->
+            <div class="space-y-12">
+                <h2 class="font-heading text-4xl font-bold text-[var(--color-midnightInk)]/80 border-b border-[var(--color-gold)]/20 pb-4">Thinkers</h2>
+                <div class="space-y-8">
+                    {thinkers.map(async (entry) => {
+                        const { Content } = await render(entry);
+                        return (
+                            <ExpandableContent title={entry.data.title} subtitle={entry.data.subtitle} icon={entry.data.icon}>
+                                <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80 prose prose-slate max-w-none">
+                                    <Content />
+                                </div>
+                            </ExpandableContent>
+                        );
+                    })}
                 </div>
-             </div>
-        </section>
+            </div>
 
-        <!-- The Collection -->
-        <section class="max-w-4xl mx-auto space-y-16">
-            <ExpandableContent title="Thinkers" subtitle="The Giants" icon="🧠">
-                <div class="py-6 space-y-8 text-[var(--color-midnightInk)]/80">
-                    <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"We climb on the shoulders of giants."</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <div class="space-y-3">
-                            <strong class="font-serif text-xl block">Maria Montessori</strong>
-                            <p class="text-sm border-l border-[var(--color-agedGold)]/20 pl-4">Discovering that freedom within limits leads to profound inner discipline.</p>
-                        </div>
-                        <div class="space-y-3">
-                            <strong class="font-serif text-xl block">Paulo Freire</strong>
-                            <p class="text-sm border-l border-[var(--color-agedGold)]/20 pl-4">Education as the practice of freedom vs. education as domestication.</p>
-                        </div>
+            <!-- Frameworks -->
+            <div class="space-y-12">
+                <h2 class="font-heading text-4xl font-bold text-[var(--color-midnightInk)]/80 border-b border-[var(--color-gold)]/20 pb-4">Frameworks</h2>
+                <div class="space-y-8">
+                    {frameworks.map(async (entry) => {
+                        const { Content } = await render(entry);
+                        return (
+                            <ExpandableContent title={entry.data.title} subtitle={entry.data.subtitle} icon={entry.data.icon}>
+                                <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80 prose prose-slate max-w-none">
+                                    <Content />
+                                </div>
+                            </ExpandableContent>
+                        );
+                    })}
+                </div>
+            </div>
+
+            <!-- Stories -->
+            {stories.length > 0 && (
+                <div class="space-y-12">
+                    <h2 class="font-heading text-4xl font-bold text-[var(--color-midnightInk)]/80 border-b border-[var(--color-gold)]/20 pb-4">Stories</h2>
+                    <div class="space-y-8">
+                        {stories.map(async (entry) => {
+                            const { Content } = await render(entry);
+                            return (
+                                <ExpandableContent title={entry.data.title} subtitle={entry.data.subtitle} icon={entry.data.icon}>
+                                    <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80 prose prose-slate max-w-none">
+                                        <Content />
+                                    </div>
+                                </ExpandableContent>
+                            );
+                        })}
                     </div>
                 </div>
-            </ExpandableContent>
-            
-            <ExpandableContent title="Frameworks" subtitle="Mental Models" icon="📐">
-                <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80">
-                    <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"The Maps of Meaning."</p>
-                    <p>Using structural analysis to understand the complexity of schools, brains, and societies. From Integral Theory to Systems Thinking.</p>
-                </div>
-            </ExpandableContent>
-
-            <ExpandableContent title="Stories" subtitle="Narratives of Change" icon="📖">
-                <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80">
-                    <p>Case studies of experiments that broke the mold. Documentation of schools where sovereignty was restored.</p>
-                </div>
-            </ExpandableContent>
+            )}
         </section>
     </main>
 </Layout>

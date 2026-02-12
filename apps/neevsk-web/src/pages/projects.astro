@@ -2,27 +2,10 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Navigation from '../components/Navigation.astro';
 import RealitySwitch from '../components/RealitySwitch.astro';
+import { getCollection } from 'astro:content';
 
-const projects = [
-	{
-		title: "Polymath Platform",
-		description: "A monorepo for intelligent systems and personal tools. The parent ecosystem for all child apps.",
-		year: "2024-Present",
-		tags: ["Turbo", "Astro", "TypeScript"]
-	},
-	{
-		title: "EdLove AI",
-		description: "Human-centric educational agents designed to nurture the 'Soul' of learning.",
-		year: "2025",
-		tags: ["AI", "Svelte", "Ecology"]
-	},
-	{
-		title: "Radical Life",
-		description: "A philosophy-driven movement for divergent thinkers and epistemic architects.",
-		year: "2023",
-		tags: ["Philosophy", "Social Design"]
-	}
-];
+const projectEntries = await getCollection('projects', ({ data }) => !data.draft);
+projectEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 ---
 
 <BaseLayout title="Projects">
@@ -32,27 +15,27 @@ const projects = [
 		<Navigation />
 		
 		<header class="mt-24 mb-16">
-			<h1 class="text-4xl font-serif dark:font-mono mb-4 italic dark:not-italic">Selected Works</h1>
-			<p class="text-ink/60 dark:text-tungsten/60 font-serif dark:font-mono">
+			<h1 class="text-5xl font-serif dark:font-mono mb-4 italic dark:not-italic">Selected Works</h1>
+			<p class="text-[var(--text-main)]/60 font-serif dark:font-mono text-lg italic dark:not-italic">
 				A collection of digital artifacts, philosophical experiments, and cybernetic systems.
 			</p>
 		</header>
 
-		<div class="space-y-12">
-			{projects.map(project => (
-				<article class="group border-l border-ink/10 dark:border-tungsten/10 pl-8 hover:border-flame dark:hover:border-glow-blue transition-colors">
-					<div class="flex justify-between items-baseline mb-2">
-						<h2 class="text-2xl font-serif dark:font-mono group-hover:text-flame dark:group-hover:text-glow-blue transition-colors">
-							{project.title}
+		<div class="space-y-24">
+			{projectEntries.map(project => (
+				<article class="group border-l border-[var(--text-main)]/10 dark:border-[var(--text-main)]/10 pl-12 hover:border-[var(--accent-secondary)] transition-all duration-500">
+					<div class="flex flex-col md:flex-row justify-between items-baseline mb-4 gap-2">
+						<h2 class="text-3xl md:text-4xl font-serif dark:font-mono group-hover:text-[var(--accent-secondary)] transition-colors">
+							{project.data.title}
 						</h2>
-						<span class="text-[10px] font-mono opacity-40">{project.year}</span>
+						<span class="text-[10px] font-mono opacity-40">{project.data.role}</span>
 					</div>
-					<p class="text-ink/70 dark:text-tungsten/70 font-serif dark:font-mono mb-6 leading-relaxed italic dark:not-italic">
-						{project.description}
+					<p class="text-[var(--text-main)]/70 font-serif dark:font-mono mb-8 leading-relaxed text-lg">
+						{project.data.description}
 					</p>
-					<div class="flex gap-4">
-						{project.tags.map(tag => (
-							<span class="text-[10px] uppercase tracking-widest font-mono opacity-50">//{tag}</span>
+					<div class="flex flex-wrap gap-6">
+						{project.data.tech.map(tag => (
+							<span class="text-[10px] uppercase tracking-widest font-mono opacity-40 group-hover:opacity-100 transition-opacity">//{tag}</span>
 						))}
 					</div>
 				</article>

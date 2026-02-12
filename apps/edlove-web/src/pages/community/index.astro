@@ -2,64 +2,60 @@
 import Layout from '../../layouts/Layout.astro';
 import CinematicBackground from '../../components/CinematicBackground.astro';
 import ExpandableContent from '../../components/ExpandableContent.astro';
+import { getCollection, render } from 'astro:content';
+
+const communityEntries = await getCollection('community', ({ data }) => !data.draft);
+communityEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 ---
 
 <Layout title="The Sangha | EdLove">
     <CinematicBackground />
 
-    <div class="relative z-10 pb-24 sanctuary-container">
+    <div class="relative z-10 pb-24 sanctuary-container" style="padding-top: var(--spacing-nav-height);">
         <!-- Header: The Sangha -->
         <section class="text-center space-y-12 mb-32 animate-fade-in-up">
             <div class="space-y-4">
-                <span class="font-sans text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-agedGold)] opacity-60">Domain V</span>
-                <h1 class="text-7xl md:text-9xl font-serif text-[var(--color-midnightInk)] leading-none">The Sangha</h1>
+                <span class="font-heading text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-gold)] opacity-60">Domain V</span>
+                <h1 class="text-6xl md:text-8xl font-heading font-bold text-[var(--color-midnightInk)] leading-none">The Sangha</h1>
             </div>
 
-            <div class="h-px w-24 bg-[var(--color-agedGold)]/30 mx-auto"></div>
+            <div class="h-px w-24 bg-[var(--color-gold)]/30 mx-auto"></div>
 
-            <p class="font-serif text-2xl text-[var(--color-midnightInk)]/50 max-w-2xl mx-auto leading-relaxed italic">
+            <p class="font-body text-2xl text-[var(--color-midnightInk)]/50 max-w-2xl mx-auto leading-relaxed italic">
                 "A horizontal network of trust. <br/> We heal and grow in community."
             </p>
         </section>
 
-        <!-- The Path: Community Blocks -->
-        <section class="max-w-4xl mx-auto space-y-16 mb-48">
-            <ExpandableContent title="Core Principles" subtitle="Our Code" icon="🛡️">
-                <div class="py-12 space-y-10 text-center">
-                    <p class="text-3xl font-serif text-[var(--color-agedGold)] italic">"The Resonance of the Whole."</p>
-                    <p class="max-w-xl mx-auto text-[var(--color-midnightInk)]/70 leading-relaxed">
-                        Community is not just a gathering of bodies; it is an alignment of hearts. To be here is to agree to a higher standard of interaction.
-                    </p>
-                    
-                    <div class="text-left space-y-8 max-w-xl mx-auto bg-white/20 p-10 rounded-2xl border border-[var(--color-midnightInk)]/5 shadow-sm">
-                        <div class="flex gap-6">
-                            <span class="font-serif text-3xl text-[var(--color-agedGold)]/40">01</span>
-                            <div>
-                                <h4 class="font-serif text-xl text-[var(--color-midnightInk)] mb-1">Dignity First</h4>
-                                <p class="text-sm text-[var(--color-midnightInk)]/60">We critique ideas, never people. Respect is the foundation of our sanctuary.</p>
+        <!-- Dynamic Content -->
+        <section class="max-w-4xl mx-auto space-y-24">
+            <div class="space-y-16">
+                {communityEntries.map(async (entry) => {
+                    const { Content } = await render(entry);
+                    return (
+                        <ExpandableContent 
+                            title={entry.data.title} 
+                            subtitle={entry.data.subtitle} 
+                            icon={entry.data.icon}
+                        >
+                            <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80 prose prose-slate max-w-none">
+                                 <Content />
                             </div>
-                        </div>
-                        <div class="flex gap-6">
-                            <span class="font-serif text-3xl text-[var(--color-agedGold)]/40">02</span>
-                            <div>
-                                <h4 class="font-serif text-xl text-[var(--color-midnightInk)] mb-1">The Gift Economy</h4>
-                                <p class="text-sm text-[var(--color-midnightInk)]/60">We share wisdom not to compete, but to elevate the collective baseline.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </ExpandableContent>
+                        </ExpandableContent>
+                    );
+                })}
+            </div>
 
-            <ExpandableContent title="Join the Founders" subtitle="Discord Community" icon="💬">
+            <!-- Join the Founders (Stays as static CTA) -->
+            <ExpandableContent title="Join the Founders" subtitle="The Private Circle" icon="💬">
                 <div class="py-12 text-center space-y-10">
-                    <p class="text-2xl font-serif text-[var(--color-midnightInk)]">Be part of the first cohort.</p>
-                    <p class="max-w-sm mx-auto text-[var(--color-midnightInk)]/50 leading-relaxed">We are currently in a sacred beta phase, building the foundations of a decolonized network.</p>
+                    <p class="text-2xl font-heading font-bold text-[var(--color-midnightInk)]">Be part of the first cohort.</p>
+                    <p class="max-w-sm mx-auto font-body text-[var(--color-midnightInk)]/50 leading-relaxed">We are currently in a sacred beta phase, building the foundations of a decolonized network.</p>
                     
-                    <div class="flex flex-col md:flex-row items-center justify-center gap-6">
-                        <a href="#" class="inline-flex items-center gap-4 px-12 py-5 bg-[var(--color-agedGold)] hover:bg-[var(--color-agedGold)]/90 text-[var(--color-midnightInk)] rounded-full transition-all hover:scale-105 shadow-xl font-bold tracking-widest text-sm">
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-6 pt-4">
+                        <a href="#" class="inline-flex items-center gap-4 px-10 py-4 bg-[var(--color-midnightInk)] text-[var(--color-warmPaper)] rounded-full transition-all hover:scale-105 shadow-xl font-heading text-xs uppercase tracking-widest font-bold">
                              Join the Digital Sangha
                         </a>
-                        <a href="/resources" class="inline-flex items-center gap-4 px-12 py-5 bg-white/20 hover:bg-white/40 border border-[var(--color-midnightInk)]/10 text-[var(--color-midnightInk)] rounded-full transition-all hover:scale-105 shadow-sm font-bold tracking-widest text-sm">
+                        <a href="/resources" class="inline-flex items-center gap-4 px-10 py-4 bg-white/20 hover:bg-white/40 border border-[var(--color-midnightInk)]/10 text-[var(--color-midnightInk)] rounded-full transition-all hover:scale-105 shadow-sm font-heading text-xs uppercase tracking-widest font-bold">
                             Looking for Tools?
                        </a>
                     </div>

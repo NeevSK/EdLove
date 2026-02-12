@@ -3,21 +3,21 @@
 
 <button
 	id="reality-toggle"
-	class="fixed top-6 right-6 z-50 p-2 border border-ink/20 dark:border-tungsten/20 hover:border-flame dark:hover:border-glow-blue transition-colors group flex items-center gap-2 bg-tungsten/50 dark:bg-void/50 backdrop-blur-md"
+	class="fixed top-6 right-6 z-50 p-2 border border-[var(--text-main)]/20 hover:border-[var(--accent-secondary)] transition-colors group flex items-center gap-2 bg-[var(--bg-main)]/50 backdrop-blur-md"
 	aria-label="Switch Reality"
 >
 	<div class="relative w-5 h-5 flex items-center justify-center">
 		<!-- Light Icon (Comet/Sun) -->
-		<svg xmlns="http://www.w3.org/2000/svg" class="w-full h-full text-flame dark:hidden transition-transform duration-500 group-hover:rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<svg xmlns="http://www.w3.org/2000/svg" class="w-full h-full text-gold dark:hidden transition-transform duration-500 group-hover:rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 			<path d="M12 2v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="M20 12h2"/><path d="m19.07 19.07 1.41 1.41"/><path d="M12 22v2"/><path d="m6.34 17.66-1.41 1.41"/><path d="M2 12h2"/><path d="m7.76 7.76-1.41 1.41"/><circle cx="12" cy="12" r="4"/>
 		</svg>
 		<!-- Dark Icon (Moon/Fracture) -->
-		<svg xmlns="http://www.w3.org/2000/svg" class="w-full h-full text-glow-blue hidden dark:block transition-transform duration-500 group-hover:-rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<svg xmlns="http://www.w3.org/2000/svg" class="w-full h-full text-plasma hidden dark:block transition-transform duration-500 group-hover:-rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 			<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
 			<path d="M19 3v4"/><path d="M21 5h-4"/>
 		</svg>
 	</div>
-	<span class="text-[10px] uppercase tracking-widest font-mono text-ink/60 dark:text-tungsten/60 group-hover:text-ink dark:group-hover:text-tungsten transition-colors">
+	<span class="text-[10px] uppercase tracking-widest font-mono text-[var(--text-main)]/60 group-hover:text-[var(--text-main)] transition-colors">
 		<span class="dark:hidden">Reality A</span>
 		<span class="hidden dark:inline">Reality B</span>
 	</span>

@@ -27,24 +27,24 @@ const skills = ["Systems Thinking", "Cybernetics", "AI Orchestration", "Astro", 
 	<main class="max-w-3xl mx-auto px-6 pb-24">
 		<Navigation />
 		
-		<header class="mt-24 mb-16 pb-12 border-b border-ink/10 dark:border-tungsten/10">
-			<h1 class="text-6xl font-serif dark:font-mono mb-6">NeevSk</h1>
-			<p class="text-xl font-serif dark:font-mono italic dark:not-italic opacity-70">
+		<header class="mt-24 mb-16 pb-12 border-b border-[var(--text-main)]/10">
+			<h1 class="text-7xl font-serif dark:font-mono mb-6 tracking-tight">NeevSk</h1>
+			<p class="text-2xl font-serif dark:font-mono italic dark:not-italic text-[var(--text-main)]/60">
 				Conceptual Engineer & Philosopher
 			</p>
 		</header>
 
-		<section class="mb-20">
-			<h2 class="text-xs uppercase tracking-[0.5em] font-mono text-flame dark:text-glow-blue mb-12">Experience</h2>
-			<div class="space-y-12">
+		<section class="mb-32">
+			<h2 class="text-xs uppercase tracking-[0.5em] font-mono text-[var(--accent-secondary)] mb-12">Experience</h2>
+			<div class="space-y-16">
 				{experience.map(job => (
 					<div>
-						<div class="flex justify-between items-baseline mb-2">
-							<h3 class="text-xl font-serif dark:font-mono">{job.role}</h3>
+						<div class="flex flex-col md:flex-row justify-between items-baseline mb-4 gap-2">
+							<h3 class="text-3xl font-serif dark:font-mono">{job.role}</h3>
 							<span class="text-xs font-mono opacity-40">{job.period}</span>
 						</div>
-						<p class="text-sm font-mono uppercase tracking-wider mb-4 opacity-60">{job.company}</p>
-						<p class="font-serif dark:font-mono italic dark:not-italic text-ink/70 dark:text-tungsten/70">
+						<p class="text-sm font-mono uppercase tracking-widest mb-6 opacity-60">//{job.company}</p>
+						<p class="text-lg font-serif dark:font-mono italic dark:not-italic text-[var(--text-main)]/70 leading-relaxed">
 							{job.details}
 						</p>
 					</div>
@@ -53,11 +53,11 @@ const skills = ["Systems Thinking", "Cybernetics", "AI Orchestration", "Astro", 
 		</section>
 
 		<section>
-			<h2 class="text-xs uppercase tracking-[0.5em] font-mono text-flame dark:text-glow-blue mb-12">Skills</h2>
+			<h2 class="text-xs uppercase tracking-[0.5em] font-mono text-[var(--accent-secondary)] mb-12">Epistemic Tools</h2>
 			<div class="flex flex-wrap gap-x-12 gap-y-8">
 				{skills.map(skill => (
 					<div class="group">
-						<span class="text-sm font-mono opacity-60 group-hover:opacity-100 transition-opacity">//{skill}</span>
+						<span class="text-lg font-mono opacity-40 group-hover:opacity-100 transition-opacity">//{skill}</span>
 					</div>
 				))}
 			</div>

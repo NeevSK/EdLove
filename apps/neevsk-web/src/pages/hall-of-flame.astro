@@ -2,46 +2,55 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Navigation from '../components/Navigation.astro';
 import RealitySwitch from '../components/RealitySwitch.astro';
-import FlameCard from '../components/FlameCard.astro';
+import { getCollection } from 'astro:content';
+
+const flameEntries = await getCollection('hall-of-flame', ({ data }) => !data.draft);
 
 const chambers = [
 	{
+		id: "The First Light",
 		title: "The First Light",
 		description: "Born not from ambition, but from reverence. Not from performance, but from pain-transformed-into-purpose. The innermost temple.",
-		variant: 'red' as const,
-		tags: ["origin", "purpose", "reverence"]
+		color: "embers"
 	},
 	{
+		id: "Chamber of Love",
 		title: "Chamber of Love",
 		description: "For those who met your soul in real life, and lit the first flames of care. Parents, brothers, teachers who SAW you.",
-		variant: 'blue' as const,
-		tags: ["family", "early-years", "compassion"]
+		color: "plasma"
 	},
 	{
+		id: "Chamber of Tribute",
 		title: "Chamber of Tribute",
 		description: "Lighthouses whose lives sent beams across broken systems. Aaron Swartz, CWW Kannangara, David Foster Wallace.",
-		variant: 'red' as const,
-		tags: ["justice", "art", "sacrifice"]
+		color: "embers"
 	},
 	{
+		id: "Chamber of Mastery",
 		title: "Chamber of Mastery",
 		description: "Those who ignited your sense of competence, clarity, and craft. Ken Miles, Buckminster Fuller, Linus Torvalds.",
-		variant: 'blue' as const,
-		tags: ["craft", "systems", "execution"]
+		color: "plasma"
 	},
 	{
-		title: "Chamber of Inspiration",
+		id: "Chamber of Inspiration & Respect",
+		title: "Chamber of Inspiration & Respect",
 		description: "Where ideas became nourishment. Ivan Illich, Maria Montessori, bell hooks, Vandana Shiva.",
-		variant: 'red' as const,
-		tags: ["education", "ecology", "philosophy"]
+		color: "embers"
 	},
 	{
+		id: "Chamber of Support",
 		title: "Chamber of Support",
 		description: "Those who nourish the mission materially, spiritually, and communally. The unseen foundations.",
-		variant: 'blue' as const,
-		tags: ["community", "future", "stability"]
+		color: "plasma"
 	}
 ];
+
+const groupedEntries = chambers.map(chamber => ({
+    ...chamber,
+    entries: flameEntries
+        .filter(entry => entry.data.chamber === chamber.id)
+        .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0))
+}));
 ---
 
 <BaseLayout title="Hall of Flame">
@@ -50,24 +59,51 @@ const chambers = [
 	<main class="max-w-6xl mx-auto px-6 pb-24">
 		<Navigation />
 		
-		<header class="mt-24 mb-16 text-center">
-			<h1 class="text-xs uppercase tracking-[0.8em] font-mono text-ink/40 dark:text-tungsten/40 mb-6">
+		<header class="mt-24 mb-32 text-center">
+			<h1 class="text-xs uppercase tracking-[0.8em] font-mono text-[var(--text-main)]/40 mb-6">
 				Scroll of the Hall of Flame
 			</h1>
-			<p class="max-w-2xl mx-auto font-serif dark:font-mono italic dark:not-italic text-lg text-ink/60 dark:text-tungsten/60">
+			<p class="max-w-2xl mx-auto font-serif dark:font-mono italic dark:not-italic text-2xl text-[var(--text-main)]/60 leading-relaxed">
 				"Where Legacy is Love, and Every Chamber Beats Like a Heart. We do not bow to the past. We honor it by continuing the story."
 			</p>
 		</header>
 
-		<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-			{chambers.map(chamber => (
-				<FlameCard {...chamber} />
+		<div class="space-y-48">
+			{groupedEntries.map(chamber => (
+				<section class="scroll-mt-32">
+					<div class="max-w-2xl mb-16">
+						<h2 class={`text-4xl font-serif dark:font-mono mb-4 text-[var(--accent-secondary)]`}>
+							{chamber.title}
+						</h2>
+						<p class="font-serif italic dark:font-mono dark:not-italic text-lg text-[var(--text-main)]/50 leading-relaxed">
+							{chamber.description}
+						</p>
+					</div>
+
+					<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+						{chamber.entries.map(entry => (
+							<div class="group p-8 border border-[var(--text-main)]/10 bg-[var(--text-main)]/[0.02] transition-all duration-500 hover:border-[var(--accent-secondary)]/30 hover:bg-[var(--text-main)]/[0.04]">
+                                <h3 class="text-xl font-serif dark:font-mono mb-2 group-hover:text-[var(--accent-secondary)] transition-colors">
+                                    {entry.data.name}
+                                </h3>
+                                <p class="text-sm font-serif italic dark:font-mono dark:not-italic opacity-50">
+                                    {entry.data.subtitle}
+                                </p>
+                            </div>
+						))}
+                        {chamber.entries.length === 0 && (
+                            <div class="p-8 border border-[var(--text-main)]/5 opacity-30 italic font-serif">
+                                This chamber remains in sacred silence for now.
+                            </div>
+                        )}
+					</div>
+				</section>
 			))}
 		</div>
 
-		<section class="mt-32 p-12 border border-ink/10 dark:border-tungsten/10 text-center bg-flame/5 dark:bg-glow-blue/5">
-			<h2 class="text-sm font-mono uppercase tracking-[0.4em] mb-6">Closing Ritual</h2>
-			<p class="font-serif italic dark:font-mono dark:not-italic text-xl">
+		<section class="mt-48 p-16 border border-[var(--text-main)]/10 text-center bg-[var(--accent-secondary)]/[0.02]">
+			<h2 class="text-sm font-mono uppercase tracking-[0.4em] mb-6 opacity-40">Closing Ritual</h2>
+			<p class="font-serif italic dark:font-mono dark:not-italic text-2xl text-[var(--accent-secondary)]">
 				"We did not burn in vain."
 			</p>
 		</section>

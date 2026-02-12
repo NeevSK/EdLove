@@ -60,6 +60,12 @@ When you need to remember why we're building this — read 01_PHILOSOPHY first.
 | 09_Domain_VI.md | Epistemic Core | The intellectual backbone | ✅ Active |
 | 10_ROADMAP.md | The Timeline | Phases, weeks, checklists, metrics | ✅ Active |
 | 11_SUBDOMAIN_NOTES.md | Ecosystem Context | Brief notes on the three subdomains | 📝 Placeholder |
+| 12_WALKTHROUGH.md | Build Logs | History of what has been built and verified | ✅ Active |
+| 13_GLOBAL_INNOVATION_GALLERY.md | Global Gallery | 40+ countries and niche innovations (The Gallery) | ✅ Active |
+| 14_SRI_LANKA_FRIENDLY_TOOLS.md | Local Tools | Hyper-local and low-bandwidth strategies for SL | ✅ Active |
+| 15_THE_TEACHER_LIFECYCLE.md | Teacher Lifecycle | Global process tools for the human derrière the desk | ✅ Active |
+| 16_PATTERN_LANGUAGE.md | Pattern Language | Synergetic principles (Fuller/Alexander) | ✅ Active |
+| 17_THE_STUDENTS_JOURNEY.md | Student Journey | Sovereignty, metacognition, and peer learning | ✅ Active |
 
 ---
 

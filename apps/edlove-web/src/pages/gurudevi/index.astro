@@ -2,6 +2,10 @@
 import Layout from '../../layouts/Layout.astro';
 import CinematicBackground from '../../components/CinematicBackground.astro';
 import ExpandableContent from '../../components/ExpandableContent.astro';
+import { getCollection, render } from 'astro:content';
+
+const gurudeviEntries = await getCollection('gurudevi', ({ data }) => !data.draft);
+gurudeviEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 ---
 
 <Layout title="Gurudevi | The Divine Teacher">
@@ -10,95 +14,62 @@ import ExpandableContent from '../../components/ExpandableContent.astro';
     <main class="relative z-10 pb-24 sanctuary-container" style="padding-top: var(--spacing-nav-height);">
         <!-- Hero: The Divine Mark -->
         <section class="text-center space-y-12 mb-32 animate-fade-in-up">
-            <div class="inline-flex items-center gap-4 px-6 py-2 rounded-full border border-[var(--color-agedGold)]/20 bg-white/40 shadow-sm backdrop-blur-md">
+            <div class="inline-flex items-center gap-4 px-6 py-2 rounded-full border border-[var(--color-gold)]/20 bg-white/40 shadow-sm backdrop-blur-md">
                 <span class="text-2xl animate-pulse">🪷</span>
-                <span class="font-sans text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-agedGold)]">The Divine Sanctuary</span>
+                <span class="font-heading text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-gold)]">The Divine Sanctuary</span>
             </div>
 
             <div class="space-y-6">
-                <h1 class="text-8xl md:text-[10rem] font-serif text-[var(--color-midnightInk)] leading-none opacity-90">Gurudevi</h1>
-                <p class="font-serif italic text-3xl text-[var(--color-midnightInk)]/60">"For the hands that hold the future."</p>
+                <h1 class="text-6xl md:text-8xl font-heading font-bold text-[var(--color-midnightInk)] leading-none opacity-90">Gurudevi</h1>
+                <p class="font-body italic text-3xl text-[var(--color-midnightInk)]/60">"For the hands that hold the future."</p>
             </div>
 
-            <div class="h-px w-24 bg-[var(--color-agedGold)]/30 mx-auto"></div>
+            <div class="h-px w-24 bg-[var(--color-gold)]/30 mx-auto"></div>
 
-            <p class="font-serif text-2xl text-[var(--color-midnightInk)]/50 max-w-3xl mx-auto leading-relaxed">
+            <p class="font-body text-2xl text-[var(--color-midnightInk)]/50 max-w-3xl mx-auto leading-relaxed">
                 A digital sanctuary born from the mud, rising through the water, blooming in the light. 
                 Built solely for the dignity and sovereignty of Sri Lankan teachers.
             </p>
         </section>
 
-        <!-- The 5 Pillars: Gallery Style -->
+        <!-- Dynamic Pillars -->
         <section class="max-w-4xl mx-auto space-y-12 mb-48">
-            <h2 class="font-serif text-5xl text-center text-[var(--color-midnightInk)] mb-24 opacity-80">The Five Pillars of Sanctuary</h2>
+            <h2 class="font-heading font-bold text-5xl text-center text-[var(--color-midnightInk)] mb-24 opacity-80">The Pillars of Sanctuary</h2>
             
             <div class="space-y-12">
-                <ExpandableContent title="Self (Pillar I)" subtitle="Sanctuary & Wellbeing" icon="🧘">
-                    <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80">
-                        <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"You cannot pour from an empty cup."</p>
-                        <p>Before you are a teacher—before the roles, the grading, the expectations—you are a human being with a nervous system that needs tending. The "Self" pillar is not about productivity; it is about preservation.</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-[var(--color-midnightInk)]/5">
-                            <div class="space-y-2">
-                                <span class="text-[10px] uppercase tracking-widest font-bold text-[var(--color-agedGold)]">Resistance</span>
-                                <p class="text-sm">In a system that extracts labor, this is your act of resistance: to remain whole.</p>
+                {gurudeviEntries.map(async (entry) => {
+                    const { Content } = await render(entry);
+                    return (
+                        <ExpandableContent 
+                            title={entry.data.title} 
+                            subtitle={entry.data.subtitle} 
+                            icon={entry.data.icon}
+                        >
+                            <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80 prose prose-slate max-w-none">
+                                 <Content />
                             </div>
-                            <div class="space-y-4">
-                                <ul class="list-none space-y-3 text-sm">
-                                    <li class="flex items-center gap-3"><span class="w-1 h-1 bg-[var(--color-agedGold)] rounded-full"></span> Micro-Meditations</li>
-                                    <li class="flex items-center gap-3"><span class="w-1 h-1 bg-[var(--color-agedGold)] rounded-full"></span> The Dignity Log</li>
-                                    <li class="flex items-center gap-3"><span class="w-1 h-1 bg-[var(--color-agedGold)] rounded-full"></span> Somatic grounding</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </ExpandableContent>
-
-                <ExpandableContent title="Classroom (Pillar II)" subtitle="The Sacred Workspace" icon="🏫">
-                    <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80">
-                         <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"Order is the foundation of peace."</p>
-                         <p>The classroom is your domain, but administrative chaos often invades it. This pillar constructs a digital perimeter around your teaching, automating the trivial so you can focus on the profound.</p>
-                    </div>
-                </ExpandableContent>
-
-                <ExpandableContent title="Community (Pillar III)" subtitle="The Sangha" icon="🌸">
-                     <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80">
-                         <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"We heal in community."</p>
-                         <p>Teaching is often a solitary act performed in a crowded room. The Sangha breaks this isolation. It is a horizontal network of trust, free from the vertical judgment of administration.</p>
-                     </div>
-                </ExpandableContent>
-
-                <ExpandableContent title="Library (Pillar IV)" subtitle="The Epistemic Core" icon="📚">
-                    <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80">
-                         <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"Theory is the roadmap to practice."</p>
-                         <p>Access to the world’s most transformative educational thought—Dewey, Montessori, Freire—decolonized and translated.</p>
-                    </div>
-                </ExpandableContent>
-
-                <ExpandableContent title="Profile (Pillar V)" subtitle="Identity & Sovereignty" icon="👤">
-                    <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80">
-                         <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"You are more than your service number."</p>
-                         <p>Your journey, your credentials, your impact—owned by you. A sovereign professional identity that transcends any single school or transfer.</p>
-                    </div>
-                </ExpandableContent>
+                        </ExpandableContent>
+                    );
+                })}
             </div>
         </section>
 
-        <!-- Teaning: The Energy Section -->
+        <!-- Teaning: The Energy Section (Remains as a specialized high-fidelity section) -->
         <section class="max-w-6xl mx-auto mb-48">
-             <div class="floating-pill p-12 md:p-24 border border-[var(--color-agedGold)]/10 overflow-hidden relative group">
-                <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-[var(--color-agedGold)]/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 group-hover:bg-[var(--color-agedGold)]/10 transition-colors duration-1000"></div>
+             <div class="floating-pill p-12 md:p-24 border border-[var(--color-gold)]/10 overflow-hidden relative group">
+                <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-[var(--color-gold)]/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 group-hover:bg-[var(--color-gold)]/10 transition-colors duration-1000"></div>
                 
                 <div class="relative z-10 grid md:grid-cols-2 gap-20 items-center">
                     <div class="space-y-8">
-                        <span class="text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-agedGold)] opacity-60">The Epistemology</span>
-                        <h3 class="text-6xl font-serif text-[var(--color-midnightInk)]">The Art of Teaning</h3>
-                        <p class="font-sans text-xl text-[var(--color-midnightInk)]/60 leading-relaxed font-light">
+                        <span class="text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-gold)] opacity-60">The Epistemology</span>
+                        <h3 class="text-6xl font-heading font-bold text-[var(--color-midnightInk)]">The Art of Teaning</h3>
+                        <p class="font-body text-xl text-[var(--color-midnightInk)]/60 leading-relaxed font-light">
                              Education is not a transaction; it is a resonance. "Teaning" captures the impedance-matched circuit where teaching and learning dissolve into a single flow of becoming.
                         </p>
                     </div>
-                    <div class="flex flex-col items-center justify-center p-12 rounded-full border border-[var(--color-agedGold)]/20 aspect-square text-center space-y-4 shine-effect bg-white/20">
+                    <div class="flex flex-col items-center justify-center p-12 rounded-full border border-[var(--color-gold)]/20 aspect-square text-center space-y-4 bg-white/20">
                          <span class="text-7xl">⚡</span>
-                         <span class="font-serif text-3xl text-[var(--color-agedGold)] tracking-widest">Energy Flow</span>
+                         <span class="font-heading font-bold text-2xl text-[var(--color-gold)] tracking-widest">Energy Flow</span>
                     </div>
                 </div>
              </div>
@@ -108,8 +79,8 @@ import ExpandableContent from '../../components/ExpandableContent.astro';
         <section class="max-w-2xl mx-auto text-center space-y-24 mb-32">
             <div class="space-y-12">
                 <div class="space-y-4">
-                    <h3 class="font-serif text-4xl text-[var(--color-midnightInk)]">Available for Sanctuary</h3>
-                    <p class="font-sans text-xs uppercase tracking-widest text-[var(--color-midnightInk)]/40">Download the portal directly</p>
+                    <h3 class="font-heading font-bold text-4xl text-[var(--color-midnightInk)]">Available for Sanctuary</h3>
+                    <p class="font-heading text-xs uppercase tracking-widest text-[var(--color-midnightInk)]/40">Download the portal directly</p>
                 </div>
                 
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
@@ -133,28 +104,27 @@ import ExpandableContent from '../../components/ExpandableContent.astro';
 
             <div class="flex items-center justify-center gap-10">
                 <div class="h-px w-16 bg-[var(--color-midnightInk)]/5"></div>
-                <span class="font-serif italic text-[var(--color-midnightInk)]/30">or</span>
+                <span class="font-body italic text-[var(--color-midnightInk)]/30">or</span>
                 <div class="h-px w-16 bg-[var(--color-midnightInk)]/5"></div>
             </div>
 
             <div class="space-y-12">
                 <div class="space-y-4">
-                    <h3 class="font-serif text-4xl text-[var(--color-midnightInk)]">The Founding Circle</h3>
-                    <p class="font-sans text-sm text-[var(--color-midnightInk)]/40 max-w-sm mx-auto">Join the private list for early access and sovereign benefits.</p>
+                    <h3 class="font-heading font-bold text-4xl text-[var(--color-midnightInk)]">The Founding Circle</h3>
+                    <p class="font-body text-sm text-[var(--color-midnightInk)]/40 max-w-sm mx-auto">Join the private list for early access and sovereign benefits.</p>
                 </div>
 
                 <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onsubmit="event.preventDefault();">
                     <input 
                         type="email" 
                         placeholder="your@email.com" 
-                        class="flex-grow px-8 py-4 rounded-full bg-white/40 border border-[var(--color-midnightInk)]/10 focus:outline-none focus:border-[var(--color-agedGold)] transition-colors font-sans text-sm"
+                        class="flex-grow px-8 py-4 rounded-full bg-white/40 border border-[var(--color-midnightInk)]/10 focus:outline-none focus:border-[var(--color-gold)] transition-colors font-heading text-sm"
                     />
-                    <button class="px-10 py-4 bg-[var(--color-agedGold)] text-[var(--color-midnightInk)] font-bold rounded-full shadow-lg hover:shadow-[0_10px_30px_rgba(212,165,116,0.3)] transition-all font-sans text-sm tracking-wide">
+                    <button class="px-10 py-4 bg-[var(--color-gold)] text-[var(--color-midnightInk)] font-bold rounded-full shadow-lg hover:shadow-[0_10px_30px_rgba(231,203,22,0.3)] transition-all font-heading text-sm uppercase tracking-wider">
                         Join
                     </button>
                 </form>
             </div>
         </section>
     </main>
-
 </Layout>

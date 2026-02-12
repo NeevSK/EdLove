@@ -2,6 +2,10 @@
 import Layout from '../../layouts/Layout.astro';
 import CinematicBackground from '../../components/CinematicBackground.astro';
 import ExpandableContent from '../../components/ExpandableContent.astro';
+import { getCollection, render } from 'astro:content';
+
+const cosmosEntries = await getCollection('cosmos', ({ data }) => !data.draft);
+cosmosEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 ---
 
 <Layout title="The Paradigm Cosmos | EdLove">
@@ -11,56 +15,33 @@ import ExpandableContent from '../../components/ExpandableContent.astro';
         <!-- Header: The Mapping -->
         <section class="text-center space-y-12 mb-32 animate-fade-in-up">
             <div class="space-y-4">
-                <span class="font-sans text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-agedGold)] opacity-60">Domain I</span>
-                <h1 class="text-7xl md:text-9xl font-serif text-[var(--color-midnightInk)] leading-none">The Paradigm Cosmos</h1>
+                <span class="font-heading text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-gold)] opacity-60">Domain I</span>
+                <h1 class="text-6xl md:text-8xl font-heading font-bold text-[var(--color-midnightInk)] leading-none">The Paradigm Cosmos</h1>
             </div>
 
-            <div class="h-px w-24 bg-[var(--color-agedGold)]/30 mx-auto"></div>
+            <div class="h-px w-24 bg-[var(--color-gold)]/30 mx-auto"></div>
 
-            <p class="font-serif text-2xl text-[var(--color-midnightInk)]/50 max-w-2xl mx-auto leading-relaxed italic">
+            <p class="font-body text-2xl text-[var(--color-midnightInk)]/50 max-w-2xl mx-auto leading-relaxed italic">
                 "We map the constellations of how learning happens. <br/> From the factory floor to the forest floor."
             </p>
         </section>
 
-        <!-- Narrative Flow: The Content -->
+        <!-- Narrative Flow: The Dynamic Content -->
         <section class="max-w-4xl mx-auto space-y-16">
-            
-            <ExpandableContent title="Biological Learning (Animal Wisdom)" subtitle="The Original Paradigm" icon="🐾">
-                <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80">
-                    <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"Humans are animals, too."</p>
-                    <p>We forget this at our peril. For 99% of human history, "education" did not exist. Learning was simply <em>living</em>.</p>
-                    <p>In this paradigm, learning is contextual, embodied, and social. Every other paradigm is an overlay on top of this fundamental truth.</p>
-                </div>
-            </ExpandableContent>
-
-            <ExpandableContent title="Industrial Model (Modern Schooling)" subtitle="The Factory System" icon="🏭">
-                <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80">
-                    <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"The Factory of Compliance."</p>
-                    <p>Born to serve the needs of industrialization. The goal was standardized workers who could follow instructions and tolerate boredom. This model is not broken—it is just obsolete.</p>
-                </div>
-            </ExpandableContent>
-
-            <ExpandableContent title="Montessori" subtitle="Prepared Environment" icon="🧸">
-                <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80">
-                    <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"Follow the Child."</p>
-                    <p>Maria Montessori discovered that children have an innate desire to learn. Here, the teacher is a gardener, preparing the soil and protecting the seed of concentration.</p>
-                </div>
-            </ExpandableContent>
-
-            <ExpandableContent title="Democratic Education" subtitle="Radical Agency" icon="🗳️">
-                <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80">
-                    <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"No learning without consent."</p>
-                    <p>Children are people with rights. You do not learn democracy by reading about it in a dictatorship; you learn it by practicing it.</p>
-                </div>
-            </ExpandableContent>
-
-             <ExpandableContent title="Indigenous Knowledge Systems" subtitle="Land & Lineage" icon="🌿">
-                <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80">
-                    <p class="text-2xl font-serif text-[var(--color-agedGold)] italic">"We are the land."</p>
-                    <p>Knowledge is not an object to be possessed; it is a relationship to be maintained. Integration of spirit and matter across generations.</p>
-                </div>
-            </ExpandableContent>
-
+            {cosmosEntries.map(async (entry) => {
+                const { Content } = await render(entry);
+                return (
+                    <ExpandableContent 
+                        title={entry.data.title} 
+                        subtitle={entry.data.subtitle} 
+                        icon={entry.data.icon}
+                    >
+                        <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80 prose prose-slate max-w-none">
+                             <Content />
+                        </div>
+                    </ExpandableContent>
+                );
+            })}
         </section>
     </div>
 </Layout>
