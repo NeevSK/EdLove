@@ -1,0 +1,5 @@
+{
+  "artifactType": "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
+  "summary": "Comprehensive design for progressive onboarding system combining minimal signup with invite codes. Explores role-based flows (Principal creates school and codes, Teachers/Students join via invites), progressive profile completion with gamification, QR codes, and Sri Lankan context optimizations. Includes database schema, security considerations, and phased implementation plan.",
+  "updatedAt": "2026-02-04T09:44:03.756632700Z"
+}

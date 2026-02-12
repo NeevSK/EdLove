@@ -1,0 +1,40 @@
+# Master Baseline Schema Strategy
+
+## Objective
+Consolidate all 36+ tables from 20+ different files into one single, clean, and logically ordered `00_master_baseline.sql`. This provides a "clean terrain" for development and makes it easy to wipe and recreate the database while the project is in Alpha.
+
+## Proposed Strategy: "The Clean Slate"
+
+### 1. The Master Baseline File
+Create `00_master_baseline.sql` in `supabase/migrations/`.
+- **Order:** Extensions -> Core Foundation (Schools/Users) -> Feature Modules (Classrooms/Community) -> Wellbeing/Progressive Features -> Triggers & RLS.
+- **Logic:** Each table creation is accompanied by its indexes, RLS enablement, and initial policies.
+
+### 2. Handling Future Changes (e.g., QR Invitations)
+Since you are still figuring out features:
+- **Invitation System:** Instead of just a `code` string, we will ensure the table has `metadata` (JSONB) and `qr_data` fields to support future QR-based flows.
+- **Flexibility:** Using JSONB columns in key tables for "draft" fields you haven't fully defined yet.
+
+### 3. The "Nuclear Option" Manual
+Document how to completely reset the Supabase database to the Master Baseline:
+1. `DROP SCHEMA public CASCADE;`
+2. `CREATE SCHEMA public;`
+3. `GRANT ALL ON SCHEMA public TO postgres;`
+4. `GRANT ALL ON SCHEMA public TO public;`
+5. Run `00_master_baseline.sql`.
+
+## Proposed Changes
+
+### [NEW] [00_master_baseline.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/00_master_baseline.sql)
+- Consolidates all 19 timestamped migrations + 3 archived schemas + 1 consolidated fix.
+- **Fixed:** The `invites` table issue.
+- **Enhanced:** Invitation system structure for future QR support.
+
+### [ARCHIVE] Migration Files
+Move all 19 older migration files to `supabase/old/migrations_history/` to keep the active `migrations/` folder clean.
+
+## Verification Plan
+1. Run the script in a fresh Supabase project (or after a reset).
+2. Check table counts (should be ~36).
+3. Verify RLS policies are active.
+4. Test core "Happy Path": Signup -> Create School -> Create Classroom.

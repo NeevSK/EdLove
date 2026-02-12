@@ -1,0 +1,179 @@
+# Supabase Schema Audit & Synchronization
+
+## Problem Overview
+
+You've created extensive Supabase schema code across multiple files but haven't consistently applied these schemas to your actual Supabase database instance. This creates uncertainty about what's deployed vs. what exists only in code.
+
+**Current Situation:**
+- **19 migration files** in `apps/gurudevi-mobile/supabase/migrations/`
+- **3 archived schema files** in documentation folders
+- **1 additional schema** in `docs/sql/`
+- **Unclear deployment status** - unknown which schemas have been applied to Supabase
+
+## Local Schema Inventory
+
+### Migration Files (Primary Source)
+Location: [migrations](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations)
+
+**Core Schema Migrations (Foundation):**
+1. `20260205_features_schema.sql` - Classrooms, lessons, assignments, submissions, mood logs, fire journal, announcements
+2. `20260205_auto_create_user.sql` - User auto-creation trigger
+3. `20260205_community_library_gamification.sql` - Community features
+
+**RLS & Permissions Fixes:**
+1. `20260205_NUCLEAR_RLS_FIX.sql`
+2. `20260205_fix_rls_recursion.sql`
+3. `20260205_fix_school_permissions.sql`
+4. `20260207_FINAL_RLS_FIX.sql`
+5. `20260207_fix_enrollment_rls.sql`
+6. `fix_recursion.sql` (no timestamp)
+
+**Feature Additions:**
+1. `20260206_add_lesson_materials.sql` - Lesson material attachments
+2. `20260206_progressive_features.sql` - Progressive feature unlocking
+3. `20260206_update_classroom_students.sql` - Classroom enrollment updates
+4. `20260207_shadow_enrollment.sql` - Shadow enrollment tracking
+5. `20260208_add_daily_content.sql` - Daily content features
+6. `20260208_add_onboarding_fields.sql` - Onboarding flow fields
+7. `20260208_add_thuthimal_fields.sql` - Thuthimal-specific fields
+8. `20260208_create_classroom_photos.sql` - Classroom photo storage
+9. `20260208_enhance_invitations.sql` - Enhanced invitation system
+10. `20260205_remove_trigger.sql` - Trigger cleanup
+
+### Archived Schema Files (Documentation)
+Location: [Docs v 3.0/brain_archive](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/brain_archive/Uncategorized/2026-02-04_1715_Gurudevi%20Development%20Tasks)
+
+1. [1427_minimal_schema.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/brain_archive/Uncategorized/2026-02-04_1715_Gurudevi%20Development%20Tasks/1427_minimal_schema.sql)
+   - Core tables: `schools`, `users`, `subscriptions`
+   - Foundational RLS policies
+   - Auto-subscription trigger
+   
+2. [1559_invite_system_schema_fixed.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/brain_archive/Uncategorized/2026-02-04_1715_Gurudevi%20Development%20Tasks/1559_invite_system_schema_fixed.sql)
+   - `invite_codes` table
+   - `profile_completion` table
+   
+3. [1559_sri_lankan_hierarchy_schema_fixed.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/brain_archive/Uncategorized/2026-02-04_1715_Gurudevi%20Development%20Tasks/1559_sri_lankan_hierarchy_schema_fixed.sql)
+   - `sections` table
+   - `grades` table
+   - Updates to `schools` type constraint
+   - Updates to `users` role constraint
+
+### Alternative Schema Files
+Location: [docs/sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/sql)
+
+1. [classrooms_schema.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/sql/classrooms_schema.sql)
+   - Alternative version of classrooms schema
+   - Includes `classroom_students` linking table
+
+> [!WARNING]
+> **Schema Conflicts Detected**
+> 
+> Both `20260205_features_schema.sql` and `classrooms_schema.sql` define the `classrooms` table with slightly different structures. The feature schema version in migrations is likely the authoritative one, but this needs verification.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Critical Questions Before Proceeding**
+> 
+> 1. **Which schemas are deployed?** Have you run ANY of these migration files against your Supabase instance?
+> 2. **Supabase access:** Do you have access to the Supabase web dashboard or CLI?
+> 3. **Schema conflicts:** The `classrooms` table is defined in two places - which version should be the source of truth?
+> 4. **Archived files status:** Should the archived schema files (minimal_schema, invite_system, sri_lankan_hierarchy) be integrated into the migrations folder?
+
+## Proposed Changes
+
+### Step 1: Database Audit Script
+Create a SQL script to query your Supabase database and generate a report of what's currently deployed.
+
+#### [NEW] [supabase_audit.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/supabase_audit.sql)
+- Query all existing tables
+- Check RLS status on each table
+- List all policies
+- Document current schema version
+
+---
+
+### Step 2: Migration Consolidation
+Organize and reconcile all schema definitions into a clean migration structure.
+
+#### [NEW] [00_baseline_schema.sql](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migrations/00_baseline_schema.sql)
+- Consolidate minimal_schema, invite_system, and sri_lankan_hierarchy
+- Create definitive baseline that includes all core tables
+- This becomes the "start from scratch" migration
+
+#### [DELETE] Duplicate/conflicting files
+- Move `docs/sql/classrooms_schema.sql` to archive or delete after reconciliation
+- Archive the old documentation SQL files after consolidation
+
+---
+
+### Step 3: Migration Tracking System
+
+#### [NEW] [migration_status.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/migration_status.md)
+- Markdown file tracking which migrations have been applied
+- Manual tracking until Supabase CLI is set up
+- Format:
+  ```markdown
+  | Migration File | Applied? | Date Applied | Notes |
+  |----------------|----------|--------------|-------|
+  | 00_baseline_schema.sql | ❌ | - | - |
+  | 20260205_features_schema.sql | ❌ | - | - |
+  ```
+
+#### [NEW] [apply_migrations.ps1](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/apply_migrations.ps1)
+- PowerShell script to apply migrations in order
+- Prompts for confirmation before each migration
+- Updates migration_status.md automatically
+
+---
+
+### Step 4: Supabase CLI Setup (Optional but Recommended)
+
+#### [NEW] [config.toml](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/supabase/config.toml)
+- If using Supabase CLI, create proper configuration
+- Enables `supabase db push` and `supabase db diff` commands
+- Provides automatic migration tracking
+
+## Verification Plan
+
+### Manual Verification Steps
+
+1. **Pre-Migration Audit:**
+   - User logs into Supabase Dashboard
+   - Navigate to Database → Tables
+   - Document which tables currently exist (screenshot or list)
+   - Run the `supabase_audit.sql` script in SQL Editor
+   - Save results as baseline
+
+2. **Schema Comparison:**
+   - Compare the audit results with the migration files
+   - Identify gaps (what's in migrations but not deployed)
+   - Identify extras (what's deployed but not in migrations)
+   - Document findings in migration_status.md
+
+3. **Post-Setup Validation:**
+   - After consolidation, user reviews the proposed baseline schema
+   - User confirms all required tables are present
+   - User confirms no critical features are missing
+
+### Automated Tests
+Not applicable - this is a database schema audit and migration setup task. The verification is primarily manual inspection of the database state.
+
+### User Manual Testing Required
+
+> [!CAUTION]
+> **Before applying any migrations to production Supabase:**
+> 
+> 1. Take a **backup** of your current Supabase database (if any data exists)
+> 2. Test migrations in a **staging/dev** Supabase project first
+> 3. Verify your app still works after applying migrations
+> 4. Check that RLS policies don't lock you out of your own data
+
+**Testing Steps:**
+1. User creates a test Supabase project (or uses existing dev instance)
+2. Apply the consolidated baseline schema
+3. User creates a test user in the app
+4. Verify signup/login flow works
+5. Test creating a classroom, lesson, etc.
+6. Confirm no RLS errors appear in logs
+7. Only after success, apply to production database

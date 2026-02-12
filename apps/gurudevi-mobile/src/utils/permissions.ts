@@ -99,6 +99,21 @@ export function getRoleDisplayName(role: UserRole, language: 'si' | 'ta' | 'en' 
             si: 'ශ්‍රේණි ප්‍රධානී',
             ta: 'வகுப்பு தலைவர்',
             en: 'Grade Head'
+        },
+        developer: {
+            si: 'සංවර්ධක',
+            ta: 'உருவாக்குபவர்',
+            en: 'Developer'
+        },
+        admin: {
+            si: 'පරිපාලක',
+            ta: 'நிர்வாகி',
+            en: 'Admin'
+        },
+        founder: {
+            si: 'නිර්මාතෘ',
+            ta: 'நிறுவனர்',
+            en: 'Founder'
         }
     };
 

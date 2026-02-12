@@ -23,7 +23,7 @@ import {
     SliderThumb,
     Button,
     ButtonText,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,

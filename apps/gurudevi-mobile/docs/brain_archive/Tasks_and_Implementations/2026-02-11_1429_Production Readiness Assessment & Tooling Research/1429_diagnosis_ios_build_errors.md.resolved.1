@@ -1,0 +1,99 @@
+# 🍎 iOS Build Diagnosis: Gluestack Migration (pnpm monorepo)
+
+If your iOS build is failing after the Gluestack migration, the issue is likely in the **code-level imports**, not native setup. Here's what to check:
+
+## 1. UI Abstraction Layer Import Issues 🎨
+We migrated to `@/ui` abstractions. If your friend pulled the latest code but their IDE/bundler is still resolving old imports, it will fail.
+
+**Check:**
+- Open [App.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/App.tsx) and verify it imports from `@/ui`:
+```typescript
+import { Box, Text, Spinner } from '@/ui';
+// NOT from '@gluestack-ui/themed' directly
+```
+- Search the codebase for any remaining direct Gluestack imports:
+```bash
+cd apps/gurudevi-mobile
+grep -r "@gluestack-ui/themed" src/
+```
+If any appear outside [src/ui/index.ts](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/ui/index.ts), they need to be changed to `@/ui`.
+
+## 2. Metro Config for Gluestack (pnpm hoisting) 🚇
+In a pnpm monorepo, dependencies are **symbolically linked** differently than npm. Gluestack UI may not transpile correctly without explicit Metro config.
+
+**Action:**
+Create `apps/gurudevi-mobile/metro.config.js`:
+```javascript
+const { getDefaultConfig } = require('expo/metro-config');
+const path = require('path');
+
+const config = getDefaultConfig(__dirname);
+
+// Critical for pnpm: Watch all workspace packages
+const workspaceRoot = path.resolve(__dirname, '../..');
+config.watchFolders = [workspaceRoot];
+
+// Ensure node_modules resolution starts from workspace root
+config.resolver.nodeModulesPaths = [
+  path.resolve(__dirname, 'node_modules'),
+  path.resolve(workspaceRoot, 'node_modules'),
+];
+
+module.exports = config;
+```
+
+## 3. TypeScript Path Alias (`@/ui`) 🔗
+The `@/ui` alias must be recognized by both TypeScript and Metro.
+
+**Check [tsconfig.json](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/tsconfig.json):**
+```json
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+**Check [babel.config.js](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/babel.config.js):**
+```javascript
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    plugins: [
+      ['module-resolver', {
+        alias: { '@': './src' }
+      }],
+      'react-native-reanimated/plugin' // MUST be last
+    ],
+  };
+};
+```
+*If `module-resolver` is missing, run: `pnpm add -D babel-plugin-module-resolver`*
+
+## 4. Cache Issues (pnpm-specific) 🧹
+`pnpm` caches aggressively. A stale dev server can cause "module not found" iOS errors.
+
+**Action:**
+```bash
+# From monorepo root
+pnpm install
+# From gurudevi-mobile
+cd apps/gurudevi-mobile
+rm -rf .expo node_modules/.cache
+pnpm expo start --clear
+```
+
+## 5. Gluestack Config Missing? ⚙️
+The Gluestack UI needs its config file to work.
+
+**Verify:**
+[apps/gurudevi-mobile/gluestack-ui.config.ts](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/gluestack-ui.config.ts) exists and exports a config.
+
+---
+
+> [!IMPORTANT]
+> **Key Difference from npm:** With pnpm, all packages live in a central `.pnpm` store. If Metro can't find Gluestack modules, it's almost always a **workspace resolution** issue in `metro.config.js`, not a native pod issue.

@@ -42,8 +42,8 @@ export const dailyContentAPI = {
             }
 
             return {
-                motivation: motivationData || null,
-                didYouKnow: didYouKnowData || null,
+                motivation: (motivationData as DailyContent) || null,
+                didYouKnow: (didYouKnowData as DailyContent) || null,
             };
         } catch (error) {
             throw new APIError('Failed to fetch daily content', 'FETCH_FAILED', error);

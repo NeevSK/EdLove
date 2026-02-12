@@ -1,0 +1,5 @@
+{
+  "artifactType": "ARTIFACT_TYPE_TASK",
+  "summary": "Task checklist for auditing local Supabase schema files, comparing with deployed database state, and establishing a synchronization strategy to ensure schema consistency between code and production.",
+  "updatedAt": "2026-02-11T10:31:56.071099300Z"
+}

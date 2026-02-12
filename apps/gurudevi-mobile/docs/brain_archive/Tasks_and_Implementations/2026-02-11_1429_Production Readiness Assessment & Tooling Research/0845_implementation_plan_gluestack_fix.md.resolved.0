@@ -1,0 +1,26 @@
+# Implementation Plan: Resolving Gluestack Export Errors
+
+The user reports that [App.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/App.tsx) has errors related to missing [Spinner](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/__tests__/steps/auth_refinement.steps.tsx#85-86) and [Center](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/__tests__/steps/auth_refinement.steps.tsx#88-89) exports from `@gluestack-ui/themed`, despite these exports being physically present in `node_modules`.
+
+## Proposed Changes
+
+### [Component Name]
+
+#### [MODIFY] [App.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/App.tsx)
+- Reformat the `@gluestack-ui/themed` import to use single quotes and a standard order. This is a "touch" to trigger the IDE's localized re-indexing.
+- If the above fails, switch to explicit paths for the problematic components as a temporary workaround.
+
+## User Review Required
+
+> [!WARNING]
+> I detected a [package-lock.json](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/package-lock.json) file in `apps/gurudevi-mobile`, which suggests an `npm install` was run in a `pnpm` workspace. This can cause inconsistent `node_modules` and resolution errors in some IDEs.
+> I recommend deleting `apps/gurudevi-mobile/node_modules` and `apps/gurudevi-mobile/package-lock.json`, then running `pnpm install` from the root.
+
+## Verification Plan
+
+### Automated Tests
+- Run `npx tsc App.tsx --noEmit --esModuleInterop --jsx react-jsx --skipLibCheck --target esnext --moduleResolution node` to ensure type resolution works under standard flags.
+- Verify `AuthScreen.tsx` (which uses the same imports) continues to resolve correctly.
+
+### Manual Verification
+- The user will check if the red squiggles in `App.tsx` disappear after the import rewrite.

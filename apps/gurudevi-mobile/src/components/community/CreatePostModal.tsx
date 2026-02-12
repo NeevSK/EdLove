@@ -17,7 +17,7 @@ import {
     InputField,
     Textarea,
     TextareaInput,
-} from "@gluestack-ui/themed";
+} from "@/ui";
 import { MessageCircle, Mic, Image as ImageIcon } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { useCommunity } from '../../hooks/useCommunity';

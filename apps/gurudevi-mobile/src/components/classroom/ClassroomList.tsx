@@ -16,7 +16,7 @@ import {
     ListRenderItemInfo,
     GestureResponderEvent,
 } from 'react-native';
-import { Box, Text, Heading, VStack, HStack } from '@gluestack-ui/themed';
+import { Box, Text, Heading, VStack, HStack } from '@/ui';
 import { BookOpen, Users, ChevronRight, ClipboardCheck } from 'lucide-react-native';
 import { Theme, typography } from '../../constants/Theme';
 import { api, Classroom } from '../../lib/api';

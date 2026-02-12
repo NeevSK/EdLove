@@ -8,7 +8,7 @@ import {
     Pressable,
     Divider,
     Heading,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { Globe, Moon, Database, ChevronRight, Check, X, Sun, Zap } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';
@@ -36,7 +36,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
     const renderThemeOption = (mode: ThemeMode, icon: any, label: string, description: string) => {
         const isActive = themeMode === mode;
         const IconComponent = icon;
-        
+
         return (
             <Pressable
                 onPress={() => {
@@ -144,11 +144,11 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
 
                     <Divider bg={Theme.colors.deepIndigo} />
 
-                    <Box p={Theme.spacing.xs}>
+                    <VStack p={Theme.spacing.xs}>
                         {renderLanguageItem('si', 'සිංහල')}
                         {renderLanguageItem('ta', 'தமிழ்')}
                         {renderLanguageItem('en', 'English')}
-                    </Box>
+                    </VStack>
                 </Box>
             </VStack>
 

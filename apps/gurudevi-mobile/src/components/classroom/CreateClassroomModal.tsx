@@ -19,7 +19,7 @@ import {
     FormControlLabel,
     FormControlLabelText,
     Spinner,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { Theme } from '../../constants/Theme';
 import { api } from '../../lib/api';
 import { supabase } from '../../lib/supabase';

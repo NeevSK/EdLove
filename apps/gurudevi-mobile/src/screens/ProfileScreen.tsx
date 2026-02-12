@@ -10,7 +10,7 @@ import {
     Button,
     ButtonText,
     Text
-} from "@gluestack-ui/themed";
+} from "@/ui";
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import { Theme } from '../constants/Theme';

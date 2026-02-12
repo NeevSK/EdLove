@@ -7,6 +7,7 @@ export interface StudentGrade {
   grade: string;
   gpa: number;
   feedback?: string;
+  rank?: number;
   graded_at: string;
 }
 

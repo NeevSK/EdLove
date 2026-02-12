@@ -19,7 +19,7 @@ import {
     Pressable,
     Input,
     InputField,
-} from "@gluestack-ui/themed";
+} from "@/ui";
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import { Check, X, Clock, Search } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';

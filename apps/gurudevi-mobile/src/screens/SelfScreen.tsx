@@ -11,7 +11,7 @@ import React from 'react';
 import { useUserRole } from '../hooks/useUserRole';
 
 // Import role-specific views
-import { StudentSelfView, TeacherSelfView, PrincipalSelfView } from './self';
+import { StudentSelfView, TeacherSelfView, PrincipalSelfView, FounderSelfView, AdminSelfView } from './self';
 
 export default function SelfScreen() {
     const { role } = useUserRole();
@@ -23,6 +23,14 @@ export default function SelfScreen() {
 
     if (role === 'principal') {
         return <PrincipalSelfView />;
+    }
+
+    if (role === 'founder') {
+        return <FounderSelfView />;
+    }
+
+    if (role === 'admin') {
+        return <AdminSelfView />;
     }
 
     // Default: Teacher view (includes teacher, section_head, grade_head)

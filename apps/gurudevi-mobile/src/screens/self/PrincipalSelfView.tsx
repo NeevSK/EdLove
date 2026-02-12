@@ -17,7 +17,7 @@ import {
     Pressable,
     Input,
     InputField
-} from "@gluestack-ui/themed";
+} from "@/ui";
 import { Battery, Activity, BookOpen, Users, Lightbulb, Calendar } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';
@@ -26,6 +26,8 @@ import { ShadowAgentDrawer, EnergyForecast } from '../../components/self';
 import { supabase } from '../../lib/supabase';
 import GlobalHeader from '../../components/shared/GlobalHeader';
 import DailyContentCard from '../../components/self/DailyContentCard';
+import WelcomeModal from '../../components/self/WelcomeModal';
+import { useStore } from '../../store/useStore';
 
 // Principal-specific core features
 const PRINCIPAL_CORE_FEATURES = [
@@ -45,6 +47,8 @@ export default function PrincipalSelfView() {
     const [activeFeature, setActiveFeature] = useState('energy');
     const [userId, setUserId] = useState<string | null>(null);
     const [showMoreTools, setShowMoreTools] = useState(false);
+    const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
+    const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
 
     React.useEffect(() => {
         const fetchUser = async () => {
@@ -71,7 +75,7 @@ export default function PrincipalSelfView() {
                                 {t('principal.schoolPulseDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -97,7 +101,7 @@ export default function PrincipalSelfView() {
                                 {t('principal.decisionJournalDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -129,7 +133,7 @@ export default function PrincipalSelfView() {
                                 {t('principal.staffWellbeingDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -155,7 +159,7 @@ export default function PrincipalSelfView() {
                                 {t('principal.leadershipWisdomDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -181,7 +185,7 @@ export default function PrincipalSelfView() {
                                 {t('principal.monthlyReflectionDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -201,8 +205,8 @@ export default function PrincipalSelfView() {
         }
     };
 
-    const allFeatures = showMoreTools 
-        ? [...PRINCIPAL_CORE_FEATURES, ...PRINCIPAL_MORE_TOOLS] 
+    const allFeatures = showMoreTools
+        ? [...PRINCIPAL_CORE_FEATURES, ...PRINCIPAL_MORE_TOOLS]
         : PRINCIPAL_CORE_FEATURES;
 
     return (
@@ -320,6 +324,10 @@ export default function PrincipalSelfView() {
             </ScrollView>
 
             <ShadowAgentDrawer />
+            <WelcomeModal
+                isOpen={justFinishedOnboarding}
+                onClose={() => setJustFinishedOnboarding(false)}
+            />
         </Box>
     );
 }

@@ -1,0 +1,72 @@
+# Walkthrough - Role Alignment & Onboarding Finalized
+
+I have successfully aligned the application with its intended user role architecture and integrated the onboarding flow.
+
+## 1. Database Logic Alignment
+I refactored the invitation acceptance logic to use the authoritative `users` table instead of the deprecated `user_roles` table. The logic now uses `.update()` to supplement existing records created by the Supabase trigger.
+
+**Verified in [InvitationWelcomeScreen.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/InvitationWelcomeScreen.tsx):**
+```typescript
+const handleJoin = async () => {
+    // ... logic to update users table
+    const { error } = await supabase
+        .from('users')
+        .update({ 
+            role: role.toLowerCase(),
+            organization_name: schoolName,
+            onboarding_completed: true,
+            onboarding_completed_at: new Date().toISOString()
+        })
+        .eq('id', session.user.id);
+    // ... redirect to Main
+};
+```
+
+## 2. Onboarding Flow Integration
+Authenticated users who have not yet completed their onboarding are now automatically directed to the [OnboardingScreen](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/OnboardingScreen.tsx#43-431).
+
+**Integrated in [App.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/App.tsx):**
+```tsx
+{!session ? (
+  <AuthScreen />
+) : !onboardingCompleted ? (
+  <OnboardingScreen onComplete={() => useStore.getState().setOnboardingCompleted(true)} />
+) : (
+  <TabNavigator ... />
+)}
+```
+
+## 3. Specialized Role Views
+I enhanced the [UserStatsCard](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/profile/UserStatsCard.tsx#27-147) to provide unique, high-tier visuals for `founder` and `admin` roles, ensuring they feel like "Eternal Guardians" and "System Archons" of the Sanctuary.
+
+| Role | Title | Primary Metric |
+| :--- | :--- | :--- |
+| **Founder** | Eternal Guardian | Wisdom (Guardian) |
+| **Admin** | Sanctuary Health | Uptime (99.9%) |
+| **Teacher** | Teacher Impact | Classes (12) |
+| **Student** | Learning Journey | Streak (5 Days) |
+
+## 4. Verification Results
+
+I ran the BDD tests for the invitation flow to ensure that my changes to the database logic (switching to `update` on `users` table) were successful.
+
+### BDD Test Report
+```
+Test Suites: 1 passed, 1 total
+Tests:       2 passed, 2 total
+Snapshots:   0 total
+Time:        3.425 s
+Ran all test suites matching /src\/__tests__\/steps\/invitation_welcome.steps.tsx/i.
+```
+
+The tests confirm that:
+1. Invitations are correctly displayed with the invited role and school.
+2. Accepting an invitation correctly triggers a database `update` on the `users` table with `onboarding_completed: true`.
+3. The user is redirected to the `Main` screen.
+
+## 5. "Hand-in-Hand" Development Explained
+In this session, we used **Behavior-Driven Development (BDD)** to guide our work:
+1. **The Blueprint**: We read the [.feature](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/features/invitation_welcome.feature) file to understand the *behavior* needed.
+2. **The Guardrail**: The existing tests were updated to reflect our new database structure *before* we were done.
+3. **The Implementation**: We modified the code until the tests turned green.
+4. **The Result**: We now have a solid feature that is both implemented and permanently protected by tests.

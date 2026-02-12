@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { Box, Text, Heading, VStack, Center } from "@gluestack-ui/themed";
+import { Box, Text, Heading, VStack, Center } from "@/ui";
 import { Theme } from '../../constants/Theme';
 import { useTranslation } from 'react-i18next';
 import GlobalHeader from '../../components/shared/GlobalHeader';

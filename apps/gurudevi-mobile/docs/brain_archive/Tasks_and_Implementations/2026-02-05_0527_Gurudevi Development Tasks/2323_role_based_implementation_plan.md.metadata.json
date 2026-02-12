@@ -1,0 +1,5 @@
+{
+  "artifactType": "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
+  "summary": "Step-by-step technical plan for implementing role-based navigation and UI. Includes extracting navigation from App.tsx, creating a dedicated navigation directory, implementing a useUserRole hook, and configuring dynamic tab labels (School vs Classroom) based on user role. Defines file structures and code snippets for immediate execution.",
+  "updatedAt": "2026-02-04T17:53:36.241678600Z"
+}

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GluestackUIProvider, Box, Spinner, Center } from "@gluestack-ui/themed";
+import { GluestackUIProvider, Spinner, Center } from '@/ui';
 import { config } from "./gluestack-ui.config";
 import { Home, School, Users, Library, User } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
@@ -18,7 +18,8 @@ import { UserRole } from './src/types/User';
 import { SchoolType } from './src/constants/SriLankanSchools';
 
 // Import screens and navigation
-import AuthScreen from './src/screens/AuthScreen';
+import WelcomeScreen from './src/screens/WelcomeScreen';
+import OnboardingScreen from './src/screens/OnboardingScreen';
 import TabNavigator from './src/navigation/TabNavigator';
 import LotusPetalFAB, { ActionItem } from './src/components/shared/LotusPetalFAB';
 import ErrorBoundary from './src/components/shared/ErrorBoundary';
@@ -31,18 +32,21 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [currentTab, setCurrentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
+  const onboardingCompleted = useStore((state) => state.onboardingCompleted);
 
   // Extract user profile fetching logic to avoid duplication
   const fetchAndSetUserProfile = async (userId: string) => {
     try {
       const { data: userProfile } = await supabase
         .from('users')
-        .select('role, school_id')
+        .select('role, school_id, onboarding_completed')
         .eq('id', userId)
         .single();
 
       if (userProfile) {
-        useStore.getState().setUserRole(userProfile.role as UserRole | null);
+        const { setUserRole, setOnboardingCompleted } = useStore.getState();
+        setUserRole(userProfile.role as UserRole | null);
+        setOnboardingCompleted(!!userProfile.onboarding_completed);
 
         // Fetch school type if school_id exists, otherwise clear it
         if (userProfile.school_id) {
@@ -174,8 +178,20 @@ export default function App() {
             <ErrorBoundary name="App Root">
               <NavigationContainer>
                 {!session ? (
-                  <ErrorBoundary name="Auth Screen">
-                    <AuthScreen />
+                  <ErrorBoundary name="Welcome Screen">
+                    <WelcomeScreen />
+                  </ErrorBoundary>
+                ) : !onboardingCompleted ? (
+                  <ErrorBoundary name="Onboarding Screen">
+                    <OnboardingScreen onComplete={(name: string, role: any) => {
+                      console.log('Onboarding complete callback triggered in App.tsx', { name, role });
+                      const store = useStore.getState();
+                      store.setTeacherName(name);
+                      store.setUserRole(role);
+                      store.setOnboardingCompleted(true);
+                      store.setJustFinishedOnboarding(true);
+                      console.log('App Store updated: onboardingCompleted is now', useStore.getState().onboardingCompleted);
+                    }} />
                   </ErrorBoundary>
                 ) : (
                   <ErrorBoundary name="Main App">

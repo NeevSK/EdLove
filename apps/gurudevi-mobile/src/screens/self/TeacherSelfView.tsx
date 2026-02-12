@@ -20,15 +20,15 @@ import {
     InputField,
     Button,
     ButtonText
-} from "@gluestack-ui/themed";
+} from "@/ui";
 import { Mic, Send, MessageCircle, Repeat, Flower, Flame, Sparkles, Heart, Lightbulb, Calendar, Battery, Moon } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';
 import { hapticLight } from '../../utils/haptics';
 import DailyRhythm from '../../components/self/DailyRhythm';
-import { 
-    MoodLotus, 
-    ShadowAgentDrawer, 
+import {
+    MoodLotus,
+    ShadowAgentDrawer,
     FireJournal,
     JoyJar,
     GratitudeGlimmers,
@@ -41,6 +41,8 @@ import { supabase } from '../../lib/supabase';
 import GlobalHeader from '../../components/shared/GlobalHeader';
 import DailyContentCard from '../../components/self/DailyContentCard';
 import ThuthimalBadge from '../../components/profile/ThuthimalBadge';
+import WelcomeModal from '../../components/self/WelcomeModal';
+import { useStore } from '../../store/useStore';
 
 // Progressive Architecture: Core features always visible, others in "More Tools"
 const CORE_FEATURES = [
@@ -65,6 +67,8 @@ export default function TeacherSelfView() {
     const [userId, setUserId] = useState<string | null>(null);
     const [showMoreTools, setShowMoreTools] = useState(false);
     const [userProfile, setUserProfile] = useState<any>(null);
+    const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
+    const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
 
     // Get current user and profile on mount
     React.useEffect(() => {
@@ -72,14 +76,14 @@ export default function TeacherSelfView() {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 setUserId(user.id);
-                
+
                 // Fetch full profile for Thuthimal status
                 const { data: profile } = await supabase
                     .from('users')
                     .select('is_thuthimal, thuthimal_gifter, thuthimal_gifted_at')
                     .eq('id', user.id)
                     .single();
-                
+
                 if (profile) {
                     setUserProfile(profile);
                 }
@@ -301,6 +305,10 @@ export default function TeacherSelfView() {
 
             {/* Shadow Agent Drawer - Always present as a floating orb */}
             <ShadowAgentDrawer />
+            <WelcomeModal
+                isOpen={justFinishedOnboarding}
+                onClose={() => setJustFinishedOnboarding(false)}
+            />
         </Box>
     );
 }

@@ -12,7 +12,7 @@
  * - student: Can view lessons, submit assignments
  * - developer: Full access for development and testing
  */
-export type UserRole = 'principal' | 'section_head' | 'grade_head' | 'teacher' | 'student' | 'developer';
+export type UserRole = 'principal' | 'section_head' | 'grade_head' | 'teacher' | 'student' | 'developer' | 'admin' | 'founder';
 
 /**
  * User Profile Interface
@@ -27,6 +27,8 @@ export interface User {
     created_at: string;          // ISO timestamp
     updated_at?: string;         // ISO timestamp (optional)
     avatar_url?: string;         // Profile picture URL (optional)
+    onboarding_completed?: boolean; // Flag indicating if user has completed onboarding
+    onboarding_completed_at?: string; // Timestamp when onboarding was completed
 }
 
 /**

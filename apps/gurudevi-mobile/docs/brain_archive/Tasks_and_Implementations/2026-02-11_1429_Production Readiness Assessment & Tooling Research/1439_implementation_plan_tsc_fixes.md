@@ -1,0 +1,28 @@
+# Resolve Critical TypeScript Errors
+
+The Gurudevi Mobile app currently has 13+ TypeScript compilation errors that prevent the app from building and running. This plan outlines the steps to identify, categorize, and resolve these errors to reach a stable, compilable state.
+
+## Proposed Changes
+
+### [gurudevi-mobile]
+
+#### [MODIFY] Multiple files in `src/` (to be determined by `tsc` output)
+We will systematically address the errors identified by the TypeScript compiler. Common patterns likely include:
+- **Missing Imports:** Adding missing type or function imports (e.g., `requireAuth` in API modules).
+- **Type Mismatches:** Correcting return types or prop definitions to align with interface specifications.
+- **Deprecation Fixes:** Updating components or functions that use deprecated APIs (e.g., transitioning to `expo-audio` or `react-native-safe-area-context`).
+- **Input Validation Stubs:** Adding basic validation logic to satisfy strict typing requirements.
+
+## Verification Plan
+
+### Automated Tests
+1. **TypeScript Compilation:**
+   - Run `pnpm exec tsc --noEmit` from the `apps/gurudevi-mobile` directory.
+   - **Success Criteria:** 0 errors reported.
+2. **Bundler Check:**
+   - Run `pnpm expo start` and ensure the Metro bundler initializes without errors.
+
+### Manual Verification
+1. **App Launch:**
+   - Launch the app on an emulator/simulator.
+   - **Success Criteria:** The app loads the initial splash/auth screen instead of crashing on the "Red Screen" (TSC errors).

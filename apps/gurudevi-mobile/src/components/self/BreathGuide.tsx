@@ -13,7 +13,7 @@ import {
     Button,
     ButtonText,
     Pressable,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,

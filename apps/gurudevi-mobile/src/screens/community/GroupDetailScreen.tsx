@@ -9,7 +9,7 @@ import {
     Image,
     Button,
     ButtonText
-} from "@gluestack-ui/themed";
+} from "@/ui";
 import { Theme } from '../../constants/Theme';
 import { useCommunity, Group, Post } from '../../hooks/useCommunity';
 import GlobalHeader from '../../components/shared/GlobalHeader';

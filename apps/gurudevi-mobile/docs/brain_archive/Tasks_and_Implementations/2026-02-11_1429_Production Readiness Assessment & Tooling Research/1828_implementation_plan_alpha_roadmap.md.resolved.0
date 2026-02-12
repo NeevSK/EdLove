@@ -1,0 +1,51 @@
+# Roadmap to Alpha Launch (Feb 14)
+
+This plan aligns our current progress with the **LOCKED master specification** ([GURUDEVI_ALPHA_COMPLETE_FINAL.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/Tasks/GURUDEVI_ALPHA_COMPLETE_FINAL.md)) to ensure we ship on time.
+
+## Current State
+- ✅ TypeScript build stabilized (zero errors).
+- ✅ Role system unified.
+- ✅ Theme and Foundation (Phase 1) mostly complete.
+- ✅ Task D (Classroom List) implemented.
+
+---
+
+## 🚀 4-Day Sprint (Feb 11 - Feb 14)
+
+### Phase 1: Stability & Foundation (Feb 11)
+**Goal**: Prevent data loss and set up telemetry.
+
+1.  **Storage Refactor**: Implement `HybridStorage` in [storage.ts](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/lib/storage.ts) using `AsyncStorage` as a persistent fallback for `react-native-mmkv`.
+2.  **Telemetry**: Integrate **PostHog** for event tracking and session recording.
+3.  **Firebase Setup**: Initialize Firebase project for Android and configure Dynamic Links (required for Invitations).
+
+### Phase 2: Auth & Invitation Alignment (Feb 12)
+**Goal**: Match the "Locked" spec for Passwordless entry.
+
+1.  **Passwordless Auth**: Implement Google Sign-In and Magic Links via Supabase.
+2.  **Role Verification**: Update `AuthScreen` to strictly follow the role dropdown logic (Principal/Teacher active, others grayed out).
+3.  **Invitation Welcome**: Build the Invitation Welcome Router to handle deep-linked QR codes.
+
+### Phase 3: Core Feature Completion (Feb 13)
+**Goal**: Finalize Task E and Onboarding.
+
+1.  **Task E (Lesson Feed)**: Integrate the existing [LessonFeed.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/classroom/LessonFeed.tsx) UI with the real Supabase backend.
+2.  **Onboarding Journey**: Implement the 5-screen skippable onboarding flow.
+
+### Phase 4: Verification & Release (Feb 14)
+**Goal**: Clean build and Deployment.
+
+1.  **Security Audit**: Final check of RLS policies.
+2.  **Production Build**: Generate release APK and verify all flows (Invite -> Onboarding -> Feed).
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- Full TSC verification build (with elevated stack size).
+- Supabase RLS policy audit via SQL scripts.
+
+### Manual Verification
+- **Invitation Flow**: Generate link -> scan -> signup -> verify role.
+- **Fail-safe Test**: Force MMKV failure and verify data persists via AsyncStorage.

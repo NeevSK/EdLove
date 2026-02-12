@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { HStack, Box } from '@gluestack-ui/themed';
+import { HStack, Box } from '@/ui';
 import { FileText, Video, Link, File, Heart, Plus, Download } from 'lucide-react-native';
 import SanctuaryCard from '../shared/SanctuaryCard';
 import SanctuaryButton from '../shared/SanctuaryButton';

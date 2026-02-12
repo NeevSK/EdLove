@@ -1,0 +1,5 @@
+{
+  "artifactType": "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
+  "summary": "A strategic-level plan designed to guide GitHub agents (and human developers) in building the 'Self' and 'Classroom' sections of Gurudevi. It consolidates the architectural vision, v0.1 MVP requirements, and technical constraints into 70% defined specifications ready for implementation. Includes breakdown of components, data models, and specific task contexts for delegation.",
+  "updatedAt": "2026-02-04T11:45:08.879254600Z"
+}

@@ -31,7 +31,7 @@ import {
     ModalCloseButton,
     ModalBody,
     Heading as ModalHeading,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { TouchableOpacity, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';

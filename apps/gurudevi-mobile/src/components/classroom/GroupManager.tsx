@@ -30,7 +30,7 @@ import {
     CheckboxIndicator,
     CheckboxIcon,
     CheckboxLabel,
-} from "@gluestack-ui/themed";
+} from "@/ui";
 import { Users, Plus, Trash2, Edit2, CheckIcon } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { hapticLight } from '../../utils/haptics';
@@ -165,11 +165,11 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
                 prev.map((g) =>
                     g.id === editingGroup.id
                         ? {
-                              ...g,
-                              name: groupName,
-                              description: groupDescription || undefined,
-                              studentIds: selectedStudentIds,
-                          }
+                            ...g,
+                            name: groupName,
+                            description: groupDescription || undefined,
+                            studentIds: selectedStudentIds,
+                        }
                         : g
                 )
             );

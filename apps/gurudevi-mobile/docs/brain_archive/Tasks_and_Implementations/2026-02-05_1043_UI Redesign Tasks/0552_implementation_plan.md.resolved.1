@@ -1,0 +1,60 @@
+# Implementation Plan - Profile Redesign "Sanctuary Identity"
+
+## Goal
+Transform the Profile functionality into a "Soulful, Artistic, and Premium" experience by implementing the "Sanctuary Identity" design. This involves separating user identity from app settings and introducing new interactive components.
+
+## User Review Required
+> [!IMPORTANT]
+> This redesign completely replaces the current "Tab Switcher" UI in the Profile screen with a vertical "Identity Card + Control Scroll" layout.
+
+## Proposed Changes
+
+### Components [NEW]
+#### [NEW] [IdentityCard.tsx](file:///C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/profile/IdentityCard.tsx)
+-   **Purpose**: Displays user identity (Name, Role, School) in a "Glassmorphism" card.
+-   **Features**:
+    -   Flip animation (Front: Details, Back: QR Code placeholder).
+    -   Progress Ring around Avatar (GOLDEN).
+    -   "Verified" badge logic.
+    -   Tap to trigger `EditProfileModal`.
+
+#### [NEW] [ControlScroll.tsx](file:///C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/profile/ControlScroll.tsx)
+-   **Purpose**: Vertical scrollable list for App Settings.
+-   **Features**:
+    -   Items: Language, Theme, Data Saver.
+    -   Style: "LotusPetal" rows (soft rounded, touch feedback).
+    -   Language Switcher integration (reusing logic from current ProfileScreen).
+
+#### [NEW] [EditProfileModal.tsx](file:///C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/profile/EditProfileModal.tsx)
+-   **Purpose**: Full-screen modal for editing profile details.
+-   **Features**:
+    -   Form fields: Full Name, Role, School Name.
+    -   Save functionality (Supabase update).
+
+### Screens [MODIFY]
+#### [MODIFY] [ProfileScreen.tsx](file:///C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/ProfileScreen.tsx)
+-   **Changes**:
+    -   Remove `VStack`, `HStack`, [Button](file:///C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/LotusButton.tsx#80-143) based "Tab Switcher" UI.
+    -   Import and render `IdentityCard` at the top.
+    -   Import and render `ControlScroll` below.
+    -   Manage state for `EditProfileModal` visibility.
+    -   Pass `loading`, `profile`, `refreshProfile` props to children.
+
+## Verification Plan
+
+### Automated Tests
+-   Verify TSX compilation using `npx tsc --noEmit`.
+
+### Manual Verification
+-   **Identity Card**:
+    -   Check if user details load correctly.
+    -   Test "Flip" interaction (tap card).
+    -   Test "Edit" interaction (tap Edit button or details).
+-   **Control Scroll**:
+    -   Test Language switching (Sinhala/Tamil/English).
+    -   Check visual feedback on touch.
+-   **Edit Modal**:
+    -   Open modal, change name, save.
+    -   Verify profile updates on main screen.
+-   **Responsiveness**:
+    -   Ensure scroll works on smaller screens.

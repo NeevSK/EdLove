@@ -28,9 +28,10 @@ import {
     SelectDragIndicatorWrapper,
     SelectDragIndicator,
     SelectItem,
-} from '@gluestack-ui/themed';
-import { ChevronRight, ChevronDown } from 'lucide-react-native';
+} from '@/ui';
+import { ChevronRight, ChevronDown, ChevronLeft } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Theme } from '../constants/Theme';
 import { UserRole } from '../types/User';
 import { supabase } from '../lib/supabase';
@@ -45,6 +46,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
     const [currentScreen, setCurrentScreen] = useState(0);
     const [name, setName] = useState('');
     const [role, setRole] = useState<UserRole>('teacher');
+    const [isLoading, setIsLoading] = useState(true);
     const toast = useToast();
 
     const screens = [
@@ -88,7 +90,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                 <VStack space="lg" mt="$6">
                     <Select
                         selectedValue={role}
-                        onValueChange={(value) => {
+                        onValueChange={(value: string) => {
                             hapticLight();
                             setRole(value as UserRole);
                         }}
@@ -115,6 +117,8 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                                 <SelectDragIndicatorWrapper>
                                     <SelectDragIndicator />
                                 </SelectDragIndicatorWrapper>
+                                <SelectItem label={t('auth.founder') || 'Founder'} value="founder" />
+                                <SelectItem label={t('auth.admin') || 'Admin'} value="admin" />
                                 <SelectItem label={t('auth.principal') || 'Principal'} value="principal" />
                                 <SelectItem label={t('auth.sectionHead') || 'Section Head'} value="section_head" />
                                 <SelectItem label={t('auth.gradeHead') || 'Grade Head'} value="grade_head" />
@@ -277,11 +281,48 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
         },
     ];
 
+    // Effect to load saved progress on mount (Failsafe Design)
+    React.useEffect(() => {
+        const loadProgress = async () => {
+            try {
+                const savedProgress = await AsyncStorage.getItem('onboarding_progress');
+                if (savedProgress) {
+                    const { screen, name: savedName, role: savedRole } = JSON.parse(savedProgress);
+                    setCurrentScreen(screen);
+                    setName(savedName);
+                    setRole(savedRole);
+                }
+            } catch (error) {
+                console.error('Error loading onboarding progress:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadProgress();
+    }, []);
+
+    // Effect to save progress whenever it changes (Failsafe Design)
+    React.useEffect(() => {
+        if (isLoading) return;
+        const saveProgress = async () => {
+            try {
+                await AsyncStorage.setItem('onboarding_progress', JSON.stringify({
+                    screen: currentScreen,
+                    name,
+                    role
+                }));
+            } catch (error) {
+                console.error('Error saving onboarding progress:', error);
+            }
+        };
+        saveProgress();
+    }, [currentScreen, name, role, isLoading]);
+
     const currentScreenData = screens[currentScreen];
-    const canProceed = currentScreen === 0 
-        ? name.trim().length > 0 
-        : currentScreen === 1 
-            ? role !== '' 
+    const canProceed = currentScreen === 0
+        ? name.trim().length > 0
+        : currentScreen === 1
+            ? !!role
             : true;
 
     const handleNext = () => {
@@ -295,41 +336,73 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
         }
     };
 
-    const handleSkip = () => {
-        if (!currentScreenData.skippable) return;
-        hapticLight();
-        if (currentScreen < screens.length - 1) {
-            setCurrentScreen(currentScreen + 1);
-        } else {
-            handleComplete();
+    const handleBack = () => {
+        if (currentScreen > 0) {
+            hapticLight();
+            setCurrentScreen(currentScreen - 1);
         }
     };
 
+    const handleReset = async () => {
+        hapticLight();
+        try {
+            await AsyncStorage.removeItem('onboarding_progress');
+            setCurrentScreen(0);
+            setName('');
+            setRole('teacher');
+            console.log('Onboarding reset successfully');
+        } catch (error) {
+            console.error('Error resetting onboarding:', error);
+        }
+    };
+
+    const handleSkip = () => {
+        if (!currentScreenData.skippable) return;
+        hapticLight();
+        handleComplete();
+    };
+
     const handleComplete = async () => {
+        console.log('handleComplete triggered in OnboardingScreen');
         try {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error('No user found');
 
-            // Update user profile with name, role, and onboarding status
+            console.log('Upserting user profile in Supabase...', { id: user.id, email: user.email, name, role });
+            // Upsert user profile with id, email, name, role, and onboarding status
+            // Using upsert ensures the row is created if it doesn't exist
             const { error } = await supabase
                 .from('users')
-                .update({
+                .upsert({
+                    id: user.id,
+                    email: user.email,
                     full_name: name,
                     role: role,
                     onboarding_completed: true,
                     onboarding_completed_at: new Date().toISOString(),
                 })
-                .eq('id', user.id);
+                .select()
+                .single();
 
-            if (error) throw error;
+            if (error) {
+                console.error('Supabase update error:', error);
+                throw error;
+            }
+
+            console.log('User profile updated successfully in Supabase');
+
+            // Clear local progress once finished
+            await AsyncStorage.removeItem('onboarding_progress');
+            console.log('Local progress cleared from AsyncStorage');
 
             hapticSuccess();
+            console.log('Calling onComplete callback...');
             onComplete(name, role);
         } catch (error) {
             console.error('Error completing onboarding:', error);
             toast.show({
                 placement: 'bottom',
-                render: ({ id }) => (
+                render: ({ id }: { id: string }) => (
                     <Toast nativeID={id} action="error" variant="solid">
                         <ToastTitle>Failed to complete onboarding. Please try again.</ToastTitle>
                     </Toast>
@@ -340,27 +413,66 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
 
     return (
         <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
-            {/* Progress Indicator */}
-            <HStack space="xs" px="$6" pt="$12" pb="$4" justifyContent="center">
-                {screens.map((_, index) => (
-                    <Box
-                        key={index}
-                        sx={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: 4,
-                            backgroundColor: index === currentScreen
-                                ? Theme.colors.sanctuarySaffron
-                                : Theme.colors.mistGray,
-                            opacity: index === currentScreen ? 1 : 0.5,
-                        }}
-                    />
-                ))}
-            </HStack>
+            {/* Header with Skip */}
+            <Box
+                sx={{
+                    pt: '$12',
+                    px: '$6',
+                    pb: '$2',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                }}
+            >
+                {/* Top Left Reset Button (Debug/Dev Only) */}
+                <Box width={40}>
+                    <Pressable onPress={handleReset}>
+                        <Text color={Theme.colors.dimGray} size="xs" fontWeight="$medium">
+                            {String(t('common.reset') || 'Reset')}
+                        </Text>
+                    </Pressable>
+                </Box>
 
-            {/* Content */}
-            <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 120 }}>
-                <VStack space="md" px="$6" pt="$6">
+                {/* Progress Dots integrated into header */}
+                <HStack space="xs" justifyContent="center">
+                    {screens.map((_, index) => (
+                        <Box
+                            key={index}
+                            sx={{
+                                width: 6,
+                                height: 6,
+                                borderRadius: 3,
+                                backgroundColor: index === currentScreen
+                                    ? Theme.colors.sanctuarySaffron
+                                    : Theme.colors.mistGray,
+                                opacity: index === currentScreen ? 1 : 0.3,
+                            }}
+                        />
+                    ))}
+                </HStack>
+
+                {/* Top Right Skip Button */}
+                <Box width={40}>
+                    {currentScreenData.skippable && (
+                        <Pressable onPress={handleSkip}>
+                            <Text color={Theme.colors.mistGray} size="sm" fontWeight="$medium">
+                                {t('onboarding.skip') || 'Skip'}
+                            </Text>
+                        </Pressable>
+                    )}
+                </Box>
+            </Box>
+
+            {/* Content Container */}
+            <ScrollView
+                sx={{ flex: 1 }}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{
+                    paddingTop: 20,
+                    paddingBottom: 100
+                }}
+            >
+                <VStack space="md" px="$6">
                     <Heading color={Theme.colors.sanctuarySaffron} size="2xl" textAlign="center">
                         {currentScreenData.title}
                     </Heading>
@@ -371,58 +483,70 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                 </VStack>
             </ScrollView>
 
-            {/* Bottom Navigation */}
+            {/* Persistent Bottom Controls */}
             <Box
                 sx={{
                     position: 'absolute',
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    backgroundColor: Theme.colors.deepIndigo,
-                    padding: Theme.spacing.lg,
+                    backgroundColor: 'rgba(23, 23, 33, 0.95)', // Glass effect background
+                    paddingHorizontal: Theme.spacing.xl,
+                    paddingVertical: Theme.spacing.lg,
                     borderTopWidth: 1,
-                    borderTopColor: Theme.colors.mistGray,
+                    borderTopColor: 'rgba(255, 255, 255, 0.05)',
                 }}
             >
-                <HStack space="md" justifyContent="space-between" alignItems="center">
-                    {/* Skip Button (only for skippable screens) */}
-                    {currentScreenData.skippable ? (
-                        <Pressable onPress={handleSkip}>
-                            <Text color={Theme.colors.mistGray} size="md">
-                                {t('onboarding.skip') || 'Skip'}
-                            </Text>
-                        </Pressable>
-                    ) : (
-                        <Box width={60} />
-                    )}
+                <HStack justifyContent="space-between" alignItems="center">
+                    {/* Back Arrow Button */}
+                    <Box width={50}>
+                        {currentScreen > 0 && (
+                            <Pressable
+                                onPress={handleBack}
+                                sx={{
+                                    width: 44,
+                                    height: 44,
+                                    borderRadius: 22,
+                                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <ChevronLeft size={24} color={Theme.colors.mistGray} />
+                            </Pressable>
+                        )}
+                    </Box>
 
-                    {/* Screen Counter */}
-                    <Text color={Theme.colors.mistGray} size="sm">
-                        {currentScreen + 1} / {screens.length}
+                    {/* Progress Text Helper */}
+                    <Text color={Theme.colors.dimGray} size="xs" fontWeight="$medium">
+                        {`${currentScreen + 1} of ${screens.length}`}
                     </Text>
 
-                    {/* Next/Complete Button */}
-                    <Button
-                        size="md"
-                        onPress={handleNext}
-                        isDisabled={!canProceed}
-                        sx={{
-                            backgroundColor: canProceed 
-                                ? Theme.colors.sanctuarySaffron 
-                                : Theme.colors.mistGray,
-                            borderRadius: Theme.corners.comfortable,
-                            minWidth: 100,
-                        }}
-                    >
-                        <ButtonText color={Theme.colors.white} fontWeight="$semibold">
-                            {currentScreen === screens.length - 1
-                                ? t('onboarding.complete') || 'Complete'
-                                : t('onboarding.next') || 'Next'}
-                        </ButtonText>
-                        {currentScreen < screens.length - 1 && (
-                            <ChevronRight size={18} color={Theme.colors.white} style={{ marginLeft: 4 }} />
-                        )}
-                    </Button>
+                    {/* Next/Complete Button (Now an Arrow or Text for Complete) */}
+                    <Box>
+                        <Button
+                            size="lg"
+                            onPress={handleNext}
+                            isDisabled={!canProceed}
+                            sx={{
+                                backgroundColor: canProceed
+                                    ? Theme.colors.sanctuarySaffron
+                                    : Theme.colors.mistGray,
+                                borderRadius: Theme.corners.comfortable,
+                                px: currentScreen === screens.length - 1 ? '$6' : '$4',
+                                height: 50,
+                                minWidth: currentScreen === screens.length - 1 ? 140 : 50,
+                            }}
+                        >
+                            {currentScreen === screens.length - 1 ? (
+                                <ButtonText color={Theme.colors.white} fontWeight="$bold" size="lg">
+                                    {t('onboarding.complete') || 'Complete'}
+                                </ButtonText>
+                            ) : (
+                                <ChevronRight size={28} color={Theme.colors.white} />
+                            )}
+                        </Button>
+                    </Box>
                 </HStack>
             </Box>
         </Box>
@@ -459,7 +583,7 @@ function SectionCard({ number, title, description, color }: {
                 }}
             >
                 <Text color={Theme.colors.white} size="lg" fontWeight="$bold">
-                    {number}
+                    {String(number)}
                 </Text>
             </Box>
             <VStack space="xs" flex={1}>
@@ -481,13 +605,15 @@ function PhilosophyPoint({ icon, title, description }: {
 }) {
     return (
         <HStack space="md" alignItems="flex-start">
-            <Text fontSize={32}>{icon}</Text>
+            <Box px="$1">
+                <Text sx={{ fontSize: 32 }}>{String(icon)}</Text>
+            </Box>
             <VStack space="xs" flex={1}>
                 <Text color={Theme.colors.sanctuarySaffron} size="lg" fontWeight="$semibold">
-                    {title}
+                    {String(title)}
                 </Text>
                 <Text color={Theme.colors.mistGray} size="md">
-                    {description}
+                    {String(description)}
                 </Text>
             </VStack>
         </HStack>
@@ -508,13 +634,15 @@ function CommitmentCard({ icon, title, description }: {
                 borderRadius: Theme.corners.comfortable,
             }}
         >
-            <Text fontSize={24}>{icon}</Text>
+            <Box px="$1">
+                <Text sx={{ fontSize: 24 }}>{String(icon)}</Text>
+            </Box>
             <VStack space="xs" flex={1}>
                 <Text color={Theme.colors.sanctuarySaffron} size="md" fontWeight="$semibold">
-                    {title}
+                    {String(title)}
                 </Text>
                 <Text color={Theme.colors.mistGray} size="sm">
-                    {description}
+                    {String(description)}
                 </Text>
             </VStack>
         </HStack>

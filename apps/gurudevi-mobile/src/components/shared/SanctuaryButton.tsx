@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ButtonText, ButtonSpinner, ButtonIcon } from '@gluestack-ui/themed';
+import { Button, ButtonText, ButtonSpinner, ButtonIcon } from '@/ui';
 import { Theme } from '../../constants/Theme';
 
 interface SanctuaryButtonProps {

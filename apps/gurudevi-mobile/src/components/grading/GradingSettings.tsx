@@ -24,7 +24,7 @@ import {
     RadioIcon,
     RadioLabel,
     Switch,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { useTranslation } from 'react-i18next';
 import { ClassroomGradingSettings } from '../../types/Grade';
 import Theme from '../../constants/Theme';

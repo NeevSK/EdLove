@@ -1,0 +1,42 @@
+# Documentation Reorganization Plan: gurudevi-mobile
+
+The goal is to declutter the root of `apps/gurudevi-mobile` and consolidate overlapping documents into a structured `Docs v 3.0` directory.
+
+## Current Pain Points
+- **Root Sprawl**: 30+ MD files in the root make it hard to find the entry point.
+- **Redundancy**: Multiple files describe the Feb 8th PRD integration (Integration Summary, Mission Complete, Master Document, PRD Summary).
+- **Inconsistency**: Some core docs are in `Docs v 3.0/Core`, others in the root.
+
+## Proposed Structure
+
+### 1. Root Cleanup
+Only high-level entry points will remain in the root:
+- `README.md`: Project overview and setup.
+- `GURUDEVI_STATUS.md`: [NEW] A single, living document summarizing current progress and next steps (linking to detailed specs).
+- `DOCS_INDEX.md`: Updated to point to the new structure.
+
+### 2. New Subdirectories in `Docs v 3.0/`
+- `Docs v 3.0/Product`: `GURUDEVI_COMPLETE_PRD.md`, `ALPHA_REQUIREMENTS.md`, `FEATURE_MAPPING.md`.
+- `Docs v 3.0/Roadmap`: `GURUDEVI_NEXT_ACTIONS.md`, `ALPHA_PROGRESS_FEB8.md`.
+- `Docs v 3.0/Archive/PRD_Integration_Phase`: Documents that were summaries of the Feb 8th documentation work itself (`GURUDEVI_PRD_SUMMARY.md`, `GURUDEVI_PRD_INTEGRATION_COMPLETE.md`, `PR_REVIEW_RESPONSE.md`).
+- `Docs v 3.0/Technical`: `SECURITY_ARCHITECTURE_REVIEW.md`, `API_REFACTORING_COMPARISON.md`, `ECOLOGY_BASED_FEATURES.md`.
+
+## Proposed Changes
+
+### [Component] apps/gurudevi-mobile
+
+#### [NEW] [GURUDEVI_STATUS.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/GURUDEVI_STATUS.md)
+A single document to track active work.
+
+#### [MODIFY] [DOCS_INDEX.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/DOCS_INDEX.md)
+Update links to the new locations.
+
+#### [MOVE]
+Move all other root `.md` files to their respective locations in `Docs v 3.0/`.
+
+## Verification Plan
+
+### Manual Verification
+1. Verify that the root directory only contains 3-4 essential `.md` files.
+2. Verify that all moved files are accessible and correctly categorized in `Docs v 3.0/`.
+3. Verify that `DOCS_INDEX.md` and `GURUDEVI_STATUS.md` have working links (to the extent of the filesystem).

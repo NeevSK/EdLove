@@ -1,0 +1,33 @@
+# Feature: Alpha Invitation & Community Onboarding Journey
+
+**Goal**: As the founder, I want a multi-stage onboarding system where Principals seed schools and Teachers join a dual-layered community (Global + School).
+
+## Scenario: Principal joins via Founder Link (Initial Setup)
+  **Given** the app is in "Alpha/Invite-Only" mode
+  **And** I have a "Founder/Dev" invitation link
+  **When** I scan the link and sign up as a "Principal"
+  **Then** the system should add me to the "Alpha Pathfinders" (Global Testing Group)
+  **And** I should see a welcome message: "Welcome to the Alpha Pathfinder community"
+  **And** in the "School" section, I should be guided to "Create your School"
+
+## Scenario: Principal creates School Group
+  **Given** I am a Principal who has just signed up
+  **When** I "Create my School" named "Royal College"
+  **Then** the system should create a "Royal College" community group
+  **And** I should be set as the "Admin" of this school group
+  **And** I should be automatically joined to the "Royal College" group
+  **And** I should see a "Invite your Teachers" prompt
+
+## Scenario: Teacher joins via Principal Link (Dual Community Join)
+  **Given** I am a new user scanning an invitation for "Royal College"
+  **When** I complete the onboarding flow as a "Teacher"
+  **Then** the system should add me to the "Alpha Pathfinders" Global group
+  **And** the system should ALSO add me to the "Royal College" school group
+  **And** in my "Classroom" section, I should see "Royal College"
+  **And** I should see a prompt to "Create your first Classroom"
+
+## Scenario: Global Community Visibility
+  **Given** I am any authenticated Alpha user (Founder, Principal, or Teacher)
+  **When** I open the "Community" section
+  **Then** I should see the "Alpha Pathfinders" group as the top/universal tile
+  **And** (if applicable) I should see my "School Group" (e.g., Royal College) as a primary tile

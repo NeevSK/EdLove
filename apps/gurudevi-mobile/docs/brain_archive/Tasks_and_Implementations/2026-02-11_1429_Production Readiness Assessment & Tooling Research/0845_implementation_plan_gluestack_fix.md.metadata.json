@@ -1,0 +1,5 @@
+{
+  "artifactType": "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
+  "summary": "Plan to resolve Gluestack UI export errors in App.tsx by standardizing imports and recommending workspace cleanup.",
+  "updatedAt": "2026-02-11T03:15:39.056332100Z"
+}

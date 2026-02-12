@@ -1,0 +1,5 @@
+# Tasks
+
+- [x] Fix `ReferenceError: Property 'QrCode' doesn't exist` in [AuthScreen.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/AuthScreen.tsx) <!-- id: 0 -->
+- [ ] Fix missing translation key `school.1AB` <!-- id: 1 -->
+- [ ] Verify no other critical errors in terminal <!-- id: 2 -->

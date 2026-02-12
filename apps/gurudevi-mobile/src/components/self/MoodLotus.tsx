@@ -23,7 +23,7 @@ import {
     SliderThumb,
     Button,
     ButtonText,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import { StyleSheet, Image, Platform } from 'react-native';
 import Animated, {
     useAnimatedStyle,

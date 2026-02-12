@@ -19,7 +19,7 @@ import {
     InputField,
     Button,
     ButtonText
-} from "@gluestack-ui/themed";
+} from "@/ui";
 import { Target, BookOpen, Flower, TrendingUp, Brain } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';
@@ -28,6 +28,8 @@ import { MoodLotus, ShadowAgentDrawer } from '../../components/self';
 import { supabase } from '../../lib/supabase';
 import GlobalHeader from '../../components/shared/GlobalHeader';
 import DailyContentCard from '../../components/self/DailyContentCard';
+import WelcomeModal from '../../components/self/WelcomeModal';
+import { useStore } from '../../store/useStore';
 
 // Student-specific core features
 const STUDENT_CORE_FEATURES = [
@@ -46,6 +48,8 @@ export default function StudentSelfView() {
     const [activeFeature, setActiveFeature] = useState('mood');
     const [userId, setUserId] = useState<string | null>(null);
     const [showMoreTools, setShowMoreTools] = useState(false);
+    const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
+    const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
 
     React.useEffect(() => {
         const fetchUser = async () => {
@@ -72,7 +76,7 @@ export default function StudentSelfView() {
                                 {t('student.dailyGoalsDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -98,7 +102,7 @@ export default function StudentSelfView() {
                                 {t('student.studyRhythmDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -124,7 +128,7 @@ export default function StudentSelfView() {
                                 {t('student.learningReflectionDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -150,7 +154,7 @@ export default function StudentSelfView() {
                                 {t('student.myProgressDesc')}
                             </Text>
                         </VStack>
-                        
+
                         <Box
                             p={Theme.spacing.md}
                             sx={{
@@ -170,8 +174,8 @@ export default function StudentSelfView() {
         }
     };
 
-    const allFeatures = showMoreTools 
-        ? [...STUDENT_CORE_FEATURES, ...STUDENT_MORE_TOOLS] 
+    const allFeatures = showMoreTools
+        ? [...STUDENT_CORE_FEATURES, ...STUDENT_MORE_TOOLS]
         : STUDENT_CORE_FEATURES;
 
     return (
@@ -289,6 +293,10 @@ export default function StudentSelfView() {
             </ScrollView>
 
             <ShadowAgentDrawer />
+            <WelcomeModal
+                isOpen={justFinishedOnboarding}
+                onClose={() => setJustFinishedOnboarding(false)}
+            />
         </Box>
     );
 }

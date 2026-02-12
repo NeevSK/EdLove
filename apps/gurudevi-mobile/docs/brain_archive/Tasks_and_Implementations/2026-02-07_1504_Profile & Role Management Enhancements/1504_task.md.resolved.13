@@ -1,0 +1,34 @@
+# Profile & Role Management Enhancements
+
+- [ ] Exploration & Planning
+    - [ ] Locate existing Profile code <!-- id: 0 -->
+    - [ ] Analyze current Role/Auth implementation <!-- id: 1 -->
+    - [ ] Create Implementation Plan <!-- id: 2 -->
+- [ ] Profile Section Basics
+    - [x] Implement Logout functionality <!-- id: 3 -->
+    - [x] Improve Edit button touch area (UI/UX) <!-- id: 4 -->
+- [ ] Role Management
+    - [x] Add "Founder/Development Admin" role <!-- id: 5 -->
+    - [x] Implement Role Dropdown for testing (switch roles without re-login) <!-- id: 6 -->
+- [ ] Profile Expansion & Editing
+    - [x] Implement Full-screen Profile view with Animation <!-- id: 7 -->
+    - [x] Add editable fields: Phone, Bio, Social Links <!-- id: 8 -->
+    - [x] Display Contextual Info: School, Class/Grade, Roles <!-- id: 20 -->
+    - [x] Edit Photo functionality <!-- id: 9 -->
+- [ ] User Stats & Growth (Gamification)
+    - [x] Design & Implement "Impact/Journey" Card <!-- id: 14 -->
+    - [x] Add Role-based Stats (e.g., Classes Taught, Attendance Streak) <!-- id: 15 -->
+    - [x] Add placeholder for Rewards/Badges system <!-- id: 16 -->
+- [ ] QR Code Integration
+    - [x] Create Unified [QRCodeGenerator](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/shared/QRCodeGenerator.tsx#15-42) component <!-- id: 18 -->
+    - [x] Add "Show QR" logic to [InviteManager](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/principal/InviteManager.tsx#50-376) <!-- id: 19 -->
+    - [x] Add "Scan" button to [AuthScreen](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/AuthScreen.tsx#62-601) (Link to existing logic) <!-- id: 10 -->
+    - [x] Create [ScannerModal](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/shared/ScannerModal.tsx#14-107) component <!-- id: 21 -->
+    - [x] Implement "Scan to Join" logic in [AuthScreen](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/AuthScreen.tsx#62-601) <!-- id: 22 -->
+    - [x] Add "My Identity QR" to [IdentityCard](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/profile/IdentityCard.tsx#35-206) (Back side) <!-- id: 11 -->
+- [ ] Additional Enhancements (MoSCoW)
+    - [x] Help & Support Section <!-- id: 17 -->
+    - [ ] "Saved/Favorites" Quick Access (Could Have) <!-- id: 18 -->
+    - [ ] App Settings: Theme/Language/Notifications <!-- id: 19 -->
+    - [x] Fix built-in TS errors in [AuthScreen.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/AuthScreen.tsx) (Gluestack compatibility) <!-- id: 23 -->
+    - [x] Fix Runtime Error in [EditProfileModal](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/profile/EditProfileModal.tsx#42-268) (Missing Import) <!-- id: 24 -->

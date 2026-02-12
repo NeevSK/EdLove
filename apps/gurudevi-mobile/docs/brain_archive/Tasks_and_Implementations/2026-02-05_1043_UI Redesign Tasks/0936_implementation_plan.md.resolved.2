@@ -1,0 +1,47 @@
+# Implementation Plan - Global Header Strategy
+
+## Goal
+Implement a consistent, "Soulful" header across the application that handles greetings ("Ayubowan"), context (School/Role), and navigation requirements, while replacing inconsistent per-screen headers.
+
+## Conflict Mitigation Strategy
+> [!IMPORTANT]
+> To avoid merge conflicts with other developers, we will use a **"Component-First, Integrate-Later"** approach.
+> 1.  **Phase 1**: Build `GlobalHeader` as a generic component. (Touches 0 existing files).
+> 2.  **Phase 2**: Integrate into **one** screen ([ClassroomScreen](file:///C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/ClassroomScreen.tsx#30-101)) to test. (Touches 1 file).
+> 3.  **Phase 3**: Roll out to other screens one by one.
+
+## Proposed Changes
+
+### Components [NEW]
+#### [NEW] [GlobalHeader.tsx](file:///C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/shared/GlobalHeader.tsx)
+-   **Purpose**: A reusable header component.
+-   **Props**:
+    -   `title`: string (optional, overrides default)
+    -   `showGreeting`: boolean (for Home/Dashboard)
+    -   `rightAction`: ReactNode (optional, for settings/filter icons)
+    -   `backButton`: boolean (default false)
+-   **Features**:
+    -   Displays "Ayubowan, [Name]" if `showGreeting` is true.
+    -   Displays School Name/Role as subtitle.
+    -   Uses `Theme.colors.voidIndigo` background to blend with screens.
+
+### Screens [MODIFY]
+#### [MODIFY] [ClassroomScreen.tsx](file:///C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/ClassroomScreen.tsx)
+-   **Changes**:
+    -   Remove [useUserRole](file:///C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/hooks/useUserRole.ts#17-23) hook calls that are just for the header title (move logic to GlobalHeader if possible, or pass props).
+    -   Replace `Heading` with `<GlobalHeader title="..." />`.
+
+#### [MODIFY] [SelfScreen.tsx](file:///C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/SelfScreen.tsx)
+-   **Changes**:
+    -   Replace top header area with `<GlobalHeader showGreeting={true} />`.
+
+#### [MODIFY] [CommunityScreen.tsx](file:///C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/CommunityScreen.tsx)
+-   **Changes**:
+    -   Integrate `<GlobalHeader title={t('tabs.community')} />`.
+
+## Verification Plan
+
+### Manual Verification
+-   **Greeting Logic**: Verify "Ayubowan" appears correctly based on time of day (if we add that logic) or just the static greeting.
+-   **Role Display**: Check if "Pro Principal" or "Student" appears correctly in the subtitle.
+-   **Layout**: Ensure no "double headers" (React Navigation header should be hidden, which it is in [TabNavigator](file:///C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/navigation/TabNavigator.tsx#38-159)).

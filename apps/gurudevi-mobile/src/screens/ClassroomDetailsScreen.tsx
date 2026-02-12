@@ -19,7 +19,7 @@ import {
     ModalFooter,
     Input,
     InputField,
-} from '@gluestack-ui/themed';
+} from '@/ui';
 import {
     Users,
     BookOpen,
