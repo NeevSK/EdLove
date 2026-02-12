@@ -1,71 +1,195 @@
 /* Import Google Fonts - EdLove Typography */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Fira+Code&display=swap');
 
 @import "tailwindcss";
 
-@keyframes float {
-
-  0%,
-  100% {
-    transform: translateY(0px);
-    opacity: 0.2;
-  }
-
-  50% {
-    transform: translateY(-30px);
-    opacity: 0.5;
-  }
-}
-
-.animate-float {
-  animation: float 5s ease-in-out infinite;
-}
-
 @theme {
-  --color-warmPaper: hsl(38, 40%, 96%);
-  --color-midnightInk: hsl(230, 40%, 15%);
-  --color-agedGold: hsl(35, 50%, 55%);
-  --color-forestSlate: hsl(150, 20%, 40%);
+  /* Typography */
+  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'Lora', 'Georgia', 'Times New Roman', serif;
+  --font-mono: 'Fira Code', 'Courier New', monospace;
 
-  --font-serif: "Cormorant Garamond", serif;
-  --font-sans: "Outfit", sans-serif;
+  /* Type Scale (Modular Scale: 1.250) */
+  --text-xs: 0.64rem;
+  --text-sm: 0.8rem;
+  --text-base: 1.1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.563rem;
+  --text-2xl: 1.953rem;
+  --text-3xl: 2.441rem;
+  --text-4xl: 3.052rem;
+  --text-5xl: 3.815rem;
 
-  --spacing-nav-height: 200px;
-  --spacing-section-gap: 60px;
-  --color-warmGrey: hsl(38, 20%, 90%);
+  /* Font Weights */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line Heights */
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+
+  /* Spacing Scale (8px base) */
+  --space-0: 0;
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-5: 2.5rem;
+  --space-6: 3rem;
+  --space-7: 4rem;
+  --space-8: 6rem;
+  --space-9: 8rem;
+  --space-10: 12rem;
+
+  /* Content Widths */
+  --content-xs: 20rem;
+  --content-sm: 30rem;
+  --content-md: 45rem;
+  --content-lg: 65rem;
+  --content-xl: 80rem;
+
+  /* Animation Durations */
+  --duration-instant: 100ms;
+  --duration-fast: 200ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-slower: 800ms;
+  --duration-slowest: 1200ms;
+
+  /* Colors - Foundation */
+  --color-gold: #e7cb16ff;
+
+  /* Legacy mapping for compatibility during transition */
+  --color-midnightInk: #2D3561;
+  --color-warmPaper: #FAF9F6;
+  --color-agedGold: #e7cb16ff;
+
+  --font-serif: var(--font-body);
+  --font-sans: var(--font-heading);
+
+  /* Navigation height for fixed header */
+  --spacing-nav-height: 80px;
 }
 
 /* Base Styles */
 html {
   background-color: var(--color-warmPaper);
   color: var(--color-midnightInk);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   scroll-behavior: smooth;
+  font-size: 16px;
 }
 
 body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  line-height: var(--leading-normal);
 }
 
 h1,
 h2,
 h3,
 h4,
-.font-serif {
-  font-family: var(--font-serif);
-  font-weight: 500;
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.025em;
 }
 
-/* The Sanctuary Grid */
+p {
+  margin-bottom: var(--space-3);
+}
+
+/* Contextual States (added to parent container or body) */
+
+/* Cosmic Context */
+.context-cosmic {
+  --theme-bg: #0A1F3D;
+  --theme-text: #FFFFFF;
+  --theme-accent: #4A90E2;
+  --theme-gold: #D4A574;
+  background: linear-gradient(180deg, #0A1F3D 0%, #1E3A5F 100%);
+  color: var(--theme-text);
+}
+
+/* Diagnostic Context */
+.context-diagnostic {
+  --theme-bg: #F5F5F5;
+  --theme-text: #2C3E50;
+  --theme-accent: #3498DB;
+  --theme-gold: #D4A574;
+  background: var(--theme-bg);
+  color: var(--theme-text);
+}
+
+/* Library Context */
+.context-library {
+  --theme-bg: #FAF9F6;
+  --theme-text: #333333;
+  --theme-accent: #A8C5D6;
+  --theme-gold: #D4A574;
+  background: var(--theme-bg);
+  color: var(--theme-text);
+}
+
+/* Community Context */
+.context-community {
+  --theme-bg: #FFF8F0;
+  --theme-text: #2D2D2D;
+  --theme-accent: #E8B4B8;
+  --theme-gold: #D4A574;
+  background: var(--theme-bg);
+  color: var(--theme-text);
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+/* Utilities */
+/* The Floating Pill - Refined for Operational Identity */
+.floating-pill {
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(45, 53, 97, 0.1);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03),
+    0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  border-radius: 24px;
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.floating-pill:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: var(--color-gold);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
 .sanctuary-container {
-  max-width: 1400px;
+  max-width: var(--content-xl);
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 var(--space-4);
 }
 
-/* Animations */
 @keyframes fade-in-up {
   from {
     opacity: 0;
@@ -79,94 +203,5 @@ h4,
 }
 
 .animate-fade-in-up {
-  animation: fade-in-up 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
-/* The Floating Pill - Refined for Operational Identity */
-.floating-pill {
-  /* background managed by component for opacity control */
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(45, 53, 97, 0.1);
-  /* Subtle MidnightInk border */
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.05),
-    0 2px 4px -1px rgba(0, 0, 0, 0.03),
-    0 10px 15px -3px rgba(0, 0, 0, 0.05);
-  border-radius: 100px;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.floating-pill:hover {
-  background: rgba(255, 255, 255, 0.85);
-  border-color: var(--color-agedGold);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-/* Micro-Shine */
-.shine-effect {
-  position: relative;
-  overflow: hidden;
-}
-
-.shine-effect::after {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg,
-      transparent,
-      rgba(255, 255, 255, 0.1),
-      transparent);
-  transform: rotate(45deg);
-  transition: 0.8s;
-}
-
-.shine-effect:hover::after {
-  left: 100%;
-}
-
-/* Utilities */
-@utility animate-fade-in {
-  animation: fadeIn 1.5s ease-out forwards;
-  opacity: 0;
-}
-
-@utility animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-/* Keyframes */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-20px);
-  }
-
-  100% {
-    transform: translateY(0px);
-  }
-}
-
-/* Stars Background */
-.cosmos-bg {
-  background: radial-gradient(circle at 50% 10%, #E8F4F8 0%, transparent 20%),
-    radial-gradient(circle at 80% 40%, #E8B4B8 0%, transparent 15%),
-    linear-gradient(to bottom, #F5F1E8 0%, #E8F4F8 100%);
+  animation: fade-in-up var(--duration-slower) cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }

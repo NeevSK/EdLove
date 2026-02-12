@@ -586,7 +586,32 @@ Different content types need different visual languages:
 
 ---
 
-## PART III: IMPLEMENTATION GUIDANCE
+## PART III: MOBILE RESPONSIVENESS & ACCESSIBILITY
+
+### The Mobile-First Mandate
+
+**"The sanctuary must fit in the palm of a hand."**
+
+Edlove.org is not "desktop with mobile fixes." It is a mobile-first experience. Many of our users (especially educators in Sri Lanka) access the web primarily via mobile devices.
+
+#### Navigation (The Mobile Menu)
+- **Thumb-Friendly**: Navigation triggers and links must be easily reachable by a thumb (bottom-heavy or centered).
+- **High Contrast**: Mobile menu must use `--color-warmPaper` background with high-contrast text to ensure readability in sunlight.
+- **Full Screen Overlay**: The menu should be a full-screen, focused experience that removes distractions.
+- **Aria Support**: All mobile-only interactions must have correct ARIA labels.
+
+#### Layout & Fluidity
+- **Fluid Type**: Use `clamp()` or modular scales that adjust based on viewport width.
+- **Horizontal Padding**: Minimum `var(--space-2)` (16px) on all mobile viewports.
+- **Touch Targets**: Minimum 44x44px for all interactive elements.
+
+#### Performance on Mobile
+- **Image Optimization**: Use WebP and responsive sizes.
+- **Zero-JS where possible**: Most interactive elements should use CSS transitions rather than heavy JS.
+
+---
+
+## PART IV: IMPLEMENTATION GUIDANCE
 
 ### For Cursor AI Development
 

@@ -525,6 +525,25 @@ ALGOLIA_APP_ID=your_id_here
 
 ---
 
+## MOBILE TECHNICAL CONSIDERATIONS
+
+### ClientRouter & Scripts
+When using `<ClientRouter />`, standard scripts only run once on the initial page load. Interactive elements like the mobile menu MUST be initialized on every page transition.
+
+**Pattern for interactive components:**
+```javascript
+document.addEventListener('astro:page-load', () => {
+  // Initialize mobile menu, sliders, etc.
+});
+```
+
+### Touch Interactivity
+- **Avoid `:hover` for critical functionality**: Hover states don't exist on mobile. Use active states or clear visual cues.
+- **FastClick**: Astro/Tailwind handle this well, but ensure no "ghost clicks" on mobile triggers.
+- **Prevent Scroll Leak**: When the mobile menu is open, the body scroll should be disabled (`overflow: hidden`).
+
+---
+
 *"Build simply. Build well. Build for everyone."*
 
 **Last Updated**: February 3, 2026  

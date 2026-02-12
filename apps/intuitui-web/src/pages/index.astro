@@ -1,22 +1,70 @@
 ---
-import '../styles/global.css';
+import MainLayout from '../layouts/MainLayout.astro';
+import SystemsGrid from '../components/SystemsGrid.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Intuitui Labs | Systems Intelligence</title>
-	</head>
-	<body class="flex items-center justify-center min-h-screen">
-		<div class="text-center space-y-4">
-			<h1 class="text-5xl font-mono font-bold tracking-tighter">intuitui.labs</h1>
-			<p class="text-lg font-light opacity-80">Designing Systems That Breathe</p>
-            <div class="pt-8">
-                <p class="text-xs font-mono uppercase tracking-widest bg-black text-white px-2 py-1 inline-block">Under Construction</p>
-            </div>
+<MainLayout title="Intuitui Labs | Systems Intelligence">
+	<section class="space-y-24">
+		<!-- Hero Section -->
+		<div class="max-w-3xl space-y-8">
+			<p class="mono-label">Systems Intelligence Studio</p>
+			<h1 class="text-6xl md:text-8xl font-bold leading-[0.9] tracking-tighter">
+				Designing <br/> 
+				<span class="text-brand-secondary">Systems</span> <br/>
+				That Breathe.
+			</h1>
+			<p class="text-xl md:text-2xl text-brand-secondary font-light max-w-2xl">
+				We transform Sri Lankan workflows through deep research, sensemaking, and humane technology.
+			</p>
 		</div>
-	</body>
-</html>
+
+		<!-- Core Pillars -->
+		<div class="space-y-12">
+			<div class="flex items-end justify-between border-b border-black/5 pb-4">
+				<h2 class="text-sm font-mono uppercase tracking-[0.2em]">Operating Blueprint</h2>
+				<span class="text-[10px] opacity-30 font-mono">01 // PILLARS</span>
+			</div>
+
+			<SystemsGrid columns={3}>
+				<div class="space-y-4">
+					<h3 class="text-lg">Sensemaking</h3>
+					<p class="text-sm text-brand-secondary">Philosophy, ethics, and systems thinking to establish clarity and direction.</p>
+				</div>
+				<div class="space-y-4">
+					<h3 class="text-lg">Field Reality</h3>
+					<p class="text-sm text-brand-secondary">Deep ethnography and workflow mapping to understand contextual bottlenecks.</p>
+				</div>
+				<div class="space-y-4">
+					<h3 class="text-lg">Innovation</h3>
+					<p class="text-sm text-brand-secondary">Designing elegant interventions and applied AI tools that empower people.</p>
+				</div>
+			</SystemsGrid>
+		</div>
+
+		<!-- Status / Mission -->
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
+			<div class="aspect-square bg-black/[0.02] border border-black/5 flex items-center justify-center relative overflow-hidden">
+				<!-- Abstract System Diagram Representation -->
+				<div class="absolute inset-12 border border-black/10 rounded-full animate-pulse"></div>
+				<div class="absolute inset-24 border border-black/10 rounded-full"></div>
+				<div class="absolute inset-36 border border-black/10 rounded-full"></div>
+				<div class="w-1 h-1 bg-brand-accent rounded-full"></div>
+                <div class="absolute bottom-6 left-6 mono-label opacity-20 text-[8px]">CORE_LOGIC_01v</div>
+			</div>
+			<div class="space-y-8">
+				<h2 class="text-4xl font-bold tracking-tight">Cultivating Clarity in a Complex World.</h2>
+				<p class="text-brand-secondary leading-relaxed">
+					Intuitui Labs operates at the intersection of symbolic culture and material infrastructure. We don't just build apps; we design the systems that allow organizations and ecosystems to flourish with dignity.
+				</p>
+				<ul class="space-y-4">
+					{['Education Systems', 'SME Modernization', 'Agriculture & Ecology', 'Knowledge Infrastructure'].map(item => (
+						<li class="flex items-center gap-4 text-sm font-mono group">
+							<span class="w-2 h-px bg-black/20 group-hover:w-4 group-hover:bg-brand-accent transition-all"></span>
+							{item}
+						</li>
+					))}
+				</ul>
+			</div>
+		</div>
+	</section>
+</MainLayout>

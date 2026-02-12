@@ -1,12 +1,42 @@
 @import "tailwindcss";
 
+@theme {
+    --color-brand-background: #fafafa;
+    --color-brand-primary: #1e293b;
+    --color-brand-secondary: #64748b;
+    --color-brand-accent: #020617;
+
+    --font-sans: "Outfit", "Inter", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", "Fira Code", monospace;
+}
+
 :root {
-    --color-primary: #0f172a;
-    --color-secondary: #ffffff;
+    --color-primary: #1e293b;
+    --color-secondary: #fafafa;
 }
 
 body {
-    background-color: var(--color-secondary);
-    color: var(--color-primary);
-    font-family: system-ui, sans-serif;
+    background-color: var(--color-brand-background);
+    color: var(--color-brand-primary);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    @apply font-bold tracking-tight text-brand-accent;
+}
+
+.mono-label {
+    @apply font-mono text-[10px] uppercase tracking-[0.2em] opacity-50;
+}
+
+/* Custom Grid Utility */
+.systems-grid {
+    background-image: radial-gradient(circle, #e2e8f0 1px, transparent 1px);
+    background-size: 32px 32px;
 }

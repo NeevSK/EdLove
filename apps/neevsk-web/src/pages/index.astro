@@ -1,24 +1,65 @@
 ---
-import '../styles/global.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navigation from '../components/Navigation.astro';
+import RealitySwitch from '../components/RealitySwitch.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>NeevSK | Architect of EdLove</title>
-	</head>
-	<body class="flex items-center justify-center min-h-screen">
-		<div class="text-center space-y-6">
-			<h1 class="text-5xl font-serif">NeevSK</h1>
-			<p class="text-lg italic opacity-80 max-w-md mx-auto">
-                "Writing the code, designing the soul."
-            </p>
-            <div class="pt-8">
-                <a href="https://edlove.org" class="text-xs uppercase tracking-widest border-b border-black/20 pb-1 hover:border-black transition-colors">Return to EdLove</a>
-            </div>
-		</div>
-	</body>
-</html>
+<BaseLayout title="Home">
+	<RealitySwitch />
+	
+	<main class="max-w-4xl mx-auto px-6 pb-24">
+		<Navigation />
+		
+		<section class="mt-24 mb-16">
+			<h1 class="text-xs uppercase tracking-[0.5em] font-mono text-ink/50 dark:text-tungsten/50 mb-4 overflow-hidden">
+				<span class="inline-block animate-reveal">NeevSk // Personal Archive</span>
+			</h1>
+			
+			<div class="relative group">
+				<h2 class="text-5xl md:text-7xl font-serif dark:font-mono tracking-tight leading-tight transition-all duration-700">
+					Existential <br />
+					<span class="text-flame dark:text-glow-blue italic dark:not-italic">Cyberneticist</span>
+				</h2>
+				
+				<div class="mt-8 flex flex-col md:flex-row gap-8 items-start">
+					<div class="flex-1">
+						<p class="text-lg md:text-xl font-serif dark:font-mono leading-relaxed text-ink/80 dark:text-tungsten/80">
+							INFJ 4w5. Epistemic Architect. Bohemian Philosopher. <br />
+							Developing the soul behind the machines at EdLove.
+						</p>
+						
+						<div class="mt-12 p-8 border border-ink/5 dark:border-tungsten/5 bg-ink/[0.02] dark:bg-tungsten/[0.02]">
+							<h3 class="text-sm font-mono uppercase tracking-widest mb-4 opacity-50">Current Reality Check</h3>
+							<p class="font-serif italic dark:font-mono dark:not-italic">
+								"Everything I want to show to the world is a fracture of what I am. This site is the uncollapsed wave function of my existence."
+							</p>
+						</div>
+					</div>
+					
+					<div class="w-full md:w-64 aspect-square border border-ink/10 dark:border-tungsten/10 overflow-hidden group">
+						<div class="w-full h-full bg-ink/5 dark:bg-tungsten/5 flex items-center justify-center p-8 grayscale group-hover:grayscale-0 transition-all duration-700">
+							<svg xmlns="http://www.w3.org/2000/svg" class="w-full h-full opacity-20 group-hover:opacity-40 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M12 2v20"/><path d="M2 12h20"/><circle cx="12" cy="12" r="10"/><path d="m16 8-8 8"/><path d="m8 8 8 8"/>
+							</svg>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<footer class="mt-32 pt-12 border-t border-ink/5 dark:border-tungsten/5 flex justify-between items-center opacity-40 hover:opacity-100 transition-opacity">
+			<p class="text-[10px] font-mono uppercase tracking-widest">© 2026 // NEEVSK.ORG</p>
+			<p class="text-[10px] font-mono uppercase tracking-widest">Coherence Initialized</p>
+		</footer>
+	</main>
+</BaseLayout>
+
+<style>
+	@keyframes reveal {
+		from { transform: translateY(100%); }
+		to { transform: translateY(0); }
+	}
+	.animate-reveal {
+		animation: reveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	}
+</style>

@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navigation from '../components/Navigation.astro';
+import RealitySwitch from '../components/RealitySwitch.astro';
+
+const experience = [
+	{
+		role: "Founder & Lead Architect",
+		company: "Polymath Platform",
+		period: "2024 - Present",
+		details: "Orchestrating the development of decentralized and intelligent educational systems."
+	},
+	{
+		role: "Epistemic Architect",
+		company: "EdLove",
+		period: "2023 - 2024",
+		details: "Designing interaction models for human-AI collaboration in learning environments."
+	}
+];
+
+const skills = ["Systems Thinking", "Cybernetics", "AI Orchestration", "Astro", "TypeScript", "UI/UX Design"];
+---
+
+<BaseLayout title="CV">
+	<RealitySwitch />
+	
+	<main class="max-w-3xl mx-auto px-6 pb-24">
+		<Navigation />
+		
+		<header class="mt-24 mb-16 pb-12 border-b border-ink/10 dark:border-tungsten/10">
+			<h1 class="text-6xl font-serif dark:font-mono mb-6">NeevSk</h1>
+			<p class="text-xl font-serif dark:font-mono italic dark:not-italic opacity-70">
+				Conceptual Engineer & Philosopher
+			</p>
+		</header>
+
+		<section class="mb-20">
+			<h2 class="text-xs uppercase tracking-[0.5em] font-mono text-flame dark:text-glow-blue mb-12">Experience</h2>
+			<div class="space-y-12">
+				{experience.map(job => (
+					<div>
+						<div class="flex justify-between items-baseline mb-2">
+							<h3 class="text-xl font-serif dark:font-mono">{job.role}</h3>
+							<span class="text-xs font-mono opacity-40">{job.period}</span>
+						</div>
+						<p class="text-sm font-mono uppercase tracking-wider mb-4 opacity-60">{job.company}</p>
+						<p class="font-serif dark:font-mono italic dark:not-italic text-ink/70 dark:text-tungsten/70">
+							{job.details}
+						</p>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<section>
+			<h2 class="text-xs uppercase tracking-[0.5em] font-mono text-flame dark:text-glow-blue mb-12">Skills</h2>
+			<div class="flex flex-wrap gap-x-12 gap-y-8">
+				{skills.map(skill => (
+					<div class="group">
+						<span class="text-sm font-mono opacity-60 group-hover:opacity-100 transition-opacity">//{skill}</span>
+					</div>
+				))}
+			</div>
+		</section>
+	</main>
+</BaseLayout>

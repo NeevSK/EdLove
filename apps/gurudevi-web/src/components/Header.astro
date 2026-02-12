@@ -1,0 +1,40 @@
+---
+const navItems = [
+  { name: 'Home', href: '/' },
+  { name: 'About', href: '/about' },
+  { name: 'Thuthimal', href: '/thuthimal' },
+];
+---
+
+<header class="w-full py-6 px-8 flex justify-between items-center bg-white/50 backdrop-blur-md sticky top-0 z-50 border-b border-mud-brown/10">
+  <div class="flex items-center space-x-2">
+    <div class="w-10 h-10 bg-sanctuary-saffron rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+      G
+    </div>
+    <span class="text-2xl font-bold tracking-tight text-charcoal-truth">Gurudevi</span>
+  </div>
+  
+  <nav>
+    <ul class="flex space-x-8">
+      {navItems.map((item) => (
+        <li>
+          <a 
+            href={item.href} 
+            class="text-mud-brown hover:text-sanctuary-saffron transition-colors font-medium"
+          >
+            {item.name}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+
+  <div class="hidden md:block">
+    <a 
+      href="https://gurudevi.lk" 
+      class="bg-sanctuary-saffron text-sacred-white px-6 py-2 rounded-full font-semibold shadow-md hover:bg-peacock-blue transition-all transform hover:scale-105"
+    >
+      Open App
+    </a>
+  </div>
+</header>

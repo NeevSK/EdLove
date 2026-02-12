@@ -1,0 +1,68 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+---
+
+<MainLayout title="About | Intuitui Labs">
+	<div class="max-w-4xl space-y-24">
+		<section class="space-y-8">
+			<p class="mono-label">Strategic Identity</p>
+			<h1 class="text-5xl md:text-7xl font-bold tracking-tighter">Vision & Mission</h1>
+			<p class="text-2xl text-brand-secondary font-light leading-snug">
+				A Sri Lanka where human systems are clear, dignified, efficient, and supported by humane technology.
+			</p>
+		</section>
+
+		<section class="grid grid-cols-1 md:grid-cols-2 gap-16">
+			<div class="space-y-6">
+				<h2 class="mono-label !opacity-100">Our Nature</h2>
+				<p class="text-brand-secondary">
+					Intuitui Labs is structured as a hybrid research–innovation studio. We combine systems research, foresight, sensing, and practical intervention design to solve real-world bottlenecks.
+				</p>
+			</div>
+			<div class="space-y-6">
+				<h2 class="mono-label !opacity-100">Positioning</h2>
+				<p class="text-brand-secondary">
+					We integrate philosophy and systems thinking with field reality and practical tech. This depth allows us to navigate the gaps between cultural intuition and technical execution.
+				</p>
+			</div>
+		</section>
+
+		<section class="space-y-12">
+			<div class="flex items-end justify-between border-b border-black/5 pb-4">
+				<h2 class="text-sm font-mono uppercase tracking-[0.2em]">Functional Units</h2>
+				<span class="text-[10px] opacity-30 font-mono">02 // STRUCTURE</span>
+			</div>
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-black/5 border border-black/5">
+				{[
+					{ title: "Systems & Insights", desc: "Research, sensemaking, and opportunity mapping." },
+					{ title: "Design & Transformation", desc: "Intervention design and systems architecture." },
+					{ title: "Applied Technology", desc: "AI tools, automation, and micro-app development." },
+					{ title: "Communication & Culture", desc: "Storytelling, diagrams, and clarity artifacts." }
+				].map(unit => (
+					<div class="bg-brand-background p-10 space-y-4 hover:bg-white transition-colors group">
+						<h3 class="text-xl font-bold group-hover:text-brand-accent">{unit.title}</h3>
+						<p class="text-sm text-brand-secondary">{unit.desc}</p>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<section class="bg-black text-white p-12 md:p-24 space-y-8">
+			<h2 class="text-3xl md:text-5xl font-bold tracking-tight">The Growth Model</h2>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-12 pt-12">
+				<div class="space-y-4 opacity-100 italic">
+					<span class="text-xs font-mono opacity-50">Phase 01</span>
+					<p class="text-lg">Studio Stage: Building symbolic capital and flagship micro-projects.</p>
+				</div>
+				<div class="space-y-4 opacity-50">
+					<span class="text-xs font-mono">Phase 02</span>
+					<p class="text-lg">Labs Stage: Expanding into a multi-unit ecosystem with partners.</p>
+				</div>
+				<div class="space-y-4 opacity-50">
+					<span class="text-xs font-mono">Phase 03</span>
+					<p class="text-lg">Institute/Group Stage: Holding structure for specialized sub-labs.</p>
+				</div>
+			</div>
+		</section>
+	</div>
+</MainLayout>

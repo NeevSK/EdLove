@@ -1,0 +1,18 @@
+---
+interface Props {
+	columns?: number;
+	className?: string;
+}
+
+const { columns = 3, className = "" } = Astro.props;
+---
+
+<div class={`grid grid-cols-1 md:grid-cols-${columns} gap-px bg-black/5 border border-black/5 ${className}`}>
+	<slot />
+</div>
+
+<style>
+	div > :global(*) {
+		@apply bg-brand-background p-8;
+	}
+</style>

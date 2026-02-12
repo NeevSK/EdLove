@@ -16,15 +16,15 @@ import { ClientRouter } from 'astro:transitions';
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
 		
-		<!-- Google Fonts: Cormorant Garamond & Outfit -->
+		<!-- Google Fonts: Inter (headings/sans) & Lora (body/serif) -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 		
 		<title>EdLove | The Educational Transformation Ecosystem</title>
 		<ClientRouter />
 	</head>
-	<body class="antialiased min-h-screen flex flex-col bg-transparent text-[var(--color-midnightInk)]">
+	<body class="antialiased min-h-screen flex flex-col bg-[var(--color-warmPaper)] text-[var(--color-midnightInk)] selection:bg-[var(--color-gold)] selection:text-[var(--color-midnightInk)]">
 		<Navigation />
         <SidePanel />
         <CenterModal />

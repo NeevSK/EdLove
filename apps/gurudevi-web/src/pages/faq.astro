@@ -1,0 +1,58 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="FAQ & Support">
+	<Header />
+	
+	<main class="flex-grow py-24 px-8">
+		<div class="max-w-4xl mx-auto space-y-16">
+			<div class="text-center space-y-4">
+				<h1 class="text-5xl font-bold text-charcoal-truth">FAQ & Institutional Support</h1>
+				<p class="text-xl text-mud-brown">Answers to common questions about joining the Gurudevi ecology.</p>
+			</div>
+
+			<div class="space-y-8">
+				{[
+					{
+						q: "How can my school join Gurudevi?",
+						a: "During our Alpha phase, we are onboarding schools through an invite-only transition. If you are a Principal or School Head, please reach out to us at institutional@gurudevi.lk to request an invitation code."
+					},
+					{
+						q: "Is teacher data visible to the Principal?",
+						a: "No. Our 'Law of Different Views' ensures that Principals see school-wide patterns (like resource needs or aggregated attendance trends) to support the teacher, but individual personal reflections and inner explorations are strictly private."
+					},
+					{
+						q: "Does the app work offline?",
+						a: "Yes. We understand the 'rooted in mud' reality of many teachers. The mobile app is designed to work with intermittent internet, syncing data when a connection becomes available."
+					},
+					{
+						q: "What is the cost for public schools?",
+						a: "Gurudevi is committed to the Sri Lankan educational ecology. We offer a generous free tier for all public school teachers. Pro features can be enabled through our Thuthimal (Gratitude) economy."
+					},
+					{
+						q: "Is there a desktop version?",
+						a: "Currently, we focus on a mobile-first experience because that is where teachers are. This website serves as the official home and informational hub, but the core 'sanctuary' features are in the mobile app."
+					}
+				].map((item) => (
+					<div class="p-8 bg-white rounded-3xl border border-mud-brown/10 shadow-sm space-y-4">
+						<h3 class="text-xl font-bold text-peacock-blue">{item.q}</h3>
+						<p class="text-mud-brown leading-relaxed">{item.a}</p>
+					</div>
+				))}
+			</div>
+
+			<section class="bg-void-indigo text-sacred-white p-12 rounded-[3rem] text-center space-y-8">
+				<h2 class="text-3xl font-bold">Still have questions?</h2>
+				<p class="opacity-80">We are here to help you navigate the topology of your school's needs.</p>
+				<a href="mailto:support@gurudevi.lk" class="inline-block px-10 py-4 bg-sanctuary-saffron text-white rounded-full font-bold hover:bg-peacock-blue transition-all">
+					Contact Support
+				</a>
+			</section>
+		</div>
+	</main>
+	
+	<Footer />
+</Layout>

@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navigation from '../components/Navigation.astro';
+import RealitySwitch from '../components/RealitySwitch.astro';
+
+const entries = [
+	{ date: "2026.02.12", title: "Decoherence as a Lifestyle", category: "Essays" },
+	{ date: "2026.01.25", title: "The Soul of the Machine", category: "Philosophy" },
+	{ date: "2025.12.10", title: "Cybernetic Feedback Loops in Ecology", category: "Notes" },
+];
+---
+
+<BaseLayout title="Archive">
+	<RealitySwitch />
+	
+	<main class="max-w-4xl mx-auto px-6 pb-24">
+		<Navigation />
+		
+		<header class="mt-24 mb-24">
+			<h1 class="text-xs uppercase tracking-[0.8em] font-mono text-ink/40 dark:text-tungsten/40 mb-6">Digital Archive</h1>
+			<p class="text-4xl font-serif dark:font-mono leading-tight">
+				A collection of uncollapsed thoughts and epistemic artifacts.
+			</p>
+		</header>
+
+		<div class="space-y-4">
+			{entries.map(entry => (
+				<div class="group flex gap-8 py-6 border-b border-ink/5 dark:border-tungsten/5 hover:bg-ink/[0.01] dark:hover:bg-tungsten/[0.01] transition-colors">
+					<span class="text-[10px] font-mono opacity-30 mt-1.5">{entry.date}</span>
+					<div class="flex-1">
+						<h2 class="text-xl font-serif dark:font-mono group-hover:text-flame dark:group-hover:text-glow-blue transition-colors">
+							{entry.title}
+						</h2>
+						<span class="text-[10px] uppercase tracking-widest font-mono opacity-40 mt-1 block">//{entry.category}</span>
+					</div>
+					<div class="hidden md:block opacity-0 group-hover:opacity-20 transition-opacity">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+					</div>
+				</div>
+			))}
+		</div>
+	</main>
+</BaseLayout>

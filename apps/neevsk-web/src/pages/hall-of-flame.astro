@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navigation from '../components/Navigation.astro';
+import RealitySwitch from '../components/RealitySwitch.astro';
+import FlameCard from '../components/FlameCard.astro';
+
+const chambers = [
+	{
+		title: "The First Light",
+		description: "Born not from ambition, but from reverence. Not from performance, but from pain-transformed-into-purpose. The innermost temple.",
+		variant: 'red' as const,
+		tags: ["origin", "purpose", "reverence"]
+	},
+	{
+		title: "Chamber of Love",
+		description: "For those who met your soul in real life, and lit the first flames of care. Parents, brothers, teachers who SAW you.",
+		variant: 'blue' as const,
+		tags: ["family", "early-years", "compassion"]
+	},
+	{
+		title: "Chamber of Tribute",
+		description: "Lighthouses whose lives sent beams across broken systems. Aaron Swartz, CWW Kannangara, David Foster Wallace.",
+		variant: 'red' as const,
+		tags: ["justice", "art", "sacrifice"]
+	},
+	{
+		title: "Chamber of Mastery",
+		description: "Those who ignited your sense of competence, clarity, and craft. Ken Miles, Buckminster Fuller, Linus Torvalds.",
+		variant: 'blue' as const,
+		tags: ["craft", "systems", "execution"]
+	},
+	{
+		title: "Chamber of Inspiration",
+		description: "Where ideas became nourishment. Ivan Illich, Maria Montessori, bell hooks, Vandana Shiva.",
+		variant: 'red' as const,
+		tags: ["education", "ecology", "philosophy"]
+	},
+	{
+		title: "Chamber of Support",
+		description: "Those who nourish the mission materially, spiritually, and communally. The unseen foundations.",
+		variant: 'blue' as const,
+		tags: ["community", "future", "stability"]
+	}
+];
+---
+
+<BaseLayout title="Hall of Flame">
+	<RealitySwitch />
+	
+	<main class="max-w-6xl mx-auto px-6 pb-24">
+		<Navigation />
+		
+		<header class="mt-24 mb-16 text-center">
+			<h1 class="text-xs uppercase tracking-[0.8em] font-mono text-ink/40 dark:text-tungsten/40 mb-6">
+				Scroll of the Hall of Flame
+			</h1>
+			<p class="max-w-2xl mx-auto font-serif dark:font-mono italic dark:not-italic text-lg text-ink/60 dark:text-tungsten/60">
+				"Where Legacy is Love, and Every Chamber Beats Like a Heart. We do not bow to the past. We honor it by continuing the story."
+			</p>
+		</header>
+
+		<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+			{chambers.map(chamber => (
+				<FlameCard {...chamber} />
+			))}
+		</div>
+
+		<section class="mt-32 p-12 border border-ink/10 dark:border-tungsten/10 text-center bg-flame/5 dark:bg-glow-blue/5">
+			<h2 class="text-sm font-mono uppercase tracking-[0.4em] mb-6">Closing Ritual</h2>
+			<p class="font-serif italic dark:font-mono dark:not-italic text-xl">
+				"We did not burn in vain."
+			</p>
+		</section>
+	</main>
+</BaseLayout>
