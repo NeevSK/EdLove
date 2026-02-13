@@ -6,7 +6,7 @@
 
 ## Proposed Changes
 
-### [NEW] [src/ui/index.ts](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/ui/index.ts)
+### [NEW] [src/ui/index.ts](../../src/ui/index.ts)
 
 Create the main UI abstraction layer with direct imports from Gluestack UI components.
 
@@ -21,7 +21,7 @@ Create the main UI abstraction layer with direct imports from Gluestack UI compo
 
 ---
 
-### [NEW] [src/ui/README.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/ui/README.md)
+### [NEW] [src/ui/README.md](../../src/ui/README.md)
 
 Create usage guide and documentation for the UI abstraction layer.
 
@@ -33,7 +33,7 @@ Create usage guide and documentation for the UI abstraction layer.
 
 ---
 
-### [MODIFY] [tsconfig.json](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/tsconfig.json)
+### [MODIFY] [tsconfig.json](../../tsconfig.json)
 
 Add path alias for clean imports.
 
@@ -50,7 +50,7 @@ Add path alias for clean imports.
 
 ---
 
-### [MODIFY] [App.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/App.tsx)
+### [MODIFY] [App.tsx](../../App.tsx)
 
 Migrate from direct Gluestack imports to UI abstraction layer.
 
@@ -68,7 +68,7 @@ import { GluestackUIProvider, Box, Spinner, Center } from '@/ui';
 
 ---
 
-### [MODIFY] [src/screens/AuthScreen.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/AuthScreen.tsx)
+### [MODIFY] [src/screens/AuthScreen.tsx](../../src/screens/AuthScreen.tsx)
 
 Migrate from direct Gluestack imports to UI abstraction layer.
 
@@ -76,7 +76,7 @@ Migrate from direct Gluestack imports to UI abstraction layer.
 
 ---
 
-### [MODIFY] [src/screens/OnboardingScreen.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/OnboardingScreen.tsx)
+### [MODIFY] [src/screens/OnboardingScreen.tsx](../../src/screens/OnboardingScreen.tsx)
 
 Migrate from direct Gluestack imports to UI abstraction layer.
 

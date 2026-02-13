@@ -4,8 +4,8 @@
 You are tasked with establishing the foundational **Global Boundaries and Behavior** for the **Gurudevi Mobile App**. 
 
 ### 🗺️ Context & Guidance
-- **Primary Reference**: Follow the [Environment Engine Implementation Plan](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/current_progress/ENVIRONMENT_ENGINE_IMPLEMENTATION.md) and [Task List](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/current_progress/task.md) for the specific component list and logic.
-- **Architectural Soul**: Read the [Sanctuary Design Axioms](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/Core/SANCTUARY_DESIGN_AXIOMS.md) to understand the "Studium/Punctum" approach.
+- **Primary Reference**: Follow the [Environment Engine Implementation Plan](./ENVIRONMENT_ENGINE_IMPLEMENTATION.md) and [Task List](./task.md) for the specific component list and logic.
+- **Architectural Soul**: Read the [Gurudevi Design Framework](../Core/gurudevi_design_framework.md) and [North Star](../Core/NORTH_STAR.md) to understand the "Studium/Punctum" approach and sanctuary design principles.
 
 This is not just a UI task; it is an **Architectural Enforcement** task. You must implement the "Triple Helix" development philosophy (Constraints + BDD + TDD) to ensure the app is resilient, accessible, and performant on low-end devices.
 
@@ -52,7 +52,7 @@ Start by implementing a global `EnvironmentContext` that unifies:
     *   *Core*: Light vs. Dark (The Base).
     *   *Temporal Modifier*: Dawn / Day / Evening / Night.
     *   *Matrix*: A "Light Mode Morning" looks different from a "Dark Mode Morning". The Temporal theme modulates the Base theme.
-    *   *Reference*: Check `src/utils/themeColors.ts` and existing theme docs.
+    *   *Reference*: Check `../../src/utils/themeColors.ts` and existing theme docs in [Design System](../Core/DESIGN_SYSTEM.md).
 *   **Language**: English, Sinhala, Tamil (First-class citizens).
 *   **Settings (The Control Room)**:
     *   *Requirement*: In the **Profile Tab**, create a dedicated **"App Settings"** section.

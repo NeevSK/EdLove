@@ -167,13 +167,13 @@ npx tsc App.tsx src/screens/OnboardingScreen.tsx --noEmit --skipLibCheck
 ## Files Changed
 
 ### Created
-- [src/ui/index.ts](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/ui/index.ts) - Main abstraction layer
-- [src/ui/README.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/ui/README.md) - Usage guide
+- [src/ui/index.ts](../../src/ui/index.ts) - Main abstraction layer
+- [src/ui/README.md](../../src/ui/README.md) - Usage guide
 
 ### Modified
-- [tsconfig.json](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/tsconfig.json) - Added path alias
-- [App.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/App.tsx) - Migrated to `@/ui` imports
-- [OnboardingScreen.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/OnboardingScreen.tsx) - Migrated to `@/ui` imports
+- [tsconfig.json](../../tsconfig.json) - Added path alias
+- [App.tsx](../../App.tsx) - Migrated to `@/ui` imports
+- [OnboardingScreen.tsx](../../src/screens/OnboardingScreen.tsx) - Migrated to `@/ui` imports
 
 ---
 
