@@ -16,6 +16,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useStore } from './src/store/useStore';
 import { UserRole } from './src/types/User';
 import { SchoolType } from './src/constants/SriLankanSchools';
+import { EnvironmentProvider } from './src/context';
 
 // Import screens and navigation
 import WelcomeScreen from './src/screens/WelcomeScreen';
@@ -174,44 +175,46 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <GluestackUIProvider config={config}>
-            <ErrorBoundary name="App Root">
-              <NavigationContainer>
-                {!session ? (
-                  <ErrorBoundary name="Welcome Screen">
-                    <WelcomeScreen />
-                  </ErrorBoundary>
-                ) : !onboardingCompleted ? (
-                  <ErrorBoundary name="Onboarding Screen">
-                    <OnboardingScreen onComplete={(name: string, role: any) => {
-                      console.log('Onboarding complete callback triggered in App.tsx', { name, role });
-                      const store = useStore.getState();
-                      store.setTeacherName(name);
-                      store.setUserRole(role);
-                      store.setOnboardingCompleted(true);
-                      store.setJustFinishedOnboarding(true);
-                      console.log('App Store updated: onboardingCompleted is now', useStore.getState().onboardingCompleted);
-                    }} />
-                  </ErrorBoundary>
-                ) : (
-                  <ErrorBoundary name="Main App">
-                    <>
-                      <TabNavigator
-                        onTabChange={(tabName: any) => {
-                          setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
-                        }}
-                      />
-                      <LotusPetalFAB
-                        currentTab={currentTab}
-                        onPress={handleFabPress}
-                        actions={getFabActions()}
-                      />
-                    </>
-                  </ErrorBoundary>
-                )}
-              </NavigationContainer>
-            </ErrorBoundary>
-          </GluestackUIProvider>
+          <EnvironmentProvider>
+            <GluestackUIProvider config={config}>
+              <ErrorBoundary name="App Root">
+                <NavigationContainer>
+                  {!session ? (
+                    <ErrorBoundary name="Welcome Screen">
+                      <WelcomeScreen />
+                    </ErrorBoundary>
+                  ) : !onboardingCompleted ? (
+                    <ErrorBoundary name="Onboarding Screen">
+                      <OnboardingScreen onComplete={(name: string, role: any) => {
+                        console.log('Onboarding complete callback triggered in App.tsx', { name, role });
+                        const store = useStore.getState();
+                        store.setTeacherName(name);
+                        store.setUserRole(role);
+                        store.setOnboardingCompleted(true);
+                        store.setJustFinishedOnboarding(true);
+                        console.log('App Store updated: onboardingCompleted is now', useStore.getState().onboardingCompleted);
+                      }} />
+                    </ErrorBoundary>
+                  ) : (
+                    <ErrorBoundary name="Main App">
+                      <>
+                        <TabNavigator
+                          onTabChange={(tabName: any) => {
+                            setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
+                          }}
+                        />
+                        <LotusPetalFAB
+                          currentTab={currentTab}
+                          onPress={handleFabPress}
+                          actions={getFabActions()}
+                        />
+                      </>
+                    </ErrorBoundary>
+                  )}
+                </NavigationContainer>
+              </ErrorBoundary>
+            </GluestackUIProvider>
+          </EnvironmentProvider>
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

@@ -16,7 +16,7 @@ import { supabase } from '../lib/supabase';
 import { Theme } from '../constants/Theme';
 import { hapticSuccess, hapticLight, hapticError } from '../utils/haptics';
 
-import { LogOut } from 'lucide-react-native';
+import { LogOut, Settings } from 'lucide-react-native';
 // New Components
 import IdentityCard from '../components/profile/IdentityCard';
 import QRCodeGenerator from '../components/shared/QRCodeGenerator';
@@ -26,6 +26,7 @@ import GlobalHeader from '../components/shared/GlobalHeader';
 import UserStatsCard from '../components/profile/UserStatsCard';
 import SupportSection from '../components/profile/SupportSection';
 import ThuthimalBadge from '../components/profile/ThuthimalBadge';
+import AppSettingsScreen from './AppSettingsScreen';
 import { Modal, TouchableOpacity } from 'react-native';
 import { X, Phone, Globe, MapPin, QrCode } from 'lucide-react-native';
 
@@ -36,6 +37,7 @@ export default function ProfileScreen() {
     const [refreshing, setRefreshing] = useState(false);
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [isFullScreen, setIsFullScreen] = useState(false);
+    const [isSettingsVisible, setSettingsVisible] = useState(false);
 
     const currentLanguage = i18n.language;
 
@@ -175,6 +177,25 @@ export default function ProfileScreen() {
             <GlobalHeader
                 title={t('profile.title') || 'Identity'}
                 subtitle="Sanctuary Profile"
+                rightAction={
+                    <TouchableOpacity
+                        onPress={() => {
+                            hapticLight();
+                            setSettingsVisible(true);
+                        }}
+                        accessible={true}
+                        accessibilityRole="button"
+                        accessibilityLabel={t('settings.title', 'App Settings')}
+                        accessibilityHint={t('settings.hint', 'Open app settings')}
+                        style={{
+                            padding: 8,
+                            borderRadius: Theme.corners.comfortable,
+                            backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                        }}
+                    >
+                        <Settings size={24} color={Theme.colors.sanctuarySaffron} />
+                    </TouchableOpacity>
+                }
             />
             <ScrollView
                 contentContainerStyle={{
@@ -349,6 +370,51 @@ export default function ProfileScreen() {
                             </Box>
                         </VStack>
                     </ScrollView>
+                </Box>
+            </Modal>
+
+            {/* App Settings Modal */}
+            <Modal
+                visible={isSettingsVisible}
+                animationType="slide"
+                presentationStyle="pageSheet"
+                onRequestClose={() => setSettingsVisible(false)}
+            >
+                <Box flex={1}>
+                    {/* Header with Close Button */}
+                    <Box
+                        style={{
+                            backgroundColor: Theme.colors.creamSilence,
+                            paddingTop: 50,
+                            paddingBottom: Theme.spacing.md,
+                            paddingHorizontal: Theme.spacing.md,
+                            borderBottomWidth: 1,
+                            borderBottomColor: Theme.colors.sandStone,
+                        }}
+                    >
+                        <HStack justifyContent="space-between" alignItems="center">
+                            <Heading size="lg" color={Theme.colors.charcoalTruth}>
+                                {t('settings.title', 'App Settings')}
+                            </Heading>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    hapticLight();
+                                    setSettingsVisible(false);
+                                }}
+                                accessible={true}
+                                accessibilityRole="button"
+                                accessibilityLabel="Close settings"
+                                style={{
+                                    padding: 8,
+                                    borderRadius: Theme.corners.full,
+                                    backgroundColor: Theme.colors.sandStone,
+                                }}
+                            >
+                                <X size={24} color={Theme.colors.charcoalTruth} />
+                            </TouchableOpacity>
+                        </HStack>
+                    </Box>
+                    <AppSettingsScreen navigation={undefined} />
                 </Box>
             </Modal>
         </Box>

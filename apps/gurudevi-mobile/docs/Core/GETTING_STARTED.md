@@ -56,22 +56,22 @@ The lotus metaphor guides every design decision:
 
 ### Session Startup Checklist
 
-1. **[NORTH_STAR.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/NORTH_STAR.md)** (5 min)
+1. **[NORTH_STAR.md](./NORTH_STAR.md)** (5 min)
    - The unchanging vision and soul of Gurudevi
    - What Gurudevi IS and will NEVER BE
    - Decision framework for when you're uncertain
 
-2. **[GURUDEVI_ARCHITECTURE_v4_0_UPDATED.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/GURUDEVI_ARCHITECTURE_v4_0_UPDATED.md)** (15 min)
+2. **[GURUDEVI_ARCHITECTURE_v5_0.md](./GURUDEVI_ARCHITECTURE_v5_0.md)** (15 min)
    - System architecture and database schema
    - Data models and relationships
    - Technical decisions and rationale
 
-3. **[DESIGN_SYSTEM.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/DESIGN_SYSTEM.md)** (10 min)
+3. **[DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)** (10 min)
    - Sanctuary color palette
    - Typography, spacing, animations
    - Component design patterns
 
-4. **[CURRENT_SPRINT.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/CURRENT_SPRINT.md)** (2 min)
+4. **[CURRENT_SPRINT.md](./CURRENT_SPRINT.md)** (2 min)
    - What to build RIGHT NOW
    - Current priorities and tasks
 
@@ -151,7 +151,7 @@ All users see these 5 tabs (content depth varies by role):
 
 #### Key Tasks
 - [ ] Initialize Expo project (SDK 54, TypeScript)
-- [ ] Install all core dependencies (see [BUILD_ORDER.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/BUILD_ORDER.md) lines 38-79)
+- [ ] Install all core dependencies (see [BUILD_ORDER.md](./BUILD_ORDER.md) lines 38-79)
 - [ ] Set up folder structure
 - [ ] Configure TypeScript strict mode
 - [ ] Test app runs on emulator
@@ -415,7 +415,7 @@ react-i18next: "13.x"
 lucide-react-native: "latest"
 ```
 
-For complete dependencies list, see [BUILD_ORDER.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/BUILD_ORDER.md)
+For complete dependencies list, see [BUILD_ORDER.md](./BUILD_ORDER.md)
 
 ---
 
@@ -853,7 +853,7 @@ Gentle acknowledgment of growth is OK (like a tree growing), but never comparati
 
 ### Q: Where do I find the database schema?
 
-**A**: See [GURUDEVI_ARCHITECTURE_v4_0_UPDATED.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/GURUDEVI_ARCHITECTURE_v4_0_UPDATED.md) Section 3.3 for complete schema with tables, columns, relationships, and RLS policies.
+**A**: See [GURUDEVI_ARCHITECTURE_v5_0.md](./GURUDEVI_ARCHITECTURE_v5_0.md) Section 3.3 for complete schema with tables, columns, relationships, and RLS policies.
 
 ---
 
@@ -902,21 +902,21 @@ Pricing in LKR honors Sri Lankan context.
 
 | Document | Purpose | When to Read |
 |----------|---------|--------------|
-| [NORTH_STAR.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/NORTH_STAR.md) | Unchanging vision & philosophy | Start of every session |
-| [BUILD_ORDER.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/BUILD_ORDER.md) | Correct build sequence | Before starting development |
-| [AI_CONTEXT.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/AI_CONTEXT.md) | Coding rules & patterns | While building features |
-| [GURUDEVI_ARCHITECTURE_v4_0_UPDATED.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/GURUDEVI_ARCHITECTURE_v4_0_UPDATED.md) | System architecture & database | When designing features |
-| [DESIGN_SYSTEM.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/DESIGN_SYSTEM.md) | Visual design & components | When building UI |
-| [CURRENT_SPRINT.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/CURRENT_SPRINT.md) | Current priorities | Daily |
-| [GURUDEVI_MASTER_DOCUMENT.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/GURUDEVI_MASTER_DOCUMENT.md) | Quick project overview | First time only |
+| [NORTH_STAR.md](./NORTH_STAR.md) | Unchanging vision & philosophy | Start of every session |
+| [BUILD_ORDER.md](./BUILD_ORDER.md) | Correct build sequence | Before starting development |
+| [AI_CONTEXT.md](./AI_CONTEXT.md) | Coding rules & patterns | While building features |
+| [GURUDEVI_ARCHITECTURE_v5_0.md](./GURUDEVI_ARCHITECTURE_v5_0.md) | System architecture & database | When designing features |
+| [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) | Visual design & components | When building UI |
+| [CURRENT_SPRINT.md](./CURRENT_SPRINT.md) | Current priorities | Daily |
+| [GURUDEVI_MASTER_DOCUMENT.md](./GURUDEVI_MASTER_DOCUMENT.md) | Quick project overview | First time only |
 
 ### Additional Resources
 
 | Document | Purpose |
 |----------|---------|
-| [GURUDEVI_SECURITY_FOUNDATION_v2_0.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/GURUDEVI_SECURITY_FOUNDATION_v2_0.md) | Security & privacy implementation |
-| [GURUDEVI_STACK_v3_1_FINAL.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/GURUDEVI_STACK_v3_1_FINAL.md) | Complete tech stack decisions |
-| [GURUDEVI_BUSINESS_MODEL_v1_0.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/Docs%20v%203.0/GURUDEVI_BUSINESS_MODEL_v1_0.md) | Business model & pricing |
+| [GURUDEVI_SECURITY_FOUNDATION_v2_0.md](./GURUDEVI_SECURITY_FOUNDATION_v2_0.md) | Security & privacy implementation |
+| [GURUDEVI_STACK_v3_1_FINAL.md](./GURUDEVI_STACK_v3_1_FINAL.md) | Complete tech stack decisions |
+| [GURUDEVI_BUSINESS_MODEL_v1_0.md](./GURUDEVI_BUSINESS_MODEL_v1_0.md) | Business model & pricing |
 
 ---
 

@@ -19,7 +19,7 @@ Establish the **Environment Engine** as the foundational "connective tissue" of 
 
 ### Mobile App (Gurudevi Mobile)
 
-#### [NEW] [EnvironmentContext.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/context/EnvironmentContext.tsx)
+#### [NEW] [EnvironmentContext.tsx](../../src/context/EnvironmentContext.tsx)
 - **Centralized Engine**: Unifies `useTheme`, `i18n`, `useRole`, and `useReality` into a single reactive hook.
 - **Dynamic Reorganization**: Components subscribe to a single "Environment" state rather than multiple disparate stores.
 

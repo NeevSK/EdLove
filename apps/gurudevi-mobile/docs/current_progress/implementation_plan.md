@@ -24,7 +24,7 @@ Implement a "Progressive Discovery" flow for the Gurudevi Sanctuary: **Welcome -
 
 ### Mobile App (Gurudevi Mobile)
 
-#### [NEW] [EnvironmentContext.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/context/EnvironmentContext.tsx)
+#### [NEW] [EnvironmentContext.tsx](../../src/context/EnvironmentContext.tsx)
 - **Centralized Engine**: Unifies `useTheme`, `i18n`, `useRole`, and `useReality` into a single reactive hook.
 - **Dynamic Reorganization**: Components subscribe to a single "Environment" state rather than multiple disparate stores.
 
@@ -36,20 +36,20 @@ Implement a "Progressive Discovery" flow for the Gurudevi Sanctuary: **Welcome -
 - **[NEW] [BiDirectionalFeedback.tsx]**: A component to capture "Stuck" signals from students and "Reality Checks" from teachers.
 - **Ecological Mapping**: Align navigation with Bronfenbrenner’s concentric circles (Self -> Microsystem -> Mesosystem).
 
-#### [MODIFY] [App.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/App.tsx)
+#### [MODIFY] [App.tsx](../../App.tsx)
 - **Offline Readiness**: Integrate `NetInfo` or similar to handle intermittent connectivity gracefully.
 - **Expo Hook**: Use standard Expo APIs for device info and battery monitoring.
 
-#### [MODIFY] [OnboardingScreen.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/OnboardingScreen.tsx)
+#### [MODIFY] [OnboardingScreen.tsx](../../src/screens/OnboardingScreen.tsx)
 - **Name Screen**: Update copy to: **"How should we call you within the app?"**.
 
 #### [MODIFY] [Shared/Components]
-- **[NEW] [NetworkMonitor.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/shared/NetworkMonitor.tsx)**: A subtle UI indicator for speed/strength.
-- **[NEW] [LotusPetalFAB.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/shared/LotusPetalFAB.tsx)**: The context-aware wise guardian (Studium/Punctum).
-- **[NEW] [ThuthimalIndicator.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/shared/ThuthimalIndicator.tsx)**: Visual acknowledgment of gratitude on the Profile.
+- **[NEW] [NetworkMonitor.tsx](../../src/components/shared/NetworkMonitor.tsx)**: A subtle UI indicator for speed/strength.
+- **[NEW] [LotusPetalFAB.tsx](../../src/components/shared/LotusPetalFAB.tsx)**: The context-aware wise guardian (Studium/Punctum).
+- **[NEW] [ThuthimalIndicator.tsx](../../src/components/shared/ThuthimalIndicator.tsx)**: Visual acknowledgment of gratitude on the Profile.
 - **Lock Wrapper**: Create a reusable `SanctuaryLock` component.
 
-#### [MODIFY] [WelcomeScreen.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/screens/WelcomeScreen.tsx)
+#### [MODIFY] [WelcomeScreen.tsx](../../src/screens/WelcomeScreen.tsx)
 - Add **"Explore as Guest"** button with Terms footer.
 
 ## Verification Plan
