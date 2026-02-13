@@ -1,5 +1,7 @@
 # Cloud Agent Prompt: Global Boundaries & Environment Engine
 
+> **Implementation Status**: This document serves as a comprehensive guide and specification for implementing the Environment Engine. Most features described here are **not yet implemented**. Please refer to [task.md](./task.md) for current implementation status.
+
 ## Role: Senior React Native (Expo) Architect
 You are tasked with establishing the foundational **Global Boundaries and Behavior** for the **Gurudevi Mobile App**. 
 
@@ -23,7 +25,7 @@ You must follow this spiral for every feature:
 **Objective**: Hard-code the "Reality" into the app's DNA.
 
 *   **Target Device**: Low-end Android (2GB RAM), Intermittent Internet, 3G data.
-*   **Tech Stack**: Expo SDK 52+ (New Architecture), React Native 0.76+, React 18/19.
+*   **Tech Stack**: Expo SDK 54+ (New Architecture), React Native 0.81+, React 19.
 *   **The "Mud" Rule**: If a feature works on an iPhone 15 but lags on a $100 Android, it is **broken**.
     *   *Implementation*: Create a `useReality()` hook or `EnvironmentGuard` component that automatically downgrades visuals (e.g., disables blur/shadows/animations) on low-end devices.
     *   *User Override*: **Critical**: This automatic downgrading must be **user-overridable**. Add a "Visual Fidelity" toggle in the new App Settings (Auto / High / Low).
@@ -82,10 +84,10 @@ Start by implementing a global `EnvironmentContext` that unifies:
 ---
 
 ## Execution Steps for You
-1.  **Setup**: Initialize the `EnvironmentContext` with initial states for Role, Theme (Time-aware), Language, and Reality.
+1.  **Setup**: Initialize the `EnvironmentContext` (create `src/context/EnvironmentContext.tsx`) with initial states for Role, Theme (Time-aware), Language, and Reality.
 2.  **BDD Proof**: Write a Gherkin feature file (`features/environment.feature`) describing the "Dawn to Night" transition and "Role-based View" adaptation.
 3.  **TDD Loop**: Write a failing test for `useEnvironment()` hook, then implement it.
-4.  **UI Implementation**: Update the main `App.tsx` and `Theme.ts` to consume this new context.
+4.  **UI Implementation**: Update the main `App.tsx` and `src/constants/Theme.ts` to consume this new context.
 5.  **Localization**: Ensure `i18n` is wired into this context (fix any existing issues).
 
 **Go.**
