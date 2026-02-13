@@ -80,6 +80,9 @@ importers:
       '@react-native-async-storage/async-storage':
         specifier: 2.2.0
         version: 2.2.0(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.10)(react@19.1.0))
+      '@react-native-community/netinfo':
+        specifier: ^11.5.2
+        version: 11.5.2(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)
       '@react-native-ml-kit/text-recognition':
         specifier: ^2.0.0
         version: 2.0.0(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)
@@ -2339,6 +2342,12 @@ packages:
   '@react-native-async-storage/async-storage@2.2.0':
     resolution: {integrity: sha512-gvRvjR5JAaUZF8tv2Kcq/Gbt3JHwbKFYfmb445rhOj6NUMx3qPLixmDx5pZAyb9at1bYvJ4/eTUipU5aki45xw==}
     peerDependencies:
+      react-native: 0.81.5
+
+  '@react-native-community/netinfo@11.5.2':
+    resolution: {integrity: sha512-/g0m65BtX9HU+bPiCH2517bOHpEIUsGrWFXDzi1a5nNKn5KujQgm04WhL7/OSXWKHyrT8VVtUoJA0XKRxueBpQ==}
+    peerDependencies:
+      react: 19.1.0
       react-native: 0.81.5
 
   '@react-native-ml-kit/text-recognition@2.0.0':
@@ -10755,6 +10764,11 @@ snapshots:
   '@react-native-async-storage/async-storage@2.2.0(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.10)(react@19.1.0))':
     dependencies:
       merge-options: 3.0.4
+      react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.1.10)(react@19.1.0)
+
+  '@react-native-community/netinfo@11.5.2(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      react: 19.1.0
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.1.10)(react@19.1.0)
 
   '@react-native-ml-kit/text-recognition@2.0.0(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)':
