@@ -117,7 +117,7 @@ describe('Environment Utilities', () => {
       expect(shouldUseDataSaver('poor')).toBe(true);
     });
 
-    it('should return false for offline (no data to save)', () => {
+    it('should return false for offline (offline saves no data)', () => {
       expect(shouldUseDataSaver('offline')).toBe(false);
     });
   });

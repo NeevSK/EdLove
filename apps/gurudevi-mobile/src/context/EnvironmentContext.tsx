@@ -61,7 +61,7 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
   const [fidelityLevel, setFidelityLevelState] = useState<FidelityLevel>('auto');
   const [language, setLanguageState] = useState<Language>('en');
   const [isVeilActive, setIsVeilActive] = useState(false);
-  const [temporalPhase, setTemporalPhase] = useState<TemporalPhase>(getTemporalPhase());
+  const [temporalPhase, setTemporalPhase] = useState<TemporalPhase>(() => getTemporalPhase());
   const [reality, setReality] = useState<RealityState>({
     deviceTier: 'medium',
     totalMemoryGB: 4,
@@ -277,6 +277,5 @@ export function useEnvironment(): EnvironmentContextValue {
   return context;
 }
 
-// Export types for convenience
-export type { EnvironmentContextValue, EnvironmentState };
+// Export utility functions for convenience
 export { getTemporalPhase, shouldUseDarkTheme };
