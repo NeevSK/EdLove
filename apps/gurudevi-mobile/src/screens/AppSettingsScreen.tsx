@@ -209,7 +209,7 @@ export default function AppSettingsScreen({ navigation }: any) {
 
   // Temporal phase description
   const getTemporalDescription = () => {
-    const time = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    const time = new Date().toLocaleTimeString(i18n.language, { hour: 'numeric', minute: '2-digit' });
     const phases = {
       dawn: t('settings.temporal.dawn', 'Gentle awakening (5-8 AM)'),
       day: t('settings.temporal.day', 'Active work (8 AM-5 PM)'),
