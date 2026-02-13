@@ -8,11 +8,12 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState, AppStateStatus } from 'react-native';
+// @ts-ignore - Dependency exists in package.json and works at runtime, but IDE cannot resolve types in this environment
 import NetInfo from '@react-native-community/netinfo';
 import { useStore } from '../store/useStore';
-import { 
-  EnvironmentContextValue, 
-  EnvironmentState,
+import i18n from '../i18n/config';
+import {
+  EnvironmentContextValue,
   ThemeMode,
   FidelityLevel,
   Language,
@@ -53,10 +54,10 @@ interface EnvironmentProviderProps {
  */
 export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
   // Get role and theme from global store
-  const role = useStore(state => state.userRole);
-  const themeMode = useStore(state => state.themeMode);
-  const setStoredThemeMode = useStore(state => state.setThemeMode);
-  
+  const role = useStore((state: any) => state.userRole);
+  const themeMode = useStore((state: any) => state.themeMode);
+  const setStoredThemeMode = useStore((state: any) => state.setThemeMode);
+
   // Local state for environment-specific settings
   const [fidelityLevel, setFidelityLevelState] = useState<FidelityLevel>('auto');
   const [language, setLanguageState] = useState<Language>('en');
@@ -69,11 +70,11 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
     isDataSaverMode: false,
     isBatterySaverMode: false,
   });
-  
+
   // Compute derived state
   const isDark = themeMode === 'dark' || (themeMode === 'auto' && shouldUseDarkTheme(temporalPhase));
   const effectiveFidelity = computeEffectiveFidelity(fidelityLevel, reality.deviceTier);
-  
+
   /**
    * Load persisted settings from AsyncStorage
    */
@@ -85,18 +86,21 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
           AsyncStorage.getItem(STORAGE_KEYS.LANGUAGE),
           AsyncStorage.getItem(STORAGE_KEYS.IS_VEIL_ACTIVE),
         ]);
-        
+
         if (fidelity) setFidelityLevelState(fidelity as FidelityLevel);
-        if (lang) setLanguageState(lang as Language);
+        if (lang) {
+          setLanguageState(lang as Language);
+          i18n.changeLanguage(lang);
+        }
         if (veil) setIsVeilActive(veil === 'true');
       } catch (error) {
         console.warn('Failed to load environment settings:', error);
       }
     }
-    
+
     loadSettings();
   }, []);
-  
+
   /**
    * Detect device capabilities and network quality on mount
    */
@@ -106,7 +110,7 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
         detectDeviceTier(),
         detectNetworkQuality(),
       ]);
-      
+
       setReality(prev => ({
         ...prev,
         deviceTier: deviceInfo.tier,
@@ -118,25 +122,25 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
       console.warn('Failed to refresh reality:', error);
     }
   }, []);
-  
+
   /**
    * Initialize reality detection
    */
   useEffect(() => {
     refreshReality();
   }, [refreshReality]);
-  
+
   /**
    * Monitor network changes
    */
   useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener(state => {
+    const unsubscribe = NetInfo.addEventListener((state: any) => {
       let quality: NetworkQuality = 'offline';
-      
+
       if (state.isConnected) {
         const type = state.type;
         const details = state.details as any;
-        
+
         if (type === 'cellular') {
           const gen = details?.cellularGeneration;
           if (gen === '5g') quality = 'excellent';
@@ -149,39 +153,39 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
           quality = 'fair';
         }
       }
-      
+
       setReality(prev => ({
         ...prev,
         networkQuality: quality,
         isDataSaverMode: shouldUseDataSaver(quality),
       }));
     });
-    
+
     return unsubscribe;
   }, []);
-  
+
   /**
    * Update temporal phase every minute when in auto theme mode
    */
   useEffect(() => {
     if (themeMode !== 'auto') return;
-    
+
     const updatePhase = () => {
       const newPhase = getTemporalPhase();
       if (newPhase !== temporalPhase) {
         setTemporalPhase(newPhase);
       }
     };
-    
+
     // Check immediately
     updatePhase();
-    
+
     // Then check every minute
     const interval = setInterval(updatePhase, 60000);
-    
+
     return () => clearInterval(interval);
   }, [themeMode, temporalPhase]);
-  
+
   /**
    * Monitor app state changes to refresh reality
    */
@@ -191,10 +195,10 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
         refreshReality();
       }
     });
-    
+
     return () => subscription.remove();
   }, [refreshReality]);
-  
+
   /**
    * Actions
    */
@@ -205,7 +209,7 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
       setTemporalPhase(getTemporalPhase());
     }
   }, [setStoredThemeMode]);
-  
+
   const setFidelityLevel = useCallback(async (level: FidelityLevel) => {
     setFidelityLevelState(level);
     try {
@@ -214,17 +218,17 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
       console.warn('Failed to save fidelity level:', error);
     }
   }, []);
-  
+
   const setLanguage = useCallback(async (lang: Language) => {
     setLanguageState(lang);
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.LANGUAGE, lang);
-      // TODO: Update i18n locale
+      await i18n.changeLanguage(lang);
     } catch (error) {
       console.warn('Failed to save language:', error);
     }
   }, []);
-  
+
   const toggleVeil = useCallback(async () => {
     const newValue = !isVeilActive;
     setIsVeilActive(newValue);
@@ -234,7 +238,7 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
       console.warn('Failed to save veil state:', error);
     }
   }, [isVeilActive]);
-  
+
   // Construct the context value
   const value: EnvironmentContextValue = {
     // State
@@ -247,7 +251,7 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
     language,
     reality,
     isVeilActive,
-    
+
     // Actions
     setThemeMode,
     setFidelityLevel,
@@ -255,7 +259,7 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
     toggleVeil,
     refreshReality,
   };
-  
+
   return (
     <EnvironmentContext.Provider value={value}>
       {children}
@@ -269,11 +273,11 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
  */
 export function useEnvironment(): EnvironmentContextValue {
   const context = useContext(EnvironmentContext);
-  
+
   if (context === undefined) {
     throw new Error('useEnvironment must be used within an EnvironmentProvider');
   }
-  
+
   return context;
 }
 

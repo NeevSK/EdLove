@@ -326,6 +326,8 @@
         "complete": "Complete"
     },
     "settings": {
+        "title": "App Settings",
+        "hint": "Open app settings",
         "appearance": {
             "title": "Appearance",
             "description": "Personalize how Gurudevi looks and feels"

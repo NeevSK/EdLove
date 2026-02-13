@@ -52,20 +52,20 @@ export interface RealityState {
 export interface EnvironmentState {
   // Role & Identity
   role: UserRole | null;
-  
+
   // Theme & Visual
   themeMode: ThemeMode;
   temporalPhase: TemporalPhase;
   isDark: boolean;
   fidelityLevel: FidelityLevel;
   effectiveFidelity: 'low' | 'high'; // Computed based on fidelityLevel and reality
-  
+
   // Language
   language: Language;
-  
+
   // Reality (Hardware/Network)
   reality: RealityState;
-  
+
   // Privacy
   isVeilActive: boolean; // "The Veil" - privacy toggle
 }
@@ -75,13 +75,13 @@ export interface EnvironmentState {
  */
 export interface EnvironmentActions {
   setThemeMode: (mode: ThemeMode) => void;
-  setFidelityLevel: (level: FidelityLevel) => void;
-  setLanguage: (language: Language) => void;
-  toggleVeil: () => void;
+  setFidelityLevel: (level: FidelityLevel) => Promise<void>;
+  setLanguage: (language: Language) => Promise<void>;
+  toggleVeil: () => Promise<void>;
   refreshReality: () => Promise<void>;
 }
 
 /**
  * Complete Environment Context
  */
-export interface EnvironmentContextValue extends EnvironmentState, EnvironmentActions {}
+export interface EnvironmentContextValue extends EnvironmentState, EnvironmentActions { }

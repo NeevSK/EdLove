@@ -10,7 +10,7 @@
  */
 
 import React, { useState } from 'react';
-import { ScrollView, Switch, Alert, TouchableOpacity } from 'react-native';
+import { ScrollView, Switch } from 'react-native';
 import {
   Box,
   VStack,
@@ -96,7 +96,7 @@ function SettingsOption({
         >
           {icon}
         </Box>
-        
+
         <VStack flex={1} space="xs">
           <Text
             style={{
@@ -117,7 +117,7 @@ function SettingsOption({
             {description}
           </Text>
         </VStack>
-        
+
         <HStack space="xs" alignItems="center">
           {value && (
             <Text
@@ -143,15 +143,14 @@ function SettingsOption({
 function SectionHeader({ title, description }: { title: string; description?: string }) {
   return (
     <VStack space="xs" style={{ marginBottom: Theme.spacing.md, marginTop: Theme.spacing.lg }}>
-      <Text
+      <Heading
+        size="lg"
         style={{
-          fontSize: Theme.typography.fontSize.lg,
-          fontWeight: Theme.typography.fontWeight.bold,
           color: Theme.colors.charcoalTruth,
         }}
       >
         {title}
-      </Text>
+      </Heading>
       {description && (
         <Text
           style={{
@@ -225,8 +224,8 @@ export default function AppSettingsScreen({ navigation }: any) {
     setShowThemeModal(false);
   };
 
-  const handleFidelityChange = (level: 'auto' | 'low' | 'high') => {
-    setFidelityLevel(level);
+  const handleFidelityChange = async (level: 'auto' | 'low' | 'high') => {
+    await setFidelityLevel(level);
     hapticSuccess();
     setShowFidelityModal(false);
   };
@@ -270,8 +269,8 @@ export default function AppSettingsScreen({ navigation }: any) {
             fidelityLevel === 'auto'
               ? t('settings.fidelity.auto_desc', 'Adapts to your device automatically')
               : fidelityLevel === 'low'
-              ? t('settings.fidelity.low_desc', 'Saves battery, works on all devices')
-              : t('settings.fidelity.high_desc', 'Beautiful effects, needs good device')
+                ? t('settings.fidelity.low_desc', 'Saves battery, works on all devices')
+                : t('settings.fidelity.high_desc', 'Beautiful effects, needs good device')
           }
           value={getFidelityLabel()}
           onPress={() => setShowFidelityModal(true)}
@@ -334,7 +333,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                   <Eye size={24} color={Theme.colors.white} />
                 )}
               </Box>
-              
+
               <VStack flex={1} space="xs">
                 <Text
                   style={{
@@ -361,10 +360,13 @@ export default function AppSettingsScreen({ navigation }: any) {
                 </Text>
               </VStack>
             </HStack>
-            
+
             <Switch
               value={isVeilActive}
-              onValueChange={toggleVeil}
+              onValueChange={async () => {
+                await toggleVeil();
+                hapticLight();
+              }}
               trackColor={{
                 false: Theme.colors.sandStone,
                 true: Theme.colors.sanctuarySaffron,
@@ -410,7 +412,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                 {reality.deviceTier.charAt(0).toUpperCase() + reality.deviceTier.slice(1)}
               </Text>
             </HStack>
-            
+
             <HStack justifyContent="space-between" alignItems="center">
               <Text style={{ color: Theme.colors.slateGray }}>
                 {t('settings.device.memory', 'Available Memory')}
@@ -424,7 +426,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                 {reality.totalMemoryGB.toFixed(1)} GB
               </Text>
             </HStack>
-            
+
             <HStack justifyContent="space-between" alignItems="center">
               <Text style={{ color: Theme.colors.slateGray }}>
                 {t('settings.device.network', 'Network Quality')}
@@ -438,7 +440,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                 {reality.networkQuality.charAt(0).toUpperCase() + reality.networkQuality.slice(1)}
               </Text>
             </HStack>
-            
+
             {reality.isDataSaverMode && (
               <Box
                 style={{
@@ -640,7 +642,7 @@ function SelectionModal({ title, options, onSelect, onClose }: SelectionModalPro
         onPress={onClose}
         accessible={false}
       />
-      
+
       <Box
         style={{
           backgroundColor: Theme.colors.white,
@@ -660,7 +662,7 @@ function SelectionModal({ title, options, onSelect, onClose }: SelectionModalPro
         >
           {title}
         </Text>
-        
+
         <VStack space="sm">
           {options.map((option) => (
             <Pressable
@@ -689,7 +691,7 @@ function SelectionModal({ title, options, onSelect, onClose }: SelectionModalPro
             >
               <HStack space="md" alignItems="center">
                 {option.icon}
-                
+
                 <VStack flex={1} space="xs">
                   <Text
                     style={{
@@ -710,7 +712,7 @@ function SelectionModal({ title, options, onSelect, onClose }: SelectionModalPro
                     {option.description}
                   </Text>
                 </VStack>
-                
+
                 {option.isSelected && (
                   <Check size={24} color={Theme.colors.sanctuarySaffron} />
                 )}
@@ -718,7 +720,7 @@ function SelectionModal({ title, options, onSelect, onClose }: SelectionModalPro
             </Pressable>
           ))}
         </VStack>
-        
+
         <Button
           onPress={onClose}
           style={{
