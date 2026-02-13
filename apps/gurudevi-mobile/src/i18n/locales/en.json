@@ -324,5 +324,70 @@
         "back": "Back",
         "skip": "Skip",
         "complete": "Complete"
+    },
+    "settings": {
+        "appearance": {
+            "title": "Appearance",
+            "description": "Personalize how Gurudevi looks and feels"
+        },
+        "theme": {
+            "title": "Theme",
+            "auto": "Auto (Time-based)",
+            "light": "Light",
+            "dark": "Dark",
+            "select": "Choose Theme",
+            "auto_full": "Automatically adjusts between light and dark based on time of day",
+            "light_full": "Bright and clear for daytime use",
+            "dark_full": "Easy on the eyes in low light",
+            "hint": "Choose between light, dark, or automatic theme based on time of day"
+        },
+        "temporal": {
+            "dawn": "Gentle awakening (5-8 AM)",
+            "day": "Active work (8 AM-5 PM)",
+            "evening": "Winding down (5-8 PM)",
+            "night": "Restful (8 PM-5 AM)"
+        },
+        "fidelity": {
+            "title": "Visual Quality",
+            "auto": "Auto (Smart)",
+            "low": "Battery Saver",
+            "high": "Best Quality",
+            "select": "Visual Quality",
+            "auto_desc": "Adapts to your device automatically",
+            "low_desc": "Saves battery, works on all devices",
+            "high_desc": "Beautiful effects, needs good device",
+            "auto_full": "Automatically adjusts based on your device capabilities",
+            "low_full": "Simplified visuals, works smoothly on all devices",
+            "high_full": "Beautiful effects and animations (requires capable device)",
+            "hint": "Control visual effects and animations quality"
+        },
+        "language": {
+            "title": "Language",
+            "description": "Choose your preferred language",
+            "current": "App Language",
+            "change_desc": "Switch between English, Sinhala, and Tamil",
+            "select": "Choose Language",
+            "hint": "Change the language of the entire app"
+        },
+        "privacy": {
+            "title": "Privacy",
+            "description": "Control how your information is displayed"
+        },
+        "veil": {
+            "title": "Privacy Veil",
+            "description": "Quick-hide personal details when needed"
+        },
+        "device": {
+            "title": "Device Information",
+            "description": "How Gurudevi adapts to your device",
+            "tier": "Device Tier",
+            "memory": "Available Memory",
+            "network": "Network Quality",
+            "data_saver": "Data Saver mode is active due to poor connection"
+        },
+        "tip": {
+            "title": "Tip",
+            "message": "These settings help Gurudevi work best for you. Auto mode is recommended for most users."
+        }
     }
 }
