@@ -22,9 +22,9 @@ import {
   Pressable,
 } from '@/ui';
 import { useTranslation } from 'react-i18next';
-import { useEnvironment } from '../../context';
-import { Theme } from '../../constants/Theme';
-import { hapticLight, hapticSuccess } from '../../utils/haptics';
+import { useEnvironment } from '../context';
+import { Theme } from '../constants/Theme';
+import { hapticLight, hapticSuccess } from '../utils/haptics';
 import {
   Sun,
   Moon,
