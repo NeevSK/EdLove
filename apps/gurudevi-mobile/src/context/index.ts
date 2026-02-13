@@ -4,6 +4,6 @@
  */
 
 export { EnvironmentProvider, useEnvironment } from './EnvironmentContext';
-export type { EnvironmentContextValue, EnvironmentState } from './EnvironmentContext';
+export type { EnvironmentContextValue, EnvironmentState } from './types';
 export * from './types';
 export * from './utils';
