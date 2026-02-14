@@ -55,6 +55,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   return (
     <View style={{ flex: 1 }}>
       <Tab.Navigator
+        id="MainTabs"
         initialRouteName="Self"
         screenListeners={{
           state: (e) => {

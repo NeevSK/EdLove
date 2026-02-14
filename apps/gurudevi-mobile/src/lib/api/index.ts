@@ -18,7 +18,8 @@ import { classroomsAPI } from './classrooms';
 
 // Re-export types for usage in app
 export * from './types';
-export * from '../../types/Community';
+// Note: Community types should be imported directly from '../../types/Community' to avoid circular dependencies
+// Do not use "export * from" here as it can cause TypeScript recursion
 
 // Main API Object
 export const api = {

@@ -10,6 +10,7 @@ const Stack = createNativeStackNavigator<ClassroomStackParamList>();
 export default function ClassroomStackNavigator() {
     return (
         <Stack.Navigator
+            id="ClassroomStack"
             screenOptions={{
                 headerShown: false,
                 contentStyle: { backgroundColor: Theme.colors.voidIndigo },
