@@ -1,0 +1,42 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} theme="digital-neon">
+  <div class="digital-neon-container" data-theme-section="digital-neon">
+    <slot />
+  </div>
+</BaseLayout>
+
+<style>
+  .digital-neon-container {
+    position: relative;
+    min-height: 100vh;
+    padding-top: 80px;
+    overflow: hidden;
+  }
+  
+  .digital-neon-container::before {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 200%;
+    height: 200%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(
+      circle at center,
+      rgba(0, 255, 148, 0.05) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: -1;
+  }
+</style>

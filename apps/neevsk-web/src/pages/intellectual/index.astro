@@ -1,0 +1,100 @@
+---
+import TwilightLayout from '../../layouts/TwilightLayout.astro';
+import Card from '../../components/common/Card.astro';
+---
+
+<TwilightLayout title="Intellectual" description="Philosophy, Frameworks, Mind">
+  <div class="intellectual-container">
+    <header class="section-header">
+      <h1>Systems of Thought</h1>
+      <p>Exploring the philosophical lineages and frameworks that shape understanding.</p>
+    </header>
+    
+    <div class="grid-layout">
+      <section class="lineage-section">
+        <h2>Philosophical Lineage</h2>
+        <div class="lineage-graph">
+          <!-- Placeholder for visual graph -->
+          <div class="node">Ivan Illich</div>
+          <div class="connector"></div>
+          <div class="node">Donella Meadows</div>
+          <div class="connector"></div>
+          <div class="node">Cybernetics</div>
+        </div>
+      </section>
+      
+      <section class="frameworks-section">
+        <h2>Frameworks & Methodologies</h2>
+        <div class="cards-grid">
+          <Card>
+            <h3>Systems Thinking</h3>
+            <p>Seeing the whole, the parts, and the relationships simultaneously.</p>
+          </Card>
+          <Card>
+            <h3>Permaculture Design</h3>
+            <p>Observing nature's patterns to design resilient human systems.</p>
+          </Card>
+          <Card>
+            <h3>TrueValuate</h3>
+            <p>A methodology for assessing value beyond financial metrics.</p>
+          </Card>
+        </div>
+      </section>
+    </div>
+  </div>
+</TwilightLayout>
+
+<style lang="scss">
+  .intellectual-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+  }
+  
+  .section-header {
+    margin-bottom: 4rem;
+    
+    h1 {
+      font-size: 3.5rem;
+      color: var(--color-text);
+      margin-bottom: 1rem;
+    }
+    
+    p {
+      font-size: 1.25rem;
+      color: var(--color-primary);
+      max-width: 600px;
+    }
+  }
+  
+  .lineage-graph {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 3rem;
+    
+    .node {
+      background: var(--color-secondary);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+    }
+    
+    .connector {
+      flex: 1;
+      height: 1px;
+      background: var(--color-text);
+      opacity: 0.3;
+    }
+  }
+  
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+</style>

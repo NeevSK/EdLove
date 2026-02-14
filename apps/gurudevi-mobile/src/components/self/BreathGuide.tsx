@@ -14,6 +14,7 @@ import {
     ButtonText,
     Pressable,
 } from '@/ui';
+import { useTranslation } from 'react-i18next';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -26,27 +27,28 @@ import { Wind } from 'lucide-react-native';
 import { Theme, typography } from '../../constants/Theme';
 import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
+import { useThemedColors } from '../../hooks/useThemedColors';
 
 interface BreathGuideProps {
     onComplete?: () => void;
 }
 
 type BreathPhase = 'inhale' | 'hold' | 'exhale' | 'rest';
-
-const BREATH_CYCLE = [
-    { phase: 'inhale' as BreathPhase, duration: 4000, instruction: 'Breathe in...' },
-    { phase: 'hold' as BreathPhase, duration: 2000, instruction: 'Hold...' },
-    { phase: 'exhale' as BreathPhase, duration: 6000, instruction: 'Breathe out...' },
-    { phase: 'rest' as BreathPhase, duration: 2000, instruction: 'Rest...' },
-];
-
 const TOTAL_CYCLES = 4; // ~1 minute total
 
 export default function BreathGuide({ onComplete }: BreathGuideProps) {
+    const { t } = useTranslation();
     const [isActive, setIsActive] = useState(false);
     const [currentPhase, setCurrentPhase] = useState<BreathPhase>('inhale');
     const [currentCycle, setCurrentCycle] = useState(0);
     const [phaseIndex, setPhaseIndex] = useState(0);
+
+    const BREATH_CYCLE = [
+        { phase: 'inhale' as BreathPhase, duration: 4000, instruction: t('self.inhale') || 'Breathe in...' },
+        { phase: 'hold' as BreathPhase, duration: 2000, instruction: t('self.hold') || 'Hold...' },
+        { phase: 'exhale' as BreathPhase, duration: 6000, instruction: t('self.exhale') || 'Breathe out...' },
+        { phase: 'rest' as BreathPhase, duration: 2000, instruction: t('self.rest') || 'Rest...' },
+    ];
 
     // Animation values
     const petalScale = useSharedValue(0.8);
@@ -157,7 +159,7 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
         setIsActive(true);
         setCurrentCycle(0);
         setPhaseIndex(0);
-        
+
         if (Platform.OS !== 'web') {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
@@ -173,7 +175,7 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
 
     const completeSession = () => {
         setIsActive(false);
-        
+
         if (Platform.OS !== 'web') {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
@@ -189,6 +191,7 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
         opacity: petalOpacity.value,
     }));
 
+    const colors = useThemedColors();
     const currentInstruction = BREATH_CYCLE[phaseIndex]?.instruction || 'Begin...';
 
     return (
@@ -207,10 +210,10 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
                             width: 150,
                             height: 150,
                             borderRadius: 75,
-                            backgroundColor: Theme.colors.lotusDeepPink,
+                            backgroundColor: colors.action, // Use theme-aware action color
                             alignItems: 'center',
                             justifyContent: 'center',
-                            shadowColor: Theme.colors.lotusDeepPink,
+                            shadowColor: colors.action,
                             shadowOffset: { width: 0, height: 0 },
                             shadowOpacity: 0.6,
                             shadowRadius: 20,
@@ -226,17 +229,17 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
             {isActive && (
                 <VStack space="sm" sx={{ alignItems: 'center' }}>
                     <Text
-                        color={Theme.colors.sacredWhite}
+                        color={colors.text}
                         size="2xl"
                         sx={{ fontWeight: typography.fontWeight.semibold }}
                     >
                         {currentInstruction}
                     </Text>
                     <Text
-                        color={Theme.colors.mistGray}
+                        color={colors.textSecondary}
                         size="sm"
                     >
-                        Cycle {currentCycle + 1} of {TOTAL_CYCLES}
+                        {t('self.cycleCount', { current: currentCycle + 1, total: TOTAL_CYCLES })}
                     </Text>
                 </VStack>
             )}
@@ -250,7 +253,7 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
                         onPress={startSession}
                         sx={{
                             borderRadius: Theme.corners.full,
-                            backgroundColor: Theme.colors.lotusDeepPink,
+                            backgroundColor: colors.action,
                             paddingHorizontal: Theme.spacing.xl,
                         }}
                     >
@@ -260,17 +263,17 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
                             style={{ marginRight: Theme.spacing.sm }}
                         />
                         <ButtonText color={Theme.colors.white}>
-                            Start Breathing
+                            {t('self.startBreathing')}
                         </ButtonText>
                     </Button>
                 ) : (
                     <Pressable onPress={stopSession}>
                         <Text
-                            color={Theme.colors.dimGray}
+                            color={colors.textTertiary}
                             size="sm"
                             sx={{ textDecorationLine: 'underline' }}
                         >
-                            Stop
+                            {t('self.stop')}
                         </Text>
                     </Pressable>
                 )}
@@ -282,17 +285,17 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
                     sx={{
                         marginTop: Theme.spacing.md,
                         padding: Theme.spacing.md,
-                        backgroundColor: Theme.colors.deepIndigo,
+                        backgroundColor: colors.secondary,
                         borderRadius: Theme.corners.comfortable,
                     }}
                 >
                     <Text
-                        color={Theme.colors.mistGray}
+                        color={colors.textSecondary}
                         size="xs"
                         textAlign="center"
                         sx={{ fontStyle: 'italic' }}
                     >
-                        1 minute of breath for an hour of calm 🌸
+                        {t('self.breathHero')}
                     </Text>
                 </Box>
             )}

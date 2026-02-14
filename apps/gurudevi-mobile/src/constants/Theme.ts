@@ -167,7 +167,7 @@ export const spacing = {
     large: 24,    // Alias for lg
     xs: 4,       // Tight spacing (icon padding, small gaps)
     sm: 8,       // Small spacing (between related items)
-    md: 16,      // Standard spacing (DEFAULT - most common)
+    md: 9,       // Standard spacing (Refined - lean but breathable)
     lg: 24,      // Large spacing (section gaps)
     xl: 32,      // Extra large (page margins, major sections)
     '2xl': 48,   // Huge spacing (page padding)

@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserRole } from '../types/User';
 import { SchoolType } from '../constants/SriLankanSchools';
 
-export type ThemeMode = 'light' | 'dark' | 'auto';
+export type ThemeMode = 'light' | 'dark' | 'auto' | 'system';
 
 interface AppState {
     teacherName: string;
@@ -30,7 +30,7 @@ export const useStore = create<AppState>()(
             setUserRole: (role) => set({ userRole: role }),
             schoolType: null,
             setSchoolType: (type) => set({ schoolType: type }),
-            themeMode: 'light', // Default to light theme
+            themeMode: 'system', // Default to system theme preference
             setThemeMode: (mode) => set({ themeMode: mode }),
             onboardingCompleted: false,
             setOnboardingCompleted: (completed) => set({ onboardingCompleted: completed }),

@@ -116,6 +116,7 @@ export {
 
 export { Icon } from '@gluestack-ui/themed/build/components/Icons';
 export { CloseIcon } from '@gluestack-ui/themed/build/components/Icons';
+// Note: CheckIcon should be imported from lucide-react-native when needed
 export { Image } from '@gluestack-ui/themed/build/components/Image';
 export { FlatList } from '@gluestack-ui/themed/build/components/FlatList';
 export { SectionList } from '@gluestack-ui/themed/build/components/SectionList';
@@ -127,6 +128,14 @@ export {
     CheckboxLabel,
     CheckboxGroup,
 } from '@gluestack-ui/themed/build/components/Checkbox';
+
+export {
+    Radio,
+    RadioIndicator,
+    RadioIcon,
+    RadioLabel,
+    RadioGroup,
+} from '@gluestack-ui/themed/build/components/Radio';
 
 export {
     Actionsheet,

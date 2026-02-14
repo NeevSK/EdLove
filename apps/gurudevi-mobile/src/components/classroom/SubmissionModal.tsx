@@ -28,7 +28,8 @@ import {
 } from '@/ui';
 import { Alert, Image } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import Theme from '../../constants/Theme';
+import { Theme } from '../../constants/Theme';
+import { useThemedColors } from '../../hooks/useThemedColors';
 // import * as ImagePicker from 'expo-image-picker';
 
 interface SubmissionModalProps {
@@ -49,6 +50,7 @@ export default function SubmissionModal({
     const [photoUri, setPhotoUri] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
+    const colors = useThemedColors();
 
     const handlePickImage = async (useCamera: boolean = false) => {
         try {
@@ -154,7 +156,7 @@ export default function SubmissionModal({
                 <ModalBackdrop />
                 <ModalContent
                     sx={{
-                        backgroundColor: Theme.colors.deepIndigo,
+                        backgroundColor: colors.tertiary,
                         padding: Theme.spacing.xl,
                         alignItems: 'center',
                     }}
@@ -165,7 +167,7 @@ export default function SubmissionModal({
                             {t('submission.success') || 'Success!'}
                         </Heading>
                         <Text
-                            color={Theme.colors.pearlGray}
+                            color={colors.textSecondary}
                             textAlign="center"
                         >
                             {t('submission.successMessage') ||
@@ -182,7 +184,7 @@ export default function SubmissionModal({
             <ModalBackdrop />
             <ModalContent
                 sx={{
-                    backgroundColor: Theme.colors.voidIndigo,
+                    backgroundColor: colors.primary,
                     height: '100%',
                     width: '100%',
                 }}
@@ -209,12 +211,12 @@ export default function SubmissionModal({
                             variant="outline"
                             size="sm"
                             sx={{
-                                borderColor: Theme.colors.mistGray,
+                                borderColor: colors.border,
                             }}
                             onPress={handleCancel}
                             disabled={isSubmitting}
                         >
-                            <ButtonText color={Theme.colors.sacredWhite}>
+                            <ButtonText color={colors.text}>
                                 {t('common.cancel') || 'Cancel'}
                             </ButtonText>
                         </Button>
@@ -224,15 +226,15 @@ export default function SubmissionModal({
                     <Box
                         sx={{
                             padding: Theme.spacing.md,
-                            backgroundColor: Theme.colors.deepIndigo,
+                            backgroundColor: colors.secondary,
                             borderRadius: Theme.corners.comfortable,
                         }}
                     >
-                        <Text color={Theme.colors.mistGray} size="sm">
+                        <Text color={colors.textSecondary} size="sm">
                             {t('submission.assignmentLabel') || 'Assignment'}
                         </Text>
                         <Text
-                            color={Theme.colors.sacredWhite}
+                            color={colors.text}
                             size="lg"
                             sx={{ fontWeight: '600' }}
                         >
@@ -242,14 +244,14 @@ export default function SubmissionModal({
 
                     {/* Text Input */}
                     <VStack space="sm" sx={{ flex: 1 }}>
-                        <Text color={Theme.colors.pearlGray} sx={{ fontWeight: '600' }}>
+                        <Text color={colors.textSecondary} sx={{ fontWeight: '600' }}>
                             {t('submission.answerLabel') || 'Your Answer'}
                         </Text>
                         <Textarea
                             sx={{
                                 flex: 1,
-                                backgroundColor: Theme.colors.deepIndigo,
-                                borderColor: Theme.colors.mistGray,
+                                backgroundColor: colors.secondary,
+                                borderColor: colors.border,
                                 minHeight: 200,
                             }}
                         >
@@ -261,7 +263,7 @@ export default function SubmissionModal({
                                 value={content}
                                 onChangeText={setContent}
                                 sx={{
-                                    color: Theme.colors.sacredWhite,
+                                    color: colors.text,
                                 }}
                                 multiline
                             />
@@ -270,7 +272,7 @@ export default function SubmissionModal({
 
                     {/* Photo Attachment */}
                     <VStack space="sm">
-                        <Text color={Theme.colors.pearlGray} sx={{ fontWeight: '600' }}>
+                        <Text color={colors.textSecondary} sx={{ fontWeight: '600' }}>
                             {t('submission.photoLabel') || 'Attach Photo (Optional)'}
                         </Text>
 

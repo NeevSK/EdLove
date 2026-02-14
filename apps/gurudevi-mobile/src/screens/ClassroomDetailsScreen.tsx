@@ -32,6 +32,8 @@ import { hapticLight } from '../utils/haptics';
 import { api, Classroom, ClassroomStudent } from '../lib/api';
 import GlobalHeader from '../components/shared/GlobalHeader';
 import { StudentList } from '../components/classroom';
+import { useThemedColors } from '../hooks/useThemedColors';
+import ScreenWrapper from '../components/shared/ScreenWrapper';
 import { LessonFeed, ContentLibrary } from './classroom';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ClassroomStackParamList } from '../types/navigation';
@@ -52,6 +54,7 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
     const [contentType, setContentType] = useState<'material' | 'assignment'>('material');
     const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const colors = useThemedColors();
 
     const [formTitle, setFormTitle] = useState('');
     const [formDescription, setFormDescription] = useState('');
@@ -160,9 +163,11 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
 
     if (loading) {
         return (
-            <Center sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
-                <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
-            </Center>
+            <ScreenWrapper>
+                <Center sx={{ flex: 1 }}>
+                    <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+                </Center>
+            </ScreenWrapper>
         );
     }
 
@@ -188,7 +193,7 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
                 <Text
                     size="xs"
                     fontWeight={activeTab === id ? "$bold" : "$normal"}
-                    color={activeTab === id ? Theme.colors.sacredWhite : Theme.colors.mistGray}
+                    color={activeTab === id ? colors.text : colors.textSecondary}
                 >
                     {label}
                 </Text>
@@ -197,7 +202,7 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
     );
 
     return (
-        <VStack sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+        <ScreenWrapper>
             <GlobalHeader
                 title={classroomName}
                 subtitle={classroom?.subject || 'Classroom'}
@@ -206,14 +211,14 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
             />
 
             {/* Header Stats */}
-            <Box sx={{ padding: Theme.spacing.lg, backgroundColor: Theme.colors.midnightBlue }}>
+            <Box sx={{ padding: Theme.spacing.lg, backgroundColor: colors.secondary }}>
                 <HStack space="xl">
                     <VStack>
-                        <Text size="xs" color={Theme.colors.mistGray} fontWeight="$bold" sx={{ textTransform: 'uppercase' }}>Students</Text>
-                        <Text size="2xl" color={Theme.colors.sacredWhite} fontWeight="$bold">{students.length}</Text>
+                        <Text size="xs" color={colors.textTertiary} fontWeight="$bold" sx={{ textTransform: 'uppercase' }}>Students</Text>
+                        <Text size="2xl" color={colors.text} fontWeight="$bold">{students.length}</Text>
                     </VStack>
                     <VStack>
-                        <Text size="xs" color={Theme.colors.mistGray} fontWeight="$bold" sx={{ textTransform: 'uppercase' }}>Subject</Text>
+                        <Text size="xs" color={colors.textTertiary} fontWeight="$bold" sx={{ textTransform: 'uppercase' }}>Subject</Text>
                         <Text size="lg" color={Theme.colors.sanctuarySaffron} fontWeight="$bold">{classroom?.subject || 'N/A'}</Text>
                     </VStack>
                     <Box sx={{ flex: 1 }} />
@@ -238,7 +243,7 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
             </Box>
 
             {/* Tabs */}
-            <HStack sx={{ backgroundColor: Theme.colors.midnightBlue, borderBottomWidth: 1, borderBottomColor: Theme.colors.deepIndigo }}>
+            <HStack sx={{ backgroundColor: colors.secondary, borderBottomWidth: 1, borderBottomColor: colors.border }}>
                 <TabButton id="students" label="Students" icon={Users} />
                 <TabButton id="lessons" label="Lessons" icon={BookOpen} />
                 <TabButton id="resources" label="Resources" icon={FileText} />
@@ -276,7 +281,7 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
                     <Center sx={{ flex: 1, padding: 40 }}>
                         <Box sx={{
                             padding: Theme.spacing.xl,
-                            backgroundColor: Theme.colors.midnightBlue,
+                            backgroundColor: colors.secondary,
                             borderRadius: Theme.corners.generous,
                             alignItems: 'center',
                             width: '100%'
@@ -285,16 +290,16 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
                                 width: 64,
                                 height: 64,
                                 borderRadius: 32,
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: colors.tertiary,
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 marginBottom: 16
                             }}>
-                                <Plus size={32} color={Theme.colors.mistGray} />
+                                <Plus size={32} color={colors.textTertiary} />
                             </Box>
-                            <Heading color={Theme.colors.sacredWhite} size="lg" mb="$2">Equipment Resources</Heading>
-                            <Text color={Theme.colors.mistGray} textAlign="center">
-                                Physical equipment and classroom resource management is coming soon.
+                            <Heading color={colors.text} size="lg" mb="$2">Equipment Resources</Heading>
+                            <Text color={colors.textSecondary} textAlign="center">
+                                {t('common.comingSoon')}
                             </Text>
                         </Box>
                     </Center>
@@ -304,19 +309,19 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
             {/* Modals */}
             <Modal isOpen={showAddMonthModal} onClose={() => setShowAddMonthModal(false)}>
                 <ModalBackdrop />
-                <ModalContent sx={{ backgroundColor: Theme.colors.midnightBlue }}>
+                <ModalContent sx={{ backgroundColor: colors.secondary }}>
                     <ModalHeader>
-                        <Heading color={Theme.colors.sacredWhite} size="lg">Add Monthly Module</Heading>
+                        <Heading color={colors.text} size="lg">Add Monthly Module</Heading>
                     </ModalHeader>
                     <ModalBody>
                         <VStack space="md">
-                            <Text color={Theme.colors.mistGray} size="sm">Give this month a title (e.g., "September 2026")</Text>
-                            <Input variant="outline" sx={{ backgroundColor: Theme.colors.deepIndigo, borderColor: Theme.colors.transparent }}>
+                            <Text color={colors.textSecondary} size="sm">Give this month a title (e.g., "September 2026")</Text>
+                            <Input variant="outline" sx={{ backgroundColor: colors.tertiary, borderColor: Theme.colors.transparent }}>
                                 <InputField
                                     placeholder="Enter title..."
                                     value={newMonthTitle}
                                     onChangeText={setNewMonthTitle}
-                                    color={Theme.colors.sacredWhite}
+                                    color={colors.text}
                                 />
                             </Input>
                         </VStack>
@@ -324,7 +329,7 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
                     <ModalFooter>
                         <HStack space="sm">
                             <Button variant="outline" action="secondary" onPress={() => setShowAddMonthModal(false)}>
-                                <ButtonText color={Theme.colors.mistGray}>Cancel</ButtonText>
+                                <ButtonText color={colors.textTertiary}>Cancel</ButtonText>
                             </Button>
                             <Button action="primary" onPress={handleAddMonth} isDisabled={!newMonthTitle.trim() || isSubmitting}>
                                 {isSubmitting ? <Spinner color={Theme.colors.white} /> : <ButtonText color={Theme.colors.white}>Create</ButtonText>}
@@ -337,9 +342,9 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
             {/* Add Content Modal (Material or Assignment) */}
             <Modal isOpen={showAddContentModal} onClose={() => setShowAddContentModal(false)}>
                 <ModalBackdrop />
-                <ModalContent sx={{ backgroundColor: Theme.colors.midnightBlue, maxWidth: 500 }}>
+                <ModalContent sx={{ backgroundColor: colors.secondary, maxWidth: 500 }}>
                     <ModalHeader>
-                        <Heading color={Theme.colors.sacredWhite} size="lg">
+                        <Heading color={colors.text} size="lg">
                             {contentType === 'material' ? 'Add Academic Material' : 'Create Assignment'}
                         </Heading>
                     </ModalHeader>
@@ -354,10 +359,10 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
                                                 <Box sx={{
                                                     padding: Theme.spacing.sm,
                                                     borderRadius: Theme.corners.tight,
-                                                    backgroundColor: formType === type ? Theme.colors.sanctuarySaffron : Theme.colors.deepIndigo,
+                                                    backgroundColor: formType === type ? Theme.colors.sanctuarySaffron : colors.tertiary,
                                                     alignItems: 'center'
                                                 }}>
-                                                    <Text color={formType === type ? Theme.colors.white : Theme.colors.mistGray} size="xs" bold>{type.toUpperCase()}</Text>
+                                                    <Text color={formType === type ? Theme.colors.white : colors.textSecondary} size="xs" bold>{type.toUpperCase()}</Text>
                                                 </Box>
                                             </Pressable>
                                         ))}
@@ -366,26 +371,26 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
                             )}
 
                             <VStack space="xs">
-                                <Text color={Theme.colors.mistGray} size="sm">Title</Text>
-                                <Input variant="outline" sx={{ backgroundColor: Theme.colors.deepIndigo, borderColor: Theme.colors.transparent }}>
+                                <Text color={colors.textSecondary} size="sm">Title</Text>
+                                <Input variant="outline" sx={{ backgroundColor: colors.tertiary, borderColor: Theme.colors.transparent }}>
                                     <InputField
                                         placeholder="Enter title..."
                                         value={formTitle}
                                         onChangeText={setFormTitle}
-                                        color={Theme.colors.sacredWhite}
+                                        color={colors.text}
                                     />
                                 </Input>
                             </VStack>
 
                             {(contentType === 'assignment' || formType === 'note') && (
                                 <VStack space="xs">
-                                    <Text color={Theme.colors.mistGray} size="sm">Description / Content</Text>
-                                    <Input variant="outline" sx={{ backgroundColor: Theme.colors.deepIndigo, borderColor: Theme.colors.transparent, minHeight: 80 }}>
+                                    <Text color={colors.textSecondary} size="sm">Description / Content</Text>
+                                    <Input variant="outline" sx={{ backgroundColor: colors.tertiary, borderColor: Theme.colors.transparent, minHeight: 80 }}>
                                         <InputField
                                             placeholder="Enter details..."
                                             value={formDescription}
                                             onChangeText={setFormDescription}
-                                            color={Theme.colors.sacredWhite}
+                                            color={colors.text}
                                             multiline
                                         />
                                     </Input>
@@ -394,13 +399,13 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
 
                             {contentType === 'material' && (formType === 'pdf' || formType === 'link') && (
                                 <VStack space="xs">
-                                    <Text color={Theme.colors.mistGray} size="sm">URL</Text>
-                                    <Input variant="outline" sx={{ backgroundColor: Theme.colors.deepIndigo, borderColor: Theme.colors.transparent }}>
+                                    <Text color={colors.textSecondary} size="sm">URL</Text>
+                                    <Input variant="outline" sx={{ backgroundColor: colors.tertiary, borderColor: Theme.colors.transparent }}>
                                         <InputField
                                             placeholder="https://..."
                                             value={formUrl}
                                             onChangeText={setFormUrl}
-                                            color={Theme.colors.sacredWhite}
+                                            color={colors.text}
                                             autoCapitalize="none"
                                         />
                                     </Input>
@@ -409,13 +414,13 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
 
                             {contentType === 'assignment' && (
                                 <VStack space="xs">
-                                    <Text color={Theme.colors.mistGray} size="sm">Due Date (Optional)</Text>
-                                    <Input variant="outline" sx={{ backgroundColor: Theme.colors.deepIndigo, borderColor: Theme.colors.transparent }}>
+                                    <Text color={colors.textSecondary} size="sm">Due Date (Optional)</Text>
+                                    <Input variant="outline" sx={{ backgroundColor: colors.tertiary, borderColor: Theme.colors.transparent }}>
                                         <InputField
                                             placeholder="YYYY-MM-DD"
                                             value={formDueDate}
                                             onChangeText={setFormDueDate}
-                                            color={Theme.colors.sacredWhite}
+                                            color={colors.text}
                                         />
                                     </Input>
                                 </VStack>
@@ -425,7 +430,7 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
                     <ModalFooter>
                         <HStack space="sm">
                             <Button variant="outline" action="secondary" onPress={() => setShowAddContentModal(false)}>
-                                <ButtonText color={Theme.colors.mistGray}>Cancel</ButtonText>
+                                <ButtonText color={colors.textTertiary}>Cancel</ButtonText>
                             </Button>
                             <Button action="primary" onPress={handleAddContent} isDisabled={!formTitle.trim() || isSubmitting}>
                                 {isSubmitting ? <Spinner color={Theme.colors.white} /> : <ButtonText color={Theme.colors.white}>Add</ButtonText>}
@@ -434,6 +439,6 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
                     </ModalFooter>
                 </ModalContent>
             </Modal>
-        </VStack>
+        </ScreenWrapper>
     );
 }

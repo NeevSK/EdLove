@@ -1,12 +1,22 @@
 ---
 title: "Montessori"
-subtitle: "The Prepared Environment"
-icon: "🧸"
-order: 30
-publishDate: 2026-02-12
+subtitle: "The child is the author of their own learning."
+icon: "🪷"
+order: 2
+accentColor: "#E07A5F"
+origin: "Maria Montessori, early 1900s, Italy/India"
+coreLogic: "Prepared environment + child-led exploration."
+draft: false
 ---
 
-"Follow the child." Maria Montessori discovered that children have an innate, internal blueprint for their own development. The role of the adult is not to "teach" in the traditional sense, but to prepare the environment and protect the child's concentration.
+### Prepared Environment
 
-### The Sanctuary of Concentration
-In a Montessori environment, the materials are self-correcting, and the child works at their own pace. This fosters a deep sense of agency and respect for one's own internal rhythm—the very definition of educational sovereignty.
+In a Montessori space, the teacher is not a lecturer but a guide. The environment is carefully curated to invite exploration.
+
+#### Core Principles
+- **Intrinsic Motivation**: Children choose their work based on inner interest.
+- **Hands-on Learning**: Abstract concepts are introduced through physical materials.
+- **Multi-Age Grouping**: Older children mentor younger ones, fostering community.
+
+#### The Reality
+While honoring the child's natural rhythm, it often faces challenges in accessibility and the economic reality of implementation.

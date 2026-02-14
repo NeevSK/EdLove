@@ -1,65 +1,16 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Navigation from '../components/Navigation.astro';
-import RealitySwitch from '../components/RealitySwitch.astro';
+import HeroHome from '../components/sections/HeroHome.astro';
+import FiveDoors from '../components/sections/FiveDoors.astro';
+import CurrentFocus from '../components/sections/CurrentFocus.astro';
 ---
 
-<BaseLayout title="Home">
-	<RealitySwitch />
-	
-	<main class="max-w-4xl mx-auto px-6 pb-24">
-		<Navigation />
-		
-		<section class="mt-24 mb-16">
-			<h1 class="text-xs uppercase tracking-[0.5em] font-mono text-[var(--text-main)]/50 mb-4 overflow-hidden">
-				<span class="inline-block animate-reveal">NeevSk // Personal Archive</span>
-			</h1>
-			
-			<div class="relative group">
-				<h2 class="text-5xl md:text-7xl font-serif dark:font-mono tracking-tight leading-tight transition-all duration-700">
-					Existential <br />
-					<span class="text-[var(--accent-secondary)] italic dark:not-italic">Cyberneticist</span>
-				</h2>
-				
-				<div class="mt-8 flex flex-col md:flex-row gap-8 items-start">
-					<div class="flex-1">
-						<p class="text-lg md:text-xl font-serif dark:font-mono leading-relaxed text-[var(--text-main)]/80">
-							INFJ 4w5. Epistemic Architect. Bohemian Philosopher. <br />
-							Developing the soul behind the machines at EdLove.
-						</p>
-						
-						<div class="mt-12 p-8 border border-[var(--text-main)]/5 bg-[var(--text-main)]/[0.02]">
-							<h3 class="text-sm font-mono uppercase tracking-widest mb-4 opacity-50">Current Reality Check</h3>
-							<p class="font-serif italic dark:font-mono dark:not-italic">
-								"Everything I want to show to the world is a fracture of what I am. This site is the uncollapsed wave function of my existence."
-							</p>
-						</div>
-					</div>
-					
-					<div class="w-full md:w-64 aspect-square border border-[var(--text-main)]/10 overflow-hidden group">
-						<div class="w-full h-full bg-[var(--text-main)]/5 flex items-center justify-center p-8 grayscale group-hover:grayscale-0 transition-all duration-700">
-							<svg xmlns="http://www.w3.org/2000/svg" class="w-full h-full opacity-20 group-hover:opacity-40 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M12 2v20"/><path d="M2 12h20"/><circle cx="12" cy="12" r="10"/><path d="m16 8-8 8"/><path d="m8 8 8 8"/>
-							</svg>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<footer class="mt-32 pt-12 border-t border-[var(--text-main)]/5 flex justify-between items-center opacity-40 hover:opacity-100 transition-opacity">
-			<p class="text-[10px] font-mono uppercase tracking-widest">© 2026 // NEEVSK.ORG</p>
-			<p class="text-[10px] font-mono uppercase tracking-widest">Coherence Initialized</p>
-		</footer>
-	</main>
+<BaseLayout 
+  title="Neev SK - Existential Cyberneticist" 
+  description="Building the soul behind the machines"
+  theme="home"
+>
+  <HeroHome />
+  <FiveDoors />
+  <CurrentFocus />
 </BaseLayout>
-
-<style>
-	@keyframes reveal {
-		from { transform: translateY(100%); }
-		to { transform: translateY(0); }
-	}
-	.animate-reveal {
-		animation: reveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-	}
-</style>

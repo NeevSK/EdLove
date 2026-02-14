@@ -26,6 +26,7 @@ import {
     Center,
 } from '@/ui';
 import { X, Save, User, Briefcase, ChevronDown, Camera } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';
 import { hapticLight, hapticSuccess, hapticError } from '../../utils/haptics';
@@ -41,6 +42,7 @@ interface EditProfileModalProps {
 }
 
 export default function EditProfileModal({ visible, onClose, onSave, currentProfile }: EditProfileModalProps) {
+    const { t } = useTranslation();
     const [fullName, setFullName] = useState('');
     const [phone, setPhone] = useState('');
     const [bio, setBio] = useState('');
@@ -92,7 +94,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
         hapticLight();
 
         try {
-            const updates: any = { 
+            const updates: any = {
                 full_name: fullName,
                 phone: phone,
                 bio: bio
@@ -100,8 +102,8 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
 
             // Only update avatar if it's a remote URL (already uploaded to Supabase Storage)
             // Don't persist local file:// URIs to the database
-            if (avatarUrl && 
-                avatarUrl !== (currentProfile?.avatar_url || null) && 
+            if (avatarUrl &&
+                avatarUrl !== (currentProfile?.avatar_url || null) &&
                 (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://'))) {
                 updates.avatar_url = avatarUrl;
             }
@@ -157,7 +159,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                             {/* Header */}
                             <HStack justifyContent="space-between" alignItems="center" mb={Theme.spacing.xl}>
                                 <Heading color={Theme.colors.sacredWhite} size="lg">
-                                    Edit Profile
+                                    {t('profile.settings')}
                                 </Heading>
                                 <Pressable onPress={onClose} p={Theme.spacing.xs}>
                                     <X color={Theme.colors.mistGray} size={24} />
@@ -196,13 +198,13 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                         </Pressable>
                                     </Box>
                                     <Text color={Theme.colors.mistGray} size="xs" mt="$2">
-                                        Tap camera to change (upload feature coming soon)
+                                        {t('profile.uploadComingSoon') || 'Upload feature coming soon'}
                                     </Text>
                                 </Center>
 
                                 {/* Name Input */}
                                 <VStack space="xs">
-                                    <Text color={Theme.colors.dimGray} size="sm">Full Name</Text>
+                                    <Text color={Theme.colors.dimGray} size="sm">{t('profile.fullName')}</Text>
                                     <Input
                                         size="xl"
                                         variant="outline"
@@ -214,7 +216,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                             color={Theme.colors.sacredWhite}
                                             value={fullName}
                                             onChangeText={setFullName}
-                                            placeholder="Enter your name"
+                                            placeholder={t('auth.fullName')}
                                             placeholderTextColor={Theme.colors.stoneGray}
                                         />
                                     </Input>
@@ -222,7 +224,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
 
                                 {/* Phone Input */}
                                 <VStack space="xs">
-                                    <Text color={Theme.colors.dimGray} size="sm">Phone Number</Text>
+                                    <Text color={Theme.colors.dimGray} size="sm">{t('profile.phone') || 'Phone Number'}</Text>
                                     <Input
                                         size="xl"
                                         variant="outline"
@@ -243,7 +245,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
 
                                 {/* Bio Input */}
                                 <VStack space="xs">
-                                    <Text color={Theme.colors.dimGray} size="sm">Bio</Text>
+                                    <Text color={Theme.colors.dimGray} size="sm">{t('profile.bio') || 'Bio'}</Text>
                                     <Input
                                         size="xl"
                                         variant="outline"
@@ -265,7 +267,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
 
                                 {/* Role Selector (Developer Mode) */}
                                 <Box>
-                                    <Text color={Theme.colors.dimGray} size="sm" mb="$1">Role (Developer Access)</Text>
+                                    <Text color={Theme.colors.dimGray} size="sm" mb="$1">{t('profile.role')} (Developer Access)</Text>
                                     <Select
                                         selectedValue={selectedRole || 'student'}
                                         onValueChange={(value) => setSelectedRole(value as UserRole)}
@@ -287,12 +289,12 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                                 <SelectDragIndicatorWrapper>
                                                     <SelectDragIndicator />
                                                 </SelectDragIndicatorWrapper>
-                                                <SelectItem label="Student" value="student" />
-                                                <SelectItem label="Teacher" value="teacher" />
-                                                <SelectItem label="Section Head" value="section_head" />
-                                                <SelectItem label="Grade Head" value="grade_head" />
-                                                <SelectItem label="Principal" value="principal" />
-                                                <SelectItem label="Founder & Developer" value="developer" />
+                                                <SelectItem label={t('role.student')} value="student" />
+                                                <SelectItem label={t('role.teacher')} value="teacher" />
+                                                <SelectItem label={t('role.section_head')} value="section_head" />
+                                                <SelectItem label={t('role.grade_head')} value="grade_head" />
+                                                <SelectItem label={t('role.principal')} value="principal" />
+                                                <SelectItem label={t('role.developer')} value="developer" />
                                             </SelectContent>
                                         </SelectPortal>
                                     </Select>
@@ -311,7 +313,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                     }}
                                 >
                                     <ButtonText color={Theme.colors.sacredWhite}>
-                                        {loading ? 'Saving...' : 'Save Changes'}
+                                        {loading ? t('common.processing') : t('common.save')}
                                     </ButtonText>
                                     {!loading && <Save size={20} color={Theme.colors.sacredWhite} style={{ marginLeft: 8 }} />}
                                 </Button>

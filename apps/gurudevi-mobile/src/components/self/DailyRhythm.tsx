@@ -33,6 +33,7 @@ import {
     ToastTitle,
     Icon
 } from "@/ui";
+import { useTranslation } from 'react-i18next';
 import { Maximize2, Plus, Edit2, Clock, Trash, ChevronDown } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { useTimetable, Period } from '../../hooks/useTimetable';
@@ -48,6 +49,7 @@ const DAYS = [
 ];
 
 function DailyRhythmContent() {
+    const { t } = useTranslation();
     const [activeDay, setActiveDay] = useState(new Date().getDay() || 1);
     if (activeDay > 5 || activeDay === 0) setActiveDay(1); // Set to Monday if weekend
 
@@ -70,9 +72,9 @@ function DailyRhythmContent() {
         if (!editingPeriod?.subject || !editingPeriod?.start_time || !editingPeriod?.end_time) {
             toast.show({
                 placement: "top",
-                render: ({ id }) => (
+                render: ({ id }: { id: string }) => (
                     <Toast nativeID={id} action="error" variant="solid">
-                        <ToastTitle>Missing required fields</ToastTitle>
+                        <ToastTitle>{t('self.missingFields')}</ToastTitle>
                     </Toast>
                 )
             });
@@ -97,9 +99,9 @@ function DailyRhythmContent() {
             setEditingPeriod(null);
             toast.show({
                 placement: "top",
-                render: ({ id }) => (
+                render: ({ id }: { id: string }) => (
                     <Toast nativeID={id} action="success" variant="solid">
-                        <ToastTitle>Timetable updated</ToastTitle>
+                        <ToastTitle>{t('self.timetableUpdated')}</ToastTitle>
                     </Toast>
                 )
             });
@@ -171,8 +173,8 @@ function DailyRhythmContent() {
             ) : periods.length === 0 ? (
                 <EmptyState
                     icon={Clock}
-                    title="No classes scheduled"
-                    description="Tap the + button to add a lesson."
+                    title={t('self.noClasses')}
+                    description={t('self.addLesson')}
                     minHeight={200}
                 />
             ) : (
@@ -224,14 +226,14 @@ function DailyRhythmContent() {
                                                     </Heading>
                                                     {active && (
                                                         <Box px="$2" py="$0.5" sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: '$full' }}>
-                                                            <Text size="2xs" color={Theme.colors.white} bold>NOW</Text>
+                                                            <Text size="2xs" color={Theme.colors.white} bold>{t('common.now') || 'NOW'}</Text>
                                                         </Box>
                                                     )}
                                                 </HStack>
                                                 <HStack space="xs" alignItems="center">
                                                     <Text size="xs" color={Theme.colors.mistGray}>{period.class_name}</Text>
                                                     {period.type === 'relief' && (
-                                                        <Text size="xs" color={Theme.colors.emberRed} italic>(Relief)</Text>
+                                                        <Text size="xs" color={Theme.colors.emberRed} italic>({t('self.relief')})</Text>
                                                     )}
                                                 </HStack>
                                             </VStack>
@@ -250,7 +252,7 @@ function DailyRhythmContent() {
                 <ModalContent sx={{ backgroundColor: Theme.colors.midnightBlue }}>
                     <ModalHeader>
                         <Heading size="lg" color={Theme.colors.sanctuarySaffron}>
-                            {editingPeriod?.id ? "Edit Period" : "New Period"}
+                            {editingPeriod?.id ? t('self.editPeriod') : t('self.newPeriod')}
                         </Heading>
                         <ModalCloseButton>
                             <CloseIcon color={Theme.colors.mistGray} />
@@ -260,17 +262,17 @@ function DailyRhythmContent() {
                         <VStack space="lg" pb="$6">
                             <Input variant="outline" size="md">
                                 <InputField
-                                    placeholder="Subject (e.g. Math)"
+                                    placeholder={t('self.subjectPlaceholder')}
                                     value={editingPeriod?.subject}
-                                    onChangeText={(val) => setEditingPeriod({ ...editingPeriod, subject: val })}
+                                    onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, subject: val })}
                                     color={Theme.colors.sacredWhite}
                                 />
                             </Input>
                             <Input variant="outline" size="md">
                                 <InputField
-                                    placeholder="Class (e.g. 10-A)"
+                                    placeholder={t('self.classPlaceholder')}
                                     value={editingPeriod?.class_name}
-                                    onChangeText={(val) => setEditingPeriod({ ...editingPeriod, class_name: val })}
+                                    onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, class_name: val })}
                                     color={Theme.colors.sacredWhite}
                                 />
                             </Input>
@@ -278,17 +280,17 @@ function DailyRhythmContent() {
                             <HStack space="md">
                                 <Input variant="outline" size="md" style={{ flex: 1 }}>
                                     <InputField
-                                        placeholder="Start (08:00)"
+                                        placeholder={t('self.startPlaceholder')}
                                         value={editingPeriod?.start_time}
-                                        onChangeText={(val) => setEditingPeriod({ ...editingPeriod, start_time: val })}
+                                        onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, start_time: val })}
                                         color={Theme.colors.sacredWhite}
                                     />
                                 </Input>
                                 <Input variant="outline" size="md" style={{ flex: 1 }}>
                                     <InputField
-                                        placeholder="End (08:40)"
+                                        placeholder={t('self.endPlaceholder')}
                                         value={editingPeriod?.end_time}
-                                        onChangeText={(val) => setEditingPeriod({ ...editingPeriod, end_time: val })}
+                                        onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, end_time: val })}
                                         color={Theme.colors.sacredWhite}
                                     />
                                 </Input>
@@ -296,18 +298,18 @@ function DailyRhythmContent() {
 
                             <Select
                                 selectedValue={editingPeriod?.type}
-                                onValueChange={(val) => setEditingPeriod({ ...editingPeriod, type: val as any })}
+                                onValueChange={(val: string) => setEditingPeriod({ ...editingPeriod, type: val as any })}
                             >
                                 <SelectTrigger variant="outline" size="md">
-                                    <SelectInput placeholder="Type" color={Theme.colors.sacredWhite} />
+                                    <SelectInput placeholder={t('self.type')} color={Theme.colors.sacredWhite} />
                                     <SelectIcon as={ChevronDown} mr="$3" />
                                 </SelectTrigger>
                                 <SelectPortal>
                                     <SelectBackdrop />
                                     <SelectContent>
-                                        <SelectItem label="Subject" value="subject" />
-                                        <SelectItem label="Relief" value="relief" />
-                                        <SelectItem label="Interval" value="interval" />
+                                        <SelectItem label={t('self.subject')} value="subject" />
+                                        <SelectItem label={t('self.relief')} value="relief" />
+                                        <SelectItem label={t('self.interval')} value="interval" />
                                     </SelectContent>
                                 </SelectPortal>
                             </Select>
@@ -321,7 +323,7 @@ function DailyRhythmContent() {
                                         onPress={() => deletePeriod(editingPeriod.id!)} // Note: Hook handles optimistic UI but here we just call it
                                     >
                                         <Trash size={18} color={Theme.colors.emberRed} />
-                                        <ButtonText ml="$2" color={Theme.colors.emberRed}>Delete</ButtonText>
+                                        <ButtonText ml="$2" color={Theme.colors.emberRed}>{t('common.delete')}</ButtonText>
                                     </Button>
                                 )}
                                 <Button
@@ -329,7 +331,7 @@ function DailyRhythmContent() {
                                     sx={{ flex: 2, backgroundColor: Theme.colors.sanctuarySaffron }}
                                     onPress={handleSave}
                                 >
-                                    <ButtonText color={Theme.colors.white}>Save</ButtonText>
+                                    <ButtonText color={Theme.colors.white}>{t('common.save')}</ButtonText>
                                 </Button>
                             </HStack>
                         </VStack>

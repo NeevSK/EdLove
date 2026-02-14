@@ -13,11 +13,14 @@ import {
   BookOpen,
   Users,
   LayoutGrid,
-  Library
+  Library,
+  Heart,
+  School
 } from 'lucide-react-native';
 
 import ClassroomStackNavigator from './ClassroomStackNavigator';
 import { useUserRole } from '../hooks/useUserRole';
+import { useThemedColors } from '../hooks/useThemedColors';
 
 // Screens
 import {
@@ -36,19 +39,24 @@ interface TabNavigatorProps {
 export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   const { t } = useTranslation();
   const { role } = useUserRole();
-  const [currentTab, setCurrentTab] = React.useState<any>('self');
+  const colors = useThemedColors();
+  const [currentTab, setCurrentTab] = React.useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
   const insets = useSafeAreaInsets(); // Get safe area insets
 
   // Dynamic Label Logic
   const getClassroomLabel = () => {
-    if (role === 'principal') return t('tabs.school');
+    if (role === 'principal') return t('tabs.mySchool') || 'My School';
+    if (role === 'founder') return t('tabs.school');
     if (role === 'section_head') return t('tabs.section');
+    if (role === 'grade_head') return t('tabs.grade') || t('tabs.classroom');
     return t('tabs.classroom');
   };
 
   return (
     <View style={{ flex: 1 }}>
       <Tab.Navigator
+        id="MainTabs"
+        initialRouteName="Self"
         screenListeners={{
           state: (e) => {
             const state = e.data?.state;
@@ -56,7 +64,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
 
             const routeName = state.routes[state.index]?.name;
             if (routeName) {
-              const tabName = routeName.toLowerCase();
+              const tabName = routeName.toLowerCase() as any;
               setCurrentTab(tabName);
               if (onTabChange) {
                 onTabChange(tabName);
@@ -67,8 +75,8 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: Theme.colors.midnightBlue,
-            borderTopColor: Theme.colors.glass.dark.border, // Use glass border token
+            backgroundColor: colors.secondary, // Use secondary for a cleaner look
+            borderTopColor: colors.border,
             borderTopWidth: 1,
             height: 60 + insets.bottom, // Dynamic height including safe area
             paddingBottom: insets.bottom > 0 ? insets.bottom : 8, // Adjust padding
@@ -79,8 +87,8 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             right: 0,
             elevation: 0, // Remove default elevation
           },
-          tabBarActiveTintColor: Theme.colors.sanctuarySaffron,
-          tabBarInactiveTintColor: Theme.colors.mistGray,
+          tabBarActiveTintColor: colors.action,
+          tabBarInactiveTintColor: colors.textTertiary,
           tabBarLabelStyle: {
             fontSize: 12,
             fontFamily: 'Inter_500Medium',
@@ -88,36 +96,34 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           },
           tabBarBackground: () => (
             // Optional: Add BlurView here for glass tab bar
-            <View style={{ flex: 1, backgroundColor: Theme.colors.midnightBlue }} />
+            <View style={{ flex: 1, backgroundColor: colors.secondary }} />
           ),
         }}
       >
-        {/* 1. Self Tab */}
+        {/* 1. Profile Tab */}
         <Tab.Screen
-          name="Self"
+          name="Profile"
           options={{
-            tabBarLabel: t('tabs.self'),
+            tabBarLabel: t('tabs.profile'),
             tabBarIcon: ({ color, size }) => (
-              <User color={color} size={size} />
+              <User color={color} size={size} fill={currentTab === 'profile' ? color : 'none'} />
             ),
           }}
         >
           {() => (
-            <ErrorBoundary name="Self Screen">
-              <SelfScreen />
+            <ErrorBoundary name="Profile Screen">
+              <ProfileScreen />
             </ErrorBoundary>
           )}
         </Tab.Screen>
 
-        {/* 2. Classroom Tab (Dynamic Name) */}
+        {/* 2. Classroom Tab */}
         <Tab.Screen
           name="Classroom"
           options={{
             tabBarLabel: getClassroomLabel(),
             tabBarIcon: ({ color, size }) => (
-              role === 'principal'
-                ? <LayoutGrid color={color} size={size} />
-                : <BookOpen color={color} size={size} />
+              <School color={color} size={size} fill={currentTab === 'classroom' ? color : 'none'} />
             ),
           }}
         >
@@ -128,13 +134,30 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           )}
         </Tab.Screen>
 
-        {/* 3. Community Tab */}
+        {/* 3. Self Tab (Center Anchor) */}
+        <Tab.Screen
+          name="Self"
+          options={{
+            tabBarLabel: t('tabs.self'),
+            tabBarIcon: ({ color, size }) => (
+              <Heart color={color} size={size} fill={currentTab === 'self' ? color : 'none'} />
+            ),
+          }}
+        >
+          {() => (
+            <ErrorBoundary name="Self Screen">
+              <SelfScreen />
+            </ErrorBoundary>
+          )}
+        </Tab.Screen>
+
+        {/* 4. Community Tab */}
         <Tab.Screen
           name="Community"
           options={{
             tabBarLabel: t('tabs.community'),
             tabBarIcon: ({ color, size }) => (
-              <Users color={color} size={size} />
+              <Users color={color} size={size} fill={currentTab === 'community' ? color : 'none'} />
             ),
           }}
         >
@@ -145,13 +168,13 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           )}
         </Tab.Screen>
 
-        {/* 4. Library Tab */}
+        {/* 5. Library Tab */}
         <Tab.Screen
           name="Library"
           options={{
             tabBarLabel: t('tabs.library'),
             tabBarIcon: ({ color, size }) => (
-              <Library color={color} size={size} />
+              <Library color={color} size={size} fill={currentTab === 'library' ? color : 'none'} />
             ),
           }}
         >
@@ -161,26 +184,10 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             </ErrorBoundary>
           )}
         </Tab.Screen>
-
-        {/* 5. Profile Tab */}
-        <Tab.Screen
-          name="Profile"
-          options={{
-            tabBarLabel: t('tabs.profile'),
-            tabBarIcon: ({ color, size }) => (
-              <User color={color} size={size} />
-            ),
-          }}
-        >
-          {() => (
-            <ErrorBoundary name="Profile Screen">
-              <ProfileScreen />
-            </ErrorBoundary>
-          )}
-        </Tab.Screen>
       </Tab.Navigator>
 
-      {/* Global Lotus FAB */}
+      {/* Global Lotus FAB - Disabled Temporarily */}
+      {/* 
       <LotusPetalFAB
         currentTab={currentTab}
         onPress={() => {
@@ -190,6 +197,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         // Pass bottom inset to FAB to lift it above tab bar
         bottomInset={60 + insets.bottom + 16}
       />
+      */}
     </View>
   );
 }

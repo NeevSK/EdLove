@@ -32,6 +32,7 @@ import { Theme } from '../../constants/Theme';
 import { ClassroomStudent, api } from '../../lib/api';
 import { hapticLight, hapticMedium } from '../../utils/haptics';
 import { AddStudentModal } from './AddStudentModal';
+import { useThemedColors } from '../../hooks/useThemedColors';
 import QRCodeGenerator from '../shared/QRCodeGenerator';
 import * as Clipboard from 'expo-clipboard';
 
@@ -46,6 +47,7 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
     const [selectedStudent, setSelectedStudent] = useState<ClassroomStudent | null>(null);
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
     const [studentForQr, setStudentForQr] = useState<ClassroomStudent | null>(null);
+    const colors = useThemedColors();
 
     const handleRemoveStudent = async (studentId: string) => {
         try {
@@ -83,18 +85,18 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                 <VStack space="md">
                     {students.length === 0 ? (
                         <Center sx={{ padding: Theme.spacing.xl }}>
-                            <Text color={Theme.colors.mistGray}>No students in this class yet.</Text>
+                            <Text color={colors.textSecondary}>No students in this class yet.</Text>
                         </Center>
                     ) : (
                         students.map((student) => (
                             <Box
                                 key={student.id}
                                 sx={{
-                                    backgroundColor: Theme.colors.midnightBlue,
+                                    backgroundColor: colors.secondary,
                                     borderRadius: Theme.corners.comfortable,
                                     padding: Theme.spacing.md,
                                     borderWidth: 1,
-                                    borderColor: student.student_id ? Theme.colors.deepIndigo : Theme.colors.amberGlow,
+                                    borderColor: student.student_id ? colors.border : Theme.colors.amberGlow,
                                     opacity: student.student_id ? 1 : 0.9,
                                 }}
                             >
@@ -110,7 +112,7 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                                                 width: 36,
                                                 height: 36,
                                                 borderRadius: 18,
-                                                backgroundColor: Theme.colors.deepIndigo,
+                                                backgroundColor: colors.tertiary,
                                                 justifyContent: 'center',
                                                 alignItems: 'center',
                                             }}
@@ -120,11 +122,11 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                                             </Text>
                                         </Box>
                                         <VStack>
-                                            <Text color={Theme.colors.sacredWhite} fontWeight="$bold">
+                                            <Text color={colors.text} fontWeight="$bold">
                                                 {student.full_name}
                                             </Text>
                                             {student.notes && (
-                                                <Text size="xs" color={Theme.colors.mistGray}>
+                                                <Text size="xs" color={colors.textSecondary}>
                                                     {student.notes}
                                                 </Text>
                                             )}
@@ -141,7 +143,7 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                                         )}
                                         <Pressable onPress={() => handleEditStudent(student)}>
                                             <Box sx={{ padding: Theme.spacing.xs }}>
-                                                <Edit2 size={18} color={Theme.colors.mistGray} />
+                                                <Edit2 size={18} color={colors.textSecondary} />
                                             </Box>
                                         </Pressable>
                                         <Pressable
@@ -209,11 +211,11 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
             {/* View QR Modal for Shadow Students */}
             <Modal isOpen={!!studentForQr} onClose={() => setStudentForQr(null)} size="md">
                 <ModalBackdrop />
-                <ModalContent sx={{ backgroundColor: Theme.colors.midnightBlue, borderColor: Theme.colors.deepIndigo, borderWidth: 1 }}>
+                <ModalContent sx={{ backgroundColor: colors.secondary, borderColor: colors.border, borderWidth: 1 }}>
                     <ModalHeader>
-                        <Heading color={Theme.colors.sacredWhite}>Invite Student</Heading>
+                        <Heading color={colors.text}>Invite Student</Heading>
                         <ModalCloseButton>
-                            <Icon as={CloseIcon} color={Theme.colors.mistGray} />
+                            <Icon as={CloseIcon} color={colors.textSecondary} />
                         </ModalCloseButton>
                     </ModalHeader>
                     <ModalBody>
@@ -227,17 +229,17 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                                 />
                             </Box>
                             <VStack space="xs" alignItems="center">
-                                <Heading size="sm" color={Theme.colors.sacredWhite}>{studentForQr?.full_name}</Heading>
-                                <Text color={Theme.colors.mistGray} size="xs">Individual Invite Code</Text>
+                                <Heading size="sm" color={colors.text}>{studentForQr?.full_name}</Heading>
+                                <Text color={colors.textSecondary} size="xs">Individual Invite Code</Text>
                                 <Pressable onPress={() => copyToClipboard(studentForQr?.invite_code || '')}>
                                     <Text color={Theme.colors.sanctuarySaffron} fontWeight="$bold">{studentForQr?.invite_code}</Text>
                                 </Pressable>
                             </VStack>
                             <Button
                                 onPress={() => setStudentForQr(null)}
-                                sx={{ backgroundColor: Theme.colors.deepIndigo, width: '100%' }}
+                                sx={{ backgroundColor: colors.tertiary, width: '100%' }}
                             >
-                                <ButtonText>Close</ButtonText>
+                                <ButtonText color={colors.text}>Close</ButtonText>
                             </Button>
                         </VStack>
                     </ModalBody>

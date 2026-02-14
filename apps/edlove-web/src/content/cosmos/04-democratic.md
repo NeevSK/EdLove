@@ -1,12 +1,22 @@
 ---
-title: "Democratic Education"
-subtitle: "Radical Agency"
-icon: "🗳️"
-order: 40
-publishDate: 2026-02-12
+title: "Democratic / Free Schools"
+subtitle: "Students govern their own education."
+icon: "⚖️"
+order: 3
+accentColor: "#4A90E2"
+origin: "A.S. Neill's Summerhill (1921), evolved globally"
+coreLogic: "Student self-governance + freedom to learn."
+draft: false
 ---
 
-Children are people. They deserve the same rights and dignity as adults. In a democratic school, students have a genuine say in how their environment is run and what they choose to learn.
+### Radical Autonomy
 
-### Learning Freedom
-You do not learn democracy by reading about it in a dictatorship (a traditional classroom). You learn it by practicing it. This paradigm shifts the power from the institution to the individual, honoring the principles of consent and community governance.
+Democratic schools operate on a simple, radical premise: students have the right to govern their own lives and learning.
+
+#### How It Works
+- **School Meetings**: Collective decision-making where students and staff have equal votes.
+- **Self-Directed Time**: No fixed curriculum; students decide what to study and when.
+- **Civic Capacity**: Develops deep responsibility and empathy through real governance.
+
+#### Tensions
+Requires extraordinary trust and is difficult to scale within systems that demand standardized outcomes.

@@ -1,34 +1,78 @@
-import React, { ReactNode } from 'react';
-import { View, StyleSheet, StatusBar, Dimensions } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import React, { ReactNode, useMemo } from 'react';
+import {
+    View,
+    StyleSheet,
+    StatusBar,
+    ScrollView,
+    KeyboardAvoidingView,
+    Platform
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Theme } from '../../constants/Theme';
-import { IS_LOW_POWER_MODE } from '../../utils/DeviceUtils';
-import { useColorScheme } from 'react-native';
+import { useEnvironment } from '../../context';
+import { getThemeColors } from '../../utils/themeColors';
 
 interface ScreenWrapperProps {
     children: ReactNode;
     noPadding?: boolean;
+    scroll?: boolean;
+    keyboardAvoiding?: boolean;
 }
 
-const ScreenWrapper: React.FC<ScreenWrapperProps> = ({ children, noPadding = false }) => {
-    const colorScheme = useColorScheme();
-    const isDark = colorScheme === 'dark';
+const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
+    children,
+    noPadding = false,
+    scroll = false,
+    keyboardAvoiding = true
+}) => {
+    const { isDark, temporalPhase, effectiveFidelity } = useEnvironment();
+    const colors = getThemeColors(isDark, temporalPhase);
     const insets = useSafeAreaInsets();
+    const isLowFidelity = effectiveFidelity === 'low';
 
-    // Background Colors
-    const bgColors = isDark
-        ? [Theme.colors.voidIndigo, Theme.colors.deepIndigo, Theme.colors.midnightBlue] // Dark Mode: Deep Ocean
-        : [Theme.colors.creamSilence, Theme.colors.lotusWhite, Theme.colors.sandStone]; // Light Mode: Porcelain
+    // Background Gradient based on theme engine
+    const bgColors = useMemo(() => {
+        // Preference for Sky Blue dominant backgrounds
+        if (temporalPhase === 'dawn' || temporalPhase === 'day') {
+            return isDark
+                ? ['#0F172A', '#1E293B', '#1E293B'] // Darker Sky/Void Blue
+                : ['#E0F7FF', '#F0F9FF', '#F0F9FF']; // Pure Sky Blue light mode
+        }
+
+        return [colors.primary, colors.secondary, colors.tertiary];
+    }, [colors, isDark, temporalPhase]);
+
+    const content = (
+        <View
+            style={[
+                styles.content,
+                /* Apply top inset manually to allow background to bleed under status bar */
+                { paddingTop: insets.top, paddingBottom: insets.bottom },
+                !noPadding && styles.defaultPadding
+            ]}
+        >
+            {children}
+        </View>
+    );
+
+    const mainContent = scroll ? (
+        <ScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            showsVerticalScrollIndicator={false}
+        >
+            {content}
+        </ScrollView>
+    ) : content;
 
     return (
-        <View style={styles.container}>
-            {/* 1. Global Background */}
-            {IS_LOW_POWER_MODE ? (
-                // Low Power: Solid color
-                <View style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? Theme.colors.voidIndigo : Theme.colors.creamSilence }]} />
+        <View style={[styles.container, { backgroundColor: colors.primary }]}>
+            {/* 1. Global Background Atmosphere */}
+            {isLowFidelity ? (
+                // Efficiency Mode: Solid color
+                <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.primary }]} />
             ) : (
-                // High Power: Gradient Atmosphere
+                // Sanctuary Mode: Gradient Atmosphere
                 <LinearGradient
                     colors={bgColors as [string, string, string]}
                     locations={[0, 0.6, 1]}
@@ -43,17 +87,15 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({ children, noPadding = fal
                 translucent
             />
 
-            {/* 3. Safe Area Content */}
-            <View
-                style={[
-                    styles.content,
-                    /* Apply top inset manually instead of SafeAreaView to allow background to bleed */
-                    { paddingTop: insets.top, paddingBottom: 0 },
-                    !noPadding && styles.defaultPadding
-                ]}
-            >
-                <>{children}</>
-            </View>
+            {/* 3. Safe Area & Layout Control */}
+            {keyboardAvoiding ? (
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    style={styles.container}
+                >
+                    {mainContent}
+                </KeyboardAvoidingView>
+            ) : mainContent}
         </View>
     );
 };
@@ -66,7 +108,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     defaultPadding: {
-        paddingHorizontal: Theme.spacing.lg,
+        paddingHorizontal: Theme.spacing.md,
     },
 });
 

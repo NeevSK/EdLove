@@ -32,6 +32,7 @@ import { api, ClassroomStudent } from '../../lib/api';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';
 import QRCodeGenerator from '../shared/QRCodeGenerator';
 import * as Clipboard from 'expo-clipboard';
+import { useThemedColors } from '../../hooks/useThemedColors';
 
 interface AddStudentModalProps {
     isOpen: boolean;
@@ -54,6 +55,7 @@ export function AddStudentModal({
     const [loading, setLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [createdShadow, setCreatedShadow] = useState<ClassroomStudent | null>(null);
+    const colors = useThemedColors();
 
     // Manual Entry State
     const [shadowName, setShadowName] = useState('');
@@ -153,17 +155,17 @@ export function AddStudentModal({
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="lg">
             <ModalBackdrop />
-            <ModalContent sx={{ backgroundColor: Theme.colors.midnightBlue, borderColor: Theme.colors.deepIndigo, borderWidth: 1 }}>
+            <ModalContent sx={{ backgroundColor: colors.secondary, borderColor: colors.border, borderWidth: 1 }}>
                 <ModalHeader>
-                    <Heading color={Theme.colors.sacredWhite}>{studentToEdit ? 'Edit Student' : 'Add Student'}</Heading>
+                    <Heading color={colors.text}>{studentToEdit ? 'Edit Student' : 'Add Student'}</Heading>
                     <ModalCloseButton>
-                        <Icon as={CloseIcon} color={Theme.colors.mistGray} />
+                        <Icon as={CloseIcon} color={colors.textSecondary} />
                     </ModalCloseButton>
                 </ModalHeader>
                 <ModalBody>
                     <VStack space="lg" pb="$4">
                         {!studentToEdit && !createdShadow && (
-                            <HStack sx={{ backgroundColor: Theme.colors.deepIndigo, borderRadius: Theme.corners.comfortable, padding: 4 }}>
+                            <HStack sx={{ backgroundColor: colors.tertiary, borderRadius: Theme.corners.comfortable, padding: 4 }}>
                                 <Pressable
                                     onPress={() => setActiveTab('search')}
                                     sx={{
@@ -175,8 +177,8 @@ export function AddStudentModal({
                                     }}
                                 >
                                     <HStack space="xs" alignItems="center">
-                                        <Search size={16} color={activeTab === 'search' ? Theme.colors.white : Theme.colors.mistGray} />
-                                        <Text color={activeTab === 'search' ? Theme.colors.white : Theme.colors.mistGray} size="sm" fontWeight="$bold">Search</Text>
+                                        <Search size={16} color={activeTab === 'search' ? Theme.colors.white : colors.textSecondary} />
+                                        <Text color={activeTab === 'search' ? Theme.colors.white : colors.textSecondary} size="sm" fontWeight="$bold">Search</Text>
                                     </HStack>
                                 </Pressable>
                                 <Pressable
@@ -190,8 +192,8 @@ export function AddStudentModal({
                                     }}
                                 >
                                     <HStack space="xs" alignItems="center">
-                                        <UserPlus size={16} color={activeTab === 'entry' ? Theme.colors.white : Theme.colors.mistGray} />
-                                        <Text color={activeTab === 'entry' ? Theme.colors.white : Theme.colors.mistGray} size="sm" fontWeight="$bold">Manual Entry</Text>
+                                        <UserPlus size={16} color={activeTab === 'entry' ? Theme.colors.white : colors.textSecondary} />
+                                        <Text color={activeTab === 'entry' ? Theme.colors.white : colors.textSecondary} size="sm" fontWeight="$bold">Manual Entry</Text>
                                     </HStack>
                                 </Pressable>
                                 <Pressable
@@ -205,8 +207,8 @@ export function AddStudentModal({
                                     }}
                                 >
                                     <HStack space="xs" alignItems="center">
-                                        <QrCode size={16} color={activeTab === 'qr' ? Theme.colors.white : Theme.colors.mistGray} />
-                                        <Text color={activeTab === 'qr' ? Theme.colors.white : Theme.colors.mistGray} size="sm" fontWeight="$bold">Join QR</Text>
+                                        <QrCode size={16} color={activeTab === 'qr' ? Theme.colors.white : colors.textSecondary} />
+                                        <Text color={activeTab === 'qr' ? Theme.colors.white : colors.textSecondary} size="sm" fontWeight="$bold">Join QR</Text>
                                     </HStack>
                                 </Pressable>
                             </HStack>
@@ -223,8 +225,8 @@ export function AddStudentModal({
                                     />
                                 </Box>
                                 <VStack space="xs" alignItems="center">
-                                    <Heading size="md" color={Theme.colors.sacredWhite}>{createdShadow.full_name}</Heading>
-                                    <Text color={Theme.colors.mistGray} size="sm">Individual Invite Code</Text>
+                                    <Heading size="md" color={colors.text}>{createdShadow.full_name}</Heading>
+                                    <Text color={colors.textSecondary} size="sm">Individual Invite Code</Text>
                                     <Pressable onPress={() => copyToClipboard(createdShadow.invite_code || '')}>
                                         <Text color={Theme.colors.sanctuarySaffron} fontWeight="$bold">{createdShadow.invite_code}</Text>
                                     </Pressable>
@@ -239,23 +241,23 @@ export function AddStudentModal({
                         ) : activeTab === 'search' ? (
                             <VStack space="md">
                                 {studentToEdit ? (
-                                    <Box sx={{ padding: Theme.spacing.md, backgroundColor: Theme.colors.deepIndigo, borderRadius: Theme.corners.comfortable }}>
-                                        <Text color={Theme.colors.sacredWhite} fontWeight="$bold">{studentToEdit.full_name}</Text>
-                                        <Text size="xs" color={Theme.colors.mistGray}>Role: Student</Text>
+                                    <Box sx={{ padding: Theme.spacing.md, backgroundColor: colors.tertiary, borderRadius: Theme.corners.comfortable }}>
+                                        <Text color={colors.text} fontWeight="$bold">{studentToEdit.full_name}</Text>
+                                        <Text size="xs" color={colors.textSecondary}>Role: Student</Text>
                                     </Box>
                                 ) : (
                                     <VStack space="xs">
-                                        <FormControlLabel><FormControlLabelText color={Theme.colors.mistGray}>Select Student</FormControlLabelText></FormControlLabel>
-                                        <Input sx={{ borderColor: Theme.colors.deepIndigo, backgroundColor: Theme.colors.voidIndigo }}>
+                                        <FormControlLabel><FormControlLabelText color={colors.textSecondary}>Select Student</FormControlLabelText></FormControlLabel>
+                                        <Input sx={{ borderColor: colors.border, backgroundColor: colors.primary }}>
                                             <InputField
                                                 placeholder="Search student by name..."
-                                                color={Theme.colors.sacredWhite}
+                                                color={colors.text}
                                                 value={searchQuery}
                                                 onChangeText={setSearchQuery}
                                             />
                                         </Input>
 
-                                        <Box sx={{ height: 200, marginTop: Theme.spacing.sm, backgroundColor: Theme.colors.voidIndigo, borderRadius: Theme.corners.comfortable, padding: Theme.spacing.xs }}>
+                                        <Box sx={{ height: 200, marginTop: Theme.spacing.sm, backgroundColor: colors.primary, borderRadius: Theme.corners.comfortable, padding: Theme.spacing.xs }}>
                                             {loading ? (
                                                 <Center sx={{ flex: 1 }}><Spinner color={Theme.colors.sanctuarySaffron} /></Center>
                                             ) : (
@@ -268,13 +270,13 @@ export function AddStudentModal({
                                                             sx={{
                                                                 padding: Theme.spacing.sm,
                                                                 borderBottomWidth: 1,
-                                                                borderBottomColor: Theme.colors.deepIndigo,
+                                                                borderBottomColor: colors.border,
                                                                 opacity: isSubmitting ? 0.5 : 1
                                                             }}
                                                             disabled={isSubmitting}
                                                         >
                                                             <HStack justifyContent="space-between" alignItems="center">
-                                                                <Text color={Theme.colors.sacredWhite}>{item.full_name}</Text>
+                                                                <Text color={colors.text}>{item.full_name}</Text>
                                                                 <Plus size={16} color={Theme.colors.sanctuarySaffron} />
                                                             </HStack>
                                                         </Pressable>
@@ -287,12 +289,12 @@ export function AddStudentModal({
 
                                 <HStack space="md">
                                     <FormControl sx={{ flex: 1 }}>
-                                        <FormControlLabel><FormControlLabelText color={Theme.colors.mistGray}>Roll Number</FormControlLabelText></FormControlLabel>
-                                        <Input sx={{ borderColor: Theme.colors.deepIndigo }}>
+                                        <FormControlLabel><FormControlLabelText color={colors.textSecondary}>Roll Number</FormControlLabelText></FormControlLabel>
+                                        <Input sx={{ borderColor: colors.border }}>
                                             <InputField
                                                 keyboardType="numeric"
                                                 placeholder="e.g. 10"
-                                                color={Theme.colors.sacredWhite}
+                                                color={colors.text}
                                                 value={rollNumber}
                                                 onChangeText={setRollNumber}
                                             />
@@ -301,11 +303,11 @@ export function AddStudentModal({
                                 </HStack>
 
                                 <FormControl>
-                                    <FormControlLabel><FormControlLabelText color={Theme.colors.mistGray}>Notes (Optional)</FormControlLabelText></FormControlLabel>
-                                    <Input sx={{ borderColor: Theme.colors.deepIndigo }}>
+                                    <FormControlLabel><FormControlLabelText color={colors.textSecondary}>Notes (Optional)</FormControlLabelText></FormControlLabel>
+                                    <Input sx={{ borderColor: colors.border }}>
                                         <InputField
                                             placeholder="Special requirements, etc."
-                                            color={Theme.colors.sacredWhite}
+                                            color={colors.text}
                                             value={notes}
                                             onChangeText={setNotes}
                                         />
@@ -328,12 +330,12 @@ export function AddStudentModal({
 
                                 <HStack space="md">
                                     <FormControl sx={{ flex: 1 }}>
-                                        <FormControlLabel><FormControlLabelText color={Theme.colors.mistGray}>Roll Number</FormControlLabelText></FormControlLabel>
-                                        <Input sx={{ borderColor: Theme.colors.deepIndigo }}>
+                                        <FormControlLabel><FormControlLabelText color={colors.textSecondary}>Roll Number</FormControlLabelText></FormControlLabel>
+                                        <Input sx={{ borderColor: colors.border }}>
                                             <InputField
                                                 keyboardType="numeric"
                                                 placeholder="e.g. 10"
-                                                color={Theme.colors.sacredWhite}
+                                                color={colors.text}
                                                 value={rollNumber}
                                                 onChangeText={setRollNumber}
                                             />
@@ -342,11 +344,11 @@ export function AddStudentModal({
                                 </HStack>
 
                                 <FormControl>
-                                    <FormControlLabel><FormControlLabelText color={Theme.colors.mistGray}>Notes (Optional)</FormControlLabelText></FormControlLabel>
-                                    <Input sx={{ borderColor: Theme.colors.deepIndigo }}>
+                                    <FormControlLabel><FormControlLabelText color={colors.textSecondary}>Notes (Optional)</FormControlLabelText></FormControlLabel>
+                                    <Input sx={{ borderColor: colors.border }}>
                                         <InputField
                                             placeholder="Special requirements, etc."
-                                            color={Theme.colors.sacredWhite}
+                                            color={colors.text}
                                             value={notes}
                                             onChangeText={setNotes}
                                         />
@@ -377,19 +379,19 @@ export function AddStudentModal({
                                         <Text color={Theme.colors.sanctuarySaffron} size="sm">{classroomId}</Text>
                                     </Pressable>
                                 </VStack>
-                                <Box sx={{ padding: Theme.spacing.md, backgroundColor: Theme.colors.deepIndigo, borderRadius: Theme.corners.comfortable }}>
+                                <Box sx={{ padding: Theme.spacing.md, backgroundColor: colors.tertiary, borderRadius: Theme.corners.comfortable }}>
                                     <HStack space="sm" alignItems="center">
                                         <Info size={16} color={Theme.colors.amberGlow} />
-                                        <Text size="xs" color={Theme.colors.mistGray} sx={{ flex: 1 }}>
+                                        <Text size="xs" color={colors.textSecondary} sx={{ flex: 1 }}>
                                             Students can scan this QR code or enter the code manually in their app to join this classroom.
                                         </Text>
                                     </HStack>
                                 </Box>
                                 <Button
                                     onPress={() => copyToClipboard(classroomId)}
-                                    sx={{ backgroundColor: Theme.colors.deepIndigo, width: '100%' }}
+                                    sx={{ backgroundColor: colors.tertiary, width: '100%' }}
                                 >
-                                    <ButtonText>Copy Class ID</ButtonText>
+                                    <ButtonText color={colors.text}>Copy Class ID</ButtonText>
                                 </Button>
                             </VStack>
                         )}

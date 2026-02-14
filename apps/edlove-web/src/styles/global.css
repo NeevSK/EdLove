@@ -9,16 +9,29 @@
   --font-body: 'Lora', 'Georgia', 'Times New Roman', serif;
   --font-mono: 'Fira Code', 'Courier New', monospace;
 
-  /* Type Scale (Universal Balance - Phase III) */
+  /* Type Scale (Universal Balance - Adult Proportions) */
   --text-xs: 0.75rem;
+  /* 12px */
   --text-sm: 0.875rem;
+  /* 14px */
   --text-base: 1rem;
+  /* 16px */
   --text-lg: 1.125rem;
-  --text-xl: 1.4rem;
-  --text-2xl: 1.75rem;
-  --text-3xl: 1.8rem;
-  --text-4xl: 2.1rem;
-  --text-5xl: 2.4rem;
+  /* 18px */
+  --text-xl: 1.25rem;
+  /* 20px */
+  --text-2xl: 1.5rem;
+  /* 24px */
+  --text-3xl: 1.875rem;
+  /* 30px */
+  --text-4xl: 2.25rem;
+  /* 36px */
+  --text-5xl: 3rem;
+  /* 48px */
+  --text-6xl: 3.75rem;
+  /* 60px */
+  --text-7xl: 4.5rem;
+  /* 72px */
 
   /* Font Weights */
   --font-weight-light: 300;
@@ -214,4 +227,82 @@ p {
 
 .animate-fade-in-up {
   animation: fade-in-up var(--duration-slower) cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Domain I: Journey Path Styles */
+.journey-container {
+  position: relative;
+  padding-left: 1rem;
+}
+
+@media (min-width: 768px) {
+  .journey-container {
+    padding-left: 4rem;
+  }
+}
+
+.journey-path {
+  position: absolute;
+  left: 17px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom,
+      transparent,
+      rgba(231, 203, 22, 0.4) 5%,
+      rgba(231, 203, 22, 0.4) 95%,
+      transparent);
+  z-index: 0;
+}
+
+@media (min-width: 768px) {
+  .journey-path {
+    left: 31px;
+  }
+}
+
+.journey-node {
+  position: relative;
+  z-index: 10;
+}
+
+.journey-dot {
+  position: absolute;
+  left: -1.45rem;
+  top: 1.5rem;
+  width: 16px;
+  height: 16px;
+  background: #0A1F3D;
+  border: 2px solid #e7cb16;
+  border-radius: 50%;
+  z-index: 20;
+  box-shadow: 0 0 15px #e7cb16;
+}
+
+@media (min-width: 768px) {
+  .journey-dot {
+    left: -2.55rem;
+  }
+}
+
+.journey-dot::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid #e7cb16;
+  opacity: 0.5;
+  animation: pulse-ring 3s infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
 }

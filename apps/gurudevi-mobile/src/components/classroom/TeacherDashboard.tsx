@@ -23,6 +23,7 @@ import { hapticLight } from '../../utils/haptics';
 import ClassroomList from './ClassroomList';
 import CreateClassroomModal from './CreateClassroomModal';
 import { useNavigation } from '@react-navigation/native';
+import { useThemedColors } from '../../hooks/useThemedColors';
 
 export default function TeacherDashboard() {
     const { t } = useTranslation();
@@ -30,6 +31,7 @@ export default function TeacherDashboard() {
     const { teacherName } = useStore();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const colors = useThemedColors();
     const [stats, setStats] = useState({
         activeClasses: 0,
         totalStudents: 0
@@ -52,24 +54,24 @@ export default function TeacherDashboard() {
             sx={{
                 flex: 1,
                 alignItems: 'center',
-                backgroundColor: Theme.colors.midnightBlue,
+                backgroundColor: colors.secondary,
                 padding: Theme.spacing.md,
                 borderRadius: Theme.corners.generous,
                 borderWidth: 1,
-                borderColor: Theme.colors.deepIndigo,
+                borderColor: colors.border,
             }}
         >
             <Box
                 sx={{
                     padding: Theme.spacing.md,
                     borderRadius: Theme.corners.comfortable,
-                    backgroundColor: Theme.colors.deepIndigo,
+                    backgroundColor: colors.tertiary,
                     marginBottom: Theme.spacing.sm
                 }}
             >
                 <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={24} />
             </Box>
-            <Text color={Theme.colors.sacredWhite} size="xs" bold textAlign="center">
+            <Text color={colors.text} size="xs" bold textAlign="center">
                 {label}
             </Text>
         </Pressable>
@@ -79,20 +81,20 @@ export default function TeacherDashboard() {
         <Box
             sx={{
                 flex: 1,
-                backgroundColor: Theme.colors.midnightBlue,
+                backgroundColor: colors.secondary,
                 padding: Theme.spacing.lg,
                 borderRadius: Theme.corners.generous,
                 borderWidth: 1,
-                borderColor: Theme.colors.deepIndigo,
+                borderColor: colors.border,
                 position: 'relative',
                 overflow: 'hidden'
             }}
         >
             <VStack space="xs">
-                <Text color={Theme.colors.mistGray} size="xs" bold>
+                <Text color={colors.textSecondary} size="xs" bold>
                     {label}
                 </Text>
-                <Text color={Theme.colors.sacredWhite} size="3xl" bold>
+                <Text color={colors.text} size="3xl" bold>
                     {value}
                 </Text>
             </VStack>
@@ -104,21 +106,21 @@ export default function TeacherDashboard() {
                     opacity: 0.1
                 }}
             >
-                <LucideIcon color={Theme.colors.sacredWhite} size={80} />
+                <LucideIcon color={colors.text} size={80} />
             </Box>
         </Box>
     );
 
     return (
-        <VStack space="xl" sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+        <VStack space="xl" sx={{ flex: 1, backgroundColor: colors.primary }}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: Theme.spacing.lg }}>
 
                 {/* Greeting */}
                 <VStack space="xs" mb="$4">
-                    <Heading color={Theme.colors.sacredWhite} size="2xl">
+                    <Heading color={colors.text} size="2xl">
                         {t('common.greeting', { name: teacherName }) || `Ayubowan, ${teacherName}!`}
                     </Heading>
-                    <Text color={Theme.colors.mistGray} size="sm">
+                    <Text color={colors.textSecondary} size="sm">
                         {t('classroom.dashboardIntro') || 'Your sanctuary awaits. Manage your classes efficiently.'}
                     </Text>
                 </VStack>
@@ -161,7 +163,7 @@ export default function TeacherDashboard() {
                 {/* Classroom List Section */}
                 <VStack space="md">
                     <HStack justifyContent="space-between" alignItems="center">
-                        <Heading color={Theme.colors.sacredWhite} size="lg">
+                        <Heading color={colors.text} size="lg">
                             {t('classroom.yourClassrooms') || 'Your Classrooms'} 🍃
                         </Heading>
                     </HStack>

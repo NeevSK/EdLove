@@ -13,6 +13,8 @@ import {
   requireClassroomAccess,
   requireStudentAccess
 } from '../../utils/authorization';
+import { UserRole } from '../../types/User';
+import { hasRole, STAFF_ROLES } from '../../utils/permissions';
 
 // ============================================================================
 // LIBRARY API - Resource Management for Educational Ecology
@@ -148,7 +150,7 @@ export const libraryAPI = {
           uses_count: 0,
           endorsements: 0,
           bookmarks: 0,
-          verified: creatorRole === 'teacher' || creatorRole === 'principal', // Auto-verify for staff
+          verified: hasRole(creatorRole as UserRole, STAFF_ROLES), // Auto-verify for staff
         },
       ])
       .select(`

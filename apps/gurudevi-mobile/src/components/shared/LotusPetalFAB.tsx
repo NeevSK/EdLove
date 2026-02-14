@@ -108,9 +108,12 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     icon,
     actions,
     scrollY,
-    disabled = false,
+    disabled = true,
     bottomInset = Theme.spacing.lg, // Default value if not provided
 }) => {
+    // TEMPORARY: Return null if disabled to completely hide the FAB
+    if (disabled) return null;
+
     // Shared value for press animation
     const pressScale = useSharedValue(1);
     // Shared value for breathing animation

@@ -11,7 +11,8 @@ import EmptyState from '../components/shared/EmptyState';
 import { BookOpen, Search } from 'lucide-react-native';
 import SanctuaryInput from '../components/shared/SanctuaryInput';
 import * as Linking from 'expo-linking';
-import { useRouter } from 'expo-router'; // Only if using Expo Router? No, this is TabNavigator. But can keep imports consistent if migrating. Actually using Linking for now.
+import { useThemedColors } from '../hooks/useThemedColors';
+import ScreenWrapper from '../components/shared/ScreenWrapper';
 
 // Mock Data until Supabase Hook is ready
 const MOCK_RESOURCES = [
@@ -30,6 +31,7 @@ export default function LibraryScreen() {
     const [refreshing, setRefreshing] = useState(false);
     const [showSearchBar, setShowSearchBar] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<typeof LIBRARY_CATEGORIES[number]>('All');
+    const colors = useThemedColors();
 
     // Mocking addition
     const [resources, setResources] = useState<any[]>(MOCK_RESOURCES);
@@ -63,32 +65,21 @@ export default function LibraryScreen() {
     });
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+        <ScreenWrapper>
             <GlobalHeader
                 title={t('tabs.library') || 'Library'}
-                subtitle="Knowledge Sanctuary"
-                rightAction={
-                    <TouchableOpacity onPress={() => setShowSearchBar(!showSearchBar)}>
-                        <Search color={Theme.colors.sacredWhite} size={24} />
-                    </TouchableOpacity>
-                }
+                subtitle={t('library.knowledgeSanctuary')}
+                searchProps={{
+                    value: searchQuery,
+                    onChangeText: setSearchQuery,
+                    placeholder: t('library.searchPlaceholder')
+                }}
             />
 
-            {/* Collapsible Search Bar */}
-            {showSearchBar && (
-                <VStack space="md" px="$4" py="$4">
-                    <SanctuaryInput
-                        placeholder="Search resources..."
-                        value={searchQuery}
-                        onChangeText={setSearchQuery}
-                        leftIcon={Search}
-                        autoFocus
-                    />
-                </VStack>
-            )}
 
             <ScrollView
-                contentContainerStyle={{ padding: Theme.spacing.md, paddingBottom: 100 }}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ paddingVertical: Theme.spacing.md, paddingBottom: 100 }}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={() => setRefreshing(false)} tintColor={Theme.colors.sanctuarySaffron} />
                 }
@@ -96,8 +87,8 @@ export default function LibraryScreen() {
                 {/* Horizontal Carousel for Resource Categories */}
                 <VStack space="xl">
                     <VStack space="sm">
-                        <Text color={Theme.colors.sacredWhite} size="lg" bold>
-                            Categories
+                        <Text color={colors.text} size="lg" bold>
+                            {t('library.categories')}
                         </Text>
                         <ScrollView
                             horizontal
@@ -115,23 +106,23 @@ export default function LibraryScreen() {
                                             paddingVertical: Theme.spacing.sm,
                                             backgroundColor: selectedCategory === category
                                                 ? Theme.colors.sanctuarySaffron
-                                                : Theme.colors.deepIndigo,
+                                                : colors.secondary,
                                             borderRadius: Theme.corners.comfortable,
                                             borderWidth: 1,
                                             borderColor: selectedCategory === category
                                                 ? Theme.colors.sanctuarySaffron
-                                                : Theme.colors.dimGray
+                                                : colors.border
                                         }}
                                     >
                                         <Text
                                             color={selectedCategory === category
                                                 ? Theme.colors.white  // Pure white for high contrast on saffron
-                                                : Theme.colors.sacredWhite
+                                                : colors.text
                                             }
                                             size="sm"
                                             bold={selectedCategory === category}
                                         >
-                                            {category}
+                                            {t(`library.types.${category.toLowerCase()}`)}
                                         </Text>
                                     </Box>
                                 </Pressable>
@@ -143,8 +134,8 @@ export default function LibraryScreen() {
                     {filteredResources.length === 0 ? (
                         <EmptyState
                             icon={BookOpen}
-                            title="Library is Empty"
-                            description="Be the first to add knowledge to the sanctuary."
+                            title={t('library.emptyTitle')}
+                            description={t('library.emptyDesc')}
                         />
                     ) : (
                         <VStack space="md">
@@ -173,6 +164,6 @@ export default function LibraryScreen() {
                 onClose={() => setIsAddModalOpen(false)}
                 onAdd={handleAddResource}
             />
-        </Box>
+        </ScreenWrapper>
     );
 }

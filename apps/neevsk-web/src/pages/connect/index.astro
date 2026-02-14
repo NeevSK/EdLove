@@ -1,0 +1,189 @@
+---
+import DigitalNeonLayout from '../../layouts/DigitalNeonLayout.astro';
+import Button from '../../components/common/Button.astro';
+---
+
+<DigitalNeonLayout title="Connect" description="Collaboration, Contact">
+  <div class="connect-container">
+    <header class="section-header">
+      <h1>Signal Established</h1>
+      <p class="glitch-text" data-text="Ready for transmission.">Ready for transmission.</p>
+    </header>
+    
+    <div class="connect-grid">
+      <section class="contact-info">
+        <h2>Availability</h2>
+        <div class="status-box">
+          <span class="indicator available"></span>
+          <p>Open to select collaborations and conversations.</p>
+        </div>
+        
+        <div class="channels">
+          <h3>Channels</h3>
+          <ul>
+            <li>
+              <span class="label">Email</span>
+              <a href="mailto:neev@edlove.org" class="link">neev@edlove.org</a>
+            </li>
+            <li>
+              <span class="label">Social</span>
+              <div class="social-links">
+                <a href="#" class="link">LinkedIn</a>
+                <a href="#" class="link">GitHub</a>
+                <a href="#" class="link">Twitter/X</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+      
+      <section class="contact-form-wrapper">
+        <h2>Send Message</h2>
+        <form class="neon-form">
+          <div class="form-group">
+            <label for="name">Name_</label>
+            <input type="text" id="name" placeholder="Enter identification" />
+          </div>
+          <div class="form-group">
+            <label for="email">Email_</label>
+            <input type="email" id="email" placeholder="Enter return address" />
+          </div>
+          <div class="form-group">
+            <label for="message">Message_</label>
+            <textarea id="message" rows="5" placeholder="Enter transmission content"></textarea>
+          </div>
+          <Button type="submit" variant="primary" class="glow-button">Transmit</Button>
+        </form>
+      </section>
+    </div>
+  </div>
+</DigitalNeonLayout>
+
+<style lang="scss">
+  .connect-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 6rem 2rem;
+  }
+  
+  .section-header {
+    text-align: center;
+    margin-bottom: 6rem;
+    
+    h1 {
+      font-size: 4rem;
+      font-family: var(--font-heading);
+      text-transform: uppercase;
+      letter-spacing: -0.05em;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 10px rgba(0, 255, 148, 0.5);
+    }
+  }
+  
+  .glitch-text {
+    font-family: var(--font-mono);
+    color: var(--color-accent);
+  }
+  
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4rem;
+    
+    @media (min-width: 768px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  .status-box {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border: 1px solid var(--color-primary);
+    border-radius: 4px;
+    margin-bottom: 3rem;
+    
+    .indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      box-shadow: 0 0 10px var(--color-primary);
+    }
+  }
+  
+  .channels {
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    
+    li {
+      margin-bottom: 1.5rem;
+    }
+    
+    .label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      opacity: 0.6;
+      margin-bottom: 0.5rem;
+    }
+    
+    .link {
+      color: var(--color-text);
+      text-decoration: none;
+      font-size: 1.2rem;
+      transition: color 0.3s ease;
+      
+      &:hover {
+        color: var(--color-primary);
+        text-shadow: 0 0 8px var(--color-primary);
+      }
+    }
+    
+    .social-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+  }
+  
+  .neon-form {
+    .form-group {
+      margin-bottom: 2rem;
+      
+      label {
+        display: block;
+        font-family: var(--font-mono);
+        color: var(--color-secondary);
+        margin-bottom: 0.5rem;
+      }
+      
+      input, textarea {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 1rem;
+        color: var(--color-text);
+        font-family: inherit;
+        transition: all 0.3s ease;
+        
+        &:focus {
+          outline: none;
+          border-color: var(--color-primary);
+          box-shadow: 0 0 15px rgba(0, 255, 148, 0.2);
+        }
+      }
+    }
+  }
+  
+  .glow-button {
+    width: 100%;
+    margin-top: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-family: var(--font-mono);
+  }
+</style>

@@ -17,12 +17,14 @@ import {
     GestureResponderEvent,
 } from 'react-native';
 import { Box, Text, Heading, VStack, HStack } from '@/ui';
-import { BookOpen, Users, ChevronRight, ClipboardCheck } from 'lucide-react-native';
+import { BookOpen, Users, ChevronRight, ClipboardCheck, Plus } from 'lucide-react-native';
 import { Theme, typography } from '../../constants/Theme';
 import { api, Classroom } from '../../lib/api';
 import { useUserRole } from '../../hooks/useUserRole';
 import { hapticLight } from '../../utils/haptics';
 import { supabase } from '../../lib/supabase';
+import { useTranslation } from 'react-i18next';
+import { useThemedColors } from '../../hooks/useThemedColors';
 
 interface ClassroomListProps {
     onClassroomPress?: (classroom: Classroom) => void;
@@ -40,10 +42,12 @@ export default function ClassroomList({
     const { role } = useUserRole();
     const [classrooms, setClassrooms] = useState<Classroom[]>([]);
     const [loading, setLoading] = useState(true);
+    const { t } = useTranslation();
+    const colors = useThemedColors();
     const styles = useMemo(() => StyleSheet.create({
         container: {
             flex: 1,
-            backgroundColor: Theme.colors.voidIndigo,
+            backgroundColor: colors.primary,
         },
         contentContainer: {
             padding: Theme.spacing.md,
@@ -56,7 +60,7 @@ export default function ClassroomList({
         },
         loadingText: {
             fontSize: Theme.typography.fontSize.md,
-            color: Theme.colors.sacredWhite,
+            color: colors.text,
             marginTop: Theme.spacing.sm,
         },
         errorText: {
@@ -82,12 +86,12 @@ export default function ClassroomList({
         emptyTitle: {
             fontSize: Theme.typography.h3.fontSize,
             fontWeight: '600',
-            color: Theme.colors.sacredWhite,
+            color: colors.text,
             marginBottom: Theme.spacing.sm,
         },
         emptyDescription: {
             fontSize: Theme.typography.fontSize.md,
-            color: Theme.colors.mistGray,
+            color: colors.textSecondary,
             textAlign: 'center',
             paddingHorizontal: Theme.spacing.lg,
         },
@@ -113,16 +117,16 @@ export default function ClassroomList({
         classroomName: {
             fontSize: Theme.typography.fontSize.lg,
             fontWeight: '600',
-            color: Theme.colors.sacredWhite,
+            color: colors.text,
         },
         classroomSubject: {
             fontSize: Theme.typography.fontSize.sm,
-            color: Theme.colors.mistGray,
+            color: colors.textSecondary,
             marginTop: Theme.spacing.xs,
         },
         classroomDescription: {
             fontSize: Theme.typography.fontSize.xs,
-            color: Theme.colors.dimGray,
+            color: colors.textTertiary,
             marginTop: Theme.spacing.xs,
         },
     }), []);
@@ -183,9 +187,10 @@ export default function ClassroomList({
                 classroom={classroom}
                 onPress={handleClassroomPress}
                 studentCount={studentCount}
+                colors={colors}
             />
         );
-    }, [handleClassroomPress]);
+    }, [handleClassroomPress, colors]);
 
     // Key extractor for FlatList
     const keyExtractor = useCallback((item: Classroom) => item.id, []);
@@ -224,15 +229,33 @@ export default function ClassroomList({
             <View style={styles.centerContainer}>
                 <BookOpen
                     size={64}
-                    color={Theme.colors.mistGray}
+                    color={colors.action}
                     style={styles.emptyIcon}
                 />
-                <Text style={styles.emptyTitle}>No Classrooms Yet</Text>
-                <Text style={styles.emptyDescription}>
-                    {role === 'teacher'
-                        ? "You haven't been assigned to any classrooms yet."
-                        : "You haven't enrolled in any classrooms yet."}
+                <Text style={styles.emptyTitle}>
+                    {t('classroom.peacefulSpace') || "This is your peaceful working space."}
                 </Text>
+                <Text style={styles.emptyDescription}>
+                    {t('classroom.startWorking') || "Let's start working."}
+                </Text>
+
+                {/* Role-neutral Add action */}
+                <TouchableOpacity
+                    style={[styles.retryButton, { marginTop: Theme.spacing.xl }]}
+                    onPress={() => {
+                        hapticLight();
+                        // If teacher, open create modal. For others, maybe a generic "Join" or info?
+                        // For now, let's keep it consistent if onClassroomPress is available or show a placeholder
+                        console.log('Add pressed in empty state');
+                    }}
+                >
+                    <HStack space="xs" alignItems="center">
+                        <Plus size={20} color={Theme.colors.white} />
+                        <Text style={styles.retryButtonText}>
+                            {t('common.add') || 'Add'}
+                        </Text>
+                    </HStack>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -248,6 +271,7 @@ export default function ClassroomList({
                         classroom={classroom}
                         onPress={handleClassroomPress}
                         studentCount={(classroom as any).student_count || 0}
+                        colors={colors}
                     />
                 ))}
             </VStack>
@@ -262,6 +286,7 @@ export default function ClassroomList({
             ItemSeparatorComponent={ItemSeparator}
             style={styles.container}
             contentContainerStyle={styles.contentContainer}
+            showsVerticalScrollIndicator={false}
             // Performance optimizations
             initialNumToRender={10}
             maxToRenderPerBatch={10}
@@ -276,9 +301,10 @@ interface ClassroomCardProps {
     classroom: Classroom;
     onPress: (classroom: Classroom) => void;
     studentCount: number;
+    colors: any;
 }
 
-const ClassroomCard = React.memo(({ classroom, onPress, studentCount }: ClassroomCardProps) => {
+const ClassroomCard = React.memo(({ classroom, onPress, studentCount, colors }: ClassroomCardProps) => {
     const handlePress = useCallback(() => {
         hapticLight();
         onPress(classroom);
@@ -296,7 +322,14 @@ const ClassroomCard = React.memo(({ classroom, onPress, studentCount }: Classroo
             onPress={handlePress}
             activeOpacity={0.7}
         >
-            <Box sx={richStyles.classroomCard}>
+            <Box
+                sx={{
+                    ...richStyles.classroomCard,
+                    backgroundColor: colors.secondary,
+                    borderColor: colors.border,
+                    ...Theme.shadows.md,
+                }}
+            >
                 <HStack space="md" alignItems="center">
                     {/* Icon Container */}
                     <Box sx={richStyles.iconContainer}>
@@ -308,17 +341,22 @@ const ClassroomCard = React.memo(({ classroom, onPress, studentCount }: Classroo
 
                     {/* Content */}
                     <VStack flex={1} space="xs">
-                        <Text color={Theme.colors.sacredWhite} size="lg" bold>
+                        <Text color={colors.text} size="lg" bold>
                             {classroom.name}
                         </Text>
                         <HStack space="sm" alignItems="center">
                             <Text color={Theme.colors.sanctuarySaffron} size="sm" bold>
                                 {classroom.subject || 'No Subject'}
                             </Text>
-                            <Box sx={richStyles.dot} />
+                            <Box
+                                sx={{
+                                    ...richStyles.dot,
+                                    backgroundColor: colors.textTertiary,
+                                }}
+                            />
                             <HStack space="xs" alignItems="center">
-                                <Users size={14} color={Theme.colors.pearlGray} />
-                                <Text color={Theme.colors.pearlGray} size="sm">
+                                <Users size={14} color={colors.textSecondary} />
+                                <Text color={colors.textSecondary} size="sm">
                                     {studentCount}
                                 </Text>
                             </HStack>
@@ -327,7 +365,10 @@ const ClassroomCard = React.memo(({ classroom, onPress, studentCount }: Classroo
 
                     {/* Quick Record Attendance Button */}
                     <TouchableOpacity onPress={handleAttendancePress}>
-                        <Box sx={richStyles.attendanceAction}>
+                        <Box sx={{
+                            ...richStyles.attendanceAction,
+                            backgroundColor: colors.tertiary,
+                        }}>
                             <ClipboardCheck size={20} color={Theme.colors.sageGreen} />
                         </Box>
                     </TouchableOpacity>
@@ -335,7 +376,7 @@ const ClassroomCard = React.memo(({ classroom, onPress, studentCount }: Classroo
                     {/* Arrow */}
                     <ChevronRight
                         size={20}
-                        color={Theme.colors.mistGray}
+                        color={colors.textSecondary}
                     />
                 </HStack>
             </Box>
@@ -352,18 +393,14 @@ const ClassroomCard = React.memo(({ classroom, onPress, studentCount }: Classroo
 
 const richStyles = {
     classroomCard: {
-        backgroundColor: Theme.colors.midnightBlue,
         borderRadius: Theme.corners.generous,
         padding: Theme.spacing.md,
         borderWidth: 1,
-        borderColor: Theme.colors.deepIndigo,
-        ...Theme.shadows.md,
     },
     iconContainer: {
         width: 50,
         height: 50,
         borderRadius: Theme.corners.comfortable,
-        backgroundColor: Theme.colors.deepIndigo,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -371,11 +408,9 @@ const richStyles = {
         width: 4,
         height: 4,
         borderRadius: 2,
-        backgroundColor: Theme.colors.dimGray,
     },
     attendanceAction: {
         padding: Theme.spacing.sm,
-        backgroundColor: Theme.colors.deepIndigo,
         borderRadius: Theme.corners.comfortable,
         marginRight: Theme.spacing.xs,
     }

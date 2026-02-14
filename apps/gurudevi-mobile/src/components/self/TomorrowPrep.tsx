@@ -12,10 +12,9 @@ import {
   Pressable,
   Checkbox,
   CheckboxIndicator,
-  CheckboxIcon,
-  CheckIcon
+  CheckboxIcon
 } from '@/ui';
-import { Calendar, Plus, Trash2 } from 'lucide-react-native';
+import { Calendar, Plus, Trash2, Check } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';
@@ -230,7 +229,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                       : 'transparent'
                   }}
                 >
-                  <CheckboxIcon as={CheckIcon} color={Theme.colors.white} />
+                  <CheckboxIcon as={Check} color={Theme.colors.white} />
                 </CheckboxIndicator>
               </Checkbox>
               

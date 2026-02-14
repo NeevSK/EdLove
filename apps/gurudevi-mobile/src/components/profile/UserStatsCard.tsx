@@ -9,7 +9,9 @@ import {
 } from '@/ui';
 import { Theme } from '../../constants/Theme';
 import { UserRole } from '../../types/User';
-import { Trophy, Users, BookOpen, Clock, Star, Shield } from 'lucide-react-native';
+import { useThemedColors } from '../../hooks/useThemedColors';
+import { useTranslation } from 'react-i18next';
+import { Trophy, Users, BookOpen, Clock, Star, Shield, Globe, Activity, Database } from 'lucide-react-native';
 
 interface UserStatsCardProps {
     role: UserRole;
@@ -24,6 +26,8 @@ interface UserStatsCardProps {
 }
 
 export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
+    const { t } = useTranslation();
+    const colors = useThemedColors();
     // Dynamic content based on role
     const getRoleBasedContent = () => {
         switch (role) {
@@ -33,46 +37,46 @@ export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
             case 'principal':
             case 'developer':
                 return {
-                    title: 'Teacher Impact',
+                    title: t('profile.impact.teacher'),
                     items: [
-                        { label: 'Classes', value: stats?.classesTaught || 12, icon: BookOpen, color: Theme.colors.sanctuarySaffron },
-                        { label: 'Students', value: stats?.studentsCount || 145, icon: Users, color: Theme.colors.sageGreen },
-                        { label: 'Guru Pts', value: stats?.guruPoints || 850, icon: Star, color: '#FFD700' },
+                        { label: t('classroom.title'), value: stats?.classesTaught || 12, icon: BookOpen, color: colors.action },
+                        { label: t('role.student'), value: stats?.studentsCount || 145, icon: Users, color: colors.success },
+                        { label: t('profile.stats.points'), value: stats?.guruPoints || 850, icon: Star, color: colors.warning },
                     ],
                     progressLabel: 'Level 5 Guru',
                     progressValue: 70
                 };
             case 'student':
                 return {
-                    title: 'Learning Journey',
+                    title: t('profile.impact.student'),
                     items: [
-                        { label: 'Streak', value: `${stats?.attendanceStreak || 5} Days`, icon: Clock, color: Theme.colors.sageGreen },
-                        { label: 'Done', value: stats?.assignmentsCompleted || 24, icon: BookOpen, color: Theme.colors.sanctuarySaffron },
-                        { label: 'Points', value: stats?.guruPoints || 320, icon: Star, color: '#FFD700' },
+                        { label: t('profile.stats.learningStreaks'), value: t('profile.stats.streak', { count: stats?.attendanceStreak || 5 }), icon: Clock, color: colors.success },
+                        { label: t('profile.stats.assignmentsDone'), value: stats?.assignmentsCompleted || 24, icon: BookOpen, color: colors.action },
+                        { label: t('profile.stats.points'), value: stats?.guruPoints || 320, icon: Star, color: colors.warning },
                     ],
                     progressLabel: 'Level 3 Scholar',
                     progressValue: 45
                 };
             case 'founder':
                 return {
-                    title: 'Eternal Guardian',
+                    title: t('profile.impact.founder'),
                     items: [
-                        { label: 'Wisdom', value: 'Guardian', icon: Star, color: Theme.colors.sanctuarySaffron },
-                        { label: 'Impact', value: 'Global', icon: Users, color: Theme.colors.sageGreen },
-                        { label: 'Points', value: '∞', icon: Trophy, color: '#FFD700' },
+                        { label: t('profile.stats.ecology'), value: stats?.attendanceStreak ? t('common.yes') : t('common.no'), icon: Globe, color: colors.action },
+                        { label: t('profile.stats.platformVision'), value: 'Global', icon: Users, color: colors.success },
+                        { label: t('profile.stats.guardianImpact'), value: stats?.guruPoints || '∞', icon: Star, color: colors.warning },
                     ],
-                    progressLabel: 'Founding Spirit',
+                    progressLabel: t('profile.stats.foundingSpirit'),
                     progressValue: 100
                 };
             case 'admin':
                 return {
-                    title: 'Sanctuary Health',
+                    title: t('profile.impact.admin'),
                     items: [
-                        { label: 'Uptime', value: '99.9%', icon: Clock, color: Theme.colors.sageGreen },
-                        { label: 'Users', value: '1.2k', icon: Users, color: Theme.colors.sanctuarySaffron },
-                        { label: 'Alerts', value: 0, icon: Shield, color: Theme.colors.emberRed },
+                        { label: t('profile.stats.coreUptime'), value: '99.9%', icon: Activity, color: colors.success },
+                        { label: t('profile.stats.securityAudit'), value: 'Healthy', icon: Database, color: colors.action },
+                        { label: t('profile.stats.apiLatency'), value: '42ms', icon: Clock, color: colors.warning },
                     ],
-                    progressLabel: 'System Archon',
+                    progressLabel: t('profile.stats.systemArchon'),
                     progressValue: 95
                 };
             default:
@@ -90,15 +94,17 @@ export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
     return (
         <Box
             sx={{
-                backgroundColor: Theme.colors.deepIndigo,
+                backgroundColor: colors.secondary,
                 borderRadius: Theme.corners.generous,
                 padding: Theme.spacing.lg,
-                marginBottom: Theme.spacing.lg
+                marginBottom: Theme.spacing.lg,
+                borderColor: colors.border,
+                borderWidth: 1
             }}
         >
             <HStack space="sm" alignItems="center" mb={Theme.spacing.md}>
-                <Trophy size={18} color={'#FFD700'} />
-                <Text color={Theme.colors.sacredWhite} bold size="md">
+                <Trophy size={18} color={colors.warning} />
+                <Text color={colors.text as any} bold size="md">
                     {content.title}
                 </Text>
             </HStack>
@@ -116,10 +122,10 @@ export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
                         >
                             <item.icon size={20} color={item.color} />
                         </Box>
-                        <Text color={Theme.colors.sacredWhite} bold size="lg">
+                        <Text color={colors.text as any} bold size="lg">
                             {item.value}
                         </Text>
-                        <Text color={Theme.colors.mistGray} size="xs">
+                        <Text color={colors.textTertiary as any} size="xs">
                             {item.label}
                         </Text>
                     </VStack>
@@ -129,15 +135,15 @@ export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
             {/* Gamification Progress */}
             <VStack space="xs">
                 <HStack justifyContent="space-between">
-                    <Text color={Theme.colors.mistGray} size="xs">
+                    <Text color={colors.textTertiary as any} size="xs">
                         {content.progressLabel}
                     </Text>
-                    <Text color={Theme.colors.sanctuarySaffron} size="xs" bold>
+                    <Text color={colors.action as any} size="xs" bold>
                         {content.progressValue}%
                     </Text>
                 </HStack>
-                <Progress value={content.progressValue} w="100%" h={6} bg={Theme.colors.midnightBlue}>
-                    <ProgressFilledTrack bg={Theme.colors.sanctuarySaffron} />
+                <Progress value={content.progressValue} w="100%" h={6} bg={colors.tertiary as any}>
+                    <ProgressFilledTrack bg={colors.action as any} />
                 </Progress>
             </VStack>
         </Box>

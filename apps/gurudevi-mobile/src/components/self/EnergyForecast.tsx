@@ -10,6 +10,7 @@ import {
 import { Battery, BatteryLow, BatteryMedium, BatteryFull } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';
+import { useThemedColors } from '../../hooks/useThemedColors';
 import { supabase } from '../../lib/supabase';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';
 import { EnergyForecast as EnergyForecastType } from '../../types/Wellbeing';
@@ -33,7 +34,7 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
 
   const loadTodayForecast = async () => {
     if (!userId) return;
-    
+
     const { data, error } = await supabase
       .from('energy_forecasts')
       .select('*')
@@ -48,7 +49,7 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
 
   const handleSelectEnergy = async (level: 1 | 2 | 3 | 4 | 5) => {
     if (!userId) return;
-    
+
     setLoading(true);
     hapticLight();
 
@@ -66,7 +67,7 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
       hapticSuccess();
       await loadTodayForecast();
     }
-    
+
     setLoading(false);
   };
 
@@ -75,35 +76,35 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
       level: 1,
       label: t('self.energyDepleted'),
       icon: BatteryLow,
-      color: '#FF6B6B',
+      color: Theme.colors.emberRed,
       emoji: '😰'
     },
     {
       level: 2,
       label: t('self.energyLow'),
       icon: BatteryLow,
-      color: '#FFA07A',
+      color: Theme.colors.emberOrange,
       emoji: '😔'
     },
     {
       level: 3,
       label: t('self.energyOkay'),
       icon: BatteryMedium,
-      color: '#FFD93D',
+      color: Theme.colors.templeGold,
       emoji: '😐'
     },
     {
       level: 4,
       label: t('self.energyGood'),
       icon: BatteryFull,
-      color: '#6BCB77',
+      color: Theme.colors.sageGreen,
       emoji: '😊'
     },
     {
       level: 5,
       label: t('self.energyEnergized'),
       icon: BatteryFull,
-      color: '#4D96FF',
+      color: Theme.colors.gurudeviBlue,
       emoji: '🌟'
     }
   ];
@@ -115,6 +116,7 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
     return BatteryFull;
   };
 
+  const colors = useThemedColors();
   const BatteryIcon = getBatteryIcon();
 
   return (
@@ -125,15 +127,15 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
             color={
               todayForecast
                 ? energyLevels[todayForecast.energy_level - 1].color
-                : Theme.colors.sanctuarySaffron
+                : colors.action
             }
             size={24}
           />
-          <Heading color={Theme.colors.sacredWhite} size="lg">
+          <Heading color={colors.text} size="lg">
             {t('self.energyForecast')}
           </Heading>
         </HStack>
-        <Text color={Theme.colors.mistGray} size="sm">
+        <Text color={colors.textSecondary} size="sm">
           {t('self.energyForecastDesc')}
         </Text>
       </VStack>
@@ -142,7 +144,7 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
         <Box
           p={Theme.spacing.lg}
           sx={{
-            backgroundColor: Theme.colors.deepIndigo,
+            backgroundColor: colors.secondary,
             borderRadius: Theme.corners.comfortable,
             borderWidth: 2,
             borderColor: energyLevels[todayForecast.energy_level - 1].color
@@ -159,14 +161,14 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
             >
               {energyLevels[todayForecast.energy_level - 1].label}
             </Text>
-            <Text color={Theme.colors.mistGray} size="sm">
+            <Text color={colors.textSecondary} size="sm">
               {t('self.checkedToday')} {new Date(todayForecast.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </Text>
             <Pressable
               onPress={() => setTodayForecast(null)}
               mt="$2"
             >
-              <Text color={Theme.colors.dimGray} size="sm" underline>
+              <Text color={colors.textTertiary} size="sm" underline>
                 {t('self.updateForecast')}
               </Text>
             </Pressable>
@@ -174,10 +176,10 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
         </Box>
       ) : (
         <VStack space="md">
-          <Text color={Theme.colors.mistGray} size="md" textAlign="center">
+          <Text color={colors.textSecondary} size="md" textAlign="center">
             {t('self.capacityToday')}
           </Text>
-          
+
           {energyLevels.map((energy) => (
             <Pressable
               key={energy.level}
@@ -189,7 +191,7 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
                 alignItems="center"
                 p="$4"
                 sx={{
-                  backgroundColor: Theme.colors.deepIndigo,
+                  backgroundColor: colors.secondary,
                   borderRadius: Theme.corners.comfortable,
                   borderWidth: 2,
                   borderColor: 'transparent',
@@ -210,10 +212,10 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
                 >
                   <Text fontSize="$2xl">{energy.emoji}</Text>
                 </Box>
-                
+
                 <VStack space="xs" sx={{ flex: 1 }}>
                   <Text
-                    color={Theme.colors.sacredWhite}
+                    color={colors.text}
                     size="md"
                     bold
                   >
@@ -238,7 +240,7 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
                           width: 30,
                           height: 6,
                           borderRadius: 3,
-                          backgroundColor: Theme.colors.dimGray
+                          backgroundColor: colors.border
                         }}
                       />
                     ))}
@@ -256,11 +258,11 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
         <Box
           p="$3"
           sx={{
-            backgroundColor: Theme.colors.deepIndigo,
+            backgroundColor: colors.tertiary,
             borderRadius: Theme.corners.comfortable
           }}
         >
-          <Text color={Theme.colors.mistGray} size="sm" textAlign="center">
+          <Text color={colors.textSecondary} size="sm" textAlign="center">
             💭 {t('self.energyReminder')}
           </Text>
         </Box>

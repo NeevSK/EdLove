@@ -1,0 +1,118 @@
+---
+import WarmArchiveLayout from '../../layouts/WarmArchiveLayout.astro';
+import Card from '../../components/common/Card.astro';
+---
+
+<WarmArchiveLayout title="Library" description="Books, Films, Wisdom">
+  <div class="library-container">
+    <header class="section-header">
+      <h1>The Archive</h1>
+      <p>Curated wisdom, films, and artifacts that shaped the soul.</p>
+    </header>
+    
+    <div class="shelves">
+      <section class="shelf">
+        <h2>Books</h2>
+        <div class="items-grid">
+          <Card class="book-card">
+            <div class="book-spine"></div>
+            <div class="book-info">
+              <h3>Tools for Conviviality</h3>
+              <p class="author">Ivan Illich</p>
+            </div>
+          </Card>
+          <Card class="book-card">
+            <div class="book-spine"></div>
+            <div class="book-info">
+              <h3>Thinking in Systems</h3>
+              <p class="author">Donella Meadows</p>
+            </div>
+          </Card>
+          <Card class="book-card">
+            <div class="book-spine"></div>
+            <div class="book-info">
+              <h3>Operating Manual for Spaceship Earth</h3>
+              <p class="author">Buckminster Fuller</p>
+            </div>
+          </Card>
+        </div>
+      </section>
+      
+      <section class="shelf">
+        <h2>Films</h2>
+        <div class="items-grid">
+          <Card class="film-card">
+            <h3>Waking Life</h3>
+            <p>Richard Linklater</p>
+          </Card>
+          <Card class="film-card">
+            <h3>Samsara</h3>
+            <p>Ron Fricke</p>
+          </Card>
+        </div>
+      </section>
+    </div>
+  </div>
+</WarmArchiveLayout>
+
+<style lang="scss">
+  .library-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+  }
+  
+  .section-header {
+    text-align: center;
+    margin-bottom: 5rem;
+    
+    h1 {
+      font-size: 4rem;
+      font-family: var(--font-heading);
+      color: var(--color-primary);
+    }
+    
+    p {
+      font-family: var(--font-body);
+      font-style: italic;
+      font-size: 1.2rem;
+    }
+  }
+  
+  .shelf {
+    margin-bottom: 4rem;
+    
+    h2 {
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-bottom: 1px solid var(--color-secondary);
+      padding-bottom: 0.5rem;
+      margin-bottom: 2rem;
+      color: var(--color-secondary);
+    }
+  }
+  
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+  
+  .book-card {
+    display: flex;
+    gap: 1rem;
+    
+    .book-spine {
+      width: 40px;
+      background: var(--color-primary);
+      border-radius: 2px;
+    }
+    
+    .author {
+      font-size: 0.9rem;
+      font-style: italic;
+      opacity: 0.8;
+    }
+  }
+</style>

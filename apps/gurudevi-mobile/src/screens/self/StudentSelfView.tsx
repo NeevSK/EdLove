@@ -30,17 +30,19 @@ import GlobalHeader from '../../components/shared/GlobalHeader';
 import DailyContentCard from '../../components/self/DailyContentCard';
 import WelcomeModal from '../../components/self/WelcomeModal';
 import { useStore } from '../../store/useStore';
+import { useThemedColors } from '../../hooks/useThemedColors';
+import ScreenWrapper from '../../components/shared/ScreenWrapper';
 
 // Student-specific core features
 const STUDENT_CORE_FEATURES = [
-    { id: 'mood', label: 'Mood Check', icon: Flower, category: 'core' },
-    { id: 'goals', label: 'Daily Goals', icon: Target, category: 'core' },
-    { id: 'study', label: 'Study Rhythm', icon: BookOpen, category: 'core' },
+    { id: 'mood', icon: Flower, category: 'core' },
+    { id: 'goals', icon: Target, category: 'core' },
+    { id: 'study', icon: BookOpen, category: 'core' },
 ];
 
 const STUDENT_MORE_TOOLS = [
-    { id: 'reflection', label: 'Learning Reflection', icon: Brain, category: 'discover' },
-    { id: 'progress', label: 'My Progress', icon: TrendingUp, category: 'discover' },
+    { id: 'reflection', icon: Brain, category: 'discover' },
+    { id: 'progress', icon: TrendingUp, category: 'discover' },
 ];
 
 export default function StudentSelfView() {
@@ -50,6 +52,7 @@ export default function StudentSelfView() {
     const [showMoreTools, setShowMoreTools] = useState(false);
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
+    const colors = useThemedColors();
 
     React.useEffect(() => {
         const fetchUser = async () => {
@@ -69,10 +72,10 @@ export default function StudentSelfView() {
                 return (
                     <VStack space="lg" sx={{ flex: 1 }}>
                         <VStack space="xs">
-                            <Heading color={Theme.colors.sacredWhite} size="lg">
+                            <Heading color={colors.text} size="lg">
                                 {t('student.dailyGoals')}
                             </Heading>
-                            <Text color={Theme.colors.mistGray} size="sm">
+                            <Text color={colors.textSecondary} size="sm">
                                 {t('student.dailyGoalsDesc')}
                             </Text>
                         </VStack>
@@ -80,13 +83,13 @@ export default function StudentSelfView() {
                         <Box
                             p={Theme.spacing.md}
                             sx={{
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: colors.tertiary,
                                 borderRadius: Theme.corners.comfortable,
                                 minHeight: 150
                             }}
                         >
-                            <Text color={Theme.colors.mistGray} size="md" textAlign="center">
-                                Daily Goals feature coming soon...
+                            <Text color={colors.textSecondary} size="md" textAlign="center">
+                                {t('common.comingSoon')}
                             </Text>
                         </Box>
                     </VStack>
@@ -95,10 +98,10 @@ export default function StudentSelfView() {
                 return (
                     <VStack space="lg" sx={{ flex: 1 }}>
                         <VStack space="xs">
-                            <Heading color={Theme.colors.sacredWhite} size="lg">
+                            <Heading color={colors.text} size="lg">
                                 {t('student.studyRhythm')}
                             </Heading>
-                            <Text color={Theme.colors.mistGray} size="sm">
+                            <Text color={colors.textSecondary} size="sm">
                                 {t('student.studyRhythmDesc')}
                             </Text>
                         </VStack>
@@ -106,13 +109,13 @@ export default function StudentSelfView() {
                         <Box
                             p={Theme.spacing.md}
                             sx={{
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: colors.tertiary,
                                 borderRadius: Theme.corners.comfortable,
                                 minHeight: 150
                             }}
                         >
-                            <Text color={Theme.colors.mistGray} size="md" textAlign="center">
-                                Study Rhythm feature coming soon...
+                            <Text color={colors.textSecondary} size="md" textAlign="center">
+                                {t('common.comingSoon')}
                             </Text>
                         </Box>
                     </VStack>
@@ -121,10 +124,10 @@ export default function StudentSelfView() {
                 return (
                     <VStack space="lg" sx={{ flex: 1 }}>
                         <VStack space="xs">
-                            <Heading color={Theme.colors.sacredWhite} size="lg">
+                            <Heading color={colors.text} size="lg">
                                 {t('student.learningReflection')}
                             </Heading>
-                            <Text color={Theme.colors.mistGray} size="sm">
+                            <Text color={colors.textSecondary} size="sm">
                                 {t('student.learningReflectionDesc')}
                             </Text>
                         </VStack>
@@ -132,13 +135,13 @@ export default function StudentSelfView() {
                         <Box
                             p={Theme.spacing.md}
                             sx={{
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: colors.tertiary,
                                 borderRadius: Theme.corners.comfortable,
                                 minHeight: 150
                             }}
                         >
-                            <Text color={Theme.colors.mistGray} size="md" textAlign="center">
-                                Learning Reflection feature coming soon...
+                            <Text color={colors.textSecondary} size="md" textAlign="center">
+                                {t('common.comingSoon')}
                             </Text>
                         </Box>
                     </VStack>
@@ -147,10 +150,10 @@ export default function StudentSelfView() {
                 return (
                     <VStack space="lg" sx={{ flex: 1 }}>
                         <VStack space="xs">
-                            <Heading color={Theme.colors.sacredWhite} size="lg">
+                            <Heading color={colors.text} size="lg">
                                 {t('student.myProgress')}
                             </Heading>
-                            <Text color={Theme.colors.mistGray} size="sm">
+                            <Text color={colors.textSecondary} size="sm">
                                 {t('student.myProgressDesc')}
                             </Text>
                         </VStack>
@@ -158,13 +161,13 @@ export default function StudentSelfView() {
                         <Box
                             p={Theme.spacing.md}
                             sx={{
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: colors.tertiary,
                                 borderRadius: Theme.corners.comfortable,
                                 minHeight: 150
                             }}
                         >
-                            <Text color={Theme.colors.mistGray} size="md" textAlign="center">
-                                Progress Tracker feature coming soon...
+                            <Text color={colors.textSecondary} size="md" textAlign="center">
+                                {t('common.comingSoon')}
                             </Text>
                         </Box>
                     </VStack>
@@ -179,11 +182,15 @@ export default function StudentSelfView() {
         : STUDENT_CORE_FEATURES;
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+        <ScreenWrapper>
             <GlobalHeader showGreeting={true} />
-            <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}>
+            <ScrollView
+                sx={{ flex: 1 }}
+                contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}
+                showsVerticalScrollIndicator={false}
+            >
                 {/* Daily Content Section */}
-                <Box px="$6" mb="$4">
+                <Box mb="$4">
                     <DailyContentCard type="motivation" />
                     <DailyContentCard type="did_you_know" />
                 </Box>
@@ -193,7 +200,7 @@ export default function StudentSelfView() {
                     <ScrollView
                         horizontal
                         showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{ paddingHorizontal: 24, gap: 12 }}
+                        contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, gap: 12 }}
                     >
                         {allFeatures.map((feature) => (
                             <Pressable
@@ -213,21 +220,21 @@ export default function StudentSelfView() {
                                         borderRadius: Theme.corners.generous,
                                         backgroundColor: activeFeature === feature.id
                                             ? Theme.colors.sanctuarySaffron
-                                            : Theme.colors.deepIndigo,
+                                            : colors.secondary,
                                         borderWidth: 1,
                                         borderColor: activeFeature === feature.id
                                             ? Theme.colors.sanctuarySaffron
-                                            : Theme.colors.transparent,
+                                            : colors.border,
                                     }}
                                 >
                                     <feature.icon
-                                        color={activeFeature === feature.id ? Theme.colors.white : Theme.colors.dimGray}
+                                        color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary}
                                         size={24}
                                     />
                                     <Text
                                         size="xs"
                                         bold={activeFeature === feature.id}
-                                        color={activeFeature === feature.id ? Theme.colors.white : Theme.colors.mistGray}
+                                        color={activeFeature === feature.id ? Theme.colors.white : colors.text}
                                         textAlign="center"
                                     >
                                         {t(`student.${feature.id}`)}
@@ -253,21 +260,21 @@ export default function StudentSelfView() {
                                     borderRadius: Theme.corners.generous,
                                     backgroundColor: showMoreTools
                                         ? Theme.colors.sanctuarySaffron
-                                        : Theme.colors.deepIndigo,
+                                        : colors.secondary,
                                     borderWidth: 1,
                                     borderColor: showMoreTools
                                         ? Theme.colors.sanctuarySaffron
-                                        : Theme.colors.dimGray,
+                                        : colors.border,
                                     borderStyle: 'dashed'
                                 }}
                             >
-                                <Text fontSize="$2xl">
+                                <Text fontSize="$2xl" color={showMoreTools ? Theme.colors.white : colors.text}>
                                     {showMoreTools ? '−' : '+'}
                                 </Text>
                                 <Text
                                     size="xs"
                                     bold={showMoreTools}
-                                    color={showMoreTools ? Theme.colors.white : Theme.colors.mistGray}
+                                    color={showMoreTools ? Theme.colors.white : colors.textSecondary}
                                     textAlign="center"
                                 >
                                     {showMoreTools ? t('self.lessTools') : t('self.moreTools')}
@@ -278,11 +285,11 @@ export default function StudentSelfView() {
                 </Box>
 
                 {/* Dynamic Content */}
-                <Box px="$6" mt="$6">
+                <Box mt="$6">
                     <Box
                         p={Theme.spacing.xl}
                         sx={{
-                            backgroundColor: Theme.colors.midnightBlue,
+                            backgroundColor: colors.secondary,
                             borderRadius: Theme.corners.generous,
                             minHeight: 300
                         }}
@@ -297,6 +304,6 @@ export default function StudentSelfView() {
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
             />
-        </Box>
+        </ScreenWrapper>
     );
 }

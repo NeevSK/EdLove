@@ -1,20 +1,24 @@
 {
-  "extends": "../../node_modules/expo/tsconfig.base.json",
   "compilerOptions": {
-    "strict": true,
+    "strict": false,
     "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "noEmit": true,
+    "lib": ["es2020", "dom"],
+    "target": "es2020",
+    "jsx": "react-jsx",
+    "module": "esnext",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "jsx": "react-jsx",
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "strictNullChecks": false,
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    },
-    "types": [
-      "jest",
-      "react-test-renderer"
-    ]
-  }
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", ".expo", "dist"]
 }

@@ -34,11 +34,13 @@ import {
 } from '@/ui';
 import { TouchableOpacity, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import * as Clipboard from 'expo-clipboard';
 import { api } from '../../lib/api';
 import { InviteCode } from '../../lib/api/school';
 import Theme from '../../constants/Theme';
-import * as Clipboard from 'expo-clipboard';
 import { Copy, RefreshCw, Users, Shield, QrCode } from 'lucide-react-native';
+import { UserRole } from '../../types/User';
+import { hasRole, ADMIN_ROLES } from '../../utils/permissions';
 import QRCodeGenerator from '../shared/QRCodeGenerator';
 
 interface InviteManagerProps {
@@ -74,7 +76,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
         }
     };
 
-    const handleGenerateCode = async (role: 'teacher' | 'student' | 'principal') => {
+    const handleGenerateCode = async (role: UserRole) => {
         setIsGenerating(true);
         setError(null);
         try {
@@ -93,7 +95,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
             await Clipboard.setStringAsync(code);
             toast.show({
                 placement: 'top',
-                render: ({ id }) => {
+                render: ({ id }: { id: string }) => {
                     return (
                         <Toast nativeID={id} action="success" variant="solid">
                             <ToastTitle>{t('principal.invites.copied') || 'Copied!'}</ToastTitle>
@@ -190,6 +192,36 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                                     '👨‍🏫 Generate Teacher Code'}
                             </ButtonText>
                         </Button>
+
+                        <HStack space="md">
+                            <Button
+                                sx={{
+                                    flex: 1,
+                                    backgroundColor: Theme.colors.twilightPurple,
+                                    padding: Theme.spacing.lg,
+                                }}
+                                onPress={() => handleGenerateCode('section_head')}
+                                disabled={isGenerating}
+                            >
+                                <ButtonText color={Theme.colors.sacredWhite}>
+                                    {t('principal.invites.generateSectionHead') || '+ Section Head'}
+                                </ButtonText>
+                            </Button>
+
+                            <Button
+                                sx={{
+                                    flex: 1,
+                                    backgroundColor: Theme.colors.twilightPurple,
+                                    padding: Theme.spacing.lg,
+                                }}
+                                onPress={() => handleGenerateCode('grade_head')}
+                                disabled={isGenerating}
+                            >
+                                <ButtonText color={Theme.colors.sacredWhite}>
+                                    {t('principal.invites.generateGradeHead') || '+ Grade Head'}
+                                </ButtonText>
+                            </Button>
+                        </HStack>
 
                         <Button
                             sx={{

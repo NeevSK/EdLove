@@ -1,0 +1,32 @@
+// Base variables
+$spacing-unit: 8px;
+$transition-speed: 0.3s;
+
+// Breakpoints
+$mobile: 640px;
+$tablet: 1024px;
+$desktop: 1280px;
+
+// Z-index scale
+$z-negative: -1;
+$z-normal: 1;
+$z-nav: 100;
+$z-modal: 200;
+$z-notification: 300;
+
+// Mixins
+@mixin mobile {
+    @media (max-width: #{$mobile}) {
+        @content;
+    }
+}
+
+@mixin tablet {
+    @media (max-width: #{$tablet}) {
+        @content;
+    }
+}
+
+@mixin theme-transition {
+    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+}

@@ -19,30 +19,32 @@ import { hapticLight } from '../utils/haptics';
 import { useStore } from '../store/useStore';
 
 // Import role-specific views
-import { PrincipalSchoolView, SectionHeadView, GradeHeadView } from './classroom';
-import { ClassroomList, TeacherDashboard, ClaimInviteModal } from '../components/classroom';
+import { PrincipalSchoolView, SectionHeadView, GradeHeadView, FounderSchoolView, AdminSchoolView } from './classroom';
+import { ClassroomList, TeacherDashboard } from '../components/classroom';
 import GlobalHeader from '../components/shared/GlobalHeader';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import ScreenWrapper from '../components/shared/ScreenWrapper';
+import { hasRole, ADMIN_ROLES } from '../utils/permissions';
+import { useThemedColors } from '../hooks/useThemedColors';
 
 // Shared container styling for role-based views
 const ROLE_VIEW_CONTAINER_STYLE = {
     flex: 1,
-    backgroundColor: Theme.colors.voidIndigo,
     padding: Theme.spacing.lg,
 };
 
 export default function ClassroomScreen() {
+    const colors = useThemedColors();
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const { role } = useUserRole();
     const [loading, setLoading] = useState(true);
     const [principalData, setPrincipalData] = useState<{ schoolId: string, userId: string } | null>(null);
-    const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     useEffect(() => {
-        if (role === 'principal') {
+        if (hasRole(role, ADMIN_ROLES)) {
             fetchPrincipalData();
         } else {
             setLoading(false);
@@ -76,15 +78,25 @@ export default function ClassroomScreen() {
 
     if (loading) {
         return (
-            <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo, justifyContent: 'center', alignItems: 'center' }}>
-                <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
-            </Box>
+            <ScreenWrapper>
+                <Center sx={{ flex: 1 }}>
+                    <Spinner size="large" color={colors.action} />
+                </Center>
+            </ScreenWrapper>
         );
     }
 
-    // Route to appropriate view based on role
-    if (role === 'principal' && principalData) {
-        return <PrincipalSchoolView schoolId={principalData.schoolId} userId={principalData.userId} />;
+    // Role-based views
+    if (principalData) {
+        if (role === 'founder') {
+            return <FounderSchoolView schoolId={principalData.schoolId} userId={principalData.userId} />;
+        }
+        if (role === 'admin') {
+            return <AdminSchoolView schoolId={principalData.schoolId} userId={principalData.userId} />;
+        }
+        if (role === 'principal' || role === 'developer') {
+            return <PrincipalSchoolView schoolId={principalData.schoolId} userId={principalData.userId} />;
+        }
     }
 
     if (role === 'section_head') {
@@ -98,36 +110,18 @@ export default function ClassroomScreen() {
     // Default view for teachers and students
     if (role === 'teacher') {
         return (
-            <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+            <ScreenWrapper>
                 <TeacherDashboard />
-            </Box>
+            </ScreenWrapper>
         );
     }
 
+    // Student View
     return (
-        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+        <ScreenWrapper>
             <GlobalHeader
-                title={t('classroom.myClassrooms') || 'My Classrooms'}
-                subtitle="Enrolled"
-                rightAction={(
-                    <Pressable
-                        onPress={() => {
-                            hapticLight();
-                            setIsClaimModalOpen(true);
-                        }}
-                    >
-                        <HStack space="xs" alignItems="center" sx={{
-                            backgroundColor: Theme.colors.sanctuarySaffron,
-                            paddingHorizontal: 12,
-                            paddingVertical: 6,
-                            borderRadius: Theme.corners.comfortable,
-                            ...Theme.shadows.sm
-                        }}>
-                            <QrCode size={16} color="white" />
-                            <Text color="white" size="xs" bold>Claim Invite</Text>
-                        </HStack>
-                    </Pressable>
-                )}
+                title={t('classroom.learningJourney') || 'Learning Journey'}
+                subtitle={t('classroom.mySanctuary') || 'My Sanctuary'}
             />
             <Box sx={{ flex: 1, padding: Theme.spacing.lg }}>
                 <ClassroomList
@@ -143,15 +137,6 @@ export default function ClassroomScreen() {
                     }}
                 />
             </Box>
-
-            <ClaimInviteModal
-                isOpen={isClaimModalOpen}
-                onClose={() => setIsClaimModalOpen(false)}
-                onSuccess={() => {
-                    setIsClaimModalOpen(false);
-                    setRefreshTrigger(prev => prev + 1);
-                }}
-            />
-        </Box>
+        </ScreenWrapper>
     );
 }

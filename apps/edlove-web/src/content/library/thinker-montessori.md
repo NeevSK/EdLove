@@ -1,8 +1,7 @@
 ---
 title: "Maria Montessori"
 subtitle: "The Doctor of Childhood"
-icon: "🧸"
-type: "Thinker"
+category: "thinker"
 order: 10
 ---
 

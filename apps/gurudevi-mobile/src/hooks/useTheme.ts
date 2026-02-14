@@ -6,6 +6,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import { useColorScheme } from 'react-native';
 import { useStore, ThemeMode } from '../store/useStore';
 export type { ThemeMode };
 
@@ -26,14 +27,17 @@ function shouldUseDarkMode(): boolean {
 }
 
 export function useTheme(): UseThemeReturn {
-    const themeMode = useStore(state => state.themeMode || 'light');
+    const themeMode = useStore(state => state.themeMode || 'system');
     const setStoredThemeMode = useStore(state => state.setThemeMode);
+    const systemColorScheme = useColorScheme();
 
     const [isDark, setIsDark] = useState(false);
 
     useEffect(() => {
         // Calculate actual theme based on mode
-        if (themeMode === 'auto') {
+        if (themeMode === 'system') {
+            setIsDark(systemColorScheme === 'dark');
+        } else if (themeMode === 'auto') {
             setIsDark(shouldUseDarkMode());
 
             // Update every minute when in auto mode to catch time changes
@@ -45,7 +49,7 @@ export function useTheme(): UseThemeReturn {
         } else {
             setIsDark(themeMode === 'dark');
         }
-    }, [themeMode]);
+    }, [themeMode, systemColorScheme]);
 
     return {
         themeMode,

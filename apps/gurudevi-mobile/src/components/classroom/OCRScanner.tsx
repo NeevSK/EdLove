@@ -24,6 +24,7 @@ import { Camera, X, Check } from 'lucide-react-native';
 import TextRecognition from '@react-native-ml-kit/text-recognition';
 import { Theme } from '../../constants/Theme';
 import { hapticLight, hapticSuccess, hapticError } from '../../utils/haptics';
+import { useThemedColors } from '../../hooks/useThemedColors';
 
 export interface ScannedStudent {
     name: string;
@@ -41,6 +42,7 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
     const [scannedText, setScannedText] = useState<string>('');
     const [parsedStudents, setParsedStudents] = useState<ScannedStudent[]>([]);
     const [step, setStep] = useState<'capture' | 'processing' | 'review'>('capture');
+    const colors = useThemedColors();
     const toast = useToast();
 
     // Request camera permissions
@@ -119,7 +121,7 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
 
             toast.show({
                 placement: 'bottom',
-                render: ({ id }) => (
+                render: ({ id }: { id: string }) => (
                     <Toast nativeID={id} action="success" variant="solid">
                         <ToastTitle>Found {students.length} student(s)! Review and confirm.</ToastTitle>
                     </Toast>
@@ -131,7 +133,7 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
 
             toast.show({
                 placement: 'bottom',
-                render: ({ id }) => (
+                render: ({ id }: { id: string }) => (
                     <Toast nativeID={id} action="error" variant="solid">
                         <ToastTitle>Failed to scan register. Try manual entry instead.</ToastTitle>
                     </Toast>
@@ -233,7 +235,7 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
         if (parsedStudents.length === 0) {
             toast.show({
                 placement: 'bottom',
-                render: ({ id }) => (
+                render: ({ id }: { id: string }) => (
                     <Toast nativeID={id} action="error" variant="solid">
                         <ToastTitle>No students to add</ToastTitle>
                     </Toast>
@@ -256,7 +258,7 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
     };
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+        <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
             {/* Header */}
             <HStack
                 px="$6"
@@ -265,13 +267,13 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
                 justifyContent="space-between"
                 alignItems="center"
                 borderBottomWidth={1}
-                borderBottomColor={Theme.colors.mistGray}
+                borderBottomColor={colors.border}
             >
                 <Heading color={Theme.colors.sanctuarySaffron} size="xl">
                     Scan Student Register
                 </Heading>
                 <Pressable onPress={onCancel}>
-                    <X size={24} color={Theme.colors.mistGray} />
+                    <X size={24} color={colors.textSecondary} />
                 </Pressable>
             </HStack>
 
@@ -279,7 +281,7 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
             <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ padding: 24 }}>
                 {step === 'capture' && (
                     <VStack space="lg">
-                        <Text color={Theme.colors.pearlGray} size="md" textAlign="center">
+                        <Text color={colors.textSecondary} size="md" textAlign="center">
                             Take a photo of your student register. Works with Sinhala, Tamil, and English text.
                         </Text>
 
@@ -302,11 +304,11 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
                                 variant="outline"
                                 onPress={handlePickImage}
                                 sx={{
-                                    borderColor: Theme.colors.mistGray,
+                                    borderColor: colors.border,
                                     borderRadius: Theme.corners.comfortable,
                                 }}
                             >
-                                <ButtonText color={Theme.colors.sacredWhite}>Choose from Gallery</ButtonText>
+                                <ButtonText color={colors.text}>Choose from Gallery</ButtonText>
                             </Button>
                         </VStack>
 
@@ -315,23 +317,25 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
                             space="sm"
                             p="$4"
                             sx={{
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: colors.tertiary,
                                 borderRadius: Theme.corners.comfortable,
+                                borderColor: colors.border,
+                                borderWidth: 1,
                             }}
                         >
                             <Text color={Theme.colors.sanctuarySaffron} size="sm" fontWeight="$semibold">
                                 Tips for best results:
                             </Text>
-                            <Text color={Theme.colors.mistGray} size="sm">
+                            <Text color={colors.textSecondary} size="sm">
                                 • Good lighting (avoid shadows)
                             </Text>
-                            <Text color={Theme.colors.mistGray} size="sm">
+                            <Text color={colors.textSecondary} size="sm">
                                 • Clear, focused image
                             </Text>
-                            <Text color={Theme.colors.mistGray} size="sm">
+                            <Text color={colors.textSecondary} size="sm">
                                 • Straight angle (not tilted)
                             </Text>
-                            <Text color={Theme.colors.mistGray} size="sm">
+                            <Text color={colors.textSecondary} size="sm">
                                 • Include column headers if possible
                             </Text>
                         </VStack>
@@ -352,7 +356,7 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
                             />
                         )}
                         <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
-                        <Text color={Theme.colors.pearlGray} size="md" textAlign="center">
+                        <Text color={colors.textSecondary} size="md" textAlign="center">
                             Scanning and analyzing text...
                         </Text>
                     </VStack>
@@ -360,7 +364,7 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
 
                 {step === 'review' && (
                     <VStack space="lg">
-                        <Text color={Theme.colors.pearlGray} size="md" textAlign="center">
+                        <Text color={colors.textSecondary} size="md" textAlign="center">
                             Found {parsedStudents.length} student(s). Review and confirm or edit manually.
                         </Text>
 
@@ -384,22 +388,24 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
                                     key={index}
                                     p="$4"
                                     sx={{
-                                        backgroundColor: Theme.colors.deepIndigo,
+                                        backgroundColor: colors.tertiary,
                                         borderRadius: Theme.corners.comfortable,
                                         borderLeftWidth: 4,
                                         borderLeftColor: Theme.colors.sageGreen,
+                                        borderColor: colors.border,
+                                        borderWidth: 1,
                                     }}
                                 >
                                     <HStack justifyContent="space-between" alignItems="center">
                                         <VStack space="xs" flex={1}>
-                                            <Text color={Theme.colors.sacredWhite} size="md" fontWeight="$semibold">
+                                            <Text color={colors.text} size="md" fontWeight="$semibold">
                                                 {student.name}
                                             </Text>
-                                            <Text color={Theme.colors.mistGray} size="sm">
+                                            <Text color={colors.textSecondary} size="sm">
                                                 Index: {student.index_number}
                                             </Text>
                                             {student.notes && (
-                                                <Text color={Theme.colors.mistGray} size="sm">
+                                                <Text color={colors.textSecondary} size="sm">
                                                     {student.notes}
                                                 </Text>
                                             )}
@@ -415,11 +421,13 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
                             <Box
                                 p="$4"
                                 sx={{
-                                    backgroundColor: Theme.colors.deepIndigo,
+                                    backgroundColor: colors.tertiary,
                                     borderRadius: Theme.corners.comfortable,
+                                    borderColor: colors.border,
+                                    borderWidth: 1,
                                 }}
                             >
-                                <Text color={Theme.colors.mistGray} size="xs" fontFamily="$mono">
+                                <Text color={colors.textSecondary} size="xs" fontFamily="$mono">
                                     {scannedText.substring(0, 200)}
                                     {scannedText.length > 200 && '...'}
                                 </Text>
@@ -434,11 +442,11 @@ export default function OCRScanner({ onStudentsScanned, onCancel }: OCRScannerPr
                                 onPress={handleRetry}
                                 flex={1}
                                 sx={{
-                                    borderColor: Theme.colors.mistGray,
+                                    borderColor: colors.border,
                                     borderRadius: Theme.corners.comfortable,
                                 }}
                             >
-                                <ButtonText color={Theme.colors.sacredWhite}>Try Again</ButtonText>
+                                <ButtonText color={colors.text}>Try Again</ButtonText>
                             </Button>
 
                             <Button

@@ -1,0 +1,158 @@
+---
+import LightTechLayout from '../../layouts/LightTechLayout.astro';
+import Card from '../../components/common/Card.astro';
+import Button from '../../components/common/Button.astro';
+---
+
+<LightTechLayout title="Professional" description="Projects, CV, Craft">
+  <div class="professional-container">
+    <header class="section-header">
+      <h1>Building the Future</h1>
+      <p>Projects, products, and systems engineering.</p>
+    </header>
+    
+    <section class="projects-grid">
+      <Card variant="feature" class="project-card">
+        <div class="project-content">
+          <span class="status">Active Development</span>
+          <h2>Gurudevi</h2>
+          <p>A digital sanctuary for teacher wellbeing. Combining community, tools, and AI to support educators.</p>
+          <div class="tech-stack">
+            <span>React Native</span>
+            <span>Supabase</span>
+            <span>AI</span>
+          </div>
+          <Button href="#" variant="primary" class="mt-4">View Case Study</Button>
+        </div>
+      </Card>
+      
+      <Card class="project-card">
+        <span class="status">Foundation</span>
+        <h3>EdLove Foundation</h3>
+        <p>Global education paradigm mapping and transformation.</p>
+      </Card>
+      
+      <Card class="project-card">
+        <span class="status">Lab</span>
+        <h3>Intuitui Labs</h3>
+        <p>Systems intelligence studio for experimental interfaces.</p>
+      </Card>
+    </section>
+    
+    <section class="resume-section">
+      <div class="resume-header">
+        <h2>Experience & Skills</h2>
+        <Button href="/resume.pdf" variant="secondary">Download CV</Button>
+      </div>
+      
+      <div class="resume-timeline">
+        <div class="timeline-item">
+          <span class="date">2024 - Present</span>
+          <h3>Founder & Lead Engineer</h3>
+          <p>EdLove Foundation</p>
+        </div>
+        <div class="timeline-item">
+          <span class="date">2022 - 2023</span>
+          <h3>Student Union VP</h3>
+          <p>Leadership and community organization.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</LightTechLayout>
+
+<style lang="scss">
+  .professional-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+  }
+  
+  .section-header {
+    margin-bottom: 4rem;
+    text-align: center;
+    
+    h1 {
+      font-size: 3rem;
+      color: var(--color-primary);
+    }
+  }
+  
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 4rem;
+    
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+      .project-card:first-child {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+  
+  .status {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-accent);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  
+  .tech-stack {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    
+    span {
+      background: rgba(0, 122, 255, 0.1);
+      color: var(--color-primary);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+  }
+  
+  .resume-section {
+    background: white;
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .resume-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .timeline-item {
+    border-left: 2px solid var(--color-primary);
+    padding-left: 1.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: -5px;
+      top: 0;
+      width: 8px;
+      height: 8px;
+      background: var(--color-primary);
+      border-radius: 50%;
+    }
+    
+    .date {
+      font-size: 0.9rem;
+      color: var(--color-secondary);
+    }
+  }
+  
+  .mt-4 {
+    margin-top: 1rem;
+  }
+</style>

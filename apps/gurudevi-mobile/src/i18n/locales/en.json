@@ -16,7 +16,8 @@
         "error": "Error",
         "success": "Success",
         "greeting": "Ayubowan, {{name}}!",
-        "create": "Create"
+        "create": "Create",
+        "add": "Add"
     },
     "greeting": {
         "ayubowan": "Ayubowan!"
@@ -25,9 +26,11 @@
         "teacher": "Teacher",
         "student": "Student",
         "principal": "Principal",
+        "section_head": "Section Head",
+        "grade_head": "Grade Head",
         "developer": "Developer",
         "admin": "Admin",
-        "founder": "Founder"
+        "founder": "Founding Guardian"
     },
     "school": {
         "personal_workspace": "Personal Workspace",
@@ -59,7 +62,7 @@
         "teacher": "Teacher",
         "student": "Student",
         "principal": "Principal",
-        "founder": "Founder",
+        "founder": "Founding Guardian",
         "admin": "Admin",
         "sectionHead": "Section Head",
         "gradeHead": "Grade Head",
@@ -73,17 +76,23 @@
     },
     "tabs": {
         "self": "Self",
-        "classroom": "Classroom",
-        "school": "School",
+        "myClassrooms": "My Classrooms",
+        "schoolOverview": "School Overview",
+        "schoolManagement": "School Management",
+        "mySchool": "My School",
+        "learningJourney": "Learning Journey",
+        "mySanctuary": "My Sanctuary",
         "section": "Section",
         "community": "Community",
         "library": "Library",
-        "profile": "Profile"
+        "profile": "Profile",
+        "grade": "Grade"
     },
     "self": {
-        "goodMorning": "Good Morning",
-        "goodAfternoon": "Good Afternoon",
-        "goodEvening": "Good Evening",
+        "goodMorning": "Good Morning!",
+        "goodAfternoon": "Good Afternoon!",
+        "goodEvening": "Good Evening!",
+        "goodNight": "Good Night!",
         "venting": "Venting Space",
         "ventingDesc": "Let go of today's stress",
         "rhythm": "Daily Rhythm",
@@ -95,6 +104,8 @@
         "newInsight": "New Insight",
         "shadowPrep": "Preparing for tomorrow...",
         "mood": "Mood Check-in",
+        "founderSubtitle": "Platform Visionary",
+        "adminSubtitle": "System Architect",
         "fire": "Fire Journal",
         "joyJar": "Joy Jar",
         "joyJarDesc": "Student breakthrough moments",
@@ -164,7 +175,46 @@
         "needInspiration": "Need inspiration? Try:",
         "threeGentleThings": "What 3 things would make tomorrow gentler? 🌙",
         "insightPlaceholder": "What teaching insight did you discover today?",
-        "momentDescriptionPlaceholder": "Maya finally understood fractions today! 🎉"
+        "momentDescriptionPlaceholder": "Maya finally understood fractions today! 🎉",
+        "dailyRhythm": "Daily Rhythm",
+        "noClasses": "No classes scheduled",
+        "addLesson": "Tap the + button to add a lesson.",
+        "editPeriod": "Edit Period",
+        "newPeriod": "New Period",
+        "subjectPlaceholder": "Subject (e.g. Math)",
+        "classPlaceholder": "Class (e.g. 10-A)",
+        "startPlaceholder": "Start (08:00)",
+        "endPlaceholder": "End (08:40)",
+        "type": "Type",
+        "subject": "Subject",
+        "relief": "Relief",
+        "interval": "Interval",
+        "timetableUpdated": "Timetable updated",
+        "missingFields": "Missing required fields",
+        "breathGuide": "Breath Guide",
+        "inhale": "Breathe in...",
+        "hold": "Hold...",
+        "exhale": "Breathe out...",
+        "rest": "Rest...",
+        "startBreathing": "Start Breathing",
+        "stop": "Stop",
+        "breathHero": "1 minute of breath for an hour of calm 🌸",
+        "cycleCount": "Cycle {{current}} of {{total}}",
+        "dailyMotivation": "Daily Motivation",
+        "didYouKnow": "Did You Know?",
+        "tapToReadMore": "Tap to read more",
+        "moodLotus": "Mood Check-in",
+        "moodLotusDesc": "How is your inner lotus today?",
+        "moodHeavy": "Heavy",
+        "moodChallenging": "Challenging",
+        "moodOkay": "Okay",
+        "moodGood": "Good",
+        "moodFlourishing": "Flourishing",
+        "closedBud": "Closed Bud",
+        "fullBloom": "Full Bloom",
+        "backToMood": "Back to Mood",
+        "moodPrivacy": "Your mood data is private and only visible to you",
+        "savedAt": "Saved {{time}}"
     },
     "student": {
         "mood": "Mood Check",
@@ -197,18 +247,86 @@
         "leadershipWisdom": "Leadership Wisdom",
         "leadershipWisdomDesc": "Capture insights from your leadership journey",
         "monthlyReflection": "Monthly Reflection",
-        "monthlyReflectionDesc": "Review the past month and plan ahead"
+        "monthlyReflectionDesc": "Review the past month and plan ahead",
+        "stats": {
+            "totalStudents": "Total Students",
+            "totalTeachers": "Total Teachers",
+            "activeClassrooms": "Active Classes",
+            "totalSections": "Sections",
+            "attendance": "Attendance"
+        },
+        "quickActions": "Quick Actions",
+        "actions": {
+            "manageHierarchy": "🏫 Manage School Hierarchy",
+            "inviteStaff": "✉️ Invite Staff & Students"
+        },
+        "resources": {
+            "title": "Resource Needs",
+            "subtitle": "Support your teachers with what they need",
+            "emptyState": "✨ All resource needs are currently met!",
+            "emptyStateDesc": "Your teachers have what they need to succeed",
+            "needUnit": "{{count}} teachers need",
+            "urgent": "🔥 Urgent priority",
+            "philosophy": "💡 This dashboard focuses on empowering teachers, not monitoring performance"
+        },
+        "hierarchy": {
+            "title": "School Hierarchy",
+            "addSection": "+ Add Section",
+            "addGrade": "+ Add Grade",
+            "grade": "Grade",
+            "noGrades": "No grades added yet",
+            "noSections": "No sections yet. Add your first section to get started!",
+            "addSectionTitle": "Add New Section",
+            "sectionNameLabel": "Enter section name (e.g., Primary, Secondary)",
+            "sectionNamePlaceholder": "Section name",
+            "addGradeTitle": "Add New Grade",
+            "gradeNumberLabel": "Enter grade number (1-13)",
+            "gradeNumberPlaceholder": "1-13",
+            "errorEmptyName": "Section name cannot be empty",
+            "errorGradeLimit": "Grade number must be between 1 and 13"
+        }
+    },
+    "founder": {
+        "platformVision": "Platform Vision",
+        "educationalEcology": "Educational Ecology",
+        "ecologyStatus": "Ecology Status: {{status}}",
+        "visionManifesting": "Vision manifesting in {{count}} sections",
+        "executiveOversight": "Executive Oversight",
+        "totalSouls": "Total Souls",
+        "guidingSpirits": "Guiding Spirits",
+        "visionaryInsights": "Visionary Insights",
+        "wellnessIndex": "Wellness Index",
+        "wellnessIncrease": "+{{percent}}% from last cycle"
+    },
+    "admin": {
+        "systemOperations": "System Operations",
+        "productionEnvironment": "Production Environment",
+        "coreUptime": "Core Uptime",
+        "apiLatency": "API Latency",
+        "operationalAudit": "Operational Audit",
+        "activeSessions": "Active Sessions",
+        "securityAlerts": "Security Alerts",
+        "infraSummary": "Infrastructure Summary: {{name}}",
+        "balance": "System Health",
+        "mood": "Personal Mood",
+        "config": "Stability",
+        "security": "Security Pulse",
+        "data": "Data Ecology",
+        "ui": "UI Harmony"
     },
     "classroom": {
         "title": "Classroom",
         "description": "Your learning journey continues here",
         "dashboardIntro": "Your sanctuary awaits. Manage your classes efficiently.",
+        "schoolManagement": "School Management",
         "createClass": "Create Class",
         "attendance": "Attendance",
         "library": "Library",
         "statActiveClasses": "Active Classes",
         "statTotalStudents": "Total Students",
         "yourClassrooms": "Your Classrooms",
+        "peacefulSpace": "This is your peaceful working space.",
+        "startWorking": "Let's start working.",
         "myClassrooms": "My Classrooms",
         "createTitle": "Create New Class",
         "errorNameRequired": "Class name is required",
@@ -233,11 +351,37 @@
         "description": "Repository of knowledge",
         "browse": "Browse",
         "upload": "Upload",
-        "search": "Search"
+        "search": "Search",
+        "searchPlaceholder": "Search resources...",
+        "categories": "Categories",
+        "emptyTitle": "Library is Empty",
+        "emptyDesc": "Be the first to add knowledge to the sanctuary.",
+        "contentLibrary": "Content Library",
+        "manageResources": "Manage your teaching resources",
+        "addResource": "Add Resource",
+        "resourceType": "Resource Type",
+        "titleLabel": "Title *",
+        "titlePlaceholder": "Enter title...",
+        "descLabel": "Description",
+        "descPlaceholder": "Enter description...",
+        "urlLabel": "URL",
+        "contentLabel": "Content",
+        "contentPlaceholder": "Enter note content...",
+        "noResources": "No resources yet. Tap the + button to add your first resource.",
+        "knowledgeSanctuary": "Knowledge Sanctuary",
+        "types": {
+            "all": "All",
+            "pdf": "PDFs",
+            "video": "Videos",
+            "doc": "Docs",
+            "link": "Links"
+        }
     },
     "profile": {
         "title": "Profile",
         "fullName": "Full Name",
+        "phone": "Phone Number",
+        "bio": "Bio / Introduction",
         "role": "Role",
         "school": "School",
         "notSetYet": "Not set yet",
@@ -250,11 +394,38 @@
         "languageDesc": "Choose your preferred language",
         "quote": "Your influence as a teacher blooms here",
         "settings": "Settings",
+        "scanToConnect": "Scan to Connect",
+        "noSchoolConnected": "No school connected",
+        "uploadComingSoon": "Upload feature coming soon",
         "subscription": "Subscription",
         "tier": "Tier",
         "free": "Free",
         "pro": "Pro",
-        "premium": "Premium"
+        "premium": "Premium",
+        "impact": {
+            "teacher": "Teacher Impact",
+            "student": "Learning Journey",
+            "founder": "Eternal Guardian",
+            "admin": "Sanctuary Health"
+        },
+        "stats": {
+            "ecology": "Ecology Status",
+            "platformVision": "Platform Vision",
+            "guardianImpact": "Guardian Impact",
+            "coreUptime": "Core Uptime",
+            "apiLatency": "API Latency",
+            "securityAudit": "Security Audit",
+            "learningStreaks": "Learning Glimmers",
+            "assignmentsDone": "Assignments Done",
+            "points": "Guru Points",
+            "streak": "{{count}} Day Streak",
+            "foundingSpirit": "Founding Spirit",
+            "systemArchon": "System Archon",
+            "visionAlignment": "Vision Alignment",
+            "coreActive": "Core Active",
+            "learningGrowth": "LEARNING GROWTH",
+            "professionalGrowth": "PROFESSIONAL GROWTH"
+        }
     },
     "invite": {
         "enterCode": "Enter Invite Code",
@@ -324,5 +495,72 @@
         "back": "Back",
         "skip": "Skip",
         "complete": "Complete"
+    },
+    "settings": {
+        "title": "App Settings",
+        "hint": "Open app settings",
+        "appearance": {
+            "title": "Appearance",
+            "description": "Personalize how Gurudevi looks and feels"
+        },
+        "theme": {
+            "title": "Theme",
+            "auto": "Auto (Time-based)",
+            "light": "Light",
+            "dark": "Dark",
+            "select": "Choose Theme",
+            "auto_full": "Automatically adjusts between light and dark based on time of day",
+            "light_full": "Bright and clear for daytime use",
+            "dark_full": "Easy on the eyes in low light",
+            "hint": "Choose between light, dark, or automatic theme based on time of day"
+        },
+        "temporal": {
+            "dawn": "Gentle awakening (5-8 AM)",
+            "day": "Active work (8 AM-5 PM)",
+            "evening": "Winding down (5-8 PM)",
+            "night": "Restful (8 PM-5 AM)"
+        },
+        "fidelity": {
+            "title": "Visual Quality",
+            "auto": "Auto (Smart)",
+            "low": "Battery Saver",
+            "high": "Best Quality",
+            "select": "Visual Quality",
+            "auto_desc": "Adapts to your device automatically",
+            "low_desc": "Saves battery, works on all devices",
+            "high_desc": "Beautiful effects, needs good device",
+            "auto_full": "Automatically adjusts based on your device capabilities",
+            "low_full": "Simplified visuals, works smoothly on all devices",
+            "high_full": "Beautiful effects and animations (requires capable device)",
+            "hint": "Control visual effects and animations quality"
+        },
+        "language": {
+            "title": "Language",
+            "description": "Choose your preferred language",
+            "current": "App Language",
+            "change_desc": "Switch between English, Sinhala, and Tamil",
+            "select": "Choose Language",
+            "hint": "Change the language of the entire app"
+        },
+        "privacy": {
+            "title": "Privacy",
+            "description": "Control how your information is displayed"
+        },
+        "veil": {
+            "title": "Privacy Veil",
+            "description": "Quick-hide personal details when needed"
+        },
+        "device": {
+            "title": "Device Information",
+            "description": "How Gurudevi adapts to your device",
+            "tier": "Device Tier",
+            "memory": "Available Memory",
+            "network": "Network Quality",
+            "data_saver": "Data Saver mode is active due to poor connection"
+        },
+        "tip": {
+            "title": "Tip",
+            "message": "These settings help Gurudevi work best for you. Auto mode is recommended for most users."
+        }
     }
 }

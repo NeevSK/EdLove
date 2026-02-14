@@ -25,6 +25,7 @@ import { api } from '../../lib/api';
 import { supabase } from '../../lib/supabase';
 import { useTranslation } from 'react-i18next';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';
+import { useThemedColors } from '../../hooks/useThemedColors';
 
 interface CreateClassroomModalProps {
     isOpen: boolean;
@@ -42,6 +43,7 @@ export default function CreateClassroomModal({
     const [subject, setSubject] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const colors = useThemedColors();
 
     const handleSubmit = async () => {
         if (!name.trim()) {
@@ -100,12 +102,14 @@ export default function CreateClassroomModal({
             <ModalBackdrop />
             <ModalContent
                 sx={{
-                    backgroundColor: Theme.colors.midnightBlue,
+                    backgroundColor: colors.secondary,
                     maxWidth: 400,
+                    borderColor: colors.border,
+                    borderWidth: 1,
                 }}
             >
                 <ModalHeader>
-                    <Heading color={Theme.colors.sacredWhite} size="lg">
+                    <Heading color={colors.text} size="lg">
                         {t('classroom.createTitle') || 'Create New Class'}
                     </Heading>
                 </ModalHeader>
@@ -130,7 +134,7 @@ export default function CreateClassroomModal({
 
                         <FormControl isRequired isInvalid={!!error}>
                             <FormControlLabel>
-                                <FormControlLabelText color={Theme.colors.mistGray}>
+                                <FormControlLabelText color={colors.textSecondary}>
                                     {t('classroom.labelName') || 'Class Name'}
                                 </FormControlLabelText>
                             </FormControlLabel>
@@ -138,26 +142,26 @@ export default function CreateClassroomModal({
                                 variant="outline"
                                 size="md"
                                 sx={{
-                                    backgroundColor: Theme.colors.deepIndigo,
-                                    borderColor: Theme.colors.transparent,
+                                    backgroundColor: colors.tertiary,
+                                    borderColor: colors.border,
                                 }}
                             >
                                 <InputField
                                     placeholder={t('classroom.placeholderName') || "e.g., Grade 10 Mathematics"}
                                     value={name}
-                                    onChangeText={(text) => {
+                                    onChangeText={(text: string) => {
                                         setName(text);
                                         if (error) setError(null);
                                     }}
-                                    color={Theme.colors.sacredWhite}
-                                    placeholderTextColor={Theme.colors.dimGray}
+                                    color={colors.text}
+                                    placeholderTextColor={colors.textTertiary}
                                 />
                             </Input>
                         </FormControl>
 
                         <FormControl>
                             <FormControlLabel>
-                                <FormControlLabelText color={Theme.colors.mistGray}>
+                                <FormControlLabelText color={colors.textSecondary}>
                                     {t('classroom.labelSubject') || 'Subject (Optional)'}
                                 </FormControlLabelText>
                             </FormControlLabel>
@@ -165,16 +169,16 @@ export default function CreateClassroomModal({
                                 variant="outline"
                                 size="md"
                                 sx={{
-                                    backgroundColor: Theme.colors.deepIndigo,
-                                    borderColor: Theme.colors.transparent,
+                                    backgroundColor: colors.tertiary,
+                                    borderColor: colors.border,
                                 }}
                             >
                                 <InputField
                                     placeholder={t('classroom.placeholderSubject') || "e.g., Mathematics"}
                                     value={subject}
                                     onChangeText={setSubject}
-                                    color={Theme.colors.sacredWhite}
-                                    placeholderTextColor={Theme.colors.dimGray}
+                                    color={colors.text}
+                                    placeholderTextColor={colors.textTertiary}
                                 />
                             </Input>
                         </FormControl>
@@ -187,10 +191,10 @@ export default function CreateClassroomModal({
                             variant="outline"
                             action="secondary"
                             onPress={handleClose}
-                            sx={{ flex: 1, borderColor: Theme.colors.mistGray }}
+                            sx={{ flex: 1, borderColor: colors.border }}
                             isDisabled={isSubmitting}
                         >
-                            <ButtonText color={Theme.colors.mistGray}>
+                            <ButtonText color={colors.textSecondary}>
                                 {t('common.cancel') || 'Cancel'}
                             </ButtonText>
                         </Button>
