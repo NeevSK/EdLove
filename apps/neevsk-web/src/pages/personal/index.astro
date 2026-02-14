@@ -103,49 +103,32 @@ import Card from '../../components/common/Card.astro';
 
     <!-- Hall of Flame -->
     <section class="hall-of-flame scroll-fade-in">
-      <a href="/personal/hall-of-flame" class="feature-link">
-        <Card variant="feature" class="flame-card">
-          <h2>🔥 Hall of Flame</h2>
-          <p>The innermost chamber—where memory walks like wind through fire. The people, moments, and ideas that shaped me.</p>
-          <span class="cta">Enter the Hall &rarr;</span>
-        </Card>
-      </a>
-    </section>
-
-    <!-- Lineage Section -->
-    <section class="lineage-section scroll-fade-in">
-      <h2>Intellectual Lineage</h2>
+      <h2>Hall of Flame</h2>
       <p class="section-intro">
-        I stand on the shoulders of giants: from Buddha's wisdom to contemporary systems thinking. My intellectual genealogy is a constellation of thinkers who asked similar questions about consciousness, systems, ethics, and being human.
+        The innermost chamber—where memory walks like wind through fire. The people, moments, and ideas that shaped me.
       </p>
-      <Card class="lineage-card">
-        <div class="lineage-branches">
-          <div class="branch">
-            <h3>🌺 Buddhist Root</h3>
-            <p>Dukkha, anatta, mindfulness. My foundational soil—suffering as noble truth, impermanence as nature, liberation through awareness.</p>
-          </div>
-          <div class="branch">
-            <h3>🧠 Psychoanalytic</h3>
-            <p>Freud → Lacan → Žižek. Unconscious meaning, language structures desire, ideology critique.</p>
-          </div>
-          <div class="branch">
-            <h3>👶 Relational</h3>
-            <p>Klein, Bowlby, Winnicott. Human connection, attachment patterns, hope for repair through relationship.</p>
-          </div>
-          <div class="branch">
-            <h3>🧩 Systems Thinking</h3>
-            <p>Meadows, Bateson, Luhmann. Feedback loops, ecology of mind, patterns that connect across scales.</p>
-          </div>
-          <div class="branch">
-            <h3>🔄 Cybernetics</h3>
-            <p>Von Foerster, Varela. Observer included, ethics explicit, design for values and dignity.</p>
-          </div>
-          <div class="branch">
-            <h3>🤝 Positioning Ethics</h3>
-            <p>Buber, Levinas, Butler, Haraway. I-Thou relating, infinite responsibility, situated knowledge, staying with trouble.</p>
-          </div>
-        </div>
-      </Card>
+      <div class="flame-chambers">
+        <a href="#" class="chamber primary">
+          <div class="chamber-icon">💫</div>
+          <h3>Shaping Hands</h3>
+          <p>People who held me steady. Family, teachers, mentors. The hands that guided when I couldn't see the path.</p>
+        </a>
+        <a href="#" class="chamber secondary">
+          <div class="chamber-icon">📚</div>
+          <h3>Sacred Texts</h3>
+          <p>Books and films that opened worlds. Stories that showed me what it means to be human, to think, to care.</p>
+        </a>
+        <a href="#" class="chamber tertiary">
+          <div class="chamber-icon">🌍</div>
+          <h3>Moments of Grace</h3>
+          <p>Ordinary miracles. Late night conversations. Insights in quiet rooms. The spaces where meaning happened.</p>
+        </a>
+        <a href="#" class="chamber accent">
+          <div class="chamber-icon">🔥</div>
+          <h3>Burning Questions</h3>
+          <p>The questions that won't leave me. The tensions I live within. What drives my seeking, my building, my becoming.</p>
+        </a>
+      </div>
     </section>
   </div>
 </NatureLayout>
@@ -308,61 +291,15 @@ import Card from '../../components/common/Card.astro';
   .hall-of-flame {
     margin-bottom: 6rem;
 
-    .feature-link {
-      text-decoration: none;
-      color: inherit;
-      display: block;
-    }
-
-    .flame-card {
-      background: linear-gradient(135deg, rgba(244, 164, 96, 0.1), rgba(244, 164, 96, 0.3));
-      border: 2px solid rgba(244, 164, 96, 0.2);
-      text-align: center;
-      transition: all 0.4s ease;
-
-      &:hover {
-        border-color: rgba(244, 164, 96, 0.5);
-        box-shadow: 0 0 30px rgba(244, 164, 96, 0.2);
-      }
-
-      h2 {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        color: #D35400;
-      }
-
-      p {
-        font-size: 1.1rem;
-        margin-bottom: 1.5rem;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-        color: var(--color-secondary);
-      }
-
-      .cta {
-        display: inline-block;
-        margin-top: 1rem;
-        font-weight: 600;
-        color: #D35400;
-        transition: all 0.3s ease;
-
-        &:hover {
-          transform: translateX(4px);
-        }
-      }
-    }
-  }
-
-  // Lineage Section
-  .lineage-section {
-    margin-bottom: 4rem;
-
     h2 {
       text-align: center;
       font-size: 2.5rem;
       margin-bottom: 1.5rem;
       color: var(--color-text);
+      background: linear-gradient(135deg, var(--accent-coral), var(--accent-gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .section-intro {
@@ -374,36 +311,145 @@ import Card from '../../components/common/Card.astro';
       opacity: 0.9;
     }
 
-    .lineage-card {
-      padding: 3rem;
+    .flame-chambers {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
 
-      .lineage-branches {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 2rem;
+      .chamber {
+        padding: 2rem;
+        text-decoration: none;
+        color: inherit;
+        border-radius: 12px;
+        border: 2px solid;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
 
-        .branch {
-          padding: 1.5rem;
-          background: linear-gradient(135deg, rgba(var(--accent-teal-rgb), 0.05), rgba(var(--accent-purple-rgb), 0.05));
-          border-radius: 12px;
-          border-left: 4px solid var(--accent-teal);
-          transition: all 0.3s ease;
+        &::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          right: -50%;
+          width: 200px;
+          height: 200px;
+          border-radius: 50%;
+          opacity: 0;
+          transition: opacity 0.4s ease;
+          z-index: 0;
+        }
 
-          &:hover {
-            border-left-color: var(--accent-emerald);
-            background: linear-gradient(135deg, rgba(var(--accent-emerald-rgb), 0.08), rgba(var(--accent-teal-rgb), 0.08));
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-teal);
+        &:hover {
+          transform: translateY(-8px);
+
+          &::before {
+            opacity: 0.8;
           }
 
           h3 {
-            font-size: 1.1rem;
-            margin-bottom: 0.75rem;
-            color: var(--color-text);
+            transform: translateY(-2px);
+          }
+        }
+
+        .chamber-icon {
+          font-size: 2.5rem;
+          margin-bottom: 1rem;
+          position: relative;
+          z-index: 1;
+        }
+
+        h3 {
+          font-size: 1.3rem;
+          margin-bottom: 0.75rem;
+          color: var(--color-text);
+          transition: transform 0.3s ease;
+          position: relative;
+          z-index: 1;
+        }
+
+        p {
+          font-size: 0.95rem;
+          line-height: 1.6;
+          color: var(--color-secondary);
+          opacity: 0.9;
+          position: relative;
+          z-index: 1;
+        }
+
+        &.primary {
+          background: linear-gradient(135deg, rgba(var(--accent-coral-rgb), 0.1), rgba(var(--accent-coral-rgb), 0.05));
+          border-color: var(--accent-coral);
+
+          &::before {
+            background: radial-gradient(circle, rgba(var(--accent-coral-rgb), 0.2), transparent);
           }
 
-          p {
-            font-size: 0.95rem;
+          &:hover {
+            box-shadow: 0 20px 40px rgba(var(--accent-coral-rgb), 0.15);
+          }
+        }
+
+        &.secondary {
+          background: linear-gradient(135deg, rgba(var(--accent-gold-rgb), 0.1), rgba(var(--accent-gold-rgb), 0.05));
+          border-color: var(--accent-gold);
+
+          &::before {
+            background: radial-gradient(circle, rgba(var(--accent-gold-rgb), 0.2), transparent);
+          }
+
+          &:hover {
+            box-shadow: 0 20px 40px rgba(var(--accent-gold-rgb), 0.15);
+          }
+        }
+
+        &.tertiary {
+          background: linear-gradient(135deg, rgba(var(--accent-teal-rgb), 0.1), rgba(var(--accent-teal-rgb), 0.05));
+          border-color: var(--accent-teal);
+
+          &::before {
+            background: radial-gradient(circle, rgba(var(--accent-teal-rgb), 0.2), transparent);
+          }
+
+          &:hover {
+            box-shadow: 0 20px 40px rgba(var(--accent-teal-rgb), 0.15);
+          }
+        }
+
+        &.accent {
+          background: linear-gradient(135deg, rgba(var(--accent-emerald-rgb), 0.1), rgba(var(--accent-emerald-rgb), 0.05));
+          border-color: var(--accent-emerald);
+
+          &::before {
+            background: radial-gradient(circle, rgba(var(--accent-emerald-rgb), 0.2), transparent);
+          }
+
+          &:hover {
+            box-shadow: 0 20px 40px rgba(var(--accent-emerald-rgb), 0.15);
+          }
+        }
+      }
+    }
+  }
+
+  // Old Lineage Section (removed - now on Intellectual page)
+  .lineage-section {
+    display: none;
+  }
+
+  .lineage-card {
+    display: none;
+  }
+
+  .lineage-branches {
+    display: none;
+  }
+
+  .branch {
+    display: none;
+  }
+
+  .branch p {
+    display: none;
             line-height: 1.6;
             color: var(--color-secondary);
             opacity: 0.85;

@@ -1,86 +1,82 @@
 // ============================================
-// CUSTOM CURSOR SYSTEM - POINTER + GLOW
-// Making interactions feel magical
+// CUSTOM CURSOR SYSTEM - ELEGANT & SIMPLE
+// Subtle glow, not distracting
 // ============================================
 
 .custom-cursor {
   position: fixed;
   top: 0;
   left: 0;
-  width: 20px;
-  height: 24px;
+  width: 16px;
+  height: 16px;
   pointer-events: none;
   z-index: 10000;
   mix-blend-mode: screen;
-  filter: drop-shadow(0 0 8px rgba(var(--accent-teal-rgb), 0.6));
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 
   .cursor-inner {
     width: 100%;
     height: 100%;
     position: relative;
-    filter: drop-shadow(0 0 4px rgba(var(--accent-teal-rgb), 0.8));
 
-    // Pointer/arrow shape
+    // Simple circular cursor with dot
     &::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 0;
-      height: 0;
-      border-left: 10px solid transparent;
-      border-right: 0px solid transparent;
-      border-top: 12px solid var(--accent-teal);
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px;
+      height: 6px;
+      background: var(--accent-teal);
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(var(--accent-teal-rgb), 0.2);
     }
 
-    // Glow ring
+    // Subtle glow ring
     &::after {
       content: '';
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 20px;
-      height: 20px;
-      border: 2px solid rgba(var(--accent-teal-rgb), 0.4);
+      width: 16px;
+      height: 16px;
+      border: 1px solid rgba(var(--accent-teal-rgb), 0.3);
       border-radius: 50%;
-      animation: cursor-pulse 2s ease-in-out infinite;
+      animation: cursor-glow 4s ease-in-out infinite;
     }
   }
 
+  // Subtle expansion on hover
   &.expanded {
-    width: 48px;
-    height: 48px;
-    filter: drop-shadow(0 0 16px rgba(var(--accent-teal-rgb), 0.9));
+    width: 20px;
+    height: 20px;
 
     .cursor-inner {
-      // Pointer grows slightly
       &::before {
-        border-left: 14px solid transparent;
-        border-top: 16px solid var(--accent-teal);
-        filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.4));
+        width: 8px;
+        height: 8px;
+        box-shadow: 0 0 0 4px rgba(var(--accent-teal-rgb), 0.3);
       }
 
-      // Glow ring expands
       &::after {
-        width: 40px;
-        height: 40px;
-        border: 2px solid rgba(var(--accent-teal-rgb), 0.7);
-        box-shadow: 0 0 20px rgba(var(--accent-teal-rgb), 0.6);
+        width: 20px;
+        height: 20px;
+        border: 1px solid rgba(var(--accent-teal-rgb), 0.5);
+        box-shadow: 0 0 12px rgba(var(--accent-teal-rgb), 0.2);
       }
     }
   }
 }
 
-// Pulse animation for cursor glow
-@keyframes cursor-pulse {
+// Slow, gentle glow animation
+@keyframes cursor-glow {
   0%, 100% {
-    box-shadow: 0 0 8px rgba(var(--accent-teal-rgb), 0.4);
+    box-shadow: 0 0 6px rgba(var(--accent-teal-rgb), 0.2);
   }
   50% {
-    box-shadow: 0 0 16px rgba(var(--accent-teal-rgb), 0.6);
+    box-shadow: 0 0 10px rgba(var(--accent-teal-rgb), 0.3);
   }
 }
 
