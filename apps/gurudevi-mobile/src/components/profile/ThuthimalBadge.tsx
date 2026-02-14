@@ -70,13 +70,13 @@ export default function ThuthimalBadge({ gifterName = 'Anonymous', giftedAt, com
 const styles = StyleSheet.create({
     // Full version styles
     container: {
-        backgroundColor: '#FFF9F0', // Warm cream, same as motivation cards
+        backgroundColor: Theme.colors.lotusWhite, // Warm cream, same as motivation cards
         borderRadius: 16,
         padding: 20,
         marginBottom: 16,
         borderLeftWidth: 4,
         borderLeftColor: Theme.colors.sanctuarySaffron,
-        shadowColor: '#000',
+        shadowColor: Theme.colors.shadowDark,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         fontWeight: '600',
-        color: '#2C3E50',
+        color: Theme.colors.charcoalTruth,
         marginLeft: 8,
         marginRight: 8,
         fontFamily: 'System',
@@ -102,14 +102,14 @@ const styles = StyleSheet.create({
         fontFamily: 'System',
     },
     messageContainer: {
-        backgroundColor: 'rgba(224, 122, 95, 0.1)', // Soft saffron tint
+        backgroundColor: 'rgba(230, 126, 34, 0.1)', // Soft saffron tint
         borderRadius: 12,
         padding: 12,
         marginBottom: 12,
     },
     messageLabel: {
         fontSize: 13,
-        color: '#7F8C8D',
+        color: Theme.colors.mistGray,
         marginBottom: 4,
         fontFamily: 'System',
     },
@@ -122,14 +122,14 @@ const styles = StyleSheet.create({
     meaning: {
         fontSize: 13,
         fontStyle: 'italic',
-        color: '#7F8C8D',
+        color: Theme.colors.mistGray,
         lineHeight: 18,
         marginBottom: 8,
         fontFamily: 'System',
     },
     date: {
         fontSize: 12,
-        color: '#95A5A6',
+        color: Theme.colors.pearlGray,
         textAlign: 'right',
         fontFamily: 'System',
     },

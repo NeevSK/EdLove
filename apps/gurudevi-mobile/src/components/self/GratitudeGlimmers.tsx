@@ -78,9 +78,9 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
   };
 
   const categories = [
-    { id: 'student-said', label: t('self.studentSaid'), emoji: '💬', color: '#FFD700' },
-    { id: 'colleague-kindness', label: t('self.colleagueKindness'), emoji: '🤝', color: '#87CEEB' },
-    { id: 'personal-win', label: t('self.personalWin'), emoji: '🌟', color: '#98FB98' }
+    { id: 'student-said', label: t('self.studentSaid'), emoji: '💬', color: Theme.colors.dawnGold },
+    { id: 'colleague-kindness', label: t('self.colleagueKindness'), emoji: '🤝', color: Theme.colors.skyBlue },
+    { id: 'personal-win', label: t('self.personalWin'), emoji: '🌟', color: Theme.colors.sageGreen }
   ];
 
   return (

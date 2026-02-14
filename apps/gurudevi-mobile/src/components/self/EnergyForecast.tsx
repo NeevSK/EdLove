@@ -76,35 +76,35 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
       level: 1,
       label: t('self.energyDepleted'),
       icon: BatteryLow,
-      color: '#FF6B6B',
+      color: Theme.colors.emberRed,
       emoji: '😰'
     },
     {
       level: 2,
       label: t('self.energyLow'),
       icon: BatteryLow,
-      color: '#FFA07A',
+      color: Theme.colors.emberOrange,
       emoji: '😔'
     },
     {
       level: 3,
       label: t('self.energyOkay'),
       icon: BatteryMedium,
-      color: '#FFD93D',
+      color: Theme.colors.templeGold,
       emoji: '😐'
     },
     {
       level: 4,
       label: t('self.energyGood'),
       icon: BatteryFull,
-      color: '#6BCB77',
+      color: Theme.colors.sageGreen,
       emoji: '😊'
     },
     {
       level: 5,
       label: t('self.energyEnergized'),
       icon: BatteryFull,
-      color: '#4D96FF',
+      color: Theme.colors.gurudeviBlue,
       emoji: '🌟'
     }
   ];

@@ -3,6 +3,8 @@
  * Time-based helpers for greetings, formatting, and sanctuary time-aware features
  */
 
+import { Theme } from '../constants/Theme';
+
 /**
  * Time of Day Types
  */
@@ -136,33 +138,33 @@ export function getSanctuaryTimeTheme(): {
     const themes = {
         dawn: {
             timeOfDay: 'dawn' as TimeOfDay,
-            primaryColor: '#FFD700', // dawnGold
-            backgroundColor: '#0f0f1e', // voidIndigo
-            textColor: '#FFF8F0', // sacredWhite
+            primaryColor: Theme.colors.dawnGold,
+            backgroundColor: Theme.colors.voidIndigo,
+            textColor: Theme.colors.sacredWhite,
             description: 'First light, gentle awakening',
             warmth: 0.3
         },
         day: {
             timeOfDay: 'day' as TimeOfDay,
-            primaryColor: '#E67E22', // sanctuarySaffron
-            backgroundColor: '#0f0f1e', // voidIndigo
-            textColor: '#FFF8F0', // sacredWhite
+            primaryColor: Theme.colors.sanctuarySaffron,
+            backgroundColor: Theme.colors.voidIndigo,
+            textColor: Theme.colors.sacredWhite,
             description: 'Full energy, active teaching',
             warmth: 0
         },
         evening: {
             timeOfDay: 'evening' as TimeOfDay,
-            primaryColor: '#DB7093', // lotusDeepPink
-            backgroundColor: '#120f1a', // Slightly warmer voidIndigo
-            textColor: '#FFF8F0', // sacredWhite
+            primaryColor: Theme.colors.lotusDeepPink,
+            backgroundColor: Theme.colors.deepIndigo,
+            textColor: Theme.colors.sacredWhite,
             description: 'Winding down, reflection',
             warmth: 0.5
         },
         night: {
             timeOfDay: 'night' as TimeOfDay,
-            primaryColor: '#9966CC', // twilightPurple
-            backgroundColor: '#1a0f1e', // Warmer, softer voidIndigo
-            textColor: '#FFEFD5', // Warmer sacredWhite (papaya whip)
+            primaryColor: Theme.colors.twilightPurple,
+            backgroundColor: Theme.colors.midnightBlue,
+            textColor: Theme.colors.sacredWhite,
             description: 'Rest, preparation for tomorrow',
             warmth: 0.8
         }
