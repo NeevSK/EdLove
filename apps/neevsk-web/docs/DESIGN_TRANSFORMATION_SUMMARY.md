@@ -221,8 +221,8 @@ hover: reverse gradient + 0 8px 24px shadow
 1. **Performance Optimized**:
    - CSS transforms (GPU accelerated)
    - `will-change` hints on animated elements
-   - Intersection Observer for scroll triggers
-   - Debounced scroll listeners
+   - GSAP ScrollTrigger for scroll-based animations
+   - Scroll listeners in navigation (debouncing planned for further optimization)
 
 2. **Accessibility Maintained**:
    - `:focus-visible` states styled
@@ -266,13 +266,13 @@ hover: reverse gradient + 0 8px 24px shadow
 ## 🎨 Color Palette
 
 ```scss
-Primary Accents:
---accent-teal:    #4A9B9B  (calm, alive)
---accent-coral:   #FF6B6B  (warm, energetic)
---accent-purple:  #9B59B6  (wisdom, depth)
---accent-gold:    #F4A460  (warmth, richness)
---accent-emerald: #2ECC71  (growth, vitality)
---accent-sky:     #3498DB  (clarity, openness)
+Primary Accents (Vivid & Bright):
+--accent-teal:    #00D9D9  (electric bright teal)
+--accent-coral:   #FF3366  (vibrant hot coral)
+--accent-purple:  #D946EF  (bright magenta)
+--accent-gold:    #FFB800  (bright golden yellow)
+--accent-emerald: #00FF88  (neon bright green)
+--accent-sky:     #00CCFF  (bright cyan)
 
 Neutrals:
 --color-background: #FAFAFA (warm white)

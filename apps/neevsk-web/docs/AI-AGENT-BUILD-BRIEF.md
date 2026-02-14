@@ -60,11 +60,14 @@ font-family: 'Literata', Georgia, serif;
 --text-tertiary: #8B8B8B;   /* Light gray */
 ```
 
-**Accents:**
+**Accents (Vivid & Bright):**
 ```css
---accent-primary: #4A9B9B;   /* Teal - calm, alive */
---accent-warm: #F4A460;      /* Warm orange - energy */
---accent-deep: #5C527F;      /* Deep purple - wisdom */
+--accent-teal:    #00D9D9;   /* Electric bright teal - calm, alive */
+--accent-coral:   #FF3366;   /* Vibrant hot coral - energy */
+--accent-purple:  #D946EF;   /* Bright magenta - wisdom */
+--accent-gold:    #FFB800;   /* Bright golden yellow - warmth */
+--accent-emerald: #00FF88;   /* Neon bright green - growth */
+--accent-sky:     #00CCFF;   /* Bright cyan - clarity */
 ```
 
 ### Spacing System (8px base)

@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 export class AnimationController {
-    private particleInterval: number | null = null;
+
 
     constructor() {
         this.init();
@@ -233,11 +233,15 @@ export class AnimationController {
         }
     }
 
-    // Magnetic button effect
+    // Magnetic button effect (optimized with quickTo)
     initMagneticButtons() {
         const buttons = document.querySelectorAll('.btn, .nav-link');
 
         buttons.forEach((button) => {
+            // Use quickTo for better performance
+            const xTo = gsap.quickTo(button, 'x', { duration: 0.3, ease: 'power2.out' });
+            const yTo = gsap.quickTo(button, 'y', { duration: 0.3, ease: 'power2.out' });
+
             button.addEventListener('mouseenter', (e) => {
                 gsap.to(button, {
                     scale: 1.05,
@@ -249,11 +253,11 @@ export class AnimationController {
             button.addEventListener('mouseleave', (e) => {
                 gsap.to(button, {
                     scale: 1,
-                    x: 0,
-                    y: 0,
                     duration: 0.3,
                     ease: 'elastic.out(1, 0.5)'
                 });
+                xTo(0);
+                yTo(0);
             });
 
             button.addEventListener('mousemove', (e: Event) => {
@@ -262,34 +266,37 @@ export class AnimationController {
                 const x = mouseEvent.clientX - rect.left - rect.width / 2;
                 const y = mouseEvent.clientY - rect.top - rect.height / 2;
 
-                gsap.to(button, {
-                    x: x * 0.3,
-                    y: y * 0.3,
-                    duration: 0.3,
-                    ease: 'power2.out'
-                });
+                xTo(x * 0.3);
+                yTo(y * 0.3);
             });
         });
     }
 
-    // Text reveal animations
+    // Text reveal animations (scoped to .text-reveal class for accessibility)
     initTextReveal() {
-        const headings = document.querySelectorAll('h1, h2, h3');
+        const headings = document.querySelectorAll('.text-reveal');
 
         headings.forEach((heading) => {
             const text = heading.textContent || '';
+
+            // Preserve original text for accessibility
+            heading.setAttribute('aria-label', text);
             heading.textContent = '';
 
             const chars = text.split('');
+            const wrapper = document.createElement('span');
+            wrapper.setAttribute('aria-hidden', 'true');
+
             chars.forEach((char) => {
                 const span = document.createElement('span');
                 span.textContent = char === ' ' ? '\u00A0' : char;
                 span.style.display = 'inline-block';
                 span.style.opacity = '0';
-                heading.appendChild(span);
+                wrapper.appendChild(span);
             });
 
-            const spans = heading.querySelectorAll('span');
+            heading.appendChild(wrapper);
+            const spans = wrapper.querySelectorAll('span');
 
             gsap.to(spans, {
                 opacity: 1,
@@ -331,7 +338,8 @@ export class AnimationController {
                 cursorX += dx * 0.15;
                 cursorY += dy * 0.15;
 
-                cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+                // Center cursor on pointer with translate offset
+                cursor.style.transform = `translate(calc(${cursorX}px - 50%), calc(${cursorY}px - 50%))`;
 
                 requestAnimationFrame(animateCursor);
             };

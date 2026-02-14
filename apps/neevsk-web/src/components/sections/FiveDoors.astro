@@ -348,21 +348,6 @@ const doors = [
         filter: blur(40px);
       }
 
-      // Stagger animation delays
-      @for $i from 0 through 5 {
-        &:nth-child(#{$i + 1}) {
-          animation-delay: #{$i * 0.1}s;
-        }
-      }
-    }
 
-    @keyframes shimmer {
-      0%, 100% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 100% 50%;
-      }
-    }
   }
 </style>

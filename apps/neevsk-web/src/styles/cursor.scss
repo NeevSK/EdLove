@@ -34,10 +34,37 @@
 }
 
 // Hide default cursor on interactive elements when custom cursor is active
-body:has(.custom-cursor) {
-  cursor: none;
-
-  a, button, .door-card, .card, .nav-link {
+// Only when accessibility features are not enabled
+@media (prefers-reduced-motion: no-preference) and (forced-colors: none) {
+  body:has(.custom-cursor) {
     cursor: none;
+
+    a,
+    button,
+    .door-card,
+    .card,
+    .nav-link {
+      cursor: none;
+    }
+  }
+}
+
+// Disable custom cursor for users with reduced motion or forced colors
+@media (prefers-reduced-motion: reduce),
+(forced-colors: active) {
+  .custom-cursor {
+    display: none !important;
+  }
+
+  body {
+    cursor: auto !important;
+
+    a,
+    button,
+    .door-card,
+    .card,
+    .nav-link {
+      cursor: pointer !important;
+    }
   }
 }
