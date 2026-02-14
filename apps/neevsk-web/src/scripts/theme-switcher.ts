@@ -6,20 +6,20 @@ export class ThemeSwitcher {
     }
 
     init() {
-        // Check for saved theme preference
-        const saved = localStorage.getItem('theme-preference');
-        if (saved) {
-            this.setTheme(saved);
-        }
+        // We no longer force a 'saved' theme on every page load.
+        // This prevents the 'flicker' issue where a previous page's 
+        // theme would override the current page's intended design.
 
-        // Listen for section changes
+        // Listen for section changes as the user scrolls
         this.observeSections();
     }
 
     setTheme(themeName: string) {
+        // Only update if the theme is actually different
+        if (this.currentTheme === themeName) return;
+
         document.documentElement.setAttribute('data-theme', themeName);
         this.currentTheme = themeName;
-        localStorage.setItem('theme-preference', themeName);
     }
 
     observeSections() {
@@ -34,7 +34,10 @@ export class ThemeSwitcher {
                     }
                 }
             });
-        }, { threshold: 0.5 });
+        }, {
+            threshold: 0.3, // Earlier trigger for smoother transition
+            rootMargin: '-80px 0px 0px 0px' // Offset for sticky headers
+        });
 
         sections.forEach(section => observer.observe(section));
     }
@@ -42,5 +45,8 @@ export class ThemeSwitcher {
 
 // Initialize on page load
 if (typeof window !== 'undefined') {
-    new ThemeSwitcher();
+    // Wait for the DOM to be fully ready
+    window.addEventListener('load', () => {
+        new ThemeSwitcher();
+    });
 }

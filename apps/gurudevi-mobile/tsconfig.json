@@ -4,7 +4,10 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "noEmit": true,
-    "lib": ["es2020", "dom"],
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "target": "es2020",
     "jsx": "react-jsx",
     "module": "esnext",
@@ -16,9 +19,18 @@
     "noImplicitThis": false,
     "strictNullChecks": false,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", ".expo", "dist"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    ".expo",
+    "dist"
+  ],
+  "extends": "expo/tsconfig.base"
 }

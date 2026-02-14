@@ -2,28 +2,38 @@
 import Button from '../common/Button.astro';
 ---
 
-<section class="hero-home">
+<section class="hero-home bg-aurora bg-particle-field">
   <div class="hero-content">
-    <h1 class="fade-in-up">Neev SK</h1>
-    <h2 class="fade-in-up delay-1">Existential Cyberneticist</h2>
-    <p class="subtitle fade-in-up delay-2">Building the soul behind the machines</p>
-    
-    <div class="hero-intro fade-in-up delay-3">
+    <h1 class="hero-title">NeevSK</h1>
+    <h2 class="hero-subtitle">a human being | an INFJ 4W5 | Navigating the Life</h2>
+    <p class="hero-tagline">Welcome to my digital home</p>
+
+    <div class="hero-intro">
       <p>
-        Currently bridging the gap between ancient wisdom and future systems.
-        Welcoming you to my digital home—a place to explore, connect, and resonate.
+        I'm Naveen Sandeepa Kumara, 23 years old from Pannala, Sri Lanka.
+        I think in systems, feel deeply, and build ecosystems where people can breathe.
+        Come explore who I am, what I think, and what I'm creating.
       </p>
     </div>
-    
-    <div class="cta-group fade-in-up delay-4">
-      <Button href="#five-doors" variant="primary">Explore the Doors</Button>
-      <Button href="/connect" variant="secondary">Get in Touch</Button>
+
+    <div class="cta-group">
+      <Button href="#facets" variant="primary" class="cta-primary">Explore Facets</Button>
+      <Button href="/connect" variant="secondary" class="cta-secondary">Get in Touch</Button>
     </div>
   </div>
-  
-  <div class="scroll-indicator fade-in delay-5">
+
+  <div class="scroll-indicator">
     <span>Scroll to enter</span>
     <div class="line"></div>
+  </div>
+
+  <!-- Decorative floating elements -->
+  <div class="floating-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+    <div class="shape shape-4"></div>
+    <div class="shape shape-5"></div>
   </div>
 </section>
 
@@ -37,99 +47,212 @@ import Button from '../common/Button.astro';
     text-align: center;
     padding: 2rem;
     position: relative;
-    
+    overflow: hidden;
+
     .hero-content {
-      max-width: 800px;
+      max-width: 900px;
       z-index: 10;
+      position: relative;
     }
-    
-    h1 {
-      font-size: clamp(3rem, 10vw, 6rem);
+
+    .hero-title {
+      font-size: clamp(3.5rem, 12vw, 7rem);
       font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(135deg, var(--color-text) 0%, rgba(var(--color-text-rgb), 0.7) 100%);
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+      color: var(--color-text);
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 1s ease forwards 0.2s;
+
+      // Gradient shimmer effect on hover
+      background: linear-gradient(
+        135deg,
+        var(--color-text) 0%,
+        var(--accent-teal) 50%,
+        var(--color-text) 100%
+      );
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadeInUp 1s ease forwards 0.2s, shimmer 8s ease-in-out infinite;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.5rem, 6vw, 3rem);
+      font-weight: 400;
+      margin-bottom: 2rem;
+      color: var(--color-secondary);
+      font-family: var(--font-body);
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 1s ease forwards 0.4s;
+
+      background: linear-gradient(
+        135deg,
+        var(--color-secondary) 0%,
+        var(--accent-purple) 50%,
+        var(--color-secondary) 100%
+      );
+      background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    
-    h2 {
-      font-size: clamp(1.5rem, 5vw, 2.5rem);
-      font-weight: 400;
-      margin-bottom: 1.5rem;
-      color: var(--color-secondary);
-      font-family: var(--font-body);
-    }
-    
-    .subtitle {
-      font-size: 1.25rem;
+
+    .hero-tagline {
+      font-size: 1.5rem;
       font-style: italic;
-      margin-bottom: 2.5rem;
-      opacity: 0.8;
-      font-family: var(--font-mono);
-    }
-    
-    .hero-intro {
-      font-size: 1.1rem;
-      line-height: 1.8;
       margin-bottom: 3rem;
-      max-width: 600px;
+      opacity: 0;
+      font-family: var(--font-mono);
+      color: var(--accent-teal);
+      transform: translateY(30px);
+      animation: fadeInUp 1s ease forwards 0.6s;
+      text-shadow: 0 0 20px rgba(var(--accent-teal-rgb), 0.3);
+    }
+
+    .hero-intro {
+      font-size: 1.2rem;
+      line-height: 1.9;
+      margin-bottom: 3rem;
+      max-width: 650px;
       margin-left: auto;
       margin-right: auto;
-      opacity: 0.9;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 1s ease forwards 0.8s;
+
+      p {
+        color: var(--color-secondary);
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
     }
-    
+
     .cta-group {
       display: flex;
-      gap: 1rem;
+      gap: 1.5rem;
       justify-content: center;
       flex-wrap: wrap;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 1s ease forwards 1s;
     }
-    
+
     .scroll-indicator {
       position: absolute;
-      bottom: 2rem;
+      bottom: 3rem;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 1rem;
-      font-size: 0.875rem;
-      opacity: 0.6;
-      
+      font-size: 0.9rem;
+      opacity: 0;
+      color: var(--color-secondary);
+      animation: fadeIn 1s ease forwards 1.5s;
+      z-index: 5;
+
+      span {
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+      }
+
       .line {
-        width: 1px;
+        width: 2px;
         height: 60px;
-        background: linear-gradient(to bottom, var(--color-text), transparent);
+        background: linear-gradient(to bottom, var(--accent-teal), transparent);
+        border-radius: 2px;
       }
     }
-    
-    // Simple fade animations (GSAP will handle complex ones later)
-    .fade-in-up {
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeInUp 0.8s ease forwards;
+
+    // Floating decorative shapes
+    .floating-shapes {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+      pointer-events: none;
+
+      .shape {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(40px);
+        opacity: 0.15;
+        animation: float 20s ease-in-out infinite;
+
+        &.shape-1 {
+          width: 300px;
+          height: 300px;
+          top: 10%;
+          left: 5%;
+          background: radial-gradient(circle, var(--accent-teal), transparent);
+          animation-delay: 0s;
+          animation-duration: 25s;
+        }
+
+        &.shape-2 {
+          width: 400px;
+          height: 400px;
+          top: 60%;
+          right: 10%;
+          background: radial-gradient(circle, var(--accent-coral), transparent);
+          animation-delay: 2s;
+          animation-duration: 30s;
+        }
+
+        &.shape-3 {
+          width: 250px;
+          height: 250px;
+          bottom: 20%;
+          left: 15%;
+          background: radial-gradient(circle, var(--accent-purple), transparent);
+          animation-delay: 4s;
+          animation-duration: 28s;
+        }
+
+        &.shape-4 {
+          width: 350px;
+          height: 350px;
+          top: 30%;
+          right: 5%;
+          background: radial-gradient(circle, var(--accent-gold), transparent);
+          animation-delay: 1s;
+          animation-duration: 35s;
+        }
+
+        &.shape-5 {
+          width: 200px;
+          height: 200px;
+          top: 70%;
+          left: 50%;
+          background: radial-gradient(circle, var(--accent-emerald), transparent);
+          animation-delay: 3s;
+          animation-duration: 22s;
+        }
+      }
     }
-    
-    .fade-in {
-      opacity: 0;
-      animation: fadeIn 0.8s ease forwards;
-    }
-    
-    .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.2s; }
-    .delay-3 { animation-delay: 0.3s; }
-    .delay-4 { animation-delay: 0.4s; }
-    .delay-5 { animation-delay: 1.0s; }
-    
-    @keyframes fadeInUp {
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    @keyframes fadeIn {
-      to { opacity: 1; }
+
+
+
+    // Responsive adjustments
+    @media (max-width: 768px) {
+      .floating-shapes .shape {
+        filter: blur(30px);
+        opacity: 0.1;
+
+        &.shape-1, &.shape-4 { width: 200px; height: 200px; }
+        &.shape-2 { width: 250px; height: 250px; }
+        &.shape-3, &.shape-5 { width: 150px; height: 150px; }
+      }
     }
   }
 </style>

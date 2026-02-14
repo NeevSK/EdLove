@@ -1,6 +1,6 @@
 ---
 export interface Props {
-  variant?: 'default' | 'feature' | 'minimal';
+  variant?: 'default' | 'feature' | 'minimal' | 'gradient';
   class?: string;
 }
 
@@ -8,40 +8,176 @@ const { variant = 'default', class: className } = Astro.props;
 ---
 
 <article class:list={['card', `card-${variant}`, className]}>
-  <slot />
+  <div class="card-glow"></div>
+  <div class="card-pattern"></div>
+  <div class="card-content">
+    <slot />
+  </div>
+  <div class="card-shine"></div>
 </article>
 
-<style>
+<style lang="scss">
   .card {
-    background: var(--color-background);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: var(--color-background-elevated);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     border-radius: var(--border-radius-lg);
-    padding: 24px;
+    padding: 32px;
     box-shadow: var(--shadow-sm);
-    transition: all var(--transition-speed) var(--ease);
+    transition: all 0.5s var(--ease-smooth);
     position: relative;
     overflow: hidden;
+
+    .card-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .card-glow {
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(
+        circle,
+        rgba(var(--accent-teal-rgb), 0.08) 0%,
+        transparent 70%
+      );
+      opacity: 0;
+      transition: all 0.6s ease;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .card-pattern {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: radial-gradient(
+        circle at 20% 50%,
+        rgba(var(--accent-teal-rgb), 0.03) 1px,
+        transparent 1px
+      );
+      background-size: 30px 30px;
+      opacity: 0;
+      transition: all 0.5s ease;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .card-shine {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent 100%
+      );
+      transform: skewX(-25deg);
+      transition: left 0.8s ease;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    &:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(var(--accent-teal-rgb), 0.15);
+
+      .card-glow {
+        opacity: 1;
+        transform: scale(1.5);
+      }
+
+      .card-pattern {
+        opacity: 1;
+        transform: rotate(2deg);
+      }
+
+      .card-shine {
+        left: 150%;
+      }
+    }
   }
-  
-  .card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
-  }
-  
+
   .card-feature {
-    padding: 32px;
+    padding: 48px;
     background: linear-gradient(
       135deg,
-      var(--color-background) 0%,
-      rgba(255, 255, 255, 0.9) 100%
+      var(--color-background-elevated) 0%,
+      rgba(var(--accent-teal-rgb), 0.02) 100%
     );
-    border-color: rgba(0, 0, 0, 0.05);
+    border: 2px solid rgba(var(--accent-teal-rgb), 0.08);
+
+    .card-glow {
+      background: radial-gradient(
+        circle,
+        rgba(var(--accent-emerald-rgb), 0.12) 0%,
+        rgba(var(--accent-teal-rgb), 0.08) 50%,
+        transparent 80%
+      );
+    }
+
+    &:hover {
+      border-color: rgba(var(--accent-teal-rgb), 0.25);
+      box-shadow: var(--shadow-teal);
+    }
   }
-  
+
   .card-minimal {
     border: none;
     box-shadow: none;
-    padding: 16px;
+    padding: 20px;
     background: transparent;
+
+    .card-glow,
+    .card-pattern,
+    .card-shine {
+      display: none;
+    }
+
+    &:hover {
+      transform: none;
+      background: rgba(var(--accent-teal-rgb), 0.03);
+    }
   }
+
+  .card-gradient {
+    padding: 40px;
+    background: linear-gradient(
+      135deg,
+      rgba(var(--accent-teal-rgb), 0.05) 0%,
+      rgba(var(--accent-purple-rgb), 0.05) 50%,
+      rgba(var(--accent-coral-rgb), 0.05) 100%
+    );
+    background-size: 200% 200%;
+    animation: gradient-flow 15s ease infinite;
+    border: 1px solid rgba(var(--accent-teal-rgb), 0.1);
+
+    .card-glow {
+      background: radial-gradient(
+        circle,
+        rgba(var(--accent-emerald-rgb), 0.15) 0%,
+        transparent 70%
+      );
+    }
+
+    &:hover {
+      border-color: rgba(var(--accent-teal-rgb), 0.3);
+      box-shadow: 0 16px 48px rgba(var(--accent-teal-rgb), 0.15);
+
+      .card-glow {
+        opacity: 1;
+        transform: scale(2);
+      }
+    }
+  }
+
+
 </style>

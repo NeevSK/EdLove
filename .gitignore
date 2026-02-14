@@ -37,3 +37,4 @@ yarn-error.log*
 *.txt
 .DS_Store
 *.pem
+.claude/settings.local.json

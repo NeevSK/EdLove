@@ -1,189 +1,420 @@
 ---
 import DigitalNeonLayout from '../../layouts/DigitalNeonLayout.astro';
-import Button from '../../components/common/Button.astro';
 ---
 
-<DigitalNeonLayout title="Connect" description="Collaboration, Contact">
+<DigitalNeonLayout title="Connect" description="Collaboration, Contact, Conversation">
   <div class="connect-container">
-    <header class="section-header">
-      <h1>Signal Established</h1>
-      <p class="glitch-text" data-text="Ready for transmission.">Ready for transmission.</p>
+    <header class="section-header scroll-fade-in">
+      <h1>Let's Connect</h1>
+      <p class="subtitle">Open for conversations, collaborations, and ideas that matter.</p>
     </header>
-    
-    <div class="connect-grid">
-      <section class="contact-info">
-        <h2>Availability</h2>
-        <div class="status-box">
-          <span class="indicator available"></span>
-          <p>Open to select collaborations and conversations.</p>
-        </div>
-        
-        <div class="channels">
-          <h3>Channels</h3>
-          <ul>
-            <li>
-              <span class="label">Email</span>
-              <a href="mailto:neev@edlove.org" class="link">neev@edlove.org</a>
-            </li>
-            <li>
-              <span class="label">Social</span>
-              <div class="social-links">
-                <a href="#" class="link">LinkedIn</a>
-                <a href="#" class="link">GitHub</a>
-                <a href="#" class="link">Twitter/X</a>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </section>
-      
-      <section class="contact-form-wrapper">
-        <h2>Send Message</h2>
-        <form class="neon-form">
-          <div class="form-group">
-            <label for="name">Name_</label>
-            <input type="text" id="name" placeholder="Enter identification" />
-          </div>
-          <div class="form-group">
-            <label for="email">Email_</label>
-            <input type="email" id="email" placeholder="Enter return address" />
-          </div>
-          <div class="form-group">
-            <label for="message">Message_</label>
-            <textarea id="message" rows="5" placeholder="Enter transmission content"></textarea>
-          </div>
-          <Button type="submit" variant="primary" class="glow-button">Transmit</Button>
-        </form>
-      </section>
+
+    <div class="contact-channels scroll-fade-in">
+      <div class="channel-card whatsapp">
+        <div class="channel-icon">💬</div>
+        <h3>WhatsApp</h3>
+        <p>Quick messages, direct conversations</p>
+        <a href="https://wa.me/+94" class="channel-link" target="_blank" rel="noopener noreferrer">
+          Message on WhatsApp →
+        </a>
+      </div>
+
+      <div class="channel-card email">
+        <div class="channel-icon">📧</div>
+        <h3>Email</h3>
+        <p>Longer thoughts, formal inquiries</p>
+        <a href="mailto:neev@edlove.org" class="channel-link">
+          neev@edlove.org
+        </a>
+      </div>
+
+      <div class="channel-card linkedin">
+        <div class="channel-icon">💼</div>
+        <h3>LinkedIn</h3>
+        <p>Professional connections and updates</p>
+        <a href="https://linkedin.com/in/neevsk" class="channel-link" target="_blank" rel="noopener noreferrer">
+          Connect on LinkedIn →
+        </a>
+      </div>
+
+      <div class="channel-card github">
+        <div class="channel-icon">🔧</div>
+        <h3>GitHub</h3>
+        <p>Code, projects, and technical collaboration</p>
+        <a href="https://github.com/neevsk" class="channel-link" target="_blank" rel="noopener noreferrer">
+          View on GitHub →
+        </a>
+      </div>
+
+      <div class="channel-card discord">
+        <div class="channel-icon">🎮</div>
+        <h3>Discord</h3>
+        <p>Real-time conversations and communities</p>
+        <a href="https://discord.com/users/" class="channel-link" target="_blank" rel="noopener noreferrer">
+          Add on Discord →
+        </a>
+      </div>
+
+      <div class="channel-card telegram">
+        <div class="channel-icon">✈️</div>
+        <h3>Telegram</h3>
+        <p>Secure messaging and channel updates</p>
+        <a href="https://t.me/neevsk" class="channel-link" target="_blank" rel="noopener noreferrer">
+          Message on Telegram →
+        </a>
+      </div>
+
+      <div class="channel-card bluesky">
+        <div class="channel-icon">🦋</div>
+        <h3>Bluesky</h3>
+        <p>Thoughts and public conversations</p>
+        <a href="https://bsky.social/profile/neevsk" class="channel-link" target="_blank" rel="noopener noreferrer">
+          Follow on Bluesky →
+        </a>
+      </div>
+
+      <div class="channel-card twitter">
+        <div class="channel-icon">𝕏</div>
+        <h3>X (Twitter)</h3>
+        <p>Public thoughts and live discussions</p>
+        <a href="https://twitter.com/neevsk" class="channel-link" target="_blank" rel="noopener noreferrer">
+          Follow on X →
+        </a>
+      </div>
     </div>
+
+    <section class="availability-note scroll-fade-in">
+      <div class="note-box">
+        <h3>Response Time</h3>
+        <p>
+          I aim to respond within 48 hours. For urgent matters, WhatsApp or Telegram is fastest.
+          For detailed conversations, email gives me space to think deeply.
+        </p>
+      </div>
+      <div class="note-box">
+        <h3>What I'm Looking For</h3>
+        <p>
+          Collaborations on teacher wellbeing, educational equity, systems that serve humanity.
+          Conversations about philosophy, psychology, systems thinking. People building things that matter.
+        </p>
+      </div>
+    </section>
   </div>
 </DigitalNeonLayout>
 
 <style lang="scss">
   .connect-container {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 6rem 2rem;
   }
-  
+
   .section-header {
     text-align: center;
-    margin-bottom: 6rem;
-    
+    margin-bottom: 4rem;
+
     h1 {
-      font-size: 4rem;
-      font-family: var(--font-heading);
-      text-transform: uppercase;
-      letter-spacing: -0.05em;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 700;
       margin-bottom: 1rem;
-      text-shadow: 0 0 10px rgba(0, 255, 148, 0.5);
+      background: linear-gradient(
+        135deg,
+        var(--accent-coral) 0%,
+        var(--accent-gold) 50%,
+        var(--accent-coral) 100%
+      );
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 8s ease-in-out infinite;
     }
-  }
-  
-  .glitch-text {
-    font-family: var(--font-mono);
-    color: var(--color-accent);
-  }
-  
-  .connect-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 4rem;
-    
-    @media (min-width: 768px) {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-  
-  .status-box {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 1.5rem;
-    border: 1px solid var(--color-primary);
-    border-radius: 4px;
-    margin-bottom: 3rem;
-    
-    .indicator {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--color-primary);
-      box-shadow: 0 0 10px var(--color-primary);
-    }
-  }
-  
-  .channels {
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    
-    li {
-      margin-bottom: 1.5rem;
-    }
-    
-    .label {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      opacity: 0.6;
-      margin-bottom: 0.5rem;
-    }
-    
-    .link {
-      color: var(--color-text);
-      text-decoration: none;
+
+    .subtitle {
       font-size: 1.2rem;
-      transition: color 0.3s ease;
-      
-      &:hover {
-        color: var(--color-primary);
-        text-shadow: 0 0 8px var(--color-primary);
-      }
-    }
-    
-    .social-links {
-      display: flex;
-      gap: 1.5rem;
+      color: var(--color-secondary);
+      max-width: 600px;
+      margin: 0 auto;
     }
   }
-  
-  .neon-form {
-    .form-group {
-      margin-bottom: 2rem;
-      
-      label {
-        display: block;
-        font-family: var(--font-mono);
-        color: var(--color-secondary);
-        margin-bottom: 0.5rem;
+
+  .contact-channels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+
+    .channel-card {
+      padding: 2rem;
+      border-radius: 12px;
+      border: 2px solid;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: 0;
       }
-      
-      input, textarea {
-        width: 100%;
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        padding: 1rem;
+
+      &:hover {
+        transform: translateY(-8px);
+
+        &::before {
+          opacity: 0.8;
+        }
+
+        h3 {
+          transform: translateY(-2px);
+        }
+
+        .channel-link {
+          transform: translateX(4px);
+        }
+      }
+
+      .channel-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      h3 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
         color: var(--color-text);
-        font-family: inherit;
+        transition: transform 0.3s ease;
+        position: relative;
+        z-index: 1;
+      }
+
+      p {
+        font-size: 0.9rem;
+        color: var(--color-secondary);
+        opacity: 0.8;
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+        position: relative;
+        z-index: 1;
+      }
+
+      .channel-link {
+        display: inline-block;
+        color: var(--color-text);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
         transition: all 0.3s ease;
-        
-        &:focus {
-          outline: none;
-          border-color: var(--color-primary);
-          box-shadow: 0 0 15px rgba(0, 255, 148, 0.2);
+        position: relative;
+        z-index: 1;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -2px;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background: currentColor;
+          transition: width 0.3s ease;
+        }
+
+        &:hover::after {
+          width: 100%;
+        }
+      }
+
+      &.whatsapp {
+        background: linear-gradient(135deg, rgba(37, 211, 102, 0.1), rgba(37, 211, 102, 0.05));
+        border-color: #25d366;
+        color: #25d366;
+
+        &::before {
+          background: radial-gradient(circle, rgba(37, 211, 102, 0.2), transparent);
+        }
+
+        .channel-link {
+          color: #25d366;
+        }
+
+        &:hover {
+          box-shadow: 0 20px 40px rgba(37, 211, 102, 0.15);
+        }
+      }
+
+      &.email {
+        background: linear-gradient(135deg, rgba(var(--accent-coral-rgb), 0.1), rgba(var(--accent-coral-rgb), 0.05));
+        border-color: var(--accent-coral);
+        color: var(--accent-coral);
+
+        &::before {
+          background: radial-gradient(circle, rgba(var(--accent-coral-rgb), 0.2), transparent);
+        }
+
+        .channel-link {
+          color: var(--accent-coral);
+        }
+
+        &:hover {
+          box-shadow: 0 20px 40px rgba(var(--accent-coral-rgb), 0.15);
+        }
+      }
+
+      &.linkedin {
+        background: linear-gradient(135deg, rgba(0, 119, 182, 0.1), rgba(0, 119, 182, 0.05));
+        border-color: #0077b6;
+        color: #0077b6;
+
+        &::before {
+          background: radial-gradient(circle, rgba(0, 119, 182, 0.2), transparent);
+        }
+
+        .channel-link {
+          color: #0077b6;
+        }
+
+        &:hover {
+          box-shadow: 0 20px 40px rgba(0, 119, 182, 0.15);
+        }
+      }
+
+      &.github {
+        background: linear-gradient(135deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.05));
+        border-color: #1a1a1a;
+        color: #1a1a1a;
+
+        &::before {
+          background: radial-gradient(circle, rgba(0, 0, 0, 0.2), transparent);
+        }
+
+        .channel-link {
+          color: #1a1a1a;
+        }
+
+        &:hover {
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+      }
+
+      &.discord {
+        background: linear-gradient(135deg, rgba(88, 101, 242, 0.1), rgba(88, 101, 242, 0.05));
+        border-color: #5865f2;
+        color: #5865f2;
+
+        &::before {
+          background: radial-gradient(circle, rgba(88, 101, 242, 0.2), transparent);
+        }
+
+        .channel-link {
+          color: #5865f2;
+        }
+
+        &:hover {
+          box-shadow: 0 20px 40px rgba(88, 101, 242, 0.15);
+        }
+      }
+
+      &.telegram {
+        background: linear-gradient(135deg, rgba(0, 136, 204, 0.1), rgba(0, 136, 204, 0.05));
+        border-color: #0088cc;
+        color: #0088cc;
+
+        &::before {
+          background: radial-gradient(circle, rgba(0, 136, 204, 0.2), transparent);
+        }
+
+        .channel-link {
+          color: #0088cc;
+        }
+
+        &:hover {
+          box-shadow: 0 20px 40px rgba(0, 136, 204, 0.15);
+        }
+      }
+
+      &.bluesky {
+        background: linear-gradient(135deg, rgba(17, 133, 254, 0.1), rgba(17, 133, 254, 0.05));
+        border-color: #1185fe;
+        color: #1185fe;
+
+        &::before {
+          background: radial-gradient(circle, rgba(17, 133, 254, 0.2), transparent);
+        }
+
+        .channel-link {
+          color: #1185fe;
+        }
+
+        &:hover {
+          box-shadow: 0 20px 40px rgba(17, 133, 254, 0.15);
+        }
+      }
+
+      &.twitter {
+        background: linear-gradient(135deg, rgba(var(--color-text-rgb), 0.05), rgba(var(--color-text-rgb), 0.02));
+        border-color: var(--color-text);
+        color: var(--color-text);
+
+        &::before {
+          background: radial-gradient(circle, rgba(var(--color-text-rgb), 0.1), transparent);
+        }
+
+        .channel-link {
+          color: var(--color-text);
+        }
+
+        &:hover {
+          box-shadow: 0 20px 40px rgba(var(--color-text-rgb), 0.1);
         }
       }
     }
   }
-  
-  .glow-button {
-    width: 100%;
-    margin-top: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    font-family: var(--font-mono);
+
+  .availability-note {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+
+    .note-box {
+      padding: 2rem;
+      background: linear-gradient(135deg, rgba(var(--accent-coral-rgb), 0.08), rgba(var(--accent-gold-rgb), 0.05));
+      border: 1px solid rgba(var(--accent-coral-rgb), 0.2);
+      border-radius: 12px;
+      border-left: 4px solid var(--accent-coral);
+
+      h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.75rem;
+        color: var(--accent-coral);
+        font-weight: 600;
+      }
+
+      p {
+        color: var(--color-text);
+        line-height: 1.8;
+        opacity: 0.95;
+      }
+    }
+  }
+
+  @keyframes shimmer {
+    0%, 100% {
+      background-position: 200% center;
+    }
+    50% {
+      background-position: -200% center;
+    }
   }
 </style>

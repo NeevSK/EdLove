@@ -10,6 +10,9 @@ import Navigation from '../components/common/Navigation.astro';
 import Footer from '../components/common/Footer.astro';
 import CoherenceMeter from '../components/common/CoherenceMeter.astro';
 import '../styles/global.scss';
+import '../styles/animations.scss';
+import '../styles/backgrounds.scss';
+import '../styles/cursor.scss';
 import '../styles/themes/nature.scss';
 import '../styles/themes/twilight.scss';
 import '../styles/themes/light-tech.scss';
@@ -23,7 +26,7 @@ import '../styles/creative-signatures.scss';
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title} | Neev SK</title>
+    <title>{title} | NeevSK</title>
     {description && <meta name="description" content={description} />}
     
     <!-- Fonts -->
@@ -43,5 +46,6 @@ import '../styles/creative-signatures.scss';
     <script src="../scripts/theme-switcher.ts"></script>
     <script src="../scripts/creative-signatures.ts"></script>
     <script src="../scripts/animations.ts"></script>
+    <script src="../scripts/scroll-to-top.ts"></script>
   </body>
 </html>
