@@ -12,6 +12,12 @@
   pointer-events: none;
   z-index: 10000;
   mix-blend-mode: screen;
+
+  @media (prefers-color-scheme: light) {
+    mix-blend-mode: multiply;
+    opacity: 0.8;
+  }
+
   transition: all 0.15s ease;
 
   .cursor-inner {
@@ -72,26 +78,28 @@
 
 // Slow, gentle glow animation
 @keyframes cursor-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 6px rgba(var(--accent-teal-rgb), 0.2);
   }
+
   50% {
     box-shadow: 0 0 10px rgba(var(--accent-teal-rgb), 0.3);
   }
 }
 
-// Hide default cursor on interactive elements when custom cursor is active
-// Only when accessibility features are not enabled
+// Show default cursor
 @media (prefers-reduced-motion: no-preference) and (forced-colors: none) {
-  body:has(.custom-cursor) {
-    cursor: none;
+  body {
+    cursor: auto;
 
     a,
     button,
     .door-card,
     .card,
     .nav-link {
-      cursor: none;
+      cursor: pointer;
     }
   }
 }

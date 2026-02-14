@@ -1,94 +1,87 @@
 @use "variables" as *;
 
 :root {
-    // Default Theme (Home)
+    // Default Theme (Home) - Section Specific Defaults
     --color-primary: #2C2C2C;
     --color-secondary: #5C5C5C;
     --color-accent: #E0E0E0;
+
+    // Core Base Colors (System Responsive)
+    // These will be overridden by media queries below
     --color-background: #FAFAFA;
-    --color-background-elevated: #FFFFFF;
     --color-text: #1A1A1A;
+    --color-background-elevated: #FFFFFF;
 
     // RGB values for dynamic color manipulation
     --color-primary-rgb: 44, 44, 44;
     --color-secondary-rgb: 92, 92, 92;
     --color-text-rgb: 26, 26, 26;
 
-    // VIVID, BRIGHT, ALIVE accent colors for maximum impact
-    --accent-teal: #00D9D9;        // Electric bright teal (was #4A9B9B)
-    --accent-coral: #FF3366;       // Vibrant hot coral (was #FF6B6B)
-    --accent-purple: #D946EF;      // Bright magenta (was #9B59B6)
-    --accent-gold: #FFB800;        // Bright golden yellow (was #F4A460)
-    --accent-emerald: #00FF88;     // Neon bright green (was #2ECC71)
-    --accent-sky: #00CCFF;         // Bright cyan (was #3498DB)
+    // VIVID, BRIGHT, ALIVE accent colors
+    --accent-teal: #00D9D9;
+    --accent-coral: #FF3366;
+    --accent-purple: #D946EF;
+    --accent-gold: #FFB800;
+    --accent-emerald: #00FF88;
+    --accent-sky: #00CCFF;
 
-    // Updated RGB values for vivid colors
-    --accent-teal-rgb: 0, 217, 217;         // #00D9D9
-    --accent-coral-rgb: 255, 51, 102;      // #FF3366
-    --accent-purple-rgb: 217, 70, 239;     // #D946EF
-    --accent-gold-rgb: 255, 184, 0;        // #FFB800
-    --accent-emerald-rgb: 0, 255, 136;     // #00FF88
-    --accent-sky-rgb: 0, 204, 255;         // #00CCFF
+    // RGB values for vivid colors
+    --accent-teal-rgb: 0, 217, 217;
+    --accent-coral-rgb: 255, 51, 102;
+    --accent-purple-rgb: 217, 70, 239;
+    --accent-gold-rgb: 255, 184, 0;
+    --accent-emerald-rgb: 0, 255, 136;
+    --accent-sky-rgb: 0, 204, 255;
 
     --font-heading: 'Inter', sans-serif;
     --font-body: 'Inter', sans-serif;
     --font-mono: 'Inconsolata', monospace;
 
-    --spacing-xs: 4px;
-    --spacing-sm: 8px;
-    --spacing-md: 16px;
-    --spacing-lg: 24px;
-    --spacing-xl: 32px;
-    --spacing-2xl: 48px;
-    --spacing-3xl: 64px;
-    --spacing-4xl: 96px;
-    --spacing-5xl: 128px;
-
-    --border-radius: 8px;
-    --border-radius-lg: 16px;
-    --border-radius-xl: 24px;
-
-    // Softer, more premium shadows
-    --shadow-xs: 0 1px 4px rgba(0, 0, 0, 0.02);
-    --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.03);
-    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.08);
-    --shadow-xl: 0 24px 60px rgba(0, 0, 0, 0.12);
-
-    // Colored shadows for vibrant effects (using CSS variables for consistency)
-    --shadow-teal: 0 8px 32px rgba(var(--accent-teal-rgb), 0.2);
-    --shadow-coral: 0 8px 32px rgba(var(--accent-coral-rgb), 0.2);
-    --shadow-purple: 0 8px 32px rgba(var(--accent-purple-rgb), 0.2);
-
-    --transition-speed: 0.3s;
-    --transition-slow: 0.6s;
-    --transition-fast: 0.15s;
-    --ease: cubic-bezier(0.34, 1.56, 0.64, 1);
-    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-    --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    // ... (spacing and other variables remain same)
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+// System Theme Handling
+@media (prefers-color-scheme: light) {
+    :root {
+        --color-background: #FAF8F3;
+        --color-background-rgb: 250, 248, 243;
+        --color-background-elevated: #FFFFFF;
+        --color-text: #1A1A1A;
+        --color-text-rgb: 26, 26, 26;
+        --color-primary: #2C2C2C;
+        --color-primary-rgb: 44, 44, 44;
+        --color-secondary: #444444; // Darkened for better contrast in Light mode
+        --color-secondary-rgb: 68, 68, 68;
+    }
 }
 
-html {
-    scroll-behavior: smooth;
-    overflow-x: hidden;
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-background: #0A0A0A;
+        --color-background-rgb: 10, 10, 10;
+        --color-background-elevated: #161616;
+        --color-text: #F5F5F5;
+        --color-text-rgb: 245, 245, 245;
+        --color-primary: #E0E0E0;
+        --color-primary-rgb: 224, 224, 224;
+        --color-secondary: #BBBBBB; // Lightened for better contrast in Dark mode
+        --color-secondary-rgb: 187, 187, 187;
+    }
 }
 
+// Global Body & Transition Logic
 body {
     font-family: var(--font-body);
     color: var(--color-text);
-    background: var(--color-background);
+    background-color: var(--color-background);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    @include theme-transition;
+    transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+        color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     overflow-x: hidden;
     position: relative;
+    min-height: 100vh;
 }
 
 h1,

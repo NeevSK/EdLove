@@ -103,31 +103,34 @@ import Card from '../../components/common/Card.astro';
 
     <!-- Hall of Flame -->
     <section class="hall-of-flame scroll-fade-in">
-      <h2>Hall of Flame</h2>
-      <p class="section-intro">
-        The innermost chamber—where memory walks like wind through fire. The people, moments, and ideas that shaped me.
-      </p>
+      <a href="/personal/hall-of-flame" class="hall-header-link">
+        <h2>Hall of Flame 🔥</h2>
+        <p class="section-intro">
+          The innermost chamber—where memory walks like wind through fire. The people, moments, and ideas that shaped me.
+        </p>
+        <span class="explore-link">Explore the Hall →</span>
+      </a>
       <div class="flame-chambers">
-        <a href="#" class="chamber primary">
+        <div class="chamber primary">
           <div class="chamber-icon">💫</div>
           <h3>Shaping Hands</h3>
           <p>People who held me steady. Family, teachers, mentors. The hands that guided when I couldn't see the path.</p>
-        </a>
-        <a href="#" class="chamber secondary">
+        </div>
+        <div class="chamber secondary">
           <div class="chamber-icon">📚</div>
           <h3>Sacred Texts</h3>
           <p>Books and films that opened worlds. Stories that showed me what it means to be human, to think, to care.</p>
-        </a>
-        <a href="#" class="chamber tertiary">
+        </div>
+        <div class="chamber tertiary">
           <div class="chamber-icon">🌍</div>
           <h3>Moments of Grace</h3>
           <p>Ordinary miracles. Late night conversations. Insights in quiet rooms. The spaces where meaning happened.</p>
-        </a>
-        <a href="#" class="chamber accent">
+        </div>
+        <div class="chamber accent">
           <div class="chamber-icon">🔥</div>
           <h3>Burning Questions</h3>
           <p>The questions that won't leave me. The tensions I live within. What drives my seeking, my building, my becoming.</p>
-        </a>
+        </div>
       </div>
     </section>
   </div>
@@ -270,7 +273,6 @@ import Card from '../../components/common/Card.astro';
           font-size: 1rem;
           line-height: 1.7;
           color: var(--color-secondary);
-          opacity: 0.9;
         }
       }
 
@@ -291,24 +293,81 @@ import Card from '../../components/common/Card.astro';
   .hall-of-flame {
     margin-bottom: 6rem;
 
-    h2 {
+    .hall-header-link {
+      display: block;
+      text-decoration: none;
       text-align: center;
+      padding: 2rem;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(var(--accent-coral-rgb), 0.05), rgba(var(--accent-gold-rgb), 0.05));
+      border: 2px solid transparent;
+      transition: all 0.4s ease;
+      margin-bottom: 3rem;
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(var(--accent-coral-rgb), 0.15), transparent);
+        border-radius: 50%;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+
+      &:hover {
+        border-color: var(--accent-coral);
+        background: linear-gradient(135deg, rgba(var(--accent-coral-rgb), 0.1), rgba(var(--accent-gold-rgb), 0.08));
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(var(--accent-coral-rgb), 0.2);
+
+        &::before {
+          opacity: 1;
+        }
+
+        .explore-link {
+          transform: translateX(8px);
+          opacity: 1;
+        }
+      }
+    }
+
+    h2 {
       font-size: 2.5rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
       color: var(--color-text);
       background: linear-gradient(135deg, var(--accent-coral), var(--accent-gold));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      position: relative;
+      z-index: 1;
     }
 
     .section-intro {
-      text-align: center;
       font-size: 1.1rem;
       max-width: 700px;
-      margin: 0 auto 2rem;
+      margin: 0 auto 1rem;
       color: var(--color-secondary);
       opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+
+    .explore-link {
+      display: inline-block;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent-coral);
+      margin-top: 0.5rem;
+      transition: all 0.3s ease;
+      opacity: 0.8;
+      position: relative;
+      z-index: 1;
     }
 
     .flame-chambers {
@@ -318,11 +377,9 @@ import Card from '../../components/common/Card.astro';
 
       .chamber {
         padding: 2rem;
-        text-decoration: none;
         color: inherit;
         border-radius: 12px;
         border: 2px solid;
-        transition: all 0.4s ease;
         position: relative;
         overflow: hidden;
 
@@ -334,21 +391,8 @@ import Card from '../../components/common/Card.astro';
           width: 200px;
           height: 200px;
           border-radius: 50%;
-          opacity: 0;
-          transition: opacity 0.4s ease;
+          opacity: 0.3;
           z-index: 0;
-        }
-
-        &:hover {
-          transform: translateY(-8px);
-
-          &::before {
-            opacity: 0.8;
-          }
-
-          h3 {
-            transform: translateY(-2px);
-          }
         }
 
         .chamber-icon {
@@ -371,7 +415,6 @@ import Card from '../../components/common/Card.astro';
           font-size: 0.95rem;
           line-height: 1.6;
           color: var(--color-secondary);
-          opacity: 0.9;
           position: relative;
           z-index: 1;
         }
@@ -432,32 +475,13 @@ import Card from '../../components/common/Card.astro';
   }
 
   // Old Lineage Section (removed - now on Intellectual page)
-  .lineage-section {
-    display: none;
-  }
-
-  .lineage-card {
-    display: none;
-  }
-
-  .lineage-branches {
-    display: none;
-  }
-
+  .lineage-section,
+  .lineage-card,
+  .lineage-branches,
   .branch {
     display: none;
   }
 
-  .branch p {
-    display: none;
-            line-height: 1.6;
-            color: var(--color-secondary);
-            opacity: 0.85;
-          }
-        }
-      }
-    }
-  }
 
   // Water flow animation
   @keyframes water-flow {

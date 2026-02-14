@@ -314,6 +314,8 @@ export class AnimationController {
 
     // Custom cursor follower
     initCursorFollower() {
+        // Disabled to use standard system cursor as requested
+        /*
         if (window.matchMedia('(pointer: fine)').matches) {
             const cursor = document.createElement('div');
             cursor.className = 'custom-cursor';
@@ -357,6 +359,7 @@ export class AnimationController {
                 });
             });
         }
+        */
     }
 }
 
