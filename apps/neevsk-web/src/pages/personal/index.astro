@@ -5,30 +5,148 @@ import Card from '../../components/common/Card.astro';
 
 <NatureLayout title="Personal" description="Soul, heart, and lineage">
   <div class="personal-wrapper">
-    <section class="intro">
-      <h1>My Lineage</h1>
-      <p class="subtitle">Where legacy is love, and every chamber beats like a heart.</p>
+    <!-- Who I Am Section -->
+    <section class="who-am-i scroll-fade-in">
+      <div class="section-content">
+        <h1>Who I Am</h1>
+        <p class="intro-text">
+          I grew up in two worlds at once. One was Pannala—a small town in Sri Lanka where education was the only path forward. The other was everywhere else: in library books, in films, in the symbolic world of ideas and systems where I became fluent.
+        </p>
+        <p class="intro-text">
+          I think in patterns. I feel deeply. I build ecosystems where people can breathe. I'm 23 years old, an INFJ 4W5, navigating the gap between what's real and what's possible.
+        </p>
+        <p class="intro-text">
+          This is the personal part—the part that doesn't go in CVs. The part that explains why I think the way I do, build the way I build, and care the way I care.
+        </p>
+      </div>
     </section>
-    
-    <div class="content-grid">
+
+    <!-- Animated Water Timeline -->
+    <section class="timeline-section scroll-fade-in">
+      <h2>My Journey</h2>
+      <div class="water-timeline">
+        <svg class="water-background" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#00D9D9;stop-opacity:0.3" />
+              <stop offset="50%" style="stop-color:#00FF88;stop-opacity:0.2" />
+              <stop offset="100%" style="stop-color:#D946EF;stop-opacity:0.15" />
+            </linearGradient>
+            <path id="waterFlow" d="M 0,200 Q 200,150 400,200 T 800,200" />
+          </defs>
+
+          <!-- Flowing water path -->
+          <path d="M 0,300 Q 200,250 400,300 T 800,300" stroke="url(#waterGradient)" stroke-width="3" fill="none" class="flow-line flow-1" />
+          <path d="M 0,400 Q 200,350 400,400 T 800,400" stroke="url(#waterGradient)" stroke-width="2" fill="none" class="flow-line flow-2" opacity="0.6" />
+          <path d="M 0,500 Q 200,450 400,500 T 800,500" stroke="url(#waterGradient)" stroke-width="2" fill="none" class="flow-line flow-3" opacity="0.4" />
+        </svg>
+
+        <div class="timeline-events">
+          <div class="event scroll-scale" data-age="10">
+            <div class="event-marker">10</div>
+            <div class="event-content">
+              <h3>The Library Card</h3>
+              <p>Pannala public library. One book a week. Philosophy, psychology, stories. The symbolic world opened up.</p>
+            </div>
+          </div>
+
+          <div class="event scroll-scale" data-age="11">
+            <div class="event-marker">11</div>
+            <div class="event-content">
+              <h3>Nalanda College & Hostel Life</h3>
+              <p>Scholarship to Colombo. Living in boarding houses. I learned to carry my real home—books, ideas, systems—with me.</p>
+            </div>
+          </div>
+
+          <div class="event scroll-scale" data-age="18">
+            <div class="event-marker">18-20</div>
+            <div class="event-content">
+              <h3>COVID & Film Marathon</h3>
+              <p>Lockdowns. 4-5 films a day. My worldview crystallized through cinema. The existential, the philosophical, the human.</p>
+            </div>
+          </div>
+
+          <div class="event scroll-scale" data-age="20">
+            <div class="event-marker">20</div>
+            <div class="event-content">
+              <h3>Axcer Innovations</h3>
+              <p>Management trainee. Scrum master, finance, HR, QA, BA. I learned how systems work in practice. Then I left—couldn't ignore the pull toward something more meaningful.</p>
+            </div>
+          </div>
+
+          <div class="event scroll-scale" data-age="21">
+            <div class="event-marker">21</div>
+            <div class="event-content">
+              <h3>University of Moratuwa</h3>
+              <p>Business Analytics. But really, learning to build systems that serve humans. CGPA 3.3—the real education is different.</p>
+            </div>
+          </div>
+
+          <div class="event scroll-scale" data-age="22">
+            <div class="event-marker">22</div>
+            <div class="event-content">
+              <h3>VP Student Union</h3>
+              <p>Leadership through seeing patterns others miss. Learning what it means to serve a community.</p>
+            </div>
+          </div>
+
+          <div class="event scroll-scale active" data-age="23">
+            <div class="event-marker">23</div>
+            <div class="event-content">
+              <h3>Building Gurudevi</h3>
+              <p>Right now. Teacher wellbeing. EdLove ecosystem. Intuitui Labs. Where everything converges—books, films, systems thinking, care for education.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hall of Flame -->
+    <section class="hall-of-flame scroll-fade-in">
       <a href="/personal/hall-of-flame" class="feature-link">
         <Card variant="feature" class="flame-card">
           <h2>🔥 Hall of Flame</h2>
-          <p>This is Radical Life’s innermost temple — the place where memory walks like wind through fire.</p>
+          <p>The innermost chamber—where memory walks like wind through fire. The people, moments, and ideas that shaped me.</p>
           <span class="cta">Enter the Hall &rarr;</span>
         </Card>
       </a>
-      
-      <Card>
-        <h3>About Me</h3>
-        <p>INFJ 4w5. Existential Cyberneticist. Building bridges between the seen and unseen.</p>
+    </section>
+
+    <!-- Lineage Section -->
+    <section class="lineage-section scroll-fade-in">
+      <h2>Intellectual Lineage</h2>
+      <p class="section-intro">
+        I stand on the shoulders of giants: from Buddha's wisdom to contemporary systems thinking. My intellectual genealogy is a constellation of thinkers who asked similar questions about consciousness, systems, ethics, and being human.
+      </p>
+      <Card class="lineage-card">
+        <div class="lineage-branches">
+          <div class="branch">
+            <h3>🌺 Buddhist Root</h3>
+            <p>Dukkha, anatta, mindfulness. My foundational soil—suffering as noble truth, impermanence as nature, liberation through awareness.</p>
+          </div>
+          <div class="branch">
+            <h3>🧠 Psychoanalytic</h3>
+            <p>Freud → Lacan → Žižek. Unconscious meaning, language structures desire, ideology critique.</p>
+          </div>
+          <div class="branch">
+            <h3>👶 Relational</h3>
+            <p>Klein, Bowlby, Winnicott. Human connection, attachment patterns, hope for repair through relationship.</p>
+          </div>
+          <div class="branch">
+            <h3>🧩 Systems Thinking</h3>
+            <p>Meadows, Bateson, Luhmann. Feedback loops, ecology of mind, patterns that connect across scales.</p>
+          </div>
+          <div class="branch">
+            <h3>🔄 Cybernetics</h3>
+            <p>Von Foerster, Varela. Observer included, ethics explicit, design for values and dignity.</p>
+          </div>
+          <div class="branch">
+            <h3>🤝 Positioning Ethics</h3>
+            <p>Buber, Levinas, Butler, Haraway. I-Thou relating, infinite responsibility, situated knowledge, staying with trouble.</p>
+          </div>
+        </div>
       </Card>
-      
-      <Card>
-        <h3>Life Journey</h3>
-        <p>A non-linear path of becoming.</p>
-      </Card>
-    </div>
+    </section>
   </div>
 </NatureLayout>
 
@@ -38,64 +156,270 @@ import Card from '../../components/common/Card.astro';
     margin: 0 auto;
     padding: 2rem;
   }
-  
-  .intro {
+
+  // Who I Am Section
+  .who-am-i {
     text-align: center;
-    margin-bottom: 4rem;
-    
+    margin-bottom: 6rem;
+    padding: 3rem 2rem;
+
     h1 {
-      font-size: 3rem;
-      color: var(--color-primary);
-      margin-bottom: 1rem;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      margin-bottom: 2rem;
+      color: var(--color-text);
+      background: linear-gradient(135deg, var(--color-text), var(--accent-teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-    
-    .subtitle {
-      font-size: 1.2rem;
-      opacity: 0.8;
-      font-family: var(--font-body);
+
+    .intro-text {
+      font-size: 1.15rem;
+      line-height: 1.9;
+      max-width: 700px;
+      margin: 1.5rem auto;
+      color: var(--color-secondary);
+      opacity: 0.95;
     }
   }
-  
-  .content-grid {
-    display: grid;
-    gap: 2rem;
-    grid-template-columns: 1fr;
-    
-    @media (min-width: 768px) {
-      grid-template-columns: repeat(2, 1fr);
+
+  // Timeline Section
+  .timeline-section {
+    margin-bottom: 8rem;
+
+    h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 3rem;
+      color: var(--color-text);
     }
-    
+
+    .water-timeline {
+      position: relative;
+      padding: 2rem 0;
+
+      .water-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        opacity: 0.3;
+
+        .flow-line {
+          animation: water-flow 8s ease-in-out infinite;
+        }
+
+        .flow-1 {
+          animation-delay: 0s;
+        }
+
+        .flow-2 {
+          animation-delay: 1s;
+        }
+
+        .flow-3 {
+          animation-delay: 2s;
+        }
+      }
+
+      .timeline-events {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+    }
+
+    .event {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 2rem;
+      align-items: start;
+      padding: 1.5rem;
+      background: rgba(var(--accent-teal-rgb), 0.04);
+      border-left: 4px solid var(--accent-teal);
+      border-radius: 8px;
+      transition: all 0.4s ease;
+
+      &:hover {
+        background: rgba(var(--accent-teal-rgb), 0.08);
+        border-left-color: var(--accent-emerald);
+        transform: translateX(8px);
+      }
+
+      &.active {
+        border-left-color: var(--accent-emerald);
+        background: rgba(var(--accent-emerald-rgb), 0.08);
+        box-shadow: var(--shadow-teal);
+
+        .event-marker {
+          background: var(--accent-emerald);
+          box-shadow: 0 0 20px rgba(var(--accent-emerald-rgb), 0.6);
+        }
+      }
+
+      .event-marker {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 70px;
+        height: 70px;
+        background: var(--accent-teal);
+        color: white;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 16px rgba(var(--accent-teal-rgb), 0.3);
+        transition: all 0.4s ease;
+      }
+
+      .event-content {
+        h3 {
+          font-size: 1.3rem;
+          margin-bottom: 0.5rem;
+          color: var(--color-text);
+        }
+
+        p {
+          font-size: 1rem;
+          line-height: 1.7;
+          color: var(--color-secondary);
+          opacity: 0.9;
+        }
+      }
+
+      @media (max-width: 640px) {
+        grid-template-columns: 60px 1fr;
+        gap: 1rem;
+
+        .event-marker {
+          width: 60px;
+          height: 60px;
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+
+  // Hall of Flame
+  .hall-of-flame {
+    margin-bottom: 6rem;
+
     .feature-link {
-      grid-column: 1 / -1;
       text-decoration: none;
       color: inherit;
+      display: block;
     }
-    
+
     .flame-card {
       background: linear-gradient(135deg, rgba(244, 164, 96, 0.1), rgba(244, 164, 96, 0.3));
-      border: 1px solid rgba(244, 164, 96, 0.2);
+      border: 2px solid rgba(244, 164, 96, 0.2);
       text-align: center;
-      
+      transition: all 0.4s ease;
+
+      &:hover {
+        border-color: rgba(244, 164, 96, 0.5);
+        box-shadow: 0 0 30px rgba(244, 164, 96, 0.2);
+      }
+
       h2 {
         font-size: 2.5rem;
         margin-bottom: 1rem;
         color: #D35400;
       }
-      
+
       p {
         font-size: 1.1rem;
         margin-bottom: 1.5rem;
         max-width: 600px;
         margin-left: auto;
         margin-right: auto;
+        color: var(--color-secondary);
       }
-      
+
       .cta {
         display: inline-block;
         margin-top: 1rem;
         font-weight: 600;
         color: #D35400;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateX(4px);
+        }
       }
+    }
+  }
+
+  // Lineage Section
+  .lineage-section {
+    margin-bottom: 4rem;
+
+    h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--color-text);
+    }
+
+    .section-intro {
+      text-align: center;
+      font-size: 1.1rem;
+      max-width: 700px;
+      margin: 0 auto 2rem;
+      color: var(--color-secondary);
+      opacity: 0.9;
+    }
+
+    .lineage-card {
+      padding: 3rem;
+
+      .lineage-branches {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+
+        .branch {
+          padding: 1.5rem;
+          background: linear-gradient(135deg, rgba(var(--accent-teal-rgb), 0.05), rgba(var(--accent-purple-rgb), 0.05));
+          border-radius: 12px;
+          border-left: 4px solid var(--accent-teal);
+          transition: all 0.3s ease;
+
+          &:hover {
+            border-left-color: var(--accent-emerald);
+            background: linear-gradient(135deg, rgba(var(--accent-emerald-rgb), 0.08), rgba(var(--accent-teal-rgb), 0.08));
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-teal);
+          }
+
+          h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            color: var(--color-text);
+          }
+
+          p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--color-secondary);
+            opacity: 0.85;
+          }
+        }
+      }
+    }
+  }
+
+  // Water flow animation
+  @keyframes water-flow {
+    0% {
+      stroke-dashoffset: 1000;
+    }
+    100% {
+      stroke-dashoffset: 0;
     }
   }
 </style>
