@@ -36,11 +36,13 @@ import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';
 import { AnnouncementWithAuthor } from '../../lib/api/community';
 import Theme from '../../constants/Theme';
+import { UserRole } from '../../types/User';
+import { hasRole, STAFF_ROLES, ADMIN_ROLES } from '../../utils/permissions';
 
 interface AnnouncementsScreenProps {
     schoolId: string;
     userId: string;
-    userRole: 'teacher' | 'student' | 'principal';
+    userRole: UserRole;
 }
 
 export default function AnnouncementsScreen({
@@ -145,8 +147,8 @@ export default function AnnouncementsScreen({
                         </Heading>
                     </HStack>
 
-                    {/* Create Button (Principal Only) */}
-                    {userRole === 'principal' && (
+                    {/* Create Button (Privileged Roles Only) */}
+                    {hasRole(userRole, ADMIN_ROLES) && (
                         <Button
                             sx={{
                                 backgroundColor: Theme.colors.sanctuarySaffron,

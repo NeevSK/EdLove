@@ -1,5 +1,6 @@
 import { supabase } from '../supabase';
 import { APIError } from './types';
+import { UserRole } from '../../types/User';
 
 // ============================================================================
 // SCHOOL API (Principal Functions)
@@ -38,7 +39,7 @@ export interface Announcement {
 export interface InviteCode {
     code: string;
     school_id: string;
-    role: 'teacher' | 'student' | 'principal';
+    role: UserRole;
     created_by: string;
     used: boolean;
     created_at: string;
@@ -168,8 +169,8 @@ export const schoolAPI = {
      * Generate an invite code
      */
     async generateInviteCode(
-        schoolId: string,
-        role: 'teacher' | 'student' | 'principal',
+        school_id: string,
+        role: UserRole,
         createdBy: string
     ): Promise<InviteCode> {
         // Generate a random 8-character code
@@ -180,7 +181,7 @@ export const schoolAPI = {
             .insert([
                 {
                     code,
-                    school_id: schoolId,
+                    school_id,
                     role,
                     created_by: createdBy,
                     used: false,

@@ -13,18 +13,18 @@ export interface ThemeColors {
     primary: string;
     secondary: string;
     tertiary: string;
-    
+
     // Text
     text: string;
     textSecondary: string;
     textTertiary: string;
-    
+
     // Actions
     action: string;
     success: string;
     error: string;
     warning: string;
-    
+
     // Functional
     border: string;
     overlay: string;
@@ -38,12 +38,12 @@ export interface ThemeColors {
 export function getThemeColors(isDark: boolean, temporalPhase?: TemporalPhase): ThemeColors {
     // Get base colors for dark/light
     const baseTheme = getBaseThemeColors(isDark);
-    
+
     // If no temporal phase specified, return base theme
     if (!temporalPhase) {
         return baseTheme;
     }
-    
+
     // Modulate based on temporal phase
     return modulateForTemporalPhase(baseTheme, temporalPhase, isDark);
 }
@@ -58,18 +58,18 @@ function getBaseThemeColors(isDark: boolean): ThemeColors {
             primary: baseColors.voidIndigo,
             secondary: baseColors.deepIndigo,
             tertiary: baseColors.midnightBlue,
-            
+
             // Dark mode text
             text: baseColors.sacredWhite,
             textSecondary: baseColors.pearlGray,
             textTertiary: baseColors.mistGray,
-            
+
             // Actions (same in both modes)
             action: baseColors.sanctuarySaffron,
             success: baseColors.sageGreen,
             error: baseColors.emberRed,
             warning: baseColors.amberGlow,
-            
+
             // Functional
             border: 'rgba(255,255,255,0.1)',
             overlay: baseColors.overlayDark,
@@ -81,18 +81,18 @@ function getBaseThemeColors(isDark: boolean): ThemeColors {
             primary: baseColors.creamSilence,
             secondary: baseColors.lotusWhite,
             tertiary: baseColors.sandStone,
-            
+
             // Light mode text
             text: baseColors.charcoalTruth,
             textSecondary: baseColors.slateGray,
             textTertiary: baseColors.stoneGray,
-            
+
             // Actions (same in both modes)
             action: baseColors.sanctuarySaffron,
             success: baseColors.sageGreen,
             error: baseColors.emberRed,
             warning: baseColors.amberGlow,
-            
+
             // Functional
             border: 'rgba(0,0,0,0.1)',
             overlay: baseColors.overlayLight,
@@ -124,29 +124,30 @@ function getBaseThemeColors(isDark: boolean): ThemeColors {
  * Each phase has subtle color shifts that create the right mood
  */
 function modulateForTemporalPhase(
-    baseTheme: ThemeColors, 
+    baseTheme: ThemeColors,
     phase: TemporalPhase,
     isDark: boolean
 ): ThemeColors {
     switch (phase) {
         case 'dawn':
-            // Dawn: Warm, gentle awakening tones
+            // Dawn: Soft sky blue skymorphism
             return {
                 ...baseTheme,
-                action: baseColors.dawnGold, // Warmer gold for dawn
-                tertiary: isDark 
-                    ? baseColors.deepIndigo 
-                    : '#FFF8E7', // Soft cream for light mode
+                primary: isDark ? '#0F172A' : '#E0F7FF', // Deeper Sky Blue
+                secondary: isDark ? '#1E293B' : '#F0F9FF', // Lighter Sky Blue
+                tertiary: isDark ? '#0F172A' : '#E0F7FF', // Consistent Blue
+                action: '#F59E0B', // Sunrise Amber/Saffron preserved for action
             };
-            
+
         case 'day':
             // Day: Bright, energetic, high contrast
             return {
                 ...baseTheme,
-                action: baseColors.gurudeviBlue, // Electric blue for day energy
-                // Keep other colors at full intensity
+                action: baseColors.sanctuarySaffron, // Warm energy for clarity
+                // Ensure shadows are ambient but not overly blue in day mode
+                shadow: isDark ? baseColors.shadowDark : 'rgba(0, 0, 0, 0.1)',
             };
-            
+
         case 'evening':
             // Evening: Warm transition to rest
             return {
@@ -156,7 +157,7 @@ function modulateForTemporalPhase(
                     ? baseColors.midnightBlue
                     : '#F5E6D3', // Warmer cream for light mode
             };
-            
+
         case 'night':
             // Night: Muted, restful, low stimulation
             return {
@@ -166,7 +167,7 @@ function modulateForTemporalPhase(
                     ? baseColors.dimGray // More muted text
                     : baseColors.slateGray,
             };
-            
+
         default:
             return baseTheme;
     }

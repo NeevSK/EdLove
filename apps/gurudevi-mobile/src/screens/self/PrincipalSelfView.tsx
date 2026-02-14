@@ -28,18 +28,20 @@ import GlobalHeader from '../../components/shared/GlobalHeader';
 import DailyContentCard from '../../components/self/DailyContentCard';
 import WelcomeModal from '../../components/self/WelcomeModal';
 import { useStore } from '../../store/useStore';
+import { useThemedColors } from '../../hooks/useThemedColors';
+import ScreenWrapper from '../../components/shared/ScreenWrapper';
 
 // Principal-specific core features
 const PRINCIPAL_CORE_FEATURES = [
-    { id: 'energy', label: 'Leadership Energy', icon: Battery, category: 'core' },
-    { id: 'pulse', label: 'School Pulse', icon: Activity, category: 'core' },
-    { id: 'decisions', label: 'Decision Journal', icon: BookOpen, category: 'core' },
+    { id: 'energy', icon: Battery, category: 'core' },
+    { id: 'pulse', icon: Activity, category: 'core' },
+    { id: 'decisions', icon: BookOpen, category: 'core' },
 ];
 
 const PRINCIPAL_MORE_TOOLS = [
-    { id: 'staffWellbeing', label: 'Staff Wellbeing', icon: Users, category: 'discover' },
-    { id: 'wisdom', label: 'Leadership Wisdom', icon: Lightbulb, category: 'discover' },
-    { id: 'monthly', label: 'Monthly Reflection', icon: Calendar, category: 'discover' },
+    { id: 'staffWellbeing', icon: Users, category: 'discover' },
+    { id: 'wisdom', icon: Lightbulb, category: 'discover' },
+    { id: 'monthly', icon: Calendar, category: 'discover' },
 ];
 
 export default function PrincipalSelfView() {
@@ -49,6 +51,7 @@ export default function PrincipalSelfView() {
     const [showMoreTools, setShowMoreTools] = useState(false);
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
+    const colors = useThemedColors();
 
     React.useEffect(() => {
         const fetchUser = async () => {
@@ -68,10 +71,10 @@ export default function PrincipalSelfView() {
                 return (
                     <VStack space="lg" sx={{ flex: 1 }}>
                         <VStack space="xs">
-                            <Heading color={Theme.colors.sacredWhite} size="lg">
+                            <Heading color={colors.text} size="lg">
                                 {t('principal.schoolPulse')}
                             </Heading>
-                            <Text color={Theme.colors.mistGray} size="sm">
+                            <Text color={colors.textSecondary} size="sm">
                                 {t('principal.schoolPulseDesc')}
                             </Text>
                         </VStack>
@@ -79,13 +82,13 @@ export default function PrincipalSelfView() {
                         <Box
                             p={Theme.spacing.md}
                             sx={{
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: colors.tertiary,
                                 borderRadius: Theme.corners.comfortable,
                                 minHeight: 150
                             }}
                         >
-                            <Text color={Theme.colors.mistGray} size="md" textAlign="center">
-                                School Pulse feature coming soon...
+                            <Text color={colors.textSecondary} size="md" textAlign="center">
+                                {t('common.comingSoon')}
                             </Text>
                         </Box>
                     </VStack>
@@ -94,10 +97,10 @@ export default function PrincipalSelfView() {
                 return (
                     <VStack space="lg" sx={{ flex: 1 }}>
                         <VStack space="xs">
-                            <Heading color={Theme.colors.sacredWhite} size="lg">
+                            <Heading color={colors.text} size="lg">
                                 {t('principal.decisionJournal')}
                             </Heading>
-                            <Text color={Theme.colors.mistGray} size="sm">
+                            <Text color={colors.textSecondary} size="sm">
                                 {t('principal.decisionJournalDesc')}
                             </Text>
                         </VStack>
@@ -105,7 +108,7 @@ export default function PrincipalSelfView() {
                         <Box
                             p={Theme.spacing.md}
                             sx={{
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: colors.tertiary,
                                 borderRadius: Theme.corners.comfortable,
                                 minHeight: 150
                             }}
@@ -114,8 +117,8 @@ export default function PrincipalSelfView() {
                                 <InputField
                                     placeholder={t('principal.decisionPlaceholder')}
                                     multiline
-                                    color={Theme.colors.sacredWhite}
-                                    placeholderTextColor={Theme.colors.dimGray}
+                                    color={colors.text}
+                                    placeholderTextColor={colors.textTertiary}
                                     sx={{ textAlignVertical: 'top', minHeight: 100 }}
                                 />
                             </Input>
@@ -126,10 +129,10 @@ export default function PrincipalSelfView() {
                 return (
                     <VStack space="lg" sx={{ flex: 1 }}>
                         <VStack space="xs">
-                            <Heading color={Theme.colors.sacredWhite} size="lg">
+                            <Heading color={colors.text} size="lg">
                                 {t('principal.staffWellbeing')}
                             </Heading>
-                            <Text color={Theme.colors.mistGray} size="sm">
+                            <Text color={colors.textSecondary} size="sm">
                                 {t('principal.staffWellbeingDesc')}
                             </Text>
                         </VStack>
@@ -137,13 +140,13 @@ export default function PrincipalSelfView() {
                         <Box
                             p={Theme.spacing.md}
                             sx={{
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: colors.tertiary,
                                 borderRadius: Theme.corners.comfortable,
                                 minHeight: 150
                             }}
                         >
-                            <Text color={Theme.colors.mistGray} size="md" textAlign="center">
-                                Staff Wellbeing Overview feature coming soon...
+                            <Text color={colors.textSecondary} size="md" textAlign="center">
+                                {t('common.comingSoon')}
                             </Text>
                         </Box>
                     </VStack>
@@ -152,10 +155,10 @@ export default function PrincipalSelfView() {
                 return (
                     <VStack space="lg" sx={{ flex: 1 }}>
                         <VStack space="xs">
-                            <Heading color={Theme.colors.sacredWhite} size="lg">
+                            <Heading color={colors.text} size="lg">
                                 {t('principal.leadershipWisdom')}
                             </Heading>
-                            <Text color={Theme.colors.mistGray} size="sm">
+                            <Text color={colors.textSecondary} size="sm">
                                 {t('principal.leadershipWisdomDesc')}
                             </Text>
                         </VStack>
@@ -163,13 +166,13 @@ export default function PrincipalSelfView() {
                         <Box
                             p={Theme.spacing.md}
                             sx={{
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: colors.tertiary,
                                 borderRadius: Theme.corners.comfortable,
                                 minHeight: 150
                             }}
                         >
-                            <Text color={Theme.colors.mistGray} size="md" textAlign="center">
-                                Leadership Wisdom feature coming soon...
+                            <Text color={colors.textSecondary} size="md" textAlign="center">
+                                {t('common.comingSoon')}
                             </Text>
                         </Box>
                     </VStack>
@@ -178,10 +181,10 @@ export default function PrincipalSelfView() {
                 return (
                     <VStack space="lg" sx={{ flex: 1 }}>
                         <VStack space="xs">
-                            <Heading color={Theme.colors.sacredWhite} size="lg">
+                            <Heading color={colors.text} size="lg">
                                 {t('principal.monthlyReflection')}
                             </Heading>
-                            <Text color={Theme.colors.mistGray} size="sm">
+                            <Text color={colors.textSecondary} size="sm">
                                 {t('principal.monthlyReflectionDesc')}
                             </Text>
                         </VStack>
@@ -189,13 +192,13 @@ export default function PrincipalSelfView() {
                         <Box
                             p={Theme.spacing.md}
                             sx={{
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: colors.tertiary,
                                 borderRadius: Theme.corners.comfortable,
                                 minHeight: 150
                             }}
                         >
-                            <Text color={Theme.colors.mistGray} size="md" textAlign="center">
-                                Monthly Reflection feature coming soon...
+                            <Text color={colors.textSecondary} size="md" textAlign="center">
+                                {t('common.comingSoon')}
                             </Text>
                         </Box>
                     </VStack>
@@ -210,11 +213,15 @@ export default function PrincipalSelfView() {
         : PRINCIPAL_CORE_FEATURES;
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+        <ScreenWrapper>
             <GlobalHeader showGreeting={true} />
-            <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}>
+            <ScrollView
+                sx={{ flex: 1 }}
+                contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}
+                showsVerticalScrollIndicator={false}
+            >
                 {/* Daily Content Section */}
-                <Box px="$6" mb="$4">
+                <Box mb="$4">
                     <DailyContentCard type="motivation" />
                     <DailyContentCard type="did_you_know" />
                 </Box>
@@ -224,7 +231,7 @@ export default function PrincipalSelfView() {
                     <ScrollView
                         horizontal
                         showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{ paddingHorizontal: 24, gap: 12 }}
+                        contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, gap: 12 }}
                     >
                         {allFeatures.map((feature) => (
                             <Pressable
@@ -244,21 +251,21 @@ export default function PrincipalSelfView() {
                                         borderRadius: Theme.corners.generous,
                                         backgroundColor: activeFeature === feature.id
                                             ? Theme.colors.sanctuarySaffron
-                                            : Theme.colors.deepIndigo,
+                                            : colors.secondary,
                                         borderWidth: 1,
                                         borderColor: activeFeature === feature.id
                                             ? Theme.colors.sanctuarySaffron
-                                            : Theme.colors.transparent,
+                                            : colors.border,
                                     }}
                                 >
                                     <feature.icon
-                                        color={activeFeature === feature.id ? Theme.colors.white : Theme.colors.dimGray}
+                                        color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary}
                                         size={24}
                                     />
                                     <Text
                                         size="xs"
                                         bold={activeFeature === feature.id}
-                                        color={activeFeature === feature.id ? Theme.colors.white : Theme.colors.mistGray}
+                                        color={activeFeature === feature.id ? Theme.colors.white : colors.text}
                                         textAlign="center"
                                     >
                                         {t(`principal.${feature.id}`)}
@@ -284,21 +291,21 @@ export default function PrincipalSelfView() {
                                     borderRadius: Theme.corners.generous,
                                     backgroundColor: showMoreTools
                                         ? Theme.colors.sanctuarySaffron
-                                        : Theme.colors.deepIndigo,
+                                        : colors.secondary,
                                     borderWidth: 1,
                                     borderColor: showMoreTools
                                         ? Theme.colors.sanctuarySaffron
-                                        : Theme.colors.dimGray,
+                                        : colors.border,
                                     borderStyle: 'dashed'
                                 }}
                             >
-                                <Text fontSize="$2xl">
+                                <Text fontSize="$2xl" color={showMoreTools ? Theme.colors.white : colors.text}>
                                     {showMoreTools ? '−' : '+'}
                                 </Text>
                                 <Text
                                     size="xs"
                                     bold={showMoreTools}
-                                    color={showMoreTools ? Theme.colors.white : Theme.colors.mistGray}
+                                    color={showMoreTools ? Theme.colors.white : colors.textSecondary}
                                     textAlign="center"
                                 >
                                     {showMoreTools ? t('self.lessTools') : t('self.moreTools')}
@@ -309,11 +316,11 @@ export default function PrincipalSelfView() {
                 </Box>
 
                 {/* Dynamic Content */}
-                <Box px="$6" mt="$6">
+                <Box mt="$6">
                     <Box
                         p={Theme.spacing.xl}
                         sx={{
-                            backgroundColor: Theme.colors.midnightBlue,
+                            backgroundColor: colors.secondary,
                             borderRadius: Theme.corners.generous,
                             minHeight: 300
                         }}
@@ -328,6 +335,6 @@ export default function PrincipalSelfView() {
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
             />
-        </Box>
+        </ScreenWrapper>
     );
 }

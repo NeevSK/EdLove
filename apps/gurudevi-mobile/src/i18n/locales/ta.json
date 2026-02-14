@@ -24,7 +24,12 @@
     "role": {
         "teacher": "ஆசிரியர்",
         "student": "மாணவர்",
-        "principal": "அதிபர்"
+        "principal": "அதிபர்",
+        "section_head": "பிரிவுத் தலைவர்",
+        "grade_head": "தரம் தலைவர்",
+        "developer": "டெவலப்பர்",
+        "admin": "நிர்வாகி",
+        "founder": "ஸ்தாபக பாதுகாவலர்"
     },
     "school": {
         "personal_workspace": "தனிப்பட்ட பணியிடம்"
@@ -48,6 +53,7 @@
         "teacher": "ஆசிரியர்",
         "student": "மாணவர்",
         "principal": "அதிபர்",
+        "founder": "ஸ்தாபக பாதுகாவலர்",
         "signInWithGoogle": "Google உடன் உள்நுழை",
         "signInWithApple": "Apple உடன் உள்நுழை",
         "orContinueWith": "அல்லது இவற்றுடன் தொடரவும்",
@@ -58,15 +64,22 @@
     },
     "tabs": {
         "self": "சுய",
-        "classroom": "வகுப்பு",
+        "myClassrooms": "என் வகுப்பறைகள்",
+        "schoolOverview": "பள்ளி மேலோட்டம்",
+        "schoolManagement": "பள்ளி மேலாண்மை",
+        "learningJourney": "கற்றல் பயணம்",
+        "mySanctuary": "என் சரணாலயம்",
+        "section": "பிரிவு",
         "community": "சமூகம்",
         "library": "நூலகம்",
-        "profile": "சுயவிவரம்"
+        "profile": "சுயவிவரம்",
+        "grade": "வகுப்பு நிலை"
     },
     "self": {
-        "goodMorning": "காலை வணக்கம்",
-        "goodAfternoon": "மதிய வணக்கம்",
-        "goodEvening": "மாலை வணக்கம்",
+        "goodMorning": "காலை வணக்கம்!",
+        "goodAfternoon": "மதிய வணக்கம்!",
+        "goodEvening": "மாலை வணக்கம்!",
+        "goodNight": "இனிய இரவு!",
         "venting": "மனம் திறத்தல்",
         "ventingDesc": "மனதில் இருப்பதை வெளியிடுங்கள்",
         "rhythm": "தினசரி ரிதம்",
@@ -188,6 +201,8 @@
         "dashboardIntro": "உங்கள் அமைதியான பணியிடத்திற்கு வரவேற்கிறோம். உங்கள் வகுப்புகளை திறம்பட நிர்வகிக்கவும்.",
         "createClass": "வகுப்பை உருவாக்கு",
         "attendance": "வருகை",
+        "peacefulSpace": "இது உங்கள் அமைதியான பணியிடம்.",
+        "startWorking": "வேலையைத் தொடங்குவோம்.",
         "library": "நூலகம்",
         "statActiveClasses": "செயலில் உள்ள வகுப்புகள்",
         "statTotalStudents": "மொத்த மாணவர்கள்",
@@ -219,6 +234,8 @@
     "profile": {
         "title": "சுயவிவரம்",
         "fullName": "முழு பெயர்",
+        "phone": "தொலைபேசி எண்",
+        "bio": "சுயவிவரம்",
         "role": "பங்கு",
         "school": "பள்ளி",
         "notSetYet": "இன்னும் அமைக்கப்படவில்லை",
@@ -278,6 +295,30 @@
         "gpaOnly": "GPA மட்டும்",
         "both": "இரண்டும்",
         "showRanks": "தரவரிசைகளைக் காட்டு"
+    },
+    "onboarding": {
+        "nameTitle": "வரவேற்கிறோம்! உங்களை எப்படி அழைக்கலாம்?",
+        "nameSubtitle": "உங்கள் பெயருடன் தொடங்குவோம்",
+        "namePlaceholder": "உங்கள் முழுப் பெயரை உள்ளிடவும்",
+        "nameHint": "குருதேவி சமூகத்தில் நீங்கள் இப்படித்தான் அறியப்படுவீர்கள்",
+        "roleTitle": "உங்கள் பொறுப்பு என்ன?",
+        "roleSubtitle": "இது உங்கள் அனுபவத்தைத் தனிப்பயனாக்க உதவும்",
+        "selectRole": "உங்கள் பொறுப்பைத் தேர்ந்தெடுக்கவும்",
+        "roleHint": "கவலைப்பட வேண்டாம், இதைச் சரிசெய்தலில் பின்னர் மாற்றலாம்",
+        "welcomeTitle": "குருதேவிக்கு வரவேற்கிறோம்",
+        "welcomeSubtitle": "அன்பில் பிறந்து, அன்பால் உருவான கல்வி",
+        "sectionsTitle": "ஐந்து நிலையான பிரிவுகள்",
+        "sectionsSubtitle": "குருதேவிக்கான உங்கள் வழிகாட்டி",
+        "ecologyTitle": "கல்விச் சூழலியல்",
+        "ecologySubtitle": "ஒரே உண்மை, பல பார்வைகள்",
+        "privacyTitle": "உங்கள் தனியுரிமை பாதுகாக்கப்படுகிறது",
+        "privacySubtitle": "உங்களுக்கான எங்கள் வாக்குறுதிகள் இவை",
+        "navigationTitle": "அனைத்தும் தயார்!",
+        "navigationSubtitle": "உங்கள் பயணத்தைத் தொடங்கத் தயார்",
+        "next": "அடுத்து",
+        "back": "பின்செல்",
+        "skip": "தவிர்",
+        "complete": "நிறைவு செய்"
     },
     "settings": {
         "appearance": {

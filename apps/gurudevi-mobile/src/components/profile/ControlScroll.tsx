@@ -9,7 +9,7 @@ import {
     Divider,
     Heading,
 } from '@/ui';
-import { Globe, Moon, Database, ChevronRight, Check, X, Sun, Zap } from 'lucide-react-native';
+import { Globe, Moon, Database, ChevronRight, Check, X, Sun, Zap, Smartphone } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';
@@ -27,6 +27,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
 
     const getThemeLabel = (mode: ThemeMode) => {
         switch (mode) {
+            case 'system': return 'System Default';
             case 'light': return 'Light Mode';
             case 'dark': return 'Dark Mode';
             case 'auto': return 'Auto (Time-based)';
@@ -227,6 +228,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                         </HStack>
 
                         <VStack space="md">
+                            {renderThemeOption('system', Smartphone, 'System Default', 'Follow device settings')}
                             {renderThemeOption('light', Sun, 'Light Mode', 'Always use light colors')}
                             {renderThemeOption('dark', Moon, 'Dark Mode', 'Always use dark colors')}
                             {renderThemeOption('auto', Zap, 'Auto (Time-based)', 'Changes based on time of day')}

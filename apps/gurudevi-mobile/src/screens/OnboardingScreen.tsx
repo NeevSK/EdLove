@@ -2,7 +2,7 @@
 // Screens 1-2: Name + Role (NOT skippable)
 // Screens 3-7: Philosophy, Five Sections, Ecology, Privacy, Navigation (SKIPPABLE)
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import {
     Box,
     VStack,
@@ -36,6 +36,8 @@ import { Theme } from '../constants/Theme';
 import { UserRole } from '../types/User';
 import { supabase } from '../lib/supabase';
 import { hapticLight, hapticSuccess } from '../utils/haptics';
+import ScreenWrapper from '../components/shared/ScreenWrapper';
+import { useThemedColors } from '../hooks/useThemedColors';
 
 interface OnboardingScreenProps {
     onComplete: (name: string, role: UserRole) => void;
@@ -43,40 +45,43 @@ interface OnboardingScreenProps {
 
 export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
     const { t } = useTranslation();
+    const colors = useThemedColors();
     const [currentScreen, setCurrentScreen] = useState(0);
     const [name, setName] = useState('');
     const [role, setRole] = useState<UserRole>('teacher');
     const [isLoading, setIsLoading] = useState(true);
     const toast = useToast();
 
-    const screens = [
+    // Use useMemo for screens to avoid recreation on every render, 
+    // especially since we need to pass dynamic colors now.
+    const screens = useMemo(() => [
         // Screen 0: Name (NOT skippable)
         {
             skippable: false,
             title: t('onboarding.nameTitle') || 'Welcome! What should we call you?',
-            subtitle: t('onboarding.nameSubtitle') || 'Let\'s start with your name',
+            subtitle: t('onboarding.nameSubtitle') || "Let's start with your name",
             content: (
                 <VStack space="lg" mt="$6">
                     <Input
                         variant="outline"
                         size="xl"
                         sx={{
-                            borderColor: Theme.colors.mistGray,
+                            borderColor: colors.textTertiary,
                             borderRadius: Theme.corners.comfortable,
-                            backgroundColor: Theme.colors.deepIndigo,
+                            backgroundColor: colors.secondary,
                         }}
                     >
                         <InputField
                             placeholder={t('onboarding.namePlaceholder') || 'Enter your full name'}
                             value={name}
                             onChangeText={setName}
-                            color={Theme.colors.sacredWhite}
-                            placeholderTextColor={Theme.colors.dimGray}
+                            color={colors.text}
+                            placeholderTextColor={colors.textTertiary}
                             fontSize={18}
                         />
                     </Input>
-                    <Text color={Theme.colors.mistGray} size="sm" textAlign="center">
-                        {t('onboarding.nameHint') || 'This is how you\'ll be known in the Gurudevi community'}
+                    <Text color={colors.textSecondary} size="sm" textAlign="center">
+                        {t('onboarding.nameHint') || "This is how you'll be known in the Gurudevi community"}
                     </Text>
                 </VStack>
             ),
@@ -99,17 +104,17 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                             variant="outline"
                             size="xl"
                             sx={{
-                                borderColor: Theme.colors.mistGray,
+                                borderColor: colors.textTertiary,
                                 borderRadius: Theme.corners.comfortable,
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: colors.secondary,
                             }}
                         >
                             <SelectInput
                                 placeholder={t('onboarding.selectRole') || 'Select your role'}
-                                color={Theme.colors.sacredWhite}
+                                color={colors.text}
                                 fontSize={18}
                             />
-                            <SelectIcon mr="$3" as={ChevronDown} color={Theme.colors.mistGray} />
+                            <SelectIcon mr="$3" as={ChevronDown} color={colors.textTertiary} />
                         </SelectTrigger>
                         <SelectPortal>
                             <SelectBackdrop />
@@ -127,30 +132,30 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                             </SelectContent>
                         </SelectPortal>
                     </Select>
-                    <Text color={Theme.colors.mistGray} size="sm" textAlign="center">
-                        {t('onboarding.roleHint') || 'Don\'t worry, you can update this later in settings'}
+                    <Text color={colors.textTertiary} size="sm" textAlign="center">
+                        {t('onboarding.roleHint') || "Don't worry, you can update this later in settings"}
                     </Text>
                 </VStack>
             ),
         },
-        // Screen 2: Welcome to Gurudevi (SKIPPABLE)
+        // Screen 2: Welcome (SKIPPABLE)
         {
             skippable: true,
             title: t('onboarding.welcomeTitle') || 'Welcome to Gurudevi',
             subtitle: t('onboarding.welcomeSubtitle') || 'Education born from Love, built with Love',
             content: (
                 <VStack space="md" mt="$6" px="$4">
-                    <Text color={Theme.colors.pearlGray} size="md" textAlign="center" lineHeight="$xl">
+                    <Text color={colors.textSecondary} size="md" textAlign="center" lineHeight="$xl">
                         Gurudevi is not surveillance. It's support.
                     </Text>
-                    <Text color={Theme.colors.pearlGray} size="md" textAlign="center" lineHeight="$xl">
+                    <Text color={colors.textSecondary} size="md" textAlign="center" lineHeight="$xl">
                         Not control. It's listening.
                     </Text>
-                    <Text color={Theme.colors.pearlGray} size="md" textAlign="center" lineHeight="$xl">
+                    <Text color={colors.textSecondary} size="md" textAlign="center" lineHeight="$xl">
                         It exists to repair broken feedback loops in education.
                     </Text>
                     <Box height={20} />
-                    <Text color={Theme.colors.sanctuarySaffron} size="lg" textAlign="center" fontWeight="$semibold">
+                    <Text color={colors.action} size="lg" textAlign="center" fontWeight="$semibold">
                         Education is a living ecology.
                     </Text>
                 </VStack>
@@ -167,36 +172,41 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                         number="1"
                         title="Self"
                         description="Your inner ecology. Reflection, journaling, personal growth."
-                        color={Theme.colors.emberOrange}
+                        color={colors.error} // EmberOrange approx
+                        themeColors={colors}
                     />
                     <SectionCard
                         number="2"
                         title="Classroom"
                         description="Your operational ecology. Students, lessons, attendance."
-                        color={Theme.colors.sageGreen}
+                        color="#63AD33" // SageGreen approx
+                        themeColors={colors}
                     />
                     <SectionCard
                         number="3"
                         title="Community"
                         description="Your relational ecology. Peer connections, discussions."
-                        color={Theme.colors.twilightBlue}
+                        color="#4A90E2" // TwilightBlue approx
+                        themeColors={colors}
                     />
                     <SectionCard
                         number="4"
                         title="Library"
                         description="Your knowledge ecology. Resources, references, sharing."
-                        color={Theme.colors.lavenderMist}
+                        color="#9B51E0" // LavenderMist approx
+                        themeColors={colors}
                     />
                     <SectionCard
                         number="5"
                         title="Profile"
                         description="Your identity. Settings, role, boundaries."
-                        color={Theme.colors.sanctuarySaffron}
+                        color={colors.action}
+                        themeColors={colors}
                     />
                 </VStack>
             ),
         },
-        // Screen 4: Educational Ecology (SKIPPABLE)
+        // Screen 4: Ecology (SKIPPABLE)
         {
             skippable: true,
             title: t('onboarding.ecologyTitle') || 'Educational Ecology',
@@ -207,26 +217,30 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                         icon="🌱"
                         title="Polycentric"
                         description="No single center of authority. Every role matters."
+                        themeColors={colors}
                     />
                     <PhilosophyPoint
                         icon="🔄"
                         title="Autopoietic"
                         description="Each level sustains itself. Self-organizing."
+                        themeColors={colors}
                     />
                     <PhilosophyPoint
                         icon="✨"
                         title="Emergent"
                         description="Patterns arise from interactions. Not imposed."
+                        themeColors={colors}
                     />
                     <PhilosophyPoint
                         icon="🎯"
                         title="Constraint-based"
                         description="Guided by boundaries, not instructions."
+                        themeColors={colors}
                     />
                 </VStack>
             ),
         },
-        // Screen 5: Privacy Commitment (SKIPPABLE)
+        // Screen 5: Privacy (SKIPPABLE)
         {
             skippable: true,
             title: t('onboarding.privacyTitle') || 'Your Privacy, Protected',
@@ -237,49 +251,53 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                         icon="🚫"
                         title="No Surveillance"
                         description="We don't watch. We support."
+                        themeColors={colors}
                     />
                     <CommitmentCard
                         icon="🤝"
                         title="No Forced Comparison"
                         description="Your journey is yours alone."
+                        themeColors={colors}
                     />
                     <CommitmentCard
                         icon="🎁"
                         title="No Extractive Gamification"
                         description="No badges for badges' sake."
+                        themeColors={colors}
                     />
                     <CommitmentCard
                         icon="🔒"
                         title="Individual Data Protected"
                         description="Private by default. Sharing is intentional."
+                        themeColors={colors}
                     />
                 </VStack>
             ),
         },
-        // Screen 6: Navigation Guide (SKIPPABLE)
+        // Screen 6: Navigation (SKIPPABLE)
         {
             skippable: true,
-            title: t('onboarding.navigationTitle') || 'You\'re All Set!',
+            title: t('onboarding.navigationTitle') || "You're All Set!",
             subtitle: t('onboarding.navigationSubtitle') || 'Ready to begin your journey',
             content: (
                 <VStack space="lg" mt="$6" px="$4">
-                    <Text color={Theme.colors.pearlGray} size="md" textAlign="center" lineHeight="$xl">
+                    <Text color={colors.textSecondary} size="md" textAlign="center" lineHeight="$xl">
                         Use the tab bar at the bottom to navigate between sections.
                     </Text>
-                    <Text color={Theme.colors.pearlGray} size="md" textAlign="center" lineHeight="$xl">
-                        Start with <Text color={Theme.colors.sanctuarySaffron} fontWeight="$semibold">Self</Text> to explore your inner sanctuary.
+                    <Text color={colors.textSecondary} size="md" textAlign="center" lineHeight="$xl">
+                        Start with <Text color={colors.action} fontWeight="$semibold">Self</Text> to explore your inner sanctuary.
                     </Text>
-                    <Text color={Theme.colors.pearlGray} size="md" textAlign="center" lineHeight="$xl">
-                        Visit <Text color={Theme.colors.sanctuarySaffron} fontWeight="$semibold">Classroom</Text> to begin working with students.
+                    <Text color={colors.textSecondary} size="md" textAlign="center" lineHeight="$xl">
+                        Visit <Text color={colors.action} fontWeight="$semibold">Classroom</Text> to begin working with students.
                     </Text>
                     <Box height={20} />
-                    <Text color={Theme.colors.sanctuarySaffron} size="lg" textAlign="center" fontWeight="$semibold">
+                    <Text color={colors.action} size="lg" textAlign="center" fontWeight="$semibold">
                         Welcome home. 🙏
                     </Text>
                 </VStack>
             ),
         },
-    ];
+    ], [colors, name, role, t]);
 
     // Effect to load saved progress on mount (Failsafe Design)
     React.useEffect(() => {
@@ -327,7 +345,6 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
 
     const handleNext = () => {
         if (!canProceed) return;
-
         hapticLight();
         if (currentScreen < screens.length - 1) {
             setCurrentScreen(currentScreen + 1);
@@ -350,7 +367,6 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
             setCurrentScreen(0);
             setName('');
             setRole('teacher');
-            console.log('Onboarding reset successfully');
         } catch (error) {
             console.error('Error resetting onboarding:', error);
         }
@@ -363,14 +379,10 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
     };
 
     const handleComplete = async () => {
-        console.log('handleComplete triggered in OnboardingScreen');
         try {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error('No user found');
 
-            console.log('Upserting user profile in Supabase...', { id: user.id, email: user.email, name, role });
-            // Upsert user profile with id, email, name, role, and onboarding status
-            // Using upsert ensures the row is created if it doesn't exist
             const { error } = await supabase
                 .from('users')
                 .upsert({
@@ -384,19 +396,9 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                 .select()
                 .single();
 
-            if (error) {
-                console.error('Supabase update error:', error);
-                throw error;
-            }
-
-            console.log('User profile updated successfully in Supabase');
-
-            // Clear local progress once finished
+            if (error) throw error;
             await AsyncStorage.removeItem('onboarding_progress');
-            console.log('Local progress cleared from AsyncStorage');
-
             hapticSuccess();
-            console.log('Calling onComplete callback...');
             onComplete(name, role);
         } catch (error) {
             console.error('Error completing onboarding:', error);
@@ -412,11 +414,10 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
     };
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+        <ScreenWrapper keyboardAvoiding={currentScreen <= 1}>
             {/* Header with Skip */}
             <Box
                 sx={{
-                    pt: '$12',
                     px: '$6',
                     pb: '$2',
                     flexDirection: 'row',
@@ -424,16 +425,14 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                     alignItems: 'center',
                 }}
             >
-                {/* Top Left Reset Button (Debug/Dev Only) */}
                 <Box width={40}>
                     <Pressable onPress={handleReset}>
-                        <Text color={Theme.colors.dimGray} size="xs" fontWeight="$medium">
+                        <Text color={colors.textTertiary} size="xs" fontWeight="$medium">
                             {String(t('common.reset') || 'Reset')}
                         </Text>
                     </Pressable>
                 </Box>
 
-                {/* Progress Dots integrated into header */}
                 <HStack space="xs" justifyContent="center">
                     {screens.map((_, index) => (
                         <Box
@@ -443,19 +442,18 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                                 height: 6,
                                 borderRadius: 3,
                                 backgroundColor: index === currentScreen
-                                    ? Theme.colors.sanctuarySaffron
-                                    : Theme.colors.mistGray,
+                                    ? colors.action
+                                    : colors.textTertiary,
                                 opacity: index === currentScreen ? 1 : 0.3,
                             }}
                         />
                     ))}
                 </HStack>
 
-                {/* Top Right Skip Button */}
                 <Box width={40}>
                     {currentScreenData.skippable && (
                         <Pressable onPress={handleSkip}>
-                            <Text color={Theme.colors.mistGray} size="sm" fontWeight="$medium">
+                            <Text color={colors.textTertiary} size="sm" fontWeight="$medium">
                                 {t('onboarding.skip') || 'Skip'}
                             </Text>
                         </Pressable>
@@ -469,14 +467,14 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{
                     paddingTop: 20,
-                    paddingBottom: 100
+                    paddingBottom: 120
                 }}
             >
                 <VStack space="md" px="$6">
-                    <Heading color={Theme.colors.sanctuarySaffron} size="2xl" textAlign="center">
+                    <Heading color={colors.action} size="2xl" textAlign="center">
                         {currentScreenData.title}
                     </Heading>
-                    <Text color={Theme.colors.mistGray} size="md" textAlign="center">
+                    <Text color={colors.textSecondary} size="md" textAlign="center">
                         {currentScreenData.subtitle}
                     </Text>
                     {currentScreenData.content}
@@ -490,15 +488,15 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    backgroundColor: 'rgba(23, 23, 33, 0.95)', // Glass effect background
+                    backgroundColor: colors.primary, // Using primary for bottom bar
+                    opacity: 0.95,
                     paddingHorizontal: Theme.spacing.xl,
                     paddingVertical: Theme.spacing.lg,
                     borderTopWidth: 1,
-                    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+                    borderTopColor: colors.border,
                 }}
             >
                 <HStack justifyContent="space-between" alignItems="center">
-                    {/* Back Arrow Button */}
                     <Box width={50}>
                         {currentScreen > 0 && (
                             <Pressable
@@ -507,22 +505,20 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                                     width: 44,
                                     height: 44,
                                     borderRadius: 22,
-                                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                                    backgroundColor: colors.secondary,
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                 }}
                             >
-                                <ChevronLeft size={24} color={Theme.colors.mistGray} />
+                                <ChevronLeft size={24} color={colors.textSecondary} />
                             </Pressable>
                         )}
                     </Box>
 
-                    {/* Progress Text Helper */}
-                    <Text color={Theme.colors.dimGray} size="xs" fontWeight="$medium">
+                    <Text color={colors.textTertiary} size="xs" fontWeight="$medium">
                         {`${currentScreen + 1} of ${screens.length}`}
                     </Text>
 
-                    {/* Next/Complete Button (Now an Arrow or Text for Complete) */}
                     <Box>
                         <Button
                             size="lg"
@@ -530,8 +526,8 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                             isDisabled={!canProceed}
                             sx={{
                                 backgroundColor: canProceed
-                                    ? Theme.colors.sanctuarySaffron
-                                    : Theme.colors.mistGray,
+                                    ? colors.action
+                                    : colors.textTertiary,
                                 borderRadius: Theme.corners.comfortable,
                                 px: currentScreen === screens.length - 1 ? '$6' : '$4',
                                 height: 50,
@@ -549,24 +545,25 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                     </Box>
                 </HStack>
             </Box>
-        </Box>
+        </ScreenWrapper>
     );
 }
 
 // Helper Components
 
-function SectionCard({ number, title, description, color }: {
+function SectionCard({ number, title, description, color, themeColors }: {
     number: string;
     title: string;
     description: string;
     color: string;
+    themeColors: any;
 }) {
     return (
         <HStack
             space="md"
             p="$4"
             sx={{
-                backgroundColor: Theme.colors.deepIndigo,
+                backgroundColor: themeColors.secondary,
                 borderRadius: Theme.corners.comfortable,
                 borderLeftWidth: 4,
                 borderLeftColor: color,
@@ -587,10 +584,10 @@ function SectionCard({ number, title, description, color }: {
                 </Text>
             </Box>
             <VStack space="xs" flex={1}>
-                <Text color={Theme.colors.sacredWhite} size="md" fontWeight="$semibold">
+                <Text color={themeColors.text} size="md" fontWeight="$semibold">
                     {title}
                 </Text>
-                <Text color={Theme.colors.mistGray} size="sm">
+                <Text color={themeColors.textTertiary} size="sm">
                     {description}
                 </Text>
             </VStack>
@@ -598,10 +595,11 @@ function SectionCard({ number, title, description, color }: {
     );
 }
 
-function PhilosophyPoint({ icon, title, description }: {
+function PhilosophyPoint({ icon, title, description, themeColors }: {
     icon: string;
     title: string;
     description: string;
+    themeColors: any;
 }) {
     return (
         <HStack space="md" alignItems="flex-start">
@@ -609,10 +607,10 @@ function PhilosophyPoint({ icon, title, description }: {
                 <Text sx={{ fontSize: 32 }}>{String(icon)}</Text>
             </Box>
             <VStack space="xs" flex={1}>
-                <Text color={Theme.colors.sanctuarySaffron} size="lg" fontWeight="$semibold">
+                <Text color={themeColors.action} size="lg" fontWeight="$semibold">
                     {String(title)}
                 </Text>
-                <Text color={Theme.colors.mistGray} size="md">
+                <Text color={themeColors.textTertiary} size="md">
                     {String(description)}
                 </Text>
             </VStack>
@@ -620,17 +618,18 @@ function PhilosophyPoint({ icon, title, description }: {
     );
 }
 
-function CommitmentCard({ icon, title, description }: {
+function CommitmentCard({ icon, title, description, themeColors }: {
     icon: string;
     title: string;
     description: string;
+    themeColors: any;
 }) {
     return (
         <HStack
             space="md"
             p="$4"
             sx={{
-                backgroundColor: Theme.colors.deepIndigo,
+                backgroundColor: themeColors.secondary,
                 borderRadius: Theme.corners.comfortable,
             }}
         >
@@ -638,10 +637,10 @@ function CommitmentCard({ icon, title, description }: {
                 <Text sx={{ fontSize: 24 }}>{String(icon)}</Text>
             </Box>
             <VStack space="xs" flex={1}>
-                <Text color={Theme.colors.sanctuarySaffron} size="md" fontWeight="$semibold">
+                <Text color={themeColors.action} size="md" fontWeight="$semibold">
                     {String(title)}
                 </Text>
-                <Text color={Theme.colors.mistGray} size="sm">
+                <Text color={themeColors.textTertiary} size="sm">
                     {String(description)}
                 </Text>
             </VStack>

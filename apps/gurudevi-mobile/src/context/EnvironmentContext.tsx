@@ -7,7 +7,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AppState, AppStateStatus } from 'react-native';
+import { AppState, AppStateStatus, useColorScheme } from 'react-native';
 // @ts-ignore - Dependency exists in package.json and works at runtime, but IDE cannot resolve types in this environment
 import NetInfo from '@react-native-community/netinfo';
 import { useStore } from '../store/useStore';
@@ -63,6 +63,7 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
   const [language, setLanguageState] = useState<Language>('en');
   const [isVeilActive, setIsVeilActive] = useState(false);
   const [temporalPhase, setTemporalPhase] = useState<TemporalPhase>(() => getTemporalPhase());
+  const systemColorScheme = useColorScheme();
   const [reality, setReality] = useState<RealityState>({
     deviceTier: 'medium',
     totalMemoryGB: 4,
@@ -72,7 +73,10 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
   });
 
   // Compute derived state
-  const isDark = themeMode === 'dark' || (themeMode === 'auto' && shouldUseDarkTheme(temporalPhase));
+  const isDark =
+    themeMode === 'dark' ||
+    (themeMode === 'system' && systemColorScheme === 'dark') ||
+    (themeMode === 'auto' && shouldUseDarkTheme(temporalPhase));
   const effectiveFidelity = computeEffectiveFidelity(fidelityLevel, reality.deviceTier);
 
   /**
@@ -168,8 +172,6 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
    * Update temporal phase every minute when in auto theme mode
    */
   useEffect(() => {
-    if (themeMode !== 'auto') return;
-
     const updatePhase = () => {
       const newPhase = getTemporalPhase();
       if (newPhase !== temporalPhase) {

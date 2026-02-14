@@ -20,6 +20,8 @@ import {
 import { Package, Lightbulb, Users, BookOpen, Wifi, AlertCircle } from 'lucide-react-native';
 import { Theme, typography } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';
+import { useTranslation } from 'react-i18next';
+import { useThemedColors } from '../../hooks/useThemedColors';
 
 interface ResourceNeed {
     id: string;
@@ -44,17 +46,19 @@ const ICON_MAP: Record<string, any> = {
     'other': AlertCircle,
 };
 
-// Color mapping based on priority
-const PRIORITY_COLORS = {
-    low: Theme.colors.mistGray,
-    medium: Theme.colors.amberGlow,
-    high: Theme.colors.sanctuarySaffron,
-    urgent: Theme.colors.emberRed,
-};
-
 export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashboardProps) {
+    const { t } = useTranslation();
+    const colors = useThemedColors();
     const [needs, setNeeds] = useState<ResourceNeed[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    // Color mapping based on priority
+    const PRIORITY_COLORS = {
+        low: colors.textTertiary,
+        medium: Theme.colors.amberGlow,
+        high: Theme.colors.sanctuarySaffron,
+        urgent: Theme.colors.emberRed,
+    };
 
     useEffect(() => {
         fetchResourceNeeds();
@@ -62,8 +66,6 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
 
     const fetchResourceNeeds = async () => {
         try {
-            // Query for resource needs
-            // This would be a real table in production
             const { data, error } = await supabase
                 .from('resource_needs')
                 .select('*')
@@ -73,7 +75,6 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
 
             if (error) {
                 console.error('Error fetching resource needs:', error);
-                // Set mock data for demonstration
                 setMockData();
             } else {
                 setNeeds(data || []);
@@ -87,7 +88,6 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
     };
 
     const setMockData = () => {
-        // Mock data for demonstration
         setNeeds([
             {
                 id: '1',
@@ -135,7 +135,7 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
     if (isLoading) {
         return (
             <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}>
-                <Spinner color={Theme.colors.sanctuarySaffron} />
+                <Spinner color={colors.action} />
             </Box>
         );
     }
@@ -145,24 +145,24 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
             <Box
                 sx={{
                     padding: Theme.spacing.xl,
-                    backgroundColor: Theme.colors.deepIndigo,
+                    backgroundColor: colors.secondary,
                     borderRadius: Theme.corners.comfortable,
                     alignItems: 'center',
                 }}
             >
                 <Text
-                    color={Theme.colors.sageGreen}
+                    color={colors.success}
                     size="lg"
                     sx={{ fontWeight: typography.fontWeight.medium }}
                 >
-                    ✨ All resource needs are currently met!
+                    {t('principal.resources.emptyState')}
                 </Text>
                 <Text
-                    color={Theme.colors.mistGray}
+                    color={colors.textSecondary}
                     size="sm"
                     sx={{ marginTop: Theme.spacing.sm }}
                 >
-                    Your teachers have what they need to succeed
+                    {t('principal.resources.emptyStateDesc')}
                 </Text>
             </Box>
         );
@@ -170,41 +170,38 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
 
     return (
         <VStack space="lg">
-            {/* Header */}
             <VStack space="xs">
-                <Heading color={Theme.colors.sacredWhite} size="xl">
-                    Resource Needs
+                <Heading color={colors.text} size="xl">
+                    {t('principal.resources.title')}
                 </Heading>
-                <Text color={Theme.colors.mistGray} size="sm">
-                    Support your teachers with what they need
+                <Text color={colors.textSecondary} size="sm">
+                    {t('principal.resources.subtitle')}
                 </Text>
             </VStack>
 
-            {/* Resource Cards */}
             <VStack space="md">
                 {needs.map((need) => {
                     const Icon = ICON_MAP[need.icon] || ICON_MAP.other;
-                    const priorityColor = PRIORITY_COLORS[need.priority];
+                    const priorityColor = (PRIORITY_COLORS as any)[need.priority] || colors.textTertiary;
 
                     return (
                         <Box
                             key={need.id}
                             sx={{
                                 padding: Theme.spacing.lg,
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: colors.secondary,
                                 borderRadius: Theme.corners.comfortable,
                                 borderLeftWidth: 4,
                                 borderLeftColor: priorityColor,
                             }}
                         >
                             <HStack space="md" alignItems="center">
-                                {/* Icon */}
                                 <Box
                                     sx={{
                                         width: 48,
                                         height: 48,
                                         borderRadius: 24,
-                                        backgroundColor: Theme.colors.midnightBlue,
+                                        backgroundColor: colors.tertiary,
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                     }}
@@ -212,21 +209,17 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
                                     <Icon color={priorityColor} size={24} />
                                 </Box>
 
-                                {/* Content */}
                                 <VStack space="xs" sx={{ flex: 1 }}>
                                     <HStack alignItems="center" space="sm">
                                         <Text
-                                            color={Theme.colors.sacredWhite}
+                                            color={colors.text}
                                             size="lg"
                                             sx={{ fontWeight: typography.fontWeight.semibold }}
                                         >
-                                            {need.requested_by_count} teachers
-                                        </Text>
-                                        <Text color={Theme.colors.mistGray} size="sm">
-                                            need
+                                            {t('principal.resources.needUnit', { count: need.requested_by_count })}
                                         </Text>
                                     </HStack>
-                                    <Text color={Theme.colors.pearlGray} size="md">
+                                    <Text color={colors.textSecondary} size="md">
                                         {need.description}
                                     </Text>
                                     {need.priority === 'urgent' && (
@@ -235,7 +228,7 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
                                             size="xs"
                                             sx={{ fontWeight: typography.fontWeight.medium }}
                                         >
-                                            🔥 Urgent priority
+                                            {t('principal.resources.urgent')}
                                         </Text>
                                     )}
                                 </VStack>
@@ -245,22 +238,21 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
                 })}
             </VStack>
 
-            {/* Philosophy Note */}
             <Box
                 sx={{
                     padding: Theme.spacing.md,
-                    backgroundColor: Theme.colors.midnightBlue,
+                    backgroundColor: colors.tertiary,
                     borderRadius: Theme.corners.comfortable,
                     marginTop: Theme.spacing.md,
                 }}
             >
                 <Text
-                    color={Theme.colors.mistGray}
+                    color={colors.textTertiary}
                     size="xs"
                     textAlign="center"
                     sx={{ fontStyle: 'italic' }}
                 >
-                    💡 This dashboard focuses on empowering teachers, not monitoring performance
+                    {t('principal.resources.philosophy')}
                 </Text>
             </Box>
         </VStack>

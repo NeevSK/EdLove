@@ -40,6 +40,10 @@ import {
 } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { hapticLight } from '../../utils/haptics';
+import { useThemedColors } from '../../hooks/useThemedColors';
+import { useTranslation } from 'react-i18next';
+import GlobalHeader from '../../components/shared/GlobalHeader';
+import ScreenWrapper from '../../components/shared/ScreenWrapper';
 
 // Types
 export type ResourceType = 'pdf' | 'link' | 'note';
@@ -56,27 +60,11 @@ export interface Resource {
     updatedAt: string;
 }
 
-// Resource type configuration
-const RESOURCE_TYPE_CONFIG = {
-    pdf: {
-        icon: File,
-        color: Theme.colors.emberRed,
-        label: 'PDF',
-    },
-    link: {
-        icon: LinkIcon,
-        color: Theme.colors.sanctuarySaffron,
-        label: 'Link',
-    },
-    note: {
-        icon: FileText,
-        color: Theme.colors.sageGreen,
-        label: 'Note',
-    },
-};
-
 export default function ContentLibrary() {
+    const { t } = useTranslation();
+    const colors = useThemedColors();
     const [resources, setResources] = useState<Resource[]>([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
     const [newResourceType, setNewResourceType] = useState<ResourceType>('note');
     const [newResourceTitle, setNewResourceTitle] = useState('');
@@ -85,6 +73,25 @@ export default function ContentLibrary() {
     const [newResourceContent, setNewResourceContent] = useState('');
     const [isLoading, setIsLoading] = useState(true);
 
+    // Resource type configuration
+    const RESOURCE_TYPE_CONFIG = {
+        pdf: {
+            icon: File,
+            color: Theme.colors.emberRed,
+            label: 'PDF',
+        },
+        link: {
+            icon: LinkIcon,
+            color: colors.action,
+            label: 'Link',
+        },
+        note: {
+            icon: FileText,
+            color: Theme.colors.sageGreen,
+            label: 'Note',
+        },
+    };
+
     useEffect(() => {
         fetchResources();
     }, []);
@@ -92,7 +99,6 @@ export default function ContentLibrary() {
     const fetchResources = async () => {
         setIsLoading(true);
         try {
-            // TODO: Replace with actual API call
             // Mock data for now
             const mockResources: Resource[] = [
                 {
@@ -158,7 +164,6 @@ export default function ContentLibrary() {
             return;
         }
 
-        // Generate a unique ID using crypto or fallback to timestamp
         const generateId = () => {
             if (typeof crypto !== 'undefined' && crypto.randomUUID) {
                 return crypto.randomUUID();
@@ -189,12 +194,16 @@ export default function ContentLibrary() {
         setShowAddModal(false);
     };
 
-    // Sort resources: pinned first, then by date
     const sortedResources = [...resources].sort((a, b) => {
         if (a.isPinned && !b.isPinned) return -1;
         if (!a.isPinned && b.isPinned) return 1;
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
+
+    const filteredResources = sortedResources.filter((r: Resource) =>
+        r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (r.description && r.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
 
     const renderResourceCard = (resource: Resource) => {
         const ResourceIcon = RESOURCE_TYPE_CONFIG[resource.type].icon;
@@ -204,12 +213,12 @@ export default function ContentLibrary() {
             <Box
                 key={resource.id}
                 sx={{
-                    backgroundColor: Theme.colors.midnightBlue,
+                    backgroundColor: colors.secondary,
                     borderRadius: Theme.corners.generous,
                     padding: Theme.spacing.md,
                     marginBottom: Theme.spacing.md,
-                    borderWidth: resource.isPinned ? 2 : 0,
-                    borderColor: resource.isPinned ? Theme.colors.sanctuarySaffron : 'transparent',
+                    borderWidth: resource.isPinned ? 2 : 1,
+                    borderColor: resource.isPinned ? colors.action : colors.border,
                 }}
             >
                 <VStack space="sm">
@@ -221,7 +230,7 @@ export default function ContentLibrary() {
                                     width: 40,
                                     height: 40,
                                     borderRadius: Theme.corners.comfortable,
-                                    backgroundColor: Theme.colors.deepIndigo,
+                                    backgroundColor: colors.tertiary,
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                 }}
@@ -229,10 +238,10 @@ export default function ContentLibrary() {
                                 <ResourceIcon color={iconColor} size={20} />
                             </Box>
                             <VStack sx={{ flex: 1 }}>
-                                <Text color={Theme.colors.sacredWhite} size="md" bold>
+                                <Text color={colors.text} size="md" bold>
                                     {resource.title}
                                 </Text>
-                                <Text color={Theme.colors.mistGray} size="xs">
+                                <Text color={colors.textSecondary} size="xs">
                                     {RESOURCE_TYPE_CONFIG[resource.type].label}
                                 </Text>
                             </VStack>
@@ -242,7 +251,7 @@ export default function ContentLibrary() {
                         {resource.isPinned && (
                             <Box
                                 sx={{
-                                    backgroundColor: Theme.colors.sanctuarySaffron,
+                                    backgroundColor: colors.action,
                                     borderRadius: Theme.corners.tight,
                                     padding: 4,
                                 }}
@@ -254,7 +263,7 @@ export default function ContentLibrary() {
 
                     {/* Description */}
                     {resource.description && (
-                        <Text color={Theme.colors.mistGray} size="sm">
+                        <Text color={colors.textSecondary} size="sm">
                             {resource.description}
                         </Text>
                     )}
@@ -266,17 +275,17 @@ export default function ContentLibrary() {
                                 sx={{
                                     padding: Theme.spacing.sm,
                                     borderRadius: Theme.corners.comfortable,
-                                    backgroundColor: Theme.colors.deepIndigo,
+                                    backgroundColor: colors.tertiary,
                                 }}
                             >
                                 <Pin
                                     color={
                                         resource.isPinned
-                                            ? Theme.colors.sanctuarySaffron
-                                            : Theme.colors.mistGray
+                                            ? colors.action
+                                            : colors.textTertiary
                                     }
                                     size={18}
-                                    fill={resource.isPinned ? Theme.colors.sanctuarySaffron : 'none'}
+                                    fill={resource.isPinned ? colors.action : 'none'}
                                 />
                             </Box>
                         </Pressable>
@@ -287,10 +296,10 @@ export default function ContentLibrary() {
                                     sx={{
                                         padding: Theme.spacing.sm,
                                         borderRadius: Theme.corners.comfortable,
-                                        backgroundColor: Theme.colors.deepIndigo,
+                                        backgroundColor: colors.tertiary,
                                     }}
                                 >
-                                    <ExternalLink color={Theme.colors.mistGray} size={18} />
+                                    <ExternalLink color={colors.textSecondary} size={18} />
                                 </Box>
                             </Pressable>
                         )}
@@ -300,7 +309,7 @@ export default function ContentLibrary() {
                                 sx={{
                                     padding: Theme.spacing.sm,
                                     borderRadius: Theme.corners.comfortable,
-                                    backgroundColor: Theme.colors.deepIndigo,
+                                    backgroundColor: colors.tertiary,
                                 }}
                             >
                                 <Trash2 color={Theme.colors.emberRed} size={18} />
@@ -313,40 +322,41 @@ export default function ContentLibrary() {
     };
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
-            <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ padding: Theme.spacing.lg }}>
-                {/* Header */}
-                <VStack space="xs" mb="$6">
-                    <Heading color={Theme.colors.sacredWhite} size="2xl">
-                        Content Library
-                    </Heading>
-                    <Text color={Theme.colors.mistGray} size="sm">
-                        Manage your teaching resources
-                    </Text>
-                </VStack>
-
+        <ScreenWrapper>
+            <GlobalHeader
+                title={t('library.contentLibrary')}
+                subtitle={t('library.manageResources')}
+                searchProps={{
+                    value: searchQuery,
+                    onChangeText: setSearchQuery,
+                    placeholder: t('library.searchPlaceholder')
+                }}
+            />
+            <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ padding: Theme.spacing.lg, paddingBottom: 100 }}>
                 {/* Resources Grid */}
                 {isLoading ? (
                     <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}>
-                        <Text color={Theme.colors.mistGray}>Loading resources...</Text>
+                        <Text color={colors.textSecondary}>{t('common.loading')}</Text>
                     </Box>
-                ) : sortedResources.length === 0 ? (
+                ) : filteredResources.length === 0 ? (
                     <Box
                         sx={{
                             padding: Theme.spacing.xl,
                             alignItems: 'center',
-                            backgroundColor: Theme.colors.midnightBlue,
+                            backgroundColor: colors.secondary,
                             borderRadius: Theme.corners.generous,
+                            borderWidth: 1,
+                            borderColor: colors.border,
                         }}
                     >
-                        <FileText color={Theme.colors.mistGray} size={48} />
-                        <Text color={Theme.colors.mistGray} mt="$4" textAlign="center">
-                            No resources yet. Tap the + button to add your first resource.
+                        <FileText color={colors.textTertiary} size={48} />
+                        <Text color={colors.textSecondary} mt="$4" textAlign="center">
+                            {t('library.noResources')}
                         </Text>
                     </Box>
                 ) : (
                     <VStack space="md">
-                        {sortedResources.map(renderResourceCard)}
+                        {filteredResources.map(renderResourceCard)}
                     </VStack>
                 )}
             </ScrollView>
@@ -368,7 +378,7 @@ export default function ContentLibrary() {
                         width: 56,
                         height: 56,
                         borderRadius: Theme.corners.full,
-                        backgroundColor: Theme.colors.sanctuarySaffron,
+                        backgroundColor: colors.action,
                         justifyContent: 'center',
                         alignItems: 'center',
                         ...Theme.shadows.lg,
@@ -383,13 +393,15 @@ export default function ContentLibrary() {
                 <ModalBackdrop />
                 <ModalContent
                     sx={{
-                        backgroundColor: Theme.colors.midnightBlue,
+                        backgroundColor: colors.secondary,
                         maxWidth: 500,
+                        borderWidth: 1,
+                        borderColor: colors.border,
                     }}
                 >
                     <ModalHeader>
-                        <Heading color={Theme.colors.sacredWhite} size="lg">
-                            Add Resource
+                        <Heading color={colors.text} size="lg">
+                            {t('library.addResource')}
                         </Heading>
                     </ModalHeader>
 
@@ -397,8 +409,8 @@ export default function ContentLibrary() {
                         <VStack space="md">
                             {/* Resource Type Selection */}
                             <VStack space="xs">
-                                <Text color={Theme.colors.mistGray} size="sm">
-                                    Resource Type
+                                <Text color={colors.textSecondary} size="sm">
+                                    {t('library.resourceType')}
                                 </Text>
                                 <HStack space="sm">
                                     {(['note', 'link', 'pdf'] as ResourceType[]).map((type) => (
@@ -416,8 +428,8 @@ export default function ContentLibrary() {
                                                     borderRadius: Theme.corners.comfortable,
                                                     backgroundColor:
                                                         newResourceType === type
-                                                            ? Theme.colors.sanctuarySaffron
-                                                            : Theme.colors.deepIndigo,
+                                                            ? colors.action
+                                                            : colors.tertiary,
                                                     alignItems: 'center',
                                                 }}
                                             >
@@ -425,7 +437,7 @@ export default function ContentLibrary() {
                                                     color={
                                                         newResourceType === type
                                                             ? Theme.colors.white
-                                                            : Theme.colors.mistGray
+                                                            : colors.textSecondary
                                                     }
                                                     size="sm"
                                                     bold={newResourceType === type}
@@ -440,46 +452,46 @@ export default function ContentLibrary() {
 
                             {/* Title */}
                             <VStack space="xs">
-                                <Text color={Theme.colors.mistGray} size="sm">
-                                    Title *
+                                <Text color={colors.textSecondary} size="sm">
+                                    {t('library.titleLabel')}
                                 </Text>
                                 <Input
                                     variant="outline"
                                     size="md"
                                     sx={{
-                                        backgroundColor: Theme.colors.deepIndigo,
-                                        borderColor: Theme.colors.transparent,
+                                        backgroundColor: colors.tertiary,
+                                        borderColor: colors.border,
                                     }}
                                 >
                                     <InputField
-                                        placeholder="Enter title..."
+                                        placeholder={t('library.titlePlaceholder')}
                                         value={newResourceTitle}
                                         onChangeText={setNewResourceTitle}
-                                        color={Theme.colors.sacredWhite}
-                                        placeholderTextColor={Theme.colors.dimGray}
+                                        color={colors.text}
+                                        placeholderTextColor={colors.textTertiary}
                                     />
                                 </Input>
                             </VStack>
 
                             {/* Description */}
                             <VStack space="xs">
-                                <Text color={Theme.colors.mistGray} size="sm">
-                                    Description
+                                <Text color={colors.textSecondary} size="sm">
+                                    {t('library.descLabel')}
                                 </Text>
                                 <Input
                                     variant="outline"
                                     size="md"
                                     sx={{
-                                        backgroundColor: Theme.colors.deepIndigo,
-                                        borderColor: Theme.colors.transparent,
+                                        backgroundColor: colors.tertiary,
+                                        borderColor: colors.border,
                                     }}
                                 >
                                     <InputField
-                                        placeholder="Enter description..."
+                                        placeholder={t('library.descPlaceholder')}
                                         value={newResourceDescription}
                                         onChangeText={setNewResourceDescription}
-                                        color={Theme.colors.sacredWhite}
-                                        placeholderTextColor={Theme.colors.dimGray}
+                                        color={colors.text}
+                                        placeholderTextColor={colors.textTertiary}
                                     />
                                 </Input>
                             </VStack>
@@ -487,23 +499,23 @@ export default function ContentLibrary() {
                             {/* URL (for PDF and Link) */}
                             {(newResourceType === 'pdf' || newResourceType === 'link') && (
                                 <VStack space="xs">
-                                    <Text color={Theme.colors.mistGray} size="sm">
-                                        URL
+                                    <Text color={colors.textSecondary} size="sm">
+                                        {t('library.urlLabel')}
                                     </Text>
                                     <Input
                                         variant="outline"
                                         size="md"
                                         sx={{
-                                            backgroundColor: Theme.colors.deepIndigo,
-                                            borderColor: Theme.colors.transparent,
+                                            backgroundColor: colors.tertiary,
+                                            borderColor: colors.border,
                                         }}
                                     >
                                         <InputField
                                             placeholder="https://..."
                                             value={newResourceUrl}
                                             onChangeText={setNewResourceUrl}
-                                            color={Theme.colors.sacredWhite}
-                                            placeholderTextColor={Theme.colors.dimGray}
+                                            color={colors.text}
+                                            placeholderTextColor={colors.textTertiary}
                                             autoCapitalize="none"
                                             keyboardType="url"
                                         />
@@ -514,23 +526,23 @@ export default function ContentLibrary() {
                             {/* Content (for Note) */}
                             {newResourceType === 'note' && (
                                 <VStack space="xs">
-                                    <Text color={Theme.colors.mistGray} size="sm">
-                                        Content
+                                    <Text color={colors.textSecondary} size="sm">
+                                        {t('library.contentLabel')}
                                     </Text>
                                     <Textarea
                                         size="md"
                                         sx={{
-                                            backgroundColor: Theme.colors.deepIndigo,
-                                            borderColor: Theme.colors.transparent,
+                                            backgroundColor: colors.tertiary,
+                                            borderColor: colors.border,
                                             minHeight: 100,
                                         }}
                                     >
                                         <TextareaInput
-                                            placeholder="Enter note content..."
+                                            placeholder={t('library.contentPlaceholder')}
                                             value={newResourceContent}
                                             onChangeText={setNewResourceContent}
-                                            color={Theme.colors.sacredWhite}
-                                            placeholderTextColor={Theme.colors.dimGray}
+                                            color={colors.text}
+                                            placeholderTextColor={colors.textTertiary}
                                         />
                                     </Textarea>
                                 </VStack>
@@ -546,26 +558,26 @@ export default function ContentLibrary() {
                                 onPress={() => setShowAddModal(false)}
                                 sx={{
                                     flex: 1,
-                                    borderColor: Theme.colors.mistGray,
+                                    borderColor: colors.border,
                                 }}
                             >
-                                <ButtonText color={Theme.colors.mistGray}>Cancel</ButtonText>
+                                <ButtonText color={colors.textSecondary}>{t('common.cancel')}</ButtonText>
                             </Button>
                             <Button
                                 action="primary"
                                 onPress={addResource}
                                 sx={{
                                     flex: 1,
-                                    backgroundColor: Theme.colors.sanctuarySaffron,
+                                    backgroundColor: colors.action,
                                 }}
                                 isDisabled={!newResourceTitle.trim()}
                             >
-                                <ButtonText color={Theme.colors.white}>Add</ButtonText>
+                                <ButtonText color={Theme.colors.white}>{t('common.add')}</ButtonText>
                             </Button>
                         </HStack>
                     </ModalFooter>
                 </ModalContent>
             </Modal>
-        </Box>
+        </ScreenWrapper>
     );
 }

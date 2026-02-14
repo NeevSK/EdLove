@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { StyleSheet, Dimensions } from 'react-native';
 import {
     Box,
@@ -9,6 +9,7 @@ import {
     Pressable,
     Center,
 } from '@/ui';
+import { useTranslation } from 'react-i18next';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -17,9 +18,10 @@ import Animated, {
     withTiming,
     Easing,
 } from 'react-native-reanimated';
-import { ShieldCheck, Edit3 } from 'lucide-react-native';
+import { ShieldCheck, Edit3, Compass, Database } from 'lucide-react-native';
 import QRCodeGenerator from '../shared/QRCodeGenerator';
 import { Theme } from '../../constants/Theme';
+import { useThemedColors } from '../../hooks/useThemedColors';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -33,6 +35,8 @@ interface IdentityCardProps {
 }
 
 export default function IdentityCard({ profile, onEdit, onExpand }: IdentityCardProps) {
+    const { t } = useTranslation();
+    const colors = useThemedColors();
     const isFlipped = useSharedValue(0); // 0 = front, 1 = back
     const [flipState, setFlipState] = useState(false);
 
@@ -67,11 +71,89 @@ export default function IdentityCard({ profile, onEdit, onExpand }: IdentityCard
         };
     });
 
-    // Avatar Placeholder (Letter)
-    const getInitials = (name: string) => {
-        if (!name) return 'G';
-        return name.charAt(0).toUpperCase();
+    // Role-specific badge text
+    const getRoleBadge = () => {
+        if (profile?.role === 'founder') return t('profile.stats.visionAlignment');
+        if (profile?.role === 'admin' || profile?.role === 'developer') return t('profile.stats.coreActive');
+        if (profile?.role === 'student') return `LVL ${profile?.level || 3}`;
+        return '70%'; // Default
     };
+
+    const styles = useMemo(() => StyleSheet.create({
+        // ... (rest of styles omitted for brevity, keeping same)
+        cardCommon: {
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            borderRadius: Theme.corners.generous,
+            overflow: 'hidden',
+            backgroundColor: colors.secondary,
+            borderWidth: 1,
+            borderColor: colors.border,
+            backfaceVisibility: 'hidden',
+            ...Theme.shadows.md,
+        },
+        cardBack: {
+            backgroundColor: colors.tertiary,
+        },
+        glassLayer: {
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        },
+        progressRing: {
+            position: 'absolute',
+            top: -4,
+            left: -4,
+            width: 88,
+            height: 88,
+            borderRadius: 44,
+            borderWidth: 2,
+            borderColor: colors.action,
+            opacity: 0.6,
+            borderStyle: 'dashed',
+        },
+        avatarContainer: {
+            width: 80,
+            height: 80,
+            borderRadius: 40,
+            overflow: 'hidden',
+            borderWidth: 2,
+            borderColor: colors.primary,
+        },
+        avatarImage: {
+            width: '100%',
+            height: '100%',
+        },
+        avatarPlaceholder: {
+            width: '100%',
+            height: '100%',
+            backgroundColor: `${colors.action}15`,
+        },
+        completionBadge: {
+            position: 'absolute',
+            bottom: -6,
+            alignSelf: 'center',
+            backgroundColor: colors.action,
+            paddingHorizontal: 6,
+            paddingVertical: 2,
+            borderRadius: 10,
+        },
+        editButton: {
+            backgroundColor: `${colors.action}10`,
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+            borderRadius: 20,
+            alignSelf: 'flex-start',
+        },
+        watermark: {
+            position: 'absolute',
+            bottom: -20,
+            right: -20,
+            width: 140,
+            height: 140,
+            opacity: 0.1,
+        }
+    }), [colors]);
 
     return (
         <Pressable onPress={handleFlip}>
@@ -94,18 +176,18 @@ export default function IdentityCard({ profile, onEdit, onExpand }: IdentityCard
                                 ) : (
                                     <Center style={styles.avatarPlaceholder}>
                                         <Text
-                                            color={Theme.colors.sanctuarySaffron}
+                                            color={colors.action as any}
                                             size="3xl"
                                             bold
                                         >
-                                            {getInitials(profile?.full_name)}
+                                            {profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : 'G'}
                                         </Text>
                                     </Center>
                                 )}
                             </Box>
                             <Box style={styles.completionBadge}>
-                                <Text color={Theme.colors.midnightBlue} size="xs" bold>
-                                    70%
+                                <Text color={colors.primary as any} size="xs" bold>
+                                    {getRoleBadge()}
                                 </Text>
                             </Box>
                         </Box>
@@ -113,25 +195,27 @@ export default function IdentityCard({ profile, onEdit, onExpand }: IdentityCard
                         {/* Details */}
                         <VStack space="xs" flex={1}>
                             <HStack alignItems="center" space="xs">
-                                <Text color={Theme.colors.mistGray} size="xs" bold textTransform="uppercase">
-                                    {profile?.role || 'Guest'}
+                                <Text color={colors.textSecondary as any} size="xs" bold textTransform="uppercase">
+                                    {profile?.role ? t(`role.${profile.role.toLowerCase()}`) : t('profile.guestUser')}
                                 </Text>
-                                {profile?.school_name && (
-                                    <ShieldCheck size={14} color={Theme.colors.sageGreen} />
+                                {profile?.role === 'founder' && <Compass size={14} color={colors.warning} />}
+                                {(profile?.role === 'admin' || profile?.role === 'developer') && <Database size={14} color={colors.action} />}
+                                {profile?.school_name && !['founder', 'admin', 'developer'].includes(profile?.role) && (
+                                    <ShieldCheck size={14} color={colors.success} />
                                 )}
                             </HStack>
 
-                            <Text color={Theme.colors.sacredWhite} size="xl" bold numberOfLines={2}>
+                            <Text color={colors.text as any} size="xl" bold numberOfLines={2}>
                                 {profile?.full_name || 'Guest User'}
                             </Text>
 
-                            <Text color={Theme.colors.dimGray} size="sm" numberOfLines={1}>
-                                {profile?.school_name || 'No school connected'}
+                            <Text color={colors.textTertiary as any} size="sm" numberOfLines={1}>
+                                {profile?.school_name || t('profile.noSchoolConnected')}
                             </Text>
 
                             {/* Edit Button (Stops Propagation to open modal instead of flip) */}
                             <Pressable
-                                onPress={(e) => {
+                                onPress={(e: any) => {
                                     e.stopPropagation();
                                     onEdit?.();
                                 }}
@@ -148,9 +232,9 @@ export default function IdentityCard({ profile, onEdit, onExpand }: IdentityCard
                                     alignItems="center"
                                     style={styles.editButton}
                                 >
-                                    <Edit3 size={12} color={Theme.colors.sanctuarySaffron} />
-                                    <Text color={Theme.colors.sanctuarySaffron} size="xs" bold>
-                                        EDIT PROFILE
+                                    <Edit3 size={12} color={colors.action} />
+                                    <Text color={colors.action} size="xs" bold>
+                                        {(t('common.edit') || 'Edit').toUpperCase()} {t('profile.title').toUpperCase()}
                                     </Text>
                                 </HStack>
                             </Pressable>
@@ -160,7 +244,7 @@ export default function IdentityCard({ profile, onEdit, onExpand }: IdentityCard
                     {/* Expand Button (Top Right) - Only show if onExpand prop is provided */}
                     {onExpand && (
                         <Pressable
-                            onPress={(e) => {
+                            onPress={(e: any) => {
                                 e.stopPropagation();
                                 onExpand();
                             }}
@@ -172,8 +256,8 @@ export default function IdentityCard({ profile, onEdit, onExpand }: IdentityCard
                                 zIndex: 10
                             }}
                         >
-                            <Text color={Theme.colors.mistGray} size="xs" bold>
-                                EXPAND ↗
+                            <Text color={colors.textTertiary} size="xs" bold>
+                                {t('common.next') || 'EXPAND'} ↗
                             </Text>
                         </Pressable>
                     )}
@@ -196,8 +280,8 @@ export default function IdentityCard({ profile, onEdit, onExpand }: IdentityCard
                                 size={120}
                             />
                         </Box>
-                        <Text color={Theme.colors.sacredWhite} mt={Theme.spacing.md} bold>
-                            Scan to Connect
+                        <Text color={colors.text} mt={Theme.spacing.md} bold>
+                            {t('profile.scanToConnect')}
                         </Text>
                     </Center>
                 </Animated.View>
@@ -205,78 +289,3 @@ export default function IdentityCard({ profile, onEdit, onExpand }: IdentityCard
         </Pressable >
     );
 }
-
-const styles = StyleSheet.create({
-    cardCommon: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        borderRadius: Theme.corners.generous,
-        overflow: 'hidden',
-        backgroundColor: Theme.colors.midnightBlue, // Fallback
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.1)',
-        backfaceVisibility: 'hidden',
-        ...Theme.shadows.md,
-    },
-    cardBack: {
-        backgroundColor: Theme.colors.deepIndigo,
-    },
-    glassLayer: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    },
-    progressRing: {
-        position: 'absolute',
-        top: -4,
-        left: -4,
-        width: 88,
-        height: 88,
-        borderRadius: 44,
-        borderWidth: 2,
-        borderColor: Theme.colors.sanctuarySaffron,
-        opacity: 0.6,
-        borderStyle: 'dashed',
-    },
-    avatarContainer: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        overflow: 'hidden',
-        borderWidth: 2,
-        borderColor: Theme.colors.voidIndigo,
-    },
-    avatarImage: {
-        width: '100%',
-        height: '100%',
-    },
-    avatarPlaceholder: {
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(230, 126, 34, 0.15)', // Saffron tint
-    },
-    completionBadge: {
-        position: 'absolute',
-        bottom: -6,
-        alignSelf: 'center',
-        backgroundColor: Theme.colors.sanctuarySaffron,
-        paddingHorizontal: 6,
-        paddingVertical: 2,
-        borderRadius: 10,
-    },
-    editButton: {
-        backgroundColor: 'rgba(230, 126, 34, 0.1)',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 20,
-        alignSelf: 'flex-start',
-    },
-    watermark: {
-        position: 'absolute',
-        bottom: -20,
-        right: -20,
-        width: 140,
-        height: 140,
-        opacity: 0.1,
-    }
-});

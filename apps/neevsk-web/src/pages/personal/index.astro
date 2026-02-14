@@ -1,0 +1,101 @@
+---
+import NatureLayout from '../../layouts/NatureLayout.astro';
+import Card from '../../components/common/Card.astro';
+---
+
+<NatureLayout title="Personal" description="Soul, heart, and lineage">
+  <div class="personal-wrapper">
+    <section class="intro">
+      <h1>My Lineage</h1>
+      <p class="subtitle">Where legacy is love, and every chamber beats like a heart.</p>
+    </section>
+    
+    <div class="content-grid">
+      <a href="/personal/hall-of-flame" class="feature-link">
+        <Card variant="feature" class="flame-card">
+          <h2>🔥 Hall of Flame</h2>
+          <p>This is Radical Life’s innermost temple — the place where memory walks like wind through fire.</p>
+          <span class="cta">Enter the Hall &rarr;</span>
+        </Card>
+      </a>
+      
+      <Card>
+        <h3>About Me</h3>
+        <p>INFJ 4w5. Existential Cyberneticist. Building bridges between the seen and unseen.</p>
+      </Card>
+      
+      <Card>
+        <h3>Life Journey</h3>
+        <p>A non-linear path of becoming.</p>
+      </Card>
+    </div>
+  </div>
+</NatureLayout>
+
+<style lang="scss">
+  .personal-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .intro {
+    text-align: center;
+    margin-bottom: 4rem;
+    
+    h1 {
+      font-size: 3rem;
+      color: var(--color-primary);
+      margin-bottom: 1rem;
+    }
+    
+    .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.8;
+      font-family: var(--font-body);
+    }
+  }
+  
+  .content-grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+    
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .feature-link {
+      grid-column: 1 / -1;
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    .flame-card {
+      background: linear-gradient(135deg, rgba(244, 164, 96, 0.1), rgba(244, 164, 96, 0.3));
+      border: 1px solid rgba(244, 164, 96, 0.2);
+      text-align: center;
+      
+      h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #D35400;
+      }
+      
+      p {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      .cta {
+        display: inline-block;
+        margin-top: 1rem;
+        font-weight: 600;
+        color: #D35400;
+      }
+    }
+  }
+</style>

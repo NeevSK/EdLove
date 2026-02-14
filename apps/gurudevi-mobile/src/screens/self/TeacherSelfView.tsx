@@ -43,22 +43,24 @@ import DailyContentCard from '../../components/self/DailyContentCard';
 import ThuthimalBadge from '../../components/profile/ThuthimalBadge';
 import WelcomeModal from '../../components/self/WelcomeModal';
 import { useStore } from '../../store/useStore';
+import { useThemedColors } from '../../hooks/useThemedColors';
+import ScreenWrapper from '../../components/shared/ScreenWrapper';
 
 // Progressive Architecture: Core features always visible, others in "More Tools"
 const CORE_FEATURES = [
-    { id: 'mood', label: 'Mood Check-in', icon: Flower, category: 'core' },
-    { id: 'fire', label: 'Fire Journal', icon: Flame, category: 'core' },
-    { id: 'rhythm', label: 'Daily Rhythm', icon: Repeat, category: 'core' },
+    { id: 'mood', icon: Flower, category: 'core' },
+    { id: 'fire', icon: Flame, category: 'core' },
+    { id: 'rhythm', icon: Repeat, category: 'core' },
 ];
 
 const MORE_TOOLS_FEATURES = [
-    { id: 'joyJar', label: 'Joy Jar', icon: Sparkles, category: 'discover', eroi: 10 },
-    { id: 'gratitude', label: 'Daily Glimmers', icon: Heart, category: 'discover', eroi: 8 },
-    { id: 'wisdom', label: 'Wisdom Seeds', icon: Lightbulb, category: 'discover', eroi: 7 },
-    { id: 'tomorrowPrep', label: "Tomorrow's Prep", icon: Calendar, category: 'discover', eroi: 9 },
-    { id: 'energyForecast', label: 'Energy Check', icon: Battery, category: 'contextual', eroi: 6 },
-    { id: 'windDown', label: 'Wind Down', icon: Moon, category: 'contextual', eroi: 8 },
-    { id: 'venting', label: 'Venting Space', icon: MessageCircle, category: 'discover', eroi: 10 },
+    { id: 'joyJar', icon: Sparkles, category: 'discover', eroi: 10 },
+    { id: 'gratitude', icon: Heart, category: 'discover', eroi: 8 },
+    { id: 'wisdom', icon: Lightbulb, category: 'discover', eroi: 7 },
+    { id: 'tomorrowPrep', icon: Calendar, category: 'discover', eroi: 9 },
+    { id: 'energyForecast', icon: Battery, category: 'contextual', eroi: 6 },
+    { id: 'windDown', icon: Moon, category: 'contextual', eroi: 8 },
+    { id: 'venting', icon: MessageCircle, category: 'discover', eroi: 10 },
 ];
 
 export default function TeacherSelfView() {
@@ -69,6 +71,7 @@ export default function TeacherSelfView() {
     const [userProfile, setUserProfile] = useState<any>(null);
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
+    const colors = useThemedColors();
 
     // Get current user and profile on mount
     React.useEffect(() => {
@@ -116,14 +119,14 @@ export default function TeacherSelfView() {
                 return (
                     <VStack space="lg" sx={{ flex: 1 }}>
                         <VStack space="xs">
-                            <Heading color={Theme.colors.sacredWhite} size="lg">{t('self.venting')}</Heading>
-                            <Text color={Theme.colors.mistGray} size="sm">{t('self.ventingDesc')}</Text>
+                            <Heading color={colors.text} size="lg">{t('self.venting')}</Heading>
+                            <Text color={colors.textSecondary} size="sm">{t('self.ventingDesc')}</Text>
                         </VStack>
 
                         <Box
                             sx={{
                                 flex: 1,
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: colors.secondary,
                                 borderRadius: Theme.corners.comfortable,
                                 padding: Theme.spacing.md,
                                 minHeight: 150
@@ -133,8 +136,8 @@ export default function TeacherSelfView() {
                                 <InputField
                                     placeholder={t('self.speakTruth')}
                                     multiline
-                                    color={Theme.colors.sacredWhite}
-                                    placeholderTextColor={Theme.colors.dimGray}
+                                    color={colors.text}
+                                    placeholderTextColor={colors.textTertiary}
                                     sx={{ textAlignVertical: 'top' }}
                                 />
                             </Input>
@@ -150,10 +153,10 @@ export default function TeacherSelfView() {
                                     borderRadius: Theme.corners.full,
                                     width: 44,
                                     height: 44,
-                                    backgroundColor: Theme.colors.deepIndigo
+                                    backgroundColor: colors.tertiary
                                 }}
                             >
-                                <Mic color={Theme.colors.sanctuarySaffron} size={20} />
+                                <Mic color={colors.action} size={20} />
                             </Button>
                             <Button
                                 size="md"
@@ -161,7 +164,7 @@ export default function TeacherSelfView() {
                                 onPress={hapticLight}
                                 sx={{
                                     borderRadius: Theme.corners.full,
-                                    backgroundColor: Theme.colors.sanctuarySaffron,
+                                    backgroundColor: colors.action,
                                     paddingHorizontal: Theme.spacing.md
                                 }}
                             >
@@ -179,9 +182,13 @@ export default function TeacherSelfView() {
     const allFeatures = showMoreTools ? [...CORE_FEATURES, ...MORE_TOOLS_FEATURES] : CORE_FEATURES;
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+        <ScreenWrapper>
             <GlobalHeader showGreeting={true} />
-            <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}>
+            <ScrollView
+                sx={{ flex: 1 }}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}
+            >
                 {/* Thuthimal Badge (Compact) */}
                 {userProfile?.is_thuthimal && (
                     <Box px="$6" mb="$3" alignItems="flex-end">
@@ -194,7 +201,7 @@ export default function TeacherSelfView() {
                 )}
 
                 {/* Daily Content Section */}
-                <Box px="$6" mb="$4">
+                <Box mb="$4">
                     <DailyContentCard type="motivation" />
                     <DailyContentCard type="did_you_know" />
                 </Box>
@@ -204,7 +211,7 @@ export default function TeacherSelfView() {
                     <ScrollView
                         horizontal
                         showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{ paddingHorizontal: 24, gap: 12 }}
+                        contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, gap: 12 }}
                     >
                         {allFeatures.map((feature) => (
                             <Pressable
@@ -224,21 +231,21 @@ export default function TeacherSelfView() {
                                         borderRadius: Theme.corners.generous,
                                         backgroundColor: activeFeature === feature.id
                                             ? Theme.colors.sanctuarySaffron
-                                            : Theme.colors.deepIndigo,
+                                            : colors.secondary,
                                         borderWidth: 1,
                                         borderColor: activeFeature === feature.id
                                             ? Theme.colors.sanctuarySaffron
-                                            : Theme.colors.transparent,
+                                            : colors.border,
                                     }}
                                 >
                                     <feature.icon
-                                        color={activeFeature === feature.id ? Theme.colors.white : Theme.colors.dimGray}
+                                        color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary}
                                         size={24}
                                     />
                                     <Text
                                         size="xs"
                                         bold={activeFeature === feature.id}
-                                        color={activeFeature === feature.id ? Theme.colors.white : Theme.colors.mistGray}
+                                        color={activeFeature === feature.id ? Theme.colors.white : colors.text}
                                         textAlign="center"
                                     >
                                         {t(`self.${feature.id}`)}
@@ -264,21 +271,21 @@ export default function TeacherSelfView() {
                                     borderRadius: Theme.corners.generous,
                                     backgroundColor: showMoreTools
                                         ? Theme.colors.sanctuarySaffron
-                                        : Theme.colors.deepIndigo,
+                                        : colors.secondary,
                                     borderWidth: 1,
                                     borderColor: showMoreTools
                                         ? Theme.colors.sanctuarySaffron
-                                        : Theme.colors.dimGray,
+                                        : colors.border,
                                     borderStyle: 'dashed'
                                 }}
                             >
-                                <Text fontSize="$2xl">
+                                <Text fontSize="$2xl" color={showMoreTools ? Theme.colors.white : colors.text}>
                                     {showMoreTools ? '−' : '+'}
                                 </Text>
                                 <Text
                                     size="xs"
                                     bold={showMoreTools}
-                                    color={showMoreTools ? Theme.colors.white : Theme.colors.mistGray}
+                                    color={showMoreTools ? Theme.colors.white : colors.textSecondary}
                                     textAlign="center"
                                 >
                                     {showMoreTools ? t('self.lessTools') : t('self.moreTools')}
@@ -289,11 +296,11 @@ export default function TeacherSelfView() {
                 </Box>
 
                 {/* Dynamic Content Workbench */}
-                <Box px="$6" mt="$6">
+                <Box mt="$6">
                     <Box
                         p={Theme.spacing.xl}
                         sx={{
-                            backgroundColor: Theme.colors.midnightBlue,
+                            backgroundColor: colors.secondary,
                             borderRadius: Theme.corners.generous,
                             minHeight: 300
                         }}
@@ -309,6 +316,6 @@ export default function TeacherSelfView() {
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
             />
-        </Box>
+        </ScreenWrapper>
     );
 }

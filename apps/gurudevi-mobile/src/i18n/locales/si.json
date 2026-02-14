@@ -25,9 +25,11 @@
         "teacher": "ගුරුවරයා",
         "student": "ශිෂ්‍යයා",
         "principal": "විදුහල්පතිවරයා",
+        "section_head": "අංශ ප්‍රධානියා",
+        "grade_head": "ශ්‍රේණි ප්‍රධානියා",
         "developer": "සංවර්ධක",
         "admin": "පරිපාලක",
-        "founder": "නිර්මාතෘ"
+        "founder": "නිර්මාතෘ භාරකරු"
     },
     "school": {
         "personal_workspace": "පෞද්ගලික වැඩබිම"
@@ -61,15 +63,24 @@
     },
     "tabs": {
         "self": "ස්වයං",
+        "myClassrooms": "මගේ පන්ති කාමර",
+        "schoolOverview": "පාසල් දළ විශ්ලේෂණය",
+        "schoolManagement": "පාසල් කළමනාකරණය",
+        "learningJourney": "ඉගෙනුම් ගමන",
+        "mySanctuary": "මගේ අභයභූමිය",
         "classroom": "පන්තිය",
+        "school": "පාසල",
+        "section": "අංශය",
+        "grade": "ශ්‍රේණිය",
         "community": "ප්‍රජාව",
         "library": "පුස්තකාලය",
-        "profile": "ප්‍රොෆයිල්"
+        "profile": "ගිණුම"
     },
     "self": {
-        "goodMorning": "සුභ උදෑසනක්",
-        "goodAfternoon": "සුභ සන්ධ්‍යාවක්",
-        "goodEvening": "සුභ සවසක්",
+        "goodMorning": "සුභ උදෑසනක්!",
+        "goodAfternoon": "සුභ සන්ධ්‍යාවක්!",
+        "goodEvening": "සුභ සවසක්!",
+        "goodNight": "සුභ රාත්‍රියක්!",
         "venting": "හිත මුදා හැරීම",
         "ventingDesc": "හිතේ බර ඉවත් කර ගන්න",
         "rhythm": "දෛනික රිද්මය",
@@ -191,6 +202,8 @@
         "dashboardIntro": "ඔබේ සන්සුන් වැඩබිමට සාදරයෙන් පිළිගනිමු. ඔබේ පන්ති කාර්යක්ෂමව කළමනාකරණය කරන්න.",
         "createClass": "පන්තියක් සාදන්න",
         "attendance": "පැමිණීම",
+        "peacefulSpace": "මෙය ඔබේ සාමකාමී වැඩබිමයි.",
+        "startWorking": "වැඩ අරඹමු.",
         "library": "පුස්තකාලය",
         "statActiveClasses": "සක්‍රීය පන්ති",
         "statTotalStudents": "මුළු ශිෂ්‍ය සංඛ්‍යාව",
@@ -223,6 +236,8 @@
     "profile": {
         "title": "ප්‍රොෆයිල්",
         "fullName": "සම්පූර්ණ නම",
+        "phone": "දුරකථන අංකය",
+        "bio": "හැඳින්වීම",
         "role": "භූමිකාව",
         "school": "පාසල",
         "notSetYet": "තවම සකසා නැත",
@@ -282,6 +297,30 @@
         "gpaOnly": "GPA පමණයි",
         "both": "දෙකම",
         "showRanks": "ස්ථාන පෙන්වන්න"
+    },
+    "onboarding": {
+        "nameTitle": "සාදරයෙන් පිළිගනිමු! අපි ඔබට කුමක් කිව යුතුද?",
+        "nameSubtitle": "ඔබේ නමෙන් පටන් ගනිමු",
+        "namePlaceholder": "ඔබේ සම්පූර්ණ නම ඇතුළත් කරන්න",
+        "nameHint": "ගුරුදෙවි ප්‍රජාව තුළ ඔබව හඳුන්වනු ලබන්නේ මෙලෙසිනි",
+        "roleTitle": "ඔබේ භූමිකාව කුමක්ද?",
+        "roleSubtitle": "මෙය ඔබගේ අත්දැකීම් පුද්ගලීකරණය කිරීමට අපට උපකාරී වේ",
+        "selectRole": "ඔබේ භූමිකාව තෝරන්න",
+        "roleHint": "කණගාටු වෙන්න එපා, ඔබට මෙය පසුව සැකසුම් තුළ යාවත්කාලීන කළ හැකිය",
+        "welcomeTitle": "ගුරුදෙවි වෙත සාදරයෙන් පිළිගනිමු",
+        "welcomeSubtitle": "ආදරයෙන් උපන්, ආදරයෙන් ගොඩනැඟුණු අධ්‍යාපනය",
+        "sectionsTitle": "ස්ථාවර අංශ පහක්",
+        "sectionsSubtitle": "ගුරුදෙවි හරහා ඔබේ මාලිමාව",
+        "ecologyTitle": "අධ්‍යාපනික පරිසර විද්‍යාව",
+        "ecologySubtitle": "එක් යථාර්ථයක්, බහුවිධ කාච",
+        "privacyTitle": "ඔබේ පෞද්ගලිකත්වය සුරක්ෂිතයි",
+        "privacySubtitle": "මේවා ඔබ වෙනුවෙන් අපගේ කැපවීම් වේ",
+        "navigationTitle": "ඔබ සියල්ල සූදානම්!",
+        "navigationSubtitle": "ඔබේ ගමන ආරම්භ කිරීමට සූදානම්",
+        "next": "ඊළඟ",
+        "back": "ආපසු",
+        "skip": "මඟ හරින්න",
+        "complete": "සම්පූර්ණයි"
     },
     "settings": {
         "appearance": {

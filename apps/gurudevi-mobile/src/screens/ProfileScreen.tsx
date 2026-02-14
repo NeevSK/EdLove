@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, RefreshControl, Alert } from 'react-native';
+import { ScrollView, RefreshControl, Alert, Linking } from 'react-native';
 import {
     Box,
     VStack,
@@ -16,7 +16,7 @@ import { supabase } from '../lib/supabase';
 import { Theme } from '../constants/Theme';
 import { hapticSuccess, hapticLight, hapticError } from '../utils/haptics';
 
-import { LogOut, Settings } from 'lucide-react-native';
+import { LogOut, Settings, Trophy } from 'lucide-react-native';
 // New Components
 import IdentityCard from '../components/profile/IdentityCard';
 import QRCodeGenerator from '../components/shared/QRCodeGenerator';
@@ -28,7 +28,10 @@ import SupportSection from '../components/profile/SupportSection';
 import ThuthimalBadge from '../components/profile/ThuthimalBadge';
 import AppSettingsScreen from './AppSettingsScreen';
 import { Modal, TouchableOpacity } from 'react-native';
-import { X, Phone, Globe, MapPin, QrCode } from 'lucide-react-native';
+import { X, Phone, Globe, MapPin, QrCode, ChevronRight } from 'lucide-react-native';
+import ScreenWrapper from '../components/shared/ScreenWrapper';
+import { useThemedColors } from '../hooks/useThemedColors';
+import { useEnvironment } from '../context';
 
 export default function ProfileScreen() {
     const { t, i18n } = useTranslation();
@@ -38,6 +41,8 @@ export default function ProfileScreen() {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [isSettingsVisible, setSettingsVisible] = useState(false);
+    const { isDark } = useEnvironment();
+    const colors = useThemedColors();
 
     const currentLanguage = i18n.language;
 
@@ -164,16 +169,16 @@ export default function ProfileScreen() {
 
     if (loading) {
         return (
-            <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+            <ScreenWrapper>
                 <Center sx={{ flex: 1 }}>
                     <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
                 </Center>
-            </Box>
+            </ScreenWrapper>
         );
     }
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+        <ScreenWrapper>
             <GlobalHeader
                 title={t('profile.title') || 'Identity'}
                 subtitle="Sanctuary Profile"
@@ -190,16 +195,19 @@ export default function ProfileScreen() {
                         style={{
                             padding: 8,
                             borderRadius: Theme.corners.comfortable,
-                            backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                            backgroundColor: colors.tertiary,
+                            borderColor: colors.border,
+                            borderWidth: 1,
                         }}
                     >
-                        <Settings size={24} color={Theme.colors.sanctuarySaffron} />
+                        <Settings size={24} color={colors.action} />
                     </TouchableOpacity>
                 }
             />
             <ScrollView
+                showsVerticalScrollIndicator={false}
                 contentContainerStyle={{
-                    padding: Theme.spacing.lg,
+                    paddingVertical: Theme.spacing.md,
                     paddingBottom: 100, // Extra padding for scrolling
                 }}
                 refreshControl={
@@ -222,7 +230,7 @@ export default function ProfileScreen() {
 
                     {/* Thuthimal Badge (if gifted Pro subscription) */}
                     {profile?.is_thuthimal && (
-                        <Box px={Theme.spacing.md}>
+                        <Box>
                             <ThuthimalBadge
                                 gifterName={profile.thuthimal_gifter}
                                 giftedAt={profile.thuthimal_gifted_at}
@@ -237,15 +245,68 @@ export default function ProfileScreen() {
                         stats={{
                             classesTaught: 12, // Mock data for now
                             studentsCount: 145,
-                            guruPoints: 850
+                            guruPoints: 850,
+                            attendanceStreak: 5,
+                            assignmentsCompleted: 24
                         }}
                     />
 
-                    {/* App Controls (Language, Settings) */}
-                    <ControlScroll
-                        currentLanguage={currentLanguage}
-                        onLanguageChange={changeLanguage}
-                    />
+                    {/* Student-specific Growth & Insights */}
+                    {profile?.role === 'student' && (
+                        <Box sx={{ backgroundColor: 'rgba(251, 191, 36, 0.1)', padding: Theme.spacing.lg, borderRadius: Theme.corners.generous, borderWidth: 1, borderColor: Theme.colors.sanctuarySaffron }}>
+                            <HStack space="sm" alignItems="center" mb="$2">
+                                <Trophy size={18} color={Theme.colors.sanctuarySaffron} />
+                                <Text color={colors.text} bold>Growth & Insights</Text>
+                            </HStack>
+                            <Text color={colors.textSecondary} size="sm">
+                                You've gained 3 new insights this week! Your learning ecology is thriving.
+                            </Text>
+                            <Button mt="$3" size="sm" variant="outline" sx={{ borderColor: Theme.colors.sanctuarySaffron }}>
+                                <ButtonText color={Theme.colors.sanctuarySaffron}>View Progress</ButtonText>
+                            </Button>
+                        </Box>
+                    )}
+
+                    {/* App Settings Card (New Entry Point) */}
+                    <TouchableOpacity
+                        onPress={() => {
+                            hapticLight();
+                            setSettingsVisible(true);
+                        }}
+                        style={{
+                            backgroundColor: colors.secondary,
+                            borderRadius: Theme.corners.generous,
+                            padding: Theme.spacing.lg,
+                            borderWidth: 1,
+                            borderColor: colors.border,
+                        }}
+                    >
+                        <HStack justifyContent="space-between" alignItems="center">
+                            <HStack space="md" alignItems="center">
+                                <Box
+                                    style={{
+                                        width: 44,
+                                        height: 44,
+                                        borderRadius: 14,
+                                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
+                                >
+                                    <Settings size={22} color={colors.action} />
+                                </Box>
+                                <VStack>
+                                    <Text color={colors.text} bold>
+                                        {t('settings.title', 'App Settings')}
+                                    </Text>
+                                    <Text color={colors.textSecondary} size="xs">
+                                        {t('settings.hint', 'Theme, Language & Quality')}
+                                    </Text>
+                                </VStack>
+                            </HStack>
+                            <ChevronRight size={20} color={colors.textSecondary} />
+                        </HStack>
+                    </TouchableOpacity>
 
                     <SupportSection />
 
@@ -270,15 +331,28 @@ export default function ProfileScreen() {
                         </Button>
 
                         {/* Delete Account Button */}
-                        <Button
-                            size="lg"
-                            variant="link"
-                            onPress={handleDeleteAccount}
-                        >
-                            <ButtonText color={Theme.colors.dimGray} size="sm">
-                                Delete Account
-                            </ButtonText>
-                        </Button>
+                        <Box sx={{
+                            mt: Theme.spacing.md,
+                            padding: Theme.spacing.md,
+                            borderRadius: Theme.corners.comfortable,
+                            backgroundColor: isDark ? '#1A0505' : '#FFF5F5',
+                            borderColor: isDark ? '#C0392B' : '#FEB2B2',
+                            borderWidth: 1,
+                            alignItems: 'center'
+                        }}>
+                            <Button
+                                size="sm"
+                                variant="link"
+                                onPress={handleDeleteAccount}
+                            >
+                                <ButtonText color={Theme.colors.emberRed} size="sm" bold>
+                                    Delete Account Permanentely
+                                </ButtonText>
+                            </Button>
+                            <Text color={colors.textTertiary} size="xs" textAlign="center" mt="$1">
+                                This action is permanent and cannot be undone.
+                            </Text>
+                        </Box>
                     </VStack>
                 </VStack>
             </ScrollView>
@@ -298,7 +372,7 @@ export default function ProfileScreen() {
                 onRequestClose={() => setIsFullScreen(false)}
                 presentationStyle="pageSheet"
             >
-                <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+                <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
                     {/* Header */}
                     <VStack p={Theme.spacing.lg} pt={Theme.spacing.xl} space="md">
                         <HStack justifyContent="space-between" alignItems="center">
@@ -311,7 +385,10 @@ export default function ProfileScreen() {
                         </HStack>
                     </VStack>
 
-                    <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg, paddingBottom: 50 }}>
+                    <ScrollView
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{ padding: Theme.spacing.lg, paddingBottom: 50 }}
+                    >
                         <VStack space="2xl">
                             {/* Large Identity Card Repetition or Just Info */}
                             <Center>
@@ -323,30 +400,30 @@ export default function ProfileScreen() {
                             </Center>
 
                             {/* Detailed Info Section */}
-                            <Box sx={{ backgroundColor: Theme.colors.deepIndigo, padding: Theme.spacing.lg, borderRadius: Theme.corners.comfortable }}>
-                                <Heading color={Theme.colors.sacredWhite} size="sm" mb="$4">
+                            <Box sx={{ backgroundColor: colors.secondary, padding: Theme.spacing.lg, borderRadius: Theme.corners.comfortable, borderColor: colors.border, borderWidth: 1 }}>
+                                <Heading color={colors.text} size="sm" mb="$4">
                                     Contact & School Info
                                 </Heading>
                                 <VStack space="md">
                                     <HStack space="md" alignItems="center">
-                                        <MapPin size={18} color={Theme.colors.mistGray} />
+                                        <MapPin size={18} color={colors.textSecondary} />
                                         <VStack>
-                                            <Text color={Theme.colors.dimGray} size="xs">School</Text>
-                                            <Text color={Theme.colors.sacredWhite}>{profile?.school_name || 'Not assigned'}</Text>
+                                            <Text color={colors.textTertiary} size="xs">School</Text>
+                                            <Text color={colors.text}>{profile?.school_name || 'Not assigned'}</Text>
                                         </VStack>
                                     </HStack>
                                     <HStack space="md" alignItems="center">
-                                        <Globe size={18} color={Theme.colors.mistGray} />
+                                        <Globe size={18} color={colors.textSecondary} />
                                         <VStack>
-                                            <Text color={Theme.colors.dimGray} size="xs">Email</Text>
-                                            <Text color={Theme.colors.sacredWhite}>{profile?.email}</Text>
+                                            <Text color={colors.textTertiary} size="xs">Email</Text>
+                                            <Text color={colors.text}>{profile?.email}</Text>
                                         </VStack>
                                     </HStack>
                                     <HStack space="md" alignItems="center">
-                                        <Phone size={18} color={Theme.colors.mistGray} />
+                                        <Phone size={18} color={colors.textSecondary} />
                                         <VStack>
-                                            <Text color={Theme.colors.dimGray} size="xs">Phone</Text>
-                                            <Text color={Theme.colors.sacredWhite}>{profile?.phone || '+94 7X XXX XXXX'}</Text>
+                                            <Text color={colors.textTertiary} size="xs">Phone</Text>
+                                            <Text color={colors.text}>{profile?.phone || '+94 7X XXX XXXX'}</Text>
                                         </VStack>
                                     </HStack>
                                 </VStack>
@@ -384,16 +461,16 @@ export default function ProfileScreen() {
                     {/* Header with Close Button */}
                     <Box
                         style={{
-                            backgroundColor: Theme.colors.creamSilence,
+                            backgroundColor: colors.primary,
                             paddingTop: 50,
                             paddingBottom: Theme.spacing.md,
                             paddingHorizontal: Theme.spacing.md,
                             borderBottomWidth: 1,
-                            borderBottomColor: Theme.colors.sandStone,
+                            borderBottomColor: colors.border,
                         }}
                     >
                         <HStack justifyContent="space-between" alignItems="center">
-                            <Heading size="lg" color={Theme.colors.charcoalTruth}>
+                            <Heading size="lg" color={colors.text}>
                                 {t('settings.title', 'App Settings')}
                             </Heading>
                             <TouchableOpacity
@@ -407,16 +484,18 @@ export default function ProfileScreen() {
                                 style={{
                                     padding: 8,
                                     borderRadius: Theme.corners.full,
-                                    backgroundColor: Theme.colors.sandStone,
+                                    backgroundColor: colors.tertiary,
+                                    borderColor: colors.border,
+                                    borderWidth: 1,
                                 }}
                             >
-                                <X size={24} color={Theme.colors.charcoalTruth} />
+                                <X size={24} color={colors.text} />
                             </TouchableOpacity>
                         </HStack>
                     </Box>
                     <AppSettingsScreen navigation={undefined} />
                 </Box>
             </Modal>
-        </Box>
+        </ScreenWrapper>
     );
 }

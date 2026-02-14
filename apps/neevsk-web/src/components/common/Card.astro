@@ -1,0 +1,47 @@
+---
+export interface Props {
+  variant?: 'default' | 'feature' | 'minimal';
+  class?: string;
+}
+
+const { variant = 'default', class: className } = Astro.props;
+---
+
+<article class:list={['card', `card-${variant}`, className]}>
+  <slot />
+</article>
+
+<style>
+  .card {
+    background: var(--color-background);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-speed) var(--ease);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .card-feature {
+    padding: 32px;
+    background: linear-gradient(
+      135deg,
+      var(--color-background) 0%,
+      rgba(255, 255, 255, 0.9) 100%
+    );
+    border-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  .card-minimal {
+    border: none;
+    box-shadow: none;
+    padding: 16px;
+    background: transparent;
+  }
+</style>

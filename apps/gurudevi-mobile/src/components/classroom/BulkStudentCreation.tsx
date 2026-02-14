@@ -23,6 +23,7 @@ import {
 import { X, Plus, Trash2, Save } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';
+import { useThemedColors } from '../../hooks/useThemedColors';
 
 export interface BulkStudent {
     name: string;
@@ -41,15 +42,16 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
     const [currentIndex, setCurrentIndex] = useState(0);
     const [step, setStep] = useState<'count' | 'entry' | 'review'>('count');
     const toast = useToast();
+    const colors = useThemedColors();
 
     // Initialize student entries
     const handleSetCount = () => {
         const count = parseInt(totalCount);
-        
+
         if (isNaN(count) || count < 1 || count > 100) {
             toast.show({
                 placement: 'bottom',
-                render: ({ id }) => (
+                render: ({ id }: { id: string }) => (
                     <Toast nativeID={id} action="error" variant="solid">
                         <ToastTitle>Please enter a number between 1 and 100</ToastTitle>
                     </Toast>
@@ -59,14 +61,14 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
         }
 
         hapticLight();
-        
+
         // Initialize array of empty students
         const initialStudents: BulkStudent[] = Array.from({ length: count }, (_, i) => ({
             name: '',
             index_number: '',
             notes: '',
         }));
-        
+
         setStudents(initialStudents);
         setCurrentIndex(0);
         setStep('entry');
@@ -75,11 +77,11 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
     // Quick add: Save current and move to next
     const handleQuickAdd = () => {
         const current = students[currentIndex];
-        
+
         if (!current.name.trim() || !current.index_number.trim()) {
             toast.show({
                 placement: 'bottom',
-                render: ({ id }) => (
+                render: ({ id }: { id: string }) => (
                     <Toast nativeID={id} action="error" variant="solid">
                         <ToastTitle>Name and Index are required</ToastTitle>
                     </Toast>
@@ -89,7 +91,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
         }
 
         hapticLight();
-        
+
         if (currentIndex < students.length - 1) {
             setCurrentIndex(currentIndex + 1);
         } else {
@@ -129,7 +131,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
         hapticLight();
         const updated = students.filter((_, i) => i !== index);
         setStudents(updated);
-        
+
         if (updated.length === 0) {
             setStep('count');
             setTotalCount('');
@@ -150,11 +152,11 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
     const handleConfirm = () => {
         // Filter out empty entries
         const validStudents = students.filter(s => s.name.trim() && s.index_number.trim());
-        
+
         if (validStudents.length === 0) {
             toast.show({
                 placement: 'bottom',
-                render: ({ id }) => (
+                render: ({ id }: { id: string }) => (
                     <Toast nativeID={id} action="error" variant="solid">
                         <ToastTitle>No valid students to add</ToastTitle>
                     </Toast>
@@ -171,22 +173,22 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
     const validStudentsCount = students.filter(s => s.name.trim() && s.index_number.trim()).length;
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+        <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
             {/* Header */}
-            <HStack 
-                px="$6" 
-                pt="$12" 
-                pb="$4" 
-                justifyContent="space-between" 
+            <HStack
+                px="$6"
+                pt="$12"
+                pb="$4"
+                justifyContent="space-between"
                 alignItems="center"
                 borderBottomWidth={1}
-                borderBottomColor={Theme.colors.mistGray}
+                borderBottomColor={colors.border}
             >
                 <Heading color={Theme.colors.sanctuarySaffron} size="xl">
                     Bulk Add Students
                 </Heading>
                 <Pressable onPress={onCancel}>
-                    <X size={24} color={Theme.colors.mistGray} />
+                    <X size={24} color={colors.textSecondary} />
                 </Pressable>
             </HStack>
 
@@ -194,7 +196,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                 {/* Step 1: Enter total count */}
                 {step === 'count' && (
                     <VStack space="lg">
-                        <Text color={Theme.colors.pearlGray} size="md" textAlign="center">
+                        <Text color={colors.text} size="md" textAlign="center">
                             How many students do you want to add?
                         </Text>
 
@@ -202,9 +204,9 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                             variant="outline"
                             size="xl"
                             sx={{
-                                borderColor: Theme.colors.mistGray,
+                                borderColor: colors.border,
                                 borderRadius: Theme.corners.comfortable,
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: colors.secondary,
                             }}
                         >
                             <InputField
@@ -212,8 +214,8 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                 value={totalCount}
                                 onChangeText={setTotalCount}
                                 keyboardType="number-pad"
-                                color={Theme.colors.sacredWhite}
-                                placeholderTextColor={Theme.colors.dimGray}
+                                color={colors.text}
+                                placeholderTextColor={colors.textTertiary}
                                 fontSize={24}
                                 textAlign="center"
                             />
@@ -230,7 +232,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                             <ButtonText>Start Entry</ButtonText>
                         </Button>
 
-                        <Text color={Theme.colors.mistGray} size="sm" textAlign="center">
+                        <Text color={colors.textSecondary} size="sm" textAlign="center">
                             Maximum 100 students at once
                         </Text>
                     </VStack>
@@ -241,7 +243,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                     <VStack space="lg">
                         {/* Progress */}
                         <HStack justifyContent="space-between" alignItems="center">
-                            <Text color={Theme.colors.mistGray} size="sm">
+                            <Text color={colors.textSecondary} size="sm">
                                 Student {currentIndex + 1} of {students.length}
                             </Text>
                             <Text color={Theme.colors.sanctuarySaffron} size="sm" fontWeight="$semibold">
@@ -253,7 +255,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                         <Box
                             sx={{
                                 height: 4,
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: colors.secondary,
                                 borderRadius: 2,
                                 overflow: 'hidden',
                             }}
@@ -269,7 +271,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
 
                         {/* Name Input */}
                         <VStack space="xs">
-                            <Text color={Theme.colors.sacredWhite} size="md" fontWeight="$semibold">
+                            <Text color={colors.text} size="md" fontWeight="$semibold">
                                 Student Name *
                             </Text>
                             <Input
@@ -284,16 +286,16 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                 <InputField
                                     placeholder="Enter full name"
                                     value={currentStudent.name}
-                                    onChangeText={(value) => updateStudent('name', value)}
-                                    color={Theme.colors.sacredWhite}
-                                    placeholderTextColor={Theme.colors.dimGray}
+                                    onChangeText={(value: string) => updateStudent('name', value)}
+                                    color={colors.text}
+                                    placeholderTextColor={colors.textTertiary}
                                 />
                             </Input>
                         </VStack>
 
                         {/* Index Number Input */}
                         <VStack space="xs">
-                            <Text color={Theme.colors.sacredWhite} size="md" fontWeight="$semibold">
+                            <Text color={colors.text} size="md" fontWeight="$semibold">
                                 Index Number *
                             </Text>
                             <Input
@@ -308,33 +310,33 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                 <InputField
                                     placeholder="Enter index number"
                                     value={currentStudent.index_number}
-                                    onChangeText={(value) => updateStudent('index_number', value)}
-                                    color={Theme.colors.sacredWhite}
-                                    placeholderTextColor={Theme.colors.dimGray}
+                                    onChangeText={(value: string) => updateStudent('index_number', value)}
+                                    color={colors.text}
+                                    placeholderTextColor={colors.textTertiary}
                                 />
                             </Input>
                         </VStack>
 
                         {/* Notes Input (Optional) */}
                         <VStack space="xs">
-                            <Text color={Theme.colors.sacredWhite} size="md">
+                            <Text color={colors.text} size="md">
                                 Notes (Optional)
                             </Text>
                             <Textarea
                                 size="md"
                                 sx={{
-                                    borderColor: Theme.colors.mistGray,
+                                    borderColor: colors.border,
                                     borderRadius: Theme.corners.comfortable,
-                                    backgroundColor: Theme.colors.deepIndigo,
+                                    backgroundColor: colors.secondary,
                                     minHeight: 80,
                                 }}
                             >
                                 <TextareaInput
                                     placeholder="Add any notes about this student..."
                                     value={currentStudent.notes}
-                                    onChangeText={(value) => updateStudent('notes', value)}
-                                    color={Theme.colors.sacredWhite}
-                                    placeholderTextColor={Theme.colors.dimGray}
+                                    onChangeText={(value: string) => updateStudent('notes', value)}
+                                    color={colors.text}
+                                    placeholderTextColor={colors.textTertiary}
                                 />
                             </Textarea>
                         </VStack>
@@ -397,7 +399,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                 {/* Step 3: Review all students */}
                 {step === 'review' && (
                     <VStack space="lg">
-                        <Text color={Theme.colors.pearlGray} size="md" textAlign="center">
+                        <Text color={colors.text} size="md" textAlign="center">
                             Review all students before adding to classroom
                         </Text>
 
@@ -409,13 +411,13 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                         <VStack space="sm">
                             {students.map((student, index) => {
                                 const isValid = student.name.trim() && student.index_number.trim();
-                                
+
                                 return (
                                     <Box
                                         key={index}
                                         p="$4"
                                         sx={{
-                                            backgroundColor: Theme.colors.deepIndigo,
+                                            backgroundColor: colors.secondary,
                                             borderRadius: Theme.corners.comfortable,
                                             borderLeftWidth: 4,
                                             borderLeftColor: isValid ? Theme.colors.sageGreen : Theme.colors.emberRed,
@@ -425,25 +427,25 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                         <HStack justifyContent="space-between" alignItems="flex-start">
                                             <VStack space="xs" flex={1}>
                                                 <HStack space="xs" alignItems="center">
-                                                    <Text color={Theme.colors.mistGray} size="xs">
+                                                    <Text color={colors.textSecondary} size="xs">
                                                         #{index + 1}
                                                     </Text>
-                                                    <Text color={Theme.colors.sacredWhite} size="md" fontWeight="$semibold">
+                                                    <Text color={colors.text} size="md" fontWeight="$semibold">
                                                         {student.name || <Text color={Theme.colors.emberRed}>No name</Text>}
                                                     </Text>
                                                 </HStack>
-                                                <Text color={Theme.colors.mistGray} size="sm">
+                                                <Text color={colors.textSecondary} size="sm">
                                                     Index: {student.index_number || <Text color={Theme.colors.emberRed}>No index</Text>}
                                                 </Text>
                                                 {student.notes && (
-                                                    <Text color={Theme.colors.mistGray} size="sm">
+                                                    <Text color={colors.textSecondary} size="sm">
                                                         {student.notes}
                                                     </Text>
                                                 )}
                                             </VStack>
-                                            
+
                                             <HStack space="sm">
-                                                <Pressable 
+                                                <Pressable
                                                     onPress={() => {
                                                         setCurrentIndex(index);
                                                         setStep('entry');
@@ -481,8 +483,8 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                 onPress={handleConfirm}
                                 isDisabled={validStudentsCount === 0}
                                 sx={{
-                                    backgroundColor: validStudentsCount > 0 
-                                        ? Theme.colors.sanctuarySaffron 
+                                    backgroundColor: validStudentsCount > 0
+                                        ? Theme.colors.sanctuarySaffron
                                         : Theme.colors.mistGray,
                                     borderRadius: Theme.corners.comfortable,
                                 }}
@@ -496,7 +498,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                 variant="link"
                                 onPress={() => setStep('entry')}
                             >
-                                <ButtonText color={Theme.colors.mistGray}>← Back to Entry</ButtonText>
+                                <ButtonText color={colors.textSecondary}>← Back to Entry</ButtonText>
                             </Button>
                         </VStack>
                     </VStack>

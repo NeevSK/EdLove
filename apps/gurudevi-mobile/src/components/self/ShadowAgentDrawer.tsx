@@ -18,6 +18,7 @@ import {
     Pressable,
 } from '@/ui';
 import { Modal, StyleSheet, Dimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -27,6 +28,7 @@ import Animated, {
     Easing,
     FadeIn,
 } from 'react-native-reanimated';
+import { X } from 'lucide-react-native';
 import { Theme, typography } from '../../constants/Theme';
 import { hapticLight } from '../../utils/haptics';
 
@@ -70,6 +72,7 @@ const CONTEXTUAL_SUGGESTIONS = [
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function ShadowAgentDrawer() {
+    const { bottom: bottomInset } = useSafeAreaInsets();
     const [isOpen, setIsOpen] = useState(false);
     const [currentSeed, setCurrentSeed] = useState('');
     const [contextualSuggestion, setContextualSuggestion] = useState<{
@@ -80,7 +83,7 @@ export default function ShadowAgentDrawer() {
     const styles = useMemo(() => StyleSheet.create({
         orbContainer: {
             position: 'absolute',
-            bottom: 24,
+            bottom: bottomInset + 80, // Positioned above the tab bar
             right: 24,
             zIndex: Theme.zIndex.fab,
         },
@@ -134,11 +137,11 @@ export default function ShadowAgentDrawer() {
         // Pick a random thought seed
         const randomSeed = THOUGHT_SEEDS[Math.floor(Math.random() * THOUGHT_SEEDS.length)];
         setCurrentSeed(randomSeed);
-        
+
         // Determine contextual suggestion based on time
         const hour = new Date().getHours();
         let suggestion = null;
-        
+
         if (hour >= 22 || hour < 5) {
             // Late night
             suggestion = CONTEXTUAL_SUGGESTIONS.find(s => s.condition === 'late_night');
@@ -149,7 +152,7 @@ export default function ShadowAgentDrawer() {
             // Midday
             suggestion = CONTEXTUAL_SUGGESTIONS.find(s => s.condition === 'midday');
         }
-        
+
         setContextualSuggestion(suggestion || null);
         setIsOpen(true);
     };
@@ -178,7 +181,7 @@ export default function ShadowAgentDrawer() {
                             ...Theme.shadows.glow,
                         }}
                     >
-                        <Text style={{ fontSize: 24 }}>🌙</Text>
+                        <Text style={{ fontSize: 24 }}>🪷</Text>
                     </Box>
                 </Animated.View>
             </Pressable>
@@ -196,7 +199,7 @@ export default function ShadowAgentDrawer() {
                 >
                     <Pressable
                         style={styles.drawerContainer}
-                        onPress={(e) => e.stopPropagation()}
+                        onPress={(e: any) => e.stopPropagation()}
                     >
                         <Box
                             sx={{
@@ -215,10 +218,30 @@ export default function ShadowAgentDrawer() {
                                     backgroundColor: Theme.colors.pearlGray,
                                     borderRadius: 2,
                                     alignSelf: 'center',
-                                    marginBottom: Theme.spacing.lg,
+                                    marginBottom: Theme.spacing.md, // Reduced from lg
                                     opacity: 0.3,
                                 }}
                             />
+
+                            {/* Close Button */}
+                            <Pressable
+                                onPress={handleCloseDrawer}
+                                style={{
+                                    position: 'absolute',
+                                    top: 16,
+                                    right: 16,
+                                    zIndex: 10,
+                                    padding: 8,
+                                }}
+                            >
+                                <Box sx={{
+                                    backgroundColor: 'rgba(255,255,255,0.05)',
+                                    borderRadius: 20,
+                                    padding: 4
+                                }}>
+                                    <X color={Theme.colors.mistGray} size={20} />
+                                </Box>
+                            </Pressable>
 
                             <VStack space="xl">
                                 {/* Title */}

@@ -1,46 +1,47 @@
 ---
-import '../styles/global.css';
-
-interface Props {
-	title: string;
-	description?: string;
+export interface Props {
+  title: string;
+  description?: string;
+  theme?: string;
 }
 
-const { title, description = "The personal digital archive of NeevSk. Existential Cyberneticist." } = Astro.props;
+const { title, description, theme = 'home' } = Astro.props;
+import Navigation from '../components/common/Navigation.astro';
+import Footer from '../components/common/Footer.astro';
+import CoherenceMeter from '../components/common/CoherenceMeter.astro';
+import '../styles/global.scss';
+import '../styles/themes/nature.scss';
+import '../styles/themes/twilight.scss';
+import '../styles/themes/light-tech.scss';
+import '../styles/themes/warm-archive.scss';
+import '../styles/themes/digital-neon.scss';
+import '../styles/creative-signatures.scss';
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title} | NeevSk</title>
-		<meta name="description" content={description} />
-		
-		<!-- Fonts -->
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Lora:ital,wght@0,400..700;1,400..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-
-		<script is:inline>
-			// Theme initialization
-			const theme = (() => {
-				if (typeof localStorage !== 'undefined' && localStorage.getItem('reality-theme')) {
-					return localStorage.getItem('reality-theme');
-				}
-				return 'light';
-			})();
-		
-			if (theme === 'dark') {
-				document.documentElement.classList.add('dark');
-			} else {
-				document.documentElement.classList.remove('dark');
-			}
-		</script>
-	</head>
-	<body class="selection:bg-[var(--accent-secondary)] selection:text-[var(--bg-main)] dark:selection:bg-[var(--accent-secondary)] dark:selection:text-[var(--bg-main)]">
-		<slot />
-	</body>
+<!DOCTYPE html>
+<html lang="en" data-theme={theme}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} | Neev SK</title>
+    {description && <meta name="description" content={description} />}
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Literata:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inconsolata:wght@400;700&family=DM+Serif+Display&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <Navigation />
+    
+    <main>
+      <slot />
+    </main>
+    
+    <Footer />
+    <CoherenceMeter />
+    
+    <script src="../scripts/theme-switcher.ts"></script>
+    <script src="../scripts/creative-signatures.ts"></script>
+    <script src="../scripts/animations.ts"></script>
+  </body>
 </html>

@@ -1,0 +1,57 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CinematicBackground from '../components/CinematicBackground.astro';
+---
+
+<Layout title="Our Vision | EdLove">
+    <CinematicBackground />
+    <div class="relative z-10 pb-24 sanctuary-container" style="padding-top: var(--spacing-nav-height);">
+        <!-- Header: The unified narrative -->
+        <section class="text-center space-y-8 mb-24 animate-fade-in-up">
+            <div class="space-y-4">
+                <span class="font-heading text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-gold)] opacity-60">The EdLove Narrative</span>
+                <h1 class="text-6xl md:text-8xl font-heading font-bold text-[var(--color-midnightInk)] leading-none">Our Vision</h1>
+            </div>
+
+            <div class="h-px w-24 bg-[var(--color-gold)]/30 mx-auto"></div>
+
+            <p class="font-body text-2xl text-[var(--color-midnightInk)]/50 max-w-2xl mx-auto leading-relaxed italic">
+                "Education is not a product to be consumed, but a relationship to be cultivated."
+            </p>
+        </section>
+
+        <!-- Narrative Flow -->
+        <section class="max-w-4xl mx-auto space-y-24 mb-48">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16">
+                <div class="space-y-8">
+                    <h3 class="font-heading text-3xl font-bold text-[var(--color-midnightInk)]">The Genesis</h3>
+                    <p class="font-body text-xl text-[var(--color-midnightInk)]/60 leading-relaxed">
+                        EdLove was born from a simple yet profound realization: that for education to truly transform, it must be rooted in love, sovereignty, and aesthetic excellence.
+                    </p>
+                </div>
+                <div class="space-y-8">
+                    <h3 class="font-heading text-3xl font-bold text-[var(--color-midnightInk)]">The mission</h3>
+                    <p class="font-body text-xl text-[var(--color-midnightInk)]/60 leading-relaxed">
+                        We stand for the dignity of the teacher and the sovereignty of the learner. In a world of increasing standardization, we choose the intimacy of the sanctuary over the efficiency of the factory.
+                    </p>
+                </div>
+            </div>
+
+            <div class="h-px w-full bg-black/5"></div>
+
+             <div class="space-y-12 text-center max-w-3xl mx-auto">
+                <h3 class="font-heading text-4xl font-bold text-[var(--color-midnightInk)]">Digital Sanctuaries</h3>
+                <p class="font-body text-xl text-[var(--color-midnightInk)]/60 leading-relaxed">
+                    We use high-end design and soulful technology to create spaces that feel like the forest—organic, breathing, and deep. EdLove is more than a platform; it is a commitment to the sacred nature of learning.
+                </p>
+            </div>
+
+            <div class="pt-12 text-center">
+                <a href="/cosmos" class="inline-flex items-center gap-4 text-[var(--color-midnightInk)]/40 hover:text-[var(--color-gold)] transition-colors group">
+                    <span class="font-heading text-xs font-bold uppercase tracking-[0.3em]">Explore the Domains</span>
+                    <span class="group-hover:translate-x-1 transition-transform">→</span>
+                </a>
+            </div>
+        </section>
+    </div>
+</Layout>

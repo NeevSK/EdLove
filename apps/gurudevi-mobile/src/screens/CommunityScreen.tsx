@@ -11,6 +11,8 @@ import { Theme } from '../constants/Theme';
 import { useTranslation } from 'react-i18next';
 import { MessageSquare, Users, PenTool, Search } from 'lucide-react-native';
 import { useCommunity, Group, Post } from '../hooks/useCommunity';
+import { useThemedColors } from '../hooks/useThemedColors';
+import ScreenWrapper from '../components/shared/ScreenWrapper';
 
 type TabType = 'feed' | 'groups';
 
@@ -21,6 +23,7 @@ export default function CommunityScreen() {
     const [searchQuery, setSearchQuery] = useState('');
     const [refreshing, setRefreshing] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const colors = useThemedColors();
 
     // Initial data load
     useEffect(() => {
@@ -44,14 +47,16 @@ export default function CommunityScreen() {
                 sx={{
                     flex: 1,
                     padding: Theme.spacing.md,
-                    backgroundColor: activeTab === 'feed' ? Theme.colors.sanctuarySaffron : Theme.colors.deepIndigo,
+                    backgroundColor: activeTab === 'feed' ? Theme.colors.sanctuarySaffron : colors.secondary,
                     borderRadius: Theme.corners.comfortable,
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    borderWidth: 1,
+                    borderColor: activeTab === 'feed' ? Theme.colors.sanctuarySaffron : colors.border
                 }}
             >
                 <HStack space="sm" alignItems="center">
-                    <MessageSquare size={16} color={activeTab === 'feed' ? Theme.colors.white : Theme.colors.mistGray} />
-                    <Text color={activeTab === 'feed' ? Theme.colors.white : Theme.colors.mistGray} bold>Feed</Text>
+                    <MessageSquare size={16} color={activeTab === 'feed' ? Theme.colors.white : colors.textSecondary} />
+                    <Text color={activeTab === 'feed' ? Theme.colors.white : colors.text} bold>Feed</Text>
                 </HStack>
             </Pressable>
             <Pressable
@@ -59,36 +64,36 @@ export default function CommunityScreen() {
                 sx={{
                     flex: 1,
                     padding: Theme.spacing.md,
-                    backgroundColor: activeTab === 'groups' ? Theme.colors.sanctuarySaffron : Theme.colors.deepIndigo,
+                    backgroundColor: activeTab === 'groups' ? Theme.colors.sanctuarySaffron : colors.secondary,
                     borderRadius: Theme.corners.comfortable,
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    borderWidth: 1,
+                    borderColor: activeTab === 'groups' ? Theme.colors.sanctuarySaffron : colors.border
                 }}
             >
                 <HStack space="sm" alignItems="center">
-                    <Users size={16} color={activeTab === 'groups' ? Theme.colors.white : Theme.colors.mistGray} />
-                    <Text color={activeTab === 'groups' ? Theme.colors.white : Theme.colors.mistGray} bold>Groups</Text>
+                    <Users size={16} color={activeTab === 'groups' ? Theme.colors.white : colors.textSecondary} />
+                    <Text color={activeTab === 'groups' ? Theme.colors.white : colors.text} bold>Groups</Text>
                 </HStack>
             </Pressable>
         </HStack>
     );
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+        <ScreenWrapper>
             <GlobalHeader
                 title={t('tabs.community') || 'Community'}
                 subtitle="Connect & Grow"
+                searchProps={{
+                    value: searchQuery,
+                    onChangeText: setSearchQuery,
+                    placeholder: activeTab === 'feed' ? "Search posts..." : "Search groups..."
+                }}
             />
 
             {renderTabs()}
 
-            <Box px="$4" mb="$4">
-                <SanctuaryInput
-                    placeholder={activeTab === 'feed' ? "Search posts..." : "Search groups..."}
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                    leftIcon={Search}
-                />
-            </Box>
+            {/* Removed the search box from here, it's now in the header */}
 
             <ScrollView
                 contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, paddingBottom: 100 }}
@@ -146,6 +151,6 @@ export default function CommunityScreen() {
                 isOpen={showCreateModal}
                 onClose={() => setShowCreateModal(false)}
             />
-        </Box>
+        </ScreenWrapper>
     );
 }

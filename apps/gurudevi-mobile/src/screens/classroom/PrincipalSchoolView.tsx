@@ -24,12 +24,15 @@ import {
 } from '@/ui';
 import { Theme } from '../../constants/Theme';
 import { useTranslation } from 'react-i18next';
+import { useUserRole } from '../../hooks/useUserRole';
 import { api } from '../../lib/api';
 import { SchoolStats, School } from '../../lib/api/school';
 import HierarchyBuilder from '../../components/principal/HierarchyBuilder';
 import InviteManager from '../../components/principal/InviteManager';
 import ResourceNeedsDashboard from '../../components/principal/ResourceNeedsDashboard';
 import GlobalHeader from '../../components/shared/GlobalHeader';
+import { useThemedColors } from '../../hooks/useThemedColors';
+import ScreenWrapper from '../../components/shared/ScreenWrapper';
 
 interface PrincipalSchoolViewProps {
     schoolId: string;
@@ -38,6 +41,8 @@ interface PrincipalSchoolViewProps {
 
 export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoolViewProps) {
     const { t } = useTranslation();
+    const { role } = useUserRole();
+    const colors = useThemedColors();
     const [stats, setStats] = useState<SchoolStats | null>(null);
     const [school, setSchool] = useState<School | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -69,32 +74,31 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
     // Show different views based on activeView
     if (activeView === 'hierarchy') {
         return (
-            <HierarchyBuilder
-                schoolId={schoolId}
-                onBack={() => setActiveView('dashboard')}
-            />
+            <ScreenWrapper>
+                <HierarchyBuilder
+                    schoolId={schoolId}
+                    onBack={() => setActiveView('dashboard')}
+                />
+            </ScreenWrapper>
         );
     }
 
     if (activeView === 'invites') {
         return (
-            <InviteManager
-                schoolId={schoolId}
-                userId={userId}
-                onBack={() => setActiveView('dashboard')}
-            />
+            <ScreenWrapper>
+                <InviteManager
+                    schoolId={schoolId}
+                    userId={userId}
+                    onBack={() => setActiveView('dashboard')}
+                />
+            </ScreenWrapper>
         );
     }
 
     return (
-        <Box
-            sx={{
-                flex: 1,
-                backgroundColor: Theme.colors.voidIndigo,
-            }}
-        >
+        <ScreenWrapper>
             <GlobalHeader
-                title={t('classroom.schoolOverview') || 'School Overview'}
+                title={t('classroom.schoolManagement') || 'School Management'}
                 subtitle={school?.name}
             />
             <ScrollView>
@@ -110,7 +114,7 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                                 alignItems: 'center',
                             }}
                         >
-                            <Spinner color={Theme.colors.sanctuarySaffron} />
+                            <Spinner color={colors.action} />
                         </Box>
                     )}
 
@@ -119,11 +123,13 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                         <Box
                             sx={{
                                 padding: Theme.spacing.md,
-                                backgroundColor: Theme.colors.emberRed,
+                                backgroundColor: colors.error,
                                 borderRadius: Theme.corners.comfortable,
+                                borderWidth: 1,
+                                borderColor: colors.border,
                             }}
                         >
-                            <Text color={Theme.colors.sacredWhite}>{error}</Text>
+                            <Text color={colors.text}>{error}</Text>
                         </Box>
                     )}
 
@@ -137,18 +143,18 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                                     sx={{
                                         flex: 1,
                                         padding: Theme.spacing.lg,
-                                        backgroundColor: Theme.colors.deepIndigo,
+                                        backgroundColor: colors.secondary,
                                         borderRadius: Theme.corners.comfortable,
                                         borderLeftWidth: 4,
-                                        borderLeftColor: Theme.colors.sanctuarySaffron,
+                                        borderLeftColor: colors.action,
                                     }}
                                 >
-                                    <Text size="sm" color={Theme.colors.mistGray}>
+                                    <Text size="sm" color={colors.textTertiary}>
                                         {t('principal.stats.totalStudents') || 'Total Students'}
                                     </Text>
                                     <Text
                                         size="3xl"
-                                        color={Theme.colors.sacredWhite}
+                                        color={colors.text}
                                         sx={{ fontWeight: '700', marginTop: Theme.spacing.xs }}
                                     >
                                         {stats.total_students}
@@ -160,18 +166,18 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                                     sx={{
                                         flex: 1,
                                         padding: Theme.spacing.lg,
-                                        backgroundColor: Theme.colors.deepIndigo,
+                                        backgroundColor: colors.secondary,
                                         borderRadius: Theme.corners.comfortable,
                                         borderLeftWidth: 4,
-                                        borderLeftColor: Theme.colors.sageGreen,
+                                        borderLeftColor: colors.success,
                                     }}
                                 >
-                                    <Text size="sm" color={Theme.colors.mistGray}>
+                                    <Text size="sm" color={colors.textTertiary}>
                                         {t('principal.stats.totalTeachers') || 'Total Teachers'}
                                     </Text>
                                     <Text
                                         size="3xl"
-                                        color={Theme.colors.sacredWhite}
+                                        color={colors.text}
                                         sx={{ fontWeight: '700', marginTop: Theme.spacing.xs }}
                                     >
                                         {stats.total_teachers}
@@ -186,18 +192,18 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                                     sx={{
                                         flex: 1,
                                         padding: Theme.spacing.lg,
-                                        backgroundColor: Theme.colors.deepIndigo,
+                                        backgroundColor: colors.secondary,
                                         borderRadius: Theme.corners.comfortable,
                                         borderLeftWidth: 4,
-                                        borderLeftColor: Theme.colors.twilightPurple,
+                                        borderLeftColor: colors.action,
                                     }}
                                 >
-                                    <Text size="sm" color={Theme.colors.mistGray}>
+                                    <Text size="sm" color={colors.textTertiary}>
                                         {t('principal.stats.activeClassrooms') || 'Active Classes'}
                                     </Text>
                                     <Text
                                         size="3xl"
-                                        color={Theme.colors.sacredWhite}
+                                        color={colors.text}
                                         sx={{ fontWeight: '700', marginTop: Theme.spacing.xs }}
                                     >
                                         {stats.total_classrooms}
@@ -209,18 +215,18 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                                     sx={{
                                         flex: 1,
                                         padding: Theme.spacing.lg,
-                                        backgroundColor: Theme.colors.deepIndigo,
+                                        backgroundColor: colors.secondary,
                                         borderRadius: Theme.corners.comfortable,
                                         borderLeftWidth: 4,
-                                        borderLeftColor: Theme.colors.amberGlow,
+                                        borderLeftColor: colors.warning,
                                     }}
                                 >
-                                    <Text size="sm" color={Theme.colors.mistGray}>
+                                    <Text size="sm" color={colors.textTertiary}>
                                         {t('principal.stats.totalSections') || 'Sections'}
                                     </Text>
                                     <Text
                                         size="3xl"
-                                        color={Theme.colors.sacredWhite}
+                                        color={colors.text}
                                         sx={{ fontWeight: '700', marginTop: Theme.spacing.xs }}
                                     >
                                         {stats.total_sections}
@@ -241,7 +247,7 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                     <VStack space="md" sx={{ marginTop: Theme.spacing.md }}>
                         <Text
                             size="lg"
-                            color={Theme.colors.pearlGray}
+                            color={colors.textSecondary}
                             sx={{ fontWeight: '600' }}
                         >
                             {t('principal.quickActions') || 'Quick Actions'}
@@ -249,12 +255,12 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
 
                         <Button
                             sx={{
-                                backgroundColor: Theme.colors.sanctuarySaffron,
+                                backgroundColor: colors.action,
                                 padding: Theme.spacing.lg,
                             }}
                             onPress={() => setActiveView('hierarchy')}
                         >
-                            <ButtonText color={Theme.colors.sacredWhite}>
+                            <ButtonText color={colors.text}>
                                 {t('principal.actions.manageHierarchy') ||
                                     '🏫 Manage School Hierarchy'}
                             </ButtonText>
@@ -262,12 +268,12 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
 
                         <Button
                             sx={{
-                                backgroundColor: Theme.colors.sageGreen,
+                                backgroundColor: colors.success,
                                 padding: Theme.spacing.lg,
                             }}
                             onPress={() => setActiveView('invites')}
                         >
-                            <ButtonText color={Theme.colors.sacredWhite}>
+                            <ButtonText color={colors.text}>
                                 {t('principal.actions.inviteStaff') ||
                                     '✉️ Invite Staff & Students'}
                             </ButtonText>
@@ -275,6 +281,6 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                     </VStack>
                 </VStack>
             </ScrollView>
-        </Box>
+        </ScreenWrapper>
     );
 }

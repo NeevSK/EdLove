@@ -1,0 +1,108 @@
+---
+const links = [
+  { href: '/', label: 'Home', theme: 'home' },
+  { href: '/personal', label: 'Personal', theme: 'nature' },
+  { href: '/intellectual', label: 'Intellectual', theme: 'twilight' },
+  { href: '/professional', label: 'Professional', theme: 'light-tech' },
+  { href: '/library', label: 'Library', theme: 'warm-archive' },
+  { href: '/connect', label: 'Connect', theme: 'digital-neon' },
+];
+
+const { pathname } = Astro.url;
+---
+
+<nav class="main-nav">
+  <div class="nav-content">
+    <a href="/" class="nav-logo">Neev SK</a>
+    
+    <div class="nav-links">
+      {links.map(link => (
+        <a 
+          href={link.href} 
+          class:list={['nav-link', { active: pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href)) }]}
+          data-theme-trigger={link.theme}
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+    
+    <button class="mobile-menu-toggle" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</nav>
+
+<style lang="scss">
+  .main-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    
+    .nav-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .nav-logo {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      
+      @media (max-width: 768px) {
+        display: none;
+      }
+    }
+    
+    .nav-link {
+      font-size: 0.95rem;
+      font-weight: 500;
+      opacity: 0.7;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      position: relative;
+      
+      &:hover {
+        opacity: 1;
+        transform: translateY(-1px);
+      }
+      
+      &.active {
+        opacity: 1;
+        
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -4px;
+          left: 0;
+          width: 100%;
+          height: 1px;
+          background-color: currentColor;
+        }
+      }
+    }
+    
+    .mobile-menu-toggle {
+      display: none;
+      
+      @media (max-width: 768px) {
+        display: block;
+      }
+    }
+  }
+</style>

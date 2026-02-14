@@ -590,24 +590,22 @@ Different content types need different visual languages:
 
 ### The Mobile-First Mandate
 
-**"The sanctuary must fit in the palm of a hand."**
+**"The sanctuary must fit in the palm of a hand, yet breathe like a cathedral on a desk."**
 
-Edlove.org is not "desktop with mobile fixes." It is a mobile-first experience. Many of our users (especially educators in Sri Lanka) access the web primarily via mobile devices.
+Edlove.org is a mobile-first experience. Many of our users (especially educators in Sri Lanka) access the web primarily via mobile devices. Our goal is to provide maximum utility on small screens without sacrificing the premium, immersive quality on desktop.
 
-#### Navigation (The Mobile Menu)
-- **Thumb-Friendly**: Navigation triggers and links must be easily reachable by a thumb (bottom-heavy or centered).
-- **High Contrast**: Mobile menu must use `--color-warmPaper` background with high-contrast text to ensure readability in sunlight.
-- **Full Screen Overlay**: The menu should be a full-screen, focused experience that removes distractions.
-- **Aria Support**: All mobile-only interactions must have correct ARIA labels.
+#### The "Floating Pill" Navigation
+- **Universal Visibility**: The navigation bar is no longer "invisible" or only visible on scroll. It uses a **Floating Pill** design that is always present.
+- **Translucent Sanctuary**: Uses `backdrop-blur-md` and a soft `bg-white/40` to maintain definition against the warm paper background while feeling light and airy.
+- **Mobile-First UX**: 
+    - **Thumb-Friendly**: The hamburger trigger and close buttons are positioned for easy thumb-reach.
+    - **Touch Targets**: Minimum 44x44px for all links and interactive elements.
+- **Desktop Premium**: On wider screens, the pill centers itself, creating a focused, high-fidelity landing experience.
 
 #### Layout & Fluidity
-- **Fluid Type**: Use `clamp()` or modular scales that adjust based on viewport width.
-- **Horizontal Padding**: Minimum `var(--space-2)` (16px) on all mobile viewports.
-- **Touch Targets**: Minimum 44x44px for all interactive elements.
-
-#### Performance on Mobile
-- **Image Optimization**: Use WebP and responsive sizes.
-- **Zero-JS where possible**: Most interactive elements should use CSS transitions rather than heavy JS.
+- **Fluid Type**: Large headings scale down aggressively on mobile (targeting `8xl` ceiling but scaling to `4xl` or `5xl` on small screens).
+- **Horizontal Padding**: Minimum `var(--space-2)` (16px) on all mobile viewports to prevent content from "hitting the glass."
+- **Performance**: Zero-JS transitions where possible to ensure smooth flow on lower-end mobile devices.
 
 ---
 

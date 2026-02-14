@@ -23,6 +23,7 @@ import {
     SliderThumb,
     Button,
     ButtonText,
+    Pressable,
 } from '@/ui';
 import { StyleSheet, Image, Platform } from 'react-native';
 import Animated, {
@@ -39,6 +40,8 @@ import { Theme, typography } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';
 import * as Haptics from 'expo-haptics';
 import BreathGuide from './BreathGuide';
+import { useTranslation } from 'react-i18next';
+import { useThemedColors } from '../../hooks/useThemedColors';
 
 interface MoodLotusProps {
     userId?: string;
@@ -48,15 +51,18 @@ interface MoodLotusProps {
 const LOTUS_BUD = require('../../../assets/images/lotus_bud.png');
 const LOTUS_BLOOM = require('../../../assets/images/lotus_bloom.png');
 
-const MOOD_STATES = [
-    { value: 1, label: 'Heavy', color: Theme.colors.dimGray, glow: 0, image: LOTUS_BUD, scale: 0.8 },
-    { value: 2, label: 'Challenging', color: Theme.colors.slateGray, glow: 0.1, image: LOTUS_BUD, scale: 0.9 },
-    { value: 3, label: 'Okay', color: Theme.colors.stoneGray, glow: 0.2, image: LOTUS_BLOOM, scale: 0.8 }, // Transition start
-    { value: 4, label: 'Good', color: Theme.colors.sageGreen, glow: 0.4, image: LOTUS_BLOOM, scale: 0.9 },
-    { value: 5, label: 'Flourishing', color: Theme.colors.sanctuarySaffron, glow: 0.6, image: LOTUS_BLOOM, scale: 1.0 },
-];
-
 export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
+    const { t } = useTranslation();
+    const colors = useThemedColors();
+
+    const MOOD_STATES = useMemo(() => [
+        { value: 1, label: t('self.moodHeavy'), color: Theme.colors.dimGray, glow: 0, image: LOTUS_BUD, scale: 0.8 },
+        { value: 2, label: t('self.moodChallenging'), color: Theme.colors.slateGray, glow: 0.1, image: LOTUS_BUD, scale: 0.9 },
+        { value: 3, label: t('self.moodOkay'), color: Theme.colors.stoneGray, glow: 0.2, image: LOTUS_BLOOM, scale: 0.8 },
+        { value: 4, label: t('self.moodGood'), color: colors.success, glow: 0.4, image: LOTUS_BLOOM, scale: 0.9 },
+        { value: 5, label: t('self.moodFlourishing'), color: colors.warning, glow: 0.6, image: LOTUS_BLOOM, scale: 1.0 },
+    ], [t, colors]);
+
     const [moodValue, setMoodValue] = useState(3);
     const [isSaving, setIsSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -82,7 +88,7 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
         },
     }), []);
 
-    const currentMood = MOOD_STATES[moodValue - 1];
+    const currentMood = MOOD_STATES[Math.floor(moodValue) - 1];
 
     // Breathing animation for lotus
     useEffect(() => {
@@ -173,7 +179,7 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
                         onPress={() => setShowBreathGuide(false)}
                         sx={{ alignSelf: 'flex-start' }}
                     >
-                        <ButtonText color={Theme.colors.mistGray}>← Back to Mood</ButtonText>
+                        <ButtonText color={colors.textSecondary}>{t('self.backToMood')}</ButtonText>
                     </Button>
                     <BreathGuide onComplete={() => setShowBreathGuide(false)} />
                 </VStack>
@@ -182,11 +188,11 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
                     {/* Header */}
                     <HStack justifyContent="space-between" alignItems="center">
                         <VStack space="xs" sx={{ flex: 1 }}>
-                            <Heading color={Theme.colors.sacredWhite} size="lg">
-                                Mood Check-in
+                            <Heading color={colors.text} size="lg">
+                                {t('self.moodLotus')}
                             </Heading>
-                            <Text color={Theme.colors.mistGray} size="sm">
-                                How is your inner lotus today?
+                            <Text color={colors.textSecondary} size="sm">
+                                {t('self.moodLotusDesc')}
                             </Text>
                         </VStack>
                         <Button
@@ -194,134 +200,156 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
                             variant="link"
                             onPress={() => setShowBreathGuide(true)}
                             sx={{
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: colors.secondary,
                                 borderRadius: Theme.corners.comfortable,
                                 paddingHorizontal: Theme.spacing.md,
                                 paddingVertical: Theme.spacing.sm,
                             }}
                         >
-                            <Wind color={Theme.colors.lotusDeepPink} size={16} />
+                            <Wind color={colors.action} size={16} />
                         </Button>
                     </HStack>
 
-            {/* Lotus Visualization */}
-            <Box
-                sx={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: Theme.spacing.xl,
-                    height: 280, // Fixed height to prevent jump
-                }}
-            >
-                <Animated.View style={lotusStyle}>
-                    <Image
-                        source={currentMood.image}
-                        style={styles.lotusImage}
-                        resizeMode="contain"
-                    />
-                    {/* Glow effect behind */}
-                    <Animated.View
-                        style={[
-                            styles.glow,
-                            {
-                                opacity: glowOpacity,
-                                backgroundColor: currentMood.color,
-                                shadowColor: currentMood.color,
-                            }
-                        ]}
-                    />
-                </Animated.View>
-
-                <Animated.Text
-                    style={{
-                        marginTop: Theme.spacing.md,
-                        fontSize: typography.fontSize.xl,
-                        fontWeight: '600',
-                        color: currentMood.color,
-                        textAlign: 'center',
-                        textShadowColor: currentMood.color,
-                        textShadowOffset: { width: 0, height: 0 },
-                        textShadowRadius: 10,
-                    }}
-                >
-                    {currentMood.label}
-                </Animated.Text>
-            </Box>
-
-            {/* Slider */}
-            <Box sx={{ paddingHorizontal: Theme.spacing.md }}>
-                <Slider
-                    value={moodValue}
-                    onChange={handleMoodChange}
-                    onChangeEnd={handleSlidingComplete}
-                    minValue={1}
-                    maxValue={5}
-                    step={1}
-                    size="lg"
-                    orientation="horizontal"
-                    isDisabled={false}
-                    isReversed={false}
-                    sx={{
-                        width: '100%',
-                        height: 50,
-                    }}
-                >
-                    <SliderTrack sx={{ height: 12, borderRadius: 6, backgroundColor: Theme.colors.midnightBlue }}>
-                        <SliderFilledTrack
-                            sx={{
-                                backgroundColor: currentMood.color,
-                            }}
-                        />
-                    </SliderTrack>
-                    <SliderThumb
+                    {/* Lotus Visualization */}
+                    <Box
                         sx={{
-                            backgroundColor: currentMood.color,
-                            borderWidth: 4,
-                            borderColor: Theme.colors.sacredWhite,
-                            width: 36,
-                            height: 36,
-                            shadowColor: currentMood.color,
-                            shadowOffset: { width: 0, height: 0 },
-                            shadowOpacity: 0.8,
-                            shadowRadius: 15,
-                            elevation: 8,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: Theme.spacing.xl,
+                            height: 280, // Fixed height to prevent jump
                         }}
-                    />
-                </Slider>
+                    >
+                        <Animated.View style={lotusStyle}>
+                            <Image
+                                source={currentMood.image}
+                                style={styles.lotusImage}
+                                resizeMode="contain"
+                            />
+                            {/* Glow effect behind */}
+                            <Animated.View
+                                style={[
+                                    styles.glow,
+                                    {
+                                        opacity: glowOpacity,
+                                        backgroundColor: currentMood.color,
+                                        shadowColor: currentMood.color,
+                                    }
+                                ]}
+                            />
+                        </Animated.View>
 
-                {/* Mood labels */}
-                <HStack
-                    justifyContent="space-between"
-                    sx={{ marginTop: Theme.spacing.md }}
-                >
-                    <Text color={Theme.colors.dimGray} size="xs">
-                        Closed Bud
-                    </Text>
-                    <Text color={Theme.colors.dimGray} size="xs">
-                        Full Bloom
-                    </Text>
-                </HStack>
-            </Box>
+                        <Animated.Text
+                            style={{
+                                marginTop: Theme.spacing.md,
+                                fontSize: typography.fontSize.xl,
+                                fontWeight: '600',
+                                color: currentMood.color,
+                                textAlign: 'center',
+                                textShadowColor: currentMood.color,
+                                textShadowOffset: { width: 0, height: 0 },
+                                textShadowRadius: 10,
+                            }}
+                        >
+                            {currentMood.label}
+                        </Animated.Text>
+                    </Box>
 
-            {/* Privacy note */}
-            <Box
-                sx={{
-                    backgroundColor: Theme.colors.midnightBlue,
-                    padding: Theme.spacing.md,
-                    borderRadius: Theme.corners.comfortable,
-                    marginTop: Theme.spacing.sm
-                }}
-            >
-                <Text color={Theme.colors.mistGray} size="xs" textAlign="center">
-                    🔒 Your mood data is private and only visible to you
-                </Text>
-                {lastSaved && (
-                    <Text color={Theme.colors.dimGray} size="xs" textAlign="center" mt="$2">
-                        Saved {lastSaved.toLocaleTimeString()}
-                    </Text>
-                )}
-            </Box>
-            </>
+                    {/* Custom Dotted Likert Slider */}
+                    <Box sx={{ paddingHorizontal: Theme.spacing.md, marginTop: Theme.spacing.lg }}>
+                        <VStack space="md">
+                            <Box sx={{ height: 40, justifyContent: 'center' }}>
+                                {/* The Track */}
+                                <Box
+                                    sx={{
+                                        position: 'absolute',
+                                        left: 16,
+                                        right: 16,
+                                        height: 2,
+                                        backgroundColor: colors.border,
+                                        borderRadius: 1,
+                                    }}
+                                />
+
+                                {/* Interactive Dots */}
+                                <HStack justifyContent="space-between" alignItems="center">
+                                    {MOOD_STATES.map((state) => {
+                                        const isActive = Math.round(moodValue) === state.value;
+                                        return (
+                                            <Pressable
+                                                key={state.value}
+                                                onPress={() => {
+                                                    handleMoodChange(state.value);
+                                                    handleSlidingComplete(state.value);
+                                                }}
+                                                sx={{
+                                                    width: 32,
+                                                    height: 32,
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                }}
+                                            >
+                                                <Animated.View
+                                                    style={[
+                                                        {
+                                                            width: isActive ? 16 : 8,
+                                                            height: isActive ? 16 : 8,
+                                                            borderRadius: isActive ? 8 : 4,
+                                                            backgroundColor: isActive ? state.color : colors.textTertiary,
+                                                            borderWidth: isActive ? 0 : 1,
+                                                            borderColor: colors.border,
+                                                        },
+                                                        isActive && {
+                                                            shadowColor: state.color,
+                                                            shadowOffset: { width: 0, height: 0 },
+                                                            shadowOpacity: 0.8,
+                                                            shadowRadius: 10,
+                                                            elevation: 5,
+                                                        }
+                                                    ]}
+                                                />
+                                            </Pressable>
+                                        );
+                                    })}
+                                </HStack>
+                            </Box>
+
+                            {/* Mood labels with soft text */}
+                            <HStack
+                                justifyContent="space-between"
+                                sx={{ paddingHorizontal: 4 }}
+                            >
+                                <Text color={colors.textTertiary} size="xs" italic>
+                                    {t('self.moodHeavy')}
+                                </Text>
+                                <Text color={colors.textTertiary} size="xs" italic>
+                                    {t('self.moodFlourishing')}
+                                </Text>
+                            </HStack>
+                        </VStack>
+                    </Box>
+
+                    {/* Privacy note - Refined for Zen aesthetic */}
+                    <Box
+                        sx={{
+                            backgroundColor: colors.secondary,
+                            padding: Theme.spacing.md,
+                            borderRadius: Theme.corners.generous,
+                            marginTop: Theme.spacing.md,
+                            borderWidth: 1,
+                            borderColor: colors.border,
+                            borderStyle: 'dashed' // Subtle boundary
+                        }}
+                    >
+                        <Text color={colors.textSecondary} size="xs" textAlign="center">
+                            {t('self.privacyNote') || '🔒 Your mood data is private and only visible to you'}
+                        </Text>
+                        {lastSaved && (
+                            <Text color={colors.textTertiary} size="xs" textAlign="center" mt="$1">
+                                {t('self.savedAt', { time: lastSaved.toLocaleTimeString() })}
+                            </Text>
+                        )}
+                    </Box>
+                </>
             )}
         </VStack>
     );

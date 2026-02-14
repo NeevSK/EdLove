@@ -27,6 +27,7 @@ import { QrCode, CheckCircle2 } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { api } from '../../lib/api';
 import { hapticSuccess } from '../../utils/haptics';
+import { useThemedColors } from '../../hooks/useThemedColors';
 
 interface ClaimInviteModalProps {
     isOpen: boolean;
@@ -38,6 +39,7 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
     const [inviteCode, setInviteCode] = useState('');
     const [loading, setLoading] = useState(false);
     const [successData, setSuccessData] = useState<any>(null);
+    const colors = useThemedColors();
 
     const handleClaim = async () => {
         if (!inviteCode.trim()) return;
@@ -63,22 +65,22 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="md">
             <ModalBackdrop />
-            <ModalContent sx={{ backgroundColor: Theme.colors.midnightBlue, borderColor: Theme.colors.deepIndigo, borderWidth: 1 }}>
+            <ModalContent sx={{ backgroundColor: colors.secondary, borderColor: colors.border, borderWidth: 1 }}>
                 <ModalHeader>
-                    <Heading color={Theme.colors.sacredWhite}>Claim Invite</Heading>
+                    <Heading color={colors.text}>Claim Invite</Heading>
                     <ModalCloseButton>
-                        <Icon as={CloseIcon} color={Theme.colors.mistGray} />
+                        <Icon as={CloseIcon} color={colors.textSecondary} />
                     </ModalCloseButton>
                 </ModalHeader>
                 <ModalBody>
                     {successData ? (
                         <VStack space="lg" alignItems="center" py="$6">
-                            <Box sx={{ backgroundColor: Theme.colors.deepIndigo, padding: 20, borderRadius: 40 }}>
+                            <Box sx={{ backgroundColor: colors.tertiary, padding: 20, borderRadius: 40 }}>
                                 <CheckCircle2 size={48} color={Theme.colors.sageGreen} />
                             </Box>
                             <VStack space="xs" alignItems="center">
-                                <Text color={Theme.colors.sacredWhite} fontWeight="$bold" size="lg">Successfully Enrolled!</Text>
-                                <Text color={Theme.colors.mistGray} textAlign="center">
+                                <Text color={colors.text} fontWeight="$bold" size="lg">Successfully Enrolled!</Text>
+                                <Text color={colors.textSecondary} textAlign="center">
                                     You have successfully linked your account to your classroom record.
                                 </Text>
                             </VStack>
@@ -91,10 +93,10 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
                         </VStack>
                     ) : (
                         <VStack space="lg" pb="$4">
-                            <Box sx={{ padding: Theme.spacing.md, backgroundColor: Theme.colors.deepIndigo, borderRadius: Theme.corners.comfortable }}>
+                            <Box sx={{ padding: Theme.spacing.md, backgroundColor: colors.tertiary, borderRadius: Theme.corners.comfortable }}>
                                 <HStack space="sm" alignItems="center">
                                     <QrCode size={20} color={Theme.colors.sanctuarySaffron} />
-                                    <Text size="sm" color={Theme.colors.mistGray}>
+                                    <Text size="sm" color={colors.textSecondary}>
                                         Enter the 8-character invite code provided by your teacher.
                                     </Text>
                                 </HStack>
@@ -102,12 +104,12 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
 
                             <FormControl isRequired>
                                 <FormControlLabel>
-                                    <FormControlLabelText color={Theme.colors.mistGray}>Invite Code</FormControlLabelText>
+                                    <FormControlLabelText color={colors.textSecondary}>Invite Code</FormControlLabelText>
                                 </FormControlLabel>
-                                <Input sx={{ borderColor: Theme.colors.deepIndigo, backgroundColor: Theme.colors.voidIndigo, height: 60 }}>
+                                <Input sx={{ borderColor: colors.border, backgroundColor: colors.primary, height: 60 }}>
                                     <InputField
                                         placeholder="e.g. a1b2c3d4"
-                                        color={Theme.colors.sacredWhite}
+                                        color={colors.text}
                                         value={inviteCode}
                                         onChangeText={setInviteCode}
                                         autoCapitalize="none"

@@ -1,0 +1,126 @@
+---
+import Card from '../common/Card.astro';
+---
+
+<section class="current-focus-section">
+  <div class="content-wrapper">
+    <div class="header">
+      <h2>Now / Status</h2>
+      <div class="status-indicator">
+        <span class="dot pulse"></span>
+        <span>Building Systems of Love</span>
+      </div>
+    </div>
+    
+    <div class="focus-grid">
+      <Card variant="feature">
+        <h3>Primary Focus: Gurudevi</h3>
+        <p>Designing a digital sanctuary for teacher wellbeing. Moving from concept to alpha.</p>
+        <div class="tags">
+          <span>React Native</span>
+          <span>Wellness</span>
+          <span>Community</span>
+        </div>
+      </Card>
+      
+      <Card>
+        <h3>Thinking About</h3>
+        <p>The role of AI in preserving human agency, rather than replacing it.</p>
+      </Card>
+      
+      <Card>
+        <h3>Reading</h3>
+        <p><em>Tools for Conviviality</em> by Ivan Illich</p>
+      </Card>
+    </div>
+  </div>
+</section>
+
+<style lang="scss">
+  .current-focus-section {
+    padding: 6rem 2rem;
+    background-color: var(--color-background);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    
+    .content-wrapper {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+      
+      h2 {
+        font-size: 2rem;
+      }
+    }
+    
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 20px;
+      
+      .dot {
+        width: 8px;
+        height: 8px;
+        background-color: #10B981;
+        border-radius: 50%;
+        
+        &.pulse {
+          box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+          animation: pulse-green 2s infinite;
+        }
+      }
+    }
+    
+    .focus-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: 1fr;
+      
+      @media (min-width: 768px) {
+        grid-template-columns: 2fr 1fr;
+      }
+    }
+    
+    .tags {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      
+      span {
+        font-size: 0.75rem;
+        background: rgba(0, 0, 0, 0.05);
+        padding: 4px 8px;
+        border-radius: 4px;
+      }
+    }
+    
+    @keyframes pulse-green {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      }
+      
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+      }
+      
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      }
+    }
+  }
+</style>

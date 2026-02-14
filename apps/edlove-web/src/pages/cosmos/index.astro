@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import CinematicBackground from '../../components/CinematicBackground.astro';
+import CosmicParticles from '../../components/CosmicParticles.astro';
 import ExpandableContent from '../../components/ExpandableContent.astro';
 import { getCollection, render } from 'astro:content';
 
@@ -8,40 +8,95 @@ const cosmosEntries = await getCollection('cosmos', ({ data }) => !data.draft);
 cosmosEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 ---
 
-<Layout title="The Paradigm Cosmos | EdLove">
-    <CinematicBackground />
+<Layout title="The Paradigm Cosmos | EdLove" theme="cosmic">
+    <CosmicParticles />
 
-    <div class="relative z-10 pb-24 sanctuary-container">
+    <div class="relative z-10 pb-32 sanctuary-container">
         <!-- Header: The Mapping -->
         <section class="text-center space-y-12 mb-32 animate-fade-in-up">
-            <div class="space-y-4">
-                <span class="font-heading text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-gold)] opacity-60">Domain I</span>
-                <h1 class="text-6xl md:text-8xl font-heading font-bold text-[var(--color-midnightInk)] leading-none">The Paradigm Cosmos</h1>
+            <div class="space-y-4 pt-16">
+                <span class="font-heading text-[10px] uppercase tracking-[0.5em] font-bold text-[var(--color-gold)] opacity-80">Domain I: The Infinite Stream</span>
+                <h1 class="text-5xl md:text-7xl font-heading font-bold text-white leading-none tracking-tighter">The Paradigm Cosmos</h1>
             </div>
 
-            <div class="h-px w-24 bg-[var(--color-gold)]/30 mx-auto"></div>
+            <div class="h-px w-32 bg-[var(--color-gold)]/30 mx-auto"></div>
 
-            <p class="font-body text-2xl text-[var(--color-midnightInk)]/50 max-w-2xl mx-auto leading-relaxed italic">
-                "We map the constellations of how learning happens. <br/> From the factory floor to the forest floor."
+            <p class="font-body text-xl md:text-2xl text-white/60 max-w-2xl mx-auto leading-relaxed italic">
+                "We map the constellations of how learning happens. From the factory floor to the forest floor."
             </p>
         </section>
 
-        <!-- Narrative Flow: The Dynamic Content -->
-        <section class="max-w-4xl mx-auto space-y-16">
-            {cosmosEntries.map(async (entry) => {
-                const { Content } = await render(entry);
-                return (
-                    <ExpandableContent 
-                        title={entry.data.title} 
-                        subtitle={entry.data.subtitle} 
-                        icon={entry.data.icon}
-                    >
-                        <div class="py-6 space-y-6 text-[var(--color-midnightInk)]/80 prose prose-slate max-w-none">
-                             <Content />
+        <!-- Journey Flow: The Timeline -->
+        <div class="max-w-5xl mx-auto journey-container relative">
+            <div class="journey-path"></div>
+            
+            <div class="space-y-32">
+                {cosmosEntries.map(async (entry) => {
+                    const { Content } = await render(entry);
+                    return (
+                        <div class="journey-node group animate-fade-in-up grid md:grid-cols-[1fr_3fr] gap-8 items-start">
+                            <!-- Time Horizon (Left Axis) -->
+                            <div class="hidden md:block text-right pt-8 pr-8 border-r border-white/10 relative">
+                                <span class="text-[var(--color-gold)] font-mono text-sm tracking-widest">{entry.data.origin || "Ancient"}</span>
+                                <div class="absolute right-[-5px] top-[2.4rem] w-2 h-2 rounded-full bg-[var(--color-gold)]"></div>
+                            </div>
+
+                            <!-- Content Node -->
+                            <div class="relative">
+                                <div class="journey-dot md:hidden"></div>
+                                
+                                <ExpandableContent 
+                                    title={entry.data.title} 
+                                    subtitle={entry.data.subtitle} 
+                                    icon={entry.data.icon}
+                                >
+                                    <div class="py-10 space-y-8 text-slate-800">
+                                        <div class="grid md:grid-cols-2 gap-8 border-b border-slate-100 pb-8">
+                                            <div class="space-y-2">
+                                                <span class="text-[10px] uppercase tracking-widest text-[var(--color-gold)] opacity-60">Origin</span>
+                                                <p class="font-serif italic text-lg">{entry.data.origin || "Ancient Evolution"}</p>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <span class="text-[10px] uppercase tracking-widest text-[var(--color-gold)] opacity-60">Core Logic</span>
+                                                <p class="font-serif italic text-lg">{entry.data.coreLogic || "Organic wisdom."}</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="prose prose-slate max-w-none">
+                                             <Content />
+                                        </div>
+
+                                        <div class="pt-6">
+                                            <a href={`/cosmos/${entry.id}`} class="inline-flex items-center gap-2 text-[var(--color-gold)] hover:gap-4 transition-all duration-300">
+                                                <span class="text-xs uppercase tracking-widest font-bold">Deep Dive into {entry.data.title}</span>
+                                                <span class="text-xl">→</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </ExpandableContent>
+                            </div>
                         </div>
-                    </ExpandableContent>
-                );
-            })}
+                    );
+                })}
+            </div>
+        </div>
+
+        <!-- Future Scenarios Bridge -->
+        <section class="mt-48 text-center space-y-12">
+            <div class="h-px w-full bg-gradient-to-r from-transparent via-[var(--color-gold)]/20 to-transparent"></div>
+            <div class="space-y-4">
+                <h2 class="text-3xl md:text-5xl font-heading text-white font-light">The Horizon: 2050</h2>
+                <p class="text-white/40 font-body italic">Where the journey leads...</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                {['The Regenerative Future', 'The Digital Future', 'The Hybrid Future'].map(future => (
+                    <div class="p-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-sm hover:border-[var(--color-gold)]/30 transition-all duration-500 group text-left">
+                        <span class="text-[10px] uppercase tracking-widest text-[var(--color-gold)] opacity-50 mb-4 block">Scenario</span>
+                        <h3 class="text-xl font-heading text-white mb-4">{future}</h3>
+                        <p class="text-sm text-white/50 font-body leading-relaxed">Imagined transitions for the ecological era...</p>
+                    </div>
+                ))}
+            </div>
         </section>
     </div>
 </Layout>

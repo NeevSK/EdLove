@@ -10,10 +10,7 @@ import { UserRole } from '../types/User';
  */
 export type TemporalPhase = 'dawn' | 'day' | 'evening' | 'night';
 
-/**
- * Theme Mode - User preference for theme
- */
-export type ThemeMode = 'light' | 'dark' | 'auto';
+export type ThemeMode = 'light' | 'dark' | 'auto' | 'system';
 
 /**
  * Visual Fidelity Level - Performance/visual quality tradeoff

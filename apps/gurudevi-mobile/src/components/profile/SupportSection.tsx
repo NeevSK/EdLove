@@ -8,9 +8,11 @@ import {
     Heading,
 } from '@/ui';
 import { Theme } from '../../constants/Theme';
+import { useThemedColors } from '../../hooks/useThemedColors';
 import { LifeBuoy, MessageCircle, AlertTriangle, ChevronRight } from 'lucide-react-native';
 
 export default function SupportSection() {
+    const colors = useThemedColors();
     const handleSupport = () => {
         // TODO: Replace with actual support URL or email
         Linking.openURL('mailto:support@gurudevi.org');
@@ -22,27 +24,27 @@ export default function SupportSection() {
                 alignItems="center"
                 justifyContent="space-between"
                 p={Theme.spacing.md}
-                bg={Theme.colors.deepIndigo}
+                bg={colors.secondary as any}
                 borderRadius={Theme.corners.comfortable}
                 mb={Theme.spacing.sm}
             >
                 <HStack space="md" alignItems="center">
-                    <Box p={8} bg={`${Theme.colors.sanctuarySaffron}20`} borderRadius={8}>
-                        <Icon size={20} color={Theme.colors.sanctuarySaffron} />
+                    <Box p={8} bg={`${colors.action}20` as any} borderRadius={8}>
+                        <Icon size={20} color={colors.action} />
                     </Box>
                     <VStack>
-                        <Text color={Theme.colors.sacredWhite} bold>{title}</Text>
-                        <Text color={Theme.colors.mistGray} size="xs">{subtitle}</Text>
+                        <Text color={colors.text as any} bold>{title}</Text>
+                        <Text color={colors.textSecondary as any} size="xs">{subtitle}</Text>
                     </VStack>
                 </HStack>
-                <ChevronRight size={20} color={Theme.colors.mistGray} />
+                <ChevronRight size={20} color={colors.textTertiary} />
             </HStack>
         </TouchableOpacity>
     );
 
     return (
         <VStack space="md" mt={Theme.spacing.lg}>
-            <Heading color={Theme.colors.mistGray} size="sm" mb="$2">
+            <Heading color={colors.textSecondary as any} size="sm" mb="$2">
                 Help & Support
             </Heading>
 

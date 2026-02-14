@@ -1,9 +1,20 @@
-/**
- * Permission Utilities
- * Role-based permission checks for Gurudevi features
- */
-
 import { User, UserRole } from '../types/User';
+import { useTranslation } from 'react-i18next';
+
+/**
+ * Role Groups for easier permission management
+ */
+export const ADMIN_ROLES: UserRole[] = ['principal', 'founder', 'admin', 'developer'];
+export const STAFF_ROLES: UserRole[] = ['principal', 'founder', 'admin', 'developer', 'section_head', 'grade_head', 'teacher'];
+export const MANAGEMENT_ROLES: UserRole[] = ['principal', 'founder', 'section_head', 'grade_head'];
+
+/**
+ * Check if a role belongs to a set of roles
+ */
+export function hasRole(role: UserRole | null | undefined, roles: UserRole[]): boolean {
+    if (!role) return false;
+    return roles.includes(role);
+}
 
 /**
  * Check if user can create lessons
@@ -14,22 +25,14 @@ export function canCreateLesson(user: User | null): boolean {
     return user.role === 'teacher';
 }
 
-/**
- * Check if user can post announcements
- * Principals and teachers can post announcements
- */
 export function canPostAnnouncement(user: User | null): boolean {
     if (!user) return false;
-    return user.role === 'principal' || user.role === 'teacher';
+    return hasRole(user.role, STAFF_ROLES);
 }
 
-/**
- * Check if user can view all school data
- * Only principals can view all school data
- */
 export function canViewAllSchoolData(user: User | null): boolean {
     if (!user) return false;
-    return user.role === 'principal';
+    return hasRole(user.role, ADMIN_ROLES);
 }
 
 /**
@@ -38,7 +41,7 @@ export function canViewAllSchoolData(user: User | null): boolean {
  */
 export function canManageStudents(user: User | null): boolean {
     if (!user) return false;
-    return user.role === 'teacher' || user.role === 'principal';
+    return hasRole(user.role, STAFF_ROLES);
 }
 
 /**
@@ -56,7 +59,7 @@ export function canSubmitAssignments(user: User | null): boolean {
  */
 export function canUploadResources(user: User | null): boolean {
     if (!user) return false;
-    return user.role === 'teacher' || user.role === 'principal';
+    return hasRole(user.role, STAFF_ROLES);
 }
 
 /**

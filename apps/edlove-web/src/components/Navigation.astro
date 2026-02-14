@@ -1,10 +1,11 @@
 ---
 const links = [
   { name: "Cosmos", href: "/cosmos" },
+  { name: "Sri Lanka", href: "/sri-lanka" },
   { name: "Gurudevi", href: "/gurudevi" },
+  { name: "Resources", href: "/resources" },
   { name: "The Sangha", href: "/community" },
   { name: "Library", href: "/library" },
-  { name: "Resources", href: "/resources" },
 ];
 
 const languages = [
@@ -14,19 +15,19 @@ const languages = [
 ];
 ---
 
-<header class="fixed top-0 left-0 right-0 z-[100] transition-all duration-300" id="main-header">
-  <nav class="sanctuary-container flex items-center justify-between h-[var(--spacing-nav-height)]">
-      <a href="/" class="flex items-center gap-2 group">
-          <span class="text-3xl group-hover:scale-110 transition-transform duration-500 ease-out">🕊️</span>
-          <span class="font-heading text-xl font-bold tracking-tight text-[var(--color-midnightInk)]">EdLove</span>
+<header class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[95%] max-w-5xl transition-all duration-300" id="main-header">
+  <nav class="bg-white/40 backdrop-blur-md border border-black/5 rounded-full px-8 h-16 flex items-center justify-between shadow-sm">
+      <a href="/" class="flex items-center gap-2 group shrink-0">
+          <span class="text-2xl group-hover:scale-110 transition-transform duration-500 ease-out">🕊️</span>
+          <span class="font-heading text-lg font-bold tracking-tight text-[var(--color-midnightInk)]">EdLove</span>
       </a>
 
       <!-- Desktop Links -->
-      <div class="hidden md:flex items-center gap-8">
+      <div class="hidden lg:flex items-center gap-6">
           {links.map(link => (
               <a 
                 href={link.href} 
-                class="font-heading text-sm font-medium text-[var(--color-midnightInk)]/70 hover:text-[var(--color-gold)] transition-all duration-300 relative group"
+                class="font-heading text-[13px] font-medium text-[var(--color-midnightInk)]/70 hover:text-[var(--color-gold)] transition-all duration-300 relative group truncate"
               >
                 {link.name}
                 <span class="absolute -bottom-1 left-0 w-0 h-px bg-[var(--color-gold)] transition-all duration-300 group-hover:w-full"></span>
@@ -34,9 +35,9 @@ const languages = [
           ))}
               
           <!-- Language Switcher -->
-          <div class="flex items-center gap-3 pl-6 border-l border-[var(--color-midnightInk)]/10 ml-2">
+          <div class="flex items-center gap-3 pl-6 border-l border-[var(--color-midnightInk)]/10 ml-2 shrink-0">
               {languages.map((lang) => (
-                  <a href={lang.href} class="font-heading text-xs font-bold text-[var(--color-midnightInk)]/40 hover:text-[var(--color-gold)] transition-colors">
+                  <a href={lang.href} class="font-heading text-[10px] font-bold text-[var(--color-midnightInk)]/40 hover:text-[var(--color-gold)] transition-colors">
                       {lang.code}
                   </a>
               ))}
@@ -46,7 +47,7 @@ const languages = [
       <!-- Mobile Trigger -->
       <button 
         id="mobile-menu-button"
-        class="md:hidden text-[var(--color-midnightInk)] p-2 focus-ring"
+        class="lg:hidden text-[var(--color-midnightInk)] p-2 focus-ring hover:bg-black/5 rounded-full transition-colors"
         aria-label="Toggle mobile menu"
         aria-expanded="false"
       >
@@ -56,46 +57,47 @@ const languages = [
       </button>
   </nav>
 
-  <!-- Mobile Menu Overlay -->
-  <div 
-    id="mobile-menu" 
-    class="md:hidden fixed inset-0 z-[110] opacity-0 pointer-events-none transition-all duration-500"
-  >
-    <!-- Blurred Backdrop -->
-    <div class="absolute inset-0 bg-[var(--color-warmPaper)]/95 backdrop-blur-2xl" id="mobile-menu-backdrop"></div>
-    
-    <!-- Menu Content -->
-    <div class="relative h-full flex flex-col items-center justify-center p-8">
-        <!-- Close Button (Bottom for Thumb-Friendly) -->
-        <button id="mobile-menu-close" class="absolute bottom-12 p-4 bg-[var(--color-midnightInk)] text-[var(--color-warmPaper)] rounded-full shadow-xl focus-ring">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-        
-        <div class="flex flex-col items-center gap-8 w-full max-w-xs" id="mobile-links">
-            {links.map((link) => (
-              <a 
-                href={link.href} 
-                class="font-heading text-4xl font-bold text-[var(--color-midnightInk)] hover:text-[var(--color-gold)] transition-all"
-              >
-                {link.name}
-              </a>
-            ))}
-            
-            <div class="h-px w-12 bg-[var(--color-midnightInk)]/10 mt-4"></div>
-            
-            <div class="flex gap-6 mt-4">
-              {languages.map((lang) => (
-                  <a href={lang.href} class="font-heading text-lg font-bold text-[var(--color-midnightInk)]/40 hover:text-[var(--color-gold)]">
-                      {lang.label}
-                  </a>
-              ))}
-            </div>
-        </div>
-    </div>
-  </div>
 </header>
+
+<!-- Mobile Menu Overlay -->
+<div 
+  id="mobile-menu" 
+  class="lg:hidden fixed inset-0 z-[110] opacity-0 pointer-events-none transition-all duration-500"
+>
+  <!-- Blurred Backdrop -->
+  <div class="absolute inset-0 bg-white/95 backdrop-blur-xl" id="mobile-menu-backdrop"></div>
+  
+  <!-- Menu Content -->
+  <div class="relative h-full flex flex-col items-center justify-center p-8">
+      <!-- Close Button (Bottom for Thumb-Friendly) -->
+      <button id="mobile-menu-close" class="absolute bottom-16 p-5 bg-[var(--color-midnightInk)] text-white rounded-full shadow-2xl focus-ring active:scale-95 transition-transform">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      
+      <div class="flex flex-col items-center gap-6 w-full max-w-xs" id="mobile-links">
+          {links.map((link) => (
+            <a 
+              href={link.href} 
+              class="font-heading text-3xl font-bold text-[var(--color-midnightInk)] hover:text-[var(--color-gold)] transition-all active:scale-95"
+            >
+              {link.name}
+            </a>
+          ))}
+          
+          <div class="h-px w-12 bg-[var(--color-midnightInk)]/10 my-4"></div>
+          
+          <div class="flex flex-wrap justify-center gap-4">
+            {languages.map((lang) => (
+                <a href={lang.href} class="px-4 py-2 rounded-full border border-black/5 font-heading text-sm font-bold text-[var(--color-midnightInk)]/40 hover:text-[var(--color-gold)] hover:bg-white transition-all">
+                    {lang.label}
+                </a>
+            ))}
+          </div>
+      </div>
+  </div>
+</div>
 
 <script>
   function setupNavigation() {

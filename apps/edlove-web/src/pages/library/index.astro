@@ -6,9 +6,9 @@ import { getCollection, render } from 'astro:content';
 
 const libraryEntries = await getCollection('library', ({ data }) => !data.draft);
 
-const thinkers = libraryEntries.filter(e => e.data.type === 'Thinker').sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
-const frameworks = libraryEntries.filter(e => e.data.type === 'Framework').sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
-const stories = libraryEntries.filter(e => e.data.type === 'Story').sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+const thinkers = libraryEntries.filter(e => e.data.category === 'thinker').sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+const frameworks = libraryEntries.filter(e => e.data.category === 'framework').sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+const stories = libraryEntries.filter(e => e.data.category === 'story').sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 ---
 
 <Layout title="The Library | EdLove">

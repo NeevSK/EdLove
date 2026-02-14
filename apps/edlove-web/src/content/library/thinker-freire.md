@@ -1,8 +1,7 @@
 ---
 title: "Paulo Freire"
 subtitle: "Pedagogy of the Oppressed"
-icon: "✊"
-type: "Thinker"
+category: "thinker"
 order: 20
 ---
 

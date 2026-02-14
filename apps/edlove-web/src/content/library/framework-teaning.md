@@ -1,8 +1,7 @@
 ---
 title: "The Art of Teaning"
 subtitle: "Matching Impedance"
-icon: "⚡"
-type: "Framework"
+category: "framework"
 order: 30
 ---
 

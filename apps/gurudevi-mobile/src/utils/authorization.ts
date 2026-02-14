@@ -78,8 +78,9 @@ export async function requireClassroomAccess(classroomId: string) {
         return user;
     }
 
-    // Principals have access to all classrooms in their school
-    if (userRole === 'principal') {
+    // Administrative roles (Principals/Founders) have access to all classrooms in their school
+    const ADMIN_ROLES = ['principal', 'founder', 'admin', 'developer'];
+    if (ADMIN_ROLES.includes(userRole)) {
         const userSchoolId = user.user_metadata?.school_id || user.app_metadata?.school_id;
         if (classroom.school_id === userSchoolId) {
             return user;
