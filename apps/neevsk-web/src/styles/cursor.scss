@@ -1,0 +1,43 @@
+// ============================================
+// CUSTOM CURSOR SYSTEM
+// Making interactions feel magical
+// ============================================
+
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+  z-index: 10000;
+  mix-blend-mode: difference;
+  transition: width 0.3s ease, height 0.3s ease;
+
+  .cursor-inner {
+    width: 100%;
+    height: 100%;
+    border: 2px solid white;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+
+  &.expanded {
+    width: 48px;
+    height: 48px;
+
+    .cursor-inner {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.8);
+    }
+  }
+}
+
+// Hide default cursor on interactive elements when custom cursor is active
+body:has(.custom-cursor) {
+  cursor: none;
+
+  a, button, .door-card, .card, .nav-link {
+    cursor: none;
+  }
+}

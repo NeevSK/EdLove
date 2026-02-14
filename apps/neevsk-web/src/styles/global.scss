@@ -5,8 +5,28 @@
     --color-primary: #2C2C2C;
     --color-secondary: #5C5C5C;
     --color-accent: #E0E0E0;
-    --color-background: #FFFFFF;
+    --color-background: #FAFAFA;
+    --color-background-elevated: #FFFFFF;
     --color-text: #1A1A1A;
+
+    // RGB values for dynamic color manipulation
+    --color-primary-rgb: 44, 44, 44;
+    --color-secondary-rgb: 92, 92, 92;
+    --color-text-rgb: 26, 26, 26;
+
+    // Vibrant accent colors for aliveness
+    --accent-teal: #4A9B9B;
+    --accent-coral: #FF6B6B;
+    --accent-purple: #9B59B6;
+    --accent-gold: #F4A460;
+    --accent-emerald: #2ECC71;
+    --accent-sky: #3498DB;
+
+    --accent-teal-rgb: 74, 155, 155;
+    --accent-coral-rgb: 255, 107, 107;
+    --accent-purple-rgb: 155, 89, 182;
+    --accent-gold-rgb: 244, 164, 96;
+    --accent-emerald-rgb: 46, 204, 113;
 
     --font-heading: 'Inter', sans-serif;
     --font-body: 'Inter', sans-serif;
@@ -17,16 +37,33 @@
     --spacing-md: 16px;
     --spacing-lg: 24px;
     --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+    --spacing-3xl: 64px;
+    --spacing-4xl: 96px;
+    --spacing-5xl: 128px;
 
     --border-radius: 8px;
-    --border-radius-lg: 12px;
+    --border-radius-lg: 16px;
+    --border-radius-xl: 24px;
 
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    // Softer, more premium shadows
+    --shadow-xs: 0 1px 4px rgba(0, 0, 0, 0.02);
+    --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.03);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.08);
+    --shadow-xl: 0 24px 60px rgba(0, 0, 0, 0.12);
+
+    // Colored shadows for vibrant effects
+    --shadow-teal: 0 8px 32px rgba(74, 155, 155, 0.2);
+    --shadow-coral: 0 8px 32px rgba(255, 107, 107, 0.2);
+    --shadow-purple: 0 8px 32px rgba(155, 89, 182, 0.2);
 
     --transition-speed: 0.3s;
+    --transition-slow: 0.6s;
+    --transition-fast: 0.15s;
     --ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 * {
@@ -35,13 +72,21 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
 body {
     font-family: var(--font-body);
     color: var(--color-text);
     background: var(--color-background);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     @include theme-transition;
+    overflow-x: hidden;
+    position: relative;
 }
 
 h1,
@@ -58,6 +103,7 @@ h6 {
 a {
     color: inherit;
     text-decoration: none;
+    position: relative;
 }
 
 img {
@@ -71,4 +117,17 @@ button {
     border: none;
     background: none;
     font-family: inherit;
+}
+
+// Premium focus states
+:focus-visible {
+    outline: 2px solid var(--accent-teal);
+    outline-offset: 4px;
+    border-radius: 6px;
+}
+
+// Selection color
+::selection {
+    background: rgba(var(--accent-teal-rgb), 0.2);
+    color: var(--color-text);
 }

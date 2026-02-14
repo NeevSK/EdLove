@@ -11,27 +11,35 @@ const links = [
 const { pathname } = Astro.url;
 ---
 
-<nav class="main-nav">
+<nav class="main-nav" id="main-nav">
   <div class="nav-content">
-    <a href="/" class="nav-logo">Neev SK</a>
-    
+    <a href="/" class="nav-logo">
+      <span class="logo-text">Neev SK</span>
+      <span class="logo-dot"></span>
+    </a>
+
     <div class="nav-links">
-      {links.map(link => (
-        <a 
-          href={link.href} 
+      {links.map((link, index) => (
+        <a
+          href={link.href}
           class:list={['nav-link', { active: pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href)) }]}
           data-theme-trigger={link.theme}
+          style={`--link-index: ${index}`}
         >
-          {link.label}
+          <span class="link-text">{link.label}</span>
+          <span class="link-hover-bg"></span>
         </a>
       ))}
     </div>
-    
+
     <button class="mobile-menu-toggle" aria-label="Toggle menu">
-      <span></span>
-      <span></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
     </button>
   </div>
+
+  <div class="nav-glow"></div>
 </nav>
 
 <style lang="scss">
@@ -41,68 +49,265 @@ const { pathname } = Astro.url;
     left: 0;
     width: 100%;
     z-index: 100;
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-    
+    backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(250, 250, 250, 0.7);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.4s var(--ease-smooth);
+
+    &.scrolled {
+      background: rgba(250, 250, 250, 0.95);
+      box-shadow: var(--shadow-sm);
+      border-bottom-color: rgba(0, 0, 0, 0.08);
+
+      .nav-glow {
+        opacity: 1;
+      }
+    }
+
     .nav-content {
-      max-width: 1400px;
+      max-width: 1600px;
       margin: 0 auto;
-      padding: 1.5rem 2rem;
+      padding: 1.25rem 2.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+
+      @media (max-width: 768px) {
+        padding: 1rem 1.5rem;
+      }
     }
-    
+
     .nav-logo {
       font-family: var(--font-heading);
       font-weight: 700;
-      font-size: 1.25rem;
+      font-size: 1.35rem;
       letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      position: relative;
+      color: var(--color-text);
+      transition: all 0.3s ease;
+
+      .logo-text {
+        background: linear-gradient(
+          135deg,
+          var(--color-text) 0%,
+          var(--accent-teal) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        transition: all 0.3s ease;
+      }
+
+      .logo-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent-teal);
+        box-shadow: 0 0 10px rgba(var(--accent-teal-rgb), 0.6);
+        animation: pulse-gentle 2s ease-in-out infinite;
+      }
+
+      &:hover {
+        transform: translateY(-2px);
+
+        .logo-text {
+          background: linear-gradient(
+            135deg,
+            var(--accent-teal) 0%,
+            var(--accent-emerald) 100%
+          );
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .logo-dot {
+          box-shadow: 0 0 20px rgba(var(--accent-teal-rgb), 1);
+        }
+      }
     }
-    
+
     .nav-links {
       display: flex;
-      gap: 2rem;
-      
+      gap: 0.5rem;
+
       @media (max-width: 768px) {
         display: none;
       }
     }
-    
+
     .nav-link {
       font-size: 0.95rem;
       font-weight: 500;
-      opacity: 0.7;
-      transition: opacity 0.2s ease, transform 0.2s ease;
+      opacity: 0.75;
+      padding: 0.6rem 1.25rem;
+      border-radius: var(--border-radius);
+      transition: all 0.3s var(--ease-smooth);
       position: relative;
-      
+      color: var(--color-text);
+
+      .link-text {
+        position: relative;
+        z-index: 2;
+      }
+
+      .link-hover-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: var(--border-radius);
+        background: linear-gradient(
+          135deg,
+          rgba(var(--accent-teal-rgb), 0.08) 0%,
+          rgba(var(--accent-emerald-rgb), 0.08) 100%
+        );
+        opacity: 0;
+        transform: scale(0.9);
+        transition: all 0.3s var(--ease-bounce);
+        z-index: 1;
+      }
+
       &:hover {
         opacity: 1;
-        transform: translateY(-1px);
+        transform: translateY(-2px);
+
+        .link-hover-bg {
+          opacity: 1;
+          transform: scale(1);
+        }
       }
-      
+
       &.active {
         opacity: 1;
-        
+        color: var(--accent-teal);
+        font-weight: 600;
+
+        .link-hover-bg {
+          opacity: 1;
+          transform: scale(1);
+          background: linear-gradient(
+            135deg,
+            rgba(var(--accent-teal-rgb), 0.12) 0%,
+            rgba(var(--accent-emerald-rgb), 0.12) 100%
+          );
+        }
+
         &::after {
           content: '';
           position: absolute;
-          bottom: -4px;
-          left: 0;
-          width: 100%;
-          height: 1px;
-          background-color: currentColor;
+          bottom: 6px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 4px;
+          height: 4px;
+          border-radius: 50%;
+          background: var(--accent-teal);
+          box-shadow: 0 0 8px rgba(var(--accent-teal-rgb), 0.8);
+          animation: pulse-gentle 2s ease-in-out infinite;
         }
       }
     }
-    
+
     .mobile-menu-toggle {
       display: none;
-      
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+
       @media (max-width: 768px) {
-        display: block;
+        display: flex;
       }
+
+      .hamburger-line {
+        width: 100%;
+        height: 2px;
+        background: var(--color-text);
+        border-radius: 2px;
+        transition: all 0.3s ease;
+      }
+
+      &:hover .hamburger-line {
+        background: var(--accent-teal);
+      }
+
+      &.active {
+        .hamburger-line:nth-child(1) {
+          transform: rotate(45deg) translate(7px, 7px);
+        }
+
+        .hamburger-line:nth-child(2) {
+          opacity: 0;
+        }
+
+        .hamburger-line:nth-child(3) {
+          transform: rotate(-45deg) translate(7px, -7px);
+        }
+      }
+    }
+
+    .nav-glow {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--accent-teal) 50%,
+        transparent 100%
+      );
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+  }
+
+  @keyframes pulse-gentle {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 0.8;
     }
   }
 </style>
+
+<script>
+  // Scroll detection
+  const nav = document.getElementById('main-nav');
+  let lastScroll = 0;
+
+  window.addEventListener('scroll', () => {
+    const currentScroll = window.pageYOffset;
+
+    if (currentScroll > 50) {
+      nav?.classList.add('scrolled');
+    } else {
+      nav?.classList.remove('scrolled');
+    }
+
+    lastScroll = currentScroll;
+  });
+
+  // Mobile menu toggle
+  const mobileToggle = document.querySelector('.mobile-menu-toggle');
+  const navLinks = document.querySelector('.nav-links');
+
+  mobileToggle?.addEventListener('click', () => {
+    mobileToggle.classList.toggle('active');
+    navLinks?.classList.toggle('mobile-active');
+  });
+</script>
