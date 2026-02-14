@@ -14,19 +14,21 @@
     --color-secondary-rgb: 92, 92, 92;
     --color-text-rgb: 26, 26, 26;
 
-    // Vibrant accent colors for aliveness
-    --accent-teal: #4A9B9B;
-    --accent-coral: #FF6B6B;
-    --accent-purple: #9B59B6;
-    --accent-gold: #F4A460;
-    --accent-emerald: #2ECC71;
-    --accent-sky: #3498DB;
+    // VIVID, BRIGHT, ALIVE accent colors for maximum impact
+    --accent-teal: #00D9D9;        // Electric bright teal (was #4A9B9B)
+    --accent-coral: #FF3366;       // Vibrant hot coral (was #FF6B6B)
+    --accent-purple: #D946EF;      // Bright magenta (was #9B59B6)
+    --accent-gold: #FFB800;        // Bright golden yellow (was #F4A460)
+    --accent-emerald: #00FF88;     // Neon bright green (was #2ECC71)
+    --accent-sky: #00CCFF;         // Bright cyan (was #3498DB)
 
-    --accent-teal-rgb: 74, 155, 155;
-    --accent-coral-rgb: 255, 107, 107;
-    --accent-purple-rgb: 155, 89, 182;
-    --accent-gold-rgb: 244, 164, 96;
-    --accent-emerald-rgb: 46, 204, 113;
+    // Updated RGB values for vivid colors
+    --accent-teal-rgb: 0, 217, 217;         // #00D9D9
+    --accent-coral-rgb: 255, 51, 102;      // #FF3366
+    --accent-purple-rgb: 217, 70, 239;     // #D946EF
+    --accent-gold-rgb: 255, 184, 0;        // #FFB800
+    --accent-emerald-rgb: 0, 255, 136;     // #00FF88
+    --accent-sky-rgb: 0, 204, 255;         // #00CCFF
 
     --font-heading: 'Inter', sans-serif;
     --font-body: 'Inter', sans-serif;
