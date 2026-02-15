@@ -38,3 +38,7 @@ yarn-error.log*
 .DS_Store
 *.pem
 .claude/settings.local.json
+
+## IDEs
+.vscode/
+.claude/

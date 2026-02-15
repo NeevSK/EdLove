@@ -12,7 +12,9 @@ import {
     Zap,
     Globe,
     Heart,
-    Flower
+    Flower,
+    LayoutGrid,
+    Activity
 } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { useTranslation } from 'react-i18next';
@@ -75,6 +77,28 @@ export default function RoleInitialState({ role, onCreatePress, onSamplePress }:
                         { id: 'demo', title: t('classroom.exploreSampleSchool') || "Explore Sample Sanctuary", subtitle: t('classroom.seeFullFeatureDemo') || "See a full school in action", icon: Zap, color: Theme.colors.sanctuarySaffron },
                         { id: 's1', title: "Health Pattern Sample", subtitle: "Attendance Trends", icon: Zap, color: Theme.colors.amberGlow },
                         { id: 's2', title: "Staff Directory Guide", subtitle: "Managing Invites", icon: Globe },
+                    ]
+                };
+            case 'section_head':
+                return {
+                    title: t('classroom.sectionHeadInitialTitle') || "Section Ecology",
+                    description: t('classroom.sectionHeadInitialDesc') || "Monitor wellbeing and academic trends across your section.",
+                    icon: LayoutGrid,
+                    primaryAction: t('principal.setupHierarchy') || "Manage Section",
+                    samples: [
+                        { id: 'demo', title: t('classroom.exploreSampleSchool') || "Explore Sample Sanctuary", subtitle: t('classroom.seeFullFeatureDemo') || "See a full school in action", icon: Zap, color: Theme.colors.sanctuarySaffron },
+                        { id: 's1', title: "Section Wellness Report", subtitle: "Aggregate insights", icon: Heart, color: Theme.colors.emberRed },
+                    ]
+                };
+            case 'grade_head':
+                return {
+                    title: t('classroom.gradeHeadInitialTitle') || "Grade Overview",
+                    description: t('classroom.gradeHeadInitialDesc') || "Coordinate classes and track progress for your assigned grade.",
+                    icon: Users,
+                    primaryAction: t('classroom.createClass') || "Manage Grade",
+                    samples: [
+                        { id: 'demo', title: t('classroom.exploreSampleSchool') || "Explore Sample Sanctuary", subtitle: t('classroom.seeFullFeatureDemo') || "See a full school in action", icon: Zap, color: Theme.colors.sanctuarySaffron },
+                        { id: 's1', title: "Grade-wide Analytics", subtitle: "Compare class performance", icon: Activity, color: colors.action },
                     ]
                 };
             case 'founder':

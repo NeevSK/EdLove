@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GluestackUIProvider, Spinner, Center } from '@/ui';
+import { GluestackUIProvider, Spinner, Center, VStack, Text } from '@/ui';
 import { config } from "./gluestack-ui.config";
 import { Home, School, Users, Library, User } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
@@ -79,10 +79,12 @@ export default function App() {
   useEffect(() => {
     async function loadFonts() {
       try {
+        console.log('App: Loading fonts...');
         await Font.loadAsync(fontAssets);
+        console.log('App: Fonts loaded successfully');
         setFontsLoaded(true);
       } catch (error) {
-        console.error('Error loading fonts:', error);
+        console.error('App: Error loading fonts:', error);
         // Continue anyway - app will use system fonts as fallback
         setFontsLoaded(true);
       }
@@ -92,7 +94,9 @@ export default function App() {
 
   useEffect(() => {
     // Check initial session
+    console.log('App: Checking session...');
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      console.log('App: Session check complete', !!session);
       setSession(session);
 
       // Fetch user role and school type when session is restored
@@ -100,6 +104,9 @@ export default function App() {
         await fetchAndSetUserProfile(session.user.id);
       }
 
+      setLoading(false);
+    }).catch(err => {
+      console.error('App: Session check failed!', err);
       setLoading(false);
     });
 
@@ -169,14 +176,21 @@ export default function App() {
   };
 
   if (loading || !fontsLoaded) {
+    console.log('App: Still loading...', { loading, fontsLoaded });
     return (
       <GluestackUIProvider config={config}>
         <Center sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
-          <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+          <VStack space="md" alignItems="center">
+            <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+            <Text color={Theme.colors.white} size="sm">
+              {loading ? 'Initializing Sanctuary...' : 'Preparing Fonts...'}
+            </Text>
+          </VStack>
         </Center>
       </GluestackUIProvider>
     );
   }
+  console.log('App: Loading finished, rendering main tree');
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

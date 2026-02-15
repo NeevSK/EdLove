@@ -160,32 +160,30 @@ export default function ClassroomList({
                     data = await api.classrooms.getByTeacher(user.id);
                 } else if (role === 'student') {
                     data = await api.classrooms.getByStudent(user.id);
-                    // Sort for student view since join query may not preserve ordering
                     data.sort((a, b) => a.name.localeCompare(b.name));
                 }
 
-                setClassrooms(data);
-
                 // Inject Sample Classroom if in Explorer/Demo mode and not dismissed
-                if (role === 'teacher' && (isExplorerMode || role === 'teacher')) {
+                if (role === 'teacher') {
                     const sampleId = 'sample-c1';
                     if (!dismissedSampleIds.includes(sampleId)) {
-                        // Check if sample already exists in data to avoid duplicates
                         if (!data.find(c => c.id === sampleId)) {
-                            // We use require to avoid circular dependency if any, 
-                            // but usually mockData is just constants.
                             const { MOCK_CLASSROOMS } = require('../../lib/api/mockData');
                             const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
                             if (sample) {
-                                setClassrooms(prev => [sample, ...prev]);
+                                (sample as any).is_sample = true;
+                                data = [sample, ...data];
                             }
                         }
                     }
                 }
 
+                console.log(`[ClassroomList] Loaded ${data.length} classrooms for role: ${role}`);
+                setClassrooms(data);
+
                 if (onDataLoaded) onDataLoaded(data);
             } catch (err: any) {
-                console.error('Error fetching classrooms:', err);
+                console.error('[ClassroomList] Error fetching classrooms:', err);
                 setError(err.message || 'Failed to load classrooms');
             } finally {
                 setLoading(false);
@@ -255,101 +253,181 @@ export default function ClassroomList({
         );
     }
 
-    // Empty state
-    if (classrooms.length === 0) {
-        return (
-            <RoleInitialState
-                role={role}
-                onCreatePress={() => {
-                    hapticLight();
-                    setPendingInitialData(null); // Clear any previous initial data
-                    setIsCreateModalOpen(true);
-                }}
-                onSamplePress={(item) => {
-                    console.log('Sample pressed:', item.title);
-                    // TODO: Could show a "Sample Preview" modal
-                }}
-            />
-        );
-    }
-
-    // Classroom list with FlatList
+    // For nested use (e.g. inside TeacherDashboard ScrollView), we use VStack
     if (isNested) {
-        // For nested use, return VStack for compatibility
         return (
-            <VStack space="md">
-                {classrooms.map((classroom) => (
-                    <ClassroomCard
-                        key={classroom.id}
-                        classroom={classroom}
-                        onPress={handleClassroomPress}
-                        onClassroomPress={onClassroomPress} // Pass onClassroomPress for edit action
-                        studentCount={(classroom as any).student_count || 0}
-                        colors={colors}
-                        setPendingInitialData={setPendingInitialData}
-                        setIsCreateModalOpen={setIsCreateModalOpen}
-                        toast={toast}
-                        t={t}
+            <VStack space="md" sx={{ width: '100%' }}>
+                {classrooms.length === 0 ? (
+                    <RoleInitialState
+                        role={role}
+                        onCreatePress={() => {
+                            hapticLight();
+                            setPendingInitialData(null);
+                            setIsCreateModalOpen(true);
+                        }}
                     />
-                ))}
+                ) : (
+                    classrooms.map((classroom) => (
+                        <ClassroomCard
+                            key={classroom.id}
+                            classroom={classroom}
+                            onPress={handleClassroomPress}
+                            onClassroomPress={onClassroomPress}
+                            studentCount={(classroom as any).student_count || 0}
+                            colors={colors}
+                            setPendingInitialData={setPendingInitialData}
+                            setIsCreateModalOpen={setIsCreateModalOpen}
+                            toast={toast}
+                            t={t}
+                        />
+                    ))
+                )}
+
+                <CreateClassroomModal
+                    isOpen={isCreateModalOpen}
+                    initialData={pendingInitialData}
+                    onClose={() => {
+                        setIsCreateModalOpen(false);
+                        setPendingInitialData(null);
+                    }}
+                    onSuccess={() => {
+                        hapticSuccess();
+                        setInternalRefreshTrigger(prev => prev + 1);
+                    }}
+                />
             </VStack>
         );
     }
 
-    return (
-        <Box flex={1}>
-            <FlatList
-                data={classrooms}
-                renderItem={renderClassroomCard}
-                keyExtractor={keyExtractor}
-                ItemSeparatorComponent={ItemSeparator}
-                style={styles.container}
-                contentContainerStyle={styles.contentContainer}
-                showsVerticalScrollIndicator={false}
-                // Performance optimizations
-                initialNumToRender={10}
-                maxToRenderPerBatch={10}
-                windowSize={5}
-                removeClippedSubviews={true}
-            />
+    // Standard view (using FlatList)
+    // For nested use (e.g. inside TeacherDashboard ScrollView), we use VStack
+    if (isNested) {
+        return (
+            <VStack space="md" sx={{ width: '100%' }}>
+                {classrooms.length === 0 ? (
+                    <RoleInitialState
+                        role={role}
+                        onCreatePress={() => {
+                            console.log('[ClassroomList] RoleInitialState onCreatePress');
+                            hapticLight();
+                            setPendingInitialData(null);
+                            setIsCreateModalOpen(true);
+                        }}
+                        onSamplePress={(item) => {
+                            console.log('[ClassroomList] Sample guide pressed:', item.id);
+                        }}
+                    />
+                ) : (
+                    <>
+                        {classrooms.map((classroom) => (
+                            <ClassroomCard
+                                key={classroom.id}
+                                classroom={classroom}
+                                onPress={handleClassroomPress}
+                                onClassroomPress={onClassroomPress} // Pass onClassroomPress for edit action
+                                studentCount={(classroom as any).student_count || 0}
+                                colors={colors}
+                                setPendingInitialData={setPendingInitialData}
+                                setIsCreateModalOpen={setIsCreateModalOpen}
+                                toast={toast}
+                                t={t}
+                            />
+                        ))}
+                    </>
+                )}
 
-            {/* Persistent FAB for Creation */}
-            <TouchableOpacity
-                onPress={() => {
-                    setPendingInitialData(null);
-                    setIsCreateModalOpen(true);
-                }}
-                style={{
-                    position: 'absolute',
-                    bottom: 20,
-                    right: 20,
-                    width: 56,
-                    height: 56,
-                    borderRadius: 28,
-                    backgroundColor: Theme.colors.sanctuarySaffron,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    ...Theme.shadows.md,
-                    zIndex: 10
-                }}
-            >
-                <Plus size={24} color="white" />
-            </TouchableOpacity>
+                <CreateClassroomModal
+                    isOpen={isCreateModalOpen}
+                    initialData={pendingInitialData}
+                    onClose={() => {
+                        console.log('[ClassroomList] Closing nested modal');
+                        setIsCreateModalOpen(false);
+                        setPendingInitialData(null);
+                    }}
+                    onSuccess={() => {
+                        console.log('[ClassroomList] Nested create success');
+                        hapticSuccess();
+                        setInternalRefreshTrigger(prev => prev + 1);
+                    }}
+                />
+            </VStack>
+        );
+    }
+
+    const content = (
+        <Box flex={1} sx={{ backgroundColor: colors.primary }}>
+            {classrooms.length === 0 ? (
+                <RoleInitialState
+                    role={role}
+                    onCreatePress={() => {
+                        console.log('[ClassroomList] Standard empty onCreatePress');
+                        hapticLight();
+                        setPendingInitialData(null);
+                        setIsCreateModalOpen(true);
+                    }}
+                    onSamplePress={(item) => {
+                        console.log('[ClassroomList] Sample guide pressed:', item.id);
+                    }}
+                />
+            ) : (
+                <>
+                    <FlatList
+                        data={classrooms}
+                        renderItem={renderClassroomCard}
+                        keyExtractor={keyExtractor}
+                        ItemSeparatorComponent={ItemSeparator}
+                        style={styles.container}
+                        contentContainerStyle={styles.contentContainer}
+                        showsVerticalScrollIndicator={false}
+                        initialNumToRender={10}
+                        maxToRenderPerBatch={10}
+                        windowSize={5}
+                        removeClippedSubviews={true}
+                    />
+
+                    <TouchableOpacity
+                        onPress={() => {
+                            console.log('[ClassroomList] FAB pressed');
+                            setPendingInitialData(null);
+                            setIsCreateModalOpen(true);
+                        }}
+                        style={{
+                            position: 'absolute',
+                            bottom: 20,
+                            right: 20,
+                            width: 56,
+                            height: 56,
+                            borderRadius: 28,
+                            backgroundColor: Theme.colors.sanctuarySaffron,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            ...Theme.shadows.md,
+                            zIndex: 10
+                        }}
+                    >
+                        <Plus size={24} color="white" />
+                    </TouchableOpacity>
+                </>
+            )}
 
             <CreateClassroomModal
                 isOpen={isCreateModalOpen}
                 initialData={pendingInitialData}
                 onClose={() => {
+                    console.log('[ClassroomList] Closing standard modal');
                     setIsCreateModalOpen(false);
                     setPendingInitialData(null);
                 }}
                 onSuccess={() => {
+                    console.log('[ClassroomList] Standard create success');
                     hapticSuccess();
                     setInternalRefreshTrigger(prev => prev + 1);
                 }}
             />
         </Box>
     );
+
+    return content;
 }
 
 // Memoized ClassroomCard component for better performance

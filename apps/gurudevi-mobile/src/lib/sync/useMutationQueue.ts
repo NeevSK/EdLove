@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { SafeZustandStorage } from '../storageWrapper';
 import { MutationQueueState, QueuedMutation } from './types';
-import 'react-native-get-random-values';
+
 import { v4 as uuidv4 } from 'uuid';
 
 /**

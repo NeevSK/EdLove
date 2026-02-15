@@ -25,7 +25,7 @@ import GlobalHeader from '../components/shared/GlobalHeader';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import ScreenWrapper from '../components/shared/ScreenWrapper';
-import { hasRole, ADMIN_ROLES } from '../utils/permissions';
+import { hasRole, ADMIN_ROLES, MANAGEMENT_ROLES } from '../utils/permissions';
 import { useThemedColors } from '../hooks/useThemedColors';
 
 // Shared container styling for role-based views
@@ -44,7 +44,7 @@ export default function ClassroomScreen() {
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     useEffect(() => {
-        if (hasRole(role, ADMIN_ROLES)) {
+        if (hasRole(role, ADMIN_ROLES) || hasRole(role, MANAGEMENT_ROLES)) {
             fetchPrincipalData();
         } else {
             setLoading(false);
@@ -100,11 +100,11 @@ export default function ClassroomScreen() {
     }
 
     if (role === 'section_head') {
-        return <SectionHeadView />;
+        return <SectionHeadView schoolId={principalData?.schoolId} userId={principalData?.userId} />;
     }
 
     if (role === 'grade_head') {
-        return <GradeHeadView />;
+        return <GradeHeadView schoolId={principalData?.schoolId} userId={principalData?.userId} />;
     }
 
     // Default view for teachers and students

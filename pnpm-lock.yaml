@@ -209,6 +209,9 @@ importers:
       react-native-gesture-handler:
         specifier: 2.28.0
         version: 2.28.0(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)
+      react-native-get-random-values:
+        specifier: ^2.0.0
+        version: 2.0.0(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.10)(react@19.1.0))
       react-native-mmkv:
         specifier: ^4.1.2
         version: 4.1.2(react-native-nitro-modules@0.33.7(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)
@@ -230,6 +233,9 @@ importers:
       react-native-worklets:
         specifier: 0.5.1
         version: 0.5.1(@babel/core@7.29.0)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)
+      uuid:
+        specifier: ^13.0.0
+        version: 13.0.0
       zustand:
         specifier: ^5.0.10
         version: 5.0.11(@types/react@19.1.10)(react@19.1.0)(use-sync-external-store@1.6.0(react@19.1.0))
@@ -252,6 +258,9 @@ importers:
       '@types/react-test-renderer':
         specifier: ^19.1.0
         version: 19.1.0
+      '@types/uuid':
+        specifier: ^11.0.0
+        version: 11.0.0
       jest-cucumber:
         specifier: ^4.5.0
         version: 4.5.0(@types/jest@30.0.0)(jest@30.2.0(@types/node@22.19.11))
@@ -3280,6 +3289,10 @@ packages:
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
 
+  '@types/uuid@11.0.0':
+    resolution: {integrity: sha512-HVyk8nj2m+jcFRNazzqyVKiZezyhDKrGUA3jlEcg/nZ6Ms+qHwocba1Y/AaVaznJTAM9xpdFSh+ptbNrhOGvZA==}
+    deprecated: This is a stub types definition. uuid provides its own type definitions, so you do not need this installed.
+
   '@types/uuid@9.0.8':
     resolution: {integrity: sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==}
 
@@ -4752,6 +4765,9 @@ packages:
 
   extend@3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
+
+  fast-base64-decode@1.0.0:
+    resolution: {integrity: sha512-qwaScUgUGBYeDNRnbc/KyllVU88Jk1pRHPStuF/lO7B0/RTRLj7U0lkdTAutlBblY08rwZDff6tNU9cjv6j//Q==}
 
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
@@ -6807,6 +6823,11 @@ packages:
       react: 19.1.0
       react-native: 0.81.5
 
+  react-native-get-random-values@2.0.0:
+    resolution: {integrity: sha512-wx7/aPqsUIiWsG35D+MsUJd8ij96e3JKddklSdrdZUrheTx89gPtz3Q2yl9knBArj5u26Cl23T88ai+Q0vypdQ==}
+    peerDependencies:
+      react-native: 0.81.5
+
   react-native-is-edge-to-edge@1.2.1:
     resolution: {integrity: sha512-FLbPWl/MyYQWz+KwqOZsSyj2JmLKglHatd3xLZWskXOpRaio4LfEDEz8E/A6uD8QoTHW6Aobw1jbEwK7KMgR7Q==}
     peerDependencies:
@@ -7890,6 +7911,10 @@ packages:
 
   uuid@10.0.0:
     resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
+    hasBin: true
+
+  uuid@13.0.0:
+    resolution: {integrity: sha512-XQegIaBTVUjSHliKqcnFqYypAd4S+WCYt5NIeRs6w/UAry7z8Y9j5ZwRRL4kzq9U3sD6v+85er9FvkEaBpji2w==}
     hasBin: true
 
   uuid@7.0.3:
@@ -11989,6 +12014,10 @@ snapshots:
 
   '@types/unist@3.0.3': {}
 
+  '@types/uuid@11.0.0':
+    dependencies:
+      uuid: 13.0.0
+
   '@types/uuid@9.0.8': {}
 
   '@types/webxr@0.5.24': {}
@@ -13730,6 +13759,8 @@ snapshots:
   exponential-backoff@3.1.3: {}
 
   extend@3.0.2: {}
+
+  fast-base64-decode@1.0.0: {}
 
   fast-deep-equal@3.1.3: {}
 
@@ -16357,6 +16388,11 @@ snapshots:
       react: 19.1.0
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.1.10)(react@19.1.0)
 
+  react-native-get-random-values@2.0.0(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.10)(react@19.1.0)):
+    dependencies:
+      fast-base64-decode: 1.0.0
+      react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.1.10)(react@19.1.0)
+
   react-native-is-edge-to-edge@1.2.1(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0):
     dependencies:
       react: 19.1.0
@@ -17648,6 +17684,8 @@ snapshots:
   utils-merge@1.0.1: {}
 
   uuid@10.0.0: {}
+
+  uuid@13.0.0: {}
 
   uuid@7.0.3: {}
 

@@ -142,7 +142,10 @@ export default function TeacherDashboard() {
                     <QuickAction
                         icon={Plus}
                         label={t('classroom.createClass') || 'Create Class'}
-                        onPress={() => setIsCreateModalOpen(true)}
+                        onPress={() => {
+                            console.log('[TeacherDashboard] Create Class button pressed');
+                            setIsCreateModalOpen(true);
+                        }}
                     />
                     <QuickAction
                         icon={ClipboardCheck}
@@ -213,8 +216,12 @@ export default function TeacherDashboard() {
 
             <CreateClassroomModal
                 isOpen={isCreateModalOpen}
-                onClose={() => setIsCreateModalOpen(false)}
-                onSuccess={() => {
+                onClose={() => {
+                    console.log('[TeacherDashboard] Closing CreateClassroomModal');
+                    setIsCreateModalOpen(false);
+                }}
+                onSuccess={(newClass) => {
+                    console.log('[TeacherDashboard] Classroom created successfully:', newClass?.id);
                     setRefreshTrigger(prev => prev + 1);
                 }}
             />

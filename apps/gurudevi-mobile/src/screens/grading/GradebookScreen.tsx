@@ -157,13 +157,8 @@ export default function GradebookScreen({
                                 color={Theme.colors.sacredWhite}
                                 sx={{ fontWeight: '700' }}
                             >
-                                <Text
-                                    size="xl"
-                                    color={Theme.colors.sacredWhite}
-                                    sx={{ fontWeight: '700' }}
-                                >
-                                    {stats.averageMarks}
-                                </Text>
+                                {stats.averageMarks}
+                            </Text>
                         </VStack>
                     </HStack>
 
