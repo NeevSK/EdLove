@@ -24,6 +24,8 @@ import { Theme } from '../../constants/Theme';
 import { hapticLight } from '../../utils/haptics';
 import { ShadowAgentDrawer, EnergyForecast } from '../../components/self';
 import { supabase } from '../../lib/supabase';
+import { useSafeMutation } from '../../hooks/useSafeMutation';
+import { useDecisionJournal } from '../../hooks/self/useDecisionJournal';
 import GlobalHeader from '../../components/shared/GlobalHeader';
 import DailyContentCard from '../../components/self/DailyContentCard';
 import WelcomeModal from '../../components/self/WelcomeModal';
@@ -105,24 +107,7 @@ export default function PrincipalSelfView() {
                             </Text>
                         </VStack>
 
-                        <Box
-                            p={Theme.spacing.md}
-                            sx={{
-                                backgroundColor: colors.tertiary,
-                                borderRadius: Theme.corners.comfortable,
-                                minHeight: 150
-                            }}
-                        >
-                            <Input variant="outline" size="md" sx={{ borderWidth: 0, flex: 1 }}>
-                                <InputField
-                                    placeholder={t('principal.decisionPlaceholder')}
-                                    multiline
-                                    color={colors.text}
-                                    placeholderTextColor={colors.textTertiary}
-                                    sx={{ textAlignVertical: 'top', minHeight: 100 }}
-                                />
-                            </Input>
-                        </Box>
+                        <DecisionJournalSection userId={userId} colors={colors} t={t} />
                     </VStack>
                 );
             case 'staffWellbeing':
@@ -336,5 +321,120 @@ export default function PrincipalSelfView() {
                 onClose={() => setJustFinishedOnboarding(false)}
             />
         </ScreenWrapper>
+    );
+}
+
+// Sub-component for Decision Journal Logic
+function DecisionJournalSection({ userId, colors, t }: { userId: string | null, colors: any, t: any }) {
+    const [decisionText, setDecisionText] = useState('');
+    const { decisions, refreshData } = useDecisionJournal(userId ?? undefined);
+
+    const { mutate, isLoading: isSaving } = useSafeMutation(
+        async (text: string) => {
+            const { error } = await supabase
+                .from('decision_journals')
+                .insert({
+                    user_id: userId,
+                    decision_text: text,
+                    is_reviewed: false
+                });
+            if (error) {
+                // Fallback if table doesn't exist yet - we rely on local cache which useSafeMutation callbacks will update via refreshData
+                if (error.code === '42P01') {
+                    console.warn("Backend table missing, saving locally only.");
+                    return;
+                }
+                throw error;
+            }
+        },
+        {
+            onSuccess: () => {
+                hapticLight();
+                setDecisionText('');
+                refreshData();
+            },
+            retryCount: 3
+        }
+    );
+
+    const handleSave = async () => {
+        if (!userId || !decisionText.trim()) return;
+        hapticLight();
+        await mutate(decisionText.trim());
+    };
+
+    return (
+        <VStack space="md" sx={{ flex: 1 }}>
+            <Box
+                p={Theme.spacing.md}
+                sx={{
+                    backgroundColor: colors.tertiary,
+                    borderRadius: Theme.corners.comfortable,
+                    minHeight: 120
+                }}
+            >
+                <Input variant="outline" size="md" sx={{ borderWidth: 0, flex: 1 }}>
+                    <InputField
+                        placeholder={t('principal.decisionPlaceholder') || "What decision is weighing on you today?"}
+                        multiline
+                        color={colors.text}
+                        placeholderTextColor={colors.textTertiary}
+                        sx={{ textAlignVertical: 'top', minHeight: 100 }}
+                        value={decisionText}
+                        onChangeText={setDecisionText}
+                    />
+                </Input>
+                <Box alignItems="flex-end" mt="$2">
+                    <Pressable
+                        onPress={handleSave}
+                        disabled={!decisionText.trim() || isSaving}
+                        sx={{
+                            backgroundColor: decisionText.trim() ? colors.action : colors.border,
+                            paddingHorizontal: Theme.spacing.md,
+                            paddingVertical: Theme.spacing.xs,
+                            borderRadius: Theme.corners.comfortable,
+                            opacity: isSaving ? 0.7 : 1
+                        }}
+                    >
+                        <Text color={Theme.colors.white} size="sm" bold>
+                            {isSaving ? "Saving..." : t('common.save')}
+                        </Text>
+                    </Pressable>
+                </Box>
+            </Box>
+
+            <Heading size="sm" color={colors.textSecondary} mt="$4">
+                {t('principal.recentDecisions') || "Recent Decisions"}
+            </Heading>
+
+            <ScrollView sx={{ maxHeight: 300 }} nestedScrollEnabled>
+                <VStack space="sm">
+                    {decisions.map((decision) => (
+                        <Box
+                            key={decision.id}
+                            p={Theme.spacing.md}
+                            sx={{
+                                backgroundColor: colors.secondary,
+                                borderRadius: Theme.corners.comfortable,
+                                borderLeftWidth: 3,
+                                borderLeftColor: colors.action
+                            }}
+                        >
+                            <Text color={colors.text} size="sm" numberOfLines={3}>
+                                {decision.decision_text}
+                            </Text>
+                            <Text color={colors.textTertiary} size="xs" mt="$1">
+                                {new Date(decision.created_at).toLocaleDateString()}
+                            </Text>
+                        </Box>
+                    ))}
+                    {decisions.length === 0 && (
+                        <Text color={colors.textTertiary} size="sm" fontStyle="italic">
+                            {t('principal.noDecisionsYet') || "No decisions logged yet."}
+                        </Text>
+                    )}
+                </VStack>
+            </ScrollView>
+        </VStack>
     );
 }

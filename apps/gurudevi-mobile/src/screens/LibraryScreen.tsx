@@ -13,13 +13,12 @@ import SanctuaryInput from '../components/shared/SanctuaryInput';
 import * as Linking from 'expo-linking';
 import { useThemedColors } from '../hooks/useThemedColors';
 import ScreenWrapper from '../components/shared/ScreenWrapper';
+import { api } from '../lib/api';
+import { isDemo } from '../lib/api/demo';
+import { Zap } from 'lucide-react-native';
+import { LibraryResource } from '../types/Community';
 
-// Mock Data until Supabase Hook is ready
-const MOCK_RESOURCES = [
-    { id: '1', title: 'Grade 10 Math Syllabus', type: 'pdf', isPublic: true, url: 'https://example.com/syllabus.pdf' },
-    { id: '2', title: 'Calculus Intro Video', type: 'video', isPublic: false, url: 'https://youtube.com/watch?v=123' },
-    { id: '3', title: 'Physics Notes', type: 'doc', isPublic: true, url: 'https://docs.google.com/doc' },
-];
+// local MOCK_RESOURCES removed, now using api.library
 
 // Library categories for filtering
 const LIBRARY_CATEGORIES = ['All', 'PDFs', 'Videos', 'Docs', 'Links'] as const;
@@ -27,17 +26,41 @@ const LIBRARY_CATEGORIES = ['All', 'PDFs', 'Videos', 'Docs', 'Links'] as const;
 export default function LibraryScreen() {
     const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [resources, setResources] = useState<LibraryResource[]>([]);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [showSearchBar, setShowSearchBar] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<typeof LIBRARY_CATEGORIES[number]>('All');
     const colors = useThemedColors();
 
-    // Mocking addition
-    const [resources, setResources] = useState<any[]>(MOCK_RESOURCES);
+    const fetchResources = async () => {
+        try {
+            if (!refreshing) setLoading(true);
+            const data = await api.library.getResources();
+            setResources(data);
+        } catch (err: any) {
+            setError(err.message || 'Failed to load resources');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    const handleAddResource = (data: any) => {
-        setResources(prev => [{ id: Date.now().toString(), isPublic: false, ...data }, ...prev]);
+    React.useEffect(() => {
+        fetchResources();
+    }, []);
+
+    const handleAddResource = async (data: any) => {
+        try {
+            const { data: { user } } = await api.self.getCurrentUser();
+            if (!user) return;
+
+            const newRes = await api.library.createResource(data, user.id, 'teacher');
+            setResources(prev => [newRes, ...prev]);
+        } catch (err) {
+            console.error('Failed to create resource', err);
+        }
     };
 
     const handleOpenResource = (url: string) => {
@@ -81,7 +104,11 @@ export default function LibraryScreen() {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingVertical: Theme.spacing.md, paddingBottom: 100 }}
                 refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={() => setRefreshing(false)} tintColor={Theme.colors.sanctuarySaffron} />
+                    <RefreshControl refreshing={refreshing} onRefresh={async () => {
+                        setRefreshing(true);
+                        await fetchResources();
+                        setRefreshing(false);
+                    }} tintColor={Theme.colors.sanctuarySaffron} />
                 }
             >
                 {/* Horizontal Carousel for Resource Categories */}
@@ -142,9 +169,9 @@ export default function LibraryScreen() {
                             {filteredResources.map((res) => (
                                 <LibraryResourceCard
                                     key={res.id}
-                                    title={res.title}
+                                    title={isDemo() ? `(Sample) ${res.title}` : res.title}
                                     type={res.type as ResourceType}
-                                    isPublic={res.isPublic}
+                                    isPublic={res.visibility === 'public'}
                                     onPress={() => handleOpenResource(res.url)}
                                     onLike={() => console.log('Like', res.id)}
                                     onaddToDesk={() => console.log('Add to desk', res.id)}

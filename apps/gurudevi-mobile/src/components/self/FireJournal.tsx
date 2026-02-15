@@ -37,6 +37,8 @@ import { Mic, Flame } from 'lucide-react-native';
 import { Theme, typography } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';
 import { hapticLight, hapticMedium } from '../../utils/haptics';
+import { useSafeMutation } from '../../hooks/useSafeMutation';
+import { useJournal } from '../../hooks/self/useJournal';
 
 interface FireJournalProps {
     userId?: string;
@@ -46,6 +48,8 @@ interface FireJournalProps {
 export default function FireJournal({ userId, onBurned }: FireJournalProps) {
     const [content, setContent] = useState('');
     const [isBurning, setIsBurning] = useState(false);
+    // Use useJournal to keep cache in sync (even if not explicitly showing history)
+    const { refreshData } = useJournal(userId);
     const [showSuccess, setShowSuccess] = useState(false);
 
     // Refs for timeout cleanup
@@ -57,7 +61,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
     const scale = useSharedValue(1);
     const translateY = useSharedValue(0);
     const rotation = useSharedValue(0);
-    
+
     // Ember particles animation values
     const ember1Y = useSharedValue(0);
     const ember2Y = useSharedValue(0);
@@ -105,6 +109,28 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
         transform: [{ translateY: ember3Y.value }],
     }));
 
+    const { mutate, isLoading: isMutating } = useSafeMutation(
+        async (text: string) => {
+            const { error } = await supabase
+                .from('fire_journal')
+                .insert([
+                    {
+                        content_preview: text.substring(0, 100), // Store preview only
+                        is_burned: true,
+                        user_id: userId,
+                        created_at: new Date().toISOString(),
+                    },
+                ]);
+            if (error) throw error;
+        },
+        {
+            onSuccess: () => {
+                refreshData();
+            },
+            retryCount: 3
+        }
+    );
+
     const handleBurn = async () => {
         if (!content.trim()) return;
         if (!userId) {
@@ -113,30 +139,14 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
         }
 
         hapticMedium();
-        setIsBurning(true);
+        setIsBurning(true); // Trigger animation immediately
 
-        // Start burn animation
+        // Start burn animation (Visuals first)
         performBurnAnimation();
 
-        // Save to database
-        try {
-            const { error } = await supabase
-                .from('fire_journal')
-                .insert([
-                    {
-                        content_preview: content.substring(0, 100), // Store preview only
-                        is_burned: true,
-                        user_id: userId,
-                        created_at: new Date().toISOString(),
-                    },
-                ]);
-
-            if (error) {
-                console.error('Failed to save fire journal entry:', error);
-            }
-        } catch (error) {
-            console.error('Error saving fire journal:', error);
-        }
+        // Save to database (Background/Robust)
+        // We pass 'content' to mutate, capturing it before reset
+        await mutate(content);
     };
 
     const performBurnAnimation = () => {
@@ -230,7 +240,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
         scale.value = withSpring(1);
         translateY.value = withSpring(0);
         rotation.value = withSpring(0);
-        
+
         // Reset ember positions
         ember1Y.value = 0;
         ember2Y.value = 0;
@@ -332,7 +342,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                         />
                     </>
                 )}
-                
+
                 <Animated.View style={containerStyle}>
                     <Box
                         sx={{

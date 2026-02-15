@@ -13,6 +13,7 @@
 
 import { supabase } from '../lib/supabase';
 import { APIError } from '../lib/api/types';
+import { isDemo } from '../lib/api/demo';
 
 /**
  * Ensures user is authenticated
@@ -20,6 +21,22 @@ import { APIError } from '../lib/api/types';
  * @returns Current user
  */
 export async function requireAuth() {
+    // Demo Mode Bypass: Return a mock user if demo mode is active
+    if (isDemo()) {
+        return {
+            id: 'u-demo',
+            email: 'demo@gurudevi.org',
+            user_metadata: {
+                role: 'teacher',
+                full_name: 'Teacher Demo',
+                school_id: 'mock-school'
+            },
+            app_metadata: {
+                role: 'teacher'
+            }
+        } as any;
+    }
+
     const { data: { session }, error } = await supabase.auth.getSession();
 
     if (error || !session) {

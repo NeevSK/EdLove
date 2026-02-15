@@ -24,6 +24,9 @@ import OnboardingScreen from './src/screens/OnboardingScreen';
 import TabNavigator from './src/navigation/TabNavigator';
 import LotusPetalFAB, { ActionItem } from './src/components/shared/LotusPetalFAB';
 import ErrorBoundary from './src/components/shared/ErrorBoundary';
+import SanctuaryToast from './src/components/shared/SanctuaryToast';
+import NetworkStatusBanner from './src/components/shared/NetworkStatusBanner';
+import SyncManager from './src/lib/sync/SyncManager';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -34,6 +37,8 @@ export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [currentTab, setCurrentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
   const onboardingCompleted = useStore((state) => state.onboardingCompleted);
+  const toast = useStore((state) => state.toast);
+  const hideToast = useStore((state) => state.hideToast);
 
   // Extract user profile fetching logic to avoid duplication
   const fetchAndSetUserProfile = async (userId: string) => {
@@ -117,6 +122,8 @@ export default function App() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Monitor network connectivity - REMOVED redundant listener (Centralized in EnvironmentContext)
 
   const handleFabPress = () => {
     // TODO: Implement specific actions for each tab
@@ -211,6 +218,14 @@ export default function App() {
                       </>
                     </ErrorBoundary>
                   )}
+                  <NetworkStatusBanner />
+                  <SyncManager />
+                  <SanctuaryToast
+                    visible={toast.visible}
+                    message={toast.message}
+                    type={toast.type}
+                    onHide={hideToast}
+                  />
                 </NavigationContainer>
               </ErrorBoundary>
             </GluestackUIProvider>

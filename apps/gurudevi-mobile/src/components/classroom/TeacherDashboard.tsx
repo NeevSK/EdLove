@@ -17,31 +17,37 @@ import {
     School
 } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { ClassroomStackParamList } from '../../types/navigation';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
 import { hapticLight } from '../../utils/haptics';
 import ClassroomList from './ClassroomList';
 import CreateClassroomModal from './CreateClassroomModal';
-import { useNavigation } from '@react-navigation/native';
 import { useThemedColors } from '../../hooks/useThemedColors';
+import { Zap } from 'lucide-react-native';
+import SandboxBanner from '../shared/SandboxBanner';
 
 export default function TeacherDashboard() {
     const { t } = useTranslation();
-    const navigation = useNavigation<any>();
-    const { teacherName } = useStore();
+    const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
+    const { teacherName, isDemoMode, setDemoMode } = useStore();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const colors = useThemedColors();
+    const [classrooms, setClassrooms] = useState<any[]>([]);
     const [stats, setStats] = useState({
         activeClasses: 0,
         totalStudents: 0
     });
 
     // We'll update stats whenever the classroom list changes
-    const handleClassroomsLoaded = (classrooms: any[]) => {
+    const handleClassroomsLoaded = (loadedClassrooms: any[]) => {
+        setClassrooms(loadedClassrooms);
         setStats({
-            activeClasses: classrooms.length,
-            totalStudents: classrooms.reduce((acc, curr) => acc + (curr.student_count || 0), 0)
+            activeClasses: loadedClassrooms.length,
+            totalStudents: loadedClassrooms.reduce((acc, curr) => acc + (curr.student_count || 0), 0)
         });
     };
 
@@ -72,7 +78,7 @@ export default function TeacherDashboard() {
                 <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={24} />
             </Box>
             <Text color={colors.text} size="xs" bold textAlign="center">
-                {label}
+                {isDemoMode ? `⚡ (${t('demoMode.simulationAlert')}) ${label}` : label}
             </Text>
         </Pressable>
     );
@@ -95,9 +101,14 @@ export default function TeacherDashboard() {
                     {label}
                 </Text>
                 <Text color={colors.text} size="3xl" bold>
-                    {value}
+                    {value}{isDemoMode && '*'}
                 </Text>
             </VStack>
+            {isDemoMode && (
+                <Box sx={{ position: 'absolute', top: 5, right: 5 }}>
+                    <Zap size={12} color={Theme.colors.sanctuarySaffron} fill={Theme.colors.sanctuarySaffron} />
+                </Box>
+            )}
             <Box
                 sx={{
                     position: 'absolute',
@@ -113,6 +124,7 @@ export default function TeacherDashboard() {
 
     return (
         <VStack space="xl" sx={{ flex: 1, backgroundColor: colors.primary }}>
+            {isDemoMode && <SandboxBanner />}
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: Theme.spacing.lg }}>
 
                 {/* Greeting */}
@@ -135,7 +147,20 @@ export default function TeacherDashboard() {
                     <QuickAction
                         icon={ClipboardCheck}
                         label={t('classroom.attendance') || 'Attendance'}
-                        onPress={() => {/* TODO: Open Attendance selection */ }}
+                        onPress={() => {
+                            // For now, if there are classrooms, pick the first one to demo the navigation.
+                            // Ideally this opens a selector.
+                            if (classrooms.length > 0) {
+                                // We need navigation prop here.
+                                // TeacherDashboard is a component, so we use useNavigation.
+                                navigation.navigate('Attendance', {
+                                    classroomId: classrooms[0].id,
+                                    classroomName: classrooms[0].name
+                                });
+                            } else {
+                                alert("No active classrooms found.");
+                            }
+                        }}
                         color={Theme.colors.sageGreen}
                     />
                     <QuickAction

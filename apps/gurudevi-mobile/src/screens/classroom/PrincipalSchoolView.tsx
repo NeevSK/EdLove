@@ -11,6 +11,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import {
     Box,
     Text,
@@ -21,18 +22,36 @@ import {
     ButtonText,
     ScrollView,
     Spinner,
+    Pressable,
 } from '@/ui';
+import {
+    Plus,
+    Users,
+    UserCheck,
+    Layout,
+    Layers,
+    ChevronRight,
+    Search,
+    Zap,
+    X,
+    Edit2,
+    Trash2
+} from 'lucide-react-native';
+import { useStore } from '../../store/useStore';
+import { hapticLight } from '../../utils/haptics';
 import { Theme } from '../../constants/Theme';
 import { useTranslation } from 'react-i18next';
 import { useUserRole } from '../../hooks/useUserRole';
-import { api } from '../../lib/api';
-import { SchoolStats, School } from '../../lib/api/school';
+import { useSchoolStats } from '../../hooks/classroom/useSchoolStats';
 import HierarchyBuilder from '../../components/principal/HierarchyBuilder';
 import InviteManager from '../../components/principal/InviteManager';
 import ResourceNeedsDashboard from '../../components/principal/ResourceNeedsDashboard';
 import GlobalHeader from '../../components/shared/GlobalHeader';
 import { useThemedColors } from '../../hooks/useThemedColors';
+import RoleInitialState from '../../components/classroom/RoleInitialState';
 import ScreenWrapper from '../../components/shared/ScreenWrapper';
+import SandboxBanner from '../../components/shared/SandboxBanner';
+import { CreateSchoolModal } from '../../components/classroom';
 
 interface PrincipalSchoolViewProps {
     schoolId: string;
@@ -43,33 +62,16 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
     const { t } = useTranslation();
     const { role } = useUserRole();
     const colors = useThemedColors();
-    const [stats, setStats] = useState<SchoolStats | null>(null);
-    const [school, setSchool] = useState<School | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const { isDemoMode } = useStore();
+
+
+    // Resilient Hook
+    const { school, stats, isLoading, error, refreshData } = useSchoolStats(schoolId);
+
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [activeView, setActiveView] = useState<'dashboard' | 'hierarchy' | 'invites'>('dashboard');
-    const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        loadSchoolData();
-    }, [schoolId]);
-
-    const loadSchoolData = async () => {
-        setIsLoading(true);
-        setError(null);
-        try {
-            const [schoolData, statsData] = await Promise.all([
-                api.school.getSchool(schoolId),
-                api.school.getSchoolStats(schoolId),
-            ]);
-            setSchool(schoolData);
-            setStats(statsData);
-        } catch (err: any) {
-            console.error('Failed to load school data:', err);
-            setError(err.message || 'Failed to load school data');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    // Load data handled by hook
 
     // Show different views based on activeView
     if (activeView === 'hierarchy') {
@@ -97,6 +99,7 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
 
     return (
         <ScreenWrapper>
+            {isDemoMode && <SandboxBanner />}
             <GlobalHeader
                 title={t('classroom.schoolManagement') || 'School Management'}
                 subtitle={school?.name}
@@ -133,9 +136,29 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                         </Box>
                     )}
 
-                    {/* Stats Cards */}
+                    {/* Stats Cards or Initial State */}
                     {stats && !isLoading && (
                         <VStack space="md">
+                            {(stats as any).is_sample && (
+                                <Box sx={{
+                                    backgroundColor: Theme.colors.amberGlow + '22',
+                                    p: "$3",
+                                    borderRadius: Theme.corners.comfortable,
+                                    borderWidth: 1,
+                                    borderColor: Theme.colors.amberGlow,
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 8,
+                                    mb: "$2"
+                                }}>
+                                    <Zap size={16} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} />
+                                    <Text sx={{ fontSize: 13, color: Theme.colors.amberGlow, fontWeight: '700' }}>
+                                        {t('demoMode.sandboxPerspective') || "VISIONARY SANDBOX: Previewing potential institutional patterns"}
+                                    </Text>
+                                </Box>
+                            )}
+
                             {/* Row 1: Students & Teachers */}
                             <HStack space="md">
                                 {/* Total Students Card */}
@@ -149,9 +172,12 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                                         borderLeftColor: colors.action,
                                     }}
                                 >
-                                    <Text size="sm" color={colors.textTertiary}>
-                                        {t('principal.stats.totalStudents') || 'Total Students'}
-                                    </Text>
+                                    <HStack justifyContent="space-between" alignItems="center">
+                                        <Text size="sm" color={colors.textTertiary}>
+                                            {t('principal.stats.totalStudents') || 'Total Students'}
+                                        </Text>
+                                        {isDemoMode && <Zap size={12} color={Theme.colors.sanctuarySaffron} fill={Theme.colors.sanctuarySaffron} />}
+                                    </HStack>
                                     <Text
                                         size="3xl"
                                         color={colors.text}
@@ -233,54 +259,79 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                                     </Text>
                                 </Box>
                             </HStack>
+
+                            {/* Resource Needs Dashboard - Primary Focus */}
+                            <Box sx={{ marginTop: Theme.spacing.lg }}>
+                                <ResourceNeedsDashboard schoolId={schoolId} />
+                            </Box>
+
+                            {/* Quick Actions */}
+                            <VStack space="md" sx={{ marginTop: Theme.spacing.md }}>
+                                <Text
+                                    size="lg"
+                                    color={colors.textSecondary}
+                                    sx={{ fontWeight: '600' }}
+                                >
+                                    {t('principal.quickActions') || 'Quick Actions'}
+                                </Text>
+
+                                <Button
+                                    sx={{
+                                        backgroundColor: colors.action,
+                                        padding: Theme.spacing.lg,
+                                    }}
+                                    onPress={() => setActiveView('hierarchy')}
+                                >
+                                    <ButtonText color={colors.text}>
+                                        {isDemoMode ? `⚡ (${t('demoMode.simulationAlert')}) ` : ''}
+                                        {t('principal.actions.manageHierarchy') || '🏫 Manage School Hierarchy'}
+                                    </ButtonText>
+                                </Button>
+
+                                <Button
+                                    sx={{
+                                        backgroundColor: colors.success,
+                                        padding: Theme.spacing.lg,
+                                    }}
+                                    onPress={() => setActiveView('invites')}
+                                >
+                                    <ButtonText color={colors.text}>
+                                        {isDemoMode ? `⚡ (${t('demoMode.simulationAlert')}) ` : ''}
+                                        {t('principal.actions.inviteStaff') || '✉️ Invite Staff & Students'}
+                                    </ButtonText>
+                                </Button>
+                            </VStack>
                         </VStack>
                     )}
-
-                    {/* Resource Needs Dashboard - Primary Focus */}
-                    {!isLoading && (
-                        <Box sx={{ marginTop: Theme.spacing.lg }}>
-                            <ResourceNeedsDashboard schoolId={schoolId} />
-                        </Box>
-                    )}
-
-                    {/* Quick Actions */}
-                    <VStack space="md" sx={{ marginTop: Theme.spacing.md }}>
-                        <Text
-                            size="lg"
-                            color={colors.textSecondary}
-                            sx={{ fontWeight: '600' }}
-                        >
-                            {t('principal.quickActions') || 'Quick Actions'}
-                        </Text>
-
-                        <Button
-                            sx={{
-                                backgroundColor: colors.action,
-                                padding: Theme.spacing.lg,
-                            }}
-                            onPress={() => setActiveView('hierarchy')}
-                        >
-                            <ButtonText color={colors.text}>
-                                {t('principal.actions.manageHierarchy') ||
-                                    '🏫 Manage School Hierarchy'}
-                            </ButtonText>
-                        </Button>
-
-                        <Button
-                            sx={{
-                                backgroundColor: colors.success,
-                                padding: Theme.spacing.lg,
-                            }}
-                            onPress={() => setActiveView('invites')}
-                        >
-                            <ButtonText color={colors.text}>
-                                {t('principal.actions.inviteStaff') ||
-                                    '✉️ Invite Staff & Students'}
-                            </ButtonText>
-                        </Button>
-                    </VStack>
                 </VStack>
             </ScrollView>
+
+            <TouchableOpacity
+                onPress={() => setIsCreateModalOpen(true)}
+                style={{
+                    position: 'absolute',
+                    bottom: 20,
+                    right: 20,
+                    width: 56,
+                    height: 56,
+                    borderRadius: 28,
+                    backgroundColor: Theme.colors.sanctuarySaffron,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    ...Theme.shadows.md,
+                    zIndex: 10
+                }}
+            >
+                <Plus size={24} color="white" />
+            </TouchableOpacity>
+
+            <CreateSchoolModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                onSuccess={() => {
+                    refreshData();
+                }}
+            />
         </ScreenWrapper>
     );
 }

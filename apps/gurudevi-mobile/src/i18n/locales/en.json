@@ -17,7 +17,22 @@
         "success": "Success",
         "greeting": "Ayubowan, {{name}}!",
         "create": "Create",
-        "add": "Add"
+        "add": "Add",
+        "guidesAndSamples": "Guides & Samples",
+        "sampleDismissed": "Sample Dismissed",
+        "sampleDismissedDesc": "This sample sanctuary has been removed from your view.",
+        "initialize": "Initialize"
+    },
+    "demoMode": {
+        "realityCheckTitle": "Sandbox Simulation",
+        "realityCheckMessage": "You are in Demo Mode. This action is being simulated and will not be saved to your actual school data.",
+        "simulationAlert": "Simulation Only",
+        "bridgeTitle": "Keep Your Progress?",
+        "bridgeMessage": "You created {{count}} items (like '{{firstName}}') while exploring. Would you like to keep these and make them your real data?",
+        "bridgeSave": "Yes, Save them",
+        "bridgeDiscard": "Discard Samples",
+        "sandboxPerspective": "VISIONARY SANDBOX: Previewing potential institutional patterns",
+        "visionaryEcology": "VISIONARY ECOLOGY: Previewing platform potential"
     },
     "greeting": {
         "ayubowan": "Ayubowan!"
@@ -41,7 +56,15 @@
         "semi_government": "Semi-Government",
         "private": "Private School",
         "international": "International School",
-        "pirivena": "Pirivena"
+        "pirivena": "Pirivena",
+        "createTitle": "Initialize Sanctuary",
+        "labelName": "School Name",
+        "placeholderName": "e.g., Green Valley Sanctuary",
+        "labelType": "School Type",
+        "selectType": "Select type",
+        "primary": "Primary",
+        "secondary": "Secondary",
+        "mixed": "Mixed (1-13)"
     },
     "auth": {
         "login": "Login",
@@ -78,7 +101,7 @@
         "self": "Self",
         "myClassrooms": "My Classrooms",
         "schoolOverview": "School Overview",
-        "schoolManagement": "School Management",
+        "schoolManagement": "School Leadership",
         "mySchool": "My School",
         "learningJourney": "Learning Journey",
         "mySanctuary": "My Sanctuary",
@@ -284,6 +307,21 @@
             "gradeNumberPlaceholder": "1-13",
             "errorEmptyName": "Section name cannot be empty",
             "errorGradeLimit": "Grade number must be between 1 and 13"
+        },
+        "invites": {
+            "title": "Invite Codes",
+            "description": "Generate invite codes for teachers and students to join your school.",
+            "generateTeacher": "👨‍🏫 Generate Teacher Code",
+            "generateSectionHead": "+ Section Head",
+            "generateGradeHead": "+ Grade Head",
+            "generateStudent": "👨‍🎓 Generate Student Code",
+            "activeCodesTitle": "Active Invite Codes",
+            "used": "Used",
+            "active": "Active",
+            "createdAt": "Created:",
+            "tapToCopy": "Tap to copy",
+            "noCodes": "No active invite codes. Generate your first code to get started!",
+            "copied": "Copied!"
         }
     },
     "founder": {
@@ -338,7 +376,25 @@
         "learningPath": "Learning Path",
         "viewStudents": "View Students",
         "assignments": "Assignments",
-        "resources": "Resources"
+        "resources": "Resources",
+        "exploreSampleSchool": "Explore Sample Sanctuary",
+        "seeFullFeatureDemo": "See a full school in action",
+        "teacherInitialTitle": "Welcome to Your Workbench",
+        "teacherInitialDesc": "Create your first classroom to start your journey.",
+        "createFirstClass": "Create My First Class",
+        "studentInitialTitle": "Your Learning Sanctuary",
+        "studentInitialDesc": "Join a class using a code or explore your potential path.",
+        "joinClass": "Join a Class",
+        "principalInitialTitle": "School Dashboard",
+        "principalInitialDesc": "Initialize your school hierarchy to see institutional patterns.",
+        "founderInitialTitle": "Ecology Oversight",
+        "founderInitialDesc": "Visionary metrics will appear here once the ecology evolves.",
+        "genericInitialTitle": "Ready to Start?",
+        "genericInitialDesc": "Explore the possibilities within this sanctuary.",
+        "loading": "Loading classrooms...",
+        "retry": "Retry",
+        "sample": "SAMPLE",
+        "noSubject": "No Subject"
     },
     "community": {
         "title": "Community",

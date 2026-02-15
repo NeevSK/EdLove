@@ -14,6 +14,8 @@ import { useThemedColors } from '../../hooks/useThemedColors';
 import { supabase } from '../../lib/supabase';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';
 import { EnergyForecast as EnergyForecastType } from '../../types/Wellbeing';
+import { useSafeMutation } from '../../hooks/useSafeMutation';
+import { useEnergyForecast } from '../../hooks/self/useEnergyForecast';
 
 interface EnergyForecastProps {
   userId?: string;
@@ -21,54 +23,47 @@ interface EnergyForecastProps {
 
 export default function EnergyForecast({ userId }: EnergyForecastProps) {
   const { t } = useTranslation();
+
+  // Resilient Data Hook
+  const { forecasts, refreshData } = useEnergyForecast(userId);
+
   const [todayForecast, setTodayForecast] = useState<EnergyForecastType | null>(null);
-  const [loading, setLoading] = useState(false);
 
   const today = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
-    if (userId) {
-      loadTodayForecast();
+    if (forecasts.length > 0) {
+      const today = new Date().toISOString().split('T')[0];
+      const found = forecasts.find(f => f.forecast_date === today);
+      setTodayForecast(found || null);
     }
-  }, [userId]);
+  }, [forecasts]);
 
-  const loadTodayForecast = async () => {
-    if (!userId) return;
-
-    const { data, error } = await supabase
-      .from('energy_forecasts')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('forecast_date', today)
-      .single();
-
-    if (data) {
-      setTodayForecast(data);
+  const { mutate: saveEnergy, isLoading } = useSafeMutation(
+    async (level: number) => {
+      const { error } = await supabase
+        .from('energy_forecasts')
+        .upsert({
+          user_id: userId,
+          energy_level: level,
+          forecast_date: today
+        }, {
+          onConflict: 'user_id,forecast_date'
+        });
+      if (error) throw error;
+    },
+    {
+      onSuccess: () => {
+        hapticSuccess();
+        refreshData();
+      }
     }
-  };
+  );
 
   const handleSelectEnergy = async (level: 1 | 2 | 3 | 4 | 5) => {
     if (!userId) return;
-
-    setLoading(true);
     hapticLight();
-
-    const { error } = await supabase
-      .from('energy_forecasts')
-      .upsert({
-        user_id: userId,
-        energy_level: level,
-        forecast_date: today
-      }, {
-        onConflict: 'user_id,forecast_date'
-      });
-
-    if (!error) {
-      hapticSuccess();
-      await loadTodayForecast();
-    }
-
-    setLoading(false);
+    await saveEnergy(level);
   };
 
   const energyLevels = [
@@ -184,7 +179,7 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
             <Pressable
               key={energy.level}
               onPress={() => handleSelectEnergy(energy.level as any)}
-              disabled={loading}
+              disabled={isLoading}
             >
               <HStack
                 space="md"

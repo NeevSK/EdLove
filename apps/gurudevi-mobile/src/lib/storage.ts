@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Standard interface to ensure we can swap implementations
 interface StorageInterface {
@@ -42,25 +43,34 @@ class MemoryStorage implements StorageInterface {
     }
 }
 
+// AsyncStorage Fallback for persistence when MMKV (JSI) isn't available
+class AsyncStorageFallback implements StorageInterface {
+    set(key: string, value: string | boolean | number) {
+        AsyncStorage.setItem(key, String(value));
+    }
+    getString(key: string) {
+        // Note: This is a hack because StorageInterface expects synchronous return.
+        // We handle the true async nature in the Zustand Storage wrapper.
+        return undefined;
+    }
+    getBoolean(key: string) { return undefined; }
+    getNumber(key: string) { return undefined; }
+    delete(key: string) { AsyncStorage.removeItem(key); }
+    clearAll() { AsyncStorage.clear(); }
+    contains(key: string) { return false; }
+}
+
 let storageInstance: StorageInterface;
 
 try {
     // Attempt to initialize MMKV
-    // We use require() to handle the case where the module might throw on import in Expo Go
     const { MMKV } = require('react-native-mmkv');
-
-    // Check if JSI bindings are actually available (sometimes require works but instantiation fails)
     storageInstance = new MMKV({
         id: 'gurudevi-storage',
-        encryptionKey: 'gurudevi-secret-key'
     });
-
-    // Simple smoke test to see if it actually works
-    storageInstance.contains('test-key');
-
-    console.log('✅ MMKV initialized successfully (Persisted Storage)');
+    console.log('✅ MMKV initialized successfully (Speed Mode)');
 } catch (e) {
-    console.warn('⚠️ MMKV not available (running in Expo Go?), falling back to In-Memory Storage because:', e);
+    console.warn('⚠️ MMKV failed, using Memory fallback for sync ops');
     storageInstance = new MemoryStorage();
 }
 

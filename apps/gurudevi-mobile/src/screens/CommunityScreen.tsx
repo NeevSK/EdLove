@@ -13,6 +13,7 @@ import { MessageSquare, Users, PenTool, Search } from 'lucide-react-native';
 import { useCommunity, Group, Post } from '../hooks/useCommunity';
 import { useThemedColors } from '../hooks/useThemedColors';
 import ScreenWrapper from '../components/shared/ScreenWrapper';
+import { isDemo } from '../lib/api/demo';
 
 type TabType = 'feed' | 'groups';
 
@@ -112,10 +113,10 @@ export default function CommunityScreen() {
                                 key={post.id}
                                 id={post.id}
                                 content={post.content}
-                                type={post.type}
+                                type={post.post_type as any}
                                 author={{
                                     id: post.author_id,
-                                    name: post.author_name,
+                                    name: isDemo() ? `(Sample) ${post.author_name}` : post.author_name,
                                     avatarUrl: post.author_avatar,
                                 }}
                                 createdAt={post.created_at}
@@ -132,6 +133,7 @@ export default function CommunityScreen() {
                             <GroupCard
                                 key={group.id}
                                 {...group}
+                                name={isDemo() ? `(Sample) ${group.name}` : group.name}
                                 memberCount={group.member_count}
                                 onPress={() => console.log('NAVIGATE_TO_GROUP', group.id)}
                                 type={group.type as any}

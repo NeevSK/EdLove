@@ -31,12 +31,17 @@ interface CreateClassroomModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: (newClass: any) => void;
+    initialData?: {
+        name: string;
+        subject?: string;
+    };
 }
 
 export default function CreateClassroomModal({
     isOpen,
     onClose,
     onSuccess,
+    initialData,
 }: CreateClassroomModalProps) {
     const { t } = useTranslation();
     const [name, setName] = useState('');
@@ -44,6 +49,13 @@ export default function CreateClassroomModal({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const colors = useThemedColors();
+
+    React.useEffect(() => {
+        if (isOpen && initialData) {
+            setName(initialData.name);
+            setSubject(initialData.subject || '');
+        }
+    }, [isOpen, initialData]);
 
     const handleSubmit = async () => {
         if (!name.trim()) {

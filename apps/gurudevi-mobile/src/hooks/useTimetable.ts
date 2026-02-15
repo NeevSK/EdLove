@@ -1,7 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useToast } from '@/ui';
-import { Alert } from 'react-native';
+import { SafeZustandStorage } from '../lib/storageWrapper';
+import { useStore } from '../store/useStore';
+
+const TIMETABLE_CACHE_KEY = 'gurudevi-timetable-cache';
 
 export interface Period {
     id: string;
@@ -16,12 +19,36 @@ export interface Period {
 }
 
 export const useTimetable = (activeDay: number) => {
+    const isOnline = useStore(state => state.isOnline);
     const [periods, setPeriods] = useState<Period[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    // Initial load from cache
+    useEffect(() => {
+        const loadCache = async () => {
+            try {
+                const cached = await SafeZustandStorage.getItem(`${TIMETABLE_CACHE_KEY}-${activeDay}`);
+                if (cached) {
+                    setPeriods(JSON.parse(cached));
+                }
+            } catch (e) {
+                console.warn('Failed to load timetable cache', e);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadCache();
+    }, [activeDay]);
+
     const fetchPeriods = useCallback(async () => {
-        setLoading(true);
+        if (!isOnline) {
+            setLoading(false);
+            return;
+        }
+        // Keep loading true only if we don't have data, otherwise background refresh
+        if (periods.length === 0) setLoading(true);
+
         setError(null);
         try {
             const { data, error } = await supabase
@@ -31,7 +58,16 @@ export const useTimetable = (activeDay: number) => {
                 .order('start_time', { ascending: true });
 
             if (error) throw error;
-            setPeriods(data || []);
+            if (error) throw error;
+
+            if (data) {
+                setPeriods(data);
+                // Persist to cache
+                SafeZustandStorage.setItem(
+                    `${TIMETABLE_CACHE_KEY}-${activeDay}`,
+                    JSON.stringify(data)
+                );
+            }
         } catch (err: any) {
             setError(err.message);
             console.error('Error fetching timetable:', err);
@@ -42,7 +78,7 @@ export const useTimetable = (activeDay: number) => {
 
     useEffect(() => {
         fetchPeriods();
-    }, [fetchPeriods]);
+    }, [fetchPeriods, isOnline]);
 
     const addPeriod = async (period: Omit<Period, 'id' | 'user_id'>) => {
         // Optimistic Update

@@ -16,7 +16,22 @@
         "error": "දෝෂයකි",
         "success": "සාර්ථකයි",
         "greeting": "ආයුබෝවන්, {{name}}!",
-        "create": "සාදන්න"
+        "create": "සාදන්න",
+        "sampleDismissed": "නියැදිය ඉවත් කරන ලදී",
+        "sampleDismissedDesc": "මෙම නියැදි අභයභූමිය ඔබගේ දසුනෙන් ඉවත් කර ඇත.",
+        "initialize": "ආරම්භ කරන්න",
+        "guidesAndSamples": "මාර්ගෝපදේශ සහ නියැදි"
+    },
+    "demoMode": {
+        "realityCheckTitle": "වැලිපෙට්ටි අනුකරණය",
+        "realityCheckMessage": "ඔබ සිටින්නේ නිරූපණ මාදිලියකය. මෙම ක්‍රියාව අනුකරණය කරන අතර ඔබේ සැබෑ පාසල් දත්ත වලට සුරැකෙන්නේ නැත.",
+        "simulationAlert": "අනුකරණය පමණි",
+        "bridgeTitle": "ඔබේ ප්‍රගතිය තබා ගන්නද?",
+        "bridgeMessage": "ගවේෂණය කරන අතරතුර ඔබ අයිතම {{count}} ක් ('{{firstName}}' වැනි) නිර්මාණය කළා. මේවා තබාගෙන ඒවා ඔබේ සැබෑ දත්ත බවට පත් කිරීමට ඔබ කැමතිද?",
+        "bridgeSave": "ඔව්, ඒවා සුරකින්න",
+        "bridgeDiscard": "නියැදි ඉවත් කරන්න",
+        "sandboxPerspective": "පර්යේෂණාත්මක වැලිපෙට්ටිය: විභව ආයතනික රටා පෙරදසුන් කිරීම",
+        "visionaryEcology": "විචක්ෂණශීලී පරිසර විද්‍යාව: ප්ලැට්ෆෝම් විභවය පෙරදසුන් කිරීම"
     },
     "greeting": {
         "ayubowan": "ආයුබෝවන්!"
@@ -32,7 +47,15 @@
         "founder": "නිර්මාතෘ භාරකරු"
     },
     "school": {
-        "personal_workspace": "පෞද්ගලික වැඩබිම"
+        "personal_workspace": "පෞද්ගලික වැඩබිම",
+        "createTitle": "අභයභූමිය ආරම්භ කරන්න",
+        "labelName": "පාසලේ නම",
+        "placeholderName": "උදා: ග්‍රීන් වැලි අභයභූමිය",
+        "labelType": "පාසල් වර්ගය",
+        "selectType": "වර්ගය තෝරන්න",
+        "primary": "ප්‍රාථමික",
+        "secondary": "ද්විතීයික",
+        "mixed": "මිශ්‍ර (1-13)"
     },
     "auth": {
         "login": "පිවිසෙන්න",
@@ -66,6 +89,7 @@
         "myClassrooms": "මගේ පන්ති කාමර",
         "schoolOverview": "පාසල් දළ විශ්ලේෂණය",
         "schoolManagement": "පාසල් කළමනාකරණය",
+        "mySchool": "මගේ පාසල",
         "learningJourney": "ඉගෙනුම් ගමන",
         "mySanctuary": "මගේ අභයභූමිය",
         "classroom": "පන්තිය",
@@ -194,7 +218,81 @@
         "leadershipWisdom": "නායකත්ව ප්‍රඥාව",
         "leadershipWisdomDesc": "ඔබේ නායකත්ව ගමනෙන් අවබෝධයන් ග්‍රහණය කරන්න",
         "monthlyReflection": "මාසික පිළිබිඹුව",
-        "monthlyReflectionDesc": "පසුගිය මාසය සමාලෝචනය කර ඉදිරියට සැලසුම් කරන්න"
+        "monthlyReflectionDesc": "පසුගිය මාසය සමාලෝචනය කර ඉදිරියට සැලසුම් කරන්න",
+        "stats": {
+            "totalStudents": "මුළු ශිෂ්‍ය සංඛ්‍යාව",
+            "totalTeachers": "මුළු ගුරු සංඛ්‍යාව",
+            "activeClassrooms": "සක්‍රීය පන්ති",
+            "totalSections": "අංශ",
+            "attendance": "පැමිණීම"
+        },
+        "quickActions": "ඉක්මන් ක්‍රියා",
+        "actions": {
+            "manageHierarchy": "🏫 පාසල් ධුරාවලිය කළමනාකරණය කරන්න",
+            "inviteStaff": "✉️ කාර්ය මණ්ඩලය සහ ශිෂ්‍යයින්ට ආරාධනා කරන්න"
+        },
+        "resources": {
+            "title": "සම්පත් අවශ්‍යතා",
+            "subtitle": "ඔබේ ගුරුවරුන්ට අවශ්‍ය දේ සමඟ ඔවුන්ට සහාය වන්න",
+            "emptyState": "✨ සියලුම සම්පත් අවශ්‍යතා දැනට සපුරා ඇත!",
+            "emptyStateDesc": "ඔබේ ගුරුවරුන්ට සාර්ථක වීමට අවශ්‍ය දේ ඇත",
+            "needUnit": "ගුරුවරුන් {{count}} කට අවශ්‍යයි",
+            "urgent": "🔥 හදිසි ප්‍රමුඛතාවය",
+            "philosophy": "💡 මෙම උපකරණ පුවරුව අවධානය යොමු කරන්නේ ගුරුවරුන් සවිබල ගැන්වීම මිස කාර්ය සාධනය නිරීක්ෂණය කිරීම නොවේ"
+        },
+        "hierarchy": {
+            "title": "පාසල් ධුරාවලිය",
+            "addSection": "+ අංශය එක් කරන්න",
+            "addGrade": "+ ශ්‍රේණිය එක් කරන්න",
+            "grade": "ශ්‍රේණිය",
+            "noGrades": "තවම ශ්‍රේණි එකතු කර නැත",
+            "noSections": "තවම අංශ නැත. ආරම්භ කිරීමට ඔබේ පළමු අංශය එක් කරන්න!",
+            "addSectionTitle": "නව අංශයක් එක් කරන්න",
+            "sectionNameLabel": "අංශයේ නම ඇතුළත් කරන්න (උදා: ප්‍රාථමික, ද්විතීයික)",
+            "sectionNamePlaceholder": "අංශයේ නම",
+            "addGradeTitle": "නව ශ්‍රේණියක් එක් කරන්න",
+            "gradeNumberLabel": "ශ්‍රේණි අංකය ඇතුළත් කරන්න (1-13)",
+            "gradeNumberPlaceholder": "1-13",
+            "errorEmptyName": "අංශයේ නම හිස් විය නොහැක",
+            "errorGradeLimit": "ශ්‍රේණි අංකය 1 සහ 13 අතර විය යුතුය"
+        },
+        "invites": {
+            "title": "ආරාධනා කේත",
+            "description": "ඔබේ පාසලට ගුරුවරුන් සහ සිසුන් සම්බන්ධ කර ගැනීම සඳහා ආරාධනා කේත සාදන්න.",
+            "generateTeacher": "👨‍🏫 ගුරු කේතය සාදන්න",
+            "generateSectionHead": "+ අංශ ප්‍රධානී",
+            "generateGradeHead": "+ ශ්‍රේණි ප්‍රධානී",
+            "generateStudent": "👨‍🎓 ශිෂ්‍ය කේතය සාදන්න",
+            "activeCodesTitle": "සක්‍රීය ආරාධනා කේත",
+            "used": "භාවිතා කර ඇත",
+            "active": "සක්‍රීය",
+            "createdAt": "සෑදූ දිනය:",
+            "tapToCopy": "පිටපත් කිරීමට තට්ටු කරන්න",
+            "noCodes": "සක්‍රීය ආරාධනා කේත නැත. ආරම්භ කිරීමට ඔබේ පළමු කේතය සාදන්න!",
+            "copied": "පිටපත් කර ඇත!"
+        }
+    },
+    "admin": {
+        "systemOperations": "පද්ධති මෙහෙයුම්",
+        "productionEnvironment": "නිෂ්පාදන පරිසරය",
+        "coreUptime": "ප්‍රධාන සක්‍රීය කාලය",
+        "apiLatency": "API ප්‍රමාදය",
+        "operationalAudit": "මෙහෙයුම් විගණනය",
+        "activeSessions": "සක්‍රීය සැසියන්",
+        "securityAlerts": "ආරක්ෂක අනතුරු ඇඟවීම්",
+        "infraSummary": "{{name}} සඳහා යටිතල පහසුකම් සාරාංශය"
+    },
+    "founder": {
+        "platformVision": "ප්ලැට්ෆෝම් දැක්ම",
+        "educationalEcology": "අධ්‍යාපනික පරිසර විද්‍යාව",
+        "ecologyStatus": "පරිසර විද්‍යා තත්ත්වය: {{status}}",
+        "visionManifesting": "අංශ {{count}} ක දැක්ම ප්‍රකාශ වේ",
+        "executiveOversight": "විධායක අධීක්ෂණය",
+        "totalSouls": "මුළු ආත්මයන්",
+        "guidingSpirits": "මග පෙන්වන ආත්මයන්",
+        "visionaryInsights": "විචක්ෂණශීලී අවබෝධයන්",
+        "wellnessIndex": "යහපැවැත්මේ දර්ශකය",
+        "wellnessIncrease": "පසුගිය චක්‍රයේ සිට +{{percent}}%"
     },
     "classroom": {
         "title": "පන්තිය",
@@ -218,7 +316,25 @@
         "learningPath": "ඉගෙනුම් මාවත",
         "viewStudents": "ශිෂ්‍යයින් බලන්න",
         "assignments": "පැවරුම්",
-        "resources": "සම්පත්"
+        "resources": "සම්පත්",
+        "exploreSampleSchool": "නියැදි අභයභූමිය ගවේෂණය කරන්න",
+        "seeFullFeatureDemo": "සම්පූර්ණ පාසලක් ක්‍රියාත්මක වන ආකාරය බලන්න",
+        "teacherInitialTitle": "ඔබේ වැඩ බිමට සාදරයෙන් පිළිගනිමු",
+        "teacherInitialDesc": "ඔබේ ගමන ආරම්භ කිරීමට ඔබේ පළමු පන්ති කාමරය සාදන්න.",
+        "createFirstClass": "මගේ පළමු පන්තිය සාදන්න",
+        "studentInitialTitle": "ඔබේ ඉගෙනුම් අභයභූමිය",
+        "studentInitialDesc": "කේතයක් භාවිතා කර පන්තියකට සම්බන්ධ වන්න හෝ ඔබේ විභව මාවත ගවේෂණය කරන්න.",
+        "joinClass": "පන්තියකට සම්බන්ධ වන්න",
+        "principalInitialTitle": "පාසල් උපකරණ පුවරුව",
+        "principalInitialDesc": "ආයතනික රටා බැලීමට ඔබේ පාසල් ධුරාවලිය ආරම්භ කරන්න.",
+        "founderInitialTitle": "පරිසර විද්‍යා අධීක්ෂණය",
+        "founderInitialDesc": "පරිසර විද්‍යාව පරිණාමය වූ පසු විචක්ෂණශීලී ප්‍රමිතික මෙහි දිස්වනු ඇත.",
+        "genericInitialTitle": "ආරම්භ කිරීමට සූදානම්ද?",
+        "genericInitialDesc": "මෙම අභයභූමිය තුළ ඇති හැකියාවන් ගවේෂණය කරන්න.",
+        "loading": "පන්ති පූරණය වෙමින්...",
+        "retry": "නැවත උත්සාහ කරන්න",
+        "sample": "ආදර්ශ",
+        "noSubject": "විෂයක් නැත"
     },
     "community": {
         "title": "ප්‍රජාව",

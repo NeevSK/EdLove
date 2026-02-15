@@ -26,9 +26,11 @@ import {
   ChevronRight,
   Check,
   Info,
+  Zap,
 } from 'lucide-react-native';
 import { useThemedColors } from '../hooks/useThemedColors';
 import ScreenWrapper from '../components/shared/ScreenWrapper';
+import { useStore } from '../store/useStore';
 
 interface SettingsOptionProps {
   icon: React.ReactNode;
@@ -175,6 +177,7 @@ export default function AppSettingsScreen({ navigation }: any) {
     toggleVeil,
     reality,
   } = useEnvironment();
+  const { isDemoMode, setDemoMode } = useStore();
 
   const [showThemeModal, setShowThemeModal] = useState(false);
   const [showFidelityModal, setShowFidelityModal] = useState(false);
@@ -380,6 +383,90 @@ export default function AppSettingsScreen({ navigation }: any) {
               accessibilityRole="switch"
               accessibilityLabel={t('settings.veil.title', 'Privacy Veil')}
               accessibilityState={{ checked: isVeilActive }}
+            />
+          </HStack>
+        </Box>
+
+        {/* Explorer Section (Demo Mode) */}
+        <SectionHeader
+          colors={colors}
+          title={t('settings.explorer.title', 'Explorer Mode')}
+          description={t(
+            'settings.explorer.description',
+            'Full potential simulation with visionary sample data'
+          )}
+        />
+
+        <Box
+          sx={{
+            backgroundColor: colors.secondary,
+            borderRadius: Theme.corners.comfortable,
+            padding: Theme.spacing.md,
+            marginBottom: Theme.spacing.sm,
+            borderWidth: 1,
+            borderColor: isDemoMode ? Theme.colors.sanctuarySaffron : colors.border,
+            shadowColor: isDemoMode ? Theme.colors.sanctuarySaffron : 'transparent',
+            shadowOpacity: isDemoMode ? 0.3 : 0,
+            shadowRadius: 10,
+          }}
+        >
+          <HStack space="md" alignItems="center" justifyContent="space-between">
+            <HStack space="md" alignItems="center" flex={1}>
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: Theme.corners.comfortable,
+                  backgroundColor: isDemoMode ? Theme.colors.sanctuarySaffron : colors.tertiary,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Zap size={24} color={isDemoMode ? Theme.colors.white : colors.textTertiary} fill={isDemoMode ? Theme.colors.white : 'transparent'} />
+              </Box>
+
+              <VStack flex={1} space="xs">
+                <Text
+                  sx={{
+                    fontSize: Theme.typography.fontSize.md,
+                    fontWeight: Theme.typography.fontWeight.semibold,
+                    color: colors.text,
+                  }}
+                >
+                  {t('settings.explorer.toggle', 'Visionary Sandbox')}
+                </Text>
+                <Text
+                  sx={{
+                    fontSize: Theme.typography.fontSize.sm,
+                    color: colors.textSecondary,
+                    lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.sm,
+                  }}
+                >
+                  {t(
+                    'settings.explorer.status',
+                    isDemoMode
+                      ? 'Sandbox is ACTIVE'
+                      : 'Show full-potential proofs'
+                  )}
+                </Text>
+              </VStack>
+            </HStack>
+
+            <Switch
+              value={isDemoMode}
+              onValueChange={(val) => {
+                setDemoMode(val);
+                hapticSuccess();
+              }}
+              trackColor={{
+                false: colors.tertiary,
+                true: Theme.colors.sanctuarySaffron,
+              }}
+              thumbColor={Theme.colors.white}
+              accessible={true}
+              accessibilityRole="switch"
+              accessibilityLabel={t('settings.explorer.title', 'Explorer Mode')}
+              accessibilityState={{ checked: isDemoMode }}
             />
           </HStack>
         </Box>

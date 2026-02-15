@@ -8,7 +8,7 @@
  * - Default: All students marked as Present
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import {
     Box,
     VStack,
@@ -25,21 +25,15 @@ import { Check, X, Clock, Search } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { hapticLight } from '../../utils/haptics';
 import { useThemedColors } from '../../hooks/useThemedColors';
+import { useAttendance } from '../../hooks/classroom/useAttendance';
 
 // Types
-export type AttendanceStatus = 'present' | 'absent' | 'late';
-
-export interface StudentAttendance {
-    id: string;
-    student_id: string;
-    full_name: string;
-    roll_number?: number;
-    status: AttendanceStatus;
-}
+import { StudentAttendance, AttendanceStatus } from '../../types/attendance';
 
 interface AttendanceSheetProps {
     classroomId: string;
     date?: string;
+    initialStudents?: StudentAttendance[];
     onAttendanceChange?: (attendance: StudentAttendance[]) => void;
 }
 
@@ -65,77 +59,52 @@ const STATUS_CONFIG = {
 export default function AttendanceSheet({
     classroomId,
     date = new Date().toISOString().split('T')[0],
+    initialStudents = [],
     onAttendanceChange,
 }: AttendanceSheetProps) {
     const colors = useThemedColors();
-    const [students, setStudents] = useState<StudentAttendance[]>([]);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
+    const {
+        students,
+        setStudents,
+        searchQuery,
+        setSearchQuery,
+        updateStudentStatus,
+        filteredStudents,
+        stats
+    } = useAttendance(initialStudents);
 
-    // Fetch students and initialize with 'present' status
+    // We shouldn't need this local loading state if parent handles it, 
+    // but if we do internal fetch, we might need it. 
+    // For now let's keep it simple: if initialStudents is empty, we *could* fetch.
+    // But useAttendance doesn't handle fetching.
+
+    // Let's add a quick internal fetch effect here *only* if needed, 
+    // or just rely on parent. BDD says "Parent passes data". 
+    // I'll keep the internal fetch purely as a fallback for pure component testing/storybook.
+
     useEffect(() => {
-        fetchStudents();
-    }, [classroomId]);
-
-    const fetchStudents = async () => {
-        setIsLoading(true);
-        try {
-            // TODO: Replace with actual API call
-            // Mock data for now
-            const mockStudents = [
-                { id: '1', student_id: 's1', full_name: 'Anura Kumara', roll_number: 1 },
-                { id: '2', student_id: 's2', full_name: 'Sithum Silva', roll_number: 2 },
-                { id: '3', student_id: 's3', full_name: 'Nimal Perera', roll_number: 3 },
+        if (initialStudents.length === 0 && students.length === 0) {
+            // Fallback mock fetch
+            const mockStudents: StudentAttendance[] = [
+                { id: '1', student_id: 's1', full_name: 'Anura Kumara', roll_number: 1, status: 'present' },
+                { id: '2', student_id: 's2', full_name: 'Sithum Silva', roll_number: 2, status: 'present' },
+                { id: '3', student_id: 's3', full_name: 'Nimal Perera', roll_number: 3, status: 'present' },
             ];
-
-            const studentsWithStatus: StudentAttendance[] = mockStudents.map((student) => ({
-                ...student,
-                status: 'present' as AttendanceStatus,
-            }));
-
-            setStudents(studentsWithStatus);
-        } catch (error) {
-            console.error('Failed to fetch students:', error);
-        } finally {
-            setIsLoading(false);
+            setStudents(mockStudents);
         }
-    };
+    }, [initialStudents, students.length, setStudents]);
 
-    // Update student status with optimistic update
-    const updateStudentStatus = (studentId: string, status: AttendanceStatus) => {
+    // Notify parent on change
+    useEffect(() => {
+        if (onAttendanceChange) {
+            onAttendanceChange(students);
+        }
+    }, [students, onAttendanceChange]);
+
+    const handleUpdateStatus = (id: string, status: AttendanceStatus) => {
         hapticLight();
-        setStudents((prev) =>
-            prev.map((student) =>
-                student.id === studentId ? { ...student, status } : student
-            )
-        );
-
-        // Notify parent component
-        const updatedStudents = students.map((student) =>
-            student.id === studentId ? { ...student, status } : student
-        );
-        onAttendanceChange?.(updatedStudents);
+        updateStudentStatus(id, status);
     };
-
-    // Filter students based on search
-    const filteredStudents = useMemo(() => {
-        if (!searchQuery.trim()) return students;
-
-        const query = searchQuery.toLowerCase();
-        return students.filter(
-            (student) =>
-                student.full_name.toLowerCase().includes(query) ||
-                student.roll_number?.toString().includes(query)
-        );
-    }, [students, searchQuery]);
-
-    // Count attendance statistics
-    const stats = useMemo(() => {
-        const present = students.filter((s) => s.status === 'present').length;
-        const absent = students.filter((s) => s.status === 'absent').length;
-        const late = students.filter((s) => s.status === 'late').length;
-        return { present, absent, late, total: students.length };
-    }, [students]);
 
     // Render swipeable student row
     const renderStudentRow = ({ item }: { item: StudentAttendance }) => {
@@ -171,11 +140,11 @@ export default function AttendanceSheet({
                         <X color={Theme.colors.white} size={24} />
                     </Box>
                 )}
-                onSwipeableRightOpen={() => updateStudentStatus(item.id, 'present')}
-                onSwipeableLeftOpen={() => updateStudentStatus(item.id, 'absent')}
+                onSwipeableRightOpen={() => handleUpdateStatus(item.id, 'present')}
+                onSwipeableLeftOpen={() => handleUpdateStatus(item.id, 'absent')}
             >
                 <Pressable
-                    onLongPress={() => updateStudentStatus(item.id, 'late')}
+                    onLongPress={() => handleUpdateStatus(item.id, 'late')}
                     delayLongPress={500}
                 >
                     <Box
@@ -333,11 +302,7 @@ export default function AttendanceSheet({
 
                     {/* Student List */}
                     <Box sx={{ flex: 1 }}>
-                        {isLoading ? (
-                            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                <Text color={colors.textSecondary}>Loading students...</Text>
-                            </Box>
-                        ) : filteredStudents.length === 0 ? (
+                        {filteredStudents.length === 0 ? (
                             <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                                 <Text color={colors.textSecondary}>
                                     {searchQuery ? 'No students found' : 'No students in this class'}

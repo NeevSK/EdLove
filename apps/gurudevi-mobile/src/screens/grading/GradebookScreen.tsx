@@ -11,7 +11,7 @@
  * Mission 03: Grading System
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     VStack,
     HStack,
@@ -26,7 +26,7 @@ import {
 import { TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { StudentGrade, ClassroomGradingSettings } from '../../types/Grade';
-import { api } from '../../lib/api';
+import { useGradebook } from '../../hooks/grading/useGradebook';
 import GradebookTable from '../../components/grading/GradebookTable';
 import GradingSettings from '../../components/grading/GradingSettings';
 import Theme from '../../constants/Theme';
@@ -41,92 +41,42 @@ export default function GradebookScreen({
     onEditGrade,
 }: GradebookScreenProps) {
     const { t } = useTranslation();
-    const [grades, setGrades] = useState<StudentGrade[]>([]);
-    const [gradingSettings, setGradingSettings] = useState<ClassroomGradingSettings>({
-        classroom_id: classroomId,
-        grading_mode: 'both',
-        show_ranks: true,
-    });
-    const [studentNames, setStudentNames] = useState<{ [studentId: string]: string }>({});
-    const [isLoading, setIsLoading] = useState(true);
+    const {
+        grades,
+        studentNames,
+        gradingSettings,
+        isLoading,
+        error,
+        sortBy,
+        setSortBy,
+        sortedGrades,
+        stats,
+        updateSettings
+    } = useGradebook(classroomId);
+
     const [showSettings, setShowSettings] = useState(false);
-    const [sortBy, setSortBy] = useState<'name' | 'marks' | 'rank'>('rank');
-    const [error, setError] = useState<string | null>(null);
-
-    // Load grades and settings
-    useEffect(() => {
-        loadData();
-    }, [classroomId]);
-
-    const loadData = async () => {
-        setIsLoading(true);
-        setError(null);
-        try {
-            // Load grades
-            const gradesData = await api.grading.getClassroomGrades(classroomId);
-            setGrades(gradesData);
-
-            // Load grading settings
-            const settingsData = await api.grading.getGradingSettings(classroomId);
-            setGradingSettings(settingsData);
-
-            // Load student names (would come from classroom students API)
-            // For now, using mock data - in real app, fetch from api.classroomStudents
-            const names: { [key: string]: string } = {};
-            gradesData.forEach((grade) => {
-                names[grade.student_id] = `Student ${grade.student_id.substring(0, 8)}`;
-            });
-            setStudentNames(names);
-        } catch (err: any) {
-            console.error('Failed to load gradebook data:', err);
-            setError(err.message || 'Failed to load gradebook');
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     const handleSaveSettings = async (
         settings: Omit<ClassroomGradingSettings, 'classroom_id'>
     ) => {
         try {
-            const updated = await api.grading.updateGradingSettings(classroomId, settings);
-            setGradingSettings(updated);
+            await updateSettings(settings);
             setShowSettings(false);
         } catch (err: any) {
-            console.error('Failed to update settings:', err);
-            setError(err.message || 'Failed to update settings');
-        }
-    };
-
-    const handleSort = (newSortBy: 'name' | 'marks' | 'rank') => {
-        setSortBy(newSortBy);
-    };
-
-    const getSortedGrades = () => {
-        const sorted = [...grades];
-        switch (sortBy) {
-            case 'name':
-                return sorted.sort((a, b) =>
-                    (studentNames[a.student_id] || '').localeCompare(
-                        studentNames[b.student_id] || ''
-                    )
-                );
-            case 'marks':
-                return sorted.sort((a, b) => b.marks - a.marks);
-            case 'rank':
-                return sorted.sort((a, b) => (a.rank || 999) - (b.rank || 999));
-            default:
-                return sorted;
+            // Error is handled in hook, but we might want to show a toast or something here
+            console.error('Failed to save settings in UI:', err);
         }
     };
 
     if (showSettings) {
         return (
-            <GradingSettings
-                currentSettings={gradingSettings}
-                onSave={handleSaveSettings}
-                onCancel={() => setShowSettings(false)}
-            />
+            gradingSettings && (
+                <GradingSettings
+                    currentSettings={gradingSettings}
+                    onSave={handleSaveSettings}
+                    onCancel={() => setShowSettings(false)}
+                />
+            )
         );
     }
 
@@ -207,13 +157,13 @@ export default function GradebookScreen({
                                 color={Theme.colors.sacredWhite}
                                 sx={{ fontWeight: '700' }}
                             >
-                                {grades.length > 0
-                                    ? Math.round(
-                                        grades.reduce((sum, g) => sum + g.marks, 0) /
-                                        grades.length
-                                    )
-                                    : 0}
-                            </Text>
+                                <Text
+                                    size="xl"
+                                    color={Theme.colors.sacredWhite}
+                                    sx={{ fontWeight: '700' }}
+                                >
+                                    {stats.averageMarks}
+                                </Text>
                         </VStack>
                     </HStack>
 
@@ -229,7 +179,7 @@ export default function GradebookScreen({
                             {t('grading.gradebook.sortBy') || 'Sort by:'}
                         </Text>
 
-                        <TouchableOpacity onPress={() => handleSort('rank')}>
+                        <TouchableOpacity onPress={() => setSortBy('rank')}>
                             <Box
                                 sx={{
                                     padding: Theme.spacing.sm,
@@ -250,7 +200,7 @@ export default function GradebookScreen({
                             </Box>
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => handleSort('marks')}>
+                        <TouchableOpacity onPress={() => setSortBy('marks')}>
                             <Box
                                 sx={{
                                     padding: Theme.spacing.sm,
@@ -271,7 +221,7 @@ export default function GradebookScreen({
                             </Box>
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => handleSort('name')}>
+                        <TouchableOpacity onPress={() => setSortBy('name')}>
                             <Box
                                 sx={{
                                     padding: Theme.spacing.sm,
@@ -327,9 +277,9 @@ export default function GradebookScreen({
                     )}
 
                     {/* Gradebook Table */}
-                    {!isLoading && !error && grades.length > 0 && (
+                    {!isLoading && !error && grades.length > 0 && gradingSettings && (
                         <GradebookTable
-                            grades={getSortedGrades()}
+                            grades={sortedGrades}
                             gradingSettings={gradingSettings}
                             studentNames={studentNames}
                         />

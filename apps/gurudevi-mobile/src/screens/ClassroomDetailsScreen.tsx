@@ -25,6 +25,8 @@ import {
     BookOpen,
     FileText,
     Plus,
+    ClipboardCheck,
+    GraduationCap
 } from 'lucide-react-native';
 import Theme from '../constants/Theme';
 import { useTranslation } from 'react-i18next';
@@ -252,11 +254,41 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
             {/* Tab Content */}
             <Box sx={{ flex: 1 }}>
                 {activeTab === 'students' && (
-                    <StudentList
-                        classroomId={classroomId}
-                        students={students}
-                        onRefresh={fetchClassroomDetails}
-                    />
+                    <VStack flex={1}>
+                        {/* Teacher Tooblar */}
+                        <HStack space="md" px="$4" py="$4" bg={colors.secondary} borderBottomWidth={1} borderColor={colors.border}>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                action="primary"
+                                onPress={() => navigation.navigate('Attendance', { classroomId, classroomName })}
+                                sx={{ flex: 1, borderColor: Theme.colors.sageGreen }}
+                            >
+                                <HStack space="xs" alignItems="center">
+                                    <ClipboardCheck size={16} color={Theme.colors.sageGreen} />
+                                    <ButtonText color={Theme.colors.sageGreen}>{t('classroom.attendance') || 'Attendance'}</ButtonText>
+                                </HStack>
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                action="primary"
+                                onPress={() => navigation.navigate('Gradebook', { classroomId, classroomName })}
+                                sx={{ flex: 1, borderColor: Theme.colors.sanctuarySaffron }}
+                            >
+                                <HStack space="xs" alignItems="center">
+                                    <GraduationCap size={16} color={Theme.colors.sanctuarySaffron} />
+                                    <ButtonText color={Theme.colors.sanctuarySaffron}>{t('grades.gradebook') || 'Gradebook'}</ButtonText>
+                                </HStack>
+                            </Button>
+                        </HStack>
+
+                        <StudentList
+                            classroomId={classroomId}
+                            students={students}
+                            onRefresh={fetchClassroomDetails}
+                        />
+                    </VStack>
                 )}
                 {activeTab === 'lessons' && (
                     <LessonFeed
