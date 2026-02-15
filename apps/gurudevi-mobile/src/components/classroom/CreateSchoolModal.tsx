@@ -33,6 +33,7 @@ import {
 import { ChevronDown } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { api } from '../../lib/api';
+import { supabase } from '../../lib/supabase';
 import { useTranslation } from 'react-i18next';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';
 import { useThemedColors } from '../../hooks/useThemedColors';
@@ -66,20 +67,15 @@ export default function CreateSchoolModal({
         hapticLight();
 
         try {
-            // Simplified create logic for demo/bridge purposes
-            // In a real app, this would hit api.school.create (if it existed)
-            // For now, we simulate success or use a generic create if available
-            console.log('Creating school:', { name, type });
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error('Not authenticated');
 
-            // Mocking the API response for now as we don't have api.school.create yet
-            const newSchool = {
-                id: 'new-school-' + Date.now(),
+            // Call real API
+            const newSchool = await api.school.create({
                 name: name.trim(),
                 type,
-                created_at: new Date().toISOString()
-            };
-
-            await new Promise(resolve => setTimeout(resolve, 1000));
+                created_by: user.id
+            });
 
             hapticSuccess();
             onSuccess(newSchool);
@@ -137,7 +133,7 @@ export default function CreateSchoolModal({
                         <FormControl isRequired isInvalid={!!error}>
                             <FormControlLabel>
                                 <FormControlLabelText color={colors.textSecondary}>
-                                    {t('school.labelName') || 'School Name'}
+                                    {t('school.labelName') || 'Sanctuary Name'}
                                 </FormControlLabelText>
                             </FormControlLabel>
                             <Input
@@ -164,34 +160,30 @@ export default function CreateSchoolModal({
                         <FormControl>
                             <FormControlLabel>
                                 <FormControlLabelText color={colors.textSecondary}>
-                                    {t('school.labelType') || 'School Type'}
+                                    {t('school.labelType') || 'Sanctuary Type'}
                                 </FormControlLabelText>
                             </FormControlLabel>
-                            <Select
-                                selectedValue={type}
-                                onValueChange={(value: any) => setType(value)}
-                            >
-                                <SelectTrigger
-                                    sx={{
-                                        backgroundColor: colors.tertiary,
-                                        borderColor: colors.border
-                                    }}
-                                >
-                                    <SelectInput placeholder={t('school.selectType') || "Select type"} color={colors.text} />
-                                    <ChevronDown size={18} color={colors.textSecondary} style={{ marginRight: 8 }} />
-                                </SelectTrigger>
-                                <SelectPortal>
-                                    <SelectBackdrop />
-                                    <SelectContent>
-                                        <SelectDragIndicatorWrapper>
-                                            <SelectDragIndicator />
-                                        </SelectDragIndicatorWrapper>
-                                        <SelectItem label={t('school.primary') || "Primary"} value="primary" />
-                                        <SelectItem label={t('school.secondary') || "Secondary"} value="secondary" />
-                                        <SelectItem label={t('school.mixed') || "Mixed (1-13)"} value="mixed" />
-                                    </SelectContent>
-                                </SelectPortal>
-                            </Select>
+                            <HStack space="md">
+                                {(['primary', 'secondary', 'mixed'] as const).map((tType) => (
+                                    <Button
+                                        key={tType}
+                                        variant={type === tType ? 'solid' : 'outline'}
+                                        onPress={() => setType(tType)}
+                                        sx={{
+                                            flex: 1,
+                                            backgroundColor: type === tType ? Theme.colors.sanctuarySaffron : 'transparent',
+                                            borderColor: type === tType ? Theme.colors.sanctuarySaffron : colors.border,
+                                        }}
+                                    >
+                                        <ButtonText
+                                            size="xs"
+                                            color={type === tType ? Theme.colors.sacredWhite : colors.textSecondary}
+                                        >
+                                            {t(`school.type_${tType}`) || tType.charAt(0).toUpperCase() + tType.slice(1)}
+                                        </ButtonText>
+                                    </Button>
+                                ))}
+                            </HStack>
                         </FormControl>
                     </VStack>
                 </ModalBody>

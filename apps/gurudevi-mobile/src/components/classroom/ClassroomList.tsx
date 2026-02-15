@@ -35,13 +35,15 @@ interface ClassroomListProps {
     onDataLoaded?: (classrooms: Classroom[]) => void;
     isNested?: boolean;
     refreshTrigger?: number;
+    emptyContent?: React.ReactNode;
 }
 
 export default function ClassroomList({
     onClassroomPress,
     onDataLoaded,
     isNested = false,
-    refreshTrigger: externalRefreshTrigger = 0
+    refreshTrigger: externalRefreshTrigger = 0,
+    emptyContent
 }: ClassroomListProps) {
     const { role } = useUserRole();
     const [classrooms, setClassrooms] = useState<Classroom[]>([]);
@@ -258,14 +260,22 @@ export default function ClassroomList({
         return (
             <VStack space="md" sx={{ width: '100%' }}>
                 {classrooms.length === 0 ? (
-                    <RoleInitialState
-                        role={role}
-                        onCreatePress={() => {
-                            hapticLight();
-                            setPendingInitialData(null);
-                            setIsCreateModalOpen(true);
-                        }}
-                    />
+                    emptyContent || (
+                        <RoleInitialState
+                            role={role}
+                            onCreatePress={() => {
+                                hapticLight();
+                                setPendingInitialData(null);
+                                setIsCreateModalOpen(true);
+                            }}
+                            onJoinPress={() => {
+                                hapticLight();
+                                // If student, this would ideally open a Join Modal or Code Entry
+                                // For now, let's keep it minimal or navigate to library
+                                console.log('[ClassroomList] onJoinPress triggered for role:', role);
+                            }}
+                        />
+                    )
                 ) : (
                     classrooms.map((classroom) => (
                         <ClassroomCard
@@ -300,59 +310,6 @@ export default function ClassroomList({
     }
 
     // Standard view (using FlatList)
-    // For nested use (e.g. inside TeacherDashboard ScrollView), we use VStack
-    if (isNested) {
-        return (
-            <VStack space="md" sx={{ width: '100%' }}>
-                {classrooms.length === 0 ? (
-                    <RoleInitialState
-                        role={role}
-                        onCreatePress={() => {
-                            console.log('[ClassroomList] RoleInitialState onCreatePress');
-                            hapticLight();
-                            setPendingInitialData(null);
-                            setIsCreateModalOpen(true);
-                        }}
-                        onSamplePress={(item) => {
-                            console.log('[ClassroomList] Sample guide pressed:', item.id);
-                        }}
-                    />
-                ) : (
-                    <>
-                        {classrooms.map((classroom) => (
-                            <ClassroomCard
-                                key={classroom.id}
-                                classroom={classroom}
-                                onPress={handleClassroomPress}
-                                onClassroomPress={onClassroomPress} // Pass onClassroomPress for edit action
-                                studentCount={(classroom as any).student_count || 0}
-                                colors={colors}
-                                setPendingInitialData={setPendingInitialData}
-                                setIsCreateModalOpen={setIsCreateModalOpen}
-                                toast={toast}
-                                t={t}
-                            />
-                        ))}
-                    </>
-                )}
-
-                <CreateClassroomModal
-                    isOpen={isCreateModalOpen}
-                    initialData={pendingInitialData}
-                    onClose={() => {
-                        console.log('[ClassroomList] Closing nested modal');
-                        setIsCreateModalOpen(false);
-                        setPendingInitialData(null);
-                    }}
-                    onSuccess={() => {
-                        console.log('[ClassroomList] Nested create success');
-                        hapticSuccess();
-                        setInternalRefreshTrigger(prev => prev + 1);
-                    }}
-                />
-            </VStack>
-        );
-    }
 
     const content = (
         <Box flex={1} sx={{ backgroundColor: colors.primary }}>
@@ -364,6 +321,11 @@ export default function ClassroomList({
                         hapticLight();
                         setPendingInitialData(null);
                         setIsCreateModalOpen(true);
+                    }}
+                    onJoinPress={() => {
+                        console.log('[ClassroomList] Standard empty onJoinPress');
+                        hapticLight();
+                        // For generic/unknown role, maybe redirect to profile to set role
                     }}
                     onSamplePress={(item) => {
                         console.log('[ClassroomList] Sample guide pressed:', item.id);

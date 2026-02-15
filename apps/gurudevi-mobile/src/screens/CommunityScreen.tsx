@@ -60,7 +60,7 @@ export default function CommunityScreen() {
     };
 
     const renderTabs = () => (
-        <HStack space="md" mb="$4" px="$4">
+        <HStack space="md" mb="$4" px="$4" py="$1" pt="$4" sx={{ padding: 5 }}>
             <Pressable
                 onPress={() => setActiveTab('feed')}
                 sx={{

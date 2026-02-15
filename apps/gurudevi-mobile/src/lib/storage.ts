@@ -60,18 +60,27 @@ class AsyncStorageFallback implements StorageInterface {
     contains(key: string) { return false; }
 }
 
+import Constants, { ExecutionEnvironment } from 'expo-constants';
+
 let storageInstance: StorageInterface;
 
-try {
-    // Attempt to initialize MMKV
-    const { MMKV } = require('react-native-mmkv');
-    storageInstance = new MMKV({
-        id: 'gurudevi-storage',
-    });
-    console.log('✅ MMKV initialized successfully (Speed Mode)');
-} catch (e) {
-    console.warn('⚠️ MMKV failed, using Memory fallback for sync ops');
-    storageInstance = new MemoryStorage();
+const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+
+if (isExpoGo) {
+    console.log('⚠️ Running in Expo Go: Defaulting to AsyncStorage Fallback');
+    storageInstance = new AsyncStorageFallback();
+} else {
+    try {
+        // Attempt to initialize MMKV
+        const { MMKV } = require('react-native-mmkv');
+        storageInstance = new MMKV({
+            id: 'gurudevi-storage',
+        });
+        console.log('✅ MMKV initialized successfully (Speed Mode)');
+    } catch (e) {
+        console.warn('⚠️ MMKV failed (Native module missing), using AsyncStorage Fallback');
+        storageInstance = new AsyncStorageFallback();
+    }
 }
 
 export const storage = storageInstance;

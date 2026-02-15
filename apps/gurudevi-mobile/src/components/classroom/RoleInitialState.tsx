@@ -14,7 +14,8 @@ import {
     Heart,
     Flower,
     LayoutGrid,
-    Activity
+    Activity,
+    Search
 } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { useTranslation } from 'react-i18next';
@@ -33,13 +34,17 @@ interface SampleItem {
 interface RoleInitialStateProps {
     role: string;
     onCreatePress?: () => void;
+    onJoinPress?: () => void;
     onSamplePress?: (item: SampleItem) => void;
 }
 
-export default function RoleInitialState({ role, onCreatePress, onSamplePress }: RoleInitialStateProps) {
+export default function RoleInitialState({ role, onCreatePress, onJoinPress, onSamplePress }: RoleInitialStateProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
     const setDemoMode = useStore((state) => state.setDemoMode);
+    const setUserRole = useStore((state) => state.setUserRole);
+
+    console.log('[RoleInitialState] Received role:', role);
 
     const getRoleContent = () => {
         switch (role) {
@@ -49,6 +54,7 @@ export default function RoleInitialState({ role, onCreatePress, onSamplePress }:
                     description: t('classroom.teacherInitialDesc') || "Create your first classroom to start your journey.",
                     icon: School,
                     primaryAction: t('classroom.createFirstClass') || "Create My First Class",
+                    actionType: 'create',
                     samples: [
                         { id: 'demo', title: t('classroom.exploreSampleSchool') || "Explore Sample Sanctuary", subtitle: t('classroom.seeFullFeatureDemo') || "See a full school in action", icon: Zap, color: Theme.colors.sanctuarySaffron },
                         { id: 's1', title: "Sample: Grade 10 Math", subtitle: "32 Students • 4 Lessons", icon: BookOpen },
@@ -61,6 +67,7 @@ export default function RoleInitialState({ role, onCreatePress, onSamplePress }:
                     description: t('classroom.studentInitialDesc') || "Join a class using a code or explore your potential path.",
                     icon: Flower,
                     primaryAction: t('classroom.joinClass') || "Join a Class",
+                    actionType: 'join',
                     samples: [
                         { id: 'demo', title: t('classroom.exploreSampleSchool') || "Explore Sample Sanctuary", subtitle: t('classroom.seeFullFeatureDemo') || "See a full school in action", icon: Zap, color: Theme.colors.sanctuarySaffron },
                         { id: 's1', title: "Sample: Science Exploration", subtitle: "Your first lesson awaits", icon: Star, color: Theme.colors.sageGreen },
@@ -73,6 +80,7 @@ export default function RoleInitialState({ role, onCreatePress, onSamplePress }:
                     description: t('classroom.principalInitialDesc') || "Initialize your school hierarchy to see institutional patterns.",
                     icon: Compass,
                     primaryAction: t('principal.setupHierarchy') || "Setup School Hierarchy",
+                    actionType: 'setup',
                     samples: [
                         { id: 'demo', title: t('classroom.exploreSampleSchool') || "Explore Sample Sanctuary", subtitle: t('classroom.seeFullFeatureDemo') || "See a full school in action", icon: Zap, color: Theme.colors.sanctuarySaffron },
                         { id: 's1', title: "Health Pattern Sample", subtitle: "Attendance Trends", icon: Zap, color: Theme.colors.amberGlow },
@@ -85,6 +93,7 @@ export default function RoleInitialState({ role, onCreatePress, onSamplePress }:
                     description: t('classroom.sectionHeadInitialDesc') || "Monitor wellbeing and academic trends across your section.",
                     icon: LayoutGrid,
                     primaryAction: t('principal.setupHierarchy') || "Manage Section",
+                    actionType: 'setup',
                     samples: [
                         { id: 'demo', title: t('classroom.exploreSampleSchool') || "Explore Sample Sanctuary", subtitle: t('classroom.seeFullFeatureDemo') || "See a full school in action", icon: Zap, color: Theme.colors.sanctuarySaffron },
                         { id: 's1', title: "Section Wellness Report", subtitle: "Aggregate insights", icon: Heart, color: Theme.colors.emberRed },
@@ -96,6 +105,7 @@ export default function RoleInitialState({ role, onCreatePress, onSamplePress }:
                     description: t('classroom.gradeHeadInitialDesc') || "Coordinate classes and track progress for your assigned grade.",
                     icon: Users,
                     primaryAction: t('classroom.createClass') || "Manage Grade",
+                    actionType: 'setup',
                     samples: [
                         { id: 'demo', title: t('classroom.exploreSampleSchool') || "Explore Sample Sanctuary", subtitle: t('classroom.seeFullFeatureDemo') || "See a full school in action", icon: Zap, color: Theme.colors.sanctuarySaffron },
                         { id: 's1', title: "Grade-wide Analytics", subtitle: "Compare class performance", icon: Activity, color: colors.action },
@@ -107,16 +117,18 @@ export default function RoleInitialState({ role, onCreatePress, onSamplePress }:
                     description: t('classroom.founderInitialDesc') || "Visionary metrics will appear here once the ecology evolves.",
                     icon: Compass,
                     primaryAction: t('founder.publishVision') || "Publish First Announcement",
+                    actionType: 'setup',
                     samples: [
                         { id: 's1', title: "Vision Manifesto", subtitle: "Philosophy of Care", icon: Heart, color: Theme.colors.emberRed },
                     ]
                 };
             default:
                 return {
-                    title: t('classroom.genericInitialTitle') || "Ready to Start?",
-                    description: t('classroom.genericInitialDesc') || "Explore the possibilities within this sanctuary.",
-                    icon: School,
-                    primaryAction: t('common.start') || "Get Started",
+                    title: t('classroom.identifyingRoleTitle') || "Identity Search",
+                    description: t('classroom.identifyingRoleDesc') || "We're identifying your role in this sanctuary. Please wait or complete your profile.",
+                    icon: Search,
+                    primaryAction: t('common.completeProfile') || "Complete Profile",
+                    actionType: 'onboarding',
                     samples: []
                 };
         }
@@ -145,14 +157,21 @@ export default function RoleInitialState({ role, onCreatePress, onSamplePress }:
                 size="lg"
                 onPress={() => {
                     hapticLight();
-                    onCreatePress?.();
+                    if ((content as any).actionType === 'create') {
+                        onCreatePress?.();
+                    } else if ((content as any).actionType === 'join') {
+                        onJoinPress?.();
+                    } else {
+                        // Fallback: onboarding or setup
+                        onCreatePress?.();
+                    }
                 }}
                 sx={{
                     backgroundColor: Theme.colors.sanctuarySaffron,
                     borderRadius: Theme.corners.comfortable
                 }}
             >
-                <HStack space="sm" alignItems="center" justifyContent="center">
+                <HStack space="sm" alignItems="center" justifyContent="center" sx={{ height: 48 }}>
                     <Plus size={20} color="white" />
                     <ButtonText color="white" sx={{ fontWeight: '600' }}>{content.primaryAction}</ButtonText>
                 </HStack>
@@ -204,7 +223,8 @@ export default function RoleInitialState({ role, onCreatePress, onSamplePress }:
                         </Pressable>
                     ))}
                 </VStack>
-            )}
-        </VStack>
+            )
+            }
+        </VStack >
     );
 }

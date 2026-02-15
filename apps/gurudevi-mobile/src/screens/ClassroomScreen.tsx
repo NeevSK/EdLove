@@ -52,6 +52,7 @@ export default function ClassroomScreen() {
     }, [role]);
 
     const fetchPrincipalData = async () => {
+        setLoading(true);
         try {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
@@ -62,7 +63,7 @@ export default function ClassroomScreen() {
                     .eq('id', user.id)
                     .single();
 
-                if (data && data.school_id) {
+                if (data) {
                     setPrincipalData({
                         userId: user.id,
                         schoolId: data.school_id
@@ -89,13 +90,13 @@ export default function ClassroomScreen() {
     // Role-based views
     if (principalData) {
         if (role === 'founder') {
-            return <FounderSchoolView schoolId={principalData.schoolId} userId={principalData.userId} />;
+            return <FounderSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchPrincipalData} />;
         }
         if (role === 'admin') {
-            return <AdminSchoolView schoolId={principalData.schoolId} userId={principalData.userId} />;
+            return <AdminSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchPrincipalData} />;
         }
         if (role === 'principal' || role === 'developer') {
-            return <PrincipalSchoolView schoolId={principalData.schoolId} userId={principalData.userId} />;
+            return <PrincipalSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchPrincipalData} />;
         }
     }
 
@@ -107,21 +108,40 @@ export default function ClassroomScreen() {
         return <GradeHeadView schoolId={principalData?.schoolId} userId={principalData?.userId} />;
     }
 
-    // Default view for teachers and students
+    // Custom configuration for Teachers
     if (role === 'teacher') {
         return (
             <ScreenWrapper>
-                <TeacherDashboard />
+                <GlobalHeader
+                    title="Classroom 💛"
+                    subtitle={undefined} // Explicitly no subtitle
+                />
+                <Box sx={{ flex: 1 }}>
+                    <TeacherDashboard onRefresh={fetchPrincipalData} />
+                </Box>
             </ScreenWrapper>
         );
     }
 
-    // Student View
+    // Default view for students (Principal/Teacher already handled)
+    const isStudentRole = role === 'student';
+
+    const headerTitle = isStudentRole
+        ? (t('classroom.journeyTitle') || 'Learning Journey')
+        : (t('classroom.initializing') || 'Sanctuary Initialization');
+
+    const headerSubtitle = isStudentRole
+        ? (t('classroom.mySanctuary') || 'My Sanctuary')
+        : (t('classroom.identifyingRole') || 'Preparing your workspace...');
+
+    console.log('[ClassroomScreen] Current role:', role);
+    console.log('[ClassroomScreen] Using header title:', headerTitle);
+
     return (
         <ScreenWrapper>
             <GlobalHeader
-                title={t('classroom.learningJourney') || 'Learning Journey'}
-                subtitle={t('classroom.mySanctuary') || 'My Sanctuary'}
+                title={headerTitle}
+                subtitle={headerSubtitle}
             />
             <Box sx={{ flex: 1, padding: Theme.spacing.lg }}>
                 <ClassroomList

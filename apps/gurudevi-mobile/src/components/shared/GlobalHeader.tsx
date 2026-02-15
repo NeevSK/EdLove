@@ -29,6 +29,7 @@ interface GlobalHeaderProps {
         onChangeText: (text: string) => void;
         placeholder?: string;
     };
+    titleSize?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl';
 }
 
 export default function GlobalHeader({
@@ -39,6 +40,7 @@ export default function GlobalHeader({
     showBack = false,
     onBack,
     searchProps,
+    titleSize = 'xl',
 }: GlobalHeaderProps) {
     const { t } = useTranslation();
     const { role } = useUserRole();
@@ -140,7 +142,7 @@ export default function GlobalHeader({
                     ) : (
                         <Box sx={{ paddingLeft: Theme.spacing.md }}>
                             <Heading
-                                size="xl"
+                                size={titleSize}
                                 color={colors.text}
                                 sx={{ lineHeight: 32 }}
                             >

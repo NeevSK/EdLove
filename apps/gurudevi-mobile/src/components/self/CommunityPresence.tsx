@@ -21,6 +21,7 @@ import Animated, {
 import { Users } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 interface CommunityPresenceProps {
     compact?: boolean;
@@ -28,6 +29,7 @@ interface CommunityPresenceProps {
 }
 
 export default function CommunityPresence({ compact = false, userVibe = 'active' }: CommunityPresenceProps) {
+    const { t } = useTranslation();
     const [onlineCount, setOnlineCount] = useState<number>(0);
     const [isLoading, setIsLoading] = useState(true);
     const [dominantVibe, setDominantVibe] = useState<string>('active');
@@ -126,7 +128,13 @@ export default function CommunityPresence({ compact = false, userVibe = 'active'
     }));
 
     if (isLoading) {
-        return null; // Or a subtle loading state
+        return (
+            <HStack space="sm" alignItems="center" justifyContent="center" py="$4">
+                <Text color={Theme.colors.mistGray} size="sm" italic>
+                    {t('community.connecting') || "Connecting to Sanctuary Network..."}
+                </Text>
+            </HStack>
+        );
     }
 
     const getVibeColor = (vibe: string) => {

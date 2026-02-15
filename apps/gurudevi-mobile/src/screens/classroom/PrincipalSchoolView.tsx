@@ -56,9 +56,10 @@ import { CreateSchoolModal } from '../../components/classroom';
 interface PrincipalSchoolViewProps {
     schoolId: string;
     userId: string;
+    onRefresh?: () => void;
 }
 
-export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoolViewProps) {
+export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: PrincipalSchoolViewProps) {
     const { t } = useTranslation();
     const { role } = useUserRole();
     const colors = useThemedColors();
@@ -137,7 +138,7 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                     )}
 
                     {/* Stats Cards or Initial State */}
-                    {stats && !isLoading && (
+                    {stats && !isLoading ? (
                         <VStack space="md">
                             {(stats as any).is_sample && (
                                 <Box sx={{
@@ -302,6 +303,13 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                                 </Button>
                             </VStack>
                         </VStack>
+                    ) : (
+                        !isLoading && (
+                            <RoleInitialState
+                                role="principal"
+                                onCreatePress={() => setIsCreateModalOpen(true)}
+                            />
+                        )
                     )}
                 </VStack>
             </ScrollView>
@@ -329,7 +337,8 @@ export default function PrincipalSchoolView({ schoolId, userId }: PrincipalSchoo
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
                 onSuccess={() => {
-                    refreshData();
+                    if (onRefresh) onRefresh();
+                    else refreshData();
                 }}
             />
         </ScreenWrapper>

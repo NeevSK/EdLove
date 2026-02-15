@@ -33,6 +33,7 @@ import SandboxBanner from '../../components/shared/SandboxBanner';
 interface AdminSchoolViewProps {
     schoolId: string;
     userId: string;
+    onRefresh?: () => void;
 }
 
 export default function AdminSchoolView({ schoolId, userId }: AdminSchoolViewProps) {

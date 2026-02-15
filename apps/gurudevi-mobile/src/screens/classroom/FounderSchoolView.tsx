@@ -35,6 +35,7 @@ import { TouchableOpacity } from 'react-native';
 interface FounderSchoolViewProps {
     schoolId: string;
     userId: string;
+    onRefresh?: () => void;
 }
 
 export default function FounderSchoolView({ schoolId, userId }: FounderSchoolViewProps) {

@@ -55,6 +55,41 @@ export interface SchoolStats {
 
 export const schoolAPI = {
     /**
+     * Create a new school
+     * User will be automatically assigned as principal via trigger or separate call
+     */
+    async create(data: { name: string; type: 'primary' | 'secondary' | 'mixed'; created_by: string }): Promise<School> {
+        try {
+            const { data: newSchool, error } = await supabase
+                .from('schools')
+                .insert([{
+                    name: data.name,
+                    type: data.type,
+                    created_by: data.created_by,
+                    is_sample: false
+                }])
+                .select()
+                .single();
+
+            if (error) {
+                throw new APIError('Failed to create school', error.code, error);
+            }
+
+            // Update user's school_id
+            const { error: updateError } = await supabase
+                .from('users')
+                .update({ school_id: newSchool.id })
+                .eq('id', data.created_by);
+
+            if (updateError) console.warn('Failed to auto-assign principal to school:', updateError);
+
+            return newSchool;
+        } catch (error: any) {
+            throw new APIError('Failed to create school', 'CREATE_FAILED', error);
+        }
+    },
+
+    /**
      * Create a new section in the school
      */
     async createSection(schoolId: string, name: string): Promise<Section> {
