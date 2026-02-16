@@ -59,55 +59,22 @@ export default function CreateClassroomModal({
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error('Not authenticated');
 
-            // Fetch user's school_id
-            let { data: userData, error: userError } = await supabase
+            // Fetch user's school_id (if they have one)
+            // But we NO LONGER fail if it's missing.
+            let { data: userData } = await supabase
                 .from('users')
-                .select('school_id, full_name')
+                .select('school_id')
                 .eq('id', user.id)
                 .single();
 
-            if (userError) {
-                console.error('Failed to fetch user data:', userError);
-                throw new Error('Failed to fetch user information');
-            }
+            const schoolId = userData?.school_id || null;
 
-            let schoolId = userData?.school_id;
-
-            // FALLBACK: If user has no school (e.g., new user who skipped or old account), 
-            // create a default "Personal Workspace" for them on the fly.
-            if (!schoolId) {
-                console.log('💡 Classroom: User has no school_id, creating a Personal Workspace...');
-                const schoolName = `${userData?.full_name || 'My'}'s Workspace`;
-                const { data: newSchool, error: schoolError } = await supabase
-                    .from('schools')
-                    .insert({
-                        name: schoolName,
-                        type: 'personal_workspace',
-                        created_by: user.id
-                    })
-                    .select()
-                    .single();
-
-                if (schoolError) {
-                    console.error('Failed to create fallback school:', schoolError);
-                    throw new Error('Could not create a workspace for your classroom');
-                }
-
-                schoolId = newSchool.id;
-
-                // Update the user record so we don't have to do this again
-                await supabase
-                    .from('users')
-                    .update({ school_id: schoolId })
-                    .eq('id', user.id);
-
-                console.log('✅ Classroom: Fallback workspace created and linked');
-            }
+            console.log(`💡 Classroom: Creating class "${name}" with school_id: ${schoolId || 'none'}`);
 
             const newClass = await api.classrooms.create({
                 name: name.trim(),
                 subject: subject.trim() || undefined,
-                school_id: schoolId as string,
+                school_id: schoolId,
                 teacher_id: user.id,
                 color_theme: 'blue', // Default theme
             });
