@@ -73,11 +73,17 @@ export default function App() {
   // Load custom fonts
   useEffect(() => {
     async function loadFonts() {
+      console.log('🚀 Startup: Loading fonts...');
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Font loading timeout')), 5000)
+      );
+
       try {
-        await Font.loadAsync(fontAssets);
+        await Promise.race([Font.loadAsync(fontAssets), timeoutPromise]);
+        console.log('✅ Startup: Fonts loaded successfully');
         setFontsLoaded(true);
       } catch (error) {
-        console.error('Error loading fonts:', error);
+        console.warn('⚠️ Startup: Font loading failed or timed out:', error);
         // Continue anyway - app will use system fonts as fallback
         setFontsLoaded(true);
       }
@@ -86,29 +92,44 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    // Check initial session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
+    console.log('🚀 Startup: Initializing Auth session...');
 
-      // Fetch user role and school type when session is restored
-      if (session?.user) {
-        await fetchAndSetUserProfile(session.user.id);
+    // Check initial session with a safety timeout
+    const checkSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+
+        if (error) throw error;
+
+        setSession(session);
+        console.log('🚀 Startup: Session check complete. Session exists:', !!session);
+
+        // Fetch user role and school type when session is restored
+        if (session?.user) {
+          console.log('🚀 Startup: Fetching user profile for existing user...');
+          await fetchAndSetUserProfile(session.user.id);
+          console.log('✅ Startup: Profile fetched');
+        } else {
+          console.log('💡 Startup: No session found (New User flow)');
+        }
+      } catch (error) {
+        console.error('❌ Startup: Auth session check failed:', error);
+      } finally {
+        setLoading(false);
+        console.log('🏁 Startup: Initialization sequence finished');
       }
+    };
 
-      setLoading(false);
-    });
+    checkSession();
 
     // Listen for auth changes
-    // This handles OAuth callback when user returns from Google/Apple authentication
-    // via the deep link: gurudevi://auth/callback
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔄 Auth Change:', event, !!session ? '(Session exists)' : '(No session)');
       setSession(session);
 
-      // Fetch user role when auth state changes
       if (session?.user) {
         await fetchAndSetUserProfile(session.user.id);
       } else {
-        // Clear session-derived state when user signs out or session expires
         const { setUserRole, setSchoolType } = useStore.getState();
         setUserRole(null);
         setSchoolType(null);
