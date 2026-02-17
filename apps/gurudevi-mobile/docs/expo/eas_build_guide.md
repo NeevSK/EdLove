@@ -22,8 +22,8 @@ pnpm build:dev
 # iOS Simulator build
 pnpm build:dev:ios
 ```
+**Output**: **APK** (Easy to install on device)
 **Use when**: Testing new features, debugging
-**Build time**: ~8-12 minutes (first build), ~5-8 minutes (cached)
 
 ### Preview Build (Stakeholder testing)
 ```bash
@@ -33,16 +33,16 @@ pnpm build:preview
 # iOS Ad-hoc
 pnpm build:preview:ios
 ```
+**Output**: **APK** (Easy to share with testers)
 **Use when**: Sharing with testers, QA validation
-**Build time**: ~10-15 minutes
 
 ### Production Build (Store submission)
 ```bash
 # Both platforms
 pnpm build:prod
 ```
+**Output**: **AAB** (Optimized for Play Store submission)
 **Use when**: Ready for App Store/Play Store
-**Build time**: ~15-20 minutes
 
 ## Environment Variables
 

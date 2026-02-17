@@ -36,7 +36,10 @@
               "pathPrefix": "/callback"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -45,11 +48,18 @@
     },
     "extra": {
       "eas": {
-        "projectId": "94cd58f4-bf04-4b79-a17a-8747a4208006"
+        "projectId": "1701dfb9-c59e-45c6-a391-58c061a0b8ce"
       }
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "owner": "neevsk",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/1701dfb9-c59e-45c6-a391-58c061a0b8ce"
+    }
   }
 }
