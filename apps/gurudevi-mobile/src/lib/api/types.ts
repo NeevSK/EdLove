@@ -133,7 +133,7 @@ export interface Assignment {
 // Classroom types
 export interface Classroom {
     id: string;
-    school_id: string;
+    school_id?: string | null;
     grade_id?: string | null;
     teacher_id?: string | null;
     section_id?: string | null;

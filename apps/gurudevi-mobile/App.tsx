@@ -40,52 +40,64 @@ export default function App() {
   const toast = useStore((state) => state.toast);
   const hideToast = useStore((state) => state.hideToast);
 
+  // Create a helper for Supabase queries with timeout
+  const withTimeout = async <T,>(promise: Promise<T>, timeoutMs: number = 5000): Promise<T> => {
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`Operation timed out after ${timeoutMs}ms`)), timeoutMs)
+    );
+    return Promise.race([promise, timeoutPromise]) as Promise<T>;
+  };
+
   // Extract user profile fetching logic to avoid duplication
   const fetchAndSetUserProfile = async (userId: string) => {
+    console.log(`🚀 Profile: Fetching for user ${userId}...`);
     try {
-      const { data: userProfile } = await supabase
+      const { data: userProfile, error } = await withTimeout(supabase
         .from('users')
         .select('role, school_id, onboarding_completed')
         .eq('id', userId)
-        .single();
+        .single());
+
+      if (error) {
+        console.warn('⚠️ Profile: Table fetch returned error (maybe new user or missing table):', error.message);
+        return;
+      }
 
       if (userProfile) {
+        console.log('✅ Profile: Data received', userProfile);
         const { setUserRole, setOnboardingCompleted } = useStore.getState();
         setUserRole(userProfile.role as UserRole | null);
         setOnboardingCompleted(!!userProfile.onboarding_completed);
 
-        // Fetch school type if school_id exists, otherwise clear it
         if (userProfile.school_id) {
-          const { data: schoolData } = await supabase
+          const { data: schoolData } = await withTimeout(supabase
             .from('schools')
             .select('type')
             .eq('id', userProfile.school_id)
-            .single();
+            .single());
 
           if (schoolData) {
             useStore.getState().setSchoolType(schoolData.type as SchoolType | null);
           }
         } else {
-          // Clear school type if user has no school
           useStore.getState().setSchoolType(null);
         }
       }
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.warn('❌ Profile: Fetching encountered an error (continuing with defaults):', error);
     }
   };
 
   // Load custom fonts
   useEffect(() => {
     async function loadFonts() {
+      console.log('🚀 Startup: Loading fonts...');
       try {
-        console.log('App: Loading fonts...');
-        await Font.loadAsync(fontAssets);
-        console.log('App: Fonts loaded successfully');
+        await withTimeout(Font.loadAsync(fontAssets), 7000);
+        console.log('✅ Startup: Fonts loaded successfully');
         setFontsLoaded(true);
       } catch (error) {
-        console.error('App: Error loading fonts:', error);
-        // Continue anyway - app will use system fonts as fallback
+        console.warn('⚠️ Startup: Font loading failed or timed out:', error);
         setFontsLoaded(true);
       }
     }
@@ -93,41 +105,60 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    // Check initial session
-    console.log('App: Checking session...');
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      console.log('App: Session check complete', !!session);
-      setSession(session);
+    console.log('🚀 Startup: Initializing Auth session...');
 
-      // Fetch user role and school type when session is restored
-      if (session?.user) {
-        await fetchAndSetUserProfile(session.user.id);
+    // Safety switch: Force loading to false after 10 seconds no matter what
+    const safetyTimeout = setTimeout(() => {
+      if (loading) {
+        console.warn('🚨 SAFETY TIMEOUT: App initialization took too long, forcing start');
+        setLoading(false);
       }
+    }, 12000);
 
-      setLoading(false);
-    }).catch(err => {
-      console.error('App: Session check failed!', err);
-      setLoading(false);
-    });
+    const checkSession = async () => {
+      try {
+        // Initial session check with 5s timeout
+        console.log('🚀 Startup: Checking getSession()...');
+        const { data: { session }, error } = await withTimeout(supabase.auth.getSession(), 8000);
 
-    // Listen for auth changes
-    // This handles OAuth callback when user returns from Google/Apple authentication
-    // via the deep link: gurudevi://auth/callback
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        if (error) throw error;
+
+        setSession(session);
+        console.log('🚀 Startup: Session check complete. Session exists:', !!session);
+
+        if (session?.user) {
+          await fetchAndSetUserProfile(session.user.id);
+        } else {
+          console.log('💡 Startup: No session found (New User flow)');
+        }
+      } catch (error) {
+        console.warn('❌ Startup: Auth session check failed or timed out:', error);
+      } finally {
+        setLoading(false);
+        clearTimeout(safetyTimeout);
+        console.log('🏁 Startup: Initialization sequence finished');
+      }
+    };
+
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔄 Auth Change:', event, !!session ? '(Session exists)' : '(No session)');
       setSession(session);
 
-      // Fetch user role when auth state changes
       if (session?.user) {
         await fetchAndSetUserProfile(session.user.id);
       } else {
-        // Clear session-derived state when user signs out or session expires
         const { setUserRole, setSchoolType } = useStore.getState();
         setUserRole(null);
         setSchoolType(null);
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(safetyTimeout);
+    };
   }, []);
 
   // Monitor network connectivity - REMOVED redundant listener (Centralized in EnvironmentContext)

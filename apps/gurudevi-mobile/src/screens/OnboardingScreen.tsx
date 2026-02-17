@@ -41,6 +41,7 @@ import { supabase } from '../lib/supabase';
 import { hapticLight, hapticSuccess } from '../utils/haptics';
 import ScreenWrapper from '../components/shared/ScreenWrapper';
 import { useThemedColors } from '../hooks/useThemedColors';
+import { useStore } from '../store/useStore';
 
 interface OnboardingScreenProps {
     onComplete: (name: string, role: UserRole, wantsAccount?: boolean) => void;
@@ -186,8 +187,68 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
     };
 
     const handleComplete = async () => {
-        hapticSuccess();
-        onComplete(name, role, false);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error('No user found');
+
+            hapticSuccess();
+
+            // 1. Create a default school (Personal Workspace) if they don't have one
+            // This ensures they can create classrooms immediately
+            const schoolName = `${name}'s Workspace`;
+            const schoolType = 'personal_workspace';
+
+            const { data: schoolData, error: schoolError } = await supabase
+                .from('schools')
+                .insert({
+                    name: schoolName,
+                    type: schoolType,
+                    created_by: user.id,
+                })
+                .select()
+                .single();
+
+            if (schoolError) {
+                console.warn('⚠️ Onboarding: Failed to create default school (might already exist):', schoolError.message);
+            }
+
+            // 2. Update user profile
+            const { error: profileError } = await supabase
+                .from('users')
+                .upsert({
+                    id: user.id,
+                    email: user.email || null,
+                    full_name: name,
+                    role: role,
+                    school_id: schoolData?.id || null, // Best effort
+                    onboarding_completed: true,
+                    onboarding_completed_at: new Date().toISOString(),
+                    is_anonymous: isAnonymous,
+                })
+                .select()
+                .single();
+
+            if (profileError) throw profileError;
+
+            // Update local store if school was created
+            if (schoolData) {
+                const { setSchoolType } = useStore.getState();
+                setSchoolType(schoolType as any);
+            }
+
+            await AsyncStorage.removeItem('onboarding_progress');
+            onComplete(name, role, false);
+        } catch (error) {
+            console.error('Error completing onboarding:', error);
+            toast.show({
+                placement: 'bottom',
+                render: ({ id }: { id: string }) => (
+                    <Toast nativeID={id} action="error" variant="solid">
+                        <ToastTitle>Failed to complete onboarding. Please try again.</ToastTitle>
+                    </Toast>
+                ),
+            });
+        }
     };
 
     return (
