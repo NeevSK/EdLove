@@ -170,6 +170,26 @@ export default function CreateClassroomModal({
                 });
             }
 
+            // Fetch user's school_id (if they have one)
+            // But we NO LONGER fail if it's missing.
+            let { data: userData } = await supabase
+                .from('users')
+                .select('school_id')
+                .eq('id', user.id)
+                .single();
+
+            const schoolId = userData?.school_id || null;
+
+            console.log(`💡 Classroom: Creating class "${name}" with school_id: ${schoolId || 'none'}`);
+
+            const newClass = await api.classrooms.create({
+                name: name.trim(),
+                subject: subject.trim() || undefined,
+                school_id: schoolId,
+                teacher_id: user.id,
+                color_theme: 'blue', // Default theme
+            });
+
             hapticSuccess();
             onSuccess(result);
             handleClose();

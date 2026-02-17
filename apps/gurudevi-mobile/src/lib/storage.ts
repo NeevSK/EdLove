@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 interface StorageInterface {
     set: (key: string, value: string | boolean | number) => void;
     getString: (key: string) => string | undefined;
+    getStringAsync: (key: string) => Promise<string | undefined>;
     getBoolean: (key: string) => boolean | undefined;
     getNumber: (key: string) => number | undefined;
     delete: (key: string) => void;
@@ -12,32 +13,77 @@ interface StorageInterface {
     contains: (key: string) => boolean;
 }
 
-// In-Memory Fallback for Expo Go / Web without native modules
-// This allows the app to run without crashing, though data won't persist across reloads
-class MemoryStorage implements StorageInterface {
+/**
+ * AsyncStorage-based fallback for Expo Go / Web
+ * Provides persistence unlike simple MemoryStorage
+ */
+class PersistentFallbackStorage implements StorageInterface {
+    // In-memory cache for synchronous access (getString, getBoolean)
+    // Synchronous access is required by many parts of the app
     private cache = new Map<string, any>();
+    private initialized = false;
+
+    constructor() {
+        this.init();
+    }
+
+    private async init() {
+        try {
+            const keys = await AsyncStorage.getAllKeys();
+            const pairs = await AsyncStorage.multiGet(keys);
+            pairs.forEach(([key, value]) => {
+                if (value !== null) {
+                    // Try to parse number/boolean
+                    if (value === 'true') this.cache.set(key, true);
+                    else if (value === 'false') this.cache.set(key, false);
+                    else if (!isNaN(Number(value)) && value.trim() !== '') this.cache.set(key, Number(value));
+                    else this.cache.set(key, value);
+                }
+            });
+            this.initialized = true;
+            console.log('📦 Storage Fallback: Hydrated cache from AsyncStorage');
+        } catch (e) {
+            console.error('📦 Storage Fallback Error during hydration:', e);
+        }
+    }
 
     set(key: string, value: string | boolean | number) {
         this.cache.set(key, value);
+        AsyncStorage.setItem(key, String(value)).catch(e =>
+            console.error(`📦 Storage Fallback: Failed to persist ${key}`, e)
+        );
     }
+
     getString(key: string) {
         const val = this.cache.get(key);
         return typeof val === 'string' ? val : undefined;
     }
+
+    async getStringAsync(key: string) {
+        if (!this.initialized) await this.init();
+        return this.getString(key);
+    }
+
     getBoolean(key: string) {
         const val = this.cache.get(key);
         return typeof val === 'boolean' ? val : undefined;
     }
+
     getNumber(key: string) {
         const val = this.cache.get(key);
         return typeof val === 'number' ? val : undefined;
     }
+
     delete(key: string) {
         this.cache.delete(key);
+        AsyncStorage.removeItem(key);
     }
+
     clearAll() {
         this.cache.clear();
+        AsyncStorage.clear();
     }
+
     contains(key: string) {
         return this.cache.has(key);
     }
