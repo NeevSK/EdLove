@@ -34,11 +34,13 @@ import {
     Icon
 } from "@/ui";
 import { useTranslation } from 'react-i18next';
-import { Maximize2, Plus, Edit2, Clock, Trash, ChevronDown } from 'lucide-react-native';
+import { Maximize2, Plus, Edit2, Clock, Trash, ChevronDown, Cloud } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { useTimetable, Period } from '../../hooks/useTimetable';
 import EmptyState from '../shared/EmptyState';
 import ErrorBoundary from '../shared/ErrorBoundary';
+import { useFeatureAccess } from '../../hooks/useFeatureAccess';
+import { useThemedColors } from '../../hooks/useThemedColors';
 
 const DAYS = [
     { id: 1, label: 'M' },
@@ -50,6 +52,8 @@ const DAYS = [
 
 function DailyRhythmContent() {
     const { t } = useTranslation();
+    const colors = useThemedColors();
+    const { isGuest } = useFeatureAccess();
     const [activeDay, setActiveDay] = useState(new Date().getDay() || 1);
     if (activeDay > 5 || activeDay === 0) setActiveDay(1); // Set to Monday if weekend
 
@@ -120,6 +124,26 @@ function DailyRhythmContent() {
 
     return (
         <VStack space="md" sx={{ flex: 1 }}>
+            {/* Guest Mode Banner */}
+            {isGuest && (
+                <Box
+                    p="$3"
+                    sx={{
+                        backgroundColor: colors.secondary,
+                        borderRadius: Theme.corners.comfortable,
+                        borderLeftWidth: 4,
+                        borderLeftColor: Theme.colors.sanctuarySaffron
+                    }}
+                >
+                    <HStack space="sm" alignItems="center">
+                        <Cloud size={20} color={Theme.colors.sanctuarySaffron} />
+                        <Text size="sm" color={colors.text} sx={{ flex: 1 }}>
+                            💾 {t('self.guestMode', { defaultValue: 'Guest Mode - Data saved locally' })}
+                        </Text>
+                    </HStack>
+                </Box>
+            )}
+
             {/* Header & Day Picker */}
             <HStack space="sm" justifyContent="space-between" alignItems="center">
                 <HStack space="xs">

@@ -53,7 +53,7 @@ export default function LibraryScreen() {
 
     const handleAddResource = async (data: any) => {
         try {
-            const { data: { user } } = await api.self.getCurrentUser();
+            const user = await api.auth.getUser();
             if (!user) return;
 
             const newRes = await api.library.createResource(data, user.id, 'teacher');

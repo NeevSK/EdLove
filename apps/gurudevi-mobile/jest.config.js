@@ -9,5 +9,8 @@ module.exports = {
     testMatch: ['**/__tests__/**/*.steps.[jt]s?(x)', '**/__tests__/**/*.test.[jt]s?(x)'],
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
+        '^expo-camera$': '<rootDir>/__mocks__/expo-camera.js',
+        '^expo-image-picker$': '<rootDir>/__mocks__/expo-image-picker.js',
     },
 };
+

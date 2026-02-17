@@ -3,6 +3,8 @@ import { supabase } from '../lib/supabase';
 import { useToast } from '@/ui';
 import { SafeZustandStorage } from '../lib/storageWrapper';
 import { useStore } from '../store/useStore';
+import { GuestDataManager } from '../lib/guestDataManager';
+import { authAPI } from '../lib/api/auth';
 
 const TIMETABLE_CACHE_KEY = 'gurudevi-timetable-cache';
 
@@ -23,31 +25,63 @@ export const useTimetable = (activeDay: number) => {
     const [periods, setPeriods] = useState<Period[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isAnonymous, setIsAnonymous] = useState(false);
 
-    // Initial load from cache
+
+    // Check anonymous status on mount
+    useEffect(() => {
+        const checkAnonymous = async () => {
+            const anon = await authAPI.isAnonymous();
+            setIsAnonymous(anon);
+        };
+        checkAnonymous();
+    }, []);
+
+    // Initial load from cache or guest storage
     useEffect(() => {
         const loadCache = async () => {
             try {
-                const cached = await SafeZustandStorage.getItem(`${TIMETABLE_CACHE_KEY}-${activeDay}`);
-                if (cached) {
-                    setPeriods(JSON.parse(cached));
+                if (isAnonymous) {
+                    // Load from guest storage
+                    const guestPeriods = await GuestDataManager.getTimetable(activeDay);
+                    const mappedPeriods = guestPeriods.map(gp => ({
+                        id: gp.localId,
+                        user_id: 'guest',
+                        day_of_week: gp.day_of_week,
+                        period_number: gp.period_number,
+                        subject: gp.subject,
+                        class_name: gp.class_name,
+                        type: gp.type,
+                        start_time: gp.start_time,
+                        end_time: gp.end_time
+                    }));
+                    setPeriods(mappedPeriods);
+                } else {
+                    // Load from regular cache
+                    const cached = await SafeZustandStorage.getItem(`${TIMETABLE_CACHE_KEY}-${activeDay}`);
+                    if (cached) {
+                        setPeriods(JSON.parse(cached));
+                    }
                 }
             } catch (e) {
                 console.warn('Failed to load timetable cache', e);
             } finally {
-                setLoading(false); // Fixed: was setIsLoading
+                setLoading(false);
             }
         };
         loadCache();
-    }, [activeDay]);
+    }, [activeDay, isAnonymous]);
 
     const fetchPeriods = useCallback(async () => {
-        if (!isOnline) {
+        // Skip Supabase fetch for anonymous users - they use local storage only
+        if (isAnonymous || !isOnline) {
             setLoading(false);
             return;
         }
-        
-        setLoading(true);
+
+        // Keep loading true only if we don't have data, otherwise background refresh
+        if (periods.length === 0) setLoading(true);
+
         setError(null);
         try {
             const { data, error } = await supabase
@@ -56,7 +90,7 @@ export const useTimetable = (activeDay: number) => {
                 .eq('day_of_week', activeDay)
                 .order('start_time', { ascending: true });
 
-            if (error) throw error; // Removed duplicate check
+            if (error) throw error;
 
             if (data) {
                 setPeriods(data);
@@ -69,10 +103,11 @@ export const useTimetable = (activeDay: number) => {
         } catch (err: any) {
             setError(err.message);
             console.error('Error fetching timetable:', err);
+            // Don't throw - just log for authenticated users
         } finally {
             setLoading(false);
         }
-    }, [activeDay, isOnline]); // Removed periods.length to prevent infinite loop
+    }, [activeDay, isAnonymous, isOnline, periods.length]);
 
     useEffect(() => {
         fetchPeriods();
@@ -85,25 +120,45 @@ export const useTimetable = (activeDay: number) => {
         const newPeriodOptimistic = {
             ...period,
             id: tempId,
-            user_id: 'optimistic'
+            user_id: isAnonymous ? 'guest' : 'optimistic'
         } as Period;
 
         setPeriods(prev => [...prev, newPeriodOptimistic].sort((a, b) => a.start_time.localeCompare(b.start_time)));
 
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) throw new Error("Not authenticated");
+            if (isAnonymous) {
+                // Guest mode: Save to local storage
+                const guestPeriod = await GuestDataManager.addTimetablePeriod({
+                    day_of_week: period.day_of_week,
+                    period_number: period.period_number,
+                    subject: period.subject,
+                    class_name: period.class_name,
+                    type: period.type,
+                    start_time: period.start_time,
+                    end_time: period.end_time
+                });
 
-            const { data, error } = await supabase
-                .from('timetable')
-                .insert([{ ...period, user_id: user.id }])
-                .select()
-                .single();
+                // Replace temp with real local ID
+                setPeriods(prev => prev.map(p => p.id === tempId ? {
+                    ...newPeriodOptimistic,
+                    id: guestPeriod.localId
+                } : p));
+            } else {
+                // Authenticated mode: Save to Supabase
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) throw new Error("Not authenticated");
 
-            if (error) throw error;
+                const { data, error } = await supabase
+                    .from('timetable')
+                    .insert([{ ...period, user_id: user.id }])
+                    .select()
+                    .single();
 
-            // Replace temp with real
-            setPeriods(prev => prev.map(p => p.id === tempId ? data : p));
+                if (error) throw error;
+
+                // Replace temp with real
+                setPeriods(prev => prev.map(p => p.id === tempId ? data : p));
+            }
         } catch (err: any) {
             // Rollback
             setPeriods(previousPeriods);
@@ -117,12 +172,18 @@ export const useTimetable = (activeDay: number) => {
         setPeriods(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
 
         try {
-            const { error } = await supabase
-                .from('timetable')
-                .update(updates)
-                .eq('id', id);
+            if (isAnonymous) {
+                // Guest mode: Update local storage
+                await GuestDataManager.updateTimetablePeriod(id, updates as any);
+            } else {
+                // Authenticated mode: Update Supabase
+                const { error } = await supabase
+                    .from('timetable')
+                    .update(updates)
+                    .eq('id', id);
 
-            if (error) throw error;
+                if (error) throw error;
+            }
         } catch (err: any) {
             setPeriods(previousPeriods);
             setError(err.message);
@@ -135,12 +196,18 @@ export const useTimetable = (activeDay: number) => {
         setPeriods(prev => prev.filter(p => p.id !== id));
 
         try {
-            const { error } = await supabase
-                .from('timetable')
-                .delete()
-                .eq('id', id);
+            if (isAnonymous) {
+                // Guest mode: Delete from local storage
+                await GuestDataManager.deleteTimetablePeriod(id);
+            } else {
+                // Authenticated mode: Delete from Supabase
+                const { error } = await supabase
+                    .from('timetable')
+                    .delete()
+                    .eq('id', id);
 
-            if (error) throw error;
+                if (error) throw error;
+            }
         } catch (err: any) {
             setPeriods(previousPeriods);
             setError(err.message);

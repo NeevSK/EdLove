@@ -79,18 +79,25 @@
         "googleSignInError": "Google sign-in failed. Please try again.",
         "appleSignInError": "Apple sign-in failed. Please try again.",
         "openingBrowser": "Opening...",
-        "signupSuccess": "Account created successfully!"
+        "signupSuccess": "Account created successfully!",
+        "continueAsGuest": "Continue as Guest",
+        "saveSanctuary": "Save Your Sanctuary",
+        "upgradePrompt": "Create an account to save your progress and sync across devices.",
+        "backToGoogle": "Back to Google Sign In"
     },
     "welcome": {
         "title": "Gurudevi",
-        "subtitle": "The Digital Sanctuary for Educators",
-        "intro": "Transmute your classroom into a shared sanctuary. Manage ecology, track wellbeing, and nurture wisdom with 108 million teachers.",
-        "message": "Welcome to your digital sanctuary.",
-        "description": "A place for educators to thrive.",
-        "getStarted": "Get Started",
-        "start": "Get Started",
-        "login": "Already have an account? Log In",
-        "privacyPact": "By joining, you agree to our Sacred Privacy Pact."
+        "subtitle": "Education born from love, built with love.",
+        "intro": "The Digital Sanctuary for Educators.",
+        "acceptTerms": "I accept the ",
+        "privacyPactLink": "Privacy Pact",
+        "startExploring": "Get Started",
+        "exploreAsGuest": "Explore as Guest",
+        "guestSubtext": "No account needed • Full access",
+        "openingSanctuary": "Initializing Sanctuary...",
+        "login": "I have an account. Log in",
+        "footer": "Education born from Love, built with Love.",
+        "privacyPactStatement": "By joining, you agree to our Sacred Privacy Pact."
     },
     "tabs": {
         "self": "Self",
@@ -438,12 +445,17 @@
     },
     "community": {
         "title": "Community",
+        "subtitle": "Connect & Grow",
         "description": "Connect with the teacher community",
         "announcements": "Announcements",
         "postAnnouncement": "Post Announcement",
         "connecting": "Connecting to Sanctuary Network...",
         "feed": "Feed",
-        "groups": "Groups"
+        "groups": "Groups",
+        "sections": {
+            "vision": "SCHOOL VISION",
+            "updates": "RECENT UPDATES"
+        }
     },
     "library": {
         "title": "Library",
@@ -492,6 +504,10 @@
         "logoutConfirmMessage": "Are you sure you want to sign out?",
         "languageDesc": "Choose your preferred language",
         "quote": "Your influence as a teacher blooms here",
+        "subtitle": "Sanctuary Profile",
+        "detailedProfile": "Detailed Profile",
+        "contactInfo": "Contact & School Info",
+        "deletePermanent": "Delete Account Permanently",
         "settings": "Settings",
         "scanToConnect": "Scan to Connect",
         "noSchoolConnected": "No school connected",
@@ -590,10 +606,18 @@
         "privacySubtitle": "These are our commitments to you",
         "navigationTitle": "You're All Set!",
         "navigationSubtitle": "Ready to begin your journey",
+        "navigationContent": "Use the Lotus Petal at the bottom for quick actions, and the tabs to navigate your sanctuary.",
+        "philosophyTitle": "Sanctuary Philosophy",
+        "philosophySubtitle": "Education is a living ecology.",
+        "philosophyContent": "Gurudevi is built on the Sanatana principles of learning—where wisdom is nurtured, not just knowledge transferred.",
+        "sectionsContent": "Self for reflecting, Classroom for teaching, Community for sharing, and Library for discovering.",
+        "ecologyContent": "Manage the energetic health of your classroom. Track relations, wellbeing, and the subtle nuances of learning.",
+        "privacyContent": "We don't track you. Your insights and student records are private, secure, and for your eyes only.",
         "next": "Next",
         "back": "Back",
         "skip": "Skip",
-        "complete": "Complete"
+        "complete": "Complete",
+        "continue": "Continue"
     },
     "settings": {
         "title": "App Settings",

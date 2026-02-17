@@ -124,12 +124,16 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
                 };
             default:
                 return {
-                    title: t('classroom.identifyingRoleTitle') || "Identity Search",
-                    description: t('classroom.identifyingRoleDesc') || "We're identifying your role in this sanctuary. Please wait or complete your profile.",
-                    icon: Search,
-                    primaryAction: t('common.completeProfile') || "Complete Profile",
-                    actionType: 'onboarding',
-                    samples: []
+                    title: t('classroom.teacherInitialTitle') || "Welcome to Your Workbench",
+                    description: t('classroom.teacherInitialDesc') || "Create your first classroom to start your journey.",
+                    icon: School,
+                    primaryAction: t('classroom.createFirstClass') || "Create My First Class",
+                    actionType: 'create',
+                    samples: [
+                        { id: 'demo', title: t('classroom.exploreSampleSchool') || "Explore Sample Sanctuary", subtitle: t('classroom.seeFullFeatureDemo') || "See a full school in action", icon: Zap, color: Theme.colors.sanctuarySaffron },
+                        { id: 's1', title: "Sample: Grade 10 Math", subtitle: "32 Students • 4 Lessons", icon: BookOpen },
+                        { id: 's2', title: "How to Invite Students", subtitle: "Quick Guide", icon: Users, color: Theme.colors.amberGlow },
+                    ]
                 };
         }
     };

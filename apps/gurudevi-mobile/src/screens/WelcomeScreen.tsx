@@ -7,104 +7,211 @@ import {
     Button,
     ButtonText,
     Center,
-} from '@/ui';
+    HStack,
+    Checkbox,
+    CheckboxIndicator,
+    CheckboxIcon,
+    CheckIcon,
+    Link,
+    LinkText,
+    useToast,
+    Toast,
+    ToastTitle,
+} from '../ui';
 import { Theme } from '../constants/Theme';
 import { useTranslation } from 'react-i18next';
 import { Image, Dimensions } from 'react-native';
-import { hapticLight, hapticSuccess } from '../utils/haptics';
+import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
 import AuthScreen from './AuthScreen';
 import ScreenWrapper from '../components/shared/ScreenWrapper';
 import useThemedColors from '../hooks/useThemedColors';
+import { authAPI } from '../lib/api/auth';
 
 const { width } = Dimensions.get('window');
+const LOGO = require('../../assets/icon.png');
 
-const LOGO = require('../../assets/icon.png'); // Correct path relative to src/screens
+interface WelcomeScreenProps {
+    onNext?: () => void;
+    initialShowAuth?: boolean;
+}
 
-export default function WelcomeScreen() {
+export default function WelcomeScreen({ onNext, initialShowAuth = false }: WelcomeScreenProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
-    const [showAuth, setShowAuth] = useState(false);
+    const [showAuth, setShowAuth] = useState(initialShowAuth);
+    const [acceptedTerms, setAcceptedTerms] = useState(true);
+    const [isConnecting, setIsConnecting] = useState(false);
+    const toast = useToast();
 
-    if (showAuth) {
-        return <AuthScreen />;
-    }
+    const showTermsToast = () => {
+        toast.show({
+            placement: "top",
+            render: ({ id }) => (
+                <Toast nativeID={id} variant="accent" action="info">
+                    <VStack space="xs">
+                        <ToastTitle>{t('auth.acceptTermsRequired') || "Please accept the Terms and Privacy Pact to continue in the sanctuary"}</ToastTitle>
+                    </VStack>
+                </Toast>
+            ),
+        });
+    };
 
-    const handleGetStarted = () => {
+    const handleStartExploring = async () => {
+        if (!acceptedTerms) {
+            hapticError();
+            showTermsToast();
+            return;
+        }
+
         hapticSuccess();
-        setShowAuth(true);
+        setIsConnecting(true);
+        console.log('🚀 Welcome: Starting anonymous sign in...');
+        try {
+            await authAPI.signInAnonymously();
+            console.log('✅ Welcome: Guest sign in success, calling onNext');
+            if (onNext) onNext();
+        } catch (error) {
+            console.error('❌ Welcome: Failed to start guest session:', error);
+            hapticError();
+            setIsConnecting(false);
+        }
     };
 
     const handleLogin = () => {
+        if (!acceptedTerms) {
+            hapticError();
+            showTermsToast();
+            return;
+        }
         hapticLight();
         setShowAuth(true);
     };
 
+    if (showAuth) {
+        return (
+            <AuthScreen
+                isAnonymous={true}
+                onContinueAsGuest={handleStartExploring}
+                onSuccess={() => {
+                    console.log('✅ Welcome: Auth Success');
+                    onNext?.();
+                }}
+            />
+        );
+    }
+
     return (
         <ScreenWrapper scroll>
-            <Center sx={{ flex: 1, paddingVertical: Theme.spacing.xl }}>
+            <Center sx={{ flex: 1, paddingVertical: Theme.spacing.xl, paddingHorizontal: 24 }}>
                 <VStack space="2xl" alignItems="center" sx={{ width: '100%', maxWidth: 400 }}>
                     {/* Hero Section */}
-                    <VStack space="md" alignItems="center">
+                    <VStack space="lg" alignItems="center">
                         <Box sx={{
-                            width: 120,
-                            height: 120,
-                            borderRadius: 60,
+                            width: 140,
+                            height: 140,
+                            borderRadius: 70,
                             backgroundColor: colors.secondary,
                             justifyContent: 'center',
                             alignItems: 'center',
                             shadowColor: colors.shadow,
                             shadowOffset: { width: 0, height: 4 },
-                            shadowOpacity: 0.2,
-                            shadowRadius: 8,
-                            elevation: 5
+                            shadowOpacity: 0.1,
+                            shadowRadius: 12,
+                            elevation: 8,
+                            mb: '$2'
                         }}>
                             <Image
                                 source={LOGO}
-                                style={{ width: 80, height: 80, borderRadius: 10 }}
+                                style={{ width: 90, height: 90, borderRadius: 12 }}
                                 alt="Gurudevi Logo"
                             />
                         </Box>
-                        <Heading
-                            color={colors.action}
-                            size="4xl"
-                            textAlign="center"
-                            sx={{ letterSpacing: -1, mt: Theme.spacing.md }}
-                        >
-                            Gurudevi
-                        </Heading>
-                        <Text
-                            color={colors.text}
-                            size="lg"
-                            textAlign="center"
-                            sx={{ opacity: 0.9, fontStyle: 'italic' }}
-                        >
-                            {t('welcome.subtitle', 'The Digital Sanctuary for Educators')}
-                        </Text>
+                        <VStack space="xs" alignItems="center">
+                            <Heading
+                                color={colors.action}
+                                size="4xl"
+                                textAlign="center"
+                                sx={{ letterSpacing: -1.5, fontWeight: '$bold' }}
+                            >
+                                Gurudevi
+                            </Heading>
+                            <Text
+                                color={colors.textSecondary}
+                                size="lg"
+                                textAlign="center"
+                                sx={{ maxWidth: 280, lineHeight: '$lg' }}
+                            >
+                                {t('welcome.subtitle')}
+                            </Text>
+                        </VStack>
                     </VStack>
 
-                    {/* Intro Text */}
-                    <Box sx={{ py: Theme.spacing.lg }}>
-                        <Text color={colors.textSecondary} textAlign="center" size="md">
-                            {t('welcome.intro', 'Transmute your classroom into a shared sanctuary. Manage ecology, track wellbeing, and nurture wisdom with 108 million teachers.')}
-                        </Text>
-                    </Box>
+                    {/* Actions Area */}
+                    <VStack space="xl" sx={{ width: '100%', mt: '$4' }}>
+                        <VStack space="lg">
+                            <HStack space="md" alignItems="center" justifyContent="center" sx={{ px: '$4' }}>
+                                <Checkbox
+                                    size="md"
+                                    value="terms"
+                                    isChecked={acceptedTerms}
+                                    onChange={(checked) => {
+                                        hapticLight();
+                                        setAcceptedTerms(checked);
+                                    }}
+                                    aria-label="Accept Terms"
+                                >
+                                    <CheckboxIndicator
+                                        sx={{
+                                            borderColor: colors.action,
+                                            backgroundColor: 'transparent',
+                                            borderRadius: '$sm',
+                                            borderWidth: 2,
+                                            ':checked': {
+                                                backgroundColor: 'transparent',
+                                                borderColor: colors.action,
+                                            },
+                                            ':active': {
+                                                backgroundColor: 'transparent',
+                                            },
+                                            ':hover': {
+                                                backgroundColor: 'transparent',
+                                            }
+                                        }}
+                                    >
+                                        <CheckboxIcon as={CheckIcon} color={colors.action} sx={{ boxSize: '$4' }} />
+                                    </CheckboxIndicator>
+                                </Checkbox>
+                                <HStack space="xs" flexShrink={1}>
+                                    <Text size="sm" color={colors.textTertiary}>{t('welcome.acceptTerms')}</Text>
+                                    <Link href="https://neevsk.org/privacy">
+                                        <LinkText size="sm" color={colors.action} sx={{ textDecorationLine: 'none', fontWeight: '$medium' }}>
+                                            {t('welcome.privacyPactLink')}
+                                        </LinkText>
+                                    </Link>
+                                </HStack>
+                            </HStack>
 
-                    {/* Actions */}
-                    <VStack space="md" sx={{ width: '100%' }}>
-                        <Button
-                            size="xl"
-                            variant="solid"
-                            onPress={handleGetStarted}
-                            sx={{
-                                backgroundColor: colors.action,
-                                borderRadius: Theme.corners.comfortable,
-                                height: 60,
-                            }}
-                        >
-                            <ButtonText color={Theme.colors.white} fontWeight="$bold" size="lg">
-                                {t('welcome.getStarted', 'Get Started')}
-                            </ButtonText>
-                        </Button>
+                            <Button
+                                size="xl"
+                                variant="solid"
+                                onPress={handleStartExploring}
+                                isDisabled={isConnecting || !acceptedTerms}
+                                sx={{
+                                    backgroundColor: acceptedTerms ? colors.action : colors.textTertiary,
+                                    borderRadius: Theme.corners.comfortable,
+                                    height: 64,
+                                    elevation: 2,
+                                    width: '100%',
+                                    ':active': {
+                                        opacity: 0.8
+                                    }
+                                }}
+                            >
+                                <ButtonText color={Theme.colors.white} fontWeight="$bold" size="lg">
+                                    {isConnecting ? t('welcome.openingSanctuary') : t('welcome.exploreAsGuest')}
+                                </ButtonText>
+                            </Button>
+                        </VStack>
 
                         <Button
                             size="lg"
@@ -113,18 +220,20 @@ export default function WelcomeScreen() {
                             sx={{
                                 borderColor: colors.textTertiary,
                                 borderRadius: Theme.corners.comfortable,
-                                height: 50,
+                                height: 52,
+                                borderWidth: 1,
+                                width: '100%',
                             }}
                         >
-                            <ButtonText color={colors.textSecondary}>
-                                {t('welcome.login', 'Already have an account? Log In')}
+                            <ButtonText color={colors.textSecondary} fontWeight="$medium">
+                                {t('welcome.login')}
                             </ButtonText>
                         </Button>
                     </VStack>
 
                     {/* Footer */}
-                    <Text color={colors.textTertiary} size="xs" textAlign="center" mt="$4">
-                        {t('welcome.privacyPact', 'By joining, you agree to our Sacred Privacy Pact.')}
+                    <Text color={colors.textTertiary} size="xs" textAlign="center" mt="$2">
+                        {t('welcome.footer')}
                     </Text>
                 </VStack>
             </Center>

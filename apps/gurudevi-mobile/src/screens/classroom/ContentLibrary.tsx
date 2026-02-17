@@ -50,6 +50,8 @@ import { useSafeMutation } from '../../hooks/useSafeMutation';
 import { useStore } from '../../store/useStore';
 import { api } from '../../lib/api';
 import { ClassroomResource } from '../../lib/api/types';
+import EmptyState from '../../components/shared/EmptyState';
+import { ResourceType } from '../../components/library/LibraryResourceCard';
 
 export default function ContentLibrary() {
     const route = useRoute<any>(); // Should be typed if possible
@@ -64,7 +66,7 @@ export default function ContentLibrary() {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
-    const [newResourceType, setNewResourceType] = useState<'pdf' | 'link' | 'note'>('note');
+    const [newResourceType, setNewResourceType] = useState<'pdf' | 'link' | 'note' | 'video' | 'text' | 'doc'>('note');
     const [newResourceTitle, setNewResourceTitle] = useState('');
     const [newResourceDescription, setNewResourceDescription] = useState('');
     const [newResourceUrl, setNewResourceUrl] = useState('');
@@ -305,21 +307,11 @@ export default function ContentLibrary() {
                         <Text color={colors.textSecondary}>{t('common.loading')}</Text>
                     </Box>
                 ) : filteredResources.length === 0 ? (
-                    <Box
-                        sx={{
-                            padding: Theme.spacing.xl,
-                            alignItems: 'center',
-                            backgroundColor: colors.secondary,
-                            borderRadius: Theme.corners.generous,
-                            borderWidth: 1,
-                            borderColor: colors.border,
-                        }}
-                    >
-                        <FileText color={colors.textTertiary} size={48} />
-                        <Text color={colors.textSecondary} mt="$4" textAlign="center">
-                            {t('library.noResources')}
-                        </Text>
-                    </Box>
+                    <EmptyState
+                        icon={FileText}
+                        title={t('library.emptyTitle')}
+                        description={t('library.emptyDesc')}
+                    />
                 ) : (
                     <VStack space="md">
                         {filteredResources.map(renderResourceCard)}

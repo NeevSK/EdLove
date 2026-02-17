@@ -184,41 +184,82 @@ export default function TeacherSelfView() {
     return (
         <ScreenWrapper>
             <GlobalHeader showGreeting={true} />
-            <ScrollView
-                sx={{ flex: 1 }}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}
-            >
-                {/* Thuthimal Badge (Compact) */}
-                {userProfile?.is_thuthimal && (
-                    <Box px="$6" mb="$3" alignItems="flex-end">
-                        <ThuthimalBadge
-                            gifterName={userProfile.thuthimal_gifter}
-                            giftedAt={userProfile.thuthimal_gifted_at}
-                            compact={true}
-                        />
+            <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+                <ScrollView
+                    sx={{ flex: 1 }}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}
+                >
+                    {/* Thuthimal Badge (Compact) */}
+                    {userProfile?.is_thuthimal && (
+                        <Box px="$6" mb="$3" alignItems="flex-end">
+                            <ThuthimalBadge
+                                gifterName={userProfile.thuthimal_gifter}
+                                giftedAt={userProfile.thuthimal_gifted_at}
+                                compact={true}
+                            />
+                        </Box>
+                    )}
+
+                    {/* Daily Content Section */}
+                    <Box mb="$4">
+                        <DailyContentCard type="motivation" />
+                        <DailyContentCard type="did_you_know" />
                     </Box>
-                )}
 
-                {/* Daily Content Section */}
-                <Box mb="$4">
-                    <DailyContentCard type="motivation" />
-                    <DailyContentCard type="did_you_know" />
-                </Box>
+                    {/* Sub-Feature Carousel */}
+                    <Box sx={{ height: 100 }}>
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, gap: 12 }}
+                        >
+                            {allFeatures.map((feature) => (
+                                <Pressable
+                                    key={feature.id}
+                                    onPress={() => {
+                                        hapticLight();
+                                        setActiveFeature(feature.id);
+                                    }}
+                                >
+                                    <VStack
+                                        alignItems="center"
+                                        justifyContent="center"
+                                        space="xs"
+                                        sx={{
+                                            width: 100,
+                                            height: 80,
+                                            borderRadius: Theme.corners.generous,
+                                            backgroundColor: activeFeature === feature.id
+                                                ? Theme.colors.sanctuarySaffron
+                                                : colors.secondary,
+                                            borderWidth: 1,
+                                            borderColor: activeFeature === feature.id
+                                                ? Theme.colors.sanctuarySaffron
+                                                : colors.border,
+                                        }}
+                                    >
+                                        <feature.icon
+                                            color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary}
+                                            size={24}
+                                        />
+                                        <Text
+                                            size="xs"
+                                            bold={activeFeature === feature.id}
+                                            color={activeFeature === feature.id ? Theme.colors.white : colors.text}
+                                            textAlign="center"
+                                        >
+                                            {t(`self.${feature.id}`)}
+                                        </Text>
+                                    </VStack>
+                                </Pressable>
+                            ))}
 
-                {/* Sub-Feature Carousel */}
-                <Box sx={{ height: 100 }}>
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, gap: 12 }}
-                    >
-                        {allFeatures.map((feature) => (
+                            {/* More Tools Toggle Button */}
                             <Pressable
-                                key={feature.id}
                                 onPress={() => {
                                     hapticLight();
-                                    setActiveFeature(feature.id);
+                                    setShowMoreTools(!showMoreTools);
                                 }}
                             >
                                 <VStack
@@ -229,86 +270,47 @@ export default function TeacherSelfView() {
                                         width: 100,
                                         height: 80,
                                         borderRadius: Theme.corners.generous,
-                                        backgroundColor: activeFeature === feature.id
+                                        backgroundColor: showMoreTools
                                             ? Theme.colors.sanctuarySaffron
                                             : colors.secondary,
                                         borderWidth: 1,
-                                        borderColor: activeFeature === feature.id
+                                        borderColor: showMoreTools
                                             ? Theme.colors.sanctuarySaffron
                                             : colors.border,
+                                        borderStyle: 'dashed'
                                     }}
                                 >
-                                    <feature.icon
-                                        color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary}
-                                        size={24}
-                                    />
+                                    <Text fontSize="$2xl" color={showMoreTools ? Theme.colors.white : colors.text}>
+                                        {showMoreTools ? '−' : '+'}
+                                    </Text>
                                     <Text
                                         size="xs"
-                                        bold={activeFeature === feature.id}
-                                        color={activeFeature === feature.id ? Theme.colors.white : colors.text}
+                                        bold={showMoreTools}
+                                        color={showMoreTools ? Theme.colors.white : colors.textSecondary}
                                         textAlign="center"
                                     >
-                                        {t(`self.${feature.id}`)}
+                                        {showMoreTools ? t('self.lessTools') : t('self.moreTools')}
                                     </Text>
                                 </VStack>
                             </Pressable>
-                        ))}
+                        </ScrollView>
+                    </Box>
 
-                        {/* More Tools Toggle Button */}
-                        <Pressable
-                            onPress={() => {
-                                hapticLight();
-                                setShowMoreTools(!showMoreTools);
+                    {/* Dynamic Content Workbench */}
+                    <Box mt="$6">
+                        <Box
+                            p={Theme.spacing.xl}
+                            sx={{
+                                backgroundColor: colors.secondary,
+                                borderRadius: Theme.corners.generous,
+                                minHeight: 300
                             }}
                         >
-                            <VStack
-                                alignItems="center"
-                                justifyContent="center"
-                                space="xs"
-                                sx={{
-                                    width: 100,
-                                    height: 80,
-                                    borderRadius: Theme.corners.generous,
-                                    backgroundColor: showMoreTools
-                                        ? Theme.colors.sanctuarySaffron
-                                        : colors.secondary,
-                                    borderWidth: 1,
-                                    borderColor: showMoreTools
-                                        ? Theme.colors.sanctuarySaffron
-                                        : colors.border,
-                                    borderStyle: 'dashed'
-                                }}
-                            >
-                                <Text fontSize="$2xl" color={showMoreTools ? Theme.colors.white : colors.text}>
-                                    {showMoreTools ? '−' : '+'}
-                                </Text>
-                                <Text
-                                    size="xs"
-                                    bold={showMoreTools}
-                                    color={showMoreTools ? Theme.colors.white : colors.textSecondary}
-                                    textAlign="center"
-                                >
-                                    {showMoreTools ? t('self.lessTools') : t('self.moreTools')}
-                                </Text>
-                            </VStack>
-                        </Pressable>
-                    </ScrollView>
-                </Box>
-
-                {/* Dynamic Content Workbench */}
-                <Box mt="$6">
-                    <Box
-                        p={Theme.spacing.xl}
-                        sx={{
-                            backgroundColor: colors.secondary,
-                            borderRadius: Theme.corners.generous,
-                            minHeight: 300
-                        }}
-                    >
-                        {renderFeature()}
+                            {renderFeature()}
+                        </Box>
                     </Box>
-                </Box>
-            </ScrollView>
+                </ScrollView>
+            </Box>
 
             {/* Shadow Agent Drawer - Always present as a floating orb */}
             <ShadowAgentDrawer />

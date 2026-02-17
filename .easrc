@@ -1,0 +1,4 @@
+# Monorepo EAS Build Configuration
+
+# Tell EAS where the app is located within the monorepo
+apps/gurudevi-mobile
