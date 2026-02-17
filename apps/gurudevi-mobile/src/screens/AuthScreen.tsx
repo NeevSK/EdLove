@@ -17,19 +17,19 @@ import {
     Divider,
     Spinner,
 } from "@/ui";
-import { QrCode, Mail } from 'lucide-react-native';
+import { Mail } from 'lucide-react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import { Theme } from '../constants/Theme';
 import { UserRole } from '../types/User';
 import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
-import { useStore } from '../store/useStore';
-import { SchoolType } from '../constants/SriLankanSchools';
 import { validators, validateForm } from '../utils/validators';
 import ScannerModal from '../components/shared/ScannerModal';
 import ScreenWrapper from '../components/shared/ScreenWrapper';
 import useThemedColors from '../hooks/useThemedColors';
+import GuestDataSyncModal from '../components/shared/GuestDataSyncModal';
+import { GuestDataSync } from '../lib/guestDataSync';
 
 const GoogleIcon = ({ color = "#FFF", size = 20 }: { color?: string; size?: number }) => (
     <Svg width={size} height={size} viewBox="0 0 20 20" fill="none">
@@ -40,7 +40,14 @@ const GoogleIcon = ({ color = "#FFF", size = 20 }: { color?: string; size?: numb
     </Svg>
 );
 
-export default function AuthScreen() {
+interface AuthScreenProps {
+    onboardingData?: { name: string; role: UserRole };
+    isAnonymous?: boolean;
+    onContinueAsGuest?: () => void;
+    onSuccess?: () => void;
+}
+
+export default function AuthScreen({ onboardingData, isAnonymous = false, onContinueAsGuest, onSuccess }: AuthScreenProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
     const [email, setEmail] = useState('');
@@ -50,10 +57,19 @@ export default function AuthScreen() {
     const [isSignUp, setIsSignUp] = useState(false);
     const [showScanner, setShowScanner] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [currentUser, setCurrentUser] = useState<any>(null);
+    const [showSyncModal, setShowSyncModal] = useState(false);
+    const [newUserId, setNewUserId] = useState<string>('');
     const toast = useToast();
 
-    // ... handleScan, handleAuth, handleOAuthSignIn, handleForgotPassword ...
-    // (Consolidating logic for the Google-first redesign)
+    React.useEffect(() => {
+        supabase.auth.getUser().then(({ data: { user } }) => {
+            setCurrentUser(user);
+        });
+    }, []);
+
+    const isRealUser = currentUser && currentUser.email && !currentUser.email.includes('anonymous');
+    const shouldHideGeneralAuth = onboardingData && isRealUser;
 
     async function handleOAuthSignIn(provider: 'google') {
         setLoading(true);
@@ -62,6 +78,10 @@ export default function AuthScreen() {
             provider,
             options: {
                 redirectTo: 'gurudevi://auth/callback',
+                queryParams: onboardingData ? {
+                    full_name: onboardingData.name,
+                    role: onboardingData.role,
+                } : undefined
             }
         });
 
@@ -73,7 +93,7 @@ export default function AuthScreen() {
     }
 
     async function handleAuth() {
-        // Validation logic
+        console.log('🚀 Auth: handleAuth triggered', { isSignUp, email });
         const { isValid, errors: valErrors } = validateForm({ email, password }, {
             email: validators.email,
             password: (val: string) => validators.nonEmpty(val, 'Password')
@@ -85,17 +105,66 @@ export default function AuthScreen() {
         }
 
         setLoading(true);
-        const { error } = isSignUp
-            ? await supabase.auth.signUp({ email, password })
-            : await supabase.auth.signInWithPassword({ email, password });
+        console.log('🚀 Auth: Starting handleAuth...', { isSignUp, email });
+        try {
+            if (isSignUp) {
+                const { data: { session: currentSession } } = await supabase.auth.getSession();
+                const isAnon = currentSession?.user?.is_anonymous || !currentSession?.user?.email;
 
-        if (error) {
+                if (isAnon && currentSession?.user) {
+                    const { error } = await supabase.auth.updateUser({
+                        email,
+                        password,
+                        data: {
+                            full_name: onboardingData?.name || 'Gurudevi User',
+                            role: onboardingData?.role || 'teacher',
+                        }
+                    });
+                    if (error) throw error;
+                    hapticSuccess();
+                    showToast(t('auth.signupSuccess'), "success");
+
+                    // Check for guest data to sync
+                    const hasGuestData = await GuestDataSync.hasGuestData();
+                    if (hasGuestData) {
+                        setNewUserId(currentSession.user.id);
+                        setShowSyncModal(true);
+                    } else {
+                        if (onSuccess) onSuccess();
+                    }
+                } else {
+                    const { data, error } = await supabase.auth.signUp({
+                        email,
+                        password,
+                        options: {
+                            data: {
+                                full_name: onboardingData?.name || 'Gurudevi User',
+                                role: onboardingData?.role || 'teacher',
+                            }
+                        }
+                    });
+                    if (error) throw error;
+                    hapticSuccess();
+                    showToast(t('auth.checkEmail'), "success");
+
+                    // Note: For new signups, sync will happen after email confirmation
+                    // You may want to trigger sync in the email confirmation callback
+                }
+            } else {
+                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                hapticSuccess();
+                console.log('✅ Auth: Login success, calling onSuccess');
+                if (onSuccess) onSuccess();
+            }
+        } catch (error: any) {
+            console.error('❌ Auth: Error during handleAuth:', error);
             hapticError();
             showToast(error.message, "error");
-        } else {
-            hapticSuccess();
+        } finally {
+            console.log('🏁 Auth: handleAuth completed');
+            setLoading(false);
         }
-        setLoading(false);
     }
 
     function showToast(message: string, action: "error" | "success") {
@@ -111,20 +180,68 @@ export default function AuthScreen() {
 
     return (
         <ScreenWrapper scroll>
-            <Center sx={{ flex: 1, paddingVertical: 60, paddingHorizontal: 24 }}>
+            <Center sx={{ flex: 1, paddingVertical: 40, paddingHorizontal: 24 }}>
                 <VStack space="4xl" sx={{ width: '100%', maxWidth: 400 }}>
-                    {/* Brand Heading */}
                     <VStack space="md" alignItems="center">
-                        <Heading size="4xl" color={colors.action} textAlign="center">
-                            Gurudevi
+                        <Heading size="3xl" color={colors.action} textAlign="center">
+                            {onboardingData ? t('auth.saveSanctuary') : "Gurudevi"}
                         </Heading>
-                        <Text color={colors.textSecondary} size="lg" textAlign="center" px="$4">
-                            {t('auth.tagline') || 'Enter the Sanctuary of Learning'}
+                        <Text color={colors.textSecondary} size="md" textAlign="center">
+                            {onboardingData
+                                ? t('auth.upgradePrompt')
+                                : t('auth.tagline') || 'Enter the Sanctuary of Learning'}
                         </Text>
                     </VStack>
 
-                    {/* Primary Path: Google Auth */}
-                    {!showEmailAuth && (
+                    {!shouldHideGeneralAuth && (
+                        <Box sx={{
+                            backgroundColor: colors.secondary,
+                            borderRadius: Theme.corners.full,
+                            p: '$1',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            alignSelf: 'center',
+                            width: 280,
+                            mb: '$4'
+                        }}>
+                            <Pressable
+                                onPress={() => { hapticLight(); setIsSignUp(false); }}
+                                sx={{
+                                    flex: 1,
+                                    py: '$3',
+                                    borderRadius: Theme.corners.full,
+                                    backgroundColor: !isSignUp ? colors.action : 'transparent',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <Text
+                                    fontWeight="$bold"
+                                    color={!isSignUp ? Theme.colors.white : colors.textSecondary}
+                                >
+                                    {t('auth.login')}
+                                </Text>
+                            </Pressable>
+                            <Pressable
+                                onPress={() => { hapticLight(); setIsSignUp(true); }}
+                                sx={{
+                                    flex: 1,
+                                    py: '$3',
+                                    borderRadius: Theme.corners.full,
+                                    backgroundColor: isSignUp ? colors.action : 'transparent',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <Text
+                                    fontWeight="$bold"
+                                    color={isSignUp ? Theme.colors.white : colors.textSecondary}
+                                >
+                                    {t('auth.signup')}
+                                </Text>
+                            </Pressable>
+                        </Box>
+                    )}
+
+                    {!showEmailAuth && !shouldHideGeneralAuth && (
                         <VStack space="xl">
                             <Button
                                 size="xl"
@@ -135,10 +252,6 @@ export default function AuthScreen() {
                                     borderRadius: Theme.corners.comfortable,
                                     height: 64,
                                     elevation: 4,
-                                    shadowColor: colors.action,
-                                    shadowOffset: { width: 0, height: 4 },
-                                    shadowOpacity: 0.3,
-                                    shadowRadius: 8,
                                 }}
                             >
                                 <HStack space="md" alignItems="center">
@@ -146,19 +259,54 @@ export default function AuthScreen() {
                                         <GoogleIcon size={24} />
                                     </Box>
                                     <ButtonText color={Theme.colors.white} fontWeight="$bold" size="lg">
-                                        {t('auth.continueWithGoogle') || 'Continue with Google'}
+                                        {isSignUp ? "Sign up with Google" : t('auth.signInWithGoogle')}
                                     </ButtonText>
                                 </HStack>
                             </Button>
 
-                            <Text color={colors.textTertiary} size="sm" textAlign="center">
-                                {t('auth.googleNudge') || 'Recommended for the best experience'}
+                            <Button
+                                size="lg"
+                                variant="outline"
+                                onPress={() => { hapticLight(); setShowEmailAuth(true); }}
+                                sx={{
+                                    borderColor: colors.border,
+                                    borderRadius: Theme.corners.comfortable,
+                                    height: 50
+                                }}
+                            >
+                                <HStack space="xs" alignItems="center">
+                                    <Mail size={18} color={colors.textSecondary} />
+                                    <ButtonText color={colors.textSecondary}>
+                                        {isSignUp ? t('auth.createAccount') : t('auth.signInEmail')}
+                                    </ButtonText>
+                                </HStack>
+                            </Button>
+                        </VStack>
+                    )}
+
+                    {isRealUser && onboardingData && onContinueAsGuest && (
+                        <VStack space="xl">
+                            <Button
+                                size="xl"
+                                onPress={onContinueAsGuest}
+                                isDisabled={loading}
+                                sx={{
+                                    backgroundColor: colors.action,
+                                    borderRadius: Theme.corners.comfortable,
+                                    height: 64,
+                                }}
+                            >
+                                <ButtonText color={Theme.colors.white} fontWeight="$bold" size="lg">
+                                    Finish Setup
+                                </ButtonText>
+                            </Button>
+                            <Text color={colors.textSecondary} textAlign="center" size="sm">
+                                You are signed in as {currentUser?.email}.
                             </Text>
                         </VStack>
                     )}
 
-                    {/* Secondary Path: Email Auth */}
-                    {showEmailAuth ? (
+                    {showEmailAuth && (
                         <VStack space="lg" sx={{ width: '100%' }}>
                             <Heading size="md" color={colors.text} mb="$2">
                                 {isSignUp ? t('auth.createAccount') : t('auth.signInEmail')}
@@ -194,39 +342,31 @@ export default function AuthScreen() {
                             </Button>
 
                             <Button variant="link" onPress={() => setShowEmailAuth(false)}>
-                                <ButtonText color={colors.textTertiary}>{t('auth.backToGoogle') || 'Back to Google Sign In'}</ButtonText>
+                                <ButtonText color={colors.textTertiary}>{t('auth.backToGoogle')}</ButtonText>
                             </Button>
                         </VStack>
-                    ) : (
+                    )}
+
+                    {(!currentUser || currentUser?.is_anonymous) && isAnonymous && onContinueAsGuest && (
                         <VStack space="md" alignItems="center" mt="$4">
                             <Divider sx={{ width: '60%', backgroundColor: colors.border, mb: '$4' }} />
-
                             <Button
-                                variant="link"
+                                variant="solid"
                                 onPress={() => {
+                                    console.log('👋 Auth: Continuing as guest...');
                                     hapticLight();
-                                    setShowEmailAuth(true);
+                                    if (onContinueAsGuest) onContinueAsGuest();
+                                }}
+                                sx={{
+                                    backgroundColor: 'transparent',
+                                    borderWidth: 1,
+                                    borderColor: colors.action,
+                                    borderRadius: Theme.corners.comfortable,
+                                    width: '100%',
+                                    height: 50
                                 }}
                             >
-                                <HStack space="xs" alignItems="center">
-                                    <Mail size={16} color={colors.textSecondary} />
-                                    <ButtonText color={colors.textSecondary}>
-                                        {t('auth.useEmailInstead') || 'Or use email address'}
-                                    </ButtonText>
-                                </HStack>
-                            </Button>
-
-                            <Button
-                                variant="link"
-                                onPress={() => setShowScanner(true)}
-                                mt="$2"
-                            >
-                                <HStack space="xs" alignItems="center">
-                                    <QrCode size={16} color={colors.textSecondary} />
-                                    <ButtonText color={colors.textSecondary}>
-                                        {t('auth.scanInvite') || 'Scan Invite Code'}
-                                    </ButtonText>
-                                </HStack>
+                                <ButtonText color={colors.action} fontWeight="$bold">{t('auth.continueAsGuest')}</ButtonText>
                             </Button>
                         </VStack>
                     )}

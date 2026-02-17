@@ -42,6 +42,19 @@ export const MOCK_CLASSROOMS: Classroom[] = [
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         is_sample: true
+    } as any,
+    {
+        id: 'sample-school-1',
+        school_id: 'sample-school',
+        name: 'Wisdom Academy [Sample School]',
+        subject: 'General',
+        description: 'A sample school to explore administrative features',
+        color_theme: '#8B5CF6',
+        teacher_id: 'mock-principal',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        is_sample: true,
+        is_school: true
     } as any
 ];
 

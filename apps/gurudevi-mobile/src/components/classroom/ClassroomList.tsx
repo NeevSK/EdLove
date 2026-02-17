@@ -152,37 +152,77 @@ export default function ClassroomList({
                 setLoading(true);
                 setError(null);
 
-                // Get current user ID
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) {
-                    throw new Error('No authenticated user');
-                }
-
-                // Fetch classrooms based on role
                 let data: Classroom[] = [];
-                if (role === 'teacher') {
-                    data = await api.classrooms.getByTeacher(user.id);
-                } else if (role === 'student') {
-                    data = await api.classrooms.getByStudent(user.id);
-                    data.sort((a, b) => a.name.localeCompare(b.name));
-                }
 
-                // Inject Sample Classroom if in Explorer/Demo mode and not dismissed
-                if (role === 'teacher') {
-                    const sampleId = 'sample-c1';
-                    if (!dismissedSampleIds.includes(sampleId)) {
-                        if (!data.find(c => c.id === sampleId)) {
+                // Handle guest users - they have no classrooms, so we'll show sample only
+                if (isGuest) {
+                    // Inject Sample Classroom/School for guests
+                    if (role === 'teacher') {
+                        const sampleId = 'sample-c1';
+                        if (!dismissedSampleIds.includes(sampleId)) {
                             const { MOCK_CLASSROOMS } = require('../../lib/api/mockData');
                             const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
                             if (sample) {
                                 (sample as any).is_sample = true;
-                                data = [sample, ...data];
+                                data = [sample];
+                            }
+                        }
+                    } else if (role === 'principal') {
+                        // For principal, check if there's a sample school
+                        const sampleSchoolId = 'sample-school-1';
+                        if (!dismissedSampleIds.includes(sampleSchoolId)) {
+                            const { MOCK_CLASSROOMS } = require('../../lib/api/mockData');
+                            const sampleSchool = MOCK_CLASSROOMS.find((c: any) => c.id === sampleSchoolId);
+                            if (sampleSchool) {
+                                (sampleSchool as any).is_sample = true;
+                                data = [sampleSchool];
+                            }
+                        }
+                    }
+                } else {
+                    // Authenticated users - fetch their actual classrooms
+                    const { data: { user } } = await supabase.auth.getUser();
+                    if (!user) {
+                        throw new Error('No authenticated user');
+                    }
+
+                    // Fetch classrooms based on role
+                    if (role === 'teacher') {
+                        data = await api.classrooms.getByTeacher(user.id);
+                    } else if (role === 'student') {
+                        data = await api.classrooms.getByStudent(user.id);
+                        data.sort((a, b) => a.name.localeCompare(b.name));
+                    } else if (role === 'principal') {
+                        // Fetch schools for principal (if there's an API method)
+                        // For now, using classrooms - you may need to create api.schools.getByPrincipal
+                        data = await api.classrooms.getByTeacher(user.id); // Placeholder
+                    }
+
+                    // Inject Sample Classroom/School if newly created user (no classrooms yet) and not dismissed
+                    if (role === 'teacher' && data.length === 0) {
+                        const sampleId = 'sample-c1';
+                        if (!dismissedSampleIds.includes(sampleId)) {
+                            const { MOCK_CLASSROOMS } = require('../../lib/api/mockData');
+                            const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
+                            if (sample) {
+                                (sample as any).is_sample = true;
+                                data = [sample];
+                            }
+                        }
+                    } else if (role === 'principal' && data.length === 0) {
+                        const sampleSchoolId = 'sample-school-1';
+                        if (!dismissedSampleIds.includes(sampleSchoolId)) {
+                            const { MOCK_CLASSROOMS } = require('../../lib/api/mockData');
+                            const sampleSchool = MOCK_CLASSROOMS.find((c: any) => c.id === sampleSchoolId);
+                            if (sampleSchool) {
+                                (sampleSchool as any).is_sample = true;
+                                data = [sampleSchool];
                             }
                         }
                     }
                 }
 
-                console.log(`[ClassroomList] Loaded ${data.length} classrooms for role: ${role}`);
+                console.log(`[ClassroomList] Loaded ${data.length} classrooms for role: ${role}, isGuest: ${isGuest}`);
                 setClassrooms(data);
 
                 if (onDataLoaded) onDataLoaded(data);
@@ -195,7 +235,7 @@ export default function ClassroomList({
         };
 
         fetchClassrooms();
-    }, [role, internalRefreshTrigger, externalRefreshTrigger]);
+    }, [role, internalRefreshTrigger, externalRefreshTrigger, isGuest]);
 
     const handleRetry = () => {
         setInternalRefreshTrigger(prev => prev + 1);

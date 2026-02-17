@@ -116,7 +116,11 @@ export {
 
 export { Icon } from '@gluestack-ui/themed/build/components/Icons';
 export { CloseIcon } from '@gluestack-ui/themed/build/components/Icons';
-// Note: CheckIcon should be imported from lucide-react-native when needed
+import { Link as BaseLink, LinkText as BaseLinkText } from '@gluestack-ui/themed/build/components/Link';
+export const Link = BaseLink as any;
+export const LinkText = BaseLinkText as any;
+import { Check } from 'lucide-react-native';
+export const CheckIcon = Check;
 export { Image } from '@gluestack-ui/themed/build/components/Image';
 export { FlatList } from '@gluestack-ui/themed/build/components/FlatList';
 export { SectionList } from '@gluestack-ui/themed/build/components/SectionList';

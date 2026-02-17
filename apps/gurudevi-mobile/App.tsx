@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GluestackUIProvider, Spinner, Center, VStack, Text } from '@/ui';
+import { GluestackUIProvider, Spinner, Center, VStack, Text } from './src/ui';
 import { config } from "./gluestack-ui.config";
 import { Home, School, Users, Library, User } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
@@ -37,26 +37,35 @@ export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [currentTab, setCurrentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
   const onboardingCompleted = useStore((state) => state.onboardingCompleted);
+  const [showWelcome, setShowWelcome] = useState(true);
   const toast = useStore((state) => state.toast);
   const hideToast = useStore((state) => state.hideToast);
 
   // Create a helper for Supabase queries with timeout
-  const withTimeout = async <T,>(promise: Promise<T>, timeoutMs: number = 5000): Promise<T> => {
+  const withTimeout = async (promise: any, timeoutMs: number = 5000): Promise<any> => {
     const timeoutPromise = new Promise((_, reject) =>
       setTimeout(() => reject(new Error(`Operation timed out after ${timeoutMs}ms`)), timeoutMs)
     );
-    return Promise.race([promise, timeoutPromise]) as Promise<T>;
+    return Promise.race([promise, timeoutPromise]);
   };
+
+  // Sync showWelcome with session status
+  useEffect(() => {
+    if (session && showWelcome) {
+      console.log('🔄 App: Session detected, automatically hiding WelcomeScreen');
+      setShowWelcome(false);
+    }
+  }, [session]);
 
   // Extract user profile fetching logic to avoid duplication
   const fetchAndSetUserProfile = async (userId: string) => {
     console.log(`🚀 Profile: Fetching for user ${userId}...`);
     try {
-      const { data: userProfile, error } = await withTimeout(supabase
+      const { data: userProfile, error } = await withTimeout((supabase
         .from('users')
         .select('role, school_id, onboarding_completed')
         .eq('id', userId)
-        .single());
+        .maybeSingle()) as any);
 
       if (error) {
         console.warn('⚠️ Profile: Table fetch returned error (maybe new user or missing table):', error.message);
@@ -68,13 +77,14 @@ export default function App() {
         const { setUserRole, setOnboardingCompleted } = useStore.getState();
         setUserRole(userProfile.role as UserRole | null);
         setOnboardingCompleted(!!userProfile.onboarding_completed);
+        console.log('📝 Store updated:', { role: userProfile.role, onboardingCompleted: !!userProfile.onboarding_completed });
 
         if (userProfile.school_id) {
-          const { data: schoolData } = await withTimeout(supabase
+          const { data: schoolData } = await withTimeout((supabase
             .from('schools')
             .select('type')
             .eq('id', userProfile.school_id)
-            .single());
+            .single()) as any);
 
           if (schoolData) {
             useStore.getState().setSchoolType(schoolData.type as SchoolType | null);
@@ -119,7 +129,7 @@ export default function App() {
       try {
         // Initial session check with 5s timeout
         console.log('🚀 Startup: Checking getSession()...');
-        const { data: { session }, error } = await withTimeout(supabase.auth.getSession(), 8000);
+        const { data: { session }, error } = await withTimeout(supabase.auth.getSession() as any, 8000);
 
         if (error) throw error;
 
@@ -141,6 +151,7 @@ export default function App() {
     };
 
     checkSession();
+    // ... rest of the existing code
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('🔄 Auth Change:', event, !!session ? '(Session exists)' : '(No session)');
@@ -149,9 +160,11 @@ export default function App() {
       if (session?.user) {
         await fetchAndSetUserProfile(session.user.id);
       } else {
-        const { setUserRole, setSchoolType } = useStore.getState();
+        const { setUserRole, setSchoolType, setTeacherName, setOnboardingCompleted } = useStore.getState();
         setUserRole(null);
         setSchoolType(null);
+        setTeacherName('Gurudevi');
+        setOnboardingCompleted(false);
       }
     });
 
@@ -231,52 +244,59 @@ export default function App() {
             <GluestackUIProvider config={config}>
               <ErrorBoundary name="App Root">
                 <NavigationContainer>
-                  {!session ? (
-                    <ErrorBoundary name="Welcome Screen">
-                      <WelcomeScreen />
-                    </ErrorBoundary>
-                  ) : !onboardingCompleted ? (
-                    <ErrorBoundary name="Onboarding Screen">
-                      <OnboardingScreen
-                        isAnonymous={session?.user?.email?.includes('anonymous')} // Simplistic check
-                        onComplete={(name: string, role: any, wantsAccount?: boolean) => {
-                          console.log('Onboarding complete', { name, role, wantsAccount });
-                          const store = useStore.getState();
-                          store.setTeacherName(name);
-                          store.setUserRole(role);
+                  {(() => {
+                    const isNewUser = !onboardingCompleted;
+                    const needsWelcome = showWelcome && isNewUser;
 
-                          if (wantsAccount) {
-                            // User wants to create account immediately
-                            // We stay on onboarding but trigger auth? 
-                            // Or we set onboarding completed and show auth as an overlay?
-                            // Let's set onboarding completed and the app will show main app, 
-                            // then we can show a promotion modal or AuthScreen.
-                            store.setOnboardingCompleted(true);
-                            // Set a flag to show auth screen for promotion
-                            // This might need a new store state or local state
-                          } else {
-                            store.setOnboardingCompleted(true);
-                          }
-                          store.setJustFinishedOnboarding(true);
-                        }}
-                      />
-                    </ErrorBoundary>
-                  ) : (
-                    <ErrorBoundary name="Main App">
-                      <>
-                        <TabNavigator
-                          onTabChange={(tabName: any) => {
-                            setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
-                          }}
-                        />
-                        <LotusPetalFAB
-                          currentTab={currentTab}
-                          onPress={handleFabPress}
-                          actions={getFabActions()}
-                        />
-                      </>
-                    </ErrorBoundary>
-                  )}
+                    console.log('🗺️ Nav decision:', { onboardingCompleted, showWelcome, session: !!session, needsWelcome });
+
+                    if (!session || needsWelcome) {
+                      return (
+                        <ErrorBoundary name="Welcome Screen">
+                          <WelcomeScreen
+                            initialShowAuth={onboardingCompleted}
+                            onNext={() => {
+                              console.log('➡️ App: onNext called from WelcomeScreen');
+                              setShowWelcome(false);
+                            }}
+                          />
+                        </ErrorBoundary>
+                      );
+                    } else if (!onboardingCompleted) {
+                      return (
+                        <ErrorBoundary name="Onboarding Screen">
+                          <OnboardingScreen
+                            isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
+                            onComplete={(name: string, role: any, wantsAccount?: boolean) => {
+                              console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
+                              const store = useStore.getState();
+                              if (name) store.setTeacherName(name);
+                              if (role) store.setUserRole(role);
+                              store.setOnboardingCompleted(true);
+                              store.setJustFinishedOnboarding(true);
+                            }}
+                          />
+                        </ErrorBoundary>
+                      );
+                    } else {
+                      return (
+                        <ErrorBoundary name="Main App">
+                          <>
+                            <TabNavigator
+                              onTabChange={(tabName: any) => {
+                                setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
+                              }}
+                            />
+                            <LotusPetalFAB
+                              currentTab={currentTab}
+                              onPress={handleFabPress}
+                              actions={getFabActions()}
+                            />
+                          </>
+                        </ErrorBoundary>
+                      );
+                    }
+                  })()}
                   <NetworkStatusBanner />
                   <SyncManager />
                   <SanctuaryToast

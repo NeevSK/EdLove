@@ -75,7 +75,7 @@ export default function CommunityScreen() {
             >
                 <HStack space="sm" alignItems="center">
                     <MessageSquare size={16} color={activeTab === 'feed' ? Theme.colors.white : colors.textSecondary} />
-                    <Text color={activeTab === 'feed' ? Theme.colors.white : colors.text} bold>Feed</Text>
+                    <Text color={activeTab === 'feed' ? Theme.colors.white : colors.text} bold>{t('community.feed')}</Text>
                 </HStack>
             </Pressable>
             <Pressable
@@ -92,7 +92,7 @@ export default function CommunityScreen() {
             >
                 <HStack space="sm" alignItems="center">
                     <Users size={16} color={activeTab === 'groups' ? Theme.colors.white : colors.textSecondary} />
-                    <Text color={activeTab === 'groups' ? Theme.colors.white : colors.text} bold>Groups</Text>
+                    <Text color={activeTab === 'groups' ? Theme.colors.white : colors.text} bold>{t('community.groups')}</Text>
                 </HStack>
             </Pressable>
         </HStack>
@@ -102,7 +102,7 @@ export default function CommunityScreen() {
         <ScreenWrapper>
             <GlobalHeader
                 title={t('tabs.community') || 'Community'}
-                subtitle="Connect & Grow"
+                subtitle={t('community.subtitle') || "Connect & Grow"}
                 searchProps={{
                     value: searchQuery,
                     onChangeText: setSearchQuery,
@@ -110,97 +110,99 @@ export default function CommunityScreen() {
                 }}
             />
 
-            {renderTabs()}
+            <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+                {renderTabs()}
 
-            {/* Removed the search box from here, it's now in the header */}
+                {/* Removed the search box from here, it's now in the header */}
 
-            <ScrollView
-                contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, paddingBottom: 100 }}
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Theme.colors.sanctuarySaffron} />
-                }
-            >
-                {loading && !refreshing ? (
-                    <Box py="$10">
-                        <Spinner color={Theme.colors.sanctuarySaffron} />
-                    </Box>
-                ) : activeTab === 'feed' ? (
-                    <VStack space="md">
-                        {/* THE RELATIONAL WEAVER - Presence & Manifestos */}
-                        <CommunityPresence compact={false} userVibe="planning" />
+                <ScrollView
+                    contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, paddingBottom: 100 }}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Theme.colors.sanctuarySaffron} />
+                    }
+                >
+                    {loading && !refreshing ? (
+                        <Box py="$10">
+                            <Spinner color={Theme.colors.sanctuarySaffron} />
+                        </Box>
+                    ) : activeTab === 'feed' ? (
+                        <VStack space="md">
+                            {/* THE RELATIONAL WEAVER - Presence & Manifestos */}
+                            <CommunityPresence compact={false} userVibe="planning" />
 
-                        {manifestos.length > 0 && (
-                            <VStack space="sm">
-                                <Text size="sm" color={Theme.colors.mistGray} bold px="$1">
-                                    SCHOOL VISION
-                                </Text>
-                                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                    <HStack space="md">
-                                        {manifestos.map((m) => (
-                                            <Box key={m.id} w={300}>
-                                                <ManifestoCard
-                                                    {...m}
-                                                    onEndorse={(mid) => {
-                                                        if (m.has_endorsed) unendorse(mid);
-                                                        else endorse({ manifestoId: mid });
-                                                    }}
-                                                />
-                                            </Box>
-                                        ))}
-                                    </HStack>
-                                </ScrollView>
-                            </VStack>
-                        )}
+                            {manifestos.length > 0 && (
+                                <VStack space="sm">
+                                    <Text size="sm" color={Theme.colors.mistGray} bold px="$1">
+                                        {t('community.sections.vision')}
+                                    </Text>
+                                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                                        <HStack space="md">
+                                            {manifestos.map((m) => (
+                                                <Box key={m.id} w={300}>
+                                                    <ManifestoCard
+                                                        {...m}
+                                                        onEndorse={(mid) => {
+                                                            if (m.has_endorsed) unendorse(mid);
+                                                            else endorse({ manifestoId: mid });
+                                                        }}
+                                                    />
+                                                </Box>
+                                            ))}
+                                        </HStack>
+                                    </ScrollView>
+                                </VStack>
+                            )}
 
-                        <Text size="sm" color={Theme.colors.mistGray} bold px="$1" mt="$2">
-                            RECENT UPDATES
-                        </Text>
+                            <Text size="sm" color={Theme.colors.mistGray} bold px="$1" mt="$2">
+                                {t('community.sections.updates')}
+                            </Text>
 
-                        {posts.map((post: Post) => (
-                            <PostCard
-                                key={post.id}
-                                id={post.id}
-                                content={post.content}
-                                type={post.post_type as any}
-                                author={{
-                                    id: post.author_id,
-                                    name: isDemo() ? `(Sample) ${post.author_name}` : post.author_name,
-                                    avatarUrl: post.author_avatar,
-                                }}
-                                createdAt={post.created_at}
-                                groupName={groups.find((g: Group) => g.id === post.group_id)?.name}
-                                reactions={Object.values(post.reactions || {}).reduce((a, b) => a + b, 0)}
-                                comments={0}
-                                onPress={() => console.log('Open Post', post.id)}
-                            />
-                        ))}
-                    </VStack>
-                ) : (
-                    <VStack space="md">
-                        {groups.map((group: Group) => (
-                            <GroupCard
-                                key={group.id}
-                                {...group}
-                                name={isDemo() ? `(Sample) ${group.name}` : group.name}
-                                memberCount={group.member_count}
-                                onPress={() => console.log('NAVIGATE_TO_GROUP', group.id)}
-                                type={group.type as any}
-                            />
-                        ))}
-                    </VStack>
-                )}
-            </ScrollView>
+                            {posts.map((post: Post) => (
+                                <PostCard
+                                    key={post.id}
+                                    id={post.id}
+                                    content={post.content}
+                                    type={post.post_type as any}
+                                    author={{
+                                        id: post.author_id,
+                                        name: isDemo() ? `(Sample) ${post.author_name}` : post.author_name,
+                                        avatarUrl: post.author_avatar,
+                                    }}
+                                    createdAt={post.created_at}
+                                    groupName={groups.find((g: Group) => g.id === post.group_id)?.name}
+                                    reactions={Object.values(post.reactions || {}).reduce((a, b) => a + b, 0)}
+                                    comments={0}
+                                    onPress={() => console.log('Open Post', post.id)}
+                                />
+                            ))}
+                        </VStack>
+                    ) : (
+                        <VStack space="md">
+                            {groups.map((group: Group) => (
+                                <GroupCard
+                                    key={group.id}
+                                    {...group}
+                                    name={isDemo() ? `(Sample) ${group.name}` : group.name}
+                                    memberCount={group.member_count}
+                                    onPress={() => console.log('NAVIGATE_TO_GROUP', group.id)}
+                                    type={group.type as any}
+                                />
+                            ))}
+                        </VStack>
+                    )}
+                </ScrollView>
 
-            <LotusPetalFAB
-                currentTab="community"
-                onPress={() => setShowCreateModal(true)}
-                icon={<PenTool color={Theme.colors.white} size={24} />}
-            />
+                <LotusPetalFAB
+                    currentTab="community"
+                    onPress={() => setShowCreateModal(true)}
+                    icon={<PenTool color={Theme.colors.white} size={24} />}
+                />
 
-            <CreatePostModal
-                isOpen={showCreateModal}
-                onClose={() => setShowCreateModal(false)}
-            />
+                <CreatePostModal
+                    isOpen={showCreateModal}
+                    onClose={() => setShowCreateModal(false)}
+                />
+            </Box>
         </ScreenWrapper>
     );
 }
