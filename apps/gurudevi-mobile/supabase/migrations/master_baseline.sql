@@ -468,11 +468,10 @@ CREATE POLICY "students_teacher_policy" ON public.students FOR ALL TO authentica
 CREATE POLICY "students_principal_policy" ON public.students FOR SELECT TO authenticated USING (classroom_id IN (SELECT c.id FROM classrooms c INNER JOIN users u ON u.id = auth.uid() WHERE u.role = 'principal' AND c.school_id = u.school_id));
 
 CREATE POLICY "Users manage own timetable" ON public.timetable FOR ALL TO authenticated USING (user_id = auth.uid());
-CREATE POLICY "Users can view their own mood logs" ON public.mood_logs FOR SELECT TO authenticated USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert their own mood logs" ON public.mood_logs FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update their own mood logs" ON public.mood_logs FOR UPDATE TO authenticated USING (auth.uid() = user_id);
-CREATE POLICY "journal_entries_privacy" ON public.journal_entries FOR ALL TO authenticated USING (user_id = auth.uid());
-CREATE POLICY "fire_journal_privacy" ON public.fire_journal FOR ALL TO authenticated USING (user_id = auth.uid());
+-- Secure RLS policies with explicit WITH CHECK for inserts
+CREATE POLICY "mood_logs_privacy" ON public.mood_logs FOR ALL TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+CREATE POLICY "journal_entries_privacy" ON public.journal_entries FOR ALL TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+CREATE POLICY "fire_journal_privacy" ON public.fire_journal FOR ALL TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
 
 CREATE POLICY "audit_log_admin_view" ON public.audit_log FOR SELECT TO authenticated
 USING (EXISTS (

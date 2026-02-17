@@ -52,7 +52,8 @@ ALTER TABLE public.mood_logs ENABLE ROW LEVEL SECURITY;
 -- RLS: STRICTLY PRIVATE - Only the user sees their mood
 CREATE POLICY mood_logs_privacy
     ON public.mood_logs FOR ALL TO authenticated
-    USING (user_id = auth.uid());
+    USING (user_id = auth.uid())
+    WITH CHECK (user_id = auth.uid());
 
 -- --------------------------------------------
 -- 3. JOURNAL ENTRIES (Self Section - Fire Journal)
@@ -72,7 +73,8 @@ ALTER TABLE public.journal_entries ENABLE ROW LEVEL SECURITY;
 -- RLS: STRICTLY PRIVATE - Only the user sees their journal
 CREATE POLICY journal_entries_privacy
     ON public.journal_entries FOR ALL TO authenticated
-    USING (user_id = auth.uid());
+    USING (user_id = auth.uid())
+    WITH CHECK (user_id = auth.uid());
 
 -- --------------------------------------------
 -- 4. STUDENTS (Classroom Section)
