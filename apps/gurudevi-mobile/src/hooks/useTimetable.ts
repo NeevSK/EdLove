@@ -46,9 +46,8 @@ export const useTimetable = (activeDay: number) => {
             setLoading(false);
             return;
         }
-        // Keep loading true only if we don't have data, otherwise background refresh
-        if (periods.length === 0) setLoading(true);
-
+        
+        setLoading(true);
         setError(null);
         try {
             const { data, error } = await supabase
@@ -73,7 +72,7 @@ export const useTimetable = (activeDay: number) => {
         } finally {
             setLoading(false);
         }
-    }, [activeDay, periods.length, isOnline]); // Added missing dependencies
+    }, [activeDay, isOnline]); // Removed periods.length to prevent infinite loop
 
     useEffect(() => {
         fetchPeriods();
