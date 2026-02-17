@@ -59,21 +59,22 @@ export default function CreateClassroomModal({
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error('Not authenticated');
 
-            // Fetch user's school_id
-            const { data: userData, error: userError } = await supabase
+            // Fetch user's school_id (if they have one)
+            // But we NO LONGER fail if it's missing.
+            let { data: userData } = await supabase
                 .from('users')
                 .select('school_id')
                 .eq('id', user.id)
                 .single();
 
-            if (userError || !userData?.school_id) {
-                throw new Error('Failed to fetch school information');
-            }
+            const schoolId = userData?.school_id || null;
+
+            console.log(`💡 Classroom: Creating class "${name}" with school_id: ${schoolId || 'none'}`);
 
             const newClass = await api.classrooms.create({
                 name: name.trim(),
                 subject: subject.trim() || undefined,
-                school_id: userData.school_id as string,
+                school_id: schoolId,
                 teacher_id: user.id,
                 color_theme: 'blue', // Default theme
             });
