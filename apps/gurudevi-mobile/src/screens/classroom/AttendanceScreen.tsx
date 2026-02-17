@@ -65,7 +65,7 @@ export default function AttendanceScreen() {
         async (updatedAttendance: StudentAttendance[]) => {
             const records = updatedAttendance.map(s => ({
                 classroom_id: classroomId,
-                student_id: s.id,
+                student_id: s.student_id, // Use student_id from StudentAttendance
                 status: s.status,
                 date: new Date().toISOString().split('T')[0],
             }));

@@ -35,7 +35,7 @@ export const useTimetable = (activeDay: number) => {
             } catch (e) {
                 console.warn('Failed to load timetable cache', e);
             } finally {
-                setIsLoading(false);
+                setLoading(false); // Fixed: was setIsLoading
             }
         };
         loadCache();
@@ -57,8 +57,7 @@ export const useTimetable = (activeDay: number) => {
                 .eq('day_of_week', activeDay)
                 .order('start_time', { ascending: true });
 
-            if (error) throw error;
-            if (error) throw error;
+            if (error) throw error; // Removed duplicate check
 
             if (data) {
                 setPeriods(data);
@@ -74,7 +73,7 @@ export const useTimetable = (activeDay: number) => {
         } finally {
             setLoading(false);
         }
-    }, [activeDay]);
+    }, [activeDay, periods.length, isOnline]); // Added missing dependencies
 
     useEffect(() => {
         fetchPeriods();

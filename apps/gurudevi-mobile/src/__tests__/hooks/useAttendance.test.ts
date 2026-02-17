@@ -8,7 +8,7 @@ const mockStudents: StudentAttendance[] = [
     { id: '3', student_id: 's3', full_name: 'Charlie', roll_number: 3, status: 'present' },
 ];
 
-describe.skip('useAttendance', () => {
+describe('useAttendance', () => {
     it('should initialize with provided students', async () => {
         const { result } = await renderHook(() => useAttendance(mockStudents));
         expect(result.current.students).toEqual(mockStudents);
