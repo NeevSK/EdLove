@@ -35,6 +35,7 @@
     "expo": "~54.0.32",
     "expo-audio": "^1.1.1",
     "expo-barcode-scanner": "^13.0.1",
+    "expo-dev-client": "~4.0.28",
     "expo-blur": "^15.0.8",
     "expo-camera": "^17.0.10",
     "expo-clipboard": "^8.0.8",
