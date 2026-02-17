@@ -19,10 +19,28 @@ on:
         options:
           - apk
           - app-bundle
+          - both
 
 jobs:
-  build:
+  prep:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          if [ "${{ github.event.inputs.build_type }}" == "both" ]; then
+            echo "matrix=[\"apk\", \"app-bundle\"]" >> $GITHUB_OUTPUT
+          else
+            echo "matrix=[\"${{ github.event.inputs.build_type }}\"]" >> $GITHUB_OUTPUT
+          fi
+
+  build:
+    needs: prep
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        type: ${{ fromJson(needs.prep.outputs.matrix) }}
     steps:
       - name: 🏗 Checkout
         uses: actions/checkout@v4
@@ -59,10 +77,10 @@ jobs:
       - name: 🚀 Build App
         run: |
           cd apps/gurudevi-mobile
-          eas build --platform android --profile ${{ github.event.inputs.profile }} --local --non-interactive --output=../../gurudevi-build.${{ github.event.inputs.build_type == 'apk' && 'apk' || 'aab' }}
+          eas build --platform android --profile ${{ github.event.inputs.profile }} --local --non-interactive --output=../../gurudevi-build.${{ matrix.type == 'apk' && 'apk' || 'aab' }}
 
       - name: 📤 Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: gurudevi-android-build
+          name: gurudevi-android-${{ matrix.type }}
           path: gurudevi-build.*
