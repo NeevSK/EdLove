@@ -377,6 +377,20 @@ CREATE TABLE IF NOT EXISTS public.manifesto_endorsements (
 -- --------------------------------------------------------
 
 -- Invite Codes
+-- Audit Log (Security & Compliance)
+CREATE TABLE IF NOT EXISTS public.audit_log (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  action TEXT NOT NULL,
+  actor_id UUID REFERENCES public.users(id),
+  target_user_id UUID REFERENCES public.users(id),
+  old_role TEXT,
+  new_role TEXT,
+  old_school_id UUID,
+  new_school_id UUID,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS public.invite_codes (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   school_id UUID REFERENCES public.schools(id) ON DELETE CASCADE NOT NULL,
@@ -423,6 +437,7 @@ ALTER TABLE public.user_rewards ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.gift_codes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.sanctuary_manifestos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.manifesto_endorsements ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audit_log ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.invite_codes ENABLE ROW LEVEL SECURITY;
 
 -- Core Policies (Production-tested)
@@ -432,7 +447,21 @@ CREATE POLICY "Principals manage their own schools" ON public.schools FOR ALL TO
 
 CREATE POLICY "Users can select own and school members" ON public.users FOR SELECT TO authenticated USING (id = auth.uid() OR school_id = get_auth_user_school_id());
 CREATE POLICY "Users can insert own profile" ON public.users FOR INSERT TO authenticated WITH CHECK (id = auth.uid());
-CREATE POLICY "Users can update own profile" ON public.users FOR UPDATE TO authenticated USING (id = auth.uid()) WITH CHECK (id = auth.uid());
+-- SECURITY: Column-restricted UPDATE policy (prevents privilege escalation)
+CREATE POLICY "Users can update safe profile fields" ON public.users FOR UPDATE TO authenticated
+USING (id = auth.uid())
+WITH CHECK (
+  id = auth.uid() AND
+  -- Ensure privileged fields remain unchanged
+  role = (SELECT role FROM public.users WHERE id = auth.uid()) AND
+  school_id IS NOT DISTINCT FROM (SELECT school_id FROM public.users WHERE id = auth.uid()) AND
+  section_id IS NOT DISTINCT FROM (SELECT section_id FROM public.users WHERE id = auth.uid()) AND
+  grade_id IS NOT DISTINCT FROM (SELECT grade_id FROM public.users WHERE id = auth.uid()) AND
+  is_pro = (SELECT is_pro FROM public.users WHERE id = auth.uid()) AND
+  is_thuthimal = (SELECT is_thuthimal FROM public.users WHERE id = auth.uid()) AND
+  invitations_remaining = (SELECT invitations_remaining FROM public.users WHERE id = auth.uid()) AND
+  invitations_sent = (SELECT invitations_sent FROM public.users WHERE id = auth.uid())
+);
 
 CREATE POLICY "Teachers manage their classrooms" ON public.classrooms FOR ALL TO authenticated USING (teacher_id = auth.uid());
 CREATE POLICY "students_teacher_policy" ON public.students FOR ALL TO authenticated USING (classroom_id IN (SELECT id FROM classrooms WHERE teacher_id = auth.uid()));
@@ -444,6 +473,78 @@ CREATE POLICY "Users can insert their own mood logs" ON public.mood_logs FOR INS
 CREATE POLICY "Users can update their own mood logs" ON public.mood_logs FOR UPDATE TO authenticated USING (auth.uid() = user_id);
 CREATE POLICY "journal_entries_privacy" ON public.journal_entries FOR ALL TO authenticated USING (user_id = auth.uid());
 CREATE POLICY "fire_journal_privacy" ON public.fire_journal FOR ALL TO authenticated USING (user_id = auth.uid());
+
+CREATE POLICY "audit_log_admin_view" ON public.audit_log FOR SELECT TO authenticated
+USING (EXISTS (
+  SELECT 1 FROM public.users WHERE id = auth.uid() AND role IN ('founder', 'admin')
+));
+
+-- ========================================================
+-- ADMIN FUNCTIONS (SECURITY DEFINER)
+-- ========================================================
+
+-- Secure role assignment function (prevents privilege escalation)
+CREATE OR REPLACE FUNCTION assign_user_role(
+  target_user_id UUID,
+  new_role TEXT,
+  new_school_id UUID DEFAULT NULL,
+  new_section_id UUID DEFAULT NULL,
+  new_grade_id UUID DEFAULT NULL
+)
+RETURNS VOID AS $$
+DECLARE
+  old_role_val TEXT;
+  old_school_val UUID;
+  actor_role TEXT;
+BEGIN
+  -- Get actor's role
+  SELECT role INTO actor_role FROM public.users WHERE id = auth.uid();
+  
+  -- Only founders and admins can assign roles
+  IF actor_role NOT IN ('founder', 'admin') THEN
+    RAISE EXCEPTION 'Unauthorized: Only founders and admins can assign roles';
+  END IF;
+
+  -- Validate role
+  IF new_role NOT IN ('founder', 'admin', 'principal', 'section_head', 'grade_head', 'teacher', 'student') THEN
+    RAISE EXCEPTION 'Invalid role: %', new_role;
+  END IF;
+
+  -- Get old values for audit
+  SELECT role, school_id INTO old_role_val, old_school_val 
+  FROM public.users WHERE id = target_user_id;
+
+  -- Update user (bypasses RLS with SECURITY DEFINER)
+  UPDATE public.users
+  SET 
+    role = new_role,
+    school_id = COALESCE(new_school_id, school_id),
+    section_id = new_section_id,
+    grade_id = new_grade_id,
+    updated_at = now()
+  WHERE id = target_user_id;
+  
+  -- Log the assignment for audit trail
+  INSERT INTO audit_log (
+    action, actor_id, target_user_id, 
+    old_role, new_role,
+    old_school_id, new_school_id,
+    created_at
+  )
+  VALUES (
+    'role_assignment', 
+    auth.uid(), 
+    target_user_id, 
+    old_role_val, 
+    new_role,
+    old_school_val,
+    new_school_id,
+    now()
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+GRANT EXECUTE ON FUNCTION assign_user_role TO authenticated;
 
 -- ========================================================
 -- MASTER BASELINE COMPLETE (v2.0)
