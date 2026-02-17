@@ -9,6 +9,7 @@ import {
     Pressable,
     Icon,
 } from '@/ui';
+import { Alert } from 'react-native';
 import {
     Plus,
     ClipboardCheck,
@@ -177,7 +178,7 @@ export default function TeacherDashboard({ onRefresh }: TeacherDashboardProps) {
                                     classroomName: classrooms[0].name
                                 });
                             } else {
-                                alert("No active classrooms found.");
+                                Alert.alert("No Classrooms", "No active classrooms found.");
                             }
                         }}
                         color={Theme.colors.sageGreen}

@@ -50,4 +50,5 @@ USING (auth.uid() = user_id);
 -- Grant privileges to authenticated role
 GRANT ALL ON TABLE mood_logs TO authenticated;
 GRANT ALL ON TABLE daily_content TO authenticated;
-GRANT ALL ON TABLE daily_content TO anon;
+-- SECURITY: Anon role should only have SELECT on daily_content, not ALL
+GRANT SELECT ON TABLE daily_content TO anon;
