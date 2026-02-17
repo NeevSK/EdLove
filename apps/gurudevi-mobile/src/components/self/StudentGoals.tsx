@@ -28,12 +28,13 @@ import { TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Theme from '../../constants/Theme';
 
-interface Goal {
-    id: string;
-    text: string;
-    progress: number; // 0-100
-    createdAt: string;
-}
+import { supabase } from '../../lib/supabase';
+import { hapticLight, hapticSuccess } from '../../utils/haptics';
+import { useSafeMutation } from '../../hooks/useSafeMutation';
+import { useStudentGoals } from '../../hooks/self/useStudentGoals';
+
+// Type is now imported from the hook/types, but for local prop compatibility we can keep an interface or import used one
+import { Goal } from '../../hooks/self/useStudentGoals';
 
 interface StudentGoalsProps {
     userId: string;
@@ -41,35 +42,19 @@ interface StudentGoalsProps {
 
 export default function StudentGoals({ userId }: StudentGoalsProps) {
     const { t } = useTranslation();
-    const [goals, setGoals] = useState<Goal[]>([]);
+
+    // Resilient Data Hook
+    const { goals, refreshData } = useStudentGoals(userId);
+
     const [newGoalText, setNewGoalText] = useState('');
     const [streak, setStreak] = useState(0);
     const [showAddGoal, setShowAddGoal] = useState(false);
 
     useEffect(() => {
-        loadGoals();
         loadStreak();
     }, [userId]);
 
-    const loadGoals = async () => {
-        // In a real app, would load from API or local storage
-        // For now, using mock data
-        const mockGoals: Goal[] = [
-            {
-                id: '1',
-                text: 'Get an A in Mathematics',
-                progress: 65,
-                createdAt: new Date().toISOString(),
-            },
-            {
-                id: '2',
-                text: 'Complete all homework on time',
-                progress: 80,
-                createdAt: new Date().toISOString(),
-            },
-        ];
-        setGoals(mockGoals);
-    };
+    // Removed manual loadGoals as it's handled by generic hook
 
     const loadStreak = async () => {
         // In a real app, would calculate from mood logs or activity
@@ -77,29 +62,52 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
         setStreak(5);
     };
 
-    const handleAddGoal = () => {
-        if (!newGoalText.trim()) return;
+    const { mutate: saveGoal, isLoading: isSaving } = useSafeMutation(
+        async (text: string) => {
+            const { error } = await supabase
+                .from('student_goals')
+                .insert({
+                    user_id: userId,
+                    text: text,
+                    progress: 0
+                });
+            if (error) throw error;
+        },
+        {
+            onSuccess: () => {
+                hapticSuccess();
+                setNewGoalText('');
+                setShowAddGoal(false);
+                refreshData();
+            }
+        }
+    );
 
-        const newGoal: Goal = {
-            id: Date.now().toString(),
-            text: newGoalText,
-            progress: 0,
-            createdAt: new Date().toISOString(),
-        };
-
-        setGoals([...goals, newGoal]);
-        setNewGoalText('');
-        setShowAddGoal(false);
+    const handleAddGoal = async () => {
+        if (!newGoalText.trim() || !userId) return;
+        hapticLight();
+        await saveGoal(newGoalText.trim());
     };
 
+    const { mutate: updateProgress } = useSafeMutation(
+        async (variables: { id: string, progress: number }) => {
+            const { error } = await supabase
+                .from('student_goals')
+                .update({ progress: variables.progress })
+                .eq('id', variables.id);
+            if (error) throw error;
+        },
+        {
+            onSuccess: () => {
+                hapticLight();
+                refreshData();
+            }
+        }
+    );
+
     const handleUpdateProgress = (goalId: string, newProgress: number) => {
-        setGoals(
-            goals.map((goal) =>
-                goal.id === goalId
-                    ? { ...goal, progress: Math.min(100, Math.max(0, newProgress)) }
-                    : goal
-            )
-        );
+        const clampedProgress = Math.min(100, Math.max(0, newProgress));
+        updateProgress({ id: goalId, progress: clampedProgress });
     };
 
     const getStreakMessage = (days: number): string => {
@@ -233,9 +241,10 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                                     backgroundColor: Theme.colors.sanctuarySaffron,
                                 }}
                                 onPress={handleAddGoal}
+                                isDisabled={!newGoalText.trim() || isSaving}
                             >
                                 <ButtonText color={Theme.colors.sacredWhite}>
-                                    {t('studentGoals.saveGoal') || 'Save Goal'}
+                                    {isSaving ? 'Saving...' : (t('studentGoals.saveGoal') || 'Save Goal')}
                                 </ButtonText>
                             </Button>
                         </VStack>

@@ -21,14 +21,18 @@ import Animated, {
 import { Users } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 interface CommunityPresenceProps {
     compact?: boolean;
+    userVibe?: string; // Current user's vibe: 'reflecting', 'teaching', 'planning'
 }
 
-export default function CommunityPresence({ compact = false }: CommunityPresenceProps) {
+export default function CommunityPresence({ compact = false, userVibe = 'active' }: CommunityPresenceProps) {
+    const { t } = useTranslation();
     const [onlineCount, setOnlineCount] = useState<number>(0);
     const [isLoading, setIsLoading] = useState(true);
+    const [dominantVibe, setDominantVibe] = useState<string>('active');
 
     // Pulsing animation for the indicator
     const pulseScale = useSharedValue(1);
@@ -59,14 +63,33 @@ export default function CommunityPresence({ compact = false }: CommunityPresence
         // Set up real-time subscription for presence
         const channel = supabase.channel('online-presence');
 
-        // Update count when presence changes
+        // Update count and vibes when presence changes
         channel
             .on('presence', { event: 'sync' }, () => {
                 const state = channel.presenceState();
-                const count = Object.keys(state).length;
-                setOnlineCount(count);
+                const presences = Object.values(state).flat();
+                setOnlineCount(presences.length);
+
+                // Determine dominant vibe
+                const vibes: Record<string, number> = {};
+                presences.forEach((p: any) => {
+                    const v = p.vibe || 'active';
+                    vibes[v] = (vibes[v] || 0) + 1;
+                });
+
+                const sortedVibes = Object.entries(vibes).sort((a, b) => b[1] - a[1]);
+                if (sortedVibes.length > 0) {
+                    setDominantVibe(sortedVibes[0][0]);
+                }
             })
-            .subscribe();
+            .subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    await channel.track({
+                        vibe: userVibe,
+                        online_at: new Date().toISOString(),
+                    });
+                }
+            });
 
         return () => {
             supabase.removeChannel(channel);
@@ -77,7 +100,7 @@ export default function CommunityPresence({ compact = false }: CommunityPresence
         try {
             // Query for users who have been active in the last 5 minutes
             const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-            
+
             const { count, error } = await supabase
                 .from('users')
                 .select('id', { count: 'exact', head: true })
@@ -105,8 +128,25 @@ export default function CommunityPresence({ compact = false }: CommunityPresence
     }));
 
     if (isLoading) {
-        return null; // Or a subtle loading state
+        return (
+            <HStack space="sm" alignItems="center" justifyContent="center" py="$4">
+                <Text color={Theme.colors.mistGray} size="sm" italic>
+                    {t('community.connecting') || "Connecting to Sanctuary Network..."}
+                </Text>
+            </HStack>
+        );
     }
+
+    const getVibeColor = (vibe: string) => {
+        switch (vibe) {
+            case 'reflecting': return Theme.colors.twilightPurple;
+            case 'teaching': return Theme.colors.dawnGold;
+            case 'planning': return Theme.colors.skyBlue;
+            default: return Theme.colors.sageGreen;
+        }
+    };
+
+    const vibeColor = getVibeColor(dominantVibe);
 
     if (compact) {
         return (
@@ -126,7 +166,7 @@ export default function CommunityPresence({ compact = false }: CommunityPresence
                             width: 8,
                             height: 8,
                             borderRadius: 4,
-                            backgroundColor: Theme.colors.sageGreen,
+                            backgroundColor: vibeColor,
                         }}
                     />
                 </Animated.View>
@@ -135,7 +175,7 @@ export default function CommunityPresence({ compact = false }: CommunityPresence
                     size="sm"
                     sx={{ fontWeight: Theme.typography.fontWeight.medium }}
                 >
-                    {onlineCount} teachers online
+                    {onlineCount} teachers {dominantVibe !== 'active' ? `are ${dominantVibe}` : 'online'}
                 </Text>
             </HStack>
         );
@@ -148,14 +188,14 @@ export default function CommunityPresence({ compact = false }: CommunityPresence
                 padding: Theme.spacing.lg,
                 borderRadius: Theme.corners.comfortable,
                 borderWidth: 1,
-                borderColor: Theme.colors.sageGreen,
+                borderColor: vibeColor,
             }}
         >
             <HStack space="md" alignItems="center">
                 {/* Animated pulse indicator */}
                 <Box sx={{ position: 'relative' }}>
                     <Users
-                        color={Theme.colors.sageGreen}
+                        color={vibeColor}
                         size={32}
                     />
                     <Animated.View
@@ -168,7 +208,7 @@ export default function CommunityPresence({ compact = false }: CommunityPresence
                                 width: 12,
                                 height: 12,
                                 borderRadius: 6,
-                                backgroundColor: Theme.colors.sageGreen,
+                                backgroundColor: vibeColor,
                             },
                         ]}
                     />
@@ -187,7 +227,7 @@ export default function CommunityPresence({ compact = false }: CommunityPresence
                         color={Theme.colors.mistGray}
                         size="sm"
                     >
-                        Online right now
+                        Currently {dominantVibe !== 'active' ? dominantVibe : 'online'}
                     </Text>
                 </Box>
             </HStack>

@@ -18,6 +18,8 @@ import { Theme } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';
 import { GratitudeEntry } from '../../types/Wellbeing';
+import { useSafeMutation } from '../../hooks/useSafeMutation';
+import { useGratitude } from '../../hooks/self/useGratitude';
 
 interface GratitudeGlimmersProps {
   userId?: string;
@@ -25,56 +27,46 @@ interface GratitudeGlimmersProps {
 
 export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
   const { t } = useTranslation();
-  const [entries, setEntries] = useState<GratitudeEntry[]>([]);
+  // Resilient Data Hook
+  const { entries, refreshData } = useGratitude(userId);
+
   const [showForm, setShowForm] = useState(false);
-  const [loading, setLoading] = useState(false);
-  
+
   const [content, setContent] = useState('');
   const [category, setCategory] = useState<'student-said' | 'colleague-kindness' | 'personal-win'>('student-said');
 
-  useEffect(() => {
-    if (userId) {
-      loadEntries();
-    }
-  }, [userId]);
+  // Removed manual loadEntries as it's handled by the hook
 
-  const loadEntries = async () => {
-    if (!userId) return;
-    
-    const { data, error } = await supabase
-      .from('gratitude_entries')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(20);
-
-    if (data) {
-      setEntries(data);
+  const { mutate, isLoading: isSaving } = useSafeMutation(
+    async (variables: { content: string, category: string }) => {
+      const { error } = await supabase
+        .from('gratitude_entries')
+        .insert({
+          user_id: userId,
+          content: variables.content,
+          category: variables.category
+        });
+      if (error) throw error;
+    },
+    {
+      onSuccess: () => {
+        hapticSuccess();
+        setContent('');
+        setShowForm(false);
+        refreshData(); // Refresh local cache
+      },
+      retryCount: 3
     }
-  };
+  );
 
   const handleSave = async () => {
     if (!userId || !content.trim()) return;
-    
-    setLoading(true);
+
     hapticLight();
-
-    const { error } = await supabase
-      .from('gratitude_entries')
-      .insert({
-        user_id: userId,
-        content: content.trim(),
-        category
-      });
-
-    if (!error) {
-      hapticSuccess();
-      setContent('');
-      setShowForm(false);
-      await loadEntries();
-    }
-    
-    setLoading(false);
+    await mutate({
+      content: content.trim(),
+      category
+    });
   };
 
   const categories = [
@@ -149,7 +141,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
                   </Box>
                 );
               })}
-              
+
               {entries.length === 0 && (
                 <Box p={Theme.spacing.xl}>
                   <Text
@@ -265,7 +257,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
               size="md"
               action="primary"
               onPress={handleSave}
-              isDisabled={!content.trim() || loading}
+              isDisabled={!content.trim() || isSaving}
               sx={{
                 backgroundColor: Theme.colors.sanctuarySaffron,
                 borderRadius: Theme.corners.comfortable

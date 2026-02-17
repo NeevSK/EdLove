@@ -21,109 +21,155 @@ import {
 import { Theme } from '../../constants/Theme';
 import { useTranslation } from 'react-i18next';
 import { useUserRole } from '../../hooks/useUserRole';
-import { api } from '../../lib/api';
-import { SchoolStats, School } from '../../lib/api/school';
+import { useSchoolStats } from '../../hooks/classroom/useSchoolStats';
 import GlobalHeader from '../../components/shared/GlobalHeader';
 import { useThemedColors } from '../../hooks/useThemedColors';
+import RoleInitialState from '../../components/classroom/RoleInitialState';
 import ScreenWrapper from '../../components/shared/ScreenWrapper';
-import { Compass, Zap, Globe, Heart } from 'lucide-react-native';
+import { Compass, Zap, Globe, Heart, Plus } from 'lucide-react-native';
+import { useStore } from '../../store/useStore';
+import SandboxBanner from '../../components/shared/SandboxBanner';
+import { CreateSchoolModal } from '../../components/classroom';
+import { TouchableOpacity } from 'react-native';
 
 interface FounderSchoolViewProps {
     schoolId: string;
     userId: string;
+    onRefresh?: () => void;
 }
 
 export default function FounderSchoolView({ schoolId, userId }: FounderSchoolViewProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
-    const [stats, setStats] = useState<SchoolStats | null>(null);
-    const [school, setSchool] = useState<School | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        loadData();
-    }, [schoolId]);
+    // Resilient Hook
+    const { school, stats, isLoading, refreshData } = useSchoolStats(schoolId);
 
-    const loadData = async () => {
-        setIsLoading(true);
-        try {
-            const [schoolData, statsData] = await Promise.all([
-                api.school.getSchool(schoolId),
-                api.school.getSchoolStats(schoolId),
-            ]);
-            setSchool(schoolData);
-            setStats(statsData);
-        } catch (err) {
-            console.error('Failed to load founder view data:', err);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const { isDemoMode } = useStore();
+
+    // Load data handled by hook
 
     return (
         <ScreenWrapper>
+            {isDemoMode && <SandboxBanner />}
             <GlobalHeader
                 title={t('founder.platformVision')}
                 subtitle={school?.name || t('founder.educationalEcology')}
             />
             <ScrollView>
                 <VStack space="xl" sx={{ padding: Theme.spacing.lg }}>
-                    {/* Visionary Summary */}
-                    <Box
-                        sx={{
-                            padding: Theme.spacing.xl,
-                            backgroundColor: colors.action,
-                            borderRadius: Theme.corners.generous,
-                            ...Theme.shadows.lg
-                        }}
-                    >
-                        <VStack space="sm">
-                            <HStack space="sm" alignItems="center">
-                                <Compass color={Theme.colors.white} size={24} />
-                                <Text color={Theme.colors.white} bold size="lg">
-                                    {t('founder.ecologyStatus', { status: 'Balanced' })}
-                                </Text>
-                            </HStack>
-                            <Text color="rgba(255,255,255,0.85)" size="sm">
-                                {t('founder.visionManifesting', { count: stats?.total_sections || 0 })}
-                            </Text>
-                        </VStack>
-                    </Box>
+                    {/* Main Content */}
+                    {stats && !isLoading && (
+                        <VStack space="xl">
+                            {(stats as any).is_sample && (
+                                <Box sx={{
+                                    backgroundColor: Theme.colors.amberGlow + '22',
+                                    p: "$3",
+                                    borderRadius: Theme.corners.comfortable,
+                                    borderWidth: 1,
+                                    borderColor: Theme.colors.amberGlow,
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 8,
+                                    mb: "$2"
+                                }}>
+                                    <Zap size={16} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} />
+                                    <Text sx={{ fontSize: 13, color: Theme.colors.amberGlow, fontWeight: '700' }}>
+                                        {t('demoMode.visionaryEcology') || "VISIONARY ECOLOGY: Previewing platform potential"}
+                                    </Text>
+                                </Box>
+                            )}
 
-                    {/* Platform Metrics */}
-                    <VStack space="md">
-                        <Heading size="md" color={colors.text}>{t('founder.executiveOversight')}</Heading>
-                        <HStack space="md">
-                            <Box sx={{ flex: 1, p: "$4", bg: colors.secondary, borderRadius: Theme.corners.comfortable }}>
-                                <Globe color={colors.action} size={20} />
-                                <Text color={colors.text} bold size="xl" mt="$2">{stats?.total_students || 0}</Text>
-                                <Text color={colors.textSecondary} size="xs">{t('founder.totalSouls')}</Text>
-                            </Box>
-                            <Box sx={{ flex: 1, p: "$4", bg: colors.secondary, borderRadius: Theme.corners.comfortable }}>
-                                <Zap color={colors.warning} size={20} />
-                                <Text color={colors.text} bold size="xl" mt="$2">{stats?.total_teachers || 0}</Text>
-                                <Text color={colors.textSecondary} size="xs">{t('founder.guidingSpirits')}</Text>
-                            </Box>
-                        </HStack>
-                    </VStack>
-
-                    {/* Ecology Health (Simulated Cross-School/Platform Trends) */}
-                    <VStack space="md" mt="$4">
-                        <Heading size="sm" color={colors.textSecondary}>{t('founder.visionaryInsights')}</Heading>
-                        <Box p="$4" bg={colors.secondary} borderRadius={Theme.corners.comfortable} borderWidth={1} borderColor={colors.border}>
-                            <HStack justifyContent="space-between" alignItems="center">
-                                <VStack space="xs">
-                                    <Text color={colors.text} bold>{t('founder.wellnessIndex')}</Text>
-                                    <Text color={colors.success} size="xs">{t('founder.wellnessIncrease', { percent: 12 })}</Text>
+                            {/* Visionary Summary */}
+                            <Box
+                                sx={{
+                                    padding: Theme.spacing.xl,
+                                    backgroundColor: colors.action,
+                                    borderRadius: Theme.corners.generous,
+                                    ...Theme.shadows.lg
+                                }}
+                            >
+                                <VStack space="sm">
+                                    <HStack space="sm" alignItems="center">
+                                        <Compass color={Theme.colors.white} size={24} />
+                                        <Text color={Theme.colors.white} bold size="lg">
+                                            {t('founder.ecologyStatus', { status: 'Balanced' })}
+                                        </Text>
+                                    </HStack>
+                                    <Text color="rgba(255,255,255,0.85)" size="sm">
+                                        {t('founder.visionManifesting', { count: stats?.total_sections || 0 })}
+                                    </Text>
                                 </VStack>
-                                <Heart color={colors.error} size={24} fill={colors.error} />
-                            </HStack>
-                        </Box>
-                    </VStack>
+                            </Box>
+
+                            {/* Platform Metrics */}
+                            <VStack space="md">
+                                <Heading size="md" color={colors.text}>{t('founder.executiveOversight')}</Heading>
+                                <HStack space="md">
+                                    <Box sx={{ flex: 1, p: "$4", bg: colors.secondary, borderRadius: Theme.corners.comfortable }}>
+                                        <HStack justifyContent="space-between" alignItems="center">
+                                            <Globe color={colors.action} size={20} />
+                                            {isDemoMode && <Zap size={12} color={Theme.colors.sanctuarySaffron} fill={Theme.colors.sanctuarySaffron} />}
+                                        </HStack>
+                                        <Text color={colors.text} bold size="xl" mt="$2">{stats?.total_students || 0}</Text>
+                                        <Text color={colors.textSecondary} size="xs">{t('founder.totalSouls')}</Text>
+                                    </Box>
+                                    <Box sx={{ flex: 1, p: "$4", bg: colors.secondary, borderRadius: Theme.corners.comfortable }}>
+                                        <Zap color={colors.warning} size={20} />
+                                        <Text color={colors.text} bold size="xl" mt="$2">{stats?.total_teachers || 0}</Text>
+                                        <Text color={colors.textSecondary} size="xs">{t('founder.guidingSpirits')}</Text>
+                                    </Box>
+                                </HStack>
+                            </VStack>
+
+                            {/* Ecology Health (Simulated Cross-School/Platform Trends) */}
+                            <VStack space="md" mt="$4">
+                                <Heading size="sm" color={colors.textSecondary}>{t('founder.visionaryInsights')}</Heading>
+                                <Box p="$4" bg={colors.secondary} borderRadius={Theme.corners.comfortable} borderWidth={1} borderColor={colors.border}>
+                                    <HStack justifyContent="space-between" alignItems="center">
+                                        <VStack space="xs">
+                                            <Text color={colors.text} bold>{t('founder.wellnessIndex')}</Text>
+                                            <Text color={colors.success} size="xs">{t('founder.wellnessIncrease', { percent: 12 })}</Text>
+                                        </VStack>
+                                        <Heart color={colors.error} size={24} fill={colors.error} />
+                                    </HStack>
+                                </Box>
+                            </VStack>
+                        </VStack>
+                    )}
 
                     {isLoading && <Spinner color={colors.action} />}
                 </VStack>
             </ScrollView>
+
+            <TouchableOpacity
+                onPress={() => setIsCreateModalOpen(true)}
+                style={{
+                    position: 'absolute',
+                    bottom: 20,
+                    right: 20,
+                    width: 56,
+                    height: 56,
+                    borderRadius: 28,
+                    backgroundColor: Theme.colors.sanctuarySaffron,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    ...Theme.shadows.md,
+                    zIndex: 10
+                }}
+            >
+                <Plus size={24} color="white" />
+            </TouchableOpacity>
+
+            <CreateSchoolModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                onSuccess={(newSchool) => {
+                    refreshData();
+                }}
+            />
         </ScreenWrapper>
     );
 }

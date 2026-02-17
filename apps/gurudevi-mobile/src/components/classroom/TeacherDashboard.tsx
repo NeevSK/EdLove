@@ -17,31 +17,43 @@ import {
     School
 } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { ClassroomStackParamList } from '../../types/navigation';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
 import { hapticLight } from '../../utils/haptics';
 import ClassroomList from './ClassroomList';
 import CreateClassroomModal from './CreateClassroomModal';
-import { useNavigation } from '@react-navigation/native';
 import { useThemedColors } from '../../hooks/useThemedColors';
+import { Zap } from 'lucide-react-native';
+import SandboxBanner from '../shared/SandboxBanner';
+import GlobalHeader from '../shared/GlobalHeader';
 
-export default function TeacherDashboard() {
+interface TeacherDashboardProps {
+    onRefresh?: () => void;
+}
+
+export default function TeacherDashboard({ onRefresh }: TeacherDashboardProps) {
     const { t } = useTranslation();
-    const navigation = useNavigation<any>();
-    const { teacherName } = useStore();
+    const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
+    const { teacherName, isDemoMode, setDemoMode } = useStore();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState<'create' | 'join'>('create');
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const colors = useThemedColors();
+    const [classrooms, setClassrooms] = useState<any[]>([]);
     const [stats, setStats] = useState({
         activeClasses: 0,
         totalStudents: 0
     });
 
     // We'll update stats whenever the classroom list changes
-    const handleClassroomsLoaded = (classrooms: any[]) => {
+    const handleClassroomsLoaded = (loadedClassrooms: any[]) => {
+        setClassrooms(loadedClassrooms);
         setStats({
-            activeClasses: classrooms.length,
-            totalStudents: classrooms.reduce((acc, curr) => acc + (curr.student_count || 0), 0)
+            activeClasses: loadedClassrooms.length,
+            totalStudents: loadedClassrooms.reduce((acc, curr) => acc + (curr.student_count || 0), 0)
         });
     };
 
@@ -72,7 +84,7 @@ export default function TeacherDashboard() {
                 <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={24} />
             </Box>
             <Text color={colors.text} size="xs" bold textAlign="center">
-                {label}
+                {isDemoMode ? `⚡ (${t('demoMode.simulationAlert')}) ${label}` : label}
             </Text>
         </Pressable>
     );
@@ -95,9 +107,14 @@ export default function TeacherDashboard() {
                     {label}
                 </Text>
                 <Text color={colors.text} size="3xl" bold>
-                    {value}
+                    {value}{isDemoMode && '*'}
                 </Text>
             </VStack>
+            {isDemoMode && (
+                <Box sx={{ position: 'absolute', top: 5, right: 5 }}>
+                    <Zap size={12} color={Theme.colors.sanctuarySaffron} fill={Theme.colors.sanctuarySaffron} />
+                </Box>
+            )}
             <Box
                 sx={{
                     position: 'absolute',
@@ -113,15 +130,15 @@ export default function TeacherDashboard() {
 
     return (
         <VStack space="xl" sx={{ flex: 1, backgroundColor: colors.primary }}>
+            {isDemoMode && <SandboxBanner />}
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: Theme.spacing.lg }}>
 
-                {/* Greeting */}
-                <VStack space="xs" mb="$4">
-                    <Heading color={colors.text} size="2xl">
-                        {t('common.greeting', { name: teacherName }) || `Ayubowan, ${teacherName}!`}
-                    </Heading>
+
+
+                {/* Greeting Detail moved to summary in header or kept as intro */}
+                <VStack space="xs" mb="$4" mt="$2">
                     <Text color={colors.textSecondary} size="sm">
-                        {t('classroom.dashboardIntro') || 'Your sanctuary awaits. Manage your classes efficiently.'}
+                        {t('classroom.dashboardIntro') || 'Lead the classroom with love and care.'}
                     </Text>
                 </VStack>
 
@@ -130,12 +147,39 @@ export default function TeacherDashboard() {
                     <QuickAction
                         icon={Plus}
                         label={t('classroom.createClass') || 'Create Class'}
-                        onPress={() => setIsCreateModalOpen(true)}
+                        onPress={() => {
+                            console.log('[TeacherDashboard] Create Class button pressed');
+                            setModalMode('create');
+                            setIsCreateModalOpen(true);
+                        }}
+                    />
+                    <QuickAction
+                        icon={Users}
+                        label={t('classroom.joinClass') || 'Join Class'}
+                        onPress={() => {
+                            console.log('[TeacherDashboard] Join Class button pressed');
+                            setModalMode('join');
+                            setIsCreateModalOpen(true);
+                        }}
+                        color={Theme.colors.sanctuarySaffron}
                     />
                     <QuickAction
                         icon={ClipboardCheck}
                         label={t('classroom.attendance') || 'Attendance'}
-                        onPress={() => {/* TODO: Open Attendance selection */ }}
+                        onPress={() => {
+                            // For now, if there are classrooms, pick the first one to demo the navigation.
+                            // Ideally this opens a selector.
+                            if (classrooms.length > 0) {
+                                // We need navigation prop here.
+                                // TeacherDashboard is a component, so we use useNavigation.
+                                navigation.navigate('Attendance', {
+                                    classroomId: classrooms[0].id,
+                                    classroomName: classrooms[0].name
+                                });
+                            } else {
+                                alert("No active classrooms found.");
+                            }
+                        }}
                         color={Theme.colors.sageGreen}
                     />
                     <QuickAction
@@ -182,14 +226,50 @@ export default function TeacherDashboard() {
                         onDataLoaded={handleClassroomsLoaded}
                         isNested={true}
                         refreshTrigger={refreshTrigger}
+                        emptyContent={
+                            <VStack
+                                space="md"
+                                sx={{
+                                    padding: Theme.spacing.xl,
+                                    backgroundColor: colors.secondary,
+                                    borderRadius: Theme.corners.generous,
+                                    alignItems: 'center',
+                                    borderWidth: 1,
+                                    borderColor: colors.border,
+                                    borderStyle: 'dashed'
+                                }}
+                            >
+                                <Box sx={{
+                                    padding: Theme.spacing.md,
+                                    borderRadius: Theme.corners.full,
+                                    backgroundColor: colors.tertiary,
+                                    opacity: 0.6
+                                }}>
+                                    <School size={32} color={Theme.colors.sanctuarySaffron} />
+                                </Box>
+                                <VStack space="xs" alignItems="center">
+                                    <Text color={colors.text} bold textAlign="center">
+                                        {t('classroom.noClassroomsYet') || "No classrooms yet"}
+                                    </Text>
+                                    <Text color={colors.textSecondary} size="xs" textAlign="center">
+                                        {t('classroom.teacherEmptyDesc') || "Your digital workbench is ready. Create a class or join an existing one to begin."}
+                                    </Text>
+                                </VStack>
+                            </VStack>
+                        }
                     />
                 </VStack>
             </ScrollView>
 
             <CreateClassroomModal
                 isOpen={isCreateModalOpen}
-                onClose={() => setIsCreateModalOpen(false)}
-                onSuccess={() => {
+                mode={modalMode}
+                onClose={() => {
+                    console.log('[TeacherDashboard] Closing CreateClassroomModal');
+                    setIsCreateModalOpen(false);
+                }}
+                onSuccess={(newClass) => {
+                    console.log('[TeacherDashboard] Classroom operation successful:', newClass?.id);
                     setRefreshTrigger(prev => prev + 1);
                 }}
             />

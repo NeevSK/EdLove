@@ -13,6 +13,12 @@ import { MessageSquare, Users, PenTool, Search } from 'lucide-react-native';
 import { useCommunity, Group, Post } from '../hooks/useCommunity';
 import { useThemedColors } from '../hooks/useThemedColors';
 import ScreenWrapper from '../components/shared/ScreenWrapper';
+import { isDemo } from '../lib/api/demo';
+import CommunityPresence from '../components/self/CommunityPresence';
+import ManifestoCard from '../components/community/ManifestoCard';
+import { useManifestos } from '../hooks/useManifestos';
+import { requireAuth } from '../utils/authorization';
+import { supabase } from '../lib/supabase';
 
 type TabType = 'feed' | 'groups';
 
@@ -23,7 +29,11 @@ export default function CommunityScreen() {
     const [searchQuery, setSearchQuery] = useState('');
     const [refreshing, setRefreshing] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [userId, setUserId] = useState<string | undefined>(undefined);
+    const [schoolId, setSchoolId] = useState<string>('mock-school');
     const colors = useThemedColors();
+
+    const { manifestos, endorse, unendorse } = useManifestos(schoolId, userId);
 
     // Initial data load
     useEffect(() => {
@@ -31,6 +41,15 @@ export default function CommunityScreen() {
     }, []);
 
     const loadData = async () => {
+        try {
+            const user = await requireAuth();
+            if (user) {
+                setUserId(user.id);
+                setSchoolId(user.user_metadata?.school_id || 'mock-school');
+            }
+        } catch (e) {
+            console.error('Auth error in CommunityScreen', e);
+        }
         await Promise.all([fetchGroups(), fetchPosts('all')]); // 'all' or specific feed logic
     };
 
@@ -41,7 +60,7 @@ export default function CommunityScreen() {
     };
 
     const renderTabs = () => (
-        <HStack space="md" mb="$4" px="$4">
+        <HStack space="md" mb="$4" px="$4" py="$1" pt="$4" sx={{ padding: 5 }}>
             <Pressable
                 onPress={() => setActiveTab('feed')}
                 sx={{
@@ -107,15 +126,45 @@ export default function CommunityScreen() {
                     </Box>
                 ) : activeTab === 'feed' ? (
                     <VStack space="md">
+                        {/* THE RELATIONAL WEAVER - Presence & Manifestos */}
+                        <CommunityPresence compact={false} userVibe="planning" />
+
+                        {manifestos.length > 0 && (
+                            <VStack space="sm">
+                                <Text size="sm" color={Theme.colors.mistGray} bold px="$1">
+                                    SCHOOL VISION
+                                </Text>
+                                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                                    <HStack space="md">
+                                        {manifestos.map((m) => (
+                                            <Box key={m.id} w={300}>
+                                                <ManifestoCard
+                                                    {...m}
+                                                    onEndorse={(mid) => {
+                                                        if (m.has_endorsed) unendorse(mid);
+                                                        else endorse({ manifestoId: mid });
+                                                    }}
+                                                />
+                                            </Box>
+                                        ))}
+                                    </HStack>
+                                </ScrollView>
+                            </VStack>
+                        )}
+
+                        <Text size="sm" color={Theme.colors.mistGray} bold px="$1" mt="$2">
+                            RECENT UPDATES
+                        </Text>
+
                         {posts.map((post: Post) => (
                             <PostCard
                                 key={post.id}
                                 id={post.id}
                                 content={post.content}
-                                type={post.type}
+                                type={post.post_type as any}
                                 author={{
                                     id: post.author_id,
-                                    name: post.author_name,
+                                    name: isDemo() ? `(Sample) ${post.author_name}` : post.author_name,
                                     avatarUrl: post.author_avatar,
                                 }}
                                 createdAt={post.created_at}
@@ -132,6 +181,7 @@ export default function CommunityScreen() {
                             <GroupCard
                                 key={group.id}
                                 {...group}
+                                name={isDemo() ? `(Sample) ${group.name}` : group.name}
                                 memberCount={group.member_count}
                                 onPress={() => console.log('NAVIGATE_TO_GROUP', group.id)}
                                 type={group.type as any}

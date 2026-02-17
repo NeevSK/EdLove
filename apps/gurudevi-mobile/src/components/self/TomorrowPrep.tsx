@@ -20,6 +20,8 @@ import { Theme } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';
 import { DailyPrepItem } from '../../types/Wellbeing';
+import { useSafeMutation } from '../../hooks/useSafeMutation';
+import { useTomorrowPrep } from '../../hooks/self/useTomorrowPrep';
 
 interface TomorrowPrepProps {
   userId?: string;
@@ -27,58 +29,44 @@ interface TomorrowPrepProps {
 
 export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
   const { t } = useTranslation();
-  const [items, setItems] = useState<DailyPrepItem[]>([]);
+
+  // Resilient Data Hook
+  const { prepItems: items, refreshData } = useTomorrowPrep(userId);
+
   const [showForm, setShowForm] = useState(false);
-  const [loading, setLoading] = useState(false);
-  
+
   const [itemText, setItemText] = useState('');
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const tomorrowDate = tomorrow.toISOString().split('T')[0];
 
-  useEffect(() => {
-    if (userId) {
-      loadItems();
-    }
-  }, [userId]);
+  // Removed manual loadItems as it's handled by the hook
 
-  const loadItems = async () => {
-    if (!userId) return;
-    
-    const { data, error } = await supabase
-      .from('daily_prep_items')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('prep_date', tomorrowDate)
-      .order('created_at', { ascending: true });
-
-    if (data) {
-      setItems(data);
+  const { mutate: saveItem, isLoading: isSaving } = useSafeMutation(
+    async (text: string) => {
+      const { error } = await supabase
+        .from('daily_prep_items')
+        .insert({
+          user_id: userId,
+          item_text: text,
+          prep_date: tomorrowDate
+        });
+      if (error) throw error;
+    },
+    {
+      onSuccess: () => {
+        hapticSuccess();
+        setItemText('');
+        setShowForm(false);
+        refreshData();
+      }
     }
-  };
+  );
 
   const handleSave = async () => {
     if (!userId || !itemText.trim() || items.length >= 3) return;
-    
-    setLoading(true);
     hapticLight();
-
-    const { error } = await supabase
-      .from('daily_prep_items')
-      .insert({
-        user_id: userId,
-        item_text: itemText.trim(),
-        prep_date: tomorrowDate
-      });
-
-    if (!error) {
-      hapticSuccess();
-      setItemText('');
-      setShowForm(false);
-      await loadItems();
-    }
-    
-    setLoading(false);
+    await saveItem(itemText.trim());
   };
 
   const handleToggle = async (item: DailyPrepItem) => {
@@ -87,8 +75,8 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
       .from('daily_prep_items')
       .update({ is_completed: !item.is_completed })
       .eq('id', item.id);
-    
-    await loadItems();
+
+    refreshData();
   };
 
   const handleDelete = async (id: string) => {
@@ -97,8 +85,8 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
       .from('daily_prep_items')
       .delete()
       .eq('id', id);
-    
-    await loadItems();
+
+    refreshData();
   };
 
   return (
@@ -191,7 +179,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
               size="md"
               action="primary"
               onPress={handleSave}
-              isDisabled={!itemText.trim() || loading}
+              isDisabled={!itemText.trim() || isSaving}
               sx={{
                 backgroundColor: Theme.colors.sanctuarySaffron,
                 borderRadius: Theme.corners.comfortable
@@ -232,7 +220,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                   <CheckboxIcon as={Check} color={Theme.colors.white} />
                 </CheckboxIndicator>
               </Checkbox>
-              
+
               <Text
                 color={Theme.colors.sacredWhite}
                 size="md"
@@ -255,7 +243,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
               </Pressable>
             </HStack>
           ))}
-          
+
           {items.length === 0 && (
             <Box p={Theme.spacing.xl}>
               <Text

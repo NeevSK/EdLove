@@ -158,4 +158,11 @@ export const classroomsAPI = {
             throw new APIError('Failed to delete classroom', error.code, error);
         }
     },
+
+    /**
+     * Join an existing classroom (for teachers)
+     */
+    async join(classroomId: string, teacherId: string): Promise<Classroom> {
+        return this.update(classroomId, { teacher_id: teacherId });
+    }
 };

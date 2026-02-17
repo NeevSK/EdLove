@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GluestackUIProvider, Spinner, Center } from '@/ui';
+import { GluestackUIProvider, Spinner, Center, VStack, Text } from '@/ui';
 import { config } from "./gluestack-ui.config";
 import { Home, School, Users, Library, User } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
@@ -24,6 +24,9 @@ import OnboardingScreen from './src/screens/OnboardingScreen';
 import TabNavigator from './src/navigation/TabNavigator';
 import LotusPetalFAB, { ActionItem } from './src/components/shared/LotusPetalFAB';
 import ErrorBoundary from './src/components/shared/ErrorBoundary';
+import SanctuaryToast from './src/components/shared/SanctuaryToast';
+import NetworkStatusBanner from './src/components/shared/NetworkStatusBanner';
+import SyncManager from './src/lib/sync/SyncManager';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -34,6 +37,8 @@ export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [currentTab, setCurrentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
   const onboardingCompleted = useStore((state) => state.onboardingCompleted);
+  const toast = useStore((state) => state.toast);
+  const hideToast = useStore((state) => state.hideToast);
 
   // Create a helper for Supabase queries with timeout
   const withTimeout = async <T,>(promise: Promise<T>, timeoutMs: number = 5000): Promise<T> => {
@@ -156,6 +161,8 @@ export default function App() {
     };
   }, []);
 
+  // Monitor network connectivity - REMOVED redundant listener (Centralized in EnvironmentContext)
+
   const handleFabPress = () => {
     // TODO: Implement specific actions for each tab
     console.log(`FAB pressed in ${currentTab} tab`);
@@ -200,14 +207,21 @@ export default function App() {
   };
 
   if (loading || !fontsLoaded) {
+    console.log('App: Still loading...', { loading, fontsLoaded });
     return (
       <GluestackUIProvider config={config}>
         <Center sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
-          <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+          <VStack space="md" alignItems="center">
+            <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+            <Text color={Theme.colors.white} size="sm">
+              {loading ? 'Initializing Sanctuary...' : 'Preparing Fonts...'}
+            </Text>
+          </VStack>
         </Center>
       </GluestackUIProvider>
     );
   }
+  console.log('App: Loading finished, rendering main tree');
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -249,6 +263,14 @@ export default function App() {
                       </>
                     </ErrorBoundary>
                   )}
+                  <NetworkStatusBanner />
+                  <SyncManager />
+                  <SanctuaryToast
+                    visible={toast.visible}
+                    message={toast.message}
+                    type={toast.type}
+                    onHide={hideToast}
+                  />
                 </NavigationContainer>
               </ErrorBoundary>
             </GluestackUIProvider>

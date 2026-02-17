@@ -21,96 +21,104 @@ import {
 import { Theme } from '../../constants/Theme';
 import { useTranslation } from 'react-i18next';
 import { useUserRole } from '../../hooks/useUserRole';
-import { api } from '../../lib/api';
-import { SchoolStats, School } from '../../lib/api/school';
+import { useSchoolStats } from '../../hooks/classroom/useSchoolStats';
 import GlobalHeader from '../../components/shared/GlobalHeader';
 import { useThemedColors } from '../../hooks/useThemedColors';
+import RoleInitialState from '../../components/classroom/RoleInitialState';
 import ScreenWrapper from '../../components/shared/ScreenWrapper';
-import { Shield, Activity, Database, Server } from 'lucide-react-native';
+import { Shield, Activity, Database, Server, Zap } from 'lucide-react-native';
+import { useStore } from '../../store/useStore';
+import SandboxBanner from '../../components/shared/SandboxBanner';
 
 interface AdminSchoolViewProps {
     schoolId: string;
     userId: string;
+    onRefresh?: () => void;
 }
 
 export default function AdminSchoolView({ schoolId, userId }: AdminSchoolViewProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
-    const [stats, setStats] = useState<SchoolStats | null>(null);
-    const [school, setSchool] = useState<School | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        loadData();
-    }, [schoolId]);
+    // Resilient Hook
+    const { school, stats, isLoading } = useSchoolStats(schoolId);
 
-    const loadData = async () => {
-        setIsLoading(true);
-        try {
-            const [schoolData, statsData] = await Promise.all([
-                api.school.getSchool(schoolId),
-                api.school.getSchoolStats(schoolId),
-            ]);
-            setSchool(schoolData);
-            setStats(statsData);
-        } catch (err) {
-            console.error('Failed to load admin view data:', err);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const { isDemoMode } = useStore();
+    // Load data handled by hook
 
     return (
         <ScreenWrapper>
+            {isDemoMode && <SandboxBanner />}
             <GlobalHeader
                 title={t('admin.systemOperations')}
                 subtitle={t('admin.productionEnvironment')}
             />
             <ScrollView>
                 <VStack space="xl" sx={{ padding: Theme.spacing.lg }}>
-                    {/* System Pulse */}
-                    <HStack space="md">
-                        <Box sx={{ flex: 1, p: "$4", bg: colors.secondary, borderRadius: Theme.corners.comfortable, borderColor: colors.success, borderWidth: 1 }}>
-                            <Activity color={colors.success} size={20} />
-                            <Text color={colors.text} bold size="xl" mt="$2">99.9%</Text>
-                            <Text color={colors.textSecondary} size="xs">{t('admin.coreUptime')}</Text>
-                        </Box>
-                        <Box sx={{ flex: 1, p: "$4", bg: colors.secondary, borderRadius: Theme.corners.comfortable, borderColor: colors.action, borderWidth: 1 }}>
-                            <Server color={colors.action} size={20} />
-                            <Text color={colors.text} bold size="xl" mt="$2">42ms</Text>
-                            <Text color={colors.textSecondary} size="xs">{t('admin.apiLatency')}</Text>
-                        </Box>
-                    </HStack>
-
-                    {/* Operational Audit */}
-                    <VStack space="md">
-                        <Heading size="md" color={colors.text}>{t('admin.operationalAudit')}</Heading>
-                        <Box p="$4" bg={colors.secondary} borderRadius={Theme.corners.comfortable}>
-                            <VStack space="md">
-                                <HStack justifyContent="space-between" alignItems="center">
-                                    <HStack space="sm" alignItems="center">
-                                        <Database size={18} color={colors.textSecondary} />
-                                        <Text color={colors.text}>{t('admin.activeSessions')}</Text>
-                                    </HStack>
-                                    <Text color={colors.text} bold>1.2k</Text>
+                    {/* Main Content */}
+                    {stats && !isLoading && (
+                        stats.total_students > 0 || stats.total_teachers > 0 ? (
+                            <>
+                                {/* System Pulse */}
+                                <HStack space="md">
+                                    <Box sx={{ flex: 1, p: "$4", bg: colors.secondary, borderRadius: Theme.corners.comfortable, borderColor: colors.success, borderWidth: 1 }}>
+                                        <HStack justifyContent="space-between" alignItems="center">
+                                            <Activity color={colors.success} size={20} />
+                                            {isDemoMode && <Zap size={12} color={Theme.colors.sanctuarySaffron} fill={Theme.colors.sanctuarySaffron} />}
+                                        </HStack>
+                                        <Text color={colors.text} bold size="xl" mt="$2">99.9%</Text>
+                                        <Text color={colors.textSecondary} size="xs">{t('admin.coreUptime')}</Text>
+                                    </Box>
+                                    <Box sx={{ flex: 1, p: "$4", bg: colors.secondary, borderRadius: Theme.corners.comfortable, borderColor: colors.action, borderWidth: 1 }}>
+                                        <Server color={colors.action} size={20} />
+                                        <Text color={colors.text} bold size="xl" mt="$2">42ms</Text>
+                                        <Text color={colors.textSecondary} size="xs">{t('admin.apiLatency')}</Text>
+                                    </Box>
                                 </HStack>
-                                <HStack justifyContent="space-between" alignItems="center">
-                                    <HStack space="sm" alignItems="center">
-                                        <Shield size={18} color={colors.textSecondary} />
-                                        <Text color={colors.text}>{t('admin.securityAlerts')}</Text>
-                                    </HStack>
-                                    <Text color={colors.success} bold>0</Text>
-                                </HStack>
-                            </VStack>
-                        </Box>
-                    </VStack>
 
-                    {/* Infrastructure Summary */}
-                    <Box p="$6" bg={colors.tertiary} borderRadius={Theme.corners.generous} borderStyle="dashed" borderWidth={1} borderColor={colors.border}>
-                        <Text color={colors.textSecondary} textAlign="center" size="sm">
-                            {t('admin.infraSummary', { name: school?.name || 'Sanctuary' })}
-                        </Text>
-                    </Box>
+                                {/* Operational Audit */}
+                                <VStack space="md">
+                                    <Heading size="md" color={colors.text}>{t('admin.operationalAudit')}</Heading>
+                                    <Box p="$4" bg={colors.secondary} borderRadius={Theme.corners.comfortable}>
+                                        <VStack space="md">
+                                            <HStack justifyContent="space-between" alignItems="center">
+                                                <HStack space="sm" alignItems="center">
+                                                    <Database size={18} color={colors.textSecondary} />
+                                                    <Text color={colors.text}>{t('admin.activeSessions')}</Text>
+                                                </HStack>
+                                                <Text color={colors.text} bold>{stats.total_students + stats.total_teachers}</Text>
+                                            </HStack>
+                                            <HStack justifyContent="space-between" alignItems="center">
+                                                <HStack space="sm" alignItems="center">
+                                                    <Shield size={18} color={colors.textSecondary} />
+                                                    <Text color={colors.text}>{t('admin.securityAlerts')}</Text>
+                                                </HStack>
+                                                <Text color={colors.success} bold>0</Text>
+                                            </HStack>
+                                        </VStack>
+                                    </Box>
+                                </VStack>
+
+                                {/* Infrastructure Summary */}
+                                <Box p="$6" bg={colors.tertiary} borderRadius={Theme.corners.generous} borderStyle="dashed" borderWidth={1} borderColor={colors.border}>
+                                    <Text color={colors.textSecondary} textAlign="center" size="sm">
+                                        {t('admin.infraSummary', { name: school?.name || 'Sanctuary' })}
+                                    </Text>
+                                </Box>
+                            </>
+                        ) : (
+                            <RoleInitialState
+                                role="admin"
+                                onCreatePress={() => {
+                                    // Admins can often jump into system settings
+                                    console.log('Admin initializing system settings');
+                                }}
+                                onSamplePress={(item) => {
+                                    console.log('Admin Sample pressed:', item.title);
+                                }}
+                            />
+                        )
+                    )}
 
                     {isLoading && <Spinner color={colors.action} />}
                 </VStack>

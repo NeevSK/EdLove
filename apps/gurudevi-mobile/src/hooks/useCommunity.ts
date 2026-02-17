@@ -1,28 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { storage, StorageKeys } from '../lib/storage';
+import { api } from '../lib/api';
+import { isDemo } from '../lib/api/demo';
+import { requireAuth } from '../utils/authorization';
 
-export interface Group {
-    id: string;
-    name: string;
-    description: string;
-    type: 'public' | 'private' | 'class';
-    member_count: number;
-    image_url?: string;
-    is_member: boolean;
-}
+import { CommunityPost, CommunityGroup, GroupType } from '../types/Community';
 
-export interface Post {
-    id: string;
-    group_id: string;
-    author_id: string;
-    content: string;
-    type: 'text' | 'announcement' | 'poll';
-    created_at: string;
-    reactions: { [key: string]: number };
-    author_name: string;
-    author_avatar?: string;
-}
+export type Group = CommunityGroup;
+export type Post = CommunityPost;
 
 // Keys for React Query
 export const COMMUNITY_KEYS = {
@@ -38,16 +24,9 @@ export const useCommunity = () => {
     const groupsQuery = useQuery({
         queryKey: COMMUNITY_KEYS.groups(),
         queryFn: async () => {
-            // Mock API Call
-            await new Promise(resolve => setTimeout(resolve, 500));
+            const mockGroups = await api.community.getGroups();
 
-            const mockGroups: Group[] = [
-                { id: '1', name: 'Science Club', description: 'For styling atomic structures', type: 'public', member_count: 42, is_member: true },
-                { id: '2', name: 'Grade 10-A', description: 'Official class group', type: 'class', member_count: 30, is_member: true },
-                { id: '3', name: 'Teachers Lounge', description: 'Staff only', type: 'private', member_count: 15, is_member: true },
-            ];
-
-            // Persist to MMKV
+            // Persist to MMKV (Internal cache)
             storage.set(StorageKeys.CACHED_GROUPS, JSON.stringify(mockGroups));
 
             return mockGroups;
@@ -64,48 +43,17 @@ export const useCommunity = () => {
     const defaultPostsQuery = useQuery({
         queryKey: COMMUNITY_KEYS.posts('all'),
         queryFn: async () => {
-            // Mock API Call
-            await new Promise(resolve => setTimeout(resolve, 500));
-            const mockPosts: Post[] = [
-                {
-                    id: '1',
-                    group_id: '1',
-                    author_id: 'u1',
-                    author_name: 'Dr. Stone',
-                    content: 'Science fair is coming up! Get your projects ready.',
-                    type: 'announcement',
-                    created_at: new Date().toISOString(),
-                    reactions: { '🔥': 5, '👍': 12 }
-                },
-                {
-                    id: '2',
-                    group_id: '1',
-                    author_id: 'u2',
-                    author_name: 'Alice',
-                    content: 'Anyone has a spare voltmeter?',
-                    type: 'text',
-                    created_at: new Date(Date.now() - 3600000).toISOString(),
-                    reactions: { '❤️': 2 }
-                }
-            ];
+            const mockPosts = await api.community.getPosts();
             return mockPosts;
         }
     });
 
     // Create Post Mutation
     const createPostMutation = useMutation({
-        mutationFn: async (post: Omit<Post, 'id' | 'created_at' | 'reactions' | 'author_name'>) => {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 500));
+        mutationFn: async (input: any) => {
+            const user = await requireAuth();
 
-            const newPost: Post = {
-                ...post,
-                id: `new-${Date.now()}`,
-                created_at: new Date().toISOString(),
-                reactions: {},
-                author_name: 'Me', // Placeholder
-            };
-            return newPost;
+            return api.community.createPost(input, user.id, 'teacher', 'mock-school');
         },
         onMutate: async (newPost) => {
             // Optimistic Update
@@ -121,6 +69,15 @@ export const useCommunity = () => {
                         created_at: new Date().toISOString(),
                         reactions: {},
                         author_name: 'Me',
+                        author_role: 'teacher',
+                        post_type: newPost.post_type || 'discussion',
+                        visibility: 'school',
+                        is_anonymous: false,
+                        comment_count: 0,
+                        view_count: 0,
+                        school_id: 'mock-school',
+                        tags: [],
+                        updated_at: new Date().toISOString()
                     } as Post,
                     ...previousPosts,
                 ]);

@@ -42,6 +42,9 @@ import * as Haptics from 'expo-haptics';
 import BreathGuide from './BreathGuide';
 import { useTranslation } from 'react-i18next';
 import { useThemedColors } from '../../hooks/useThemedColors';
+import { useSafeMutation } from '../../hooks/useSafeMutation';
+import { useMood } from '../../hooks/self/useMood';
+import { useStore } from '../../store/useStore';
 
 interface MoodLotusProps {
     userId?: string;
@@ -64,9 +67,19 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
     ], [t, colors]);
 
     const [moodValue, setMoodValue] = useState(3);
-    const [isSaving, setIsSaving] = useState(false);
-    const [lastSaved, setLastSaved] = useState<Date | null>(null);
     const [showBreathGuide, setShowBreathGuide] = useState(false);
+
+    // Resilient Data
+    const { moodHistory, refreshData } = useMood(userId);
+    const showToast = useStore(state => state.showToast);
+
+    // Get last saved time from cache/history
+    const lastSaved = useMemo(() => {
+        if (moodHistory.length > 0) {
+            return new Date(moodHistory[0].created_at);
+        }
+        return null;
+    }, [moodHistory]);
 
     // Animation values
     const scale = useSharedValue(0.8);
@@ -144,9 +157,8 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
         }
     };
 
-    const saveMoodLog = async (mood: number) => {
-        setIsSaving(true);
-        try {
+    const { mutate, isLoading: isSaving } = useSafeMutation(
+        async (mood: number) => {
             const { error } = await supabase
                 .from('mood_logs')
                 .insert([
@@ -156,17 +168,18 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
                         created_at: new Date().toISOString(),
                     },
                 ]);
-
-            if (error) {
-                console.error('Failed to save mood log:', error);
-            } else {
-                setLastSaved(new Date());
-            }
-        } catch (error) {
-            console.error('Error saving mood:', error);
-        } finally {
-            setIsSaving(false);
+            if (error) throw error;
+        },
+        {
+            onSuccess: () => {
+                refreshData(); // Refresh local cache
+            },
+            retryCount: 3
         }
+    );
+
+    const saveMoodLog = async (mood: number) => {
+        await mutate(mood);
     };
 
     return (

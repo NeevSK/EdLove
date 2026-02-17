@@ -163,6 +163,9 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
         networkQuality: quality,
         isDataSaverMode: shouldUseDataSaver(quality),
       }));
+
+      // Update global store
+      useStore.getState().setOnline(state.isConnected ?? false, quality);
     });
 
     return unsubscribe;

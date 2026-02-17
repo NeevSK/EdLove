@@ -28,6 +28,15 @@ export interface WisdomNote {
   created_at: string;
 }
 
+export interface DecisionLog {
+  id: string;
+  user_id: string;
+  decision_text: string;
+  context?: string;
+  is_reviewed: boolean;
+  created_at: string;
+}
+
 export interface DailyPrepItem {
   id: string;
   user_id: string;

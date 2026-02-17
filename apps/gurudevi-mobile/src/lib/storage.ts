@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Standard interface to ensure we can swap implementations
@@ -88,33 +89,44 @@ class PersistentFallbackStorage implements StorageInterface {
     }
 }
 
+// AsyncStorage Fallback for persistence when MMKV (JSI) isn't available
+class AsyncStorageFallback implements StorageInterface {
+    set(key: string, value: string | boolean | number) {
+        AsyncStorage.setItem(key, String(value));
+    }
+    getString(key: string) {
+        // Note: This is a hack because StorageInterface expects synchronous return.
+        // We handle the true async nature in the Zustand Storage wrapper.
+        return undefined;
+    }
+    getBoolean(key: string) { return undefined; }
+    getNumber(key: string) { return undefined; }
+    delete(key: string) { AsyncStorage.removeItem(key); }
+    clearAll() { AsyncStorage.clear(); }
+    contains(key: string) { return false; }
+}
+
+import Constants, { ExecutionEnvironment } from 'expo-constants';
+
 let storageInstance: StorageInterface;
 
-try {
-    // Attempt to initialize MMKV
-    const { MMKV } = require('react-native-mmkv');
+const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
-    const mmkv = new MMKV({
-        id: 'gurudevi-storage',
-        encryptionKey: 'gurudevi-secret-key'
-    });
-
-    // Wrap MMKV to match our interface (adding async fallback method)
-    storageInstance = {
-        set: (k, v) => mmkv.set(k, v),
-        getString: (k) => mmkv.getString(k),
-        getStringAsync: async (k) => mmkv.getString(k),
-        getBoolean: (k) => mmkv.getBoolean(k),
-        getNumber: (k) => mmkv.getNumber(k),
-        delete: (k) => mmkv.delete(k),
-        clearAll: () => mmkv.clearAll(),
-        contains: (k) => mmkv.contains(k)
-    };
-
-    console.log('✅ MMKV initialized successfully (Persisted Storage)');
-} catch (e) {
-    console.warn('⚠️ MMKV not available (running in Expo Go?), falling back to AsyncStorage persistence');
-    storageInstance = new PersistentFallbackStorage();
+if (isExpoGo) {
+    console.log('⚠️ Running in Expo Go: Defaulting to AsyncStorage Fallback');
+    storageInstance = new AsyncStorageFallback();
+} else {
+    try {
+        // Attempt to initialize MMKV
+        const { MMKV } = require('react-native-mmkv');
+        storageInstance = new MMKV({
+            id: 'gurudevi-storage',
+        });
+        console.log('✅ MMKV initialized successfully (Speed Mode)');
+    } catch (e) {
+        console.warn('⚠️ MMKV failed (Native module missing), using AsyncStorage Fallback');
+        storageInstance = new AsyncStorageFallback();
+    }
 }
 
 export const storage = storageInstance;

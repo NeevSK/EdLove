@@ -16,37 +16,66 @@ import { assignmentsAPI } from './assignments';
 import { classroomStudentsAPI } from './classroomStudents';
 import { classroomsAPI } from './classrooms';
 
+import { inventoryAPI } from './inventory';
+
 // Re-export types for usage in app
 export * from './types';
 // Note: Community types should be imported directly from '../../types/Community' to avoid circular dependencies
 // Do not use "export * from" here as it can cause TypeScript recursion
 
+import { interceptApiCall } from './demoProvider';
+
+// Helper to wrap API modules with a demo-aware proxy
+function createDemoProxy<T extends object>(moduleName: string, target: T): T {
+    return new Proxy(target, {
+        get(obj: any, prop: string) {
+            const originalMethod = obj[prop];
+            if (typeof originalMethod === 'function') {
+                return async (...args: any[]) => {
+                    const intercepted = interceptApiCall(moduleName, prop, args);
+                    if (intercepted) return intercepted;
+
+                    let result = await originalMethod.apply(obj, args);
+
+                    // Ghost Seeding: Post-process results for specific modules
+                    const { processGhostData } = require('./demoProvider');
+                    result = processGhostData(moduleName, prop, result);
+
+                    return result;
+                };
+            }
+            return originalMethod;
+        }
+    });
+}
+
 // Main API Object
 export const api = {
-    // Core Modules (Grouped)
-    auth: authAPI,
-    tasks: tasksAPI,
-    notes: notesAPI,
-    lessons: lessonsAPI,
-    students: studentsAPI,
+    // Core Modules (Wrapped with Proxy)
+    auth: authAPI, // Auth usually shouldn't be proxied if it handles sessions
+    tasks: createDemoProxy('tasks', tasksAPI),
+    notes: createDemoProxy('notes', notesAPI),
+    lessons: createDemoProxy('lessons', lessonsAPI),
+    students: createDemoProxy('students', studentsAPI),
 
     // New Features
-    attendance: attendanceAPI,
-    resources: resourcesAPI,
-    groups: groupsAPI,
-    lessonMaterials: lessonMaterialsAPI,
-    assignments: assignmentsAPI,
-    classroomStudents: classroomStudentsAPI,
-    classrooms: classroomsAPI,
+    attendance: createDemoProxy('attendance', attendanceAPI),
+    resources: createDemoProxy('resources', resourcesAPI),
+    groups: createDemoProxy('groups', groupsAPI),
+    lessonMaterials: createDemoProxy('lessonMaterials', lessonMaterialsAPI),
+    assignments: createDemoProxy('assignments', assignmentsAPI),
+    classroomStudents: createDemoProxy('classroomStudents', classroomStudentsAPI),
+    classrooms: createDemoProxy('classrooms', classroomsAPI),
 
-    // Community & Library (Educational Ecology Features)
-    community: communityAPI,
-    library: libraryAPI,
+    // Community & Library
+    community: createDemoProxy('community', communityAPI),
+    library: createDemoProxy('library', libraryAPI),
 
     // Other Modules
     self: selfAPI,
-    grading: gradingAPI,
-    school: schoolAPI,
+    grading: createDemoProxy('grading', gradingAPI),
+    school: createDemoProxy('school', schoolAPI),
+    inventory: createDemoProxy('inventory', inventoryAPI),
 };
 
 export default api;

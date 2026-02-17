@@ -17,6 +17,8 @@ import { Theme } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';
 import { WisdomNote } from '../../types/Wellbeing';
+import { useSafeMutation } from '../../hooks/useSafeMutation';
+import { useWisdom } from '../../hooks/self/useWisdom';
 
 interface WisdomSeedsProps {
   userId?: string;
@@ -24,54 +26,41 @@ interface WisdomSeedsProps {
 
 export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
   const { t } = useTranslation();
-  const [notes, setNotes] = useState<WisdomNote[]>([]);
+  // Resilient Data Hook
+  const { notes, refreshData } = useWisdom(userId);
+
   const [showForm, setShowForm] = useState(false);
-  const [loading, setLoading] = useState(false);
-  
+
   const [insight, setInsight] = useState('');
 
-  useEffect(() => {
-    if (userId) {
-      loadNotes();
-    }
-  }, [userId]);
+  // Removed manual loadNotes as it's handled by the hook
 
-  const loadNotes = async () => {
-    if (!userId) return;
-    
-    const { data, error } = await supabase
-      .from('wisdom_notes')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(30);
-
-    if (data) {
-      setNotes(data);
+  const { mutate, isLoading: isSaving } = useSafeMutation(
+    async (insightText: string) => {
+      const { error } = await supabase
+        .from('wisdom_notes')
+        .insert({
+          user_id: userId,
+          insight: insightText
+        });
+      if (error) throw error;
+    },
+    {
+      onSuccess: () => {
+        hapticSuccess();
+        setInsight('');
+        setShowForm(false);
+        refreshData(); // Refresh local cache
+      },
+      retryCount: 3
     }
-  };
+  );
 
   const handleSave = async () => {
     if (!userId || !insight.trim()) return;
-    
-    setLoading(true);
+
     hapticLight();
-
-    const { error } = await supabase
-      .from('wisdom_notes')
-      .insert({
-        user_id: userId,
-        insight: insight.trim()
-      });
-
-    if (!error) {
-      hapticSuccess();
-      setInsight('');
-      setShowForm(false);
-      await loadNotes();
-    }
-    
-    setLoading(false);
+    await mutate(insight.trim());
   };
 
   const wisdomPrompts = [
@@ -141,7 +130,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
                   </VStack>
                 </Box>
               ))}
-              
+
               {notes.length === 0 && (
                 <VStack space="md" p={Theme.spacing.lg}>
                   <Text
@@ -242,7 +231,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
               size="md"
               action="primary"
               onPress={handleSave}
-              isDisabled={!insight.trim() || loading}
+              isDisabled={!insight.trim() || isSaving}
               sx={{
                 backgroundColor: Theme.colors.sanctuarySaffron,
                 borderRadius: Theme.corners.comfortable

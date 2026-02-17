@@ -122,7 +122,7 @@ CREATE TABLE public.subscriptions (
 -- 2.1 Classrooms
 CREATE TABLE public.classrooms (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  school_id UUID REFERENCES public.schools(id) ON DELETE CASCADE NOT NULL,
+  school_id UUID REFERENCES public.schools(id) ON DELETE CASCADE, -- Made NULLABLE for personal workspaces
   teacher_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
   grade_id UUID REFERENCES public.grades(id) ON DELETE SET NULL,
   section_id UUID REFERENCES public.sections(id) ON DELETE SET NULL,
@@ -250,6 +250,24 @@ CREATE TABLE public.daily_content (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 3.4.1 Daily Content Helper
+CREATE OR REPLACE FUNCTION get_daily_content_for_today(content_type text)
+RETURNS SETOF daily_content
+LANGUAGE sql
+SECURITY DEFINER
+AS $$
+  SELECT *
+  FROM daily_content
+  WHERE type = content_type
+    AND active = true
+    AND date <= CURRENT_DATE
+  ORDER BY date DESC
+  LIMIT 1;
+$$;
+
+GRANT EXECUTE ON FUNCTION get_daily_content_for_today(text) TO authenticated;
+GRANT EXECUTE ON FUNCTION get_daily_content_for_today(text) TO anon;
+
 -- --------------------------------------------------------
 -- 4. COMMUNITY & SOCIAL MODULE
 -- --------------------------------------------------------
@@ -345,6 +363,29 @@ CREATE TRIGGER update_subscriptions_updated_at BEFORE UPDATE ON public.subscript
 CREATE OR REPLACE FUNCTION public.handle_new_user_preferences() RETURNS trigger AS $$ BEGIN INSERT INTO public.user_preferences (user_id) VALUES (new.id) ON CONFLICT (user_id) DO NOTHING; RETURN new; END; $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE TRIGGER on_auth_user_created_preferences AFTER INSERT ON public.users FOR EACH ROW EXECUTE FUNCTION public.handle_new_user_preferences();
 
+-- 7.2 User Sync (Extends auth.users to public.users)
+CREATE OR REPLACE FUNCTION public.handle_new_user() 
+RETURNS trigger 
+LANGUAGE plpgsql 
+SECURITY DEFINER SET search_path = public
+AS $$
+BEGIN
+  INSERT INTO public.users (id, email, full_name, role)
+  VALUES (
+    new.id, 
+    new.email, 
+    COALESCE(new.raw_user_meta_data->>'full_name', 'Sanctuary User'),
+    COALESCE(new.raw_user_meta_data->>'role', 'teacher')
+  )
+  ON CONFLICT (id) DO NOTHING;
+  RETURN new;
+END;
+$$;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
 -- --------------------------------------------------------
 -- 8. ROW LEVEL SECURITY (RLS) POLICIES
 -- --------------------------------------------------------
@@ -396,13 +437,27 @@ TO authenticated
 USING (id = auth.uid())
 WITH CHECK (id = auth.uid());
 
-CREATE POLICY "Teachers manage their classrooms" ON public.classrooms FOR ALL TO authenticated USING (teacher_id = auth.uid());
-CREATE POLICY "Strictly private mood logs" ON public.mood_logs FOR ALL TO authenticated USING (user_id = auth.uid());
+CREATE POLICY "Teachers can insert their own classrooms" ON public.classrooms FOR INSERT TO authenticated WITH CHECK (teacher_id = auth.uid());
+CREATE POLICY "Teachers manage their own classrooms" ON public.classrooms FOR ALL TO authenticated USING (teacher_id = auth.uid());
+-- 8.2 Wellbeing Policies
+CREATE POLICY "Users can manage their own mood logs" ON public.mood_logs FOR ALL TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+CREATE POLICY "Users can manage their own fire journal" ON public.fire_journal FOR ALL TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
 CREATE POLICY "Invite codes select active" ON public.invite_codes FOR SELECT TO authenticated, anon USING (is_active = true);
 
 -- Additional Policies (Truncated for readability, full implementation requires specific access rules)
 
 -- ========================================================
 -- MASTER BASELINE COMPLETE
--- Total Tables: ~36
 -- ========================================================
+
+-- Initial User Sync (Ensure all existing auth users are in public types)
+INSERT INTO public.users (id, email, full_name, role, created_at, updated_at)
+SELECT 
+    id, 
+    email, 
+    COALESCE(raw_user_meta_data->>'full_name', 'Sanctuary User') as full_name, 
+    COALESCE(raw_user_meta_data->>'role', 'teacher') as role,
+    created_at, 
+    NOW()
+FROM auth.users
+WHERE id NOT IN (SELECT id FROM public.users);

@@ -18,6 +18,8 @@ import { Theme } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';
 import { JoyMoment } from '../../types/Wellbeing';
+import { useSafeMutation } from '../../hooks/useSafeMutation';
+import { useJoyJar } from '../../hooks/self/useJoyJar';
 
 interface JoyJarProps {
   userId?: string;
@@ -25,61 +27,54 @@ interface JoyJarProps {
 
 export default function JoyJar({ userId }: JoyJarProps) {
   const { t } = useTranslation();
-  const [joyMoments, setJoyMoments] = useState<JoyMoment[]>([]);
+  // Resilient Data Hook
+  const { joyMoments, refreshData } = useJoyJar(userId);
+
   const [showForm, setShowForm] = useState(false);
-  const [loading, setLoading] = useState(false);
-  
+
+  // Form state
+
   // Form state
   const [studentName, setStudentName] = useState('');
   const [momentDescription, setMomentDescription] = useState('');
   const [category, setCategory] = useState<'breakthrough' | 'question' | 'connection' | 'other'>('breakthrough');
 
-  useEffect(() => {
-    if (userId) {
-      loadJoyMoments();
-    }
-  }, [userId]);
+  // Removed manual loadJoyMoments as it's handled by the hook
 
-  const loadJoyMoments = async () => {
-    if (!userId) return;
-    
-    const { data, error } = await supabase
-      .from('joy_moments')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(20);
-
-    if (data) {
-      setJoyMoments(data);
+  const { mutate, isLoading: isSaving } = useSafeMutation(
+    async (variables: { studentName: string | null, description: string, category: string }) => {
+      const { error } = await supabase
+        .from('joy_moments')
+        .insert({
+          user_id: userId,
+          student_name: variables.studentName,
+          moment_description: variables.description,
+          category: variables.category
+        });
+      if (error) throw error;
+    },
+    {
+      onSuccess: () => {
+        hapticSuccess();
+        setStudentName('');
+        setMomentDescription('');
+        setCategory('breakthrough');
+        setShowForm(false);
+        refreshData(); // Refresh local cache
+      },
+      retryCount: 3
     }
-  };
+  );
 
   const handleSaveMoment = async () => {
     if (!userId || !momentDescription.trim()) return;
-    
-    setLoading(true);
+
     hapticLight();
-
-    const { error } = await supabase
-      .from('joy_moments')
-      .insert({
-        user_id: userId,
-        student_name: studentName.trim() || null,
-        moment_description: momentDescription.trim(),
-        category
-      });
-
-    if (!error) {
-      hapticSuccess();
-      setStudentName('');
-      setMomentDescription('');
-      setCategory('breakthrough');
-      setShowForm(false);
-      await loadJoyMoments();
-    }
-    
-    setLoading(false);
+    await mutate({
+      studentName: studentName.trim() || null,
+      description: momentDescription.trim(),
+      category
+    });
   };
 
   const categories = [
@@ -158,7 +153,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
                   </HStack>
                 </Box>
               ))}
-              
+
               {joyMoments.length === 0 && (
                 <Box p={Theme.spacing.xl}>
                   <Text
@@ -294,7 +289,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
               size="md"
               action="primary"
               onPress={handleSaveMoment}
-              isDisabled={!momentDescription.trim() || loading}
+              isDisabled={!momentDescription.trim() || isSaving}
               sx={{
                 backgroundColor: Theme.colors.sanctuarySaffron,
                 borderRadius: Theme.corners.comfortable

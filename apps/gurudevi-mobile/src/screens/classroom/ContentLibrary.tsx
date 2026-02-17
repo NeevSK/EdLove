@@ -39,39 +39,36 @@ import {
     ExternalLink,
 } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
-import { hapticLight } from '../../utils/haptics';
+import { hapticLight, hapticSuccess } from '../../utils/haptics';
 import { useThemedColors } from '../../hooks/useThemedColors';
 import { useTranslation } from 'react-i18next';
+import { useRoute } from '@react-navigation/native';
 import GlobalHeader from '../../components/shared/GlobalHeader';
 import ScreenWrapper from '../../components/shared/ScreenWrapper';
-
-// Types
-export type ResourceType = 'pdf' | 'link' | 'note';
-
-export interface Resource {
-    id: string;
-    title: string;
-    description?: string;
-    type: ResourceType;
-    url?: string;
-    content?: string;
-    isPinned: boolean;
-    createdAt: string;
-    updatedAt: string;
-}
+import { useResources } from '../../hooks/classroom/useResources';
+import { useSafeMutation } from '../../hooks/useSafeMutation';
+import { useStore } from '../../store/useStore';
+import { api } from '../../lib/api';
+import { ClassroomResource } from '../../lib/api/types';
 
 export default function ContentLibrary() {
+    const route = useRoute<any>(); // Should be typed if possible
+    const classroomId = route.params?.classroomId || 'demo-class';
+
     const { t } = useTranslation();
     const colors = useThemedColors();
-    const [resources, setResources] = useState<Resource[]>([]);
+    const showToast = useStore(state => state.showToast);
+
+    // Resilient Data Hook
+    const { resources, isLoading, setResources } = useResources(classroomId);
+
     const [searchQuery, setSearchQuery] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
-    const [newResourceType, setNewResourceType] = useState<ResourceType>('note');
+    const [newResourceType, setNewResourceType] = useState<'pdf' | 'link' | 'note'>('note');
     const [newResourceTitle, setNewResourceTitle] = useState('');
     const [newResourceDescription, setNewResourceDescription] = useState('');
     const [newResourceUrl, setNewResourceUrl] = useState('');
     const [newResourceContent, setNewResourceContent] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
 
     // Resource type configuration
     const RESOURCE_TYPE_CONFIG = {
@@ -92,120 +89,89 @@ export default function ContentLibrary() {
         },
     };
 
-    useEffect(() => {
-        fetchResources();
-    }, []);
-
-    const fetchResources = async () => {
-        setIsLoading(true);
-        try {
-            // Mock data for now
-            const mockResources: Resource[] = [
-                {
-                    id: '1',
-                    title: 'Mathematics Chapter 5',
-                    description: 'Algebra basics and equations',
-                    type: 'pdf',
-                    url: 'https://example.com/math-ch5.pdf',
-                    isPinned: true,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                },
-                {
-                    id: '2',
-                    title: 'Khan Academy - Algebra',
-                    description: 'Interactive algebra tutorials',
-                    type: 'link',
-                    url: 'https://www.khanacademy.org/math/algebra',
-                    isPinned: false,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                },
-                {
-                    id: '3',
-                    title: 'Homework for Week 5',
-                    description: 'Complete exercises 1-10 from textbook',
-                    type: 'note',
-                    content: 'Students should complete exercises 1-10 from the textbook by Friday.',
-                    isPinned: false,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                },
-            ];
-
-            setResources(mockResources);
-        } catch (error) {
-            console.error('Failed to fetch resources:', error);
-        } finally {
-            setIsLoading(false);
+    // Mutations
+    const togglePinMutation = useSafeMutation(
+        (variables: { id: string; is_pinned: boolean }) =>
+            api.resources.togglePin(variables.id, variables.is_pinned),
+        {
+            onMutate: ({ id, is_pinned }) => {
+                setResources(prev => prev.map(r =>
+                    r.id === id ? { ...r, is_pinned } : r
+                ));
+            },
+            onSuccess: () => hapticSuccess()
         }
-    };
+    );
+
+    const deleteMutation = useSafeMutation(
+        (id: string) => api.resources.delete(id),
+        {
+            onMutate: (id) => {
+                setResources(prev => prev.filter(r => r.id !== id));
+            },
+            onSuccess: () => {
+                hapticSuccess();
+                showToast('Resource deleted', 'success');
+            }
+        }
+    );
+
+    const addMutation = useSafeMutation(
+        (variables: any) => api.resources.create(variables),
+        {
+            onSuccess: (newResource) => {
+                hapticSuccess();
+                setResources(prev => [newResource, ...prev]);
+                showToast('Resource added', 'success');
+                setShowAddModal(false);
+                // Reset form
+                setNewResourceTitle('');
+                setNewResourceDescription('');
+                setNewResourceUrl('');
+                setNewResourceContent('');
+                setNewResourceType('note');
+            }
+        }
+    );
 
     const togglePin = (resourceId: string) => {
-        hapticLight();
-        setResources((prev) =>
-            prev.map((resource) =>
-                resource.id === resourceId
-                    ? { ...resource, isPinned: !resource.isPinned }
-                    : resource
-            )
-        );
+        const resource = resources.find(r => r.id === resourceId);
+        if (resource) {
+            togglePinMutation.mutate({ id: resourceId, is_pinned: !resource.is_pinned });
+        }
     };
 
     const deleteResource = (resourceId: string) => {
-        hapticLight();
-        setResources((prev) => prev.filter((resource) => resource.id !== resourceId));
+        deleteMutation.mutate(resourceId);
     };
 
     const addResource = () => {
-        hapticLight();
+        if (!newResourceTitle.trim()) return;
 
-        if (!newResourceTitle.trim()) {
-            return;
-        }
-
-        const generateId = () => {
-            if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-                return crypto.randomUUID();
-            }
-            return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
-        };
-
-        const newResource: Resource = {
-            id: generateId(),
+        addMutation.mutate({
+            classroom_id: classroomId,
+            teacher_id: 'current-teacher-id', // TODO: Get from store
             title: newResourceTitle,
-            description: newResourceDescription || undefined,
+            description: newResourceDescription,
             type: newResourceType,
-            url: newResourceUrl || undefined,
-            content: newResourceContent || undefined,
-            isPinned: false,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
-
-        setResources((prev) => [newResource, ...prev]);
-
-        // Reset form
-        setNewResourceTitle('');
-        setNewResourceDescription('');
-        setNewResourceUrl('');
-        setNewResourceContent('');
-        setNewResourceType('note');
-        setShowAddModal(false);
+            url: newResourceUrl,
+            content: newResourceContent,
+            is_pinned: false
+        });
     };
 
     const sortedResources = [...resources].sort((a, b) => {
-        if (a.isPinned && !b.isPinned) return -1;
-        if (!a.isPinned && b.isPinned) return 1;
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        if (a.is_pinned && !b.is_pinned) return -1;
+        if (!a.is_pinned && b.is_pinned) return 1;
+        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
     });
 
-    const filteredResources = sortedResources.filter((r: Resource) =>
+    const filteredResources = sortedResources.filter((r: ClassroomResource) =>
         r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (r.description && r.description.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
-    const renderResourceCard = (resource: Resource) => {
+    const renderResourceCard = (resource: ClassroomResource) => {
         const ResourceIcon = RESOURCE_TYPE_CONFIG[resource.type].icon;
         const iconColor = RESOURCE_TYPE_CONFIG[resource.type].color;
 
@@ -217,8 +183,8 @@ export default function ContentLibrary() {
                     borderRadius: Theme.corners.generous,
                     padding: Theme.spacing.md,
                     marginBottom: Theme.spacing.md,
-                    borderWidth: resource.isPinned ? 2 : 1,
-                    borderColor: resource.isPinned ? colors.action : colors.border,
+                    borderWidth: resource.is_pinned ? 2 : 1,
+                    borderColor: resource.is_pinned ? colors.action : colors.border,
                 }}
             >
                 <VStack space="sm">
@@ -248,7 +214,7 @@ export default function ContentLibrary() {
                         </HStack>
 
                         {/* Pin indicator */}
-                        {resource.isPinned && (
+                        {resource.is_pinned && (
                             <Box
                                 sx={{
                                     backgroundColor: colors.action,
@@ -280,12 +246,12 @@ export default function ContentLibrary() {
                             >
                                 <Pin
                                     color={
-                                        resource.isPinned
+                                        resource.is_pinned
                                             ? colors.action
                                             : colors.textTertiary
                                     }
                                     size={18}
-                                    fill={resource.isPinned ? colors.action : 'none'}
+                                    fill={resource.is_pinned ? colors.action : 'none'}
                                 />
                             </Box>
                         </Pressable>

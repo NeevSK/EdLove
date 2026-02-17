@@ -34,8 +34,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Moon, Sun, Cloud, Stars } from 'lucide-react-native';
 import { Theme, typography } from '../../constants/Theme';
-import { supabase } from '../../lib/supabase';
-import { hapticLight } from '../../utils/haptics';
+import { hapticLight, hapticSuccess } from '../../utils/haptics';
+import { useSafeMutation } from '../../hooks/useSafeMutation';
+import { useSleepTracker } from '../../hooks/self/useSleepTracker';
 
 interface SleepTrackerProps {
     userId?: string;
@@ -50,10 +51,11 @@ const SLEEP_QUALITY = [
 ];
 
 export default function SleepTracker({ userId }: SleepTrackerProps) {
+    // Resilient Data Hook
+    const { sleepLogs, refreshData } = useSleepTracker(userId);
+
     const [sleepQuality, setSleepQuality] = useState(3);
     const [hasLoggedToday, setHasLoggedToday] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSaving, setIsSaving] = useState(false);
 
     // Animation values
     const moonScale = useSharedValue(1);
@@ -86,55 +88,47 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
         );
     }, [userId]);
 
-    const checkTodayLog = async () => {
-        try {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+    // Check if logged today based on hook data
+    useEffect(() => {
+        if (!userId || !sleepLogs.length) return;
 
-            const { data, error } = await supabase
-                .from('sleep_logs')
-                .select('quality')
-                .eq('user_id', userId)
-                .gte('created_at', today.toISOString())
-                .single();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-            if (data && !error) {
-                setHasLoggedToday(true);
-                setSleepQuality(data.quality);
-            }
-        } catch (error) {
-            console.error('Error checking sleep log:', error);
-        } finally {
-            setIsLoading(false);
+        const todayLog = sleepLogs.find(log => new Date(log.created_at) >= today);
+
+        if (todayLog) {
+            setHasLoggedToday(true);
+            setSleepQuality(todayLog.quality);
         }
-    };
+    }, [sleepLogs, userId]);
 
-    const saveSleepLog = async () => {
-        if (!userId) return;
-
-        setIsSaving(true);
-        try {
+    const { mutate: saveLog, isLoading: isSaving } = useSafeMutation(
+        async (quality: number) => {
             const { error } = await supabase
                 .from('sleep_logs')
                 .insert([
                     {
                         user_id: userId,
-                        quality: sleepQuality,
+                        quality: quality,
                         created_at: new Date().toISOString(),
                     },
                 ]);
-
-            if (error) {
-                console.error('Failed to save sleep log:', error);
-            } else {
-                hapticLight();
+            if (error) throw error;
+        },
+        {
+            onSuccess: () => {
+                hapticSuccess();
                 setHasLoggedToday(true);
+                refreshData();
             }
-        } catch (error) {
-            console.error('Error saving sleep log:', error);
-        } finally {
-            setIsSaving(false);
         }
+    );
+
+    const saveSleepLog = async () => {
+        if (!userId) return;
+        hapticLight();
+        await saveLog(sleepQuality);
     };
 
     const moonStyle = useAnimatedStyle(() => ({
@@ -159,9 +153,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
         );
     }
 
-    if (isLoading) {
-        return null;
-    }
+    // Loading state removed as we show UI optimistically or empty state
 
     return (
         <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
