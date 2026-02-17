@@ -18,7 +18,7 @@ on:
         type: choice
         options:
           - apk
-          - app-bundle
+          - aab
           - both
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
       - id: set-matrix
         run: |
           if [ "${{ github.event.inputs.build_type }}" == "both" ]; then
-            echo "matrix=[\"apk\", \"app-bundle\"]" >> $GITHUB_OUTPUT
+            echo "matrix=[\"apk\", \"aab\"]" >> $GITHUB_OUTPUT
           else
             echo "matrix=[\"${{ github.event.inputs.build_type }}\"]" >> $GITHUB_OUTPUT
           fi
