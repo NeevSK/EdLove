@@ -206,15 +206,29 @@ export default function App() {
                     </ErrorBoundary>
                   ) : !onboardingCompleted ? (
                     <ErrorBoundary name="Onboarding Screen">
-                      <OnboardingScreen onComplete={(name: string, role: any) => {
-                        console.log('Onboarding complete callback triggered in App.tsx', { name, role });
-                        const store = useStore.getState();
-                        store.setTeacherName(name);
-                        store.setUserRole(role);
-                        store.setOnboardingCompleted(true);
-                        store.setJustFinishedOnboarding(true);
-                        console.log('App Store updated: onboardingCompleted is now', useStore.getState().onboardingCompleted);
-                      }} />
+                      <OnboardingScreen
+                        isAnonymous={session?.user?.email?.includes('anonymous')} // Simplistic check
+                        onComplete={(name: string, role: any, wantsAccount?: boolean) => {
+                          console.log('Onboarding complete', { name, role, wantsAccount });
+                          const store = useStore.getState();
+                          store.setTeacherName(name);
+                          store.setUserRole(role);
+
+                          if (wantsAccount) {
+                            // User wants to create account immediately
+                            // We stay on onboarding but trigger auth? 
+                            // Or we set onboarding completed and show auth as an overlay?
+                            // Let's set onboarding completed and the app will show main app, 
+                            // then we can show a promotion modal or AuthScreen.
+                            store.setOnboardingCompleted(true);
+                            // Set a flag to show auth screen for promotion
+                            // This might need a new store state or local state
+                          } else {
+                            store.setOnboardingCompleted(true);
+                          }
+                          store.setJustFinishedOnboarding(true);
+                        }}
+                      />
                     </ErrorBoundary>
                   ) : (
                     <ErrorBoundary name="Main App">

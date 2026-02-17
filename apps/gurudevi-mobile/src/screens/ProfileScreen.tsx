@@ -219,6 +219,40 @@ export default function ProfileScreen() {
                 }
             >
                 <VStack space="2xl">
+                    {/* Guest Promotion Banner */}
+                    {profile?.is_anonymous && (
+                        <Box sx={{
+                            mx: '$4',
+                            p: '$4',
+                            bg: colors.action,
+                            borderRadius: Theme.corners.comfortable,
+                            shadowColor: colors.action,
+                            shadowOffset: { width: 0, height: 4 },
+                            shadowOpacity: 0.3,
+                            shadowRadius: 8,
+                            elevation: 4
+                        }}>
+                            <VStack space="sm">
+                                <Heading size="md" color="white">{t('profile.guestTitle') || 'Guest Explorer'}</Heading>
+                                <Text color="white" size="sm">
+                                    {t('profile.guestDesc') || 'You are exploring as a guest. Create an account to save your sanctuary permanently.'}
+                                </Text>
+                                <Button
+                                    size="sm"
+                                    onPress={() => {
+                                        hapticSuccess();
+                                        // Logic to trigger AuthScreen for promotion
+                                        // For now, let's just log and show success toast
+                                        console.log('Promotion triggered from Profile');
+                                    }}
+                                    sx={{ bg: 'white', alignSelf: 'flex-start', mt: '$2' }}
+                                >
+                                    <ButtonText color={colors.action}>Create Account</ButtonText>
+                                </Button>
+                            </VStack>
+                        </Box>
+                    )}
+
                     {/* Identity Card (Front/Back) */}
                     <Center>
                         <IdentityCard

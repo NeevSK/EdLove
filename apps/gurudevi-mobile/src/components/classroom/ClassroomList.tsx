@@ -29,6 +29,7 @@ import { useTranslation } from 'react-i18next';
 import { useThemedColors } from '../../hooks/useThemedColors';
 import RoleInitialState from './RoleInitialState';
 import CreateClassroomModal from './CreateClassroomModal';
+import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 
 interface ClassroomListProps {
     onClassroomPress?: (classroom: Classroom) => void;
@@ -46,6 +47,7 @@ export default function ClassroomList({
     emptyContent
 }: ClassroomListProps) {
     const { role } = useUserRole();
+    const { isGuest, canCreateClassroom } = useFeatureAccess();
     const [classrooms, setClassrooms] = useState<Classroom[]>([]);
     const [loading, setLoading] = useState(true);
     const { t } = useTranslation();
@@ -347,28 +349,30 @@ export default function ClassroomList({
                         removeClippedSubviews={true}
                     />
 
-                    <TouchableOpacity
-                        onPress={() => {
-                            console.log('[ClassroomList] FAB pressed');
-                            setPendingInitialData(null);
-                            setIsCreateModalOpen(true);
-                        }}
-                        style={{
-                            position: 'absolute',
-                            bottom: 20,
-                            right: 20,
-                            width: 56,
-                            height: 56,
-                            borderRadius: 28,
-                            backgroundColor: Theme.colors.sanctuarySaffron,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            ...Theme.shadows.md,
-                            zIndex: 10
-                        }}
-                    >
-                        <Plus size={24} color="white" />
-                    </TouchableOpacity>
+                    {!isGuest && (
+                        <TouchableOpacity
+                            onPress={() => {
+                                console.log('[ClassroomList] FAB pressed');
+                                setPendingInitialData(null);
+                                setIsCreateModalOpen(true);
+                            }}
+                            style={{
+                                position: 'absolute',
+                                bottom: 20,
+                                right: 20,
+                                width: 56,
+                                height: 56,
+                                borderRadius: 28,
+                                backgroundColor: Theme.colors.sanctuarySaffron,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                ...Theme.shadows.md,
+                                zIndex: 10
+                            }}
+                        >
+                            <Plus size={24} color="white" />
+                        </TouchableOpacity>
+                    )}
                 </>
             )}
 

@@ -27,6 +27,7 @@ export interface User {
     created_at: string;          // ISO timestamp
     updated_at?: string;         // ISO timestamp (optional)
     avatar_url?: string;         // Profile picture URL (optional)
+    is_anonymous?: boolean;      // NEW: Flag for anonymous/guest users
     onboarding_completed?: boolean; // Flag indicating if user has completed onboarding
     onboarding_completed_at?: string; // Timestamp when onboarding was completed
 }

@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, Dimensions } from 'react-native';
 import { hapticLight, hapticSuccess } from '../utils/haptics';
 import AuthScreen from './AuthScreen';
+import TermsScreen from './TermsScreen';
 import ScreenWrapper from '../components/shared/ScreenWrapper';
 import useThemedColors from '../hooks/useThemedColors';
 
@@ -24,14 +25,22 @@ export default function WelcomeScreen() {
     const { t } = useTranslation();
     const colors = useThemedColors();
     const [showAuth, setShowAuth] = useState(false);
+    const [showTerms, setShowTerms] = useState(false);
 
     if (showAuth) {
         return <AuthScreen />;
     }
 
+    if (showTerms) {
+        return <TermsScreen onAccept={() => {
+            // This is handled by App.tsx detecting the new session
+            // from signInAnonymously inside TermsScreen
+        }} />;
+    }
+
     const handleGetStarted = () => {
         hapticSuccess();
-        setShowAuth(true);
+        setShowTerms(true);
     };
 
     const handleLogin = () => {
