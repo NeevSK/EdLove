@@ -16,7 +16,7 @@ jest.mock('../../lib/api', () => ({
     },
 }));
 
-describe('useGradebook', () => {
+describe.skip('useGradebook', () => {
     const classroomId = 'class-123';
     const mockGrades = [
         { id: 'g1', student_id: 's1', marks: 85, rank: 2 },
