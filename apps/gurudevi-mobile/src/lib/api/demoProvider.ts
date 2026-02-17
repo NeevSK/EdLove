@@ -58,8 +58,14 @@ export function interceptApiCall(moduleName: string, methodName: string, origina
         }
 
         if (methodName.startsWith('create') || methodName.startsWith('update') || methodName.startsWith('delete') || methodName.startsWith('add')) {
-            // ... (keep existing write interception logic for Demo Mode)
-            // ... (I'll refine this in the next pass to avoid a huge chunk)
+            // Block write operations in demo mode
+            console.log(`[DEMO MODE] Blocked write operation: ${registryKey}.${methodName}`);
+            // Return a successful mock response without executing real DB writes
+            return Promise.resolve({ 
+                success: true, 
+                message: 'Demo mode: Operation simulated successfully',
+                data: null 
+            });
         }
     }
 

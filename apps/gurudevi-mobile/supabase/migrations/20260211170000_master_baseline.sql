@@ -364,6 +364,7 @@ CREATE OR REPLACE FUNCTION public.handle_new_user_preferences() RETURNS trigger 
 CREATE TRIGGER on_auth_user_created_preferences AFTER INSERT ON public.users FOR EACH ROW EXECUTE FUNCTION public.handle_new_user_preferences();
 
 -- 7.2 User Sync (Extends auth.users to public.users)
+-- SECURITY: Always assigns 'teacher' role, ignoring raw_user_meta_data role claim
 CREATE OR REPLACE FUNCTION public.handle_new_user() 
 RETURNS trigger 
 LANGUAGE plpgsql 
@@ -375,7 +376,7 @@ BEGIN
     new.id, 
     new.email, 
     COALESCE(new.raw_user_meta_data->>'full_name', 'Sanctuary User'),
-    COALESCE(new.raw_user_meta_data->>'role', 'teacher')
+    'teacher' -- Always default to 'teacher', server-side role assignment required for elevation
   )
   ON CONFLICT (id) DO NOTHING;
   RETURN new;
@@ -451,12 +452,13 @@ CREATE POLICY "Invite codes select active" ON public.invite_codes FOR SELECT TO 
 -- ========================================================
 
 -- Initial User Sync (Ensure all existing auth users are in public types)
+-- SECURITY: Role is set to 'teacher' by default, ignoring client-controlled metadata
 INSERT INTO public.users (id, email, full_name, role, created_at, updated_at)
 SELECT 
     id, 
     email, 
     COALESCE(raw_user_meta_data->>'full_name', 'Sanctuary User') as full_name, 
-    COALESCE(raw_user_meta_data->>'role', 'teacher') as role,
+    'teacher' as role, -- Always default to 'teacher', ignore client metadata
     created_at, 
     NOW()
 FROM auth.users

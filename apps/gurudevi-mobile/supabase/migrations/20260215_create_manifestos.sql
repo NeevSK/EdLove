@@ -5,7 +5,7 @@
 CREATE TABLE IF NOT EXISTS public.sanctuary_manifestos (
     id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     school_id UUID NOT NULL REFERENCES public.schools(id) ON DELETE CASCADE,
-    creator_id UUID NOT NULL REFERENCES public.users(id) ON DELETE SET NULL,
+    creator_id UUID REFERENCES public.users(id) ON DELETE SET NULL, -- Removed NOT NULL to allow SET NULL
     title TEXT NOT NULL,
     content TEXT NOT NULL,
     vibe TEXT DEFAULT 'visionary', -- 'visionary', 'supportive', 'academic', 'wellbeing'
@@ -42,6 +42,7 @@ WITH CHECK (
         SELECT 1 FROM public.users 
         WHERE id = auth.uid() 
         AND role IN ('principal', 'admin', 'founder')
+        AND school_id = sanctuary_manifestos.school_id -- Enforce same school
     )
 );
 

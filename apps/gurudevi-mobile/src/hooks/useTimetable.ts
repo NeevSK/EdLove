@@ -35,7 +35,7 @@ export const useTimetable = (activeDay: number) => {
             } catch (e) {
                 console.warn('Failed to load timetable cache', e);
             } finally {
-                setIsLoading(false);
+                setLoading(false); // Fixed: was setIsLoading
             }
         };
         loadCache();
@@ -46,9 +46,8 @@ export const useTimetable = (activeDay: number) => {
             setLoading(false);
             return;
         }
-        // Keep loading true only if we don't have data, otherwise background refresh
-        if (periods.length === 0) setLoading(true);
-
+        
+        setLoading(true);
         setError(null);
         try {
             const { data, error } = await supabase
@@ -57,8 +56,7 @@ export const useTimetable = (activeDay: number) => {
                 .eq('day_of_week', activeDay)
                 .order('start_time', { ascending: true });
 
-            if (error) throw error;
-            if (error) throw error;
+            if (error) throw error; // Removed duplicate check
 
             if (data) {
                 setPeriods(data);
@@ -74,7 +72,7 @@ export const useTimetable = (activeDay: number) => {
         } finally {
             setLoading(false);
         }
-    }, [activeDay]);
+    }, [activeDay, isOnline]); // Removed periods.length to prevent infinite loop
 
     useEffect(() => {
         fetchPeriods();
