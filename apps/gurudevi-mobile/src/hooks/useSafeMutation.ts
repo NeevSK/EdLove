@@ -96,7 +96,15 @@ export function useSafeMutation<TData, TVariables>(
                     }
                     return null as TData; // Return null as optimistic result
                 } else {
+                    // No mutationKey provided - show toast but don't throw
                     console.warn('Cannot queue mutation without a mutationKey');
+                    showToast('Action saved locally (offline)', 'info');
+                    
+                    // Return optimistic null without throwing
+                    if (options?.onSuccess) {
+                        options.onSuccess(null, variables);
+                    }
+                    return null as TData;
                 }
             }
 
@@ -110,8 +118,8 @@ export function useSafeMutation<TData, TVariables>(
                 }
             }
 
-            // If we queued it, we don't throw. If we couldn't queue it, we throw.
-            if (options?.mutationKey && (err.message === 'OFFLINE_QUEUE' || err.message === 'Network request failed')) {
+            // Don't throw if we're offline - return optimistic null
+            if (err.message === 'OFFLINE_QUEUE' || err.message === 'Network request failed') {
                 return null as TData;
             }
 
