@@ -1,0 +1,30 @@
+{
+    "name": "@repo/scanner-kit",
+    "version": "0.0.0",
+    "private": true,
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "scripts": {
+        "check-types": "tsc --noEmit"
+    },
+    "peerDependencies": {
+        "@react-native-ml-kit/text-recognition": "*",
+        "buffer": "*",
+        "expo-camera": "*",
+        "expo-file-system": "*",
+        "expo-image-manipulator": "*",
+        "expo-image-picker": "*",
+        "jpeg-js": "*",
+        "jsqr": "*",
+        "qrcode": "*",
+        "react": "*",
+        "react-native": "*",
+        "react-native-svg": "*"
+    },
+    "devDependencies": {
+        "@repo/typescript-config": "workspace:*",
+        "@types/react": "~19.1.10",
+        "typescript": "~5.9.2"
+    }
+}

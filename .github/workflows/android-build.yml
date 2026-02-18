@@ -77,10 +77,5 @@ jobs:
       - name: 🚀 Build App
         run: |
           cd apps/gurudevi-mobile
-          eas build --platform android --profile ${{ github.event.inputs.profile }} --local --non-interactive --clear-cache --output=../../gurudevi-build.${{ matrix.type == 'apk' && 'apk' || 'aab' }}
+          eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive
 
-      - name: 📤 Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: gurudevi-android-${{ matrix.type }}
-          path: gurudevi-build.*

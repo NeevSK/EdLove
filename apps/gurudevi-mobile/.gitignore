@@ -44,3 +44,10 @@ tsc_errors*.txt
 # generated native folders
 /ios
 /android
+
+# Assets (Consolidated to src/assets)
+assets/*
+!assets/icon.png
+!assets/splash-icon.png
+!assets/adaptive-icon.png
+!assets/favicon.png
