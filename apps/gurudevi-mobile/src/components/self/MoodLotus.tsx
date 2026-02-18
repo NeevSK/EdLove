@@ -45,6 +45,8 @@ import { useThemedColors } from '../../hooks/useThemedColors';
 import { useSafeMutation } from '../../hooks/useSafeMutation';
 import { useMood } from '../../hooks/self/useMood';
 import { useStore } from '../../store/useStore';
+import SkeletonLoader, { SkeletonCard } from '../shared/SkeletonLoader';
+import PositiveInvitation from '../shared/PositiveInvitation';
 
 interface MoodLotusProps {
     userId?: string;
@@ -70,7 +72,7 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
     const [showBreathGuide, setShowBreathGuide] = useState(false);
 
     // Resilient Data
-    const { moodHistory, refreshData } = useMood(userId);
+    const { moodHistory, refreshData, isLoading } = useMood(userId);
     const showToast = useStore(state => state.showToast);
 
     // Get last saved time from cache/history
@@ -179,8 +181,28 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
     );
 
     const saveMoodLog = async (mood: number) => {
+        if (!userId) return;
         await mutate(mood);
     };
+
+    if (isLoading) {
+        return (
+            <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
+                <SkeletonCard height={280} />
+                <SkeletonCard height={80} />
+                <SkeletonCard height={60} />
+            </VStack>
+        );
+    }
+
+    if (!userId) {
+        return (
+            <PositiveInvitation
+                type="guest"
+                onAction={() => { }} // TODO: Navigate to Auth
+            />
+        );
+    }
 
     return (
         <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>

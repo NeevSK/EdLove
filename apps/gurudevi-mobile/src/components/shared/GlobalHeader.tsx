@@ -10,7 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';
 import { useUserRole } from '../../hooks/useUserRole';
 import { useStore } from '../../store/useStore';
-import { ChevronLeft, Search, User } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+import { ChevronLeft, Search, User, Bell } from 'lucide-react-native';
 import { Pressable, TouchableOpacity } from 'react-native';
 import { useThemedColors } from '../../hooks/useThemedColors';
 import SanctuaryInput from './SanctuaryInput';
@@ -46,6 +47,7 @@ export default function GlobalHeader({
     const { role } = useUserRole();
     const teacherName = useStore(state => state.teacherName);
     const colors = useThemedColors();
+    const navigation = useNavigation<any>();
     const [showSearch, setShowSearch] = React.useState(false);
     const [isNotificationVisible, setIsNotificationVisible] = React.useState(false);
 
@@ -94,7 +96,7 @@ export default function GlobalHeader({
                             <TouchableOpacity
                                 onPress={() => {
                                     hapticLight();
-                                    setIsNotificationVisible(true);
+                                    navigation.navigate('Profile');
                                 }}
                                 style={{ position: 'relative', paddingLeft: 4 }}
                             >
@@ -154,31 +156,58 @@ export default function GlobalHeader({
 
                 <HStack space="md" alignItems="center" sx={{ flex: 1, justifyContent: 'flex-end', paddingRight: Theme.spacing.md }}>
                     {showGreeting && (
-                        <VStack alignItems="flex-end" space={0}>
-                            <Text
-                                color={colors.action as any}
-                                size="lg"
-                                sx={{
-                                    lineHeight: 24,
-                                    textAlign: 'right'
+                        <HStack alignItems="center" space="md">
+                            <VStack alignItems="flex-end" space={0}>
+                                <Text
+                                    color={colors.action as any}
+                                    size="lg"
+                                    sx={{
+                                        lineHeight: 24,
+                                        textAlign: 'right'
+                                    }}
+                                >
+                                    {greeting.emoji}
+                                </Text>
+                                <Text
+                                    color={colors.action as any}
+                                    size="md"
+                                    sx={{
+                                        fontStyle: 'italic',
+                                        fontWeight: 'bold',
+                                        letterSpacing: 1.5,
+                                        textAlign: 'right',
+                                        lineHeight: 20
+                                    }}
+                                >
+                                    {t(greeting.key)}
+                                </Text>
+                            </VStack>
+                            <Pressable
+                                onPress={() => {
+                                    hapticLight();
+                                    setIsNotificationVisible(true);
+                                }}
+                                style={{
+                                    padding: 8,
+                                    marginRight: -8
                                 }}
                             >
-                                {greeting.emoji}
-                            </Text>
-                            <Text
-                                color={colors.action as any}
-                                size="md"
-                                sx={{
-                                    fontStyle: 'italic',
-                                    fontWeight: 'bold',
-                                    letterSpacing: 1.5,
-                                    textAlign: 'right',
-                                    lineHeight: 20
-                                }}
-                            >
-                                {t(greeting.key)}
-                            </Text>
-                        </VStack>
+                                <Box sx={{ position: 'relative' }}>
+                                    <Bell color={colors.textSecondary} size={24} />
+                                    <Box sx={{
+                                        position: 'absolute',
+                                        top: 0,
+                                        right: 2,
+                                        width: 8,
+                                        height: 8,
+                                        borderRadius: 4,
+                                        backgroundColor: colors.error,
+                                        borderWidth: 1.5,
+                                        borderColor: colors.primary,
+                                    }} />
+                                </Box>
+                            </Pressable>
+                        </HStack>
                     )}
 
                     {searchProps && (

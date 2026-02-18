@@ -1,11 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Image as RNImage } from 'react-native';
 import {
     Box,
     VStack,
     HStack,
     Text,
-    Image,
     Pressable,
     Center,
 } from '@/ui';
@@ -168,9 +167,8 @@ export default function IdentityCard({ profile, onEdit, onExpand }: IdentityCard
                             <Box style={styles.progressRing} />
                             <Box style={styles.avatarContainer}>
                                 {profile?.avatar_url ? (
-                                    <Image
+                                    <RNImage
                                         source={{ uri: profile.avatar_url }}
-                                        alt="Avatar"
                                         style={styles.avatarImage}
                                     />
                                 ) : (
@@ -196,7 +194,12 @@ export default function IdentityCard({ profile, onEdit, onExpand }: IdentityCard
                         <VStack space="xs" flex={1}>
                             <HStack alignItems="center" space="xs">
                                 <Text color={colors.textSecondary as any} size="xs" bold textTransform="uppercase">
-                                    {profile?.role ? t(`role.${profile.role.toLowerCase()}`) : t('profile.guestUser')}
+                                    {profile?.role === 'teacher' && 'Teacher 🌱'}
+                                    {profile?.role === 'student' && 'Student 📚'}
+                                    {profile?.role === 'principal' && 'Principal 🏛️'}
+                                    {profile?.role === 'founder' && 'Founder 🌸'}
+                                    {(profile?.role === 'admin' || profile?.role === 'developer') && 'Guardian 🛡️'}
+                                    {!profile?.role && (t('profile.guestUser') || 'Guest Explorer 🌿')}
                                 </Text>
                                 {profile?.role === 'founder' && <Compass size={14} color={colors.warning} />}
                                 {(profile?.role === 'admin' || profile?.role === 'developer') && <Database size={14} color={colors.action} />}
@@ -257,13 +260,13 @@ export default function IdentityCard({ profile, onEdit, onExpand }: IdentityCard
                             }}
                         >
                             <Text color={colors.textTertiary} size="xs" bold>
-                                {t('common.next') || 'EXPAND'} ↗
+                                {t('common.fullView') || 'FULL VIEW'} ↗
                             </Text>
                         </Pressable>
                     )}
 
                     {/* Decorative Elements */}
-                    <Image
+                    <RNImage
                         source={require('../../assets/images/lotus_bloom.png')}
                         style={styles.watermark}
                         resizeMode="contain"

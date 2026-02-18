@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { dailyContentAPI, DailyContent } from '../../lib/api/dailyContent';
 import { useThemedColors } from '../../hooks/useThemedColors';
 import { Theme } from '../../constants/Theme';
+import { Box, VStack, HStack, Text, Heading, Pressable } from '@/ui';
+import SkeletonLoader, { SkeletonCard } from '../shared/SkeletonLoader';
 
 interface DailyContentCardProps {
     type: 'motivation' | 'did_you_know';
@@ -112,9 +114,7 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
 
     if (loading) {
         return (
-            <View style={[styles.card, styles.loadingCard]}>
-                <Text style={styles.loadingText}>{t('common.loading')}</Text>
-            </View>
+            <SkeletonCard height={120} />
         );
     }
 

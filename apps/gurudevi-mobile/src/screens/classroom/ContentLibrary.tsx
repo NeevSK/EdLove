@@ -50,7 +50,8 @@ import { useSafeMutation } from '../../hooks/useSafeMutation';
 import { useStore } from '../../store/useStore';
 import { api } from '../../lib/api';
 import { ClassroomResource } from '../../lib/api/types';
-import EmptyState from '../../components/shared/EmptyState';
+import { SkeletonCard } from '../../components/shared/SkeletonLoader';
+import PositiveInvitation from '../../components/shared/PositiveInvitation';
 import { ResourceType } from '../../components/library/LibraryResourceCard';
 
 export default function ContentLibrary() {
@@ -303,14 +304,15 @@ export default function ContentLibrary() {
             <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ padding: Theme.spacing.lg, paddingBottom: 100 }}>
                 {/* Resources Grid */}
                 {isLoading ? (
-                    <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}>
-                        <Text color={colors.textSecondary}>{t('common.loading')}</Text>
-                    </Box>
+                    <VStack space="md">
+                        <SkeletonCard height={100} />
+                        <SkeletonCard height={100} />
+                        <SkeletonCard height={100} />
+                    </VStack>
                 ) : filteredResources.length === 0 ? (
-                    <EmptyState
-                        icon={FileText}
-                        title={t('library.emptyTitle')}
-                        description={t('library.emptyDesc')}
+                    <PositiveInvitation
+                        context="classroom"
+                        onAction={() => setShowAddModal(true)}
                     />
                 ) : (
                     <VStack space="md">

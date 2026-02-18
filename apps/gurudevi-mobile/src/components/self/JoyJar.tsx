@@ -20,6 +20,8 @@ import { hapticLight, hapticSuccess } from '../../utils/haptics';
 import { JoyMoment } from '../../types/Wellbeing';
 import { useSafeMutation } from '../../hooks/useSafeMutation';
 import { useJoyJar } from '../../hooks/self/useJoyJar';
+import SkeletonLoader, { SkeletonCard } from '../shared/SkeletonLoader';
+import PositiveInvitation from '../shared/PositiveInvitation';
 
 interface JoyJarProps {
   userId?: string;
@@ -28,7 +30,7 @@ interface JoyJarProps {
 export default function JoyJar({ userId }: JoyJarProps) {
   const { t } = useTranslation();
   // Resilient Data Hook
-  const { joyMoments, refreshData } = useJoyJar(userId);
+  const { joyMoments, refreshData, isLoading } = useJoyJar(userId);
 
   const [showForm, setShowForm] = useState(false);
 
@@ -83,6 +85,25 @@ export default function JoyJar({ userId }: JoyJarProps) {
     { id: 'connection', label: t('self.connection'), emoji: '💫' },
     { id: 'other', label: t('self.other'), emoji: '✨' }
   ];
+
+  if (isLoading && userId) {
+    return (
+      <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}>
+        <SkeletonCard height={48} />
+        <SkeletonCard height={80} />
+        <SkeletonCard height={80} />
+      </VStack>
+    );
+  }
+
+  if (!userId) {
+    return (
+      <PositiveInvitation
+        type="guest"
+        onAction={() => { }} // TODO: Navigate to Auth
+      />
+    );
+  }
 
   return (
     <VStack space="lg" sx={{ flex: 1 }}>
@@ -155,15 +176,10 @@ export default function JoyJar({ userId }: JoyJarProps) {
               ))}
 
               {joyMoments.length === 0 && (
-                <Box p={Theme.spacing.xl}>
-                  <Text
-                    color={Theme.colors.dimGray}
-                    size="md"
-                    textAlign="center"
-                  >
-                    {t('self.startCapturing')}
-                  </Text>
-                </Box>
+                <PositiveInvitation
+                  icon={Sparkles}
+                  title={t('self.startCapturing')}
+                />
               )}
             </VStack>
           </ScrollView>

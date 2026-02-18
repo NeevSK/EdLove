@@ -5,6 +5,7 @@
  */
 
 import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import {
     Box,
     VStack,
@@ -22,9 +23,13 @@ import { supabase } from '../../lib/supabase';
 import GlobalHeader from '../../components/shared/GlobalHeader';
 import DailyContentCard from '../../components/self/DailyContentCard';
 import WelcomeModal from '../../components/self/WelcomeModal';
+import { SkeletonCard } from '../../components/shared/SkeletonLoader';
+import PositiveInvitation from '../../components/shared/PositiveInvitation';
 import { useStore } from '../../store/useStore';
 import { useThemedColors } from '../../hooks/useThemedColors';
 import ScreenWrapper from '../../components/shared/ScreenWrapper';
+// IdentityCard and UserStatsCard removed
+// EditProfileModal removed
 
 const ADMIN_CORE_FEATURES = [
     { id: 'balance', icon: Activity, category: 'core' },
@@ -40,22 +45,61 @@ const ADMIN_MORE_TOOLS = [
 
 export default function AdminSelfView() {
     const { t } = useTranslation();
+    const navigation = useNavigation<any>();
     const [activeFeature, setActiveFeature] = useState('balance');
     const [userId, setUserId] = useState<string | null>(null);
+    const [loadingUser, setLoadingUser] = useState(true);
     const [showMoreTools, setShowMoreTools] = useState(false);
+    const [userProfile, setUserProfile] = useState<any>(null);
+    // Edit modal state removed
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const colors = useThemedColors();
 
     React.useEffect(() => {
         const fetchUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) setUserId(user.id);
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    setUserId(user.id);
+                    const { data: profile } = await supabase
+                        .from('users')
+                        .select(`
+                            *,
+                            schools (
+                                name
+                            )
+                        `)
+                        .eq('id', user.id)
+                        .single();
+
+                    if (profile) {
+                        setUserProfile({
+                            ...profile,
+                            school_name: profile.schools?.name || null
+                        });
+                    } else {
+                        setUserProfile({
+                            id: user.id,
+                            full_name: user.user_metadata?.full_name || user.email?.split('@')[0],
+                            email: user.email,
+                            role: user.user_metadata?.role || 'admin',
+                            school_name: null
+                        });
+                    }
+                }
+            } finally {
+                setLoadingUser(false);
+            }
         };
         fetchUser();
     }, []);
 
     const renderFeature = () => {
+        if (!userId) {
+            return <PositiveInvitation type="guest" onAction={() => { }} />;
+        }
+
         switch (activeFeature) {
             case 'balance':
                 return (
@@ -64,15 +108,16 @@ export default function AdminSelfView() {
                             <Heading color={colors.text} size="lg">{t('admin.balance')}</Heading>
                             <Text color={colors.textSecondary} size="sm">Monitoring the stability of the Educational Ecology.</Text>
                         </VStack>
-                        <Box p={Theme.spacing.md} sx={{ backgroundColor: colors.tertiary, borderRadius: Theme.corners.comfortable, minHeight: 150 }}>
-                            <Text color={colors.textSecondary} size="md" textAlign="center">
-                                {t('common.comingSoon')}
-                            </Text>
-                        </Box>
+                        <PositiveInvitation
+                            context="self"
+                            title={t('admin.balanceComingSoon', 'System Pulse Arriving')}
+                            description={t('admin.balanceComingSoonDesc', 'A dashboard for operational harmony is being calibrated.')}
+                        />
                     </VStack>
                 );
             case 'mood':
-                return <MoodLotus userId={userId ?? undefined} />;
+                return <MoodLotus userId={userId} />;
+            default:
                 return (
                     <Box p={Theme.spacing.md}>
                         <Text color={colors.textSecondary} textAlign="center">{t('common.comingSoon')}</Text>
@@ -94,6 +139,9 @@ export default function AdminSelfView() {
                 contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}
                 showsVerticalScrollIndicator={false}
             >
+                {/* Identity & Stats Anchor - REMOVED */}
+                {/* Access Profile via GlobalHeader Avatar */}
+
                 <Box mb="$4">
                     <DailyContentCard type="motivation" />
                     <DailyContentCard type="did_you_know" />
@@ -134,13 +182,20 @@ export default function AdminSelfView() {
 
                 <Box mt="$6">
                     <Box p={Theme.spacing.xl} sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.generous, minHeight: 300 }}>
-                        {renderFeature()}
+                        {loadingUser ? (
+                            <VStack space="md">
+                                <SkeletonCard height={40} />
+                                <SkeletonCard height={150} />
+                                <SkeletonCard height={40} />
+                            </VStack>
+                        ) : renderFeature()}
                     </Box>
                 </Box>
             </ScrollView>
 
             <ShadowAgentDrawer />
             <WelcomeModal isOpen={justFinishedOnboarding} onClose={() => setJustFinishedOnboarding(false)} />
+            {/* EditProfileModal removed */}
         </ScreenWrapper>
     );
 }

@@ -17,8 +17,9 @@ import { isDemo } from '../lib/api/demo';
 import CommunityPresence from '../components/self/CommunityPresence';
 import ManifestoCard from '../components/community/ManifestoCard';
 import { useManifestos } from '../hooks/useManifestos';
-import { requireAuth } from '../utils/authorization';
 import { supabase } from '../lib/supabase';
+import { SkeletonCard } from '../components/shared/SkeletonLoader';
+import PositiveInvitation from '../components/shared/PositiveInvitation';
 
 type TabType = 'feed' | 'groups';
 
@@ -42,7 +43,7 @@ export default function CommunityScreen() {
 
     const loadData = async () => {
         try {
-            const user = await requireAuth();
+            const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 setUserId(user.id);
                 setSchoolId(user.user_metadata?.school_id || 'mock-school');
@@ -122,15 +123,25 @@ export default function CommunityScreen() {
                     }
                 >
                     {loading && !refreshing ? (
-                        <Box py="$10">
-                            <Spinner color={Theme.colors.sanctuarySaffron} />
-                        </Box>
+                        <VStack space="md" py="$4">
+                            <SkeletonCard height={80} />
+                            <SkeletonCard height={200} />
+                            <SkeletonCard height={200} />
+                        </VStack>
                     ) : activeTab === 'feed' ? (
                         <VStack space="md">
                             {/* THE RELATIONAL WEAVER - Presence & Manifestos */}
-                            <CommunityPresence compact={false} userVibe="planning" />
+                            {userId && <CommunityPresence compact={false} userVibe="planning" />}
 
-                            {manifestos.length > 0 && (
+                            {!userId && (
+                                <PositiveInvitation
+                                    type="guest"
+                                    context="community"
+                                    onAction={() => { }} // TODO: Navigate to Auth
+                                />
+                            )}
+
+                            {userId && manifestos.length > 0 && (
                                 <VStack space="sm">
                                     <Text size="sm" color={Theme.colors.mistGray} bold px="$1">
                                         {t('community.sections.vision')}
@@ -153,9 +164,18 @@ export default function CommunityScreen() {
                                 </VStack>
                             )}
 
-                            <Text size="sm" color={Theme.colors.mistGray} bold px="$1" mt="$2">
-                                {t('community.sections.updates')}
-                            </Text>
+                            {posts.length > 0 && (
+                                <Text size="sm" color={Theme.colors.mistGray} bold px="$1" mt="$2">
+                                    {t('community.sections.updates')}
+                                </Text>
+                            )}
+
+                            {posts.length === 0 && userId && (
+                                <PositiveInvitation
+                                    context="community"
+                                    onAction={() => setShowCreateModal(true)}
+                                />
+                            )}
 
                             {posts.map((post: Post) => (
                                 <PostCard
@@ -178,6 +198,22 @@ export default function CommunityScreen() {
                         </VStack>
                     ) : (
                         <VStack space="md">
+                            {!userId && (
+                                <PositiveInvitation
+                                    type="guest"
+                                    context="community"
+                                    onAction={() => { }}
+                                />
+                            )}
+
+                            {groups.length === 0 && userId && (
+                                <PositiveInvitation
+                                    context="community"
+                                    title={t('community.noGroups', 'No circles found')}
+                                    description={t('community.noGroupsDesc', 'Connect with others by joining a community group.')}
+                                />
+                            )}
+
                             {groups.map((group: Group) => (
                                 <GroupCard
                                     key={group.id}

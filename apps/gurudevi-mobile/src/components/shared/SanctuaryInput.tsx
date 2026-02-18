@@ -14,6 +14,7 @@ import {
 } from '@/ui';
 import { AlertCircle } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
+import { useThemedColors } from '../../hooks/useThemedColors';
 
 interface SanctuaryInputProps {
     label?: string;
@@ -51,6 +52,7 @@ export default function SanctuaryInput({
     autoFocus = false
 }: SanctuaryInputProps) {
     const hasError = isInvalid || !!error;
+    const colors = useThemedColors();
 
     return (
         <FormControl isInvalid={hasError} isDisabled={isDisabled}>
@@ -72,19 +74,20 @@ export default function SanctuaryInput({
                 isDisabled={isDisabled}
                 isInvalid={hasError}
                 sx={{
-                    borderColor: hasError ? Theme.colors.emberRed : Theme.colors.deepIndigo,
-                    backgroundColor: Theme.colors.midnightBlue,
+                    borderColor: hasError ? colors.error : colors.border,
+                    backgroundColor: colors.secondary,
                     borderRadius: Theme.corners.comfortable,
                     minHeight: multiline ? (24 * numberOfLines + 24) : 48,
                     paddingHorizontal: Theme.spacing.md,
+                    borderWidth: 1,
                     ':focus': {
-                        borderColor: Theme.colors.sanctuarySaffron,
-                        borderWidth: 1,
-                        backgroundColor: Theme.colors.deepIndigo
+                        borderColor: colors.action,
+                        borderWidth: 2,
+                        backgroundColor: colors.tertiary
                     },
                     ':disabled': {
                         opacity: 0.5,
-                        backgroundColor: Theme.colors.voidIndigo
+                        backgroundColor: colors.primary
                     }
                 }}
             >
@@ -100,8 +103,8 @@ export default function SanctuaryInput({
                     onChangeText={onChangeText}
                     autoFocus={autoFocus}
                     type={type}
-                    color={Theme.colors.sacredWhite}
-                    placeholderTextColor={Theme.colors.slateGray}
+                    color={colors.text}
+                    placeholderTextColor={colors.textTertiary}
                     multiline={multiline}
                     numberOfLines={numberOfLines}
                     textAlignVertical={multiline ? 'top' : 'center'}
@@ -120,8 +123,8 @@ export default function SanctuaryInput({
 
             {hasError && (
                 <FormControlError mt="$1">
-                    <FormControlErrorIcon as={AlertCircle} color={Theme.colors.emberRed} size="xs" />
-                    <FormControlErrorText color={Theme.colors.emberRed} size="xs" ml="$1">
+                    <FormControlErrorIcon as={AlertCircle} color={colors.error} size="xs" />
+                    <FormControlErrorText color={colors.error} size="xs" ml="$1">
                         {error || 'Invalid input'}
                     </FormControlErrorText>
                 </FormControlError>

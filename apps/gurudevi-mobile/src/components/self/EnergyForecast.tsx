@@ -16,6 +16,8 @@ import { hapticLight, hapticSuccess } from '../../utils/haptics';
 import { EnergyForecast as EnergyForecastType } from '../../types/Wellbeing';
 import { useSafeMutation } from '../../hooks/useSafeMutation';
 import { useEnergyForecast } from '../../hooks/self/useEnergyForecast';
+import SkeletonLoader, { SkeletonCard } from '../shared/SkeletonLoader';
+import PositiveInvitation from '../shared/PositiveInvitation';
 
 interface EnergyForecastProps {
   userId?: string;
@@ -23,9 +25,10 @@ interface EnergyForecastProps {
 
 export default function EnergyForecast({ userId }: EnergyForecastProps) {
   const { t } = useTranslation();
+  const colors = useThemedColors();
 
   // Resilient Data Hook
-  const { forecasts, refreshData } = useEnergyForecast(userId);
+  const { forecasts, refreshData, isLoading: dataLoading } = useEnergyForecast(userId);
 
   const [todayForecast, setTodayForecast] = useState<EnergyForecastType | null>(null);
 
@@ -111,7 +114,25 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
     return BatteryFull;
   };
 
-  const colors = useThemedColors();
+  if (dataLoading && userId) {
+    return (
+      <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}>
+        <SkeletonCard height={80} />
+        <SkeletonCard height={80} />
+        <SkeletonCard height={80} />
+      </VStack>
+    );
+  }
+
+  if (!userId) {
+    return (
+      <PositiveInvitation
+        type="guest"
+        onAction={() => { }} // TODO: Navigate to Auth
+      />
+    );
+  }
+
   const BatteryIcon = getBatteryIcon();
 
   return (

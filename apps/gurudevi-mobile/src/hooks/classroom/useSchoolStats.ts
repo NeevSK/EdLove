@@ -17,6 +17,7 @@ const SCHOOL_INFO_CACHE_KEY = 'gurudevi-school-info-cache';
  */
 export function useSchoolStats(schoolId: string) {
     const isOnline = useStore(state => state.isOnline);
+    const isDemoMode = useStore(state => state.isDemoMode);
     const [stats, setStats] = useState<SchoolStats | null>(null);
     const [school, setSchool] = useState<School | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -48,25 +49,45 @@ export function useSchoolStats(schoolId: string) {
 
     // Refresh from API
     const refreshData = useCallback(async () => {
-        if (!schoolId || !isOnline) {
+        // If no schoolId and not in demo mode (or explicitly guest), we still want to show SOMETHING
+        // Let's assume if schoolId is missing, we check if we should show mock data
+        if (!schoolId && !isDemoMode) {
             setIsLoading(false);
             return;
         }
 
         try {
-            const [schoolData, statsData] = await Promise.all([
-                api.school.getSchool(schoolId),
-                api.school.getSchoolStats(schoolId),
-            ]);
+            let schoolData: School;
+            let statsData: SchoolStats;
+
+            if (isDemoMode || !schoolId) {
+                // Return mock data for demo/guest flow
+                const { MOCK_SCHOOL_STATS } = require('../../lib/api/mockData');
+                schoolData = {
+                    id: 'sample-school',
+                    name: 'Wisdom Academy',
+                    school_type: 'Primary',
+                    status: 'active',
+                    created_at: new Date().toISOString()
+                } as any;
+                statsData = { ...MOCK_SCHOOL_STATS, is_sample: true } as any;
+            } else {
+                [schoolData, statsData] = await Promise.all([
+                    api.school.getSchool(schoolId),
+                    api.school.getSchoolStats(schoolId),
+                ]);
+            }
 
             setSchool(schoolData);
             setStats(statsData);
 
-            // Persist to cache
-            await Promise.all([
-                SafeZustandStorage.setItem(`${SCHOOL_INFO_CACHE_KEY}-${schoolId}`, JSON.stringify(schoolData)),
-                SafeZustandStorage.setItem(`${SCHOOL_STATS_CACHE_KEY}-${schoolId}`, JSON.stringify(statsData))
-            ]);
+            // Persist to cache if we have a real schoolId
+            if (schoolId) {
+                await Promise.all([
+                    SafeZustandStorage.setItem(`${SCHOOL_INFO_CACHE_KEY}-${schoolId}`, JSON.stringify(schoolData)),
+                    SafeZustandStorage.setItem(`${SCHOOL_STATS_CACHE_KEY}-${schoolId}`, JSON.stringify(statsData))
+                ]);
+            }
 
             setError(null);
         } catch (e: any) {
@@ -75,7 +96,7 @@ export function useSchoolStats(schoolId: string) {
         } finally {
             setIsLoading(false);
         }
-    }, [schoolId, isOnline]);
+    }, [schoolId, isOnline, isDemoMode]);
 
     // Fetch on mount/online change
     useEffect(() => {

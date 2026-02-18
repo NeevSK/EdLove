@@ -7,6 +7,7 @@
  */
 
 import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import {
     Box,
     VStack,
@@ -29,9 +30,13 @@ import { supabase } from '../../lib/supabase';
 import GlobalHeader from '../../components/shared/GlobalHeader';
 import DailyContentCard from '../../components/self/DailyContentCard';
 import WelcomeModal from '../../components/self/WelcomeModal';
+import { SkeletonCard } from '../../components/shared/SkeletonLoader';
+import PositiveInvitation from '../../components/shared/PositiveInvitation';
 import { useStore } from '../../store/useStore';
 import { useThemedColors } from '../../hooks/useThemedColors';
 import ScreenWrapper from '../../components/shared/ScreenWrapper';
+// IdentityCard and UserStatsCard removed
+// EditProfileModal removed
 
 // Student-specific core features
 const STUDENT_CORE_FEATURES = [
@@ -47,27 +52,69 @@ const STUDENT_MORE_TOOLS = [
 
 export default function StudentSelfView() {
     const { t } = useTranslation();
+    const navigation = useNavigation<any>();
     const [activeFeature, setActiveFeature] = useState('mood');
     const [userId, setUserId] = useState<string | null>(null);
+    const [loadingUser, setLoadingUser] = useState(true);
     const [showMoreTools, setShowMoreTools] = useState(false);
+    const [userProfile, setUserProfile] = useState<any>(null);
+    // Edit modal state removed
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const colors = useThemedColors();
 
     React.useEffect(() => {
         const fetchUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                setUserId(user.id);
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    setUserId(user.id);
+                    const { data: profile } = await supabase
+                        .from('users')
+                        .select(`
+                            *,
+                            schools (
+                                name
+                            )
+                        `)
+                        .eq('id', user.id)
+                        .single();
+
+                    if (profile) {
+                        setUserProfile({
+                            ...profile,
+                            school_name: profile.schools?.name || null
+                        });
+                    } else {
+                        setUserProfile({
+                            id: user.id,
+                            full_name: user.user_metadata?.full_name || user.email?.split('@')[0],
+                            email: user.email,
+                            role: user.user_metadata?.role || 'student',
+                            school_name: null
+                        });
+                    }
+                }
+            } finally {
+                setLoadingUser(false);
             }
         };
         fetchUser();
     }, []);
 
     const renderFeature = () => {
+        if (!userId) {
+            return (
+                <PositiveInvitation
+                    type="guest"
+                    onAction={() => { }} // TODO: Navigate to Auth
+                />
+            );
+        }
+
         switch (activeFeature) {
             case 'mood':
-                return <MoodLotus userId={userId ?? undefined} />;
+                return <MoodLotus userId={userId} />;
             case 'goals':
                 return (
                     <VStack space="lg" sx={{ flex: 1 }}>
@@ -80,18 +127,11 @@ export default function StudentSelfView() {
                             </Text>
                         </VStack>
 
-                        <Box
-                            p={Theme.spacing.md}
-                            sx={{
-                                backgroundColor: colors.tertiary,
-                                borderRadius: Theme.corners.comfortable,
-                                minHeight: 150
-                            }}
-                        >
-                            <Text color={colors.textSecondary} size="md" textAlign="center">
-                                {t('common.comingSoon')}
-                            </Text>
-                        </Box>
+                        <PositiveInvitation
+                            context="self"
+                            title={t('student.goalsComingSoon', 'Goal Setting Arriving Soon')}
+                            description={t('student.goalsComingSoonDesc', 'We are building a beautiful space for your daily aspirations.')}
+                        />
                     </VStack>
                 );
             case 'study':
@@ -106,18 +146,11 @@ export default function StudentSelfView() {
                             </Text>
                         </VStack>
 
-                        <Box
-                            p={Theme.spacing.md}
-                            sx={{
-                                backgroundColor: colors.tertiary,
-                                borderRadius: Theme.corners.comfortable,
-                                minHeight: 150
-                            }}
-                        >
-                            <Text color={colors.textSecondary} size="md" textAlign="center">
-                                {t('common.comingSoon')}
-                            </Text>
-                        </Box>
+                        <PositiveInvitation
+                            context="self"
+                            title={t('student.studyComingSoon', 'Find Your Rhythm')}
+                            description={t('student.studyComingSoonDesc', 'A gentle study timer and focus tool are in production.')}
+                        />
                     </VStack>
                 );
             case 'reflection':
@@ -132,18 +165,11 @@ export default function StudentSelfView() {
                             </Text>
                         </VStack>
 
-                        <Box
-                            p={Theme.spacing.md}
-                            sx={{
-                                backgroundColor: colors.tertiary,
-                                borderRadius: Theme.corners.comfortable,
-                                minHeight: 150
-                            }}
-                        >
-                            <Text color={colors.textSecondary} size="md" textAlign="center">
-                                {t('common.comingSoon')}
-                            </Text>
-                        </Box>
+                        <PositiveInvitation
+                            context="self"
+                            title={t('student.reflectionComingSoon', 'Sacred Reflections')}
+                            description={t('student.reflectionComingSoonDesc', 'A quiet corner for your daily insights is being prepared.')}
+                        />
                     </VStack>
                 );
             case 'progress':
@@ -158,22 +184,15 @@ export default function StudentSelfView() {
                             </Text>
                         </VStack>
 
-                        <Box
-                            p={Theme.spacing.md}
-                            sx={{
-                                backgroundColor: colors.tertiary,
-                                borderRadius: Theme.corners.comfortable,
-                                minHeight: 150
-                            }}
-                        >
-                            <Text color={colors.textSecondary} size="md" textAlign="center">
-                                {t('common.comingSoon')}
-                            </Text>
-                        </Box>
+                        <PositiveInvitation
+                            context="self"
+                            title={t('student.progressComingSoon', 'Watch Yourself Bloom')}
+                            description={t('student.progressComingSoonDesc', 'Our growth visualization toolkit is on the way.')}
+                        />
                     </VStack>
                 );
             default:
-                return <MoodLotus userId={userId ?? undefined} />;
+                return <MoodLotus userId={userId} />;
         }
     };
 
@@ -189,6 +208,9 @@ export default function StudentSelfView() {
                 contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}
                 showsVerticalScrollIndicator={false}
             >
+                {/* Identity & Stats Anchor - REMOVED */}
+                {/* Access Profile via GlobalHeader Avatar */}
+
                 {/* Daily Content Section */}
                 <Box mb="$4">
                     <DailyContentCard type="motivation" />
@@ -294,7 +316,13 @@ export default function StudentSelfView() {
                             minHeight: 300
                         }}
                     >
-                        {renderFeature()}
+                        {loadingUser ? (
+                            <VStack space="md">
+                                <SkeletonCard height={40} />
+                                <SkeletonCard height={150} />
+                                <SkeletonCard height={40} />
+                            </VStack>
+                        ) : renderFeature()}
                     </Box>
                 </Box>
             </ScrollView>
@@ -304,6 +332,7 @@ export default function StudentSelfView() {
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
             />
+            {/* EditProfileModal removed */}
         </ScreenWrapper>
     );
 }

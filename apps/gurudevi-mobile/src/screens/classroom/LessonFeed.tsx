@@ -17,6 +17,7 @@ import { api } from '../../lib/api';
 import { Lesson, Assignment, LessonMaterial } from '../../lib/api/types';
 import { Theme } from '../../constants/Theme';
 import { useThemedColors } from '../../hooks/useThemedColors';
+import { SkeletonCard } from '../../components/shared/SkeletonLoader';
 
 interface LessonFeedProps {
     classroomId: string;
@@ -251,10 +252,11 @@ export default function LessonFeed({
                     )}
 
                     {isLoading && (
-                        <HStack space="sm" sx={{ justifyContent: 'center', padding: 10 }}>
-                            <Spinner size="small" color={colors.action} />
-                            <Text color={colors.textSecondary} size="xs">Checking for updates...</Text>
-                        </HStack>
+                        <VStack space="md">
+                            <SkeletonCard height={80} />
+                            <SkeletonCard height={80} />
+                            <SkeletonCard height={80} />
+                        </VStack>
                     )}
 
                     {monthlyGroups.map(({ monthTitle, lessonId, materials, assignments }) => (

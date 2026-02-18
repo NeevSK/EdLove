@@ -30,6 +30,8 @@ import { useThemedColors } from '../../hooks/useThemedColors';
 import RoleInitialState from './RoleInitialState';
 import CreateClassroomModal from './CreateClassroomModal';
 import { useFeatureAccess } from '../../hooks/useFeatureAccess';
+import PositiveInvitation from '../shared/PositiveInvitation';
+import { SkeletonCard } from '../shared/SkeletonLoader';
 
 interface ClassroomListProps {
     onClassroomPress?: (classroom: Classroom) => void;
@@ -178,6 +180,25 @@ export default function ClassroomList({
                                 data = [sampleSchool];
                             }
                         }
+                    } else if (role === 'student') {
+                        const sampleId = 'sample-c1';
+                        if (!dismissedSampleIds.includes(sampleId)) {
+                            const { MOCK_CLASSROOMS } = require('../../lib/api/mockData');
+                            const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
+                            if (sample) {
+                                (sample as any).is_sample = true;
+                                data = [sample];
+                            }
+                        }
+                    } else {
+                        // Default fallback for guests with no role selected yet
+                        const sampleId = 'sample-c1';
+                        const { MOCK_CLASSROOMS } = require('../../lib/api/mockData');
+                        const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
+                        if (sample) {
+                            (sample as any).is_sample = true;
+                            data = [sample];
+                        }
                     }
                 } else {
                     // Authenticated users - fetch their actual classrooms
@@ -217,6 +238,16 @@ export default function ClassroomList({
                             if (sampleSchool) {
                                 (sampleSchool as any).is_sample = true;
                                 data = [sampleSchool];
+                            }
+                        }
+                    } else if (role === 'student' && data.length === 0) {
+                        const sampleId = 'sample-c1';
+                        if (!dismissedSampleIds.includes(sampleId)) {
+                            const { MOCK_CLASSROOMS } = require('../../lib/api/mockData');
+                            const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
+                            if (sample) {
+                                (sample as any).is_sample = true;
+                                data = [sample];
                             }
                         }
                     }
@@ -275,10 +306,11 @@ export default function ClassroomList({
     // Loading state
     if (loading) {
         return (
-            <View style={styles.centerContainer}>
-                <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} />
-                <Text style={styles.loadingText}>{t('classroom.loading')}</Text>
-            </View>
+            <VStack space="md" sx={{ width: '100%', padding: isNested ? 0 : Theme.spacing.md }}>
+                <SkeletonCard height={80} />
+                <SkeletonCard height={80} />
+                <SkeletonCard height={80} />
+            </VStack>
         );
     }
 
@@ -303,18 +335,16 @@ export default function ClassroomList({
             <VStack space="md" sx={{ width: '100%' }}>
                 {classrooms.length === 0 ? (
                     emptyContent || (
-                        <RoleInitialState
-                            role={role}
-                            onCreatePress={() => {
+                        <PositiveInvitation
+                            context="classroom"
+                            onAction={() => {
                                 hapticLight();
-                                setPendingInitialData(null);
-                                setIsCreateModalOpen(true);
-                            }}
-                            onJoinPress={() => {
-                                hapticLight();
-                                // If student, this would ideally open a Join Modal or Code Entry
-                                // For now, let's keep it minimal or navigate to library
-                                console.log('[ClassroomList] onJoinPress triggered for role:', role);
+                                if (role === 'student') {
+                                    // Navigate to library or show join instructions
+                                } else {
+                                    setPendingInitialData(null);
+                                    setIsCreateModalOpen(true);
+                                }
                             }}
                         />
                     )
@@ -356,21 +386,12 @@ export default function ClassroomList({
     const content = (
         <Box flex={1} sx={{ backgroundColor: colors.primary }}>
             {classrooms.length === 0 ? (
-                <RoleInitialState
-                    role={role}
-                    onCreatePress={() => {
-                        console.log('[ClassroomList] Standard empty onCreatePress');
+                <PositiveInvitation
+                    context="classroom"
+                    onAction={() => {
                         hapticLight();
                         setPendingInitialData(null);
                         setIsCreateModalOpen(true);
-                    }}
-                    onJoinPress={() => {
-                        console.log('[ClassroomList] Standard empty onJoinPress');
-                        hapticLight();
-                        // For generic/unknown role, maybe redirect to profile to set role
-                    }}
-                    onSamplePress={(item) => {
-                        console.log('[ClassroomList] Sample guide pressed:', item.id);
                     }}
                 />
             ) : (

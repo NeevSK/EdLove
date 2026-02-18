@@ -22,6 +22,8 @@ import { hapticLight, hapticSuccess } from '../../utils/haptics';
 import { DailyPrepItem } from '../../types/Wellbeing';
 import { useSafeMutation } from '../../hooks/useSafeMutation';
 import { useTomorrowPrep } from '../../hooks/self/useTomorrowPrep';
+import SkeletonLoader, { SkeletonCard } from '../shared/SkeletonLoader';
+import PositiveInvitation from '../shared/PositiveInvitation';
 
 interface TomorrowPrepProps {
   userId?: string;
@@ -31,7 +33,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
   const { t } = useTranslation();
 
   // Resilient Data Hook
-  const { prepItems: items, refreshData } = useTomorrowPrep(userId);
+  const { prepItems: items, refreshData, isLoading } = useTomorrowPrep(userId);
 
   const [showForm, setShowForm] = useState(false);
 
@@ -88,6 +90,25 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
 
     refreshData();
   };
+
+  if (isLoading && userId) {
+    return (
+      <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}>
+        <SkeletonCard height={48} />
+        <SkeletonCard height={48} />
+        <SkeletonCard height={48} />
+      </VStack>
+    );
+  }
+
+  if (!userId) {
+    return (
+      <PositiveInvitation
+        type="guest"
+        onAction={() => { }} // TODO: Navigate to Auth
+      />
+    );
+  }
 
   return (
     <VStack space="lg" sx={{ flex: 1 }}>
@@ -245,15 +266,10 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
           ))}
 
           {items.length === 0 && (
-            <Box p={Theme.spacing.xl}>
-              <Text
-                color={Theme.colors.dimGray}
-                size="md"
-                textAlign="center"
-              >
-                {t('self.threeGentleThings')}
-              </Text>
-            </Box>
+            <PositiveInvitation
+              icon={Calendar}
+              title={t('self.threeGentleThings')}
+            />
           )}
         </VStack>
       )}

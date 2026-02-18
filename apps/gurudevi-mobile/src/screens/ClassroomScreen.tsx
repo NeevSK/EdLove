@@ -9,36 +9,29 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Box, Text, Center, Heading, Spinner, HStack, VStack, Pressable } from "@/ui";
+import { Box, VStack } from "@/ui";
 import { useUserRole } from '../hooks/useUserRole';
 import { Theme } from '../constants/Theme';
 import { supabase } from '../lib/supabase';
-import { QrCode } from 'lucide-react-native';
-import { ClassroomStudent, api } from '../lib/api';
-import { hapticLight } from '../utils/haptics';
-import { useStore } from '../store/useStore';
-
-// Import role-specific views
 import { PrincipalSchoolView, SectionHeadView, GradeHeadView, FounderSchoolView, AdminSchoolView } from './classroom';
 import { ClassroomList, TeacherDashboard } from '../components/classroom';
+import { SkeletonCard } from '../components/shared/SkeletonLoader';
 import GlobalHeader from '../components/shared/GlobalHeader';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import ScreenWrapper from '../components/shared/ScreenWrapper';
 import { hasRole, ADMIN_ROLES, MANAGEMENT_ROLES } from '../utils/permissions';
 import { useThemedColors } from '../hooks/useThemedColors';
-
-// Shared container styling for role-based views
-const ROLE_VIEW_CONTAINER_STYLE = {
-    flex: 1,
-    padding: Theme.spacing.lg,
-};
+import { useFeatureAccess } from '../hooks/useFeatureAccess';
+import PositiveInvitation from '../components/shared/PositiveInvitation';
+import { hapticLight } from '../utils/haptics';
 
 export default function ClassroomScreen() {
     const colors = useThemedColors();
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const { role } = useUserRole();
+    const { isGuest } = useFeatureAccess();
     const [loading, setLoading] = useState(true);
     const [principalData, setPrincipalData] = useState<{ schoolId: string, userId: string } | null>(null);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -56,7 +49,6 @@ export default function ClassroomScreen() {
         try {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
-                // Fetch user's school_id
                 const { data, error } = await supabase
                     .from('users')
                     .select('school_id')
@@ -80,42 +72,30 @@ export default function ClassroomScreen() {
     if (loading) {
         return (
             <ScreenWrapper>
-                <Center sx={{ flex: 1 }}>
-                    <Spinner size="large" color={colors.action} />
-                </Center>
+                <VStack space="md" p={Theme.spacing.lg}>
+                    <SkeletonCard height={60} />
+                    <SkeletonCard height={200} />
+                    <SkeletonCard height={120} />
+                </VStack>
             </ScreenWrapper>
         );
     }
 
-    // Role-based views
+    // Role-based routing
     if (principalData) {
-        if (role === 'founder') {
-            return <FounderSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchPrincipalData} />;
-        }
-        if (role === 'admin') {
-            return <AdminSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchPrincipalData} />;
-        }
-        if (role === 'principal' || role === 'developer') {
-            return <PrincipalSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchPrincipalData} />;
-        }
+        if (role === 'founder') return <FounderSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchPrincipalData} />;
+        if (role === 'admin') return <AdminSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchPrincipalData} />;
+        if (role === 'principal' || role === 'developer') return <PrincipalSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchPrincipalData} />;
     }
 
-    if (role === 'section_head') {
-        return <SectionHeadView schoolId={principalData?.schoolId} userId={principalData?.userId} />;
-    }
+    if (role === 'section_head') return <SectionHeadView schoolId={principalData?.schoolId} userId={principalData?.userId} />;
+    if (role === 'grade_head') return <GradeHeadView schoolId={principalData?.schoolId} userId={principalData?.userId} />;
 
-    if (role === 'grade_head') {
-        return <GradeHeadView schoolId={principalData?.schoolId} userId={principalData?.userId} />;
-    }
-
-    // Custom configuration for Teachers
+    // Teacher View
     if (role === 'teacher') {
         return (
             <ScreenWrapper>
-                <GlobalHeader
-                    title="Classroom 💛"
-                    subtitle={undefined} // Explicitly no subtitle
-                />
+                <GlobalHeader title="Classroom 💛" subtitle={undefined} />
                 <Box sx={{ flex: 1 }}>
                     <TeacherDashboard onRefresh={fetchPrincipalData} />
                 </Box>
@@ -123,39 +103,34 @@ export default function ClassroomScreen() {
         );
     }
 
-    // Default view for students (Principal/Teacher already handled)
+    // Default/Student View
     const isStudentRole = role === 'student';
-
-    const headerTitle = isStudentRole
-        ? (t('classroom.journeyTitle') || 'Learning Journey')
-        : (t('classroom.initializing') || 'Sanctuary Initialization');
-
-    const headerSubtitle = isStudentRole
-        ? (t('classroom.mySanctuary') || 'My Sanctuary')
-        : (t('classroom.identifyingRole') || 'Preparing your workspace...');
-
-    console.log('[ClassroomScreen] Current role:', role);
-    console.log('[ClassroomScreen] Using header title:', headerTitle);
+    const headerTitle = isStudentRole ? (t('classroom.journeyTitle') || 'Learning Journey') : (t('classroom.initializing') || 'Sanctuary Initialization');
+    const headerSubtitle = isStudentRole ? (t('classroom.mySanctuary') || 'My Sanctuary') : (t('classroom.identifyingRole') || 'Preparing your workspace...');
 
     return (
         <ScreenWrapper>
-            <GlobalHeader
-                title={headerTitle}
-                subtitle={headerSubtitle}
-            />
+            <GlobalHeader title={headerTitle} subtitle={headerSubtitle} />
             <Box sx={{ flex: 1, padding: Theme.spacing.lg }}>
                 <ClassroomList
                     refreshTrigger={refreshTrigger}
                     onClassroomPress={(classroom) => {
                         navigation.navigate('Classroom' as any, {
                             screen: 'ClassroomDetails',
-                            params: {
-                                classroomId: classroom.id,
-                                classroomName: classroom.name
-                            }
+                            params: { classroomId: classroom.id, classroomName: classroom.name }
                         });
                     }}
                 />
+
+                {isGuest && (
+                    <PositiveInvitation
+                        type="guest"
+                        onAction={() => {
+                            hapticLight();
+                            // TODO: Add auth navigation
+                        }}
+                    />
+                )}
             </Box>
         </ScreenWrapper>
     );

@@ -7,8 +7,7 @@ import LibraryResourceCard, { ResourceType } from '../components/library/Library
 import AddResourceModal from '../components/library/AddResourceModal';
 import { Theme } from '../constants/Theme';
 import { useTranslation } from 'react-i18next';
-import EmptyState from '../components/shared/EmptyState';
-import { BookOpen, Search } from 'lucide-react-native';
+import { BookOpen, Search, Plus } from 'lucide-react-native';
 import SanctuaryInput from '../components/shared/SanctuaryInput';
 import * as Linking from 'expo-linking';
 import { useThemedColors } from '../hooks/useThemedColors';
@@ -17,6 +16,8 @@ import { api } from '../lib/api';
 import { isDemo } from '../lib/api/demo';
 import { Zap } from 'lucide-react-native';
 import { LibraryResource } from '../types/Community';
+import { SkeletonCard } from '../components/shared/SkeletonLoader';
+import PositiveInvitation from '../components/shared/PositiveInvitation';
 
 // local MOCK_RESOURCES removed, now using api.library
 
@@ -158,11 +159,16 @@ export default function LibraryScreen() {
                     </VStack>
 
                     {/* Resources List */}
-                    {filteredResources.length === 0 ? (
-                        <EmptyState
-                            icon={BookOpen}
-                            title={t('library.emptyTitle')}
-                            description={t('library.emptyDesc')}
+                    {loading ? (
+                        <VStack space="md">
+                            <SkeletonCard height={120} />
+                            <SkeletonCard height={120} />
+                            <SkeletonCard height={120} />
+                        </VStack>
+                    ) : filteredResources.length === 0 ? (
+                        <PositiveInvitation
+                            context="library"
+                            onAction={() => setIsAddModalOpen(true)}
                         />
                     ) : (
                         <VStack space="md">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, RefreshControl, Alert, Linking } from 'react-native';
+import { ScrollView, RefreshControl, Alert } from 'react-native';
 import {
     Box,
     VStack,
@@ -16,19 +16,17 @@ import { supabase } from '../lib/supabase';
 import { Theme } from '../constants/Theme';
 import { hapticSuccess, hapticLight, hapticError } from '../utils/haptics';
 
-import { LogOut, Settings, Trophy } from 'lucide-react-native';
+import { LogOut, Settings, Trophy, MapPin, Globe, Phone, ChevronRight } from 'lucide-react-native';
 // New Components
 import IdentityCard from '../components/profile/IdentityCard';
-import QRCodeGenerator from '../components/shared/QRCodeGenerator';
-import ControlScroll from '../components/profile/ControlScroll';
-import EditProfileModal from '../components/profile/EditProfileModal';
-import GlobalHeader from '../components/shared/GlobalHeader';
 import UserStatsCard from '../components/profile/UserStatsCard';
 import SupportSection from '../components/profile/SupportSection';
 import ThuthimalBadge from '../components/profile/ThuthimalBadge';
+import EditProfileModal from '../components/profile/EditProfileModal';
+import GlobalHeader from '../components/shared/GlobalHeader';
 import AppSettingsScreen from './AppSettingsScreen';
 import { Modal, TouchableOpacity } from 'react-native';
-import { X, Phone, Globe, MapPin, QrCode, ChevronRight } from 'lucide-react-native';
+import { X } from 'lucide-react-native';
 import ScreenWrapper from '../components/shared/ScreenWrapper';
 import { useThemedColors } from '../hooks/useThemedColors';
 import { useEnvironment } from '../context';
@@ -39,7 +37,6 @@ export default function ProfileScreen() {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [isEditModalVisible, setEditModalVisible] = useState(false);
-    const [isFullScreen, setIsFullScreen] = useState(false);
     const [isSettingsVisible, setSettingsVisible] = useState(false);
     const { isDark } = useEnvironment();
     const colors = useThemedColors();
@@ -94,11 +91,6 @@ export default function ProfileScreen() {
         } finally {
             setLoading(false);
         }
-    }
-
-    async function changeLanguage(lang: 'si' | 'ta' | 'en') {
-        hapticSuccess();
-        await i18n.changeLanguage(lang);
     }
 
     async function handleLogout() {
@@ -260,7 +252,7 @@ export default function ProfileScreen() {
                             <IdentityCard
                                 profile={profile}
                                 onEdit={() => setEditModalVisible(true)}
-                                onExpand={() => setIsFullScreen(true)}
+                            // onExpand removed to hide redundant "Full View" button
                             />
                         </Center>
 
@@ -287,9 +279,40 @@ export default function ProfileScreen() {
                             }}
                         />
 
+                        {/* Contact Info Section (Inlined) */}
+                        <Box sx={{ backgroundColor: colors.secondary, padding: Theme.spacing.lg, borderRadius: Theme.corners.comfortable, borderColor: colors.border, borderWidth: 1, marginHorizontal: Theme.spacing.md }}>
+                            <Heading color={colors.text} size="sm" mb="$4">
+                                {t('profile.contactInfo')}
+                            </Heading>
+                            <VStack space="md">
+                                <HStack space="md" alignItems="center">
+                                    <MapPin size={18} color={colors.textSecondary} />
+                                    <VStack>
+                                        <Text color={colors.textTertiary} size="xs">School</Text>
+                                        <Text color={colors.text}>{profile?.school_name || 'Not assigned'}</Text>
+                                    </VStack>
+                                </HStack>
+                                <HStack space="md" alignItems="center">
+                                    <Globe size={18} color={colors.textSecondary} />
+                                    <VStack>
+                                        <Text color={colors.textTertiary} size="xs">Email</Text>
+                                        <Text color={colors.text}>{profile?.email}</Text>
+                                    </VStack>
+                                </HStack>
+                                <HStack space="md" alignItems="center">
+                                    <Phone size={18} color={colors.textSecondary} />
+                                    <VStack>
+                                        <Text color={colors.textTertiary} size="xs">Phone</Text>
+                                        <Text color={colors.text}>{profile?.phone || '+94 7X XXX XXXX'}</Text>
+                                    </VStack>
+                                </HStack>
+                            </VStack>
+                        </Box>
+
+
                         {/* Student-specific Growth & Insights */}
                         {profile?.role === 'student' && (
-                            <Box sx={{ backgroundColor: 'rgba(251, 191, 36, 0.1)', padding: Theme.spacing.lg, borderRadius: Theme.corners.generous, borderWidth: 1, borderColor: Theme.colors.sanctuarySaffron }}>
+                            <Box sx={{ backgroundColor: 'rgba(251, 191, 36, 0.1)', padding: Theme.spacing.lg, borderRadius: Theme.corners.generous, borderWidth: 1, borderColor: Theme.colors.sanctuarySaffron, marginHorizontal: Theme.spacing.md }}>
                                 <HStack space="sm" alignItems="center" mb="$2">
                                     <Trophy size={18} color={Theme.colors.sanctuarySaffron} />
                                     <Text color={colors.text} bold>Growth & Insights</Text>
@@ -315,6 +338,7 @@ export default function ProfileScreen() {
                                 padding: Theme.spacing.lg,
                                 borderWidth: 1,
                                 borderColor: colors.border,
+                                marginHorizontal: Theme.spacing.md
                             }}
                         >
                             <HStack justifyContent="space-between" alignItems="center">
@@ -347,7 +371,7 @@ export default function ProfileScreen() {
                         <SupportSection />
 
                         {/* Account Actions - Moved to end */}
-                        <VStack space="md" mt={Theme.spacing.xl}>
+                        <VStack space="md" mt={Theme.spacing.xl} mx={Theme.spacing.md}>
                             {/* Logout Button */}
                             <Button
                                 size="xl"
@@ -400,91 +424,6 @@ export default function ProfileScreen() {
                     onSave={fetchProfile}
                     currentProfile={profile}
                 />
-
-                {/* Full Screen Profile Modal */}
-                <Modal
-                    animationType="slide"
-                    visible={isFullScreen}
-                    onRequestClose={() => setIsFullScreen(false)}
-                    presentationStyle="pageSheet"
-                >
-                    <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
-                        {/* Header */}
-                        <VStack p={Theme.spacing.lg} pt={Theme.spacing.xl} space="md">
-                            <HStack justifyContent="space-between" alignItems="center">
-                                <Heading color={Theme.colors.sanctuarySaffron} size="xl">
-                                    {t('profile.detailedProfile')}
-                                </Heading>
-                                <TouchableOpacity onPress={() => setIsFullScreen(false)} style={{ padding: 8 }}>
-                                    <X size={24} color={Theme.colors.mistGray} />
-                                </TouchableOpacity>
-                            </HStack>
-                        </VStack>
-
-                        <ScrollView
-                            showsVerticalScrollIndicator={false}
-                            contentContainerStyle={{ padding: Theme.spacing.lg, paddingBottom: 50 }}
-                        >
-                            <VStack space="2xl">
-                                {/* Large Identity Card Repetition or Just Info */}
-                                <Center>
-                                    <IdentityCard
-                                        profile={profile}
-                                        onEdit={() => setEditModalVisible(true)}
-                                    // No expand button here
-                                    />
-                                </Center>
-
-                                {/* Detailed Info Section */}
-                                <Box sx={{ backgroundColor: colors.secondary, padding: Theme.spacing.lg, borderRadius: Theme.corners.comfortable, borderColor: colors.border, borderWidth: 1 }}>
-                                    <Heading color={colors.text} size="sm" mb="$4">
-                                        {t('profile.contactInfo')}
-                                    </Heading>
-                                    <VStack space="md">
-                                        <HStack space="md" alignItems="center">
-                                            <MapPin size={18} color={colors.textSecondary} />
-                                            <VStack>
-                                                <Text color={colors.textTertiary} size="xs">School</Text>
-                                                <Text color={colors.text}>{profile?.school_name || 'Not assigned'}</Text>
-                                            </VStack>
-                                        </HStack>
-                                        <HStack space="md" alignItems="center">
-                                            <Globe size={18} color={colors.textSecondary} />
-                                            <VStack>
-                                                <Text color={colors.textTertiary} size="xs">Email</Text>
-                                                <Text color={colors.text}>{profile?.email}</Text>
-                                            </VStack>
-                                        </HStack>
-                                        <HStack space="md" alignItems="center">
-                                            <Phone size={18} color={colors.textSecondary} />
-                                            <VStack>
-                                                <Text color={colors.textTertiary} size="xs">Phone</Text>
-                                                <Text color={colors.text}>{profile?.phone || '+94 7X XXX XXXX'}</Text>
-                                            </VStack>
-                                        </HStack>
-                                    </VStack>
-                                </Box>
-
-                                {/* Stats Again (Optional) */}
-                                <UserStatsCard role={profile?.role || 'student'} />
-
-                                {/* QR Code Large View */}
-                                <Box sx={{ backgroundColor: 'white', padding: Theme.spacing.xl, borderRadius: Theme.corners.comfortable, alignItems: 'center' }}>
-                                    <Heading color="black" size="md" mb="$4">My Identity QR</Heading>
-                                    <QRCodeGenerator
-                                        value={profile?.id || 'gurudevi-guest'}
-                                        size={200}
-                                        color="black"
-                                        backgroundColor="white"
-                                    />
-                                    <Text color="gray" size="sm" mt="$2" textAlign="center">
-                                        Scan to share contact info
-                                    </Text>
-                                </Box>
-                            </VStack>
-                        </ScrollView>
-                    </Box>
-                </Modal>
 
                 {/* App Settings Modal */}
                 <Modal

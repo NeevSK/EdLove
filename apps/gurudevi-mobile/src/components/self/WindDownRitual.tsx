@@ -16,6 +16,8 @@ import { Moon, CheckCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../../constants/Theme';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';
+import SkeletonLoader, { SkeletonCard } from '../shared/SkeletonLoader';
+import PositiveInvitation from '../shared/PositiveInvitation';
 
 interface WindDownRitualProps {
   userId?: string;
@@ -25,7 +27,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
   const [completed, setCompleted] = useState(false);
-  
+
   // Wind-down steps
   const [wentWell, setWentWell] = useState('');
   const [toRelease, setToRelease] = useState('');
@@ -117,7 +119,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
         >
           <VStack space="lg" alignItems="center">
             <CheckCircle color={Theme.colors.sanctuarySaffron} size={64} />
-            
+
             <VStack space="xs" alignItems="center">
               <Text
                 color={Theme.colors.sacredWhite}
@@ -194,6 +196,15 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
           </VStack>
         </Box>
       </VStack>
+    );
+  }
+
+  if (!userId) {
+    return (
+      <PositiveInvitation
+        type="guest"
+        onAction={() => { }} // TODO: Navigate to Auth
+      />
     );
   }
 

@@ -27,6 +27,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Theme, typography } from '../../constants/Theme';
 import { supabase } from '../../lib/supabase';
+import SkeletonLoader, { SkeletonCard } from '../shared/SkeletonLoader';
+import PositiveInvitation from '../shared/PositiveInvitation';
 
 interface ProgressTreeProps {
     userId?: string;
@@ -46,6 +48,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
     const [interactionCount, setInteractionCount] = useState(0);
     const [currentStage, setCurrentStage] = useState(GROWTH_STAGES[0]);
     const [showBloom, setShowBloom] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     // Animation values
     const treeScale = useSharedValue(0.8);
@@ -55,6 +58,8 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
     useEffect(() => {
         if (userId) {
             fetchInteractionCount();
+        } else {
+            setIsLoading(false);
         }
 
         // Gentle breathing animation for the tree
@@ -103,6 +108,8 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
             setInteractionCount(total);
         } catch (error) {
             console.error('Error fetching interaction count:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -143,9 +150,28 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
     // Calculate progress to next stage
     const nextStage = GROWTH_STAGES.find(s => s.minInteractions > interactionCount);
     const progressPercent = nextStage
-        ? ((interactionCount - currentStage.minInteractions) / 
-           (nextStage.minInteractions - currentStage.minInteractions)) * 100
+        ? ((interactionCount - currentStage.minInteractions) /
+            (nextStage.minInteractions - currentStage.minInteractions)) * 100
         : 100;
+
+    if (isLoading && userId) {
+        return (
+            <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
+                <SkeletonCard height={40} />
+                <SkeletonCard height={280} />
+                <SkeletonCard height={80} />
+            </VStack>
+        );
+    }
+
+    if (!userId) {
+        return (
+            <PositiveInvitation
+                type="guest"
+                onAction={() => { }} // TODO: Navigate to Auth
+            />
+        );
+    }
 
     return (
         <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>

@@ -29,6 +29,10 @@ import ScreenWrapper from '../../components/shared/ScreenWrapper';
 import { Shield, Activity, Database, Server, Zap } from 'lucide-react-native';
 import { useStore } from '../../store/useStore';
 import SandboxBanner from '../../components/shared/SandboxBanner';
+import { SkeletonCard } from '../../components/shared/SkeletonLoader';
+import { useFeatureAccess } from '../../hooks/useFeatureAccess';
+import PositiveInvitation from '../../components/shared/PositiveInvitation';
+import { hapticLight } from '../../utils/haptics';
 
 interface AdminSchoolViewProps {
     schoolId: string;
@@ -39,6 +43,7 @@ interface AdminSchoolViewProps {
 export default function AdminSchoolView({ schoolId, userId }: AdminSchoolViewProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
+    const { isGuest } = useFeatureAccess();
 
     // Resilient Hook
     const { school, stats, isLoading } = useSchoolStats(schoolId);
@@ -105,6 +110,15 @@ export default function AdminSchoolView({ schoolId, userId }: AdminSchoolViewPro
                                         {t('admin.infraSummary', { name: school?.name || 'Sanctuary' })}
                                     </Text>
                                 </Box>
+
+                                {isGuest && (
+                                    <PositiveInvitation
+                                        type="guest"
+                                        onAction={() => {
+                                            hapticLight();
+                                        }}
+                                    />
+                                )}
                             </>
                         ) : (
                             <RoleInitialState
@@ -120,7 +134,16 @@ export default function AdminSchoolView({ schoolId, userId }: AdminSchoolViewPro
                         )
                     )}
 
-                    {isLoading && <Spinner color={colors.action} />}
+                    {isLoading && (
+                        <VStack space="md">
+                            <HStack space="md">
+                                <SkeletonCard height={100} style={{ flex: 1 }} />
+                                <SkeletonCard height={100} style={{ flex: 1 }} />
+                            </HStack>
+                            <SkeletonCard height={150} />
+                            <SkeletonCard height={80} />
+                        </VStack>
+                    )}
                 </VStack>
             </ScrollView>
         </ScreenWrapper>

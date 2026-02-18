@@ -39,6 +39,8 @@ import { supabase } from '../../lib/supabase';
 import { hapticLight, hapticMedium } from '../../utils/haptics';
 import { useSafeMutation } from '../../hooks/useSafeMutation';
 import { useJournal } from '../../hooks/self/useJournal';
+import SkeletonLoader, { SkeletonCard } from '../shared/SkeletonLoader';
+import PositiveInvitation from '../shared/PositiveInvitation';
 
 interface FireJournalProps {
     userId?: string;
@@ -49,7 +51,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
     const [content, setContent] = useState('');
     const [isBurning, setIsBurning] = useState(false);
     // Use useJournal to keep cache in sync (even if not explicitly showing history)
-    const { refreshData } = useJournal(userId);
+    const { refreshData, isLoading } = useJournal(userId);
     const [showSuccess, setShowSuccess] = useState(false);
 
     // Refs for timeout cleanup
@@ -89,7 +91,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                 { scale: scale.value },
                 { translateY: translateY.value },
                 { rotate: `${rotation.value}deg` },
-            ],
+            ] as any,
         };
     });
 
@@ -133,10 +135,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
 
     const handleBurn = async () => {
         if (!content.trim()) return;
-        if (!userId) {
-            console.error('User must be logged in to use Fire Journal');
-            return;
-        }
+        if (!userId) return;
 
         hapticMedium();
         setIsBurning(true); // Trigger animation immediately
@@ -255,6 +254,28 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
             onBurned?.();
         }, 2000);
     };
+
+    if (isLoading && userId) {
+        return (
+            <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
+                <SkeletonCard height={40} />
+                <SkeletonCard height={200} />
+                <HStack space="md" justifyContent="flex-end">
+                    <SkeletonLoader width={48} height={48} borderRadius={24} />
+                    <SkeletonLoader width={100} height={48} borderRadius={24} />
+                </HStack>
+            </VStack>
+        );
+    }
+
+    if (!userId) {
+        return (
+            <PositiveInvitation
+                type="guest"
+                onAction={() => { }} // TODO: Navigate to Auth
+            />
+        );
+    }
 
     return (
         <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>

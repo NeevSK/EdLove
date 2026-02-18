@@ -19,6 +19,8 @@ import { hapticLight, hapticSuccess } from '../../utils/haptics';
 import { WisdomNote } from '../../types/Wellbeing';
 import { useSafeMutation } from '../../hooks/useSafeMutation';
 import { useWisdom } from '../../hooks/self/useWisdom';
+import SkeletonLoader, { SkeletonCard } from '../shared/SkeletonLoader';
+import PositiveInvitation from '../shared/PositiveInvitation';
 
 interface WisdomSeedsProps {
   userId?: string;
@@ -27,7 +29,7 @@ interface WisdomSeedsProps {
 export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
   const { t } = useTranslation();
   // Resilient Data Hook
-  const { notes, refreshData } = useWisdom(userId);
+  const { notes, refreshData, isLoading } = useWisdom(userId);
 
   const [showForm, setShowForm] = useState(false);
 
@@ -70,6 +72,25 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
     "Mistakes are data, not disasters",
     "Connection before content"
   ];
+
+  if (isLoading && userId) {
+    return (
+      <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}>
+        <SkeletonCard height={48} />
+        <SkeletonCard height={80} />
+        <SkeletonCard height={80} />
+      </VStack>
+    );
+  }
+
+  if (!userId) {
+    return (
+      <PositiveInvitation
+        type="guest"
+        onAction={() => { }} // TODO: Navigate to Auth
+      />
+    );
+  }
 
   return (
     <VStack space="lg" sx={{ flex: 1 }}>
@@ -132,30 +153,11 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
               ))}
 
               {notes.length === 0 && (
-                <VStack space="md" p={Theme.spacing.lg}>
-                  <Text
-                    color={Theme.colors.mistGray}
-                    size="md"
-                    textAlign="center"
-                  >
-                    {t('self.yourPedagogyJournal')}
-                  </Text>
-                  <VStack space="xs" mt="$4">
-                    <Text color={Theme.colors.dimGray} size="sm" bold>
-                      {t('self.exampleInsights')}
-                    </Text>
-                    {wisdomPrompts.map((prompt, idx) => (
-                      <Text
-                        key={idx}
-                        color={Theme.colors.mistGray}
-                        size="sm"
-                        fontStyle="italic"
-                      >
-                        • {prompt}
-                      </Text>
-                    ))}
-                  </VStack>
-                </VStack>
+                <PositiveInvitation
+                  icon={Lightbulb}
+                  title={t('self.yourPedagogyJournal')}
+                  description={t('self.exampleInsights')}
+                />
               )}
             </VStack>
           </ScrollView>

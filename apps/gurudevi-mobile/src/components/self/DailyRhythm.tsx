@@ -41,6 +41,8 @@ import EmptyState from '../shared/EmptyState';
 import ErrorBoundary from '../shared/ErrorBoundary';
 import { useFeatureAccess } from '../../hooks/useFeatureAccess';
 import { useThemedColors } from '../../hooks/useThemedColors';
+import SkeletonLoader, { SkeletonCard, SkeletonTextLine } from '../shared/SkeletonLoader';
+import PositiveInvitation from '../shared/PositiveInvitation';
 
 const DAYS = [
     { id: 1, label: 'M' },
@@ -191,15 +193,16 @@ function DailyRhythmContent() {
 
             {/* List */}
             {loading && periods.length === 0 ? (
-                <Center sx={{ flex: 1 }}>
-                    <Spinner color={Theme.colors.sanctuarySaffron} />
-                </Center>
+                <VStack space="md" sx={{ flex: 1 }}>
+                    <SkeletonCard height={80} />
+                    <SkeletonCard height={80} />
+                    <SkeletonCard height={80} />
+                </VStack>
             ) : periods.length === 0 ? (
-                <EmptyState
+                <PositiveInvitation
                     icon={Clock}
                     title={t('self.noClasses')}
                     description={t('self.addLesson')}
-                    minHeight={200}
                 />
             ) : (
                 <ScrollView showsVerticalScrollIndicator={false}>

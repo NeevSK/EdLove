@@ -43,8 +43,8 @@ export const colors = {
 
     // Text Colors - Light Mode
     charcoalTruth: '#0F172A',       // Deep Navy Ink
-    slateGray: '#64748B',           // Slate
-    stoneGray: '#94A3B8',           // Light Slate (tertiary)
+    slateGray: '#475569',           // Darker Slate (Secondary) - Passed AA
+    stoneGray: '#64748B',           // Medium Slate (Tertiary) - Passed AA
 
     // Text Colors - Dark Mode
     sacredWhite: '#F8FAFC',         // Porcelain White

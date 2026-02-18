@@ -20,6 +20,8 @@ import { hapticLight, hapticSuccess } from '../../utils/haptics';
 import { GratitudeEntry } from '../../types/Wellbeing';
 import { useSafeMutation } from '../../hooks/useSafeMutation';
 import { useGratitude } from '../../hooks/self/useGratitude';
+import SkeletonLoader, { SkeletonCard } from '../shared/SkeletonLoader';
+import PositiveInvitation from '../shared/PositiveInvitation';
 
 interface GratitudeGlimmersProps {
   userId?: string;
@@ -28,7 +30,7 @@ interface GratitudeGlimmersProps {
 export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
   const { t } = useTranslation();
   // Resilient Data Hook
-  const { entries, refreshData } = useGratitude(userId);
+  const { entries, refreshData, isLoading } = useGratitude(userId);
 
   const [showForm, setShowForm] = useState(false);
 
@@ -74,6 +76,25 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
     { id: 'colleague-kindness', label: t('self.colleagueKindness'), emoji: '🤝', color: Theme.colors.skyBlue },
     { id: 'personal-win', label: t('self.personalWin'), emoji: '🌟', color: Theme.colors.sageGreen }
   ];
+
+  if (isLoading && userId) {
+    return (
+      <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}>
+        <SkeletonCard height={48} />
+        <SkeletonCard height={80} />
+        <SkeletonCard height={80} />
+      </VStack>
+    );
+  }
+
+  if (!userId) {
+    return (
+      <PositiveInvitation
+        type="guest"
+        onAction={() => { }} // TODO: Navigate to Auth
+      />
+    );
+  }
 
   return (
     <VStack space="lg" sx={{ flex: 1 }}>
@@ -143,15 +164,10 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
               })}
 
               {entries.length === 0 && (
-                <Box p={Theme.spacing.xl}>
-                  <Text
-                    color={Theme.colors.dimGray}
-                    size="md"
-                    textAlign="center"
-                  >
-                    {t('self.whatSmiledToday')}
-                  </Text>
-                </Box>
+                <PositiveInvitation
+                  icon={Heart}
+                  title={t('self.whatSmiledToday')}
+                />
               )}
             </VStack>
           </ScrollView>

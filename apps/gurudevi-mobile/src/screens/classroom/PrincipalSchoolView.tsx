@@ -52,6 +52,7 @@ import RoleInitialState from '../../components/classroom/RoleInitialState';
 import ScreenWrapper from '../../components/shared/ScreenWrapper';
 import SandboxBanner from '../../components/shared/SandboxBanner';
 import { CreateSchoolModal } from '../../components/classroom';
+import { SkeletonCard } from '../../components/shared/SkeletonLoader';
 
 interface PrincipalSchoolViewProps {
     schoolId: string;
@@ -112,14 +113,17 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                 >
                     {/* Loading State */}
                     {isLoading && (
-                        <Box
-                            sx={{
-                                padding: Theme.spacing.xl,
-                                alignItems: 'center',
-                            }}
-                        >
-                            <Spinner color={colors.action} />
-                        </Box>
+                        <VStack space="md">
+                            <SkeletonCard height={100} />
+                            <HStack space="md">
+                                <SkeletonCard height={120} style={{ flex: 1 }} />
+                                <SkeletonCard height={120} style={{ flex: 1 }} />
+                            </HStack>
+                            <HStack space="md">
+                                <SkeletonCard height={120} style={{ flex: 1 }} />
+                                <SkeletonCard height={120} style={{ flex: 1 }} />
+                            </HStack>
+                        </VStack>
                     )}
 
                     {/* Error State */}

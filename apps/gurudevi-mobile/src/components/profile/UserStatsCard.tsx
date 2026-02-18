@@ -39,23 +39,23 @@ export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
                 return {
                     title: t('profile.impact.teacher'),
                     items: [
-                        { label: t('classroom.title'), value: stats?.classesTaught || 12, icon: BookOpen, color: colors.action },
-                        { label: t('role.student'), value: stats?.studentsCount || 145, icon: Users, color: colors.success },
-                        { label: t('profile.stats.points'), value: stats?.guruPoints || 850, icon: Star, color: colors.warning },
+                        { label: t('classroom.title'), value: stats?.classesTaught ?? 0, icon: BookOpen, color: colors.action },
+                        { label: t('role.student'), value: stats?.studentsCount ?? 0, icon: Users, color: colors.success },
+                        { label: t('profile.stats.points'), value: stats?.guruPoints ?? 0, icon: Star, color: colors.warning },
                     ],
-                    progressLabel: 'Level 5 Guru',
-                    progressValue: 70
+                    progressLabel: t('profile.stats.level', { level: 1 }) || 'Level 1 Guru',
+                    progressValue: stats?.guruPoints ? Math.min(Math.floor(stats.guruPoints / 10), 100) : 0
                 };
             case 'student':
                 return {
                     title: t('profile.impact.student'),
                     items: [
-                        { label: t('profile.stats.learningStreaks'), value: t('profile.stats.streak', { count: stats?.attendanceStreak || 5 }), icon: Clock, color: colors.success },
-                        { label: t('profile.stats.assignmentsDone'), value: stats?.assignmentsCompleted || 24, icon: BookOpen, color: colors.action },
-                        { label: t('profile.stats.points'), value: stats?.guruPoints || 320, icon: Star, color: colors.warning },
+                        { label: t('profile.stats.learningStreaks'), value: t('profile.stats.streak', { count: stats?.attendanceStreak ?? 0 }), icon: Clock, color: colors.success },
+                        { label: t('profile.stats.assignmentsDone'), value: stats?.assignmentsCompleted ?? 0, icon: BookOpen, color: colors.action },
+                        { label: t('profile.stats.points'), value: stats?.guruPoints ?? 0, icon: Star, color: colors.warning },
                     ],
-                    progressLabel: 'Level 3 Scholar',
-                    progressValue: 45
+                    progressLabel: t('profile.stats.scholarLevel', { level: 1 }) || 'Level 1 Scholar',
+                    progressValue: stats?.guruPoints ? Math.min(Math.floor(stats.guruPoints / 5), 100) : 0
                 };
             case 'founder':
                 return {

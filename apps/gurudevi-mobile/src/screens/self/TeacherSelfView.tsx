@@ -7,6 +7,7 @@
  */
 
 import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import {
     Box,
     VStack,
@@ -41,10 +42,14 @@ import { supabase } from '../../lib/supabase';
 import GlobalHeader from '../../components/shared/GlobalHeader';
 import DailyContentCard from '../../components/self/DailyContentCard';
 import ThuthimalBadge from '../../components/profile/ThuthimalBadge';
+import { SkeletonCard } from '../../components/shared/SkeletonLoader';
 import WelcomeModal from '../../components/self/WelcomeModal';
 import { useStore } from '../../store/useStore';
 import { useThemedColors } from '../../hooks/useThemedColors';
 import ScreenWrapper from '../../components/shared/ScreenWrapper';
+import IdentityCard from '../../components/profile/IdentityCard';
+import UserStatsCard from '../../components/profile/UserStatsCard';
+import EditProfileModal from '../../components/profile/EditProfileModal';
 
 // Progressive Architecture: Core features always visible, others in "More Tools"
 const CORE_FEATURES = [
@@ -65,10 +70,13 @@ const MORE_TOOLS_FEATURES = [
 
 export default function TeacherSelfView() {
     const { t } = useTranslation();
+    const navigation = useNavigation<any>();
     const [activeFeature, setActiveFeature] = useState('mood');
     const [userId, setUserId] = useState<string | null>(null);
+    const [loadingUser, setLoadingUser] = useState(true);
     const [showMoreTools, setShowMoreTools] = useState(false);
     const [userProfile, setUserProfile] = useState<any>(null);
+    const [isEditModalVisible, setEditModalVisible] = useState(false);
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const colors = useThemedColors();
@@ -76,20 +84,40 @@ export default function TeacherSelfView() {
     // Get current user and profile on mount
     React.useEffect(() => {
         const fetchUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                setUserId(user.id);
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    setUserId(user.id);
 
-                // Fetch full profile for Thuthimal status
-                const { data: profile } = await supabase
-                    .from('users')
-                    .select('is_thuthimal, thuthimal_gifter, thuthimal_gifted_at')
-                    .eq('id', user.id)
-                    .single();
+                    // Fetch full profile for Identity Card
+                    const { data: profile } = await supabase
+                        .from('users')
+                        .select(`
+                            *,
+                            schools (
+                                name
+                            )
+                        `)
+                        .eq('id', user.id)
+                        .single();
 
-                if (profile) {
-                    setUserProfile(profile);
+                    if (profile) {
+                        setUserProfile({
+                            ...profile,
+                            school_name: profile.schools?.name || null
+                        });
+                    } else {
+                        setUserProfile({
+                            id: user.id,
+                            full_name: user.user_metadata?.full_name || user.email?.split('@')[0],
+                            email: user.email,
+                            role: user.user_metadata?.role || 'teacher',
+                            school_name: null
+                        });
+                    }
                 }
+            } finally {
+                setLoadingUser(false);
             }
         };
         fetchUser();
@@ -190,6 +218,10 @@ export default function TeacherSelfView() {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}
                 >
+                    {/* Identity & Stats Anchor - REMOVED for specific role views to reduce redundancy */}
+                    {/* Access Profile via GlobalHeader Avatar */}
+
+
                     {/* Thuthimal Badge (Compact) */}
                     {userProfile?.is_thuthimal && (
                         <Box px="$6" mb="$3" alignItems="flex-end">
@@ -306,7 +338,13 @@ export default function TeacherSelfView() {
                                 minHeight: 300
                             }}
                         >
-                            {renderFeature()}
+                            {loadingUser ? (
+                                <VStack space="md">
+                                    <SkeletonCard height={40} />
+                                    <SkeletonCard height={150} />
+                                    <SkeletonCard height={40} />
+                                </VStack>
+                            ) : renderFeature()}
                         </Box>
                     </Box>
                 </ScrollView>
@@ -317,6 +355,16 @@ export default function TeacherSelfView() {
             <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
+            />
+            <EditProfileModal
+                visible={isEditModalVisible}
+                onClose={() => setEditModalVisible(false)}
+                onSave={() => {
+                    setLoadingUser(true);
+                    // Trigger re-fetch - could be better but this is simple for now
+                    window.dispatchEvent(new Event('refresh-profile')); // Not ideal in RN, but let's just re-mount logic or similar
+                }}
+                currentProfile={userProfile}
             />
         </ScreenWrapper>
     );

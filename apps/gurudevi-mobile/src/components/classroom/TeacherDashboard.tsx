@@ -15,7 +15,8 @@ import {
     ClipboardCheck,
     BookOpen,
     Users,
-    School
+    School,
+    Zap
 } from 'lucide-react-native';
 import { Theme } from '../../constants/Theme';
 import { useNavigation } from '@react-navigation/native';
@@ -27,9 +28,11 @@ import { hapticLight } from '../../utils/haptics';
 import ClassroomList from './ClassroomList';
 import CreateClassroomModal from './CreateClassroomModal';
 import { useThemedColors } from '../../hooks/useThemedColors';
-import { Zap } from 'lucide-react-native';
 import SandboxBanner from '../shared/SandboxBanner';
 import GlobalHeader from '../shared/GlobalHeader';
+import PositiveInvitation from '../shared/PositiveInvitation';
+import { useFeatureAccess } from '../../hooks/useFeatureAccess';
+import { SkeletonCard } from '../shared/SkeletonLoader';
 
 interface TeacherDashboardProps {
     onRefresh?: () => void;
@@ -38,10 +41,12 @@ interface TeacherDashboardProps {
 export default function TeacherDashboard({ onRefresh }: TeacherDashboardProps) {
     const { t } = useTranslation();
     const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
-    const { teacherName, isDemoMode, setDemoMode } = useStore();
+    const { teacherName, isDemoMode } = useStore();
+    const { isGuest } = useFeatureAccess();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'create' | 'join'>('create');
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
     const colors = useThemedColors();
     const [classrooms, setClassrooms] = useState<any[]>([]);
     const [stats, setStats] = useState({
@@ -56,6 +61,7 @@ export default function TeacherDashboard({ onRefresh }: TeacherDashboardProps) {
             activeClasses: loadedClassrooms.length,
             totalStudents: loadedClassrooms.reduce((acc, curr) => acc + (curr.student_count || 0), 0)
         });
+        setIsLoading(false);
     };
 
     const QuickAction = ({ icon: LucideIcon, label, onPress, color }: any) => (
@@ -103,7 +109,7 @@ export default function TeacherDashboard({ onRefresh }: TeacherDashboardProps) {
                 overflow: 'hidden'
             }}
         >
-            <VStack space="xs">
+            <VStack space="xs" zIndex={1}>
                 <Text color={colors.textSecondary} size="xs" bold>
                     {label}
                 </Text>
@@ -129,150 +135,150 @@ export default function TeacherDashboard({ onRefresh }: TeacherDashboardProps) {
         </Box>
     );
 
+    const DashboardSkeleton = () => (
+        <VStack space="xl">
+            <HStack space="md">
+                <SkeletonCard height={80} style={{ flex: 1 }} />
+                <SkeletonCard height={80} style={{ flex: 1 }} />
+                <SkeletonCard height={80} style={{ flex: 1 }} />
+                <SkeletonCard height={80} style={{ flex: 1 }} />
+            </HStack>
+            <HStack space="md">
+                <SkeletonCard height={120} style={{ flex: 1 }} />
+                <SkeletonCard height={120} style={{ flex: 1 }} />
+            </HStack>
+            <VStack space="md">
+                <SkeletonCard height={100} />
+                <SkeletonCard height={100} />
+            </VStack>
+        </VStack>
+    );
+
     return (
         <VStack space="xl" sx={{ flex: 1, backgroundColor: colors.primary }}>
             {isDemoMode && <SandboxBanner />}
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: Theme.spacing.lg }}>
+                {isLoading ? (
+                    <DashboardSkeleton />
+                ) : (
+                    <>
+                        {/* Greeting Intro */}
+                        <VStack space="xs" mb="$4" mt="$2">
+                            <Text color={colors.textSecondary} size="sm">
+                                {t('classroom.dashboardIntro') || 'Lead the classroom with love and care.'}
+                            </Text>
+                        </VStack>
 
-
-
-                {/* Greeting Detail moved to summary in header or kept as intro */}
-                <VStack space="xs" mb="$4" mt="$2">
-                    <Text color={colors.textSecondary} size="sm">
-                        {t('classroom.dashboardIntro') || 'Lead the classroom with love and care.'}
-                    </Text>
-                </VStack>
-
-                {/* Quick Actions */}
-                <HStack space="md" mb="$6">
-                    <QuickAction
-                        icon={Plus}
-                        label={t('classroom.createClass') || 'Create Class'}
-                        onPress={() => {
-                            console.log('[TeacherDashboard] Create Class button pressed');
-                            setModalMode('create');
-                            setIsCreateModalOpen(true);
-                        }}
-                    />
-                    <QuickAction
-                        icon={Users}
-                        label={t('classroom.joinClass') || 'Join Class'}
-                        onPress={() => {
-                            console.log('[TeacherDashboard] Join Class button pressed');
-                            setModalMode('join');
-                            setIsCreateModalOpen(true);
-                        }}
-                        color={Theme.colors.sanctuarySaffron}
-                    />
-                    <QuickAction
-                        icon={ClipboardCheck}
-                        label={t('classroom.attendance') || 'Attendance'}
-                        onPress={() => {
-                            // For now, if there are classrooms, pick the first one to demo the navigation.
-                            // Ideally this opens a selector.
-                            if (classrooms.length > 0) {
-                                // We need navigation prop here.
-                                // TeacherDashboard is a component, so we use useNavigation.
-                                navigation.navigate('Attendance', {
-                                    classroomId: classrooms[0].id,
-                                    classroomName: classrooms[0].name
-                                });
-                            } else {
-                                Alert.alert("No Classrooms", "No active classrooms found.");
-                            }
-                        }}
-                        color={Theme.colors.sageGreen}
-                    />
-                    <QuickAction
-                        icon={BookOpen}
-                        label={t('classroom.library') || 'Library'}
-                        onPress={() => {/* TODO: Open Library */ }}
-                        color={Theme.colors.amberGlow}
-                    />
-                </HStack>
-
-                {/* Statistics */}
-                <HStack space="md" mb="$8">
-                    <StatCard
-                        icon={School}
-                        label={t('classroom.statActiveClasses') || 'Active Classes'}
-                        value={stats.activeClasses}
-                    />
-                    <StatCard
-                        icon={Users}
-                        label={t('classroom.statTotalStudents') || 'Total Students'}
-                        value={stats.totalStudents}
-                    />
-                </HStack>
-
-                {/* Classroom List Section */}
-                <VStack space="md">
-                    <HStack justifyContent="space-between" alignItems="center">
-                        <Heading color={colors.text} size="lg">
-                            {t('classroom.yourClassrooms') || 'Your Classrooms'} 🍃
-                        </Heading>
-                    </HStack>
-
-                    <ClassroomList
-                        onClassroomPress={(classroom) => {
-                            hapticLight();
-                            navigation.navigate('Classroom' as any, {
-                                screen: 'ClassroomDetails',
-                                params: {
-                                    classroomId: classroom.id,
-                                    classroomName: classroom.name
-                                }
-                            });
-                        }}
-                        onDataLoaded={handleClassroomsLoaded}
-                        isNested={true}
-                        refreshTrigger={refreshTrigger}
-                        emptyContent={
-                            <VStack
-                                space="md"
-                                sx={{
-                                    padding: Theme.spacing.xl,
-                                    backgroundColor: colors.secondary,
-                                    borderRadius: Theme.corners.generous,
-                                    alignItems: 'center',
-                                    borderWidth: 1,
-                                    borderColor: colors.border,
-                                    borderStyle: 'dashed'
+                        {/* Quick Actions */}
+                        <HStack space="md" mb="$6">
+                            <QuickAction
+                                icon={Plus}
+                                label={t('classroom.createClass') || 'Create Class'}
+                                onPress={() => {
+                                    setModalMode('create');
+                                    setIsCreateModalOpen(true);
                                 }}
-                            >
-                                <Box sx={{
-                                    padding: Theme.spacing.md,
-                                    borderRadius: Theme.corners.full,
-                                    backgroundColor: colors.tertiary,
-                                    opacity: 0.6
-                                }}>
-                                    <School size={32} color={Theme.colors.sanctuarySaffron} />
-                                </Box>
-                                <VStack space="xs" alignItems="center">
-                                    <Text color={colors.text} bold textAlign="center">
-                                        {t('classroom.noClassroomsYet') || "No classrooms yet"}
-                                    </Text>
-                                    <Text color={colors.textSecondary} size="xs" textAlign="center">
-                                        {t('classroom.teacherEmptyDesc') || "Your digital workbench is ready. Create a class or join an existing one to begin."}
-                                    </Text>
-                                </VStack>
-                            </VStack>
-                        }
-                    />
-                </VStack>
+                            />
+                            <QuickAction
+                                icon={Users}
+                                label={t('classroom.joinClass') || 'Join Class'}
+                                onPress={() => {
+                                    setModalMode('join');
+                                    setIsCreateModalOpen(true);
+                                }}
+                                color={Theme.colors.sanctuarySaffron}
+                            />
+                            <QuickAction
+                                icon={ClipboardCheck}
+                                label={t('classroom.attendance') || 'Attendance'}
+                                onPress={() => {
+                                    if (classrooms.length > 0) {
+                                        navigation.navigate('Attendance', {
+                                            classroomId: classrooms[0].id,
+                                            classroomName: classrooms[0].name
+                                        });
+                                    } else {
+                                        Alert.alert(t('common.noClassrooms') || "No Classrooms", t('common.noClassroomsDesc') || "No active classrooms found.");
+                                    }
+                                }}
+                                color={Theme.colors.sageGreen}
+                            />
+                            <QuickAction
+                                icon={BookOpen}
+                                label={t('classroom.library') || 'Library'}
+                                onPress={() => {
+                                    // TODO: Library navigation
+                                }}
+                                color={Theme.colors.amberGlow}
+                            />
+                        </HStack>
+
+                        {/* Statistics */}
+                        <HStack space="md" mb="$8">
+                            <StatCard
+                                icon={School}
+                                label={t('classroom.statActiveClasses') || 'Active Classes'}
+                                value={stats.activeClasses}
+                            />
+                            <StatCard
+                                icon={Users}
+                                label={t('classroom.statTotalStudents') || 'Total Students'}
+                                value={stats.totalStudents}
+                            />
+                        </HStack>
+
+                        {/* Classroom List Section */}
+                        <VStack space="md">
+                            <HStack justifyContent="space-between" alignItems="center">
+                                <Heading color={colors.text} size="lg">
+                                    {t('classroom.yourClassrooms') || 'Your Classrooms'} 🍃
+                                </Heading>
+                            </HStack>
+
+                            <ClassroomList
+                                onClassroomPress={(classroom) => {
+                                    hapticLight();
+                                    navigation.navigate('Classroom' as any, {
+                                        screen: 'ClassroomDetails',
+                                        params: {
+                                            classroomId: classroom.id,
+                                            classroomName: classroom.name
+                                        }
+                                    });
+                                }}
+                                onDataLoaded={handleClassroomsLoaded}
+                                isNested={true}
+                                refreshTrigger={refreshTrigger}
+                                emptyContent={
+                                    <PositiveInvitation
+                                        context="classroom"
+                                        onAction={() => {
+                                            setModalMode('create');
+                                            setIsCreateModalOpen(true);
+                                        }}
+                                    />
+                                }
+                            />
+
+                            {isGuest && (
+                                <PositiveInvitation
+                                    type="guest"
+                                    onAction={() => {
+                                        hapticLight();
+                                        // TODO: Conversion navigation
+                                    }}
+                                />
+                            )}
+                        </VStack>
+                    </>
+                )}
             </ScrollView>
 
             <CreateClassroomModal
                 isOpen={isCreateModalOpen}
                 mode={modalMode}
-                onClose={() => {
-                    console.log('[TeacherDashboard] Closing CreateClassroomModal');
-                    setIsCreateModalOpen(false);
-                }}
-                onSuccess={(newClass) => {
-                    console.log('[TeacherDashboard] Classroom operation successful:', newClass?.id);
-                    setRefreshTrigger(prev => prev + 1);
-                }}
+                onClose={() => setIsCreateModalOpen(false)}
+                onSuccess={() => setRefreshTrigger(prev => prev + 1)}
             />
         </VStack>
     );

@@ -31,6 +31,10 @@ import { useStore } from '../../store/useStore';
 import SandboxBanner from '../../components/shared/SandboxBanner';
 import { CreateSchoolModal } from '../../components/classroom';
 import { TouchableOpacity } from 'react-native';
+import { SkeletonCard } from '../../components/shared/SkeletonLoader';
+import { useFeatureAccess } from '../../hooks/useFeatureAccess';
+import PositiveInvitation from '../../components/shared/PositiveInvitation';
+import { hapticLight } from '../../utils/haptics';
 
 interface FounderSchoolViewProps {
     schoolId: string;
@@ -41,6 +45,7 @@ interface FounderSchoolViewProps {
 export default function FounderSchoolView({ schoolId, userId }: FounderSchoolViewProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
+    const { isGuest } = useFeatureAccess();
 
     // Resilient Hook
     const { school, stats, isLoading, refreshData } = useSchoolStats(schoolId);
@@ -137,10 +142,28 @@ export default function FounderSchoolView({ schoolId, userId }: FounderSchoolVie
                                     </HStack>
                                 </Box>
                             </VStack>
+
+                            {isGuest && (
+                                <PositiveInvitation
+                                    type="guest"
+                                    onAction={() => {
+                                        hapticLight();
+                                    }}
+                                />
+                            )}
                         </VStack>
                     )}
 
-                    {isLoading && <Spinner color={colors.action} />}
+                    {isLoading && (
+                        <VStack space="md">
+                            <SkeletonCard height={120} />
+                            <HStack space="md">
+                                <SkeletonCard height={100} style={{ flex: 1 }} />
+                                <SkeletonCard height={100} style={{ flex: 1 }} />
+                            </HStack>
+                            <SkeletonCard height={80} />
+                        </VStack>
+                    )}
                 </VStack>
             </ScrollView>
 
