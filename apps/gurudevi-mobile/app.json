@@ -53,7 +53,8 @@
     },
     "plugins": [
       "expo-font",
-      "./plugins/withAndroidCruncherDisabled"
+      "./plugins/withAndroidCruncherDisabled",
+      "./plugins/withGradleProperties"
     ],
     "owner": "neevsk",
     "runtimeVersion": {
