@@ -71,11 +71,28 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
+      - name: 🏗 Setup Gradle Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: 📦 Install dependencies
         run: pnpm install
 
       - name: 🚀 Build App
         run: |
           cd apps/gurudevi-mobile
-          eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive
+          # Build locally on the runner
+          eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive --local --output=app.${{ matrix.type }}
+
+      - name: 📤 Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-build-${{ matrix.type }}
+          path: apps/gurudevi-mobile/app.${{ matrix.type }}
 
