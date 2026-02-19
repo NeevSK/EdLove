@@ -7,7 +7,7 @@ const workspaceRoot = path.resolve(projectRoot, '../..');
 const config = getDefaultConfig(projectRoot);
 
 // 1. Watch all files in the monorepo
-config.watchFolders = [workspaceRoot];
+config.watchFolders = [...(config.watchFolders || []), workspaceRoot];
 
 // 2. Let Metro know where to resolve packages and in what order
 config.resolver.nodeModulesPaths = [
@@ -17,6 +17,6 @@ config.resolver.nodeModulesPaths = [
 
 // 3. Force Metro to resolve workspace packages from the app's node_modules
 //    This prevents duplicate React instances across packages
-config.resolver.disableHierarchicalLookup = true;
+config.resolver.disableHierarchicalLookup = false;
 
 module.exports = config;
