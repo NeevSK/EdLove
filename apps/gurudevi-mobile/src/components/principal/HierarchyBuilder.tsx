@@ -31,14 +31,14 @@ import {
     ModalBody,
     ModalFooter,
     Spinner,
-} from '@/ui';
+} from '@repo/ui';
 import { TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';
 import { Section, Grade } from '../../lib/api/school';
-import Theme from '../../constants/Theme';
+import { Theme } from '@repo/ui';
 
-import { useThemedColors } from '../../hooks/useThemedColors';
+import { useThemedColors } from '@repo/ui';
 
 interface HierarchyBuilderProps {
     schoolId: string;

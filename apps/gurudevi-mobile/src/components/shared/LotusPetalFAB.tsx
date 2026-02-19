@@ -34,7 +34,7 @@ import {
     Upload,
     Edit
 } from 'lucide-react-native';
-import { Theme } from '../../constants/Theme';
+import { Theme } from '@repo/ui';
 
 // ============================================================================
 // TYPES
@@ -252,7 +252,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         return {
             transform: [{ scale: actionMenuScale.value }, { translateY: -10 }], // Pop up slightly
             opacity: actionMenuScale.value,
-        };
+        } as any;
     });
 
     useEffect(() => {
@@ -296,7 +296,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                 { translateX: translateX.value },
                 { translateY: translateY.value }
             ]
-        };
+        } as any;
     });
 
     const containerStyle = useMemo(() => [

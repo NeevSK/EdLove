@@ -17,11 +17,11 @@ import {
     Heading,
     Box,
     ScrollView,
-} from '@/ui';
+} from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { StudentGrade } from '../../types/Grade';
+import { StudentGrade } from '@repo/core';
 import { marksToGPA } from '../../utils/grading';
-import { Theme } from '../../constants/Theme';
+import { Theme } from '@repo/ui';
 
 interface ReportCardProps {
     studentName: string;

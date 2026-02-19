@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Lesson Materials API
  * 
  * API methods for managing academic materials (PDFs, Links, Notes)
  */
 
-import { supabase } from '../supabase';
+import { supabase } from '@repo/core';
 import { APIError, LessonMaterial } from './types';
 
 export const lessonMaterialsAPI = {

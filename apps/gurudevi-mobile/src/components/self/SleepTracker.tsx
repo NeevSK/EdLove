@@ -23,7 +23,8 @@ import {
     SliderThumb,
     Button,
     ButtonText,
-} from '@/ui';
+} from '@repo/ui';
+import { supabase } from '@repo/core';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -33,10 +34,10 @@ import Animated, {
     Easing,
 } from 'react-native-reanimated';
 import { Moon, Sun, Cloud, Stars } from 'lucide-react-native';
-import { Theme, typography } from '../../constants/Theme';
-import { hapticLight, hapticSuccess } from '../../utils/haptics';
-import { useSafeMutation } from '../../hooks/useSafeMutation';
-import { useSleepTracker } from '../../hooks/self/useSleepTracker';
+import { Theme, typography } from '@repo/ui';
+import { hapticLight, hapticSuccess } from '@repo/ui';
+import { useSafeMutation } from '@repo/core';
+import { useSleepTracker } from '@repo/self';
 
 interface SleepTrackerProps {
     userId?: string;
@@ -62,6 +63,20 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
     const starsOpacity = useSharedValue(0.6);
 
     const currentQuality = SLEEP_QUALITY[sleepQuality - 1];
+
+    const checkTodayLog = () => {
+        if (!sleepLogs.length) return;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const todayLog = sleepLogs.find(log => new Date(log.created_at) >= today);
+
+        if (todayLog) {
+            setHasLoggedToday(true);
+            setSleepQuality(todayLog.quality);
+        }
+    };
 
     useEffect(() => {
         if (userId) {

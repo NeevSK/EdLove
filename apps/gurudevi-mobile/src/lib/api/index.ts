@@ -1,28 +1,8 @@
-import { authAPI } from './auth';
-import { tasksAPI, notesAPI } from './teacher';
-import { lessonsAPI, studentsAPI } from './classroom';
-import { selfAPI } from './self';
-import { gradingAPI } from './grading';
-import { schoolAPI } from './school';
-import { communityAPI } from './community';
-import { libraryAPI } from './library';
 
-// New Features from Mission 02 (maintained as separate modules for now)
-import { attendanceAPI } from './attendance';
-import { resourcesAPI } from './resources';
-import { groupsAPI } from './groups';
-import { lessonMaterialsAPI } from './lessonMaterials';
-import { assignmentsAPI } from './assignments';
-import { classroomStudentsAPI } from './classroomStudents';
-import { classroomsAPI } from './classrooms';
-
-import { inventoryAPI } from './inventory';
-
-// Re-export types for usage in app
-export * from './types';
-// Note: Community types should be imported directly from '../../types/Community' to avoid circular dependencies
-// Do not use "export * from" here as it can cause TypeScript recursion
-
+import { api as coreAPI } from '@repo/core';
+import { libraryAPI } from '@repo/library';
+import { communityAPI } from '@repo/community';
+import { selfAPI } from '@repo/self';
 import { interceptApiCall } from './demoProvider';
 
 // Helper to wrap API modules with a demo-aware proxy
@@ -38,8 +18,8 @@ function createDemoProxy<T extends object>(moduleName: string, target: T): T {
                     let result = await originalMethod.apply(obj, args);
 
                     // Ghost Seeding: Post-process results for specific modules
-                    const { processGhostData } = require('./demoProvider');
-                    result = processGhostData(moduleName, prop, result);
+                    // const { processGhostData } = require('./demoProvider');
+                    // result = processGhostData(moduleName, prop, result);
 
                     return result;
                 };
@@ -49,33 +29,17 @@ function createDemoProxy<T extends object>(moduleName: string, target: T): T {
     });
 }
 
-// Main API Object
+
+const wrappedLibraryAPI = createDemoProxy('library', libraryAPI);
+const wrappedCommunityAPI = createDemoProxy('community', communityAPI);
+
+// Combine APIs into a single object for backward compatibility
 export const api = {
-    // Core Modules (Wrapped with Proxy)
-    auth: authAPI, // Auth usually shouldn't be proxied if it handles sessions
-    tasks: createDemoProxy('tasks', tasksAPI),
-    notes: createDemoProxy('notes', notesAPI),
-    lessons: createDemoProxy('lessons', lessonsAPI),
-    students: createDemoProxy('students', studentsAPI),
-
-    // New Features
-    attendance: createDemoProxy('attendance', attendanceAPI),
-    resources: createDemoProxy('resources', resourcesAPI),
-    groups: createDemoProxy('groups', groupsAPI),
-    lessonMaterials: createDemoProxy('lessonMaterials', lessonMaterialsAPI),
-    assignments: createDemoProxy('assignments', assignmentsAPI),
-    classroomStudents: createDemoProxy('classroomStudents', classroomStudentsAPI),
-    classrooms: createDemoProxy('classrooms', classroomsAPI),
-
-    // Community & Library
-    community: createDemoProxy('community', communityAPI),
-    library: createDemoProxy('library', libraryAPI),
-
-    // Other Modules
+    ...coreAPI,
+    library: wrappedLibraryAPI,
+    community: wrappedCommunityAPI,
     self: selfAPI,
-    grading: createDemoProxy('grading', gradingAPI),
-    school: createDemoProxy('school', schoolAPI),
-    inventory: createDemoProxy('inventory', inventoryAPI),
 };
 
+export * from '@repo/core';
 export default api;

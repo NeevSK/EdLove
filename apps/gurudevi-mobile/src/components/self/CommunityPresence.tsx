@@ -1,4 +1,4 @@
-/**
+﻿/**
  * COMMUNITY PRESENCE
  * Shows how many teachers are currently online
  * Provides instant comfort and combats teacher isolation
@@ -9,7 +9,7 @@ import {
     Box,
     HStack,
     Text,
-} from '@/ui';
+} from '@repo/ui';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -19,8 +19,8 @@ import Animated, {
     Easing,
 } from 'react-native-reanimated';
 import { Users } from 'lucide-react-native';
-import { Theme } from '../../constants/Theme';
-import { supabase } from '../../lib/supabase';
+import { Theme } from '@repo/ui';
+import { supabase } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 
 interface CommunityPresenceProps {

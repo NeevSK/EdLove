@@ -1,6 +1,6 @@
-import { supabase } from '../supabase';
+﻿import { supabase } from '@repo/core';
 import { APIError } from './types';
-import { UserRole } from '../../types/User';
+import { UserRole } from '@repo/core';
 
 // ============================================================================
 // SCHOOL API (Principal Functions)

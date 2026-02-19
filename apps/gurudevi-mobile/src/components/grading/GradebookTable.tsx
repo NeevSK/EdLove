@@ -15,12 +15,12 @@ import {
     HStack,
     Text,
     Box,
-} from '@/ui';
+} from '@repo/ui';
 import { FlatList, ListRenderItemInfo } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { StudentGrade, ClassroomGradingSettings } from '../../types/Grade';
+import { StudentGrade, ClassroomGradingSettings } from '@repo/core';
 import { marksToGPA, calculateRanks } from '../../utils/grading';
-import { Theme } from '../../constants/Theme';
+import { Theme } from '@repo/ui';
 
 interface GradebookTableProps {
     grades: StudentGrade[];

@@ -17,10 +17,10 @@ import {
     InputField,
     Textarea,
     TextareaInput,
-} from "@/ui";
+} from '@repo/ui';
 import { MessageCircle, Mic, Image as ImageIcon } from 'lucide-react-native';
-import { Theme } from '../../constants/Theme';
-import { useCommunity } from '../../hooks/useCommunity';
+import { Theme } from '@repo/ui';
+import { useCommunity } from '@repo/community';
 
 interface CreatePostModalProps {
     isOpen: boolean;

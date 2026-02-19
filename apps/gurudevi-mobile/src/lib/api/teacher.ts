@@ -1,6 +1,5 @@
-import { supabase } from '../supabase';
+﻿import { supabase, requireTeacherAccess } from '@repo/core';
 import { APIError, Task, TeacherNote } from './types';
-import { requireTeacherAccess } from '../../utils/authorization';
 
 // ============================================================================
 // TASKS API

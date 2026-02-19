@@ -1,13 +1,12 @@
-/**
+﻿/**
  * Attendance API
  * 
  * API methods for managing classroom attendance
  */
 
-import { supabase } from '../supabase';
+import { supabase, requireClassroomAccess } from '@repo/core';
 import { APIError } from './types';
 import type { AttendanceRecord } from './types';
-import { requireClassroomAccess } from '../../utils/authorization';
 
 export const attendanceAPI = {
     /**
@@ -16,7 +15,7 @@ export const attendanceAPI = {
     async getByDate(classroomId: string, date: string): Promise<AttendanceRecord[]> {
         // Verify authorization - user must have access to classroom
         await requireClassroomAccess(classroomId);
-        
+
         const { data, error } = await supabase
             .from('attendance')
             .select('*')
@@ -41,7 +40,7 @@ export const attendanceAPI = {
     ): Promise<AttendanceRecord> {
         // Verify authorization - teacher must have access to classroom
         await requireClassroomAccess(classroomId);
-        
+
         const { data, error } = await supabase
             .from('attendance')
             .upsert(
@@ -93,7 +92,7 @@ export const attendanceAPI = {
 
         // Verify authorization for the classroom
         await requireClassroomAccess(classroomId);
-        
+
         const { data, error } = await supabase
             .from('attendance')
             .upsert(records, {

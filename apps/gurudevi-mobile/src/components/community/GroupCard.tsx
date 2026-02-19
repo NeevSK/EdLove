@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Box, HStack, VStack, Text } from '@/ui';
+import { Box, HStack, VStack, Text } from '@repo/ui';
 import { Users, Lock, Globe } from 'lucide-react-native';
-import SanctuaryCard from '../shared/SanctuaryCard';
-import { Theme } from '../../constants/Theme';
+import { SanctuaryCard } from '@repo/ui';
+import { Theme } from '@repo/ui';
 
 interface GroupCardProps {
     id: string;

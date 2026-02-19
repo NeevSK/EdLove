@@ -1,11 +1,12 @@
+﻿
 import React from 'react';
-import { Box, Text, HStack, Spinner } from '@/ui';
+import { Box, Text, HStack, Spinner, Theme } from '@repo/ui';
 import { WifiOff, RefreshCw } from 'lucide-react-native';
-import { useStore } from '../../store/useStore';
-import { Theme } from '../../constants/Theme';
+import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MotiView } from 'moti';
-import { useMutationQueue } from '../../lib/sync/useMutationQueue';
+import Animated, { SlideInDown, SlideOutUp } from 'react-native-reanimated';
+import { useNetInfo } from '@react-native-community/netinfo';
+import { useStore, useMutationQueue } from '@repo/core';
 
 /**
  * NetworkStatusBanner
@@ -30,10 +31,9 @@ export default function NetworkStatusBanner() {
         : Theme.colors.sanctuarySaffron;
 
     return (
-        <MotiView
-            from={{ translateY: -100, opacity: 0 }}
-            animate={{ translateY: 0, opacity: 1 }}
-            exit={{ translateY: -100, opacity: 0 }}
+        <Animated.View
+            entering={SlideInDown.duration(500)}
+            exiting={SlideOutUp.duration(500)}
             style={{
                 position: 'absolute',
                 top: 0,
@@ -67,6 +67,6 @@ export default function NetworkStatusBanner() {
                     )}
                 </HStack>
             </Box>
-        </MotiView>
+        </Animated.View>
     );
 }

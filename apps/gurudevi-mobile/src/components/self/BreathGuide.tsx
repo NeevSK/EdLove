@@ -13,7 +13,7 @@ import {
     Button,
     ButtonText,
     Pressable,
-} from '@/ui';
+} from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import Animated, {
     useAnimatedStyle,
@@ -24,10 +24,10 @@ import Animated, {
     runOnJS,
 } from 'react-native-reanimated';
 import { Wind } from 'lucide-react-native';
-import { Theme, typography } from '../../constants/Theme';
+import { Theme, typography } from '@repo/ui';
 import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
-import { useThemedColors } from '../../hooks/useThemedColors';
+import { useThemedColors } from '@repo/ui';
 
 interface BreathGuideProps {
     onComplete?: () => void;
@@ -189,7 +189,7 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
             { rotate: `${petalRotation.value}deg` },
         ],
         opacity: petalOpacity.value,
-    }));
+    } as any));
 
     const colors = useThemedColors();
     const currentInstruction = BREATH_CYCLE[phaseIndex]?.instruction || 'Begin...';

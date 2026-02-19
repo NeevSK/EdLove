@@ -4,19 +4,16 @@ import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GluestackUIProvider, Spinner, Center, VStack, Text } from './src/ui';
+import { GluestackUIProvider, Spinner, Center, VStack, Text } from '@repo/ui';
 import { config } from "./gluestack-ui.config";
 import { Home, School, Users, Library, User } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
 import * as Font from 'expo-font';
-import { supabase } from './src/lib/supabase';
-import { Theme } from './src/constants/Theme';
+import { supabase, useStore, UserRole, SchoolType } from '@repo/core';
+import { Theme } from '@repo/ui';
 import { fontAssets } from './src/constants/Fonts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useStore } from './src/store/useStore';
-import { UserRole } from './src/types/User';
-import { SchoolType } from './src/constants/SriLankanSchools';
-import { EnvironmentProvider } from './src/context';
+import { EnvironmentProvider } from '@repo/ui';
 
 // Import screens and navigation
 import WelcomeScreen from './src/screens/WelcomeScreen';
@@ -24,7 +21,7 @@ import OnboardingScreen from './src/screens/OnboardingScreen';
 import TabNavigator from './src/navigation/TabNavigator';
 import LotusPetalFAB, { ActionItem } from './src/components/shared/LotusPetalFAB';
 import ErrorBoundary from './src/components/shared/ErrorBoundary';
-import SanctuaryToast from './src/components/shared/SanctuaryToast';
+import { SanctuaryToast } from '@repo/ui';
 import NetworkStatusBanner from './src/components/shared/NetworkStatusBanner';
 import SyncManager from './src/lib/sync/SyncManager';
 

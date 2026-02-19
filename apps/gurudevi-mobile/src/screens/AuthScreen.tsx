@@ -16,28 +16,36 @@ import {
     Pressable,
     Divider,
     Spinner,
-} from "@/ui";
+} from '@repo/ui';
 import { Mail } from 'lucide-react-native';
-import Svg, { Path } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '../lib/supabase';
-import { Theme } from '../constants/Theme';
-import { UserRole } from '../types/User';
-import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
+import { supabase, UserRole } from '@repo/core';
+import { Theme } from '@repo/ui';
+import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
 import { validators, validateForm } from '../utils/validators';
-import ScannerModal from '../components/shared/ScannerModal';
-import ScreenWrapper from '../components/shared/ScreenWrapper';
-import useThemedColors from '../hooks/useThemedColors';
+import { ScannerModal } from '@repo/scanner-kit';
+import { ScreenWrapper } from '@repo/ui';
+import { useThemedColors } from '@repo/ui';
 import GuestDataSyncModal from '../components/shared/GuestDataSyncModal';
 import { GuestDataSync } from '../lib/guestDataSync';
 
-const GoogleIcon = ({ color = "#FFF", size = 20 }: { color?: string; size?: number }) => (
-    <Svg width={size} height={size} viewBox="0 0 20 20" fill="none">
-        <Path d="M19.6 10.227c0-.709-.064-1.39-.182-2.045H10v3.868h5.382a4.6 4.6 0 01-1.996 3.018v2.51h3.232c1.891-1.742 2.982-4.305 2.982-7.35z" fill="#4285F4" />
-        <Path d="M10 20c2.7 0 4.964-.895 6.618-2.423l-3.232-2.509c-.895.6-2.04.955-3.386.955-2.605 0-4.81-1.76-5.595-4.123H1.064v2.59A9.996 9.996 0 0010 20z" fill="#34A853" />
-        <Path d="M4.405 11.9c-.2-.6-.314-1.24-.314-1.9 0-.66.114-1.3.314-1.9V5.51H1.064A9.996 9.996 0 000 10c0 1.614.386 3.14 1.064 4.49l3.34-2.59z" fill="#FBBC05" />
-        <Path d="M10 3.977c1.468 0 2.786.505 3.823 1.496l2.868-2.868C14.959.99 12.695 0 10 0 6.09 0 2.71 2.24 1.064 5.51l3.34 2.59C5.19 5.736 7.395 3.977 10 3.977z" fill="#EA4335" />
-    </Svg>
+// Google 'G' icon rendered with plain RN — no react-native-svg needed
+const GoogleIcon = ({ size = 20 }: { size?: number }) => (
+    <Box style={{
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+    }}>
+        <Text style={{
+            fontSize: size * 0.65,
+            fontWeight: '700',
+            color: '#4285F4',
+            lineHeight: size * 0.75,
+        }}>G</Text>
+    </Box>
 );
 
 interface AuthScreenProps {

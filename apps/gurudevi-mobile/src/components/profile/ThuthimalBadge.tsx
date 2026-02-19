@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Flower2 } from 'lucide-react-native';
-import { Theme } from '../../constants/Theme';
+import { Theme } from '@repo/ui';
 
 interface ThuthimalBadgeProps {
     gifterName?: string;

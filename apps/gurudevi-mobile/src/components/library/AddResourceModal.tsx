@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Modal, ModalBackdrop, ModalContent, ModalHeader, ModalBody, ModalFooter, Heading, VStack, HStack, Text, Input, InputField } from '@/ui';
-import SanctuaryButton from '../shared/SanctuaryButton';
-import { Theme } from '../../constants/Theme';
-import { ResourceType } from './LibraryResourceCard';
+import { Modal, ModalBackdrop, ModalContent, ModalHeader, ModalBody, ModalFooter, Heading, VStack, HStack, Text, Input, InputField } from '@repo/ui';
+import { SanctuaryButton } from '@repo/ui';
+import { Theme } from '@repo/ui';
+import { ResourceType } from '@repo/ui';
 
 interface AddResourceModalProps {
     isOpen: boolean;

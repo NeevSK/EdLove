@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { dailyContentAPI, DailyContent } from '../../lib/api/dailyContent';
-import { useThemedColors } from '../../hooks/useThemedColors';
-import { Theme } from '../../constants/Theme';
-import { Box, VStack, HStack, Text, Heading, Pressable } from '@/ui';
-import SkeletonLoader, { SkeletonCard } from '../shared/SkeletonLoader';
+import { dailyContentAPI, DailyContent } from '@repo/self';
+import { useThemedColors } from '@repo/ui';
+import { Theme } from '@repo/ui';
+import { Box, VStack, HStack, Text, Heading, Pressable } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui';
 
 interface DailyContentCardProps {
     type: 'motivation' | 'did_you_know';

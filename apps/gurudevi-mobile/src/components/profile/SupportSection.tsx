@@ -6,9 +6,9 @@ import {
     HStack,
     Text,
     Heading,
-} from '@/ui';
-import { Theme } from '../../constants/Theme';
-import { useThemedColors } from '../../hooks/useThemedColors';
+} from '@repo/ui';
+import { Theme } from '@repo/ui';
+import { useThemedColors } from '@repo/ui';
 import { LifeBuoy, MessageCircle, AlertTriangle, ChevronRight } from 'lucide-react-native';
 
 export default function SupportSection() {

@@ -1,9 +1,9 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Box, VStack, Text, Heading, Center } from '@/ui';
+import { Box, VStack, Text, Heading, Center } from '@repo/ui';
 import { AlertTriangle, RefreshCw } from 'lucide-react-native';
-import { Theme } from '../../constants/Theme';
-import SanctuaryButton from './SanctuaryButton';
+import { Theme } from '@repo/ui';
+import { SanctuaryButton } from '@repo/ui';
 
 interface Props {
     children: ReactNode;
@@ -29,10 +29,10 @@ export default class ErrorBoundary extends Component<Props, State> {
 
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         console.error(`Error in ${this.props.name}:`, error, errorInfo);
-        
+
         // Call custom error handler if provided
         this.props.onError?.(error, errorInfo);
-        
+
         // TODO: Send to error tracking service (e.g., Sentry)
         // Sentry.captureException(error, { 
         //     contexts: { 

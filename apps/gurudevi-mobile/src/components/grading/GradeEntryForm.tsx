@@ -23,10 +23,10 @@ import {
     TextareaInput,
     Button,
     ButtonText,
-} from '@/ui';
+} from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { marksToGPA } from '../../utils/grading';
-import { Theme } from '../../constants/Theme';
+import { Theme } from '@repo/ui';
 
 interface GradeEntryFormProps {
     studentName: string;

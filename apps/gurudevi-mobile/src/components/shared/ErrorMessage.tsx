@@ -36,9 +36,9 @@
 
 import React, { FC, useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { HStack } from '@/ui';
+import { HStack } from '@repo/ui';
 import { Info, AlertTriangle, AlertCircle, X } from 'lucide-react-native';
-import { Theme, typography } from '../../constants/Theme';
+import { Theme, typography } from '@repo/ui';
 
 // ============================================================================
 // TYPES

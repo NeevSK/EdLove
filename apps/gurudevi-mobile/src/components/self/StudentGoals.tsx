@@ -1,4 +1,4 @@
-/**
+﻿/**
  * STUDENT GOALS COMPONENT
  * 
  * Student-specific feature for the Self tab.
@@ -23,18 +23,15 @@ import {
     InputField,
     Progress,
     ProgressFilledTrack,
-} from '@/ui';
+} from '@repo/ui';
 import { TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import Theme from '../../constants/Theme';
+import { Theme } from '@repo/ui';
 
-import { supabase } from '../../lib/supabase';
-import { hapticLight, hapticSuccess } from '../../utils/haptics';
-import { useSafeMutation } from '../../hooks/useSafeMutation';
-import { useStudentGoals } from '../../hooks/self/useStudentGoals';
-
-// Type is now imported from the hook/types, but for local prop compatibility we can keep an interface or import used one
-import { Goal } from '../../hooks/self/useStudentGoals';
+import { supabase } from '@repo/core';
+import { hapticLight, hapticSuccess } from '@repo/ui';
+import { useSafeMutation } from '@repo/core';
+import { useStudentGoals, Goal } from '@repo/self';
 
 interface StudentGoalsProps {
     userId: string;

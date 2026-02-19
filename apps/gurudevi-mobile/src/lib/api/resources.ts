@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Resources API
  * 
  * API methods for managing classroom resources
  */
 
-import { supabase } from '../supabase';
+import { supabase } from '@repo/core';
 import { APIError } from './types';
 import type { ClassroomResource } from './types';
 

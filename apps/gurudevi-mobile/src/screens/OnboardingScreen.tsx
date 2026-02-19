@@ -27,17 +27,15 @@ import {
     SelectDragIndicatorWrapper,
     SelectDragIndicator,
     SelectItem,
-} from '../ui';
+} from '@repo/ui';
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Theme } from '../constants/Theme';
-import { UserRole } from '../types/User';
-import { supabase } from '../lib/supabase';
-import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
-import ScreenWrapper from '../components/shared/ScreenWrapper';
-import { useThemedColors } from '../hooks/useThemedColors';
-import { useStore } from '../store/useStore';
+import { Theme } from '@repo/ui';
+import { UserRole, supabase, useStore } from '@repo/core';
+import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
+import { ScreenWrapper } from '@repo/ui';
+import { useThemedColors } from '@repo/ui';
 import AuthScreen from './AuthScreen';
 import { ProgressIndicator } from '../components/ProgressIndicator';
 

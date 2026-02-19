@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Assignments API
  * 
  * API methods for managing classroom assignments
  */
 
-import { supabase } from '../supabase';
+import { supabase } from '@repo/core';
 import { APIError, Assignment } from './types';
 
 export const assignmentsAPI = {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { ScrollView, RefreshControl, Alert } from 'react-native';
 import {
     Box,
@@ -10,11 +10,11 @@ import {
     Button,
     ButtonText,
     Text
-} from "@/ui";
+} from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '../lib/supabase';
-import { Theme } from '../constants/Theme';
-import { hapticSuccess, hapticLight, hapticError } from '../utils/haptics';
+import { supabase } from '@repo/core';
+import { Theme, useThemedColors } from '@repo/ui';
+import { hapticSuccess, hapticLight, hapticError } from '@repo/ui';
 
 import { LogOut, Settings, Trophy, MapPin, Globe, Phone, ChevronRight } from 'lucide-react-native';
 // New Components
@@ -23,13 +23,13 @@ import UserStatsCard from '../components/profile/UserStatsCard';
 import SupportSection from '../components/profile/SupportSection';
 import ThuthimalBadge from '../components/profile/ThuthimalBadge';
 import EditProfileModal from '../components/profile/EditProfileModal';
-import GlobalHeader from '../components/shared/GlobalHeader';
+import { GlobalHeader } from '@repo/ui';
 import AppSettingsScreen from './AppSettingsScreen';
 import { Modal, TouchableOpacity } from 'react-native';
 import { X } from 'lucide-react-native';
-import ScreenWrapper from '../components/shared/ScreenWrapper';
-import { useThemedColors } from '../hooks/useThemedColors';
-import { useEnvironment } from '../context';
+import { ScreenWrapper } from '@repo/ui';
+
+import { useEnvironment } from '@repo/ui';
 
 export default function ProfileScreen() {
     const { t, i18n } = useTranslation();

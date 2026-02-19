@@ -91,7 +91,10 @@ jest.mock('@gluestack-ui/themed', () => {
     };
 });
 
-jest.mock('../../components/shared/ScannerModal', () => () => null);
+jest.mock('@repo/scanner-kit', () => ({
+    ScannerModal: () => null,
+    QRCodeGenerator: () => null,
+}));
 jest.mock('expo-linear-gradient', () => ({ LinearGradient: ({ children }) => children }));
 jest.mock('lucide-react-native', () => {
     const React = require('react');

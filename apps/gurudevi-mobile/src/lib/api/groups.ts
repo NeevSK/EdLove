@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Groups API
  * 
  * API methods for managing student groups
  */
 
-import { supabase } from '../supabase';
+import { supabase } from '@repo/core';
 import { APIError } from './types';
 import type { StudentGroup } from './types';
 

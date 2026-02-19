@@ -1,6 +1,4 @@
-import { GuestDataManager } from './guestDataManager';
-import { supabase } from './supabase';
-import { authAPI } from './api/auth';
+import { GuestDataManager, supabase, authAPI } from '@repo/core';
 
 export interface SyncProgress {
     total: number;

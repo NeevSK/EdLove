@@ -13,11 +13,11 @@ import {
     ModalBody,
     ModalCloseButton,
     CloseIcon
-} from '@/ui';
+} from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { Sparkles, Cloud, Lock } from 'lucide-react-native';
-import { Theme } from '../../constants/Theme';
-import { useThemedColors } from '../../hooks/useThemedColors';
+import { Theme, useThemedColors } from '@repo/ui';
+
 
 export interface GuestConversionPromptProps {
     isOpen: boolean;

@@ -61,12 +61,12 @@ export function getFontFamily(
  */
 export const fontAssets = {
     // Abhaya Libre (Sinhala) - 3 weights
-    'AbhayaLibre-Regular': require('../../assets/fonts/static/AbhayaLibre-Regular.ttf'),
-    'AbhayaLibre-Medium': require('../../assets/fonts/static/AbhayaLibre-Medium.ttf'),
-    'AbhayaLibre-Bold': require('../../assets/fonts/static/AbhayaLibre-Bold.ttf'),
+    'AbhayaLibre-Regular': require('@/assets/fonts/static/AbhayaLibre-Regular.ttf'),
+    'AbhayaLibre-Medium': require('@/assets/fonts/static/AbhayaLibre-Medium.ttf'),
+    'AbhayaLibre-Bold': require('@/assets/fonts/static/AbhayaLibre-Bold.ttf'),
 
     // Baloo Thambi 2 (Tamil) - 3 weights
-    'BalooThambi2-Regular': require('../../assets/fonts/static/BalooThambi2-Regular.ttf'),
-    'BalooThambi2-Medium': require('../../assets/fonts/static/BalooThambi2-Medium.ttf'),
-    'BalooThambi2-Bold': require('../../assets/fonts/static/BalooThambi2-Bold.ttf'),
+    'BalooThambi2-Regular': require('@/assets/fonts/static/BalooThambi2-Regular.ttf'),
+    'BalooThambi2-Medium': require('@/assets/fonts/static/BalooThambi2-Medium.ttf'),
+    'BalooThambi2-Bold': require('@/assets/fonts/static/BalooThambi2-Bold.ttf'),
 };

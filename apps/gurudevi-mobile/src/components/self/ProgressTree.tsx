@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GENTLE PROGRESS TREE
  * Visual growth (seed → sapling → tree) over months
  * NO streaks, NO pressure, just organic growth
@@ -16,7 +16,7 @@ import {
     VStack,
     Text,
     Heading,
-} from '@/ui';
+} from '@repo/ui';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -25,10 +25,10 @@ import Animated, {
     withTiming,
     Easing,
 } from 'react-native-reanimated';
-import { Theme, typography } from '../../constants/Theme';
-import { supabase } from '../../lib/supabase';
-import SkeletonLoader, { SkeletonCard } from '../shared/SkeletonLoader';
-import PositiveInvitation from '../shared/PositiveInvitation';
+import { Theme, typography } from '@repo/ui';
+import { supabase } from '@repo/core';
+import { SkeletonCard } from '@repo/ui';
+import { PositiveInvitation } from '@repo/ui';
 
 interface ProgressTreeProps {
     userId?: string;

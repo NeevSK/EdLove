@@ -1,4 +1,4 @@
-/**
+﻿/**
  * VOICE JOURNALING
  * Speak pain, feel release (2 min → peace for hours)
  * Perfect for exhausted teachers who can't type
@@ -21,7 +21,7 @@ import {
     Button,
     ButtonText,
     Pressable,
-} from '@/ui';
+} from '@repo/ui';
 import { StyleSheet, Platform } from 'react-native';
 import Animated, {
     useAnimatedStyle,
@@ -33,9 +33,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Mic, Square, Play, Trash2, Check } from 'lucide-react-native';
 import { useAudioRecorder, useAudioPlayer, AudioModule, RecordingPresets, useAudioPlayerStatus, setAudioModeAsync } from 'expo-audio';
-import { Theme, typography } from '../../constants/Theme';
-import { supabase } from '../../lib/supabase';
-import { hapticLight, hapticMedium } from '../../utils/haptics';
+import { Theme, typography } from '@repo/ui';
+import { supabase } from '@repo/core';
+import { hapticLight, hapticMedium } from '@repo/ui';
 
 interface VoiceJournalingProps {
     userId?: string;

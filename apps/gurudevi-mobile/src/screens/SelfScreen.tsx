@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import { useUserRole } from '../hooks/useUserRole';
+import { useUserRole } from '@repo/core';
 
 // Import role-specific views
 import { StudentSelfView, TeacherSelfView, PrincipalSelfView, FounderSelfView, AdminSelfView } from './self';

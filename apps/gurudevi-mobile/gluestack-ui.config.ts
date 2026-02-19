@@ -1,6 +1,6 @@
 import { createConfig } from '@gluestack-ui/themed';
 import { config as defaultConfig } from '@gluestack-ui/config';
-import { Theme } from './src/constants/Theme';
+import { Theme } from '@repo/ui';
 
 // Extend the default config with our Sanctuary colors
 // This allows using bg="$sanctuarySaffron" instead of Theme.colors.sanctuarySaffron

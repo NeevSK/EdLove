@@ -22,7 +22,13 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    "types": [
+      "react",
+      "react-native",
+      "jest",
+      "@tanstack/react-query"
+    ]
   },
   "include": [
     "src/**/*"

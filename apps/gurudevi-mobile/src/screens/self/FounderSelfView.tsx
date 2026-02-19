@@ -1,9 +1,10 @@
-/**
+﻿/**
  * FounderSelfView Component
  * 
  * Sanctuary for the Founder - focus on Vision, Philosophy, and Legacy
  */
 
+import { supabase, useStore } from '@repo/core';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -13,21 +14,18 @@ import {
     Heading,
     ScrollView,
     Pressable
-} from "@/ui";
+} from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { Sparkles, Compass, Zap, Lightbulb, Globe, Heart } from 'lucide-react-native';
-import { Theme } from '../../constants/Theme';
-import { hapticLight } from '../../utils/haptics';
+import { Theme } from '@repo/ui';
+import { hapticLight } from '@repo/ui';
 import { MoodLotus, ShadowAgentDrawer, EnergyForecast, WisdomSeeds } from '../../components/self';
-import { supabase } from '../../lib/supabase';
-import GlobalHeader from '../../components/shared/GlobalHeader';
+import { GlobalHeader } from '@repo/ui';
 import DailyContentCard from '../../components/self/DailyContentCard';
 import WelcomeModal from '../../components/self/WelcomeModal';
-import { SkeletonCard } from '../../components/shared/SkeletonLoader';
-import PositiveInvitation from '../../components/shared/PositiveInvitation';
-import { useStore } from '../../store/useStore';
-import { useThemedColors } from '../../hooks/useThemedColors';
-import ScreenWrapper from '../../components/shared/ScreenWrapper';
+import { SkeletonCard, PositiveInvitation } from '@repo/ui';
+import { useThemedColors } from '@repo/ui';
+import { ScreenWrapper } from '@repo/ui';
 // IdentityCard and UserStatsCard removed
 // EditProfileModal removed
 
@@ -135,7 +133,7 @@ export default function FounderSelfView() {
     return (
         <ScreenWrapper>
             <GlobalHeader
-                showGreeting={true}
+
                 subtitle={t('self.founderSubtitle') || 'Platform Visionary'}
             />
             <ScrollView

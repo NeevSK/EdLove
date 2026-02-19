@@ -11,10 +11,10 @@ import {
     Button,
     ButtonText,
     VStack
-} from '@/ui';
-import { Theme } from '../../constants/Theme';
+} from '@repo/ui';
+import { Theme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { hapticSuccess } from '../../utils/haptics';
+import { hapticSuccess } from '@repo/ui';
 
 interface WelcomeModalProps {
     isOpen: boolean;

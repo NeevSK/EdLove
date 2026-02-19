@@ -8,8 +8,8 @@ import Animated, {
     Easing,
     withSequence
 } from 'react-native-reanimated';
-import { Text, VStack, Center } from '@/ui';
-import { Theme } from '../../constants/Theme';
+import { Text, VStack, Center } from '@repo/ui';
+import { Theme } from '@repo/ui';
 import { Flower } from 'lucide-react-native';
 
 interface LotusLoaderProps {
@@ -65,8 +65,8 @@ export default function LotusLoader({
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [
             { scale: scale.value },
-            { rotate: `${rotation.value}deg` } // Slowly rotate the lotus
-        ],
+            { rotate: `${rotation.value}deg` }
+        ] as any,
         opacity: opacity.value
     }));
 

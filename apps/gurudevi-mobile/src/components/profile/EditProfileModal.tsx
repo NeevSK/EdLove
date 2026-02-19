@@ -24,14 +24,11 @@ import {
     SelectItem,
     Image,
     Center,
-} from '@/ui';
+} from '@repo/ui';
 import { X, Save, User, Briefcase, ChevronDown, Camera } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '../../constants/Theme';
-import { supabase } from '../../lib/supabase';
-import { hapticLight, hapticSuccess, hapticError } from '../../utils/haptics';
-import { useStore } from '../../store/useStore';
-import { UserRole } from '../../types/User';
+import { Theme } from '@repo/ui';
+import { supabase, useStore, UserRole } from '@repo/core';
 import * as ImagePicker from 'expo-image-picker';
 
 interface EditProfileModalProps {

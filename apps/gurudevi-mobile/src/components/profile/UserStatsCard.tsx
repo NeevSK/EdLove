@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import {
     Box,
     VStack,
@@ -6,10 +6,10 @@ import {
     Text,
     Progress,
     ProgressFilledTrack,
-} from '@/ui';
-import { Theme } from '../../constants/Theme';
-import { UserRole } from '../../types/User';
-import { useThemedColors } from '../../hooks/useThemedColors';
+} from '@repo/ui';
+import { Theme } from '@repo/ui';
+import { UserRole } from '@repo/core';
+import { useThemedColors } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { Trophy, Users, BookOpen, Clock, Star, Shield, Globe, Activity, Database } from 'lucide-react-native';
 

@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Classroom Students API
  * 
  * API methods for managing students in classrooms
  */
 
-import { supabase } from '../supabase';
+import { supabase } from '@repo/core';
 import { APIError } from './types';
 import type { ClassroomStudent } from './types';
 

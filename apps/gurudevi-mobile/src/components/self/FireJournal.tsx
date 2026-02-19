@@ -1,4 +1,4 @@
-/**
+﻿/**
  * FIRE JOURNAL
  * "Burn" negative thoughts - A cathartic release mechanism
  * 
@@ -21,7 +21,7 @@ import {
     InputField,
     Button,
     ButtonText,
-} from '@/ui';
+} from '@repo/ui';
 import { StyleSheet } from 'react-native';
 import Animated, {
     useAnimatedStyle,
@@ -34,13 +34,10 @@ import Animated, {
     FadeIn,
 } from 'react-native-reanimated';
 import { Mic, Flame } from 'lucide-react-native';
-import { Theme, typography } from '../../constants/Theme';
-import { supabase } from '../../lib/supabase';
-import { hapticLight, hapticMedium } from '../../utils/haptics';
-import { useSafeMutation } from '../../hooks/useSafeMutation';
-import { useJournal } from '../../hooks/self/useJournal';
-import SkeletonLoader, { SkeletonCard } from '../shared/SkeletonLoader';
-import PositiveInvitation from '../shared/PositiveInvitation';
+import { Theme, typography } from '@repo/ui';
+import { supabase, useSafeMutation } from '@repo/core';
+import { hapticLight, hapticMedium, SkeletonCard, SkeletonLoader, PositiveInvitation } from '@repo/ui';
+import { useJournal } from '@repo/self';
 
 interface FireJournalProps {
     userId?: string;

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * RESOURCE NEEDS DASHBOARD
  * Redefined Principal View - Focus on Resource Needs, NOT Performance
  * 
@@ -16,12 +16,12 @@ import {
     Text,
     Heading,
     Spinner,
-} from '@/ui';
+} from '@repo/ui';
 import { Package, Lightbulb, Users, BookOpen, Wifi, AlertCircle } from 'lucide-react-native';
-import { Theme, typography } from '../../constants/Theme';
-import { supabase } from '../../lib/supabase';
+import { Theme, typography } from '@repo/ui';
+import { supabase } from '@repo/core';
 import { useTranslation } from 'react-i18next';
-import { useThemedColors } from '../../hooks/useThemedColors';
+import { useThemedColors } from '@repo/ui';
 
 interface ResourceNeed {
     id: string;
