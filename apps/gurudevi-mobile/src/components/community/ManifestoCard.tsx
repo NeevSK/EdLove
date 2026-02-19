@@ -6,10 +6,10 @@ import {
     Text,
     Heading,
     Pressable,
-} from '@/ui';
+} from '@repo/ui';
 import { Heart, Target, Star, ShieldCheck } from 'lucide-react-native';
-import { Theme } from '../../constants/Theme';
-import { SanctuaryManifesto } from '../../lib/api/sacredMissions';
+import { Theme } from '@repo/ui';
+import { SanctuaryManifesto } from '@repo/community';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,

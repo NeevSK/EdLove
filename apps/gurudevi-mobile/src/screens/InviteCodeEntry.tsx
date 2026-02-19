@@ -15,11 +15,11 @@ import {
     useToast,
     Toast,
     ToastTitle,
-} from '@/ui';
+} from '@repo/ui';
+import { Theme } from '@repo/ui';
 import { ArrowRight, HelpCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '../constants/Theme';
-import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
+import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
 import { validateInviteCode, InviteCodeData } from '../lib/inviteCodes';
 
 interface InviteCodeEntryProps {

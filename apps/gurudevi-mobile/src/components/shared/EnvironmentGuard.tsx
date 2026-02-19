@@ -6,7 +6,7 @@
  */
 
 import React, { ReactNode } from 'react';
-import { useEnvironment } from '../../context';
+import { useEnvironment } from '@repo/ui';
 
 interface EnvironmentGuardProps {
   children: ReactNode;
@@ -31,17 +31,17 @@ export function EnvironmentGuard({
   requiresHighFidelity = false,
 }: EnvironmentGuardProps) {
   const { effectiveFidelity } = useEnvironment();
-  
+
   // If component requires high fidelity and we're in low fidelity mode
   if (requiresHighFidelity && effectiveFidelity === 'low') {
     return <>{lowFidelityFallback}</>;
   }
-  
+
   // If we're in low fidelity mode and have a fallback
   if (effectiveFidelity === 'low' && lowFidelityFallback !== null) {
     return <>{lowFidelityFallback}</>;
   }
-  
+
   // Render children normally
   return <>{children}</>;
 }
@@ -65,13 +65,13 @@ export function useHighFidelity(): boolean {
  */
 export function useShouldAnimate(): boolean {
   const { effectiveFidelity, reality } = useEnvironment();
-  
+
   // Don't animate in low fidelity mode
   if (effectiveFidelity === 'low') return false;
-  
+
   // Don't animate if battery saver is on
   if (reality.isBatterySaverMode) return false;
-  
+
   return true;
 }
 
@@ -80,17 +80,17 @@ export function useShouldAnimate(): boolean {
  */
 export function useShouldLoadHighQualityImages(): boolean {
   const { effectiveFidelity, reality } = useEnvironment();
-  
+
   // Don't load high-quality images in low fidelity mode
   if (effectiveFidelity === 'low') return false;
-  
+
   // Don't load high-quality images in data saver mode
   if (reality.isDataSaverMode) return false;
-  
+
   // Don't load high-quality images on poor network
   if (reality.networkQuality === 'poor' || reality.networkQuality === 'offline') {
     return false;
   }
-  
+
   return true;
 }

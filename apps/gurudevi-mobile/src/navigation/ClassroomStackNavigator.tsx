@@ -1,12 +1,13 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ClassroomScreen, ClassroomDetailsScreen } from '../screens';
-import ClassroomDashboard from '../screens/ClassroomDashboard';
-import AttendanceScreen from '../screens/classroom/AttendanceScreen';
-import GradebookScreen from '../screens/grading/GradebookScreen';
-import { Theme } from '../constants/Theme';
-
-import { ClassroomStackParamList } from '../types/navigation';
+import {
+    ClassroomScreen,
+    ClassroomDashboard,
+    AttendanceScreen,
+    GradebookScreen
+} from '@repo/classroom';
+import { Theme } from '@repo/ui';
+import { ClassroomStackParamList } from '@repo/core';
 
 const Stack = createNativeStackNavigator<ClassroomStackParamList>();
 

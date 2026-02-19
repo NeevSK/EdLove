@@ -8,11 +8,11 @@ import {
     Pressable,
     Divider,
     Heading,
-} from '@/ui';
+} from '@repo/ui';
 import { Globe, Moon, Database, ChevronRight, Check, X, Sun, Zap, Smartphone } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '../../constants/Theme';
-import { hapticLight, hapticSuccess } from '../../utils/haptics';
+import { Theme } from '@repo/ui';
+import { hapticLight, hapticSuccess } from '@repo/ui';
 import { useTheme, ThemeMode } from '../../hooks/useTheme';
 
 interface ControlScrollProps {

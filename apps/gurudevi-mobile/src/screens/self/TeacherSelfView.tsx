@@ -21,11 +21,11 @@ import {
     InputField,
     Button,
     ButtonText
-} from "@/ui";
+} from '@repo/ui';
 import { Mic, Send, MessageCircle, Repeat, Flower, Flame, Sparkles, Heart, Lightbulb, Calendar, Battery, Moon } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '../../constants/Theme';
-import { hapticLight } from '../../utils/haptics';
+import { Theme } from '@repo/ui';
+import { hapticLight } from '@repo/ui';
 import DailyRhythm from '../../components/self/DailyRhythm';
 import {
     MoodLotus,
@@ -38,15 +38,14 @@ import {
     EnergyForecast,
     WindDownRitual
 } from '../../components/self';
-import { supabase } from '../../lib/supabase';
-import GlobalHeader from '../../components/shared/GlobalHeader';
+import { supabase, useStore } from '@repo/core';
+import { GlobalHeader } from '@repo/ui';
 import DailyContentCard from '../../components/self/DailyContentCard';
 import ThuthimalBadge from '../../components/profile/ThuthimalBadge';
-import { SkeletonCard } from '../../components/shared/SkeletonLoader';
+import { SkeletonCard } from '@repo/ui';
 import WelcomeModal from '../../components/self/WelcomeModal';
-import { useStore } from '../../store/useStore';
-import { useThemedColors } from '../../hooks/useThemedColors';
-import ScreenWrapper from '../../components/shared/ScreenWrapper';
+import { useThemedColors } from '@repo/ui';
+import { ScreenWrapper } from '@repo/ui';
 import IdentityCard from '../../components/profile/IdentityCard';
 import UserStatsCard from '../../components/profile/UserStatsCard';
 import EditProfileModal from '../../components/profile/EditProfileModal';
@@ -211,7 +210,7 @@ export default function TeacherSelfView() {
 
     return (
         <ScreenWrapper>
-            <GlobalHeader showGreeting={true} />
+            <GlobalHeader />
             <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
                 <ScrollView
                     sx={{ flex: 1 }}

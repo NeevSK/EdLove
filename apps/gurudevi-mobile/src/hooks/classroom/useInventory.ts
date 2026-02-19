@@ -1,6 +1,5 @@
+﻿import { SafeZustandStorage, useStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
-import { useStore } from '../../store/useStore';
-import { SafeZustandStorage } from '../../lib/storageWrapper';
 import { api } from '../../lib/api';
 import { InventoryItem, InventoryRequest } from '../../lib/api/types';
 

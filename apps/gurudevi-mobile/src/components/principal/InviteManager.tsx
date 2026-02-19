@@ -1,4 +1,4 @@
-/**
+﻿/**
  * INVITE MANAGER COMPONENT
  * 
  * Manage invite codes for staff and students to join the school.
@@ -31,17 +31,16 @@ import {
     ModalCloseButton,
     ModalBody,
     Heading as ModalHeading,
-} from '@/ui';
+} from '@repo/ui';
 import { TouchableOpacity, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import * as Clipboard from 'expo-clipboard';
 import { api } from '../../lib/api';
 import { InviteCode } from '../../lib/api/school';
-import Theme from '../../constants/Theme';
+import { Theme } from '@repo/ui';
 import { Copy, RefreshCw, Users, Shield, QrCode } from 'lucide-react-native';
-import { UserRole } from '../../types/User';
-import { hasRole, ADMIN_ROLES } from '../../utils/permissions';
-import QRCodeGenerator from '../shared/QRCodeGenerator';
+import { UserRole, ADMIN_ROLES, hasRole } from '@repo/core';
+import { QRCodeGenerator } from '@repo/scanner-kit';
 
 interface InviteManagerProps {
     schoolId: string;

@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Inventory API
  * 
  * API methods for managing physical classroom inventory
  */
 
-import { supabase } from '../supabase';
+import { supabase } from '@repo/core';
 import { APIError } from './types';
 import type { InventoryItem, InventoryRequest } from './types';
 

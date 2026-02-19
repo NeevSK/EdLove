@@ -11,13 +11,13 @@ import {
   ButtonText,
   Progress,
   ProgressFilledTrack
-} from '@/ui';
+} from '@repo/ui';
 import { Moon, CheckCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '../../constants/Theme';
-import { hapticLight, hapticSuccess } from '../../utils/haptics';
-import SkeletonLoader, { SkeletonCard } from '../shared/SkeletonLoader';
-import PositiveInvitation from '../shared/PositiveInvitation';
+import { Theme } from '@repo/ui';
+import { hapticLight, hapticSuccess } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui';
+import { PositiveInvitation } from '@repo/ui';
 
 interface WindDownRitualProps {
   userId?: string;

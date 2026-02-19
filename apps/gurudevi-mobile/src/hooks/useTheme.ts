@@ -1,4 +1,4 @@
-/**
+﻿/**
  * useTheme Hook
  * 
  * Manages app theme (light/dark/auto) with time-based dynamic switching
@@ -7,7 +7,8 @@
 
 import { useEffect, useState } from 'react';
 import { useColorScheme } from 'react-native';
-import { useStore, ThemeMode } from '../store/useStore';
+import { useStore } from '@repo/core';
+import type { ThemeMode } from '@repo/ui';
 export type { ThemeMode };
 
 interface UseThemeReturn {

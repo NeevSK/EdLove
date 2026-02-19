@@ -1,6 +1,5 @@
-import { supabase } from '../supabase';
+﻿import { supabase, requireTeacherAccess, requireClassroomAccess, requireAuth } from '@repo/core';
 import { APIError, Lesson, Student } from './types';
-import { requireTeacherAccess, requireClassroomAccess, requireAuth } from '../../utils/authorization';
 
 // ============================================================================
 // LESSONS API

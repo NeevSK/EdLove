@@ -1,9 +1,9 @@
 import React from 'react';
-import { Box, HStack, Text, Pressable } from '@/ui';
+import { Box, HStack, Text, Pressable } from '@repo/ui';
 import { Zap, X } from 'lucide-react-native';
-import { Theme } from '../../constants/Theme';
+import { Theme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { hapticLight } from '../../utils/haptics';
+import { hapticLight } from '@repo/ui';
 import { useDemoBridge } from '../../hooks/useDemoBridge';
 
 /**

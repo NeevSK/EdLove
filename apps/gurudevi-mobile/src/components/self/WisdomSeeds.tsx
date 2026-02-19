@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   Box,
   VStack,
@@ -10,17 +10,14 @@ import {
   Button,
   ButtonText,
   ScrollView
-} from '@/ui';
+} from '@repo/ui';
 import { Lightbulb, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '../../constants/Theme';
-import { supabase } from '../../lib/supabase';
-import { hapticLight, hapticSuccess } from '../../utils/haptics';
-import { WisdomNote } from '../../types/Wellbeing';
-import { useSafeMutation } from '../../hooks/useSafeMutation';
-import { useWisdom } from '../../hooks/self/useWisdom';
-import SkeletonLoader, { SkeletonCard } from '../shared/SkeletonLoader';
-import PositiveInvitation from '../shared/PositiveInvitation';
+import { Theme } from '@repo/ui';
+import { supabase, useSafeMutation } from '@repo/core';
+import { WisdomNote } from '@repo/self';
+import { hapticLight, hapticSuccess, SkeletonCard, PositiveInvitation } from '@repo/ui';
+import { useWisdom } from '@repo/self';
 
 interface WisdomSeedsProps {
   userId?: string;

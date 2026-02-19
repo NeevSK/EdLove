@@ -1,25 +1,24 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { ScrollView, RefreshControl } from 'react-native';
-import { Box, VStack, HStack, Text, Pressable, Spinner, useToast, Toast, ToastTitle } from "@/ui";
-import GlobalHeader from '../components/shared/GlobalHeader';
+import { Box, VStack, HStack, Text, Pressable, Spinner, useToast, Toast, ToastTitle } from '@repo/ui';
+import { GlobalHeader } from '@repo/ui';
 import LotusPetalFAB from '../components/shared/LotusPetalFAB';
 import PostCard from '../components/community/PostCard';
 import GroupCard from '../components/community/GroupCard';
 import CreatePostModal from '../components/community/CreatePostModal';
-import SanctuaryInput from '../components/shared/SanctuaryInput';
-import { Theme } from '../constants/Theme';
+import { SanctuaryInput } from '@repo/ui';
+import { Theme, useThemedColors } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { MessageSquare, Users, PenTool, Search } from 'lucide-react-native';
-import { useCommunity, Group, Post } from '../hooks/useCommunity';
-import { useThemedColors } from '../hooks/useThemedColors';
-import ScreenWrapper from '../components/shared/ScreenWrapper';
+import { useCommunity, Group, Post } from '@repo/community';
+
+import { ScreenWrapper } from '@repo/ui';
 import { isDemo } from '../lib/api/demo';
 import CommunityPresence from '../components/self/CommunityPresence';
 import ManifestoCard from '../components/community/ManifestoCard';
-import { useManifestos } from '../hooks/useManifestos';
-import { supabase } from '../lib/supabase';
-import { SkeletonCard } from '../components/shared/SkeletonLoader';
-import PositiveInvitation from '../components/shared/PositiveInvitation';
+import { useManifestos } from '@repo/community';
+import { supabase } from '@repo/core';
+import { SkeletonCard, PositiveInvitation } from '@repo/ui';
 
 type TabType = 'feed' | 'groups';
 
@@ -190,7 +189,7 @@ export default function CommunityScreen() {
                                     }}
                                     createdAt={post.created_at}
                                     groupName={groups.find((g: Group) => g.id === post.group_id)?.name}
-                                    reactions={Object.values(post.reactions || {}).reduce((a, b) => a + b, 0)}
+                                    reactions={Object.values(post.reactions || {}).reduce((a: number, b: any) => a + (typeof b === 'number' ? b : 0), 0)}
                                     comments={0}
                                     onPress={() => console.log('Open Post', post.id)}
                                 />

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * REMINDERS MANAGER
  * CRUD functionality for gentle reminders
  * Default: "Drink water intermittently while teaching"
@@ -29,11 +29,11 @@ import {
     ModalCloseButton,
     ModalBody,
     ModalFooter,
-} from '@/ui';
+} from '@repo/ui';
 import { Plus, Trash2, Edit, Bell, Droplet, Clock } from 'lucide-react-native';
-import { Theme, typography } from '../../constants/Theme';
-import { supabase } from '../../lib/supabase';
-import { hapticLight, hapticMedium } from '../../utils/haptics';
+import { Theme, typography } from '@repo/ui';
+import { supabase } from '@repo/core';
+import { hapticLight, hapticMedium } from '@repo/ui';
 
 interface Reminder {
     id: string;

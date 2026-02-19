@@ -16,17 +16,16 @@ import {
     Pressable,
     Divider,
     Spinner,
-} from "@/ui";
+} from '@repo/ui';
 import { Mail } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '../lib/supabase';
-import { Theme } from '../constants/Theme';
-import { UserRole } from '../types/User';
-import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
+import { supabase, UserRole } from '@repo/core';
+import { Theme } from '@repo/ui';
+import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
 import { validators, validateForm } from '../utils/validators';
-import ScannerModal from '../components/shared/ScannerModal';
-import ScreenWrapper from '../components/shared/ScreenWrapper';
-import useThemedColors from '../hooks/useThemedColors';
+import { ScannerModal } from '@repo/scanner-kit';
+import { ScreenWrapper } from '@repo/ui';
+import { useThemedColors } from '@repo/ui';
 import GuestDataSyncModal from '../components/shared/GuestDataSyncModal';
 import { GuestDataSync } from '../lib/guestDataSync';
 

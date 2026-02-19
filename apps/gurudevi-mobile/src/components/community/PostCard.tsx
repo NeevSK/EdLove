@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Box, HStack, VStack, Text, Avatar, AvatarFallbackText, AvatarImage } from '@/ui';
+import { Box, HStack, VStack, Text, Avatar, AvatarFallbackText, AvatarImage } from '@repo/ui';
 import { MoreHorizontal, Heart, MessageCircle, Share2, BarChart2 } from 'lucide-react-native';
-import SanctuaryCard from '../shared/SanctuaryCard';
-import { Theme } from '../../constants/Theme';
+import { SanctuaryCard } from '@repo/ui';
+import { Theme } from '@repo/ui';
 import { formatDistanceToNow } from 'date-fns';
 
 export type PostType = 'post' | 'text' | 'announcement' | 'poll';

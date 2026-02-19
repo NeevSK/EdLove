@@ -1,9 +1,9 @@
-import { Alert } from 'react-native';
+﻿import { Alert } from 'react-native';
 import { isDemo } from './demo';
 import * as MOCK from './mockData';
-import { hapticWarning } from '../../utils/haptics';
+import { hapticWarning } from '@repo/ui';
 import i18n from 'i18next';
-import { useStore } from '../../store/useStore';
+import { useStore } from '@repo/core';
 
 /**
  * Registry of mock data getters.

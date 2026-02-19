@@ -8,7 +8,7 @@
 import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet, Text, TextStyle } from 'react-native';
 import ErrorMessage from '../components/shared/ErrorMessage';
-import Theme from '../constants/Theme';
+import { Theme } from '@repo/ui';
 
 export default function ErrorMessageDemo() {
     const [showGentle, setShowGentle] = useState(true);

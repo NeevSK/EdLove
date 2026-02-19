@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ANNOUNCEMENTS SCREEN
  * 
  * School-wide news feed for announcements.
@@ -31,13 +31,12 @@ import {
     ModalFooter,
     Spinner,
     Switch,
-} from '@/ui';
+} from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';
-import { AnnouncementWithAuthor } from '../../lib/api/community';
-import Theme from '../../constants/Theme';
-import { UserRole } from '../../types/User';
-import { hasRole, STAFF_ROLES, ADMIN_ROLES } from '../../utils/permissions';
+import { AnnouncementWithAuthor } from '@repo/community';
+import { Theme } from '@repo/ui';
+import { UserRole, hasRole, STAFF_ROLES, ADMIN_ROLES } from '@repo/core';
 
 interface AnnouncementsScreenProps {
     schoolId: string;

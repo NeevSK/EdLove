@@ -32,17 +32,17 @@ import {
     Toast,
     ToastTitle,
     Icon
-} from "@/ui";
+} from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { Maximize2, Plus, Edit2, Clock, Trash, ChevronDown, Cloud } from 'lucide-react-native';
-import { Theme } from '../../constants/Theme';
-import { useTimetable, Period } from '../../hooks/useTimetable';
+import { Theme } from '@repo/ui';
+import { useTimetable, Period } from '@repo/self';
 import EmptyState from '../shared/EmptyState';
 import ErrorBoundary from '../shared/ErrorBoundary';
-import { useFeatureAccess } from '../../hooks/useFeatureAccess';
-import { useThemedColors } from '../../hooks/useThemedColors';
-import SkeletonLoader, { SkeletonCard, SkeletonTextLine } from '../shared/SkeletonLoader';
-import PositiveInvitation from '../shared/PositiveInvitation';
+import { useFeatureAccess } from '@repo/core';
+import { useThemedColors } from '@repo/ui';
+import { SkeletonCard, SkeletonTextLine } from '@repo/ui';
+import { PositiveInvitation } from '@repo/ui';
 
 const DAYS = [
     { id: 1, label: 'M' },

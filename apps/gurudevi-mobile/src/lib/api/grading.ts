@@ -1,12 +1,5 @@
-import { supabase } from '../supabase';
+﻿import { supabase, requireAuth, requireClassroomAccess, requireStudentAccess, StudentGrade, ClassroomGradingSettings, marksToGPA } from '@repo/core';
 import { APIError } from './types';
-import { StudentGrade, ClassroomGradingSettings } from '../../types/Grade';
-import { marksToGPA } from '../../utils/grading';
-import {
-    requireAuth,
-    requireClassroomAccess,
-    requireStudentAccess
-} from '../../utils/authorization';
 
 // ============================================================================
 // GRADING API

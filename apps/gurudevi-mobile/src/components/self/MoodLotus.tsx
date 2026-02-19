@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MOOD LOTUS COMPONENT
  * Daily mood check-in with lotus visual metaphor
  * 
@@ -24,7 +24,7 @@ import {
     Button,
     ButtonText,
     Pressable,
-} from '@/ui';
+} from '@repo/ui';
 import { StyleSheet, Image, Platform } from 'react-native';
 import Animated, {
     useAnimatedStyle,
@@ -36,17 +36,13 @@ import Animated, {
     runOnJS,
 } from 'react-native-reanimated';
 import { Wind } from 'lucide-react-native';
-import { Theme, typography } from '../../constants/Theme';
-import { supabase } from '../../lib/supabase';
+import { Theme, typography } from '@repo/ui';
 import * as Haptics from 'expo-haptics';
 import BreathGuide from './BreathGuide';
 import { useTranslation } from 'react-i18next';
-import { useThemedColors } from '../../hooks/useThemedColors';
-import { useSafeMutation } from '../../hooks/useSafeMutation';
-import { useMood } from '../../hooks/self/useMood';
-import { useStore } from '../../store/useStore';
-import SkeletonLoader, { SkeletonCard } from '../shared/SkeletonLoader';
-import PositiveInvitation from '../shared/PositiveInvitation';
+import { supabase, useStore, useSafeMutation } from '@repo/core';
+import { useThemedColors, SkeletonCard, PositiveInvitation } from '@repo/ui';
+import { useMood } from '@repo/self';
 
 interface MoodLotusProps {
     userId?: string;

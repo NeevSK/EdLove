@@ -1,17 +1,11 @@
-/**
+﻿/**
  * Classrooms API
  * 
  * API methods for managing classrooms
  */
 
-import { supabase } from '../supabase';
+import { supabase, requireTeacherAccess, requireStudentAccess, requireSchoolAccess, requireClassroomAccess } from '@repo/core';
 import { APIError, Classroom } from './types';
-import {
-    requireTeacherAccess,
-    requireStudentAccess,
-    requireSchoolAccess,
-    requireClassroomAccess
-} from '../../utils/authorization';
 
 // Interface for the join result from classroom_students query
 interface ClassroomStudentJoin {

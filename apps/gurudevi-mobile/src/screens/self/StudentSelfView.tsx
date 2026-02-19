@@ -20,21 +20,19 @@ import {
     InputField,
     Button,
     ButtonText
-} from "@/ui";
+} from '@repo/ui';
 import { Target, BookOpen, Flower, TrendingUp, Brain } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '../../constants/Theme';
-import { hapticLight } from '../../utils/haptics';
+import { Theme } from '@repo/ui';
+import { hapticLight } from '@repo/ui';
 import { MoodLotus, ShadowAgentDrawer } from '../../components/self';
-import { supabase } from '../../lib/supabase';
-import GlobalHeader from '../../components/shared/GlobalHeader';
+import { supabase, useStore } from '@repo/core';
+import { GlobalHeader } from '@repo/ui';
 import DailyContentCard from '../../components/self/DailyContentCard';
 import WelcomeModal from '../../components/self/WelcomeModal';
-import { SkeletonCard } from '../../components/shared/SkeletonLoader';
-import PositiveInvitation from '../../components/shared/PositiveInvitation';
-import { useStore } from '../../store/useStore';
-import { useThemedColors } from '../../hooks/useThemedColors';
-import ScreenWrapper from '../../components/shared/ScreenWrapper';
+import { SkeletonCard, PositiveInvitation } from '@repo/ui';
+import { useThemedColors } from '@repo/ui';
+import { ScreenWrapper } from '@repo/ui';
 // IdentityCard and UserStatsCard removed
 // EditProfileModal removed
 
@@ -202,7 +200,7 @@ export default function StudentSelfView() {
 
     return (
         <ScreenWrapper>
-            <GlobalHeader showGreeting={true} />
+            <GlobalHeader />
             <ScrollView
                 sx={{ flex: 1 }}
                 contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}

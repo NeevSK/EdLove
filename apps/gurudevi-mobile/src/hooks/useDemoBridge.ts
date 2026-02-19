@@ -1,8 +1,8 @@
-import { Alert } from 'react-native';
-import { useStore } from '../store/useStore';
+﻿import { Alert } from 'react-native';
+import { useStore } from '@repo/core';
 import { api } from '../lib/api';
 import { useTranslation } from 'react-i18next';
-import { hapticSuccess, hapticWarning } from '../utils/haptics';
+import { hapticSuccess, hapticWarning } from '@repo/ui';
 
 /**
  * Hook to handle the "Bridge to Reality" flow when exiting Demo Mode.

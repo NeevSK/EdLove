@@ -1,4 +1,4 @@
-import { useStore } from '../../store/useStore';
+﻿import { useStore } from '@repo/core';
 
 /**
  * Configuration for demo behavior

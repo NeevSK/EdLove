@@ -24,10 +24,10 @@ import {
     RadioIcon,
     RadioLabel,
     Switch,
-} from '@/ui';
+} from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { ClassroomGradingSettings } from '../../types/Grade';
-import Theme from '../../constants/Theme';
+import { ClassroomGradingSettings } from '@repo/core';
+import { Theme } from '@repo/ui';
 
 interface GradingSettingsProps {
     currentSettings: ClassroomGradingSettings;
@@ -83,6 +83,7 @@ export default function GradingSettings({
                         {t('grading.settings.modeLabel') || 'Grading Mode'}
                     </Text>
 
+
                     <RadioGroup
                         value={gradingMode}
                         onChange={(value) => setGradingMode(value as 'marks' | 'gpa' | 'both')}
@@ -97,6 +98,7 @@ export default function GradingSettings({
                                     borderRadius: Theme.corners.comfortable,
                                 }}
                             >
+
                                 <Radio value="marks">
                                     <RadioIndicator>
                                         <RadioIcon />
@@ -129,6 +131,7 @@ export default function GradingSettings({
                                     borderRadius: Theme.corners.comfortable,
                                 }}
                             >
+
                                 <Radio value="gpa">
                                     <RadioIndicator>
                                         <RadioIcon />
@@ -161,6 +164,7 @@ export default function GradingSettings({
                                     borderRadius: Theme.corners.comfortable,
                                 }}
                             >
+
                                 <Radio value="both">
                                     <RadioIndicator>
                                         <RadioIcon />

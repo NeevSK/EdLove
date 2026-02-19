@@ -9,11 +9,11 @@ import {
   Button,
   ButtonText,
   Pressable,
-} from '@/ui';
+} from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { useEnvironment } from '../context';
-import { Theme } from '../constants/Theme';
-import { hapticLight, hapticSuccess } from '../utils/haptics';
+import { useEnvironment } from '@repo/ui';
+import { Theme, useThemedColors } from '@repo/ui';
+import { hapticLight, hapticSuccess } from '@repo/ui';
 import {
   Sun,
   Moon,
@@ -28,9 +28,9 @@ import {
   Info,
   Zap,
 } from 'lucide-react-native';
-import { useThemedColors } from '../hooks/useThemedColors';
-import ScreenWrapper from '../components/shared/ScreenWrapper';
-import { useStore } from '../store/useStore';
+
+import { ScreenWrapper } from '@repo/ui';
+import { useStore } from '@repo/core';
 
 interface SettingsOptionProps {
   icon: React.ReactNode;

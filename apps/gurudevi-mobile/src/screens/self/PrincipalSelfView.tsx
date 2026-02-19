@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PrincipalSelfView Component
  * 
  * Principal-focused wellbeing features emphasizing leadership wellness
@@ -6,6 +6,7 @@
  * More Tools: Staff wellbeing overview (aggregated), Leadership wisdom, Monthly reflection
  */
 
+import { supabase, useStore, useSafeMutation } from '@repo/core';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -17,24 +18,21 @@ import {
     ScrollView,
     Pressable,
     Input,
-    InputField
-} from "@/ui";
+    InputField,
+    Theme,
+    hapticLight,
+    SkeletonCard,
+    PositiveInvitation,
+    useThemedColors,
+    ScreenWrapper
+} from '@repo/ui';
 import { Battery, Activity, BookOpen, Users, Lightbulb, Calendar } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '../../constants/Theme';
-import { hapticLight } from '../../utils/haptics';
 import { ShadowAgentDrawer, EnergyForecast } from '../../components/self';
-import { supabase } from '../../lib/supabase';
-import { useSafeMutation } from '../../hooks/useSafeMutation';
-import { useDecisionJournal } from '../../hooks/self/useDecisionJournal';
-import GlobalHeader from '../../components/shared/GlobalHeader';
+import { useDecisionJournal } from '@repo/self';
+import { GlobalHeader } from '@repo/ui';
 import DailyContentCard from '../../components/self/DailyContentCard';
 import WelcomeModal from '../../components/self/WelcomeModal';
-import { SkeletonCard } from '../../components/shared/SkeletonLoader';
-import PositiveInvitation from '../../components/shared/PositiveInvitation';
-import { useStore } from '../../store/useStore';
-import { useThemedColors } from '../../hooks/useThemedColors';
-import ScreenWrapper from '../../components/shared/ScreenWrapper';
 // IdentityCard and UserStatsCard removed
 // EditProfileModal removed
 
@@ -213,7 +211,7 @@ export default function PrincipalSelfView() {
 
     return (
         <ScreenWrapper>
-            <GlobalHeader showGreeting={true} />
+            <GlobalHeader />
             <ScrollView
                 sx={{ flex: 1 }}
                 contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}

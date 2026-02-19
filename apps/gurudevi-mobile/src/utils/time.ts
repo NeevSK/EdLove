@@ -3,7 +3,7 @@
  * Time-based helpers for greetings, formatting, and sanctuary time-aware features
  */
 
-import { Theme } from '../constants/Theme';
+import { Theme } from '@repo/ui';
 
 /**
  * Time of Day Types

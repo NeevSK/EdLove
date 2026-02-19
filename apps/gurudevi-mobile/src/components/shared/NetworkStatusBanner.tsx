@@ -1,11 +1,12 @@
+﻿
 import React from 'react';
-import { Box, Text, HStack, Spinner } from '@/ui';
+import { Box, Text, HStack, Spinner, Theme } from '@repo/ui';
 import { WifiOff, RefreshCw } from 'lucide-react-native';
-import { useStore } from '../../store/useStore';
-import { Theme } from '../../constants/Theme';
+import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { SlideInDown, SlideOutUp } from 'react-native-reanimated';
-import { useMutationQueue } from '../../lib/sync/useMutationQueue';
+import { useNetInfo } from '@react-native-community/netinfo';
+import { useStore, useMutationQueue } from '@repo/core';
 
 /**
  * NetworkStatusBanner

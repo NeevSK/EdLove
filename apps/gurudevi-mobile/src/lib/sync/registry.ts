@@ -1,6 +1,6 @@
-
+﻿
 import { api } from '../api';
-import { supabase } from '../supabase';
+import { supabase } from '@repo/core';
 
 /**
  * Mutation Registry

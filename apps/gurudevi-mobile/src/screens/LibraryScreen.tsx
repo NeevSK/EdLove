@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import { ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
-import { Box, VStack, Text, Pressable } from "@/ui";
-import GlobalHeader from '../components/shared/GlobalHeader';
+import { Box, VStack, Text, Pressable } from '@repo/ui';
+import { GlobalHeader } from '@repo/ui';
 import LotusPetalFAB from '../components/shared/LotusPetalFAB';
-import LibraryResourceCard, { ResourceType } from '../components/library/LibraryResourceCard';
+import { LibraryResourceCard, ResourceType } from '@repo/ui';
 import AddResourceModal from '../components/library/AddResourceModal';
-import { Theme } from '../constants/Theme';
+import { Theme, useThemedColors } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { BookOpen, Search, Plus } from 'lucide-react-native';
-import SanctuaryInput from '../components/shared/SanctuaryInput';
+import { SanctuaryInput } from '@repo/ui';
 import * as Linking from 'expo-linking';
-import { useThemedColors } from '../hooks/useThemedColors';
-import ScreenWrapper from '../components/shared/ScreenWrapper';
+
+import { ScreenWrapper } from '@repo/ui';
 import { api } from '../lib/api';
 import { isDemo } from '../lib/api/demo';
 import { Zap } from 'lucide-react-native';
-import { LibraryResource } from '../types/Community';
-import { SkeletonCard } from '../components/shared/SkeletonLoader';
-import PositiveInvitation from '../components/shared/PositiveInvitation';
+import { CommunityPost } from '@repo/community';
+import { LibraryResource } from '@repo/library';
+import { SkeletonCard, PositiveInvitation } from '@repo/ui';
 
 // local MOCK_RESOURCES removed, now using api.library
 

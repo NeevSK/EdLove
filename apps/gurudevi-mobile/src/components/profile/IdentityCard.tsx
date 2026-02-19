@@ -7,7 +7,7 @@ import {
     Text,
     Pressable,
     Center,
-} from '@/ui';
+} from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import Animated, {
     useSharedValue,
@@ -18,10 +18,10 @@ import Animated, {
     Easing,
 } from 'react-native-reanimated';
 import { ShieldCheck, Edit3, Compass, Database } from 'lucide-react-native';
-import QRCodeGenerator from '../shared/QRCodeGenerator';
-import { Theme } from '../../constants/Theme';
-import { useThemedColors } from '../../hooks/useThemedColors';
-import { hapticLight, hapticSuccess } from '../../utils/haptics';
+import { QRCodeGenerator } from '@repo/scanner-kit';
+import { Theme } from '@repo/ui';
+import { useThemedColors } from '@repo/ui';
+import { hapticLight, hapticSuccess } from '@repo/ui';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_WIDTH = SCREEN_WIDTH - Theme.spacing.xl * 2;

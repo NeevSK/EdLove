@@ -20,9 +20,9 @@ import {
     ButtonText,
     Progress,
     ProgressFilledTrack,
-} from '@/ui';
+} from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import Theme from '../../constants/Theme';
+import { Theme } from '@repo/ui';
 
 interface UserProfile {
     id: string;

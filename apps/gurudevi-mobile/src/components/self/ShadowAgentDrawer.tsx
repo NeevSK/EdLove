@@ -16,7 +16,7 @@ import {
     VStack,
     Text,
     Pressable,
-} from '@/ui';
+} from '@repo/ui';
 import { Modal, StyleSheet, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
@@ -29,8 +29,8 @@ import Animated, {
     FadeIn,
 } from 'react-native-reanimated';
 import { X } from 'lucide-react-native';
-import { Theme, typography } from '../../constants/Theme';
-import { hapticLight } from '../../utils/haptics';
+import { Theme, typography } from '@repo/ui';
+import { hapticLight } from '@repo/ui';
 
 const THOUGHT_SEEDS = [
     "What is heavy today?",

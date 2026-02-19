@@ -44,9 +44,9 @@ import {
     SelectBackdrop,
     SelectContent,
     SelectItem,
-} from '@/ui';
+} from '@repo/ui';
 import { ChevronDown } from 'lucide-react-native';
-import { Theme, typography } from '../../constants/Theme';
+import { Theme, typography } from '@repo/ui';
 
 // ============================================================================
 // TYPES

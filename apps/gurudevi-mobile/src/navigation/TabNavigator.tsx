@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LotusPetalFAB from '../components/shared/LotusPetalFAB';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '../constants/Theme';
+import { Theme } from '@repo/ui';
 import ErrorBoundary from '../components/shared/ErrorBoundary';
 
 // Icons
@@ -19,8 +19,8 @@ import {
 } from 'lucide-react-native';
 
 import ClassroomStackNavigator from './ClassroomStackNavigator';
-import { useUserRole } from '../hooks/useUserRole';
-import { useThemedColors } from '../hooks/useThemedColors';
+import { useUserRole } from '@repo/core';
+import { useThemedColors } from '@repo/ui';
 
 // Screens
 import {

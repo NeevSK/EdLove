@@ -9,10 +9,10 @@ import {
     Image,
     Button,
     ButtonText
-} from "@/ui";
-import { Theme } from '../../constants/Theme';
-import { useCommunity, Group, Post } from '../../hooks/useCommunity';
-import GlobalHeader from '../../components/shared/GlobalHeader';
+} from '@repo/ui';
+import { Theme } from '@repo/ui';
+import { useCommunity, Group, Post } from '@repo/community';
+import { GlobalHeader } from '@repo/ui';
 import PostCard from '../../components/community/PostCard';
 import { Users, Settings } from 'lucide-react-native';
 
@@ -87,15 +87,19 @@ export default function GroupDetailScreen({ groupId = '1', navigation }: GroupDe
                         {posts.map((post: Post) => (
                             <PostCard
                                 key={post.id}
-                                {...post}
+                                id={post.id}
                                 author={{
                                     id: post.author_id,
                                     name: post.author_name,
                                     avatarUrl: post.author_avatar,
+                                    role: post.author_role,
                                 }}
+                                content={post.content}
+                                type={post.post_type === 'announcement' ? 'announcement' : 'text'}
                                 createdAt={post.created_at}
                                 reactions={Object.values(post.reactions || {}).reduce((a: number, b: number) => a + b, 0)}
-                                comments={0}
+                                comments={post.comment_count}
+                                isAnonymous={post.is_anonymous}
                             />
                         ))}
                     </VStack>

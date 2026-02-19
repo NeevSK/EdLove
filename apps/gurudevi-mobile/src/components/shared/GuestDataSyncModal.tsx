@@ -14,9 +14,9 @@ import {
     ModalBody,
     ModalFooter,
     Spinner
-} from '@/ui';
-import { Theme } from '../../constants/Theme';
-import { useThemedColors } from '../../hooks/useThemedColors';
+} from '@repo/ui';
+import { Theme } from '@repo/ui';
+import { useThemedColors } from '@repo/ui';
 import { GuestDataSync } from '../../lib/guestDataSync';
 import { Check, AlertCircle, Cloud, Database } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -41,7 +41,7 @@ export default function GuestDataSyncModal({
     const [progress, setProgress] = useState({ current: 0, total: 0, step: '' });
     const [completed, setCompleted] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [summary, setSummary] = useState({ timetable: 0, moodLogs: 0, journalEntries: 0, students: 0, total: 0 });
+    const [summary, setSummary] = useState({ timetablePeriods: 0, moodLogs: 0, journalEntries: 0, students: 0, total: 0 });
 
     useEffect(() => {
         if (isOpen) {
