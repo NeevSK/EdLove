@@ -10,13 +10,13 @@ export const profileAPI = {
             .from('users')
             .select('*')
             .eq('id', userId)
-            .single();
+            .maybeSingle();
 
         if (error) {
             throw new APIError('Failed to fetch user profile', error.code, error);
         }
 
-        return data;
+        return data; // Can be null for new guests
     },
 
     /**

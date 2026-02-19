@@ -72,18 +72,29 @@ export const ButtonText = BaseButtonText as any;
 export const ButtonSpinner = BaseButtonSpinner as any;
 export const ButtonIcon = BaseButtonIcon as any;
 
-export {
-    Select,
-    SelectTrigger,
-    SelectInput,
-    SelectIcon,
-    SelectPortal,
-    SelectBackdrop,
-    SelectContent,
-    SelectDragIndicatorWrapper,
-    SelectDragIndicator,
-    SelectItem
+import {
+    Select as BaseSelect,
+    SelectTrigger as BaseSelectTrigger,
+    SelectInput as BaseSelectInput,
+    SelectIcon as BaseSelectIcon,
+    SelectPortal as BaseSelectPortal,
+    SelectBackdrop as BaseSelectBackdrop,
+    SelectContent as BaseSelectContent,
+    SelectDragIndicatorWrapper as BaseSelectDragIndicatorWrapper,
+    SelectDragIndicator as BaseSelectDragIndicator,
+    SelectItem as BaseSelectItem
 } from '@gluestack-ui/themed/build/components/Select';
+
+export const Select = BaseSelect as any;
+export const SelectTrigger = BaseSelectTrigger as any;
+export const SelectInput = BaseSelectInput as any;
+export const SelectIcon = BaseSelectIcon as any;
+export const SelectPortal = BaseSelectPortal as any;
+export const SelectBackdrop = BaseSelectBackdrop as any;
+export const SelectContent = BaseSelectContent as any;
+export const SelectDragIndicatorWrapper = BaseSelectDragIndicatorWrapper as any;
+export const SelectDragIndicator = BaseSelectDragIndicator as any;
+export const SelectItem = BaseSelectItem as any;
 
 export {
     FormControl,

@@ -8,6 +8,7 @@ export interface Classroom {
     subject?: string | null;
     description?: string | null;
     color_theme?: string;
+    syllabus_version?: string;
     is_archived?: boolean;
     created_at: string;
     updated_at: string;

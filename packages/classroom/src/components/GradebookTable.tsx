@@ -10,7 +10,8 @@ import {
     HStack,
     Text,
     Box,
-    Theme
+    Theme,
+    useThemedColors,
 } from '@repo/ui';
 import { FlatList, ListRenderItemInfo } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +29,7 @@ export default function GradebookTable({
     studentNames,
 }: GradebookTableProps) {
     const { t } = useTranslation();
+    const colors = useThemedColors();
     const { grading_mode, show_ranks } = gradingSettings;
 
     // Calculate ranks if needed
@@ -49,7 +51,7 @@ export default function GradebookTable({
 
         if (grading_mode === 'marks') {
             return (
-                <Text sx={{ color: Theme.colors.charcoalTruth, fontWeight: 'bold' as any }}>
+                <Text sx={{ color: colors.text, fontWeight: '700' }}>
                     {grade.marks}/100
                 </Text>
             );
@@ -58,11 +60,11 @@ export default function GradebookTable({
         if (grading_mode === 'gpa') {
             return (
                 <VStack sx={{ gap: Theme.spacing.xs }}>
-                    <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' as any, fontSize: Theme.typography.fontSize.lg }}>
+                    <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700', fontSize: Theme.typography.fontSize.lg }}>
                         {letterGrade}
                     </Text>
-                    <Text sx={{ color: Theme.colors.slateGray, fontSize: Theme.typography.fontSize.xs }}>
-                        {gpa.toFixed(1)} {t('grades.gpa')}
+                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>
+                        {gpa.toFixed(1)} {t('grading.gradebook.gpaLabel') || 'GPA'}
                     </Text>
                 </VStack>
             );
@@ -72,20 +74,20 @@ export default function GradebookTable({
         return (
             <VStack sx={{ gap: Theme.spacing.xs }}>
                 <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
-                    <Text sx={{ color: Theme.colors.charcoalTruth, fontWeight: '700' as any }}>
+                    <Text sx={{ color: colors.text, fontWeight: '700' }}>
                         {grade.marks}
                     </Text>
-                    <Text sx={{ color: Theme.colors.slateGray }}>·</Text>
-                    <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' as any }}>
+                    <Text sx={{ color: colors.textTertiary }}>·</Text>
+                    <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}>
                         {letterGrade}
                     </Text>
                 </HStack>
-                <Text sx={{ color: Theme.colors.slateGray, fontSize: Theme.typography.fontSize.xs }}>
-                    {gpa.toFixed(1)} {t('grades.gpa')}
+                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>
+                    {gpa.toFixed(1)} {t('grading.gradebook.gpaLabel') || 'GPA'}
                 </Text>
             </VStack>
         );
-    }, [grading_mode, t]);
+    }, [grading_mode, t, colors]);
 
     // Memoized row renderer
     const renderGradeRow = useCallback(({ item: grade, index }: ListRenderItemInfo<StudentGrade>) => (
@@ -93,11 +95,12 @@ export default function GradebookTable({
             grade={grade}
             index={index}
             totalItems={sortedGrades.length}
-            studentName={studentNames[grade.student_id] || t('grades.unknownStudent')}
+            studentName={studentNames[grade.student_id] || t('grading.gradebook.unknownStudent') || 'Unknown Student'}
             showRanks={show_ranks}
             renderGradeDisplay={renderGradeDisplay}
+            colors={colors}
         />
-    ), [sortedGrades.length, studentNames, show_ranks, t, renderGradeDisplay]);
+    ), [sortedGrades.length, studentNames, show_ranks, t, renderGradeDisplay, colors]);
 
     // Key extractor
     const keyExtractor = useCallback((item: StudentGrade) => item.id, []);
@@ -105,18 +108,20 @@ export default function GradebookTable({
     // Empty component
     const EmptyComponent = useCallback(() => (
         <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}>
-            <Text sx={{ color: Theme.colors.slateGray, textAlign: 'center' }}>
-                {t('grades.noGrades')}
+            <Text sx={{ color: colors.textSecondary, textAlign: 'center' }}>
+                {t('grading.gradebook.noGrades') || 'No grades recorded yet'}
             </Text>
         </Box>
-    ), [t]);
+    ), [t, colors]);
 
     return (
         <Box
             sx={{
-                backgroundColor: Theme.colors.lotusWhite,
-                borderRadius: Theme.corners.generous,
-                ...Theme.shadows.md,
+                backgroundColor: colors.secondary,
+                borderRadius: Theme.corners.comfortable,
+                borderWidth: 1,
+                borderColor: colors.border,
+                ...Theme.shadows.sm,
                 overflow: 'hidden',
             }}
         >
@@ -126,29 +131,29 @@ export default function GradebookTable({
                     sx={{
                         gap: Theme.spacing.md,
                         padding: Theme.spacing.md,
-                        backgroundColor: Theme.colors.sandStone,
+                        backgroundColor: colors.tertiary,
                         borderBottomWidth: 1,
-                        borderBottomColor: Theme.colors.stoneGray,
+                        borderBottomColor: colors.border,
                     }}
                 >
                     <Box sx={{ flex: 2 }}>
-                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' as any, color: Theme.colors.charcoalTruth }}>
-                            {t('grades.student')}
+                        <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '700', color: colors.textSecondary, textTransform: 'uppercase' }}>
+                            {t('grading.gradebook.studentHeader') || 'Student'}
                         </Text>
                     </Box>
                     <Box sx={{ flex: 2 }}>
-                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' as any, color: Theme.colors.charcoalTruth }}>
+                        <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '700', color: colors.textSecondary, textTransform: 'uppercase' }}>
                             {grading_mode === 'marks'
-                                ? t('grades.marks')
+                                ? t('grading.gradebook.marksHeader') || 'Marks'
                                 : grading_mode === 'gpa'
-                                    ? t('grades.grade')
-                                    : t('grades.marksGrade')}
+                                    ? t('grading.gradebook.gradeHeader') || 'Grade'
+                                    : t('grading.gradebook.marksGradeHeader') || 'Marks / Grade'}
                         </Text>
                     </Box>
                     {show_ranks && (
                         <Box sx={{ flex: 1, alignItems: 'center' }}>
-                            <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' as any, color: Theme.colors.charcoalTruth }}>
-                                {t('grades.rank')}
+                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '700', color: colors.textSecondary, textTransform: 'uppercase' }}>
+                                {t('grading.gradebook.rankHeader') || 'Rank'}
                             </Text>
                         </Box>
                     )}
@@ -178,6 +183,7 @@ interface GradeRowProps {
     studentName: string;
     showRanks: boolean;
     renderGradeDisplay: (grade: StudentGrade) => React.ReactElement | null;
+    colors: any;
 }
 
 const GradeRow = React.memo(({
@@ -186,18 +192,20 @@ const GradeRow = React.memo(({
     totalItems,
     studentName,
     showRanks,
-    renderGradeDisplay
+    renderGradeDisplay,
+    colors
 }: GradeRowProps) => (
     <HStack
         sx={{
             gap: Theme.spacing.md,
             padding: Theme.spacing.md,
             borderBottomWidth: index < totalItems - 1 ? 1 : 0,
-            borderBottomColor: Theme.colors.sandStone,
+            borderBottomColor: colors.border,
+            backgroundColor: index % 2 === 0 ? colors.secondary : colors.tertiary,
         }}
     >
         <Box sx={{ flex: 2 }}>
-            <Text sx={{ color: Theme.colors.charcoalTruth }}>
+            <Text sx={{ color: colors.text, fontWeight: '700' }}>
                 {studentName}
             </Text>
         </Box>
@@ -211,13 +219,13 @@ const GradeRow = React.memo(({
                         paddingHorizontal: Theme.spacing.sm,
                         paddingVertical: Theme.spacing.xs,
                         backgroundColor: Theme.colors.sanctuarySaffron,
-                        borderRadius: Theme.corners.tight,
+                        borderRadius: Theme.corners.full,
                     }}
                 >
                     <Text
                         sx={{
-                            fontSize: Theme.typography.fontSize.sm,
-                            fontWeight: '700' as any,
+                            fontSize: Theme.typography.fontSize.xs,
+                            fontWeight: '700',
                             color: Theme.colors.white
                         }}
                     >
@@ -233,6 +241,7 @@ const GradeRow = React.memo(({
         prevProps.grade.marks === nextProps.grade.marks &&
         prevProps.grade.rank === nextProps.grade.rank &&
         prevProps.studentName === nextProps.studentName &&
-        prevProps.showRanks === nextProps.showRanks
+        prevProps.showRanks === nextProps.showRanks &&
+        prevProps.colors === nextProps.colors
     );
 });

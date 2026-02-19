@@ -161,7 +161,7 @@ export default function SubmissionModal({
                         alignItems: 'center',
                     }}
                 >
-                    <VStack space="lg" sx={{ alignItems: 'center' }}>
+                    <VStack sx={{ gap: Theme.spacing.lg, alignItems: 'center' }}>
                         <Text style={{ fontSize: 64 }}>✅</Text>
                         <Heading size="xl" color={Theme.colors.sageGreen}>
                             {t('submission.success') || 'Success!'}
@@ -180,7 +180,7 @@ export default function SubmissionModal({
     }
 
     return (
-        <Modal isOpen={isOpen} onClose={handleCancel} size="full">
+        <Modal isOpen={isOpen} onClose={handleCancel}>
             <ModalBackdrop />
             <ModalContent
                 sx={{
@@ -190,10 +190,10 @@ export default function SubmissionModal({
                 }}
             >
                 <VStack
-                    space="lg"
                     sx={{
                         flex: 1,
                         padding: Theme.spacing.lg,
+                        gap: Theme.spacing.lg,
                     }}
                 >
                     {/* Header */}
@@ -230,20 +230,18 @@ export default function SubmissionModal({
                             borderRadius: Theme.corners.comfortable,
                         }}
                     >
-                        <Text color={colors.textSecondary} size="sm">
+                        <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>
                             {t('submission.assignmentLabel') || 'Assignment'}
                         </Text>
                         <Text
-                            color={colors.text}
-                            size="lg"
-                            sx={{ fontWeight: '600' }}
+                            sx={{ color: colors.text, fontSize: Theme.typography.fontSize.lg, fontWeight: '600' }}
                         >
                             {assignmentTitle}
                         </Text>
                     </Box>
 
                     {/* Text Input */}
-                    <VStack space="sm" sx={{ flex: 1 }}>
+                    <VStack sx={{ gap: Theme.spacing.sm, flex: 1 }}>
                         <Text color={colors.textSecondary} sx={{ fontWeight: '600' }}>
                             {t('submission.answerLabel') || 'Your Answer'}
                         </Text>
@@ -271,7 +269,7 @@ export default function SubmissionModal({
                     </VStack>
 
                     {/* Photo Attachment */}
-                    <VStack space="sm">
+                    <VStack sx={{ gap: Theme.spacing.sm }}>
                         <Text color={colors.textSecondary} sx={{ fontWeight: '600' }}>
                             {t('submission.photoLabel') || 'Attach Photo (Optional)'}
                         </Text>
@@ -299,7 +297,7 @@ export default function SubmissionModal({
                                 </Button>
                             </Box>
                         ) : (
-                            <HStack space="md">
+                            <HStack sx={{ gap: Theme.spacing.md }}>
                                 <Button
                                     variant="outline"
                                     sx={{
@@ -341,7 +339,7 @@ export default function SubmissionModal({
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? (
-                            <HStack space="sm" sx={{ alignItems: 'center' }}>
+                            <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
                                 <Spinner color={Theme.colors.sacredWhite} size="small" />
                                 <ButtonText color={Theme.colors.sacredWhite}>
                                     {t('submission.submitting') || 'Turning in...'}

@@ -23,7 +23,8 @@ import {
     BookOpen,
     Users,
     School,
-    Zap
+    Zap,
+    MessageCircle
 } from 'lucide-react-native';
 
 import { useNavigation } from '@react-navigation/native';
@@ -32,17 +33,21 @@ import { useTranslation } from 'react-i18next';
 import { useFeatureAccess, useStore, ClassroomStackParamList } from '@repo/core';
 import ClassroomList from './ClassroomList';
 import CreateClassroomModal from './CreateClassroomModal';
+import TeacherFeedbackModal from './teacher/TeacherFeedbackModal';
 
 interface TeacherDashboardProps {
     onRefresh?: () => void;
+    schoolId?: string;
+    userId?: string;
 }
 
-export default function TeacherDashboard({ onRefresh }: TeacherDashboardProps) {
+export default function TeacherDashboard({ onRefresh, schoolId, userId }: TeacherDashboardProps) {
     const { t } = useTranslation();
     const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
     const { teacherName, isDemoMode } = useStore();
     const { isGuest } = useFeatureAccess();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'create' | 'join'>('create');
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
@@ -108,7 +113,7 @@ export default function TeacherDashboard({ onRefresh }: TeacherDashboardProps) {
                 overflow: 'hidden'
             }}
         >
-            <VStack sx={{ zIndex: 1, gap: '$1' }}>
+            <VStack sx={{ zIndex: 1, gap: Theme.spacing.xs }}>
                 <Text color={colors.textSecondary} sx={{ fontSize: 12, fontWeight: '700' }}>
                     {label}
                 </Text>
@@ -135,18 +140,18 @@ export default function TeacherDashboard({ onRefresh }: TeacherDashboardProps) {
     );
 
     const DashboardSkeleton = () => (
-        <VStack sx={{ gap: '$6' }}>
-            <HStack sx={{ gap: '$4' }}>
+        <VStack sx={{ gap: Theme.spacing.xl }}>
+            <HStack sx={{ gap: Theme.spacing.md }}>
                 <SkeletonCard height={80} style={{ flex: 1 }} />
                 <SkeletonCard height={80} style={{ flex: 1 }} />
                 <SkeletonCard height={80} style={{ flex: 1 }} />
                 <SkeletonCard height={80} style={{ flex: 1 }} />
             </HStack>
-            <HStack sx={{ gap: '$4' }}>
+            <HStack sx={{ gap: Theme.spacing.md }}>
                 <SkeletonCard height={120} style={{ flex: 1 }} />
                 <SkeletonCard height={120} style={{ flex: 1 }} />
             </HStack>
-            <VStack sx={{ gap: '$4' }}>
+            <VStack sx={{ gap: Theme.spacing.md }}>
                 <SkeletonCard height={100} />
                 <SkeletonCard height={100} />
             </VStack>
@@ -154,18 +159,18 @@ export default function TeacherDashboard({ onRefresh }: TeacherDashboardProps) {
     );
 
     return (
-        <VStack sx={{ flex: 1, backgroundColor: colors.primary, gap: '$6' }}>
+        <VStack sx={{ flex: 1, backgroundColor: colors.primary, gap: Theme.spacing.xl }}>
             {isDemoMode && <SandboxBanner />}
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: Theme.spacing.lg }}>
                 {/* Greeting Intro */}
-                <VStack sx={{ gap: '$1', marginBottom: '$4', marginTop: '$2' }}>
-                    <Text color={colors.textSecondary} sx={{ fontSize: '$sm' }}>
+                <VStack sx={{ gap: 4, marginBottom: Theme.spacing.md, marginTop: Theme.spacing.sm }}>
+                    <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>
                         {t('classroom.dashboardIntro') || 'Lead the classroom with love and care.'}
                     </Text>
                 </VStack>
 
                 {/* Quick Actions */}
-                <HStack sx={{ gap: '$4', marginBottom: '$6' }}>
+                <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.lg }}>
                     <QuickAction
                         icon={Plus}
                         label={t('classroom.createClass') || 'Create Class'}
@@ -206,10 +211,16 @@ export default function TeacherDashboard({ onRefresh }: TeacherDashboardProps) {
                         }}
                         color={Theme.colors.amberGlow}
                     />
+                    <QuickAction
+                        icon={MessageCircle}
+                        label={t('teacher.actions.principalEcho') || 'Principal Echo'}
+                        onPress={() => setIsFeedbackModalOpen(true)}
+                        color={Theme.colors.emberRed}
+                    />
                 </HStack>
 
                 {/* Statistics */}
-                <HStack sx={{ gap: '$4', marginBottom: '$8' }}>
+                <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.xl }}>
                     <StatCard
                         icon={School}
                         label={t('classroom.statActiveClasses') || 'Active Classes'}
@@ -223,9 +234,9 @@ export default function TeacherDashboard({ onRefresh }: TeacherDashboardProps) {
                 </HStack>
 
                 {/* Classroom List Section */}
-                <VStack sx={{ gap: '$4' }}>
+                <VStack sx={{ gap: Theme.spacing.md }}>
                     <HStack justifyContent="space-between" alignItems="center">
-                        <Heading color={colors.text} sx={{ fontSize: '$lg' }}>
+                        <Heading color={colors.text} sx={{ fontSize: Theme.typography.fontSize.lg }}>
                             {t('classroom.yourClassrooms') || 'Your Classrooms'} 🍃
                         </Heading>
                     </HStack>
@@ -272,6 +283,13 @@ export default function TeacherDashboard({ onRefresh }: TeacherDashboardProps) {
                 mode={modalMode}
                 onClose={() => setIsCreateModalOpen(false)}
                 onSuccess={() => setRefreshTrigger(prev => prev + 1)}
+            />
+
+            <TeacherFeedbackModal
+                isOpen={isFeedbackModalOpen}
+                onClose={() => setIsFeedbackModalOpen(false)}
+                schoolId={schoolId || ''}
+                teacherId={userId || ''}
             />
         </VStack>
     );

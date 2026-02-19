@@ -14,4 +14,10 @@ export interface Student {
     updated_at: string;
 }
 
+export interface BulkStudent {
+    name: string;
+    index_number: string;
+    notes: string;
+}
+
 export type ClassroomStudent = Student;

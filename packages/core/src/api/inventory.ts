@@ -48,17 +48,34 @@ export const inventoryAPI = {
     },
 
     /**
-     * Get all requests for a classroom
+     * Get all requests for a school (Principal View)
      */
-    async getRequests(classroomId: string): Promise<InventoryRequest[]> {
+    async getSchoolRequests(schoolId: string): Promise<InventoryRequest[]> {
         const { data, error } = await supabase
             .from('inventory_requests')
             .select('*')
-            .eq('classroom_id', classroomId)
+            .eq('school_id', schoolId)
             .order('created_at', { ascending: false });
 
         if (error) {
-            throw new APIError('Failed to fetch requests', error.code, error);
+            throw new APIError('Failed to fetch school requests', error.code, error);
+        }
+
+        return data || [];
+    },
+
+    /**
+     * Get aggregated resource needs for a school (Principal Dashboard)
+     */
+    async getSchoolResourceNeeds(schoolId: string): Promise<any[]> {
+        const { data, error } = await supabase
+            .from('resource_needs')
+            .select('*')
+            .eq('school_id', schoolId)
+            .order('priority', { ascending: false });
+
+        if (error) {
+            throw new APIError('Failed to fetch school resource needs', error.code, error);
         }
 
         return data || [];
@@ -68,7 +85,7 @@ export const inventoryAPI = {
      * Create a new supply request
      */
     async createRequest(
-        request: Omit<InventoryRequest, 'id' | 'created_at' | 'status'>
+        request: Omit<InventoryRequest, 'id' | 'created_at' | 'status'> & { school_id: string }
     ): Promise<InventoryRequest> {
         const { data, error } = await supabase
             .from('inventory_requests')

@@ -29,6 +29,13 @@ export * from './SandboxBanner';
 export { default as SandboxBanner } from './SandboxBanner';
 
 export * from './library/LibraryResourceCard';
+export * from './DeleteAccountModal';
+export { default as DeleteAccountModal } from './DeleteAccountModal';
 
+export * from './SanctuaryStatsCard';
+export { default as SanctuaryStatsCard } from './SanctuaryStatsCard';
+
+export * from './StepIndicator';
+export { default as StepIndicator } from './StepIndicator';
 
 export { hapticLight } from '../utils/haptics';

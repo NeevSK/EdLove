@@ -1,6 +1,6 @@
 import { storage, StorageKeys, requireAuth } from '@repo/core';
 import { CommunityPost, CommunityGroup } from '../types';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { communityAPI } from '../api/community';
 
 export type Group = CommunityGroup;
@@ -16,31 +16,27 @@ export const COMMUNITY_KEYS = {
 export const useCommunity = () => {
     const queryClient = useQueryClient();
 
-    // Fetch Groups
-    const groupsQuery = useQuery({
+    // Fetch Groups with Infinite Scroll
+    const groupsInfiniteQuery = useInfiniteQuery({
         queryKey: COMMUNITY_KEYS.groups(),
-        queryFn: async () => {
-            const mockGroups = await communityAPI.getGroups();
-
-            // Persist to MMKV (Internal cache)
-            storage.set(StorageKeys.CACHED_GROUPS, JSON.stringify(mockGroups));
-
-            return mockGroups;
+        queryFn: async ({ pageParam = 0 }) => {
+            return communityAPI.getGroups({ limit: 10, offset: pageParam });
         },
-        initialData: () => {
-            try {
-                const cached = storage.getString(StorageKeys.CACHED_GROUPS);
-                return cached ? JSON.parse(cached) : undefined;
-            } catch (e) { return undefined; }
+        initialPageParam: 0,
+        getNextPageParam: (lastPage, allPages) => {
+            return lastPage.length === 10 ? allPages.length * 10 : undefined;
         }
     });
 
-    // Default fetch for 'all' posts to satisfy legacy API
-    const defaultPostsQuery = useQuery({
+    // Fetch Posts with Infinite Scroll
+    const postsInfiniteQuery = useInfiniteQuery({
         queryKey: COMMUNITY_KEYS.posts('all'),
-        queryFn: async () => {
-            const mockPosts = await communityAPI.getPosts();
-            return mockPosts;
+        queryFn: async ({ pageParam = 0 }) => {
+            return communityAPI.getPosts({ limit: 10, offset: pageParam });
+        },
+        initialPageParam: 0,
+        getNextPageParam: (lastPage, allPages) => {
+            return lastPage.length === 10 ? allPages.length * 10 : undefined;
         }
     });
 
@@ -92,25 +88,30 @@ export const useCommunity = () => {
     });
 
     return {
-        groups: groupsQuery.data || [],
-        isLoadingGroups: groupsQuery.isLoading,
-        errorGroups: groupsQuery.error,
+        groups: groupsInfiniteQuery.data?.pages.flat() || [],
+        isLoadingGroups: groupsInfiniteQuery.isLoading,
+        isFetchingNextGroups: groupsInfiniteQuery.isFetchingNextPage,
+        hasNextGroups: groupsInfiniteQuery.hasNextPage,
+        fetchNextGroups: groupsInfiniteQuery.fetchNextPage,
+
+        posts: postsInfiniteQuery.data?.pages.flat() || [],
+        isLoadingPosts: postsInfiniteQuery.isLoading,
+        isFetchingNextPosts: postsInfiniteQuery.isFetchingNextPage,
+        hasNextPosts: postsInfiniteQuery.hasNextPage,
+        fetchNextPosts: postsInfiniteQuery.fetchNextPage,
 
         getPosts: (groupId?: string) => {
             // Wrapper to access data if needed
             return { data: [], isLoading: false };
         },
 
-        // Expose default posts so UI doesn't break
-        posts: defaultPostsQuery.data || [],
-
-        fetchGroups: () => groupsQuery.refetch(),
+        fetchGroups: () => groupsInfiniteQuery.refetch(),
         fetchPosts: (groupId?: string) => queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(groupId || 'all') }),
 
         createPost: createPostMutation.mutateAsync,
         isCreatingPost: createPostMutation.isPending,
 
-        loading: groupsQuery.isLoading || defaultPostsQuery.isLoading,
-        error: (groupsQuery.error || defaultPostsQuery.error) ? ((groupsQuery.error || defaultPostsQuery.error) as Error).message : null,
+        loading: groupsInfiniteQuery.isLoading || postsInfiniteQuery.isLoading,
+        error: (groupsInfiniteQuery.error || postsInfiniteQuery.error) ? ((groupsInfiniteQuery.error || postsInfiniteQuery.error) as Error).message : null,
     };
 };

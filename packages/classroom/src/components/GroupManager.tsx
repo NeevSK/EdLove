@@ -30,11 +30,12 @@ import {
     CheckboxIndicator,
     CheckboxIcon,
     CheckboxLabel,
+    Theme,
+    hapticLight,
+    useThemedColors,
 } from '@repo/ui';
-import { Users, Plus, Trash2, Edit2, CheckIcon } from 'lucide-react-native';
-import { Theme } from '@repo/ui';
-import { hapticLight } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
+import { useTranslation } from 'react-i18next';
+import { Users, Plus, Trash2, Edit2, Check as CheckIcon } from 'lucide-react-native';
 
 // Types
 export interface Student {
@@ -75,6 +76,7 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
     const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const colors = useThemedColors();
+    const { t } = useTranslation();
 
     useEffect(() => {
         fetchStudents();
@@ -113,7 +115,7 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
                 description: 'First lab rotation',
                 studentIds: ['s1', 's2', 's3'],
                 createdAt: new Date().toISOString(),
-                color: GROUP_COLORS[0],
+                color: GROUP_COLORS[0] ?? '#CCCCCC',
             },
         ];
         setGroups(mockGroups);
@@ -183,7 +185,7 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
                 description: groupDescription || undefined,
                 studentIds: selectedStudentIds,
                 createdAt: new Date().toISOString(),
-                color: GROUP_COLORS[groups.length % GROUP_COLORS.length],
+                color: GROUP_COLORS[groups.length % GROUP_COLORS.length] ?? '#CCCCCC',
             };
             setGroups((prev) => [...prev, newGroup]);
         }
@@ -221,10 +223,10 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
                     borderWidth: 1,
                 }}
             >
-                <VStack space="sm">
+                <VStack sx={{ gap: Theme.spacing.sm }}>
                     {/* Header */}
-                    <HStack space="md" alignItems="flex-start" justifyContent="space-between">
-                        <HStack space="sm" alignItems="center" sx={{ flex: 1 }}>
+                    <HStack alignItems="flex-start" justifyContent="space-between" sx={{ gap: Theme.spacing.md }}>
+                        <HStack alignItems="center" sx={{ flex: 1, gap: Theme.spacing.sm }}>
                             <Box
                                 sx={{
                                     width: 40,
@@ -239,17 +241,17 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
                                 <Users color={Theme.colors.white} size={20} />
                             </Box>
                             <VStack sx={{ flex: 1 }}>
-                                <Text color={colors.text} size="md" bold>
+                                <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, fontWeight: '600' as any }}>
                                     {group.name}
                                 </Text>
-                                <Text color={colors.textSecondary} size="xs">
-                                    {groupStudents.length} {groupStudents.length === 1 ? 'student' : 'students'}
+                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>
+                                    {t('groups.selectedCount', { count: groupStudents.length }) || `${groupStudents.length} students`}
                                 </Text>
                             </VStack>
                         </HStack>
 
                         {/* Actions */}
-                        <HStack space="xs">
+                        <HStack sx={{ gap: Theme.spacing.xs }}>
                             <Pressable onPress={() => openEditModal(group)}>
                                 <Box
                                     sx={{
@@ -281,7 +283,7 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
 
                     {/* Description */}
                     {group.description && (
-                        <Text color={colors.textSecondary} size="sm">
+                        <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>
                             {group.description}
                         </Text>
                     )}
@@ -296,17 +298,17 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
                             borderWidth: 1,
                         }}
                     >
-                        <VStack space="xs">
+                        <VStack sx={{ gap: Theme.spacing.xs }}>
                             {groupStudents.map((student, index) => (
-                                <HStack key={student.id} space="xs" alignItems="center">
-                                    <Text color={colors.textSecondary} size="xs">
+                                <HStack key={student.id} alignItems="center" sx={{ gap: Theme.spacing.xs }}>
+                                    <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>
                                         {index + 1}.
                                     </Text>
-                                    <Text color={colors.text} size="xs">
+                                    <Text color={colors.text} sx={{ fontSize: Theme.typography.fontSize.xs }}>
                                         {student.full_name}
                                     </Text>
                                     {student.roll_number && (
-                                        <Text color={colors.textTertiary} size="xs">
+                                        <Text color={colors.textTertiary} sx={{ fontSize: Theme.typography.fontSize.xs }}>
                                             (#{student.roll_number})
                                         </Text>
                                     )}
@@ -323,12 +325,12 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
         <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
             <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ padding: Theme.spacing.lg }}>
                 {/* Header */}
-                <VStack space="xs" mb="$6">
-                    <Heading color={colors.text} size="2xl">
-                        Group Manager
+                <VStack sx={{ marginBottom: Theme.spacing.xl, gap: Theme.spacing.xs }}>
+                    <Heading color={colors.text} sx={{ fontSize: Theme.typography.fontSize['2xl'] }}>
+                        {t('groups.title') || 'Group Manager'}
                     </Heading>
-                    <Text color={colors.textSecondary} size="sm">
-                        Create temporary student groups for activities
+                    <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>
+                        {t('groups.subtitle') || 'Create temporary student groups for activities'}
                     </Text>
                 </VStack>
 
@@ -349,12 +351,12 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
                         }}
                     >
                         <Users color={colors.textSecondary} size={48} />
-                        <Text color={colors.textSecondary} mt="$4" textAlign="center">
-                            No groups yet. Tap the + button to create your first group.
+                        <Text color={colors.textSecondary} sx={{ marginTop: Theme.spacing.md, textAlign: 'center' }}>
+                            {t('groups.emptyState') || 'No groups yet. Tap the + button to create your first group.'}
                         </Text>
                     </Box>
                 ) : (
-                    <VStack space="md">{groups.map(renderGroupCard)}</VStack>
+                    <VStack sx={{ gap: Theme.spacing.md }}>{groups.map(renderGroupCard)}</VStack>
                 )}
             </ScrollView>
 
@@ -383,7 +385,7 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
             </Pressable>
 
             {/* Create/Edit Group Modal */}
-            <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} size="lg">
+            <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)}>
                 <ModalBackdrop />
                 <ModalContent
                     sx={{
@@ -395,29 +397,28 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
                     }}
                 >
                     <ModalHeader>
-                        <Heading color={colors.text} size="lg">
-                            {editingGroup ? 'Edit Group' : 'Create Group'}
+                        <Heading color={colors.text} sx={{ fontSize: Theme.typography.fontSize.lg }}>
+                            {editingGroup ? (t('groups.editGroup') || 'Edit Group') : (t('groups.createGroup') || 'Create Group')}
                         </Heading>
                     </ModalHeader>
 
                     <ModalBody>
                         <ScrollView showsVerticalScrollIndicator={false}>
-                            <VStack space="md">
+                            <VStack sx={{ gap: Theme.spacing.md }}>
                                 {/* Group Name */}
-                                <VStack space="xs">
-                                    <Text color={colors.textSecondary} size="sm">
-                                        Group Name *
+                                <VStack sx={{ gap: Theme.spacing.xs }}>
+                                    <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>
+                                        {t('groups.nameLabel') || 'Group Name *'}
                                     </Text>
                                     <Input
-                                        variant="outline"
-                                        size="md"
                                         sx={{
                                             backgroundColor: colors.tertiary,
                                             borderColor: colors.border,
+                                            borderRadius: Theme.corners.comfortable,
                                         }}
                                     >
                                         <InputField
-                                            placeholder="e.g., Lab Group A"
+                                            placeholder={t('groups.namePlaceholder') || "e.g., Lab Group A"}
                                             value={groupName}
                                             onChangeText={setGroupName}
                                             color={colors.text}
@@ -427,20 +428,19 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
                                 </VStack>
 
                                 {/* Group Description */}
-                                <VStack space="xs">
-                                    <Text color={colors.textSecondary} size="sm">
-                                        Description (Optional)
+                                <VStack sx={{ gap: Theme.spacing.xs }}>
+                                    <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>
+                                        {t('groups.descriptionLabel') || 'Description (Optional)'}
                                     </Text>
                                     <Input
-                                        variant="outline"
-                                        size="md"
                                         sx={{
                                             backgroundColor: colors.tertiary,
                                             borderColor: colors.border,
+                                            borderRadius: Theme.corners.comfortable,
                                         }}
                                     >
                                         <InputField
-                                            placeholder="e.g., First lab rotation"
+                                            placeholder={t('groups.descriptionPlaceholder') || "e.g., First lab rotation"}
                                             value={groupDescription}
                                             onChangeText={setGroupDescription}
                                             color={colors.text}
@@ -450,9 +450,9 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
                                 </VStack>
 
                                 {/* Student Selection */}
-                                <VStack space="xs">
-                                    <Text color={colors.textSecondary} size="sm">
-                                        Select Students * ({selectedStudentIds.length} selected)
+                                <VStack sx={{ gap: Theme.spacing.xs }}>
+                                    <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>
+                                        {t('groups.selectStudentsLabel', { count: selectedStudentIds.length }) || `Select Students * (${selectedStudentIds.length} selected)`}
                                     </Text>
                                     <Box
                                         sx={{
@@ -465,16 +465,16 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
                                         }}
                                     >
                                         <ScrollView showsVerticalScrollIndicator={true}>
-                                            <VStack space="xs">
+                                            <VStack sx={{ gap: Theme.spacing.xs }}>
                                                 {students.map((student) => (
                                                     <Pressable
                                                         key={student.id}
                                                         onPress={() => toggleStudentSelection(student.id)}
                                                     >
                                                         <HStack
-                                                            space="sm"
                                                             alignItems="center"
                                                             sx={{
+                                                                gap: Theme.spacing.sm,
                                                                 padding: Theme.spacing.sm,
                                                                 borderRadius: Theme.corners.comfortable,
                                                                 backgroundColor: selectedStudentIds.includes(
@@ -488,7 +488,7 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
                                                                 value={student.id}
                                                                 isChecked={selectedStudentIds.includes(student.id)}
                                                                 onChange={(isChecked: boolean) => toggleStudentSelection(student.id)}
-                                                                size="sm"
+                                                                aria-label="Select student"
                                                             >
                                                                 <CheckboxIndicator
                                                                     sx={{
@@ -508,13 +508,13 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
                                                                 </CheckboxIndicator>
                                                             </Checkbox>
                                                             <VStack sx={{ flex: 1 }}>
-                                                                <Text color={colors.text} size="sm">
+                                                                <Text color={colors.text} sx={{ fontSize: Theme.typography.fontSize.sm }}>
                                                                     {student.full_name}
                                                                 </Text>
                                                                 {student.roll_number && (
                                                                     <Text
                                                                         color={colors.textTertiary}
-                                                                        size="xs"
+                                                                        sx={{ fontSize: Theme.typography.fontSize.xs }}
                                                                     >
                                                                         Roll #{student.roll_number}
                                                                     </Text>
@@ -532,7 +532,7 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
                     </ModalBody>
 
                     <ModalFooter>
-                        <HStack space="sm">
+                        <HStack sx={{ gap: Theme.spacing.sm }}>
                             <Button
                                 variant="outline"
                                 action="secondary"

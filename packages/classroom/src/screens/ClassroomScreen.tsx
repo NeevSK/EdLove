@@ -8,7 +8,7 @@
  * - Teacher/Student: Classroom list (assigned classes)
  */
 
-import { supabase, useUserRole, hasRole, ADMIN_ROLES, MANAGEMENT_ROLES, useFeatureAccess } from '@repo/core';
+import { supabase, useUserRole, hasRole, ADMIN_ROLES, MANAGEMENT_ROLES, useRoleFeatures } from '@repo/core';
 import React, { useEffect, useState } from 'react';
 import { Box, VStack, Theme, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, hapticLight } from '@repo/ui';
 import { PrincipalSchoolView, SectionHeadView, GradeHeadView, FounderSchoolView/*, AdminSchoolView*/ } from './';
@@ -21,20 +21,16 @@ export default function ClassroomScreen() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const { role } = useUserRole();
-    const { isGuest } = useFeatureAccess();
+    const { isGuest } = useRoleFeatures();
     const [loading, setLoading] = useState(true);
     const [principalData, setPrincipalData] = useState<{ schoolId: string, userId: string } | null>(null);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     useEffect(() => {
-        if (hasRole(role, ADMIN_ROLES) || hasRole(role, MANAGEMENT_ROLES)) {
-            fetchPrincipalData();
-        } else {
-            setLoading(false);
-        }
+        fetchRoleData();
     }, [role]);
 
-    const fetchPrincipalData = async () => {
+    const fetchRoleData = async () => {
         setLoading(true);
         try {
             const { data: { user } } = await supabase.auth.getUser();
@@ -43,7 +39,7 @@ export default function ClassroomScreen() {
                     .from('users')
                     .select('school_id')
                     .eq('id', user.id)
-                    .single();
+                    .maybeSingle();
 
                 if (data) {
                     setPrincipalData({
@@ -53,7 +49,7 @@ export default function ClassroomScreen() {
                 }
             }
         } catch (error) {
-            console.error('Error fetching principal data:', error);
+            console.error('Error fetching role data:', error);
         } finally {
             setLoading(false);
         }
@@ -62,7 +58,7 @@ export default function ClassroomScreen() {
     if (loading) {
         return (
             <ScreenWrapper>
-                <VStack space="md" p={Theme.spacing.lg}>
+                <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.lg }}>
                     <SkeletonCard height={60} />
                     <SkeletonCard height={200} />
                     <SkeletonCard height={120} />
@@ -73,9 +69,9 @@ export default function ClassroomScreen() {
 
     // Role-based routing
     if (principalData) {
-        if (role === 'founder') return <FounderSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchPrincipalData} />;
-        // if (role === 'admin') return <AdminSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchPrincipalData} />;
-        if (role === 'principal' || role === 'developer') return <PrincipalSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchPrincipalData} />;
+        if (role === 'founder') return <FounderSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchRoleData} />;
+        // if (role === 'admin') return <AdminSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchRoleData} />;
+        if (role === 'principal' || role === 'developer') return <PrincipalSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchRoleData} />;
     }
 
     if (role === 'section_head') return <SectionHeadView schoolId={principalData?.schoolId} userId={principalData?.userId} />;
@@ -87,7 +83,11 @@ export default function ClassroomScreen() {
             <ScreenWrapper>
                 <GlobalHeader title="Classroom 💛" subtitle={undefined} />
                 <Box sx={{ flex: 1 }}>
-                    <TeacherDashboard onRefresh={fetchPrincipalData} />
+                    <TeacherDashboard
+                        schoolId={principalData?.schoolId}
+                        userId={principalData?.userId}
+                        onRefresh={fetchRoleData}
+                    />
                 </Box>
             </ScreenWrapper>
         );

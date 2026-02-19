@@ -19,8 +19,9 @@ import {
 } from 'lucide-react-native';
 
 import ClassroomStackNavigator from './ClassroomStackNavigator';
-import { useUserRole } from '@repo/core';
 import { useThemedColors } from '@repo/ui';
+import { useUserRole, useRewards, useTracking } from '@repo/core';
+import AchievementUnlockOverlay from '../components/shared/AchievementUnlockOverlay';
 
 // Screens
 import {
@@ -42,6 +43,17 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   const colors = useThemedColors();
   const [currentTab, setCurrentTab] = React.useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
   const insets = useSafeAreaInsets(); // Get safe area insets
+  const { newAchievements } = useRewards();
+  const { exploredFeatures } = useTracking();
+  const [showCelebration, setShowCelebration] = React.useState(false);
+  const [currentAchievement, setCurrentAchievement] = React.useState('');
+
+  React.useEffect(() => {
+    if (newAchievements.length > 0) {
+      setCurrentAchievement(newAchievements[0]);
+      setShowCelebration(true);
+    }
+  }, [newAchievements]);
 
   // Dynamic Label Logic
   const getClassroomLabel = () => {
@@ -106,7 +118,12 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           options={{
             tabBarLabel: t('tabs.profile'),
             tabBarIcon: ({ color, size }) => (
-              <User color={color} size={size} fill={currentTab === 'profile' ? color : 'none'} />
+              <View>
+                <User color={color} size={size} fill={currentTab === 'profile' ? color : 'none'} />
+                {!exploredFeatures.includes('section_profile') && (
+                  <View style={{ position: 'absolute', top: -2, right: -2, width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron, borderWidth: 1, borderColor: colors.secondary }} />
+                )}
+              </View>
             ),
           }}
         >
@@ -140,7 +157,12 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           options={{
             tabBarLabel: t('tabs.self'),
             tabBarIcon: ({ color, size }) => (
-              <Heart color={color} size={size} fill={currentTab === 'self' ? color : 'none'} />
+              <View>
+                <Heart color={color} size={size} fill={currentTab === 'self' ? color : 'none'} />
+                {!exploredFeatures.includes('section_self') && (
+                  <View style={{ position: 'absolute', top: -2, right: -2, width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron, borderWidth: 1, borderColor: colors.secondary }} />
+                )}
+              </View>
             ),
           }}
         >
@@ -157,7 +179,12 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           options={{
             tabBarLabel: t('tabs.community'),
             tabBarIcon: ({ color, size }) => (
-              <Users color={color} size={size} fill={currentTab === 'community' ? color : 'none'} />
+              <View>
+                <Users color={color} size={size} fill={currentTab === 'community' ? color : 'none'} />
+                {!exploredFeatures.includes('section_community') && (
+                  <View style={{ position: 'absolute', top: -2, right: -2, width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron, borderWidth: 1, borderColor: colors.secondary }} />
+                )}
+              </View>
             ),
           }}
         >
@@ -174,7 +201,12 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           options={{
             tabBarLabel: t('tabs.library'),
             tabBarIcon: ({ color, size }) => (
-              <Library color={color} size={size} fill={currentTab === 'library' ? color : 'none'} />
+              <View>
+                <Library color={color} size={size} fill={currentTab === 'library' ? color : 'none'} />
+                {!exploredFeatures.includes('section_library') && (
+                  <View style={{ position: 'absolute', top: -2, right: -2, width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron, borderWidth: 1, borderColor: colors.secondary }} />
+                )}
+              </View>
             ),
           }}
         >
@@ -186,18 +218,12 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         </Tab.Screen>
       </Tab.Navigator>
 
-      {/* Global Lotus FAB - Disabled Temporarily */}
-      {/* 
-      <LotusPetalFAB
-        currentTab={currentTab}
-        onPress={() => {
-          console.log(`Lotus FAB Pressed on ${currentTab}`);
-          // Future: Trigger specific actions here
-        }}
-        // Pass bottom inset to FAB to lift it above tab bar
-        bottomInset={60 + insets.bottom + 16}
+
+      <AchievementUnlockOverlay
+        title={currentAchievement}
+        visible={showCelebration}
+        onHide={() => setShowCelebration(false)}
       />
-      */}
     </View>
   );
 }

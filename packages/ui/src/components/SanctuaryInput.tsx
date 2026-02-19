@@ -59,7 +59,7 @@ export default function SanctuaryInput({
             {label && (
                 <FormControlLabel sx={{ marginBottom: '$2' as any }}>
                     <FormControlLabelText
-                        color={Theme.colors.pearlGray}
+                        color={colors.textSecondary}
                         sx={{ fontSize: '$sm' as any, fontWeight: '$medium' }}
                     >
                         {label}

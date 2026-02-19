@@ -36,7 +36,9 @@ import { useSchoolStats } from '../hooks/classroom/useSchoolStats';
 import {
     HierarchyBuilder,
     InviteManager,
-    ResourceNeedsDashboard
+    ResourceNeedsDashboard,
+    DashboardEcho,
+    CurriculumPulse
 } from '../components';
 import { GlobalHeader } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
@@ -241,6 +243,16 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                                 <ResourceNeedsDashboard schoolId={schoolId} />
                             </Box>
 
+                            {/* School Echo (Feedback Loop) */}
+                            <Box sx={{ marginTop: Theme.spacing.lg }}>
+                                <DashboardEcho schoolId={schoolId} />
+                            </Box>
+
+                            {/* Curriculum Pulse (Syllabus Tracking) */}
+                            <Box sx={{ marginTop: Theme.spacing.lg }}>
+                                <CurriculumPulse schoolId={schoolId} />
+                            </Box>
+
                             {/* Utility Actions */}
                             <VStack sx={{ gap: Theme.spacing.md, marginTop: Theme.spacing.md }}>
                                 <Heading sx={{ fontSize: Theme.typography.fontSize.xl }} color={colors.textSecondary}>
@@ -267,6 +279,20 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                                 >
                                     <ButtonText color={colors.text}>
                                         ✉️ {t('principal.actions.inviteStaff') || 'Invite Staff & Students'}
+                                    </ButtonText>
+                                </Button>
+
+                                <Button
+                                    sx={{
+                                        backgroundColor: colors.tertiary,
+                                        padding: Theme.spacing.lg,
+                                        borderWidth: 1,
+                                        borderColor: colors.border,
+                                    }}
+                                    onPress={() => { }}
+                                >
+                                    <ButtonText color={colors.textSecondary}>
+                                        📊 {t('principal.actions.divisionalReport') || 'Generate Divisional Report'}
                                     </ButtonText>
                                 </Button>
                             </VStack>

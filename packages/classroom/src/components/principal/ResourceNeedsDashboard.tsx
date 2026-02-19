@@ -1,13 +1,3 @@
-/**
- * RESOURCE NEEDS DASHBOARD
- * Redefined Principal View - Focus on Resource Needs, NOT Performance
- * 
- * Philosophy:
- * - Show what teachers NEED, not how they're "performing"
- * - Example: "15 teachers need projectors" not "Teacher X missed deadline"
- * - Support and empower, don't monitor and pressure
- */
-
 import React, { useState, useEffect } from 'react';
 import {
     Box,
@@ -19,7 +9,7 @@ import {
 } from '@repo/ui';
 import { Package, Lightbulb, Users, BookOpen, Wifi, AlertCircle } from 'lucide-react-native';
 import { Theme, typography } from '@repo/ui';
-import { supabase } from '@repo/core';
+import { api } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import { useThemedColors } from '@repo/ui';
 
@@ -61,75 +51,21 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
     };
 
     useEffect(() => {
-        fetchResourceNeeds();
+        if (schoolId) {
+            fetchResourceNeeds();
+        }
     }, [schoolId]);
 
     const fetchResourceNeeds = async () => {
         try {
-            const { data, error } = await supabase
-                .from('resource_needs')
-                .select('*')
-                .eq('school_id', schoolId)
-                .order('priority', { ascending: false })
-                .order('requested_by_count', { ascending: false });
-
-            if (error) {
-                console.error('Error fetching resource needs:', error);
-                setMockData();
-            } else {
-                setNeeds(data || []);
-            }
+            setIsLoading(true);
+            const data = await api.inventory.getSchoolResourceNeeds(schoolId);
+            setNeeds(data || []);
         } catch (error) {
             console.error('Failed to fetch resource needs:', error);
-            setMockData();
         } finally {
             setIsLoading(false);
         }
-    };
-
-    const setMockData = () => {
-        setNeeds([
-            {
-                id: '1',
-                resource_type: 'projector',
-                description: 'Projectors for visual learning',
-                requested_by_count: 15,
-                priority: 'high',
-                icon: 'projector',
-            },
-            {
-                id: '2',
-                resource_type: 'internet',
-                description: 'Better internet connectivity',
-                requested_by_count: 12,
-                priority: 'urgent',
-                icon: 'internet',
-            },
-            {
-                id: '3',
-                resource_type: 'books',
-                description: 'Updated textbooks and reference materials',
-                requested_by_count: 8,
-                priority: 'medium',
-                icon: 'books',
-            },
-            {
-                id: '4',
-                resource_type: 'supplies',
-                description: 'Basic classroom supplies',
-                requested_by_count: 6,
-                priority: 'medium',
-                icon: 'supplies',
-            },
-            {
-                id: '5',
-                resource_type: 'support',
-                description: 'Additional teaching assistants',
-                requested_by_count: 4,
-                priority: 'low',
-                icon: 'support',
-            },
-        ]);
     };
 
     if (isLoading) {
@@ -154,13 +90,13 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
                     color={colors.success}
                     sx={{ fontWeight: typography.fontWeight.medium, fontSize: 18 }}
                 >
-                    {t('principal.resources.emptyState')}
+                    {t('principal.resources.emptyState') || 'Sanctuary is Well-Equipped'}
                 </Text>
                 <Text
                     color={colors.textSecondary}
                     sx={{ marginTop: Theme.spacing.sm, fontSize: 14 }}
                 >
-                    {t('principal.resources.emptyStateDesc')}
+                    {t('principal.resources.emptyStateDesc') || 'No resource requests or damaged items reported.'}
                 </Text>
             </Box>
         );
@@ -170,10 +106,10 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
         <VStack sx={{ gap: Theme.spacing.lg }}>
             <VStack sx={{ gap: Theme.spacing.xs }}>
                 <Heading color={colors.text} sx={{ fontSize: 24 }}>
-                    {t('principal.resources.title')}
+                    {t('principal.resources.title') || 'Resource Vistas'}
                 </Heading>
                 <Text color={colors.textSecondary} sx={{ fontSize: 14 }}>
-                    {t('principal.resources.subtitle')}
+                    {t('principal.resources.subtitle') || 'Aggregated needs from your teachers'}
                 </Text>
             </VStack>
 

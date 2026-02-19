@@ -12,9 +12,11 @@ import {
     Text
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
+import { Theme, useThemedColors, DeleteAccountModal } from '@repo/ui';
+import { useAccountDeletion, useRewards, useTracking } from '@repo/core';
 import { supabase } from '@repo/core';
-import { Theme, useThemedColors } from '@repo/ui';
 import { hapticSuccess, hapticLight, hapticError } from '@repo/ui';
+import AchievementGallery from '../components/profile/AchievementGallery';
 
 import { LogOut, Settings, Trophy, MapPin, Globe, Phone, ChevronRight } from 'lucide-react-native';
 // New Components
@@ -37,9 +39,18 @@ export default function ProfileScreen() {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [isEditModalVisible, setEditModalVisible] = useState(false);
-    const [isSettingsVisible, setSettingsVisible] = useState(false);
     const { isDark } = useEnvironment();
     const colors = useThemedColors();
+    const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [isSettingsVisible, setSettingsVisible] = useState(false);
+    const { deleteAccount, isDeleting } = useAccountDeletion();
+    const { rewards, isLoading: isRewardsLoading } = useRewards();
+    const { discoverFeature } = useTracking();
+
+    useEffect(() => {
+        // Track that the user discovered the Profile section
+        discoverFeature('section_profile');
+    }, []);
 
     const currentLanguage = i18n.language;
 
@@ -126,37 +137,24 @@ export default function ProfileScreen() {
 
     async function handleDeleteAccount() {
         hapticLight();
-        Alert.alert(
-            'Delete Account',
-            'This action cannot be undone. All your data will be permanently deleted. Are you sure?',
-            [
-                {
-                    text: 'Cancel',
-                    style: 'cancel',
-                },
-                {
-                    text: 'Delete Forever',
-                    style: 'destructive',
-                    onPress: async () => {
-                        setLoading(true);
-                        try {
-                            // Note: Account deletion should be handled server-side via API
-                            // For now, inform user that feature is not yet available
-                            Alert.alert(
-                                'Feature Not Available',
-                                'Account deletion will be available soon. Please contact support if you need immediate assistance.',
-                                [{ text: 'OK' }]
-                            );
-                        } catch (error) {
-                            console.error('Error deleting account:', error);
-                            hapticError();
-                        } finally {
-                            setLoading(false);
-                        }
-                    },
-                },
-            ]
-        );
+        setDeleteModalVisible(true);
+    }
+
+    async function confirmDeleteAccount() {
+        try {
+            await deleteAccount();
+            hapticSuccess();
+            setDeleteModalVisible(false);
+            // Sign out is handled by deleteAccount
+        } catch (error) {
+            console.error('Error deleting account:', error);
+            hapticError();
+            Alert.alert(
+                'Deletion Failed',
+                'We could not delete your account at this time. Please try again later or contact support.',
+                [{ text: 'OK' }]
+            );
+        }
     }
 
     if (loading) {
@@ -271,13 +269,16 @@ export default function ProfileScreen() {
                         <UserStatsCard
                             role={profile?.role || 'student'}
                             stats={{
-                                classesTaught: 12, // Mock data for now
+                                classesTaught: 12, // Mock for now
                                 studentsCount: 145,
-                                guruPoints: 850,
-                                attendanceStreak: 5,
-                                assignmentsCompleted: 24
+                                guruPoints: rewards?.points || 0,
+                                attendanceStreak: profile?.attendance_streak || 0,
+                                assignmentsCompleted: profile?.assignments_count || 0
                             }}
                         />
+
+                        {/* Achievements Gallery */}
+                        <AchievementGallery unlockedBadges={rewards?.badges || []} />
 
                         {/* Contact Info Section (Inlined) */}
                         <Box sx={{ backgroundColor: colors.secondary, padding: Theme.spacing.lg, borderRadius: Theme.corners.comfortable, borderColor: colors.border, borderWidth: 1, marginHorizontal: Theme.spacing.md }}>
@@ -471,6 +472,14 @@ export default function ProfileScreen() {
                         <AppSettingsScreen navigation={undefined} />
                     </Box>
                 </Modal>
+
+                {/* Account Deletion Confirmation Modal */}
+                <DeleteAccountModal
+                    isOpen={isDeleteModalVisible}
+                    onClose={() => setDeleteModalVisible(false)}
+                    onDelete={confirmDeleteAccount}
+                    isLoading={isDeleting}
+                />
             </Box>
         </ScreenWrapper>
     );

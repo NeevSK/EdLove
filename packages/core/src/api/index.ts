@@ -1,4 +1,6 @@
 import { authAPI } from './auth';
+import { rewardsAPI } from './rewards';
+import { trackingAPI } from './tracking';
 import { tasksAPI, notesAPI } from './teacher';
 import { lessonsAPI, studentsAPI } from './classroom';
 export { lessonsAPI, studentsAPI };
@@ -80,6 +82,8 @@ export const api = {
     grading: createDemoProxy('grading', gradingAPI),
     school: createDemoProxy('school', schoolAPI),
     inventory: createDemoProxy('inventory', inventoryAPI),
+    rewards: createDemoProxy('rewards', rewardsAPI),
+    tracking: createDemoProxy('tracking', trackingAPI),
 };
 
 export default api;

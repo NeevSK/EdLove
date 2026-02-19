@@ -165,4 +165,18 @@ export const authAPI = {
             throw new APIError('Failed to sign out', error.code, error);
         }
     },
+
+    /**
+     * Delete current user account
+     */
+    async deleteAccount() {
+        const { error } = await supabase.rpc('delete_user_account');
+
+        if (error) {
+            throw new APIError('Failed to delete account', error.code, error);
+        }
+
+        // Also sign out locally just in case
+        await supabase.auth.signOut();
+    },
 };

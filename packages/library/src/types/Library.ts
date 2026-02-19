@@ -5,15 +5,17 @@
 import { UserRole } from '@repo/core';
 
 export type ResourceType =
-    | 'pdf'
+    | 'lesson'
+    | 'worksheet'
+    | 'guide'
+    | 'reading'
+    | 'pedagogy'
     | 'video'
     | 'link'
-    | 'note'
-    | 'lesson_plan'
-    | 'activity'
-    | 'assessment'
-    | 'project'
-    | 'book';
+    | 'other'
+    | 'pdf'
+    | 'doc'
+    | 'note';
 
 export type ResourceFormat = 'text' | 'video' | 'interactive' | 'audio' | 'document';
 export type ResourceDifficulty = 'beginner' | 'intermediate' | 'advanced';

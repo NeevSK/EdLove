@@ -142,6 +142,10 @@ export default function ClassroomList({
     const [internalRefreshTrigger, setInternalRefreshTrigger] = useState(0);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [pendingInitialData, setPendingInitialData] = useState<any>(null);
+    const [page, setPage] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+    const [isFetchingMore, setIsFetchingMore] = useState(false);
+    const PAGE_SIZE = 10;
     const toast = useToast();
     const { isExplorerMode, dismissedSampleIds } = useStore();
 
@@ -179,24 +183,16 @@ export default function ClassroomList({
                                 data = [sampleSchool];
                             }
                         }
-                    } else if (role === 'student') {
-                        const sampleId = 'sample-c1';
-                        if (!dismissedSampleIds.includes(sampleId)) {
-                            const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
-                            if (sample) {
-                                (sample as any).is_sample = true;
-                                data = [sample];
-                            }
-                        }
-                    } else {
-                        // Default fallback for guests with no role selected yet
+                    } else if (role === 'student' || !role) {
+                        // Default fallback for guests or students
                         const sampleId = 'sample-c1';
                         const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
-                        if (sample) {
+                        if (sample && !dismissedSampleIds.includes(sampleId)) {
                             (sample as any).is_sample = true;
                             data = [sample];
                         }
                     }
+                    setHasMore(false);
                 } else {
                     // Authenticated users - fetch their actual classrooms
                     const { data: { user } } = await supabase.auth.getUser();
@@ -204,17 +200,19 @@ export default function ClassroomList({
                         throw new Error('No authenticated user');
                     }
 
+                    const pagination = { limit: PAGE_SIZE, offset: 0 };
                     // Fetch classrooms based on role
                     if (role === 'teacher') {
-                        data = await api.classrooms.getByTeacher(user.id);
+                        data = await api.classrooms.getByTeacher(user.id, pagination);
                     } else if (role === 'student') {
-                        data = await api.classrooms.getByStudent(user.id);
+                        data = await api.classrooms.getByStudent(user.id, pagination);
                         data.sort((a, b) => a.name.localeCompare(b.name));
                     } else if (role === 'principal') {
-                        // Fetch schools for principal (if there's an API method)
-                        // For now, using classrooms - you may need to create api.schools.getByPrincipal
-                        data = await api.classrooms.getByTeacher(user.id); // Placeholder
+                        data = await api.classrooms.getBySchool(user.id, pagination); // Assuming user.id is schoolId or mapped
                     }
+
+                    setHasMore(data.length === PAGE_SIZE);
+                    setPage(1);
 
                     // Inject Sample Classroom/School if newly created user (no classrooms yet) and not dismissed
                     if (role === 'teacher' && data.length === 0) {
@@ -276,6 +274,37 @@ export default function ClassroomList({
         setInternalRefreshTrigger(prev => prev + 1);
     };
 
+    const fetchMore = async () => {
+        if (loading || isFetchingMore || !hasMore || isGuest) return;
+
+        try {
+            setIsFetchingMore(true);
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const pagination = { limit: PAGE_SIZE, offset: page * PAGE_SIZE };
+            let newData: Classroom[] = [];
+
+            if (role === 'teacher') {
+                newData = await api.classrooms.getByTeacher(user.id, pagination);
+            } else if (role === 'student') {
+                newData = await api.classrooms.getByStudent(user.id, pagination);
+            } else if (role === 'principal') {
+                newData = await api.classrooms.getBySchool(user.id, pagination);
+            }
+
+            if (newData.length > 0) {
+                setClassrooms(prev => [...prev, ...newData]);
+                setPage(prev => prev + 1);
+            }
+            setHasMore(newData.length === PAGE_SIZE);
+        } catch (err) {
+            console.error('[ClassroomList] Error fetching more:', err);
+        } finally {
+            setIsFetchingMore(false);
+        }
+    };
+
     const handleClassroomPress = useCallback((classroom: Classroom) => {
         if (onClassroomPress) {
             onClassroomPress(classroom);
@@ -310,7 +339,7 @@ export default function ClassroomList({
     // Loading state
     if (loading) {
         return (
-            <VStack sx={{ width: '100%', padding: isNested ? 0 : Theme.spacing.md, gap: '$4' }}>
+            <VStack sx={{ width: '100%', padding: isNested ? 0 : Theme.spacing.md, gap: Theme.spacing.md }}>
                 <SkeletonCard height={80} />
                 <SkeletonCard height={80} />
                 <SkeletonCard height={80} />
@@ -336,7 +365,7 @@ export default function ClassroomList({
     // For nested use (e.g. inside TeacherDashboard ScrollView), we use VStack
     if (isNested) {
         return (
-            <VStack sx={{ width: '100%', gap: '$4' }}>
+            <VStack sx={{ width: '100%', gap: Theme.spacing.md }}>
                 {classrooms.length === 0 ? (
                     emptyContent || (
                         <PositiveInvitation
@@ -408,6 +437,9 @@ export default function ClassroomList({
                         style={styles.container}
                         contentContainerStyle={styles.contentContainer}
                         showsVerticalScrollIndicator={false}
+                        onEndReached={fetchMore}
+                        onEndReachedThreshold={0.5}
+                        ListFooterComponent={isFetchingMore ? <ActivityIndicator color={colors.action} style={{ padding: 10 }} /> : null}
                         initialNumToRender={10}
                         maxToRenderPerBatch={10}
                         windowSize={5}
@@ -543,7 +575,7 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
                     ...Theme.shadows.md,
                 }}
             >
-                <HStack alignItems="center" sx={{ gap: '$4' }}>
+                <HStack alignItems="center" sx={{ gap: Theme.spacing.md }}>
                     {/* Icon Container */}
                     <Box sx={richStyles.iconContainer}>
                         <BookOpen
@@ -553,8 +585,8 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
                     </Box>
 
                     {/* Content */}
-                    <VStack flex={1} sx={{ gap: '$1' }}>
-                        <HStack alignItems="center" sx={{ gap: '$2' }}>
+                    <VStack flex={1} sx={{ gap: 4 }}>
+                        <HStack alignItems="center" sx={{ gap: 8 }}>
                             <Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}>
                                 {classroom.name}
                             </Text>
@@ -575,7 +607,7 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
                                 </Box>
                             )}
                         </HStack>
-                        <HStack alignItems="center" sx={{ gap: '$2' }}>
+                        <HStack alignItems="center" sx={{ gap: 8 }}>
                             <Text color={Theme.colors.sanctuarySaffron} sx={{ fontSize: 14, fontWeight: '700' }}>
                                 {classroom.subject || t('classroom.noSubject')}
                             </Text>
@@ -585,7 +617,7 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
                                     backgroundColor: colors.textTertiary,
                                 }}
                             />
-                            <HStack alignItems="center" sx={{ gap: '$1' }}>
+                            <HStack alignItems="center" sx={{ gap: 4 }}>
                                 <Users size={14} color={colors.textSecondary} />
                                 <Text color={colors.textSecondary} sx={{ fontSize: 14 }}>
                                     {studentCount}

@@ -1,0 +1,59 @@
+import { useEffect, useState } from 'react';
+import { supabase } from '../lib/supabase';
+import { trackingAPI } from '../api/tracking';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+
+/**
+ * Hook for tracking feature discovery and exploration status.
+ */
+export function useTracking() {
+    const queryClient = useQueryClient();
+    const [userId, setUserId] = useState<string | null>(null);
+
+    useEffect(() => {
+        const getUserId = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) setUserId(user.id);
+        };
+        getUserId();
+    }, []);
+
+    // Get explored features
+    const { data: exploredFeatures = [], isLoading } = useQuery({
+        queryKey: ['explored_features', userId],
+        queryFn: () => (userId ? trackingAPI.getExploredFeatures(userId) : []),
+        enabled: !!userId,
+    });
+
+    /**
+     * Marks a feature as discovered.
+     */
+    const discoverFeature = async (featureName: string) => {
+        if (!userId) return;
+
+        // Optimistic check to avoid unnecessary API calls
+        if (exploredFeatures.includes(featureName)) return;
+
+        try {
+            await trackingAPI.logFeatureUsage(userId, featureName);
+            // Invalidate to refresh the explored list
+            queryClient.invalidateQueries({ queryKey: ['explored_features', userId] });
+        } catch (error) {
+            console.error(`Failed to track discovery for ${featureName}:`, error);
+        }
+    };
+
+    /**
+     * Checks if a feature has been discovered.
+     */
+    const isDiscovered = (featureName: string) => {
+        return exploredFeatures.includes(featureName);
+    };
+
+    return {
+        exploredFeatures,
+        isLoading,
+        discoverFeature,
+        isDiscovered
+    };
+}

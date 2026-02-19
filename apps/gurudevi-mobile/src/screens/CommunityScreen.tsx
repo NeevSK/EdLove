@@ -1,30 +1,38 @@
-﻿import React, { useState, useEffect } from 'react';
-import { ScrollView, RefreshControl } from 'react-native';
-import { Box, VStack, HStack, Text, Pressable, Spinner, useToast, Toast, ToastTitle } from '@repo/ui';
-import { GlobalHeader } from '@repo/ui';
+﻿import React, { useState, useEffect, useMemo } from 'react';
+import { RefreshControl, FlatList, ActivityIndicator, ScrollView } from 'react-native';
+import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, Theme } from '@repo/ui';
 import LotusPetalFAB from '../components/shared/LotusPetalFAB';
 import PostCard from '../components/community/PostCard';
 import GroupCard from '../components/community/GroupCard';
 import CreatePostModal from '../components/community/CreatePostModal';
-import { SanctuaryInput } from '@repo/ui';
-import { Theme, useThemedColors } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { MessageSquare, Users, PenTool, Search } from 'lucide-react-native';
-import { useCommunity, Group, Post } from '@repo/community';
-
-import { ScreenWrapper } from '@repo/ui';
+import { MessageSquare, Users, PenTool } from 'lucide-react-native';
+import { useCommunity, Post, Group } from '@repo/community';
+import { useUserRole, useRoleFeatures, useTracking, supabase } from '@repo/core';
 import { isDemo } from '../lib/api/demo';
 import CommunityPresence from '../components/self/CommunityPresence';
 import ManifestoCard from '../components/community/ManifestoCard';
 import { useManifestos } from '@repo/community';
-import { supabase } from '@repo/core';
-import { SkeletonCard, PositiveInvitation } from '@repo/ui';
 
 type TabType = 'feed' | 'groups';
 
 export default function CommunityScreen() {
     const { t } = useTranslation();
-    const { groups, posts, fetchGroups, fetchPosts, loading, error } = useCommunity();
+    const { role } = useUserRole();
+    const { isGuest } = useRoleFeatures();
+    const {
+        posts,
+        groups,
+        loading,
+        fetchPosts,
+        fetchGroups,
+        fetchNextPosts,
+        hasNextPosts,
+        isFetchingNextPosts,
+        fetchNextGroups,
+        hasNextGroups,
+        isFetchingNextGroups
+    } = useCommunity();
     const [activeTab, setActiveTab] = useState<TabType>('feed');
     const [searchQuery, setSearchQuery] = useState('');
     const [refreshing, setRefreshing] = useState(false);
@@ -32,8 +40,16 @@ export default function CommunityScreen() {
     const [userId, setUserId] = useState<string | undefined>(undefined);
     const [schoolId, setSchoolId] = useState<string>('mock-school');
     const colors = useThemedColors();
+    const { discoverFeature } = useTracking();
+
+    useEffect(() => {
+        discoverFeature('section_community');
+    }, []);
 
     const { manifestos, endorse, unendorse } = useManifestos(schoolId, userId);
+
+    // Filtered data for FlatList
+    const listData = useMemo(() => (activeTab === 'feed' ? posts : groups), [activeTab, posts, groups]);
 
     // Initial data load
     useEffect(() => {
@@ -50,7 +66,7 @@ export default function CommunityScreen() {
         } catch (e) {
             console.error('Auth error in CommunityScreen', e);
         }
-        await Promise.all([fetchGroups(), fetchPosts('all')]); // 'all' or specific feed logic
+        await Promise.all([fetchGroups(), fetchPosts('all')]);
     };
 
     const onRefresh = async () => {
@@ -60,7 +76,7 @@ export default function CommunityScreen() {
     };
 
     const renderTabs = () => (
-        <HStack space="md" mb="$4" px="$4" py="$1" pt="$4" sx={{ padding: 5 }}>
+        <HStack space="md" mb="$4" px="$4" py="$1" pt="$4">
             <Pressable
                 onPress={() => setActiveTab('feed')}
                 sx={{
@@ -98,6 +114,131 @@ export default function CommunityScreen() {
         </HStack>
     );
 
+    const renderFeedHeader = () => (
+        <VStack space="md" pb="$4">
+            {userId && <CommunityPresence compact={false} userVibe="planning" />}
+
+            {!userId && (
+                <PositiveInvitation
+                    type="guest"
+                    context="community"
+                    onAction={() => { }} // TODO: Navigate to Auth
+                />
+            )}
+
+            {userId && manifestos.length > 0 && (
+                <VStack space="sm">
+                    <Text size="sm" color={Theme.colors.mistGray} bold px="$1">
+                        {t('community.sections.vision')}
+                    </Text>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                        <HStack space="md">
+                            {manifestos.map((m) => (
+                                <Box key={m.id} w={300}>
+                                    <ManifestoCard
+                                        {...m}
+                                        onEndorse={(mid) => {
+                                            if (m.has_endorsed) unendorse(mid);
+                                            else endorse({ manifestoId: mid });
+                                        }}
+                                    />
+                                </Box>
+                            ))}
+                        </HStack>
+                    </ScrollView>
+                </VStack>
+            )}
+
+            {posts.length > 0 && (
+                <Text size="sm" color={Theme.colors.mistGray} bold px="$1" mt="$2">
+                    {t('community.sections.updates')}
+                </Text>
+            )}
+        </VStack>
+    );
+
+    const renderGroupsHeader = () => (
+        <VStack space="md" pb="$4">
+            {!userId && (
+                <PositiveInvitation
+                    type="guest"
+                    context="community"
+                    onAction={() => { }}
+                />
+            )}
+        </VStack>
+    );
+
+    const getEmptyListComponent = () => {
+        if (loading && !refreshing) {
+            return (
+                <VStack space="md" py="$4">
+                    <SkeletonCard height={80} />
+                    <SkeletonCard height={200} />
+                    <SkeletonCard height={200} />
+                </VStack>
+            );
+        }
+
+        if (activeTab === 'feed') {
+            if (posts.length === 0 && userId) {
+                return (
+                    <PositiveInvitation
+                        context="community"
+                        onAction={() => setShowCreateModal(true)}
+                    />
+                );
+            }
+        } else { // groups tab
+            if (groups.length === 0 && userId) {
+                return (
+                    <PositiveInvitation
+                        context="community"
+                        title={t('community.noGroups', 'No circles found')}
+                        description={t('community.noGroupsDesc', 'Connect with others by joining a community group.')}
+                    />
+                );
+            }
+        }
+        return null;
+    };
+
+    const renderItem = ({ item }: { item: any }) => {
+        if (activeTab === 'feed') {
+            const post = item as Post;
+            return (
+                <PostCard
+                    id={post.id}
+                    author={{
+                        id: post.author_id,
+                        name: isDemo() ? `(Sample) ${post.author_name}` : post.author_name,
+                        avatarUrl: post.author_avatar,
+                        role: post.author_role
+                    }}
+                    content={post.content}
+                    type={post.post_type as any}
+                    createdAt={post.created_at}
+                    groupName={groups.find((g: Group) => g.id === post.group_id)?.name}
+                    reactions={typeof post.reactions === 'number' ? post.reactions : 0}
+                    comments={post.comment_count || 0}
+                    onPress={() => console.log('Open Post', post.id)}
+                />
+            );
+        } else {
+            const group = item as Group;
+            return (
+                <GroupCard
+                    id={group.id}
+                    name={isDemo() ? `(Sample) ${group.name}` : group.name}
+                    memberCount={group.member_count}
+                    type={group.type as any}
+                    description={group.description}
+                    onPress={() => console.log('NAVIGATE_TO_GROUP', group.id)}
+                />
+            );
+        }
+    };
+
     return (
         <ScreenWrapper>
             <GlobalHeader
@@ -113,119 +254,32 @@ export default function CommunityScreen() {
             <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
                 {renderTabs()}
 
-                {/* Removed the search box from here, it's now in the header */}
-
-                <ScrollView
-                    contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, paddingBottom: 100 }}
+                <FlatList
+                    data={listData}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id}
+                    onEndReached={() => {
+                        if (activeTab === 'feed' && hasNextPosts && !isFetchingNextPosts) {
+                            fetchNextPosts();
+                        } else if (activeTab === 'groups' && hasNextGroups && !isFetchingNextGroups) {
+                            fetchNextGroups();
+                        }
+                    }}
+                    onEndReachedThreshold={0.5}
+                    ListHeaderComponent={activeTab === 'feed' ? renderFeedHeader : renderGroupsHeader}
+                    ListFooterComponent={(isFetchingNextPosts || isFetchingNextGroups) ? (
+                        <ActivityIndicator size="small" color={colors.action} style={{ padding: 20 }} />
+                    ) : null}
+                    ListEmptyComponent={getEmptyListComponent()}
                     refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Theme.colors.sanctuarySaffron} />
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            tintColor={colors.action}
+                        />
                     }
-                >
-                    {loading && !refreshing ? (
-                        <VStack space="md" py="$4">
-                            <SkeletonCard height={80} />
-                            <SkeletonCard height={200} />
-                            <SkeletonCard height={200} />
-                        </VStack>
-                    ) : activeTab === 'feed' ? (
-                        <VStack space="md">
-                            {/* THE RELATIONAL WEAVER - Presence & Manifestos */}
-                            {userId && <CommunityPresence compact={false} userVibe="planning" />}
-
-                            {!userId && (
-                                <PositiveInvitation
-                                    type="guest"
-                                    context="community"
-                                    onAction={() => { }} // TODO: Navigate to Auth
-                                />
-                            )}
-
-                            {userId && manifestos.length > 0 && (
-                                <VStack space="sm">
-                                    <Text size="sm" color={Theme.colors.mistGray} bold px="$1">
-                                        {t('community.sections.vision')}
-                                    </Text>
-                                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                        <HStack space="md">
-                                            {manifestos.map((m) => (
-                                                <Box key={m.id} w={300}>
-                                                    <ManifestoCard
-                                                        {...m}
-                                                        onEndorse={(mid) => {
-                                                            if (m.has_endorsed) unendorse(mid);
-                                                            else endorse({ manifestoId: mid });
-                                                        }}
-                                                    />
-                                                </Box>
-                                            ))}
-                                        </HStack>
-                                    </ScrollView>
-                                </VStack>
-                            )}
-
-                            {posts.length > 0 && (
-                                <Text size="sm" color={Theme.colors.mistGray} bold px="$1" mt="$2">
-                                    {t('community.sections.updates')}
-                                </Text>
-                            )}
-
-                            {posts.length === 0 && userId && (
-                                <PositiveInvitation
-                                    context="community"
-                                    onAction={() => setShowCreateModal(true)}
-                                />
-                            )}
-
-                            {posts.map((post: Post) => (
-                                <PostCard
-                                    key={post.id}
-                                    id={post.id}
-                                    content={post.content}
-                                    type={post.post_type as any}
-                                    author={{
-                                        id: post.author_id,
-                                        name: isDemo() ? `(Sample) ${post.author_name}` : post.author_name,
-                                        avatarUrl: post.author_avatar,
-                                    }}
-                                    createdAt={post.created_at}
-                                    groupName={groups.find((g: Group) => g.id === post.group_id)?.name}
-                                    reactions={Object.values(post.reactions || {}).reduce((a: number, b: any) => a + (typeof b === 'number' ? b : 0), 0)}
-                                    comments={0}
-                                    onPress={() => console.log('Open Post', post.id)}
-                                />
-                            ))}
-                        </VStack>
-                    ) : (
-                        <VStack space="md">
-                            {!userId && (
-                                <PositiveInvitation
-                                    type="guest"
-                                    context="community"
-                                    onAction={() => { }}
-                                />
-                            )}
-
-                            {groups.length === 0 && userId && (
-                                <PositiveInvitation
-                                    context="community"
-                                    title={t('community.noGroups', 'No circles found')}
-                                    description={t('community.noGroupsDesc', 'Connect with others by joining a community group.')}
-                                />
-                            )}
-
-                            {groups.map((group: Group) => (
-                                <GroupCard
-                                    key={group.id}
-                                    {...group}
-                                    name={isDemo() ? `(Sample) ${group.name}` : group.name}
-                                    memberCount={group.member_count}
-                                    onPress={() => console.log('NAVIGATE_TO_GROUP', group.id)}
-                                    type={group.type as any}
-                                />
-                            ))}
-                        </VStack>
-                    )}
-                </ScrollView>
+                    contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, paddingBottom: 100 }}
+                />
 
                 <LotusPetalFAB
                     currentTab="community"
@@ -237,7 +291,7 @@ export default function CommunityScreen() {
                     isOpen={showCreateModal}
                     onClose={() => setShowCreateModal(false)}
                 />
-            </Box>
-        </ScreenWrapper>
+            </Box >
+        </ScreenWrapper >
     );
 }
