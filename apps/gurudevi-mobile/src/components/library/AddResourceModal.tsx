@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, ModalBackdrop, ModalContent, ModalHeader, ModalBody, ModalFooter, Heading, VStack, HStack, Text, Input, InputField } from '@repo/ui';
 import { SanctuaryButton } from '@repo/ui';
-import { Theme } from '@repo/ui';
+import { Theme, useThemedColors } from '@repo/ui';
+import { useTranslation } from 'react-i18next';
 import { LIBRARY_RESOURCE_CATEGORIES } from '@repo/core';
 
 type LibResourceType = typeof LIBRARY_RESOURCE_CATEGORIES[number]['id'];
@@ -13,6 +14,8 @@ interface AddResourceModalProps {
 }
 
 export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResourceModalProps) {
+    const { t } = useTranslation();
+    const colors = useThemedColors();
     const [title, setTitle] = useState('');
     const [url, setUrl] = useState('');
     const [description, setDescription] = useState('');
@@ -86,9 +89,8 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
                                     variant={type === cat.id ? 'solid' : 'outline'}
                                     size="xs"
                                     action="secondary"
-                                    sx={{ minWidth: 80 }}
                                 >
-                                    {cat.en}
+                                    {t(`library.types.${cat.id}` as any)}
                                 </SanctuaryButton>
                             ))}
                         </HStack>

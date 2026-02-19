@@ -77,15 +77,6 @@ export default function AttendanceSheet({
         stats
     } = useAttendance(initialStudents);
 
-    // We shouldn't need this local loading state if parent handles it, 
-    // but if we do internal fetch, we might need it. 
-    // For now let's keep it simple: if initialStudents is empty, we *could* fetch.
-    // But useAttendance doesn't handle fetching.
-
-    // Let's add a quick internal fetch effect here *only* if needed, 
-    // or just rely on parent. BDD says "Parent passes data". 
-    // I'll keep the internal fetch purely as a fallback for pure component testing/storybook.
-
     useEffect(() => {
         if (initialStudents.length === 0 && students.length === 0) {
             // Fallback mock fetch
@@ -183,11 +174,11 @@ export default function AttendanceSheet({
                                 <VStack sx={{ flex: 1 }}>
                                     <Text
                                         color={colors.text}
-                                        sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: '700' }}
+                                        sx={{ fontSize: 16, fontWeight: '700' }}
                                     >
                                         {item.full_name}
                                     </Text>
-                                    <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>
+                                    <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>
                                         {t('attendance.sheet.swipeHint')}
                                     </Text>
                                 </VStack>
@@ -211,18 +202,16 @@ export default function AttendanceSheet({
         );
     };
 
-    const StatusConfig = STATUS_CONFIG;
-
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
                 <VStack sx={{ flex: 1, padding: 16, gap: 12 }}>
                     {/* Header with stats */}
                     <Box>
-                        <Heading color={colors.text} sx={{ fontSize: Theme.typography.fontSize.lg, marginBottom: Theme.spacing.xs }}>
+                        <Heading color={colors.text} sx={{ fontSize: 18, marginBottom: Theme.spacing.xs }}>
                             {t('attendance.sheet.title')}
                         </Heading>
-                        <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm, marginBottom: Theme.spacing.md }}>
+                        <Text color={colors.textSecondary} sx={{ fontSize: 14, marginBottom: Theme.spacing.md }}>
                             {date}
                         </Text>
 
@@ -238,10 +227,10 @@ export default function AttendanceSheet({
                                     borderLeftColor: STATUS_CONFIG.present.color,
                                 }}
                             >
-                                <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>
+                                <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>
                                     {t('attendance.stats.present')}
                                 </Text>
-                                <Text color={colors.text} sx={{ fontSize: Theme.typography.fontSize.lg, fontWeight: '700' }}>
+                                <Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}>
                                     {stats.present}
                                 </Text>
                             </Box>
@@ -255,10 +244,10 @@ export default function AttendanceSheet({
                                     borderLeftColor: STATUS_CONFIG.absent.color,
                                 }}
                             >
-                                <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>
+                                <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>
                                     {t('attendance.stats.absent')}
                                 </Text>
-                                <Text color={colors.text} sx={{ fontSize: Theme.typography.fontSize.lg, fontWeight: '700' }}>
+                                <Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}>
                                     {stats.absent}
                                 </Text>
                             </Box>
@@ -272,10 +261,10 @@ export default function AttendanceSheet({
                                     borderLeftColor: STATUS_CONFIG.late.color,
                                 }}
                             >
-                                <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>
+                                <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>
                                     {t('attendance.stats.late')}
                                 </Text>
-                                <Text color={colors.text} sx={{ fontSize: Theme.typography.fontSize.lg, fontWeight: '700' }}>
+                                <Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}>
                                     {stats.late}
                                 </Text>
                             </Box>
@@ -334,25 +323,25 @@ export default function AttendanceSheet({
                             borderRadius: Theme.corners.comfortable,
                         }}
                     >
-                        <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs, marginBottom: Theme.spacing.xs }}>
+                        <Text color={colors.textSecondary} sx={{ fontSize: 12, marginBottom: Theme.spacing.xs }}>
                             {t('common.quickActions') || 'Quick Actions:'}
                         </Text>
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                            <HStack alignItems="center" sx={{ gap: Theme.spacing.xs }}>
-                                <Text color={colors.text} sx={{ fontSize: Theme.typography.fontSize.xs }}>→</Text>
-                                <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>
+                        <VStack sx={{ gap: 8 }}>
+                            <HStack alignItems="center" sx={{ gap: 8 }}>
+                                <Text color={colors.text} sx={{ fontSize: 12 }}>→</Text>
+                                <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>
                                     {t('attendance.sheet.swipeHintRight') || 'Swipe Right = Present'}
                                 </Text>
                             </HStack>
-                            <HStack alignItems="center" sx={{ gap: Theme.spacing.xs }}>
-                                <Text color={colors.text} sx={{ fontSize: Theme.typography.fontSize.xs }}>←</Text>
-                                <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>
+                            <HStack alignItems="center" sx={{ gap: 8 }}>
+                                <Text color={colors.text} sx={{ fontSize: 12 }}>←</Text>
+                                <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>
                                     {t('attendance.sheet.swipeHintLeft') || 'Swipe Left = Absent'}
                                 </Text>
                             </HStack>
-                            <HStack alignItems="center" sx={{ gap: Theme.spacing.xs }}>
-                                <Text color={colors.text} sx={{ fontSize: Theme.typography.fontSize.xs }}>⏱</Text>
-                                <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>
+                            <HStack alignItems="center" sx={{ gap: 8 }}>
+                                <Text color={colors.text} sx={{ fontSize: 12 }}>⏱</Text>
+                                <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>
                                     {t('attendance.sheet.swipeHintLong') || 'Long Press = Late'}
                                 </Text>
                             </HStack>

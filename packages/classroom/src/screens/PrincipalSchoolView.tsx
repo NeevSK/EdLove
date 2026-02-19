@@ -38,7 +38,8 @@ import {
     InviteManager,
     ResourceNeedsDashboard,
     DashboardEcho,
-    CurriculumPulse
+    CurriculumPulse,
+    PrincipalAdminWidget
 } from '../components';
 import { GlobalHeader } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
@@ -237,6 +238,11 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                                     </Text>
                                 </Box>
                             </HStack>
+
+                            {/* Resource Needs Section */}
+                            <Box sx={{ marginTop: Theme.spacing.md }}>
+                                <PrincipalAdminWidget onAction={(action) => console.log('Principal Admin Action:', action)} />
+                            </Box>
 
                             {/* Resource Needs Section */}
                             <Box sx={{ marginTop: Theme.spacing.md }}>

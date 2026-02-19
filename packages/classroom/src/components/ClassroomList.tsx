@@ -88,56 +88,7 @@ export default function ClassroomList({
             fontWeight: '600',
             color: Theme.colors.white,
         },
-        emptyIcon: {
-            marginBottom: Theme.spacing.md,
-        },
-        emptyTitle: {
-            fontSize: Theme.typography.h3.fontSize,
-            fontWeight: '600',
-            color: colors.text,
-            marginBottom: Theme.spacing.sm,
-        },
-        emptyDescription: {
-            fontSize: Theme.typography.fontSize.md,
-            color: colors.textSecondary,
-            textAlign: 'center',
-            paddingHorizontal: Theme.spacing.lg,
-        },
-        classroomCard: {
-            backgroundColor: Theme.colors.midnightBlue,
-            borderRadius: Theme.corners.generous,
-            padding: Theme.spacing.md,
-            shadowColor: Theme.colors.shadowDark,
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-            elevation: 3,
-        },
-        cardContent: {
-            alignItems: 'center',
-        },
-        iconContainer: {
-            backgroundColor: Theme.colors.deepIndigo, // sapphireGlow not found, use deepIndigo or amberGlow?
-            // Actually, let's use a valid one.
-            borderRadius: Theme.corners.full,
-            padding: Theme.spacing.sm,
-        },
-        classroomName: {
-            fontSize: Theme.typography.fontSize.lg,
-            fontWeight: '600',
-            color: colors.text,
-        },
-        classroomSubject: {
-            fontSize: Theme.typography.fontSize.sm,
-            color: colors.textSecondary,
-            marginTop: Theme.spacing.xs,
-        },
-        classroomDescription: {
-            fontSize: Theme.typography.fontSize.xs,
-            color: colors.textTertiary,
-            marginTop: Theme.spacing.xs,
-        },
-    }), []);
+    }), [colors]);
     const [error, setError] = useState<string | null>(null);
     const [internalRefreshTrigger, setInternalRefreshTrigger] = useState(0);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -161,9 +112,7 @@ export default function ClassroomList({
 
                 let data: Classroom[] = [];
 
-                // Handle guest users - they have no classrooms, so we'll show sample only
                 if (isGuest) {
-                    // Inject Sample Classroom/School for guests
                     if (role === 'teacher') {
                         const sampleId = 'sample-c1';
                         if (!dismissedSampleIds.includes(sampleId)) {
@@ -174,7 +123,6 @@ export default function ClassroomList({
                             }
                         }
                     } else if (role === 'principal') {
-                        // For principal, check if there's a sample school
                         const sampleSchoolId = 'sample-school-1';
                         if (!dismissedSampleIds.includes(sampleSchoolId)) {
                             const sampleSchool = MOCK_CLASSROOMS.find((c: any) => c.id === sampleSchoolId);
@@ -184,7 +132,6 @@ export default function ClassroomList({
                             }
                         }
                     } else if (role === 'student' || !role) {
-                        // Default fallback for guests or students
                         const sampleId = 'sample-c1';
                         const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
                         if (sample && !dismissedSampleIds.includes(sampleId)) {
@@ -194,27 +141,24 @@ export default function ClassroomList({
                     }
                     setHasMore(false);
                 } else {
-                    // Authenticated users - fetch their actual classrooms
                     const { data: { user } } = await supabase.auth.getUser();
                     if (!user) {
                         throw new Error('No authenticated user');
                     }
 
                     const pagination = { limit: PAGE_SIZE, offset: 0 };
-                    // Fetch classrooms based on role
                     if (role === 'teacher') {
                         data = await api.classrooms.getByTeacher(user.id, pagination);
                     } else if (role === 'student') {
                         data = await api.classrooms.getByStudent(user.id, pagination);
                         data.sort((a, b) => a.name.localeCompare(b.name));
                     } else if (role === 'principal') {
-                        data = await api.classrooms.getBySchool(user.id, pagination); // Assuming user.id is schoolId or mapped
+                        data = await api.classrooms.getBySchool(user.id, pagination);
                     }
 
                     setHasMore(data.length === PAGE_SIZE);
                     setPage(1);
 
-                    // Inject Sample Classroom/School if newly created user (no classrooms yet) and not dismissed
                     if (role === 'teacher' && data.length === 0) {
                         const sampleId = 'sample-c1';
                         if (!dismissedSampleIds.includes(sampleId)) {
@@ -246,9 +190,7 @@ export default function ClassroomList({
                 }
 
                 if (isMounted) {
-                    console.log(`[ClassroomList] Loaded ${data.length} classrooms for role: ${role}, isGuest: ${isGuest}`);
                     setClassrooms(data);
-
                     if (onDataLoaded) onDataLoaded(data);
                 }
             } catch (err: any) {
@@ -268,7 +210,7 @@ export default function ClassroomList({
         return () => {
             isMounted = false;
         };
-    }, [role, internalRefreshTrigger, externalRefreshTrigger, isGuest]);
+    }, [role, internalRefreshTrigger, externalRefreshTrigger, isGuest, dismissedSampleIds]);
 
     const handleRetry = () => {
         setInternalRefreshTrigger(prev => prev + 1);
@@ -311,7 +253,6 @@ export default function ClassroomList({
         }
     }, [onClassroomPress]);
 
-    // Memoized classroom card renderer
     const renderClassroomCard = useCallback(({ item: classroom }: ListRenderItemInfo<Classroom>) => {
         const studentCount = (classroom as any).student_count || 0;
 
@@ -319,7 +260,7 @@ export default function ClassroomList({
             <ClassroomCard
                 classroom={classroom}
                 onPress={handleClassroomPress}
-                onClassroomPress={onClassroomPress} // Pass onClassroomPress for edit action
+                onClassroomPress={onClassroomPress}
                 studentCount={studentCount}
                 colors={colors}
                 setPendingInitialData={setPendingInitialData}
@@ -328,15 +269,11 @@ export default function ClassroomList({
                 t={t}
             />
         );
-    }, [handleClassroomPress, onClassroomPress, colors, setPendingInitialData, setIsCreateModalOpen, toast, t]);
+    }, [handleClassroomPress, onClassroomPress, colors, toast, t]);
 
-    // Key extractor for FlatList
     const keyExtractor = useCallback((item: Classroom) => item.id, []);
-
-    // Item separator
     const ItemSeparator = useCallback(() => <View style={{ height: Theme.spacing.md }} />, []);
 
-    // Loading state
     if (loading) {
         return (
             <VStack sx={{ width: '100%', padding: isNested ? 0 : Theme.spacing.md, gap: Theme.spacing.md }}>
@@ -347,7 +284,6 @@ export default function ClassroomList({
         );
     }
 
-    // Error state
     if (error) {
         return (
             <View style={styles.centerContainer}>
@@ -362,7 +298,6 @@ export default function ClassroomList({
         );
     }
 
-    // For nested use (e.g. inside TeacherDashboard ScrollView), we use VStack
     if (isNested) {
         return (
             <VStack sx={{ width: '100%', gap: Theme.spacing.md }}>
@@ -372,9 +307,7 @@ export default function ClassroomList({
                             context="classroom"
                             onAction={() => {
                                 hapticLight();
-                                if (role === 'student') {
-                                    // Navigate to library or show join instructions
-                                } else {
+                                if (role !== 'student') {
                                     setPendingInitialData(null);
                                     setIsCreateModalOpen(true);
                                 }
@@ -414,10 +347,8 @@ export default function ClassroomList({
         );
     }
 
-    // Standard view (using FlatList)
-
-    const content = (
-        <Box flex={1} sx={{ backgroundColor: colors.primary }}>
+    return (
+        <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
             {classrooms.length === 0 ? (
                 <PositiveInvitation
                     context="classroom"
@@ -449,7 +380,7 @@ export default function ClassroomList({
                     {!isGuest && (
                         <TouchableOpacity
                             onPress={() => {
-                                console.log('[ClassroomList] FAB pressed');
+                                hapticLight();
                                 setPendingInitialData(null);
                                 setIsCreateModalOpen(true);
                             }}
@@ -477,27 +408,23 @@ export default function ClassroomList({
                 isOpen={isCreateModalOpen}
                 initialData={pendingInitialData}
                 onClose={() => {
-                    console.log('[ClassroomList] Closing standard modal');
                     setIsCreateModalOpen(false);
                     setPendingInitialData(null);
                 }}
                 onSuccess={() => {
-                    console.log('[ClassroomList] Standard create success');
                     hapticSuccess();
                     setInternalRefreshTrigger(prev => prev + 1);
                 }}
             />
         </Box>
     );
-
-    return content;
 }
 
-// Memoized ClassroomCard component for better performance
+// Memoized ClassroomCard component
 interface ClassroomCardProps {
     classroom: Classroom;
     onPress: (classroom: Classroom) => void;
-    onClassroomPress?: (classroom: Classroom) => void; // Added for edit action
+    onClassroomPress?: (classroom: Classroom) => void;
     studentCount: number;
     colors: any;
     setPendingInitialData: (data: any) => void;
@@ -517,16 +444,8 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
     const handleAttendancePress = useCallback((e: GestureResponderEvent) => {
         e.stopPropagation();
         hapticLight();
-
-        if ((classroom as any).is_sample) {
-            // Re-using this area for info or specific sample action
-            console.log('Sample info requested:', classroom.id);
-            return;
-        }
-
-        // TODO: Navigate to Attendance for this class
         console.log('Open attendance for:', classroom.id);
-    }, [classroom.id, (classroom as any).is_sample]);
+    }, [classroom.id]);
 
     const handleDismiss = useCallback((e: GestureResponderEvent) => {
         e.stopPropagation();
@@ -535,32 +454,18 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
 
         toast.show({
             placement: "top",
-            render: ({ id }: { id: string }) => {
-                const toastId = "toast-" + id;
-                return (
-                    <Toast nativeID={toastId}>
-                        <VStack sx={{ gap: '$1' }}>
-                            <ToastTitle>{t('common.sampleDismissed') || 'Sample Dismissed'}</ToastTitle>
-                            <ToastDescription>
-                                {t('common.sampleDismissedDesc') || 'This sample sanctuary has been removed from your view.'}
-                            </ToastDescription>
-                        </VStack>
-                    </Toast>
-                );
-            },
+            render: ({ id }: { id: string }) => (
+                <Toast nativeID={"toast-" + id}>
+                    <VStack sx={{ gap: 4 }}>
+                        <ToastTitle>{t('common.sampleDismissed') || 'Sample Dismissed'}</ToastTitle>
+                        <ToastDescription>
+                            {t('common.sampleDismissedDesc') || 'This sample sanctuary has been removed from your view.'}
+                        </ToastDescription>
+                    </VStack>
+                </Toast>
+            ),
         });
     }, [classroom.id, dismissSample, toast, t]);
-
-    const handleEdit = useCallback((e: GestureResponderEvent) => {
-        e.stopPropagation();
-        hapticLight();
-        // Set data and open modal
-        setPendingInitialData({
-            name: classroom.name,
-            subject: classroom.subject
-        });
-        setIsCreateModalOpen(true);
-    }, [classroom, setPendingInitialData, setIsCreateModalOpen]);
 
     return (
         <TouchableOpacity
@@ -569,23 +474,29 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
         >
             <Box
                 sx={{
-                    ...richStyles.classroomCard,
+                    borderRadius: Theme.corners.generous,
+                    padding: Theme.spacing.md,
+                    borderWidth: 1,
                     backgroundColor: colors.secondary,
                     borderColor: colors.border,
-                    ...Theme.shadows.md,
                 }}
             >
                 <HStack alignItems="center" sx={{ gap: Theme.spacing.md }}>
-                    {/* Icon Container */}
-                    <Box sx={richStyles.iconContainer}>
+                    <Box sx={{
+                        width: 50,
+                        height: 50,
+                        borderRadius: Theme.corners.comfortable,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: colors.tertiary
+                    }}>
                         <BookOpen
                             size={24}
                             color={Theme.colors.sanctuarySaffron}
                         />
                     </Box>
 
-                    {/* Content */}
-                    <VStack flex={1} sx={{ gap: 4 }}>
+                    <VStack sx={{ flex: 1, gap: 4 }}>
                         <HStack alignItems="center" sx={{ gap: 8 }}>
                             <Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}>
                                 {classroom.name}
@@ -613,7 +524,9 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
                             </Text>
                             <Box
                                 sx={{
-                                    ...richStyles.dot,
+                                    width: 4,
+                                    height: 4,
+                                    borderRadius: 2,
                                     backgroundColor: colors.textTertiary,
                                 }}
                             />
@@ -626,17 +539,16 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
                         </HStack>
                     </VStack>
 
-                    {/* Quick Record Attendance Button */}
                     <TouchableOpacity onPress={handleAttendancePress}>
                         <Box sx={{
-                            ...richStyles.attendanceAction,
+                            padding: Theme.spacing.sm,
+                            borderRadius: Theme.corners.comfortable,
                             backgroundColor: colors.tertiary,
                         }}>
                             <ClipboardCheck size={20} color={Theme.colors.sageGreen} />
                         </Box>
                     </TouchableOpacity>
 
-                    {/* Arrow */}
                     <ChevronRight
                         size={20}
                         color={colors.textSecondary}
@@ -646,37 +558,9 @@ const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studen
         </TouchableOpacity>
     );
 }, (prevProps, nextProps) => {
-    // Custom comparison for better performance
     return (
         prevProps.classroom.id === nextProps.classroom.id &&
         prevProps.classroom.updated_at === nextProps.classroom.updated_at &&
         prevProps.studentCount === nextProps.studentCount
     );
 });
-
-const richStyles = {
-    classroomCard: {
-        borderRadius: Theme.corners.generous,
-        padding: Theme.spacing.md,
-        borderWidth: 1,
-    },
-    iconContainer: {
-        width: 50,
-        height: 50,
-        borderRadius: Theme.corners.comfortable,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    dot: {
-        width: 4,
-        height: 4,
-        borderRadius: 2,
-    },
-    attendanceAction: {
-        padding: Theme.spacing.sm,
-        borderRadius: Theme.corners.comfortable,
-        marginRight: Theme.spacing.xs,
-    }
-};
-
-

@@ -35,7 +35,7 @@ import {
     Spinner,
 } from '@repo/ui';
 import { ChevronDown, MessageSquare, Heart, AlertTriangle, CheckCircle2 } from 'lucide-react-native';
-import { supabase } from '@repo/core';
+import { supabase, handleAPIError } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 
 interface TeacherFeedbackModalProps {
@@ -82,10 +82,7 @@ export default function TeacherFeedbackModal({ isOpen, onClose, schoolId, teache
             onClose();
             setContent('');
         } catch (error) {
-            console.error('Failed to submit feedback:', error);
-            // In a real app, show a toast here
-            // For now, we'll just mock success if offline/error during dev
-            onClose();
+            handleAPIError(error);
         } finally {
             setIsSubmitting(false);
         }

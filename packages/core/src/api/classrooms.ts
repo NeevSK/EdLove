@@ -111,6 +111,19 @@ export const classroomsAPI = {
      * Get a single classroom by ID
      */
     async getById(id: string): Promise<Classroom> {
+        if (id.startsWith('sample-')) {
+            return {
+                id,
+                name: 'Sample Classroom',
+                subject: 'General Studies',
+                description: 'A place for exploration and growth.',
+                teacher_id: 'mock-teacher',
+                school_id: 'mock-school',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            } as Classroom;
+        }
+
         await requireClassroomAccess(id);
         const { data, error } = await supabase
             .from('classrooms')

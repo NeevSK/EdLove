@@ -32,7 +32,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { hapticLight, hapticSuccess, Textarea } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
-import { useFeatureAccess } from '@repo/core';
+import { useFeatureAccess, handleAPIError } from '@repo/core';
 import GuestConversionPrompt from '../shared/GuestConversionPrompt';
 import { useNavigation } from '@react-navigation/native';
 
@@ -214,9 +214,8 @@ export default function CreateClassroomModal({
             onSuccess(result);
             handleClose();
         } catch (err: any) {
-            console.error('Failed to process classroom operation:', err);
-            const detailMsg = err.details?.message || err.details?.details || JSON.stringify(err.details);
-            setError(`${err.message}${err.code ? ` (${err.code})` : ''}${detailMsg ? `: ${detailMsg}` : ''}`);
+            const apiError = handleAPIError(err, true);
+            setError(apiError.message);
         } finally {
             setIsSubmitting(false);
         }

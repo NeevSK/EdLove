@@ -62,7 +62,7 @@ export default function AttendanceScreen() {
                 classroom_id: classroomId,
                 student_id: s.student_id, // Use student_id from StudentAttendance
                 status: s.status,
-                date: new Date().toISOString().split('T')[0],
+                date: new Date().toISOString().split('T')[0] || '',
             }));
             return api.attendance.batchRecord(records);
         },

@@ -83,7 +83,7 @@ export default function ScannerModal({
             });
 
             if (!result.canceled && result.assets && result.assets.length > 0) {
-                await processImage(result.assets[0].uri);
+                await processImage(result.assets[0]?.uri || '');
             }
         } catch (error) {
             console.error('Pick Image Error:', error);

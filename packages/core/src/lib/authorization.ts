@@ -79,6 +79,11 @@ export async function requireClassroomAccess(classroomId: string) {
     // Get user role from metadata
     const userRole = user.user_metadata?.role || user.app_metadata?.role;
 
+    // Bypass check for sample classrooms (demo/onboarding)
+    if (classroomId.startsWith('sample-')) {
+        return user;
+    }
+
     // Check if user is the teacher of this classroom
     const { data: classroom, error } = await supabase
         .from('classrooms')

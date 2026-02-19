@@ -84,7 +84,7 @@ export default function SchoolCreationScreen() {
             <GlobalHeader
                 title="Establish School"
                 subtitle="Bring your sanctuary to life"
-                showBackButton
+                showBack
             />
 
             <StepIndicator

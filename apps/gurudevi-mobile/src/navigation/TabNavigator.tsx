@@ -19,6 +19,7 @@ import {
 } from 'lucide-react-native';
 
 import ClassroomStackNavigator from './ClassroomStackNavigator';
+import ProfileStackNavigator from './ProfileStackNavigator';
 import { useThemedColors } from '@repo/ui';
 import { useUserRole, useRewards, useTracking } from '@repo/core';
 import AchievementUnlockOverlay from '../components/shared/AchievementUnlockOverlay';
@@ -120,16 +121,13 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             tabBarIcon: ({ color, size }) => (
               <View>
                 <User color={color} size={size} fill={currentTab === 'profile' ? color : 'none'} />
-                {!exploredFeatures.includes('section_profile') && (
-                  <View style={{ position: 'absolute', top: -2, right: -2, width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron, borderWidth: 1, borderColor: colors.secondary }} />
-                )}
               </View>
             ),
           }}
         >
           {() => (
-            <ErrorBoundary name="Profile Screen">
-              <ProfileScreen />
+            <ErrorBoundary name="Profile Stack">
+              <ProfileStackNavigator />
             </ErrorBoundary>
           )}
         </Tab.Screen>
@@ -159,9 +157,6 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             tabBarIcon: ({ color, size }) => (
               <View>
                 <Heart color={color} size={size} fill={currentTab === 'self' ? color : 'none'} />
-                {!exploredFeatures.includes('section_self') && (
-                  <View style={{ position: 'absolute', top: -2, right: -2, width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron, borderWidth: 1, borderColor: colors.secondary }} />
-                )}
               </View>
             ),
           }}
@@ -181,9 +176,6 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             tabBarIcon: ({ color, size }) => (
               <View>
                 <Users color={color} size={size} fill={currentTab === 'community' ? color : 'none'} />
-                {!exploredFeatures.includes('section_community') && (
-                  <View style={{ position: 'absolute', top: -2, right: -2, width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron, borderWidth: 1, borderColor: colors.secondary }} />
-                )}
               </View>
             ),
           }}
@@ -203,9 +195,6 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             tabBarIcon: ({ color, size }) => (
               <View>
                 <Library color={color} size={size} fill={currentTab === 'library' ? color : 'none'} />
-                {!exploredFeatures.includes('section_library') && (
-                  <View style={{ position: 'absolute', top: -2, right: -2, width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron, borderWidth: 1, borderColor: colors.secondary }} />
-                )}
               </View>
             ),
           }}

@@ -28,7 +28,7 @@ import {
 import { X, Save, User, Briefcase, ChevronDown, Camera } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
-import { supabase, useStore, UserRole } from '@repo/core';
+import { supabase, useStore, UserRole, uploadToCloudinary, handleAPIError } from '@repo/core';
 import * as ImagePicker from 'expo-image-picker';
 
 interface EditProfileModalProps {
@@ -97,19 +97,18 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                 bio: bio
             };
 
-            // Only update avatar if it's a remote URL (already uploaded to Supabase Storage)
-            // Don't persist local file:// URIs to the database
-            if (avatarUrl &&
-                avatarUrl !== (currentProfile?.avatar_url || null) &&
-                (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://'))) {
+            // Handle Avatar Upload to Cloudinary
+            if (avatarUrl && avatarUrl.startsWith('file://')) {
+                try {
+                    const uploadedUrl = await uploadToCloudinary(avatarUrl, 'image');
+                    updates.avatar_url = uploadedUrl;
+                } catch (uploadError) {
+                    handleAPIError(new Error('Failed to upload profile picture. Using current profile data.'));
+                    // Continue with other updates even if upload fails
+                }
+            } else if (avatarUrl && (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://'))) {
                 updates.avatar_url = avatarUrl;
             }
-            // TODO: Implement actual Supabase Storage upload for local file URIs
-            // Example flow:
-            // if (avatarUrl && avatarUrl.startsWith('file://')) {
-            //     const uploadedUrl = await uploadToSupabaseStorage(avatarUrl);
-            //     updates.avatar_url = uploadedUrl;
-            // }
 
             // Only update role if changed
             if (selectedRole && selectedRole !== currentProfile.role) {

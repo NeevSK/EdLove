@@ -45,8 +45,11 @@ import {
     api,
     useStore,
     useSafeMutation,
-    supabase
+    supabase,
+    initPostHog,
+    trackEvent
 } from '@repo/core';
+import { PositiveInvitation } from '@repo/ui';
 
 const CATEGORIES: { id: InventoryCategory; labelKey: string; icon: any }[] = [
     { id: 'furniture', labelKey: 'classroom.inventory.furniture', icon: Sofa },
@@ -184,7 +187,17 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
 
             {/* Inventory List */}
             <VStack sx={{ paddingHorizontal: Theme.spacing.md, gap: Theme.spacing.md }}>
-                {filteredItems.map(item => (
+                {!user ? (
+                    <PositiveInvitation
+                        type="guest"
+                        title={t('classroom.inventory.guestTitle', 'A Glimpse into the Sanctuary')}
+                        description={t('classroom.inventory.guestDesc', 'Explore the tools teachers use to manage their sacred spaces.')}
+                    />
+                ) : filteredItems.length === 0 ? (
+                    <Box p="$10" alignItems="center">
+                        <Text color={colors.textSecondary}>{t('common.noItemsFound')}</Text>
+                    </Box>
+                ) : filteredItems.map(item => (
                     <Pressable
                         key={item.id}
                         onPress={() => handleReportIssue(item)}
@@ -216,8 +229,8 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
 
                             <Box
                                 sx={{
-                                    px: Theme.spacing.sm,
-                                    py: Theme.spacing.xs,
+                                    paddingHorizontal: Theme.spacing.sm,
+                                    paddingVertical: Theme.spacing.xs,
                                     backgroundColor: getConditionColor(item.condition),
                                     borderRadius: Theme.corners.tight,
                                 }}
@@ -250,7 +263,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                     elevation: 8,
                 }}
             >
-                <ButtonText color={Theme.colors.white} sx={{ mr: Theme.spacing.sm }}>{t('classroom.inventory.requestSupplies')}</ButtonText>
+                <ButtonText color={Theme.colors.white} sx={{ marginRight: Theme.spacing.sm }}>{t('classroom.inventory.requestSupplies')}</ButtonText>
                 <Plus color={Theme.colors.white} size={20} />
             </Button>
 
@@ -268,7 +281,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                         </ModalCloseButton>
                     </ModalHeader>
                     <ModalBody>
-                        <Text color={colors.textSecondary} sx={{ mb: Theme.spacing.md }}>
+                        <Text color={colors.textSecondary} sx={{ marginBottom: Theme.spacing.md }}>
                             {t('classroom.inventory.reportIssue')} for: <Text color={colors.text} sx={{ fontWeight: 'bold' }}>{selectedItem?.name}</Text>
                         </Text>
                         <VStack sx={{ gap: Theme.spacing.md }}>
@@ -309,7 +322,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                         <Button
                             variant="outline"
                             action="secondary"
-                            sx={{ mr: Theme.spacing.sm }}
+                            sx={{ marginRight: Theme.spacing.sm }}
                             onPress={() => setShowReportModal(false)}
                         >
                             <ButtonText>{t('common.cancel')}</ButtonText>
@@ -354,7 +367,9 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                                 </Input>
                             </VStack>
                             <VStack sx={{ gap: 4 }}>
-                                <Text color={colors.text} sx={{ fontSize: 13 }}>{t('classroom.inventory.quantity', { count: '' }).replace(': ', '').trim()}</Text>
+                                <Text color={colors.text} sx={{ fontSize: 13 }}>
+                                    {String(t('classroom.inventory.quantity', { count: 0 }) || '').split(':')[0]?.trim() || ''}
+                                </Text>
                                 <Input>
                                     <InputField
                                         placeholder="e.g. 1 Box"
@@ -382,7 +397,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                         <Button
                             variant="outline"
                             action="secondary"
-                            sx={{ mr: Theme.spacing.sm }}
+                            sx={{ marginRight: Theme.spacing.sm }}
                             onPress={() => setShowRequestModal(false)}
                         >
                             <ButtonText>{t('common.cancel')}</ButtonText>

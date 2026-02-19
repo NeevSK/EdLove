@@ -186,7 +186,7 @@ export default function LibraryScreen() {
     };
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper scroll={false}>
             <GlobalHeader
                 title={t('tabs.library') || 'Library'}
                 subtitle={t('library.knowledgeSanctuary')}

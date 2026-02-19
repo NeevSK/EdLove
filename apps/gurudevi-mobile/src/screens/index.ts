@@ -4,3 +4,4 @@ export { default as LibraryScreen } from './LibraryScreen';
 export { default as CommunityScreen } from './CommunityScreen';
 export { default as SelfScreen } from './SelfScreen';
 export { default as SchoolCreationScreen } from './SchoolCreationScreen';
+export { default as AIAssistantScreen } from './AIAssistantScreen';

@@ -54,7 +54,8 @@
     "plugins": [
       "expo-font",
       "./plugins/withAndroidCruncherDisabled",
-      "./plugins/withGradleProperties"
+      "./plugins/withGradleProperties",
+      "expo-localization"
     ],
     "owner": "neevsk",
     "runtimeVersion": {

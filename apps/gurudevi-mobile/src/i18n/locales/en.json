@@ -16,6 +16,8 @@
         "error": "Error",
         "success": "Success",
         "greeting": "Ayubowan, {{name}}!",
+        "goodAfternoon": "Good Afternoon",
+        "send": "Send to Principal",
         "create": "Create",
         "add": "Add",
         "guidesAndSamples": "Guides & Samples",
@@ -97,7 +99,10 @@
         "openingSanctuary": "Initializing Sanctuary...",
         "login": "I have an account. Log in",
         "footer": "Education born from Love, built with Love.",
-        "privacyPactStatement": "By joining, you agree to our Sacred Privacy Pact."
+        "privacyPactStatement": "By joining, you agree to our Sacred Privacy Pact.",
+        "message": "Welcome to Gurudevi",
+        "description": "Your AI-powered educational companion.",
+        "start": "Get Started"
     },
     "tabs": {
         "self": "Self",
@@ -427,6 +432,10 @@
         "noClassroomsYet": "No classrooms yet",
         "teacherEmptyDesc": "Your digital workbench is ready. Create a class or join an existing one to begin.",
         "noAvailableClasses": "No unassigned classrooms found for this grade.",
+        "customSubject": "Custom Subject",
+        "syllabusVersion": "Syllabus Version",
+        "theme": "Theme",
+        "descPlaceholder": "Enter a description for your classroom...",
         "inventory": {
             "title": "Inventory",
             "all": "All",
@@ -477,7 +486,9 @@
         "sections": {
             "vision": "SCHOOL VISION",
             "updates": "RECENT UPDATES"
-        }
+        },
+        "noGroups": "No circles found",
+        "noGroupsDesc": "Connect with others by joining a community group."
     },
     "library": {
         "title": "Library",
@@ -507,8 +518,15 @@
             "pdf": "PDFs",
             "video": "Videos",
             "doc": "Docs",
-            "link": "Links"
-        }
+            "link": "Links",
+            "lesson": "Lessons",
+            "worksheet": "Worksheets",
+            "guide": "Guides",
+            "reading": "Reading",
+            "pedagogy": "Pedagogy",
+            "other": "Other"
+        },
+        "collections": "Collections"
     },
     "profile": {
         "title": "Profile",
@@ -561,7 +579,8 @@
             "visionAlignment": "Vision Alignment",
             "coreActive": "Core Active",
             "learningGrowth": "LEARNING GROWTH",
-            "professionalGrowth": "PROFESSIONAL GROWTH"
+            "professionalGrowth": "PROFESSIONAL GROWTH",
+            "level": "Level"
         }
     },
     "invite": {
@@ -815,6 +834,31 @@
         "tip": {
             "title": "Tip",
             "message": "These settings help Gurudevi work best for you. Auto mode is recommended for most users."
+        }
+    },
+    "invitation": {
+        "guestTitle": "Your sanctuary begins here",
+        "guestDesc": "Sign in to sync your journey across all your devices.",
+        "guestAction": "Sign In / Sign Up",
+        "communityEmptyTitle": "Join the circle of wisdom",
+        "communityEmptyDesc": "Engage with fellow educators and share your experiences.",
+        "communityEmptyAction": "Join Discussion",
+        "libraryEmptyTitle": "Your personal library awaits",
+        "libraryEmptyDesc": "Save resources, books, and insights to build your knowledge treasury.",
+        "libraryEmptyAction": "Explore Library"
+    },
+    "teacher": {
+        "actions": {
+            "principalEcho": "Principal Echo"
+        },
+        "feedback": {
+            "title": "Principal Echo",
+            "subtitle": "Send a reflection or request to administration",
+            "category": "Category",
+            "priority": "Urgency",
+            "content": "Your Reflection",
+            "placeholder": "Share your thoughts, resource needs, or concerns...",
+            "note": "This reflection will be surfaced on the Principal's Dashboard 'Echo' vistas."
         }
     }
 }

@@ -17,17 +17,25 @@ import {
     useToast,
     Toast,
     ToastTitle,
+    Pressable,
 } from '@repo/ui';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Theme, useThemedColors, useEnvironment } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { Image, Dimensions } from 'react-native';
 import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
 import AuthScreen from './AuthScreen';
 import { ScreenWrapper } from '@repo/ui';
-import { authAPI } from '@repo/core';
+import { authAPI, handleAPIError } from '@repo/core';
 
 const { width } = Dimensions.get('window');
 const LOGO = require('../../assets/icon.png');
+
+const LANGUAGES = [
+    { code: 'en', label: 'English' },
+    { code: 'si', label: 'Sinhala' },
+    { code: 'ta', label: 'Tamil' },
+];
 
 interface WelcomeScreenProps {
     onNext?: () => void;
@@ -35,12 +43,18 @@ interface WelcomeScreenProps {
 }
 
 export default function WelcomeScreen({ onNext, initialShowAuth = false }: WelcomeScreenProps) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const colors = useThemedColors();
     const [showAuth, setShowAuth] = useState(initialShowAuth);
     const [acceptedTerms, setAcceptedTerms] = useState(true);
     const [isConnecting, setIsConnecting] = useState(false);
     const toast = useToast();
+
+    const changeLanguage = async (langCode: string) => {
+        hapticLight();
+        await i18n.changeLanguage(langCode);
+        await AsyncStorage.setItem('user-language', langCode);
+    };
 
     const showTermsToast = () => {
         toast.show({
@@ -70,8 +84,7 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
             console.log('✅ Welcome: Guest sign in success, calling onNext');
             if (onNext) onNext();
         } catch (error) {
-            console.error('❌ Welcome: Failed to start guest session:', error);
-            hapticError();
+            handleAPIError(error);
             setIsConnecting(false);
         }
     };
@@ -101,6 +114,32 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
 
     return (
         <ScreenWrapper scroll>
+            {/* Language Selector */}
+            <Box sx={{ position: 'absolute', top: Theme.spacing.xl, right: Theme.spacing.lg, zIndex: 10 }}>
+                <HStack space="xs" sx={{ backgroundColor: colors.secondary, borderRadius: 20, padding: 4, borderWidth: 1, borderColor: colors.border }}>
+                    {LANGUAGES.map(lang => (
+                        <Pressable
+                            key={lang.code}
+                            onPress={() => changeLanguage(lang.code)}
+                            sx={{
+                                paddingHorizontal: 10,
+                                paddingVertical: 6,
+                                borderRadius: 16,
+                                backgroundColor: i18n.language?.startsWith(lang.code) ? colors.action : 'transparent'
+                            }}
+                        >
+                            <Text
+                                size="xs"
+                                color={i18n.language?.startsWith(lang.code) ? Theme.colors.white : colors.textSecondary}
+                                bold={i18n.language?.startsWith(lang.code)}
+                            >
+                                {lang.code.toUpperCase()}
+                            </Text>
+                        </Pressable>
+                    ))}
+                </HStack>
+            </Box>
+
             <Center sx={{ flex: 1, paddingVertical: Theme.spacing.xl, paddingHorizontal: 24 }}>
                 <VStack space="2xl" alignItems="center" sx={{ width: '100%', maxWidth: 400 }}>
                     {/* Hero Section */}

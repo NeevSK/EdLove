@@ -14,17 +14,16 @@ interface StorageInterface {
 }
 
 /**
- * AsyncStorage-based fallback for Expo Go / Web
- * Provides persistence unlike simple MemoryStorage
+ * Robust AsyncStorage-based storage with in-memory cache for synchronous access.
+ * This ensures getString/getBoolean work immediately while persisting in background.
  */
-class PersistentFallbackStorage implements StorageInterface {
-    // In-memory cache for synchronous access (getString, getBoolean)
-    // Synchronous access is required by many parts of the app
+class RobustAsyncStorage implements StorageInterface {
     private cache = new Map<string, any>();
     private initialized = false;
+    private initPromise: Promise<void> | null = null;
 
     constructor() {
-        this.init();
+        this.initPromise = this.init();
     }
 
     private async init() {
@@ -41,16 +40,16 @@ class PersistentFallbackStorage implements StorageInterface {
                 }
             });
             this.initialized = true;
-            console.log('📦 Storage Fallback: Hydrated cache from AsyncStorage');
+            console.log('📦 Storage: Hydrated cache from AsyncStorage');
         } catch (e) {
-            console.error('📦 Storage Fallback Error during hydration:', e);
+            console.error('📦 Storage Error during hydration:', e);
         }
     }
 
     set(key: string, value: string | boolean | number) {
         this.cache.set(key, value);
         AsyncStorage.setItem(key, String(value)).catch(e =>
-            console.error(`📦 Storage Fallback: Failed to persist ${key}`, e)
+            console.error(`📦 Storage: Failed to persist ${key}`, e)
         );
     }
 
@@ -60,8 +59,9 @@ class PersistentFallbackStorage implements StorageInterface {
     }
 
     async getStringAsync(key: string) {
-        if (!this.initialized) await this.init();
-        return this.getString(key);
+        if (!this.initialized && this.initPromise) await this.initPromise;
+        const val = await AsyncStorage.getItem(key);
+        return val || undefined;
     }
 
     getBoolean(key: string) {
@@ -89,27 +89,6 @@ class PersistentFallbackStorage implements StorageInterface {
     }
 }
 
-// AsyncStorage Fallback for persistence when MMKV (JSI) isn't available
-class AsyncStorageFallback implements StorageInterface {
-    set(key: string, value: string | boolean | number) {
-        AsyncStorage.setItem(key, String(value));
-    }
-    getString(key: string) {
-        // Note: This is a hack because StorageInterface expects synchronous return.
-        // We handle the true async nature in the Zustand Storage wrapper.
-        return undefined;
-    }
-    async getStringAsync(key: string) {
-        const val = await AsyncStorage.getItem(key);
-        return val || undefined;
-    }
-    getBoolean(key: string) { return undefined; }
-    getNumber(key: string) { return undefined; }
-    delete(key: string) { AsyncStorage.removeItem(key); }
-    clearAll() { AsyncStorage.clear(); }
-    contains(key: string) { return false; }
-}
-
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 
 let storageInstance: StorageInterface;
@@ -117,8 +96,8 @@ let storageInstance: StorageInterface;
 const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
 if (isExpoGo) {
-    console.log('⚠️ Running in Expo Go: Defaulting to AsyncStorage Fallback');
-    storageInstance = new AsyncStorageFallback();
+    console.log('⚠️ Running in Expo Go: Defaulting to Robust AsyncStorage');
+    storageInstance = new RobustAsyncStorage();
 } else {
     try {
         // Attempt to initialize MMKV
@@ -128,8 +107,8 @@ if (isExpoGo) {
         });
         console.log('✅ MMKV initialized successfully (Speed Mode)');
     } catch (e) {
-        console.warn('⚠️ MMKV failed (Native module missing), using AsyncStorage Fallback');
-        storageInstance = new AsyncStorageFallback();
+        console.warn('⚠️ MMKV failed (Native module missing), using Robust AsyncStorage');
+        storageInstance = new RobustAsyncStorage();
     }
 }
 

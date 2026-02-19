@@ -14,8 +14,8 @@ export default function StepIndicator({
     stepLabels,
 }: StepIndicatorProps) {
     return (
-        <VStack sx={{ gap: '$sm' as any, px: '$4' as any, py: '$4' as any }}>
-            <HStack sx={{ gap: '$xs' as any, width: '100%', alignItems: 'center' }}>
+        <VStack sx={{ gap: Theme.spacing.sm, paddingHorizontal: Theme.spacing.md, paddingVertical: Theme.spacing.md }}>
+            <HStack sx={{ gap: Theme.spacing.xs, width: '100%', alignItems: 'center' }}>
                 {Array.from({ length: totalSteps }).map((_, index) => {
                     const isCompleted = index + 1 < currentStep;
                     const isActive = index + 1 === currentStep;
@@ -39,10 +39,10 @@ export default function StepIndicator({
                 })}
             </HStack>
             <HStack sx={{ justifyContent: 'space-between', width: '100%' }}>
-                <Text color={Theme.colors.sanctuarySaffron} sx={{ fontWeight: '$bold' as any, fontSize: '$sm' as any }}>
+                <Text color={Theme.colors.sanctuarySaffron} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.sm }}>
                     Step {currentStep} of {totalSteps}
                 </Text>
-                <Text color={Theme.colors.mistGray} sx={{ fontSize: '$sm' as any }}>
+                <Text color={Theme.colors.mistGray} sx={{ fontSize: Theme.typography.fontSize.sm }}>
                     {stepLabels[currentStep - 1]}
                 </Text>
             </HStack>

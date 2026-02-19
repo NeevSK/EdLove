@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { trackingAPI } from '../api/tracking';
+import { trackEvent } from '../lib/monitoring/posthog';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 /**
@@ -36,6 +37,9 @@ export function useTracking() {
 
         try {
             await trackingAPI.logFeatureUsage(userId, featureName);
+            // PostHog Tracking
+            trackEvent('feature_discovered', { feature_name: featureName, user_id: userId });
+
             // Invalidate to refresh the explored list
             queryClient.invalidateQueries({ queryKey: ['explored_features', userId] });
         } catch (error) {

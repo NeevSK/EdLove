@@ -18,13 +18,13 @@ import {
 } from '@repo/ui';
 import { Alert } from 'react-native';
 import {
-    Plus,
-    ClipboardCheck,
-    BookOpen,
-    Users,
-    School,
     Zap,
-    MessageCircle
+    MessageCircle,
+    ShieldCheck,
+    Plus,
+    Users,
+    BookOpen,
+    School
 } from 'lucide-react-native';
 
 import { useNavigation } from '@react-navigation/native';
@@ -34,6 +34,9 @@ import { useFeatureAccess, useStore, ClassroomStackParamList } from '@repo/core'
 import ClassroomList from './ClassroomList';
 import CreateClassroomModal from './CreateClassroomModal';
 import TeacherFeedbackModal from './teacher/TeacherFeedbackModal';
+import { Modal, TouchableOpacity } from 'react-native';
+import { X } from 'lucide-react-native';
+import TeacherAdminWidget from './TeacherAdminWidget';
 
 interface TeacherDashboardProps {
     onRefresh?: () => void;
@@ -48,6 +51,7 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
     const { isGuest } = useFeatureAccess();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+    const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'create' | 'join'>('create');
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
@@ -189,18 +193,9 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                         color={Theme.colors.sanctuarySaffron}
                     />
                     <QuickAction
-                        icon={ClipboardCheck}
-                        label={t('classroom.attendance') || 'Attendance'}
-                        onPress={() => {
-                            if (classrooms.length > 0) {
-                                navigation.navigate('Attendance', {
-                                    classroomId: classrooms[0].id,
-                                    classroomName: classrooms[0].name
-                                });
-                            } else {
-                                Alert.alert(t('common.noClassrooms') || "No Classrooms", t('common.noClassroomsDesc') || "No active classrooms found.");
-                            }
-                        }}
+                        icon={ShieldCheck}
+                        label={t('teacher.admin.portal') || 'Admin'}
+                        onPress={() => setIsAdminModalOpen(true)}
                         color={Theme.colors.sageGreen}
                     />
                     <QuickAction
@@ -220,7 +215,7 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                 </HStack>
 
                 {/* Statistics */}
-                <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.xl }}>
+                <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.sm }}>
                     <StatCard
                         icon={School}
                         label={t('classroom.statActiveClasses') || 'Active Classes'}
@@ -232,6 +227,7 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                         value={stats.totalStudents}
                     />
                 </HStack>
+
 
                 {/* Classroom List Section */}
                 <VStack sx={{ gap: Theme.spacing.md }}>
@@ -291,6 +287,60 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                 schoolId={schoolId || ''}
                 teacherId={userId || ''}
             />
+
+            {/* Admin Portal Modal */}
+            <Modal
+                visible={isAdminModalOpen}
+                animationType="slide"
+                presentationStyle="pageSheet"
+                onRequestClose={() => setIsAdminModalOpen(false)}
+            >
+                <Box flex={1} sx={{ backgroundColor: colors.primary }}>
+                    <Box sx={{
+                        paddingTop: 50,
+                        paddingBottom: Theme.spacing.md,
+                        paddingHorizontal: Theme.spacing.md,
+                        borderBottomWidth: 1,
+                        borderBottomColor: colors.border
+                    }}>
+                        <HStack justifyContent="space-between" alignItems="center">
+                            <Heading size="lg" color={colors.text}>
+                                {t('teacher.admin.portal') || 'Administrative Portal'}
+                            </Heading>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    hapticLight();
+                                    setIsAdminModalOpen(false);
+                                }}
+                                style={{
+                                    padding: 8,
+                                    borderRadius: Theme.corners.full,
+                                    backgroundColor: colors.tertiary,
+                                    borderColor: colors.border,
+                                    borderWidth: 1,
+                                }}
+                            >
+                                <X size={24} color={colors.text} />
+                            </TouchableOpacity>
+                        </HStack>
+                    </Box>
+                    <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg }}>
+                        <TeacherAdminWidget
+                            onAction={(action) => {
+                                console.log('Admin Action:', action);
+                                // Handle specific navigations if needed
+                                if (action === 'Attendance' && classrooms.length > 0) {
+                                    setIsAdminModalOpen(false);
+                                    navigation.navigate('Attendance', {
+                                        classroomId: classrooms[0].id,
+                                        classroomName: classrooms[0].name
+                                    });
+                                }
+                            }}
+                        />
+                    </ScrollView>
+                </Box>
+            </Modal>
         </VStack>
     );
 }

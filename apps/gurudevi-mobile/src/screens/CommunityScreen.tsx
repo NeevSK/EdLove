@@ -240,7 +240,7 @@ export default function CommunityScreen() {
     };
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper scroll={false}>
             <GlobalHeader
                 title={t('tabs.community') || 'Community'}
                 subtitle={t('community.subtitle') || "Connect & Grow"}

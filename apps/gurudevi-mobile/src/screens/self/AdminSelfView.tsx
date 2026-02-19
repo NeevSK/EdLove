@@ -26,8 +26,7 @@ import WelcomeModal from '../../components/self/WelcomeModal';
 import { SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
-// IdentityCard and UserStatsCard removed
-// EditProfileModal removed
+import EditProfileModal from '../../components/profile/EditProfileModal';
 
 const ADMIN_CORE_FEATURES = [
     { id: 'balance', icon: Activity, category: 'core' },
@@ -49,7 +48,7 @@ export default function AdminSelfView() {
     const [loadingUser, setLoadingUser] = useState(true);
     const [showMoreTools, setShowMoreTools] = useState(false);
     const [userProfile, setUserProfile] = useState<any>(null);
-    // Edit modal state removed
+    const [isEditModalVisible, setEditModalVisible] = useState(false);
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const colors = useThemedColors();
@@ -129,7 +128,8 @@ export default function AdminSelfView() {
     return (
         <ScreenWrapper>
             <GlobalHeader
-
+                isSelfView
+                avatarUrl={userProfile?.avatar_url}
                 subtitle={t('self.adminSubtitle') || 'System Architect'}
             />
             <ScrollView
@@ -137,8 +137,6 @@ export default function AdminSelfView() {
                 contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}
                 showsVerticalScrollIndicator={false}
             >
-                {/* Identity & Stats Anchor - REMOVED */}
-                {/* Access Profile via GlobalHeader Avatar */}
 
                 <Box mb="$4">
                     <DailyContentCard type="motivation" />
@@ -193,7 +191,15 @@ export default function AdminSelfView() {
 
             <ShadowAgentDrawer />
             <WelcomeModal isOpen={justFinishedOnboarding} onClose={() => setJustFinishedOnboarding(false)} />
-            {/* EditProfileModal removed */}
+            <EditProfileModal
+                visible={isEditModalVisible}
+                onClose={() => setEditModalVisible(false)}
+                onSave={() => {
+                    setLoadingUser(true);
+                    // Re-fetch logic
+                }}
+                currentProfile={userProfile}
+            />
         </ScreenWrapper>
     );
 }

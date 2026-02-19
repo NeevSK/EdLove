@@ -65,6 +65,23 @@ export const inventoryAPI = {
     },
 
     /**
+     * Get all requests for a classroom
+     */
+    async getRequests(classroomId: string): Promise<InventoryRequest[]> {
+        const { data, error } = await supabase
+            .from('inventory_requests')
+            .select('*')
+            .eq('classroom_id', classroomId)
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            throw new APIError('Failed to fetch classroom requests', error.code, error);
+        }
+
+        return data || [];
+    },
+
+    /**
      * Get aggregated resource needs for a school (Principal Dashboard)
      */
     async getSchoolResourceNeeds(schoolId: string): Promise<any[]> {

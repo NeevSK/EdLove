@@ -14,7 +14,8 @@ import {
     useThemedColors,
     hapticLight,
     GlobalHeader,
-    ScreenWrapper
+    ScreenWrapper,
+    SkeletonCard
 } from '@repo/ui';
 import {
     Users,
@@ -136,15 +137,26 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
         return (
             <ScreenWrapper>
                 <GlobalHeader title={classroomName} showBack onBack={() => navigation.goBack()} />
-                <VStack flex={1} justifyContent="center" alignItems="center">
-                    <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+                <VStack sx={{ gap: '$md' as any, padding: '$4' as any }}>
+                    <SkeletonCard height={100} />
+                    <HStack sx={{ gap: '$md' as any, marginTop: '$4' as any }}>
+                        <SkeletonCard width={90} height={70} />
+                        <SkeletonCard width={90} height={70} />
+                        <SkeletonCard width={90} height={70} />
+                    </HStack>
+                    <VStack sx={{ gap: '$md' as any, marginTop: '$4' as any }}>
+                        <SkeletonCard height={60} />
+                        <SkeletonCard height={60} />
+                        <SkeletonCard height={60} />
+                        <SkeletonCard height={60} />
+                    </VStack>
                 </VStack>
             </ScreenWrapper>
         );
     }
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper scroll={false}>
             <GlobalHeader
                 title={classroomName}
                 subtitle={classroom?.subject || 'Classroom'}

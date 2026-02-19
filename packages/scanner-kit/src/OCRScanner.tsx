@@ -133,7 +133,7 @@ export default function OCRScanner({ onStudentsScanned, onCancel, colors: colors
         const lines = text.split('\n').filter(line => line.trim().length > 0);
 
         for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].trim();
+            const line = (lines[i] || '').trim();
 
             if (
                 line.toLowerCase().includes('name') ||
@@ -150,8 +150,8 @@ export default function OCRScanner({ onStudentsScanned, onCancel, colors: colors
                 const parts = line.split(/[|\t]/).map(p => p.trim());
                 if (parts.length >= 2) {
                     students.push({
-                        name: parts[0],
-                        index_number: parts[1],
+                        name: parts[0] || '',
+                        index_number: parts[1] || '',
                         notes: parts.length > 2 ? parts.slice(2).join(' ') : undefined,
                     });
                     continue;
@@ -180,8 +180,8 @@ export default function OCRScanner({ onStudentsScanned, onCancel, colors: colors
                 const indexMatch = line.match(/(\d+)/);
                 if (nameMatch && indexMatch) {
                     students.push({
-                        name: nameMatch[1].trim(),
-                        index_number: indexMatch[1],
+                        name: (nameMatch[1] || '').trim(),
+                        index_number: indexMatch[1] || '',
                     });
                 }
             }

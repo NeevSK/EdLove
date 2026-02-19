@@ -28,6 +28,7 @@ export * from './school';
 // Note: Community types should be imported directly from '../../types/Community' to avoid circular dependencies
 // Do not use "export * from" here as it can cause TypeScript recursion
 
+import { handleAPIError } from '../lib/apiInterceptor';
 import { interceptApiCall } from './demoProvider';
 
 // Helper to wrap API modules with a demo-aware proxy
@@ -37,16 +38,42 @@ function createDemoProxy<T extends object>(moduleName: string, target: T): T {
             const originalMethod = obj[prop];
             if (typeof originalMethod === 'function') {
                 return async (...args: any[]) => {
-                    const intercepted = interceptApiCall(moduleName, prop, args);
-                    if (intercepted) return intercepted;
+                    try {
+                        const intercepted = interceptApiCall(moduleName, prop, args);
+                        if (intercepted) return intercepted;
 
-                    let result = await originalMethod.apply(obj, args);
+                        let result = await originalMethod.apply(obj, args);
 
-                    // Ghost Seeding: Post-process results for specific modules
-                    const { processGhostData } = require('./demoProvider');
-                    result = processGhostData(moduleName, prop, result);
+                        // Ghost Seeding: Post-process results for specific modules
+                        const { processGhostData } = require('./demoProvider');
+                        result = processGhostData(moduleName, prop, result);
 
-                    return result;
+                        return result;
+                    } catch (error) {
+                        // Global Layer 1 Error Handling
+                        handleAPIError(error);
+                        throw error; // Re-throw so callers can still handle locally if needed
+                    }
+                };
+            }
+            return originalMethod;
+        }
+    });
+}
+
+// Helper to wrap non-proxied modules with error handling
+function withErrorInterception<T extends object>(target: T): T {
+    return new Proxy(target, {
+        get(obj: any, prop: string) {
+            const originalMethod = obj[prop];
+            if (typeof originalMethod === 'function') {
+                return async (...args: any[]) => {
+                    try {
+                        return await originalMethod.apply(obj, args);
+                    } catch (error) {
+                        handleAPIError(error);
+                        throw error;
+                    }
                 };
             }
             return originalMethod;
@@ -57,7 +84,7 @@ function createDemoProxy<T extends object>(moduleName: string, target: T): T {
 // Main API Object
 export const api = {
     // Core Modules (Wrapped with Proxy)
-    auth: authAPI, // Auth usually shouldn't be proxied if it handles sessions
+    auth: withErrorInterception(authAPI), // Added interceptor for Auth
     tasks: createDemoProxy('tasks', tasksAPI),
     notes: createDemoProxy('notes', notesAPI),
     lessons: createDemoProxy('lessons', lessonsAPI),

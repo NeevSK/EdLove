@@ -22,3 +22,8 @@ export * from './api/auth';
 export * from './api/types';
 export * from './lib/grading';
 export * from './constants/SriLankanSchools';
+export * from './lib/cloudinary';
+export * from './lib/apiInterceptor';
+export * from './hooks/useAIAgent';
+export * from './lib/monitoring/sentry';
+export * from './lib/monitoring/posthog';

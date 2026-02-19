@@ -9,7 +9,8 @@ import { useThemedColors } from '../hooks/useThemedColors';
 import SanctuaryInput from './SanctuaryInput';
 import { hapticLight, hapticMedium } from '../utils/haptics';
 import NotificationDrawer from './NotificationDrawer';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, Image } from 'react-native';
+import { Avatar, AvatarFallbackText, AvatarImage } from '../gluestack';
 
 interface GlobalHeaderProps {
     title?: string;
@@ -25,6 +26,8 @@ interface GlobalHeaderProps {
         onChangeText: (text: string) => void;
         placeholder?: string;
     };
+    isSelfView?: boolean;
+    avatarUrl?: string;
 }
 
 export default function GlobalHeader({
@@ -36,7 +39,9 @@ export default function GlobalHeader({
     showSearch = false,
     rightAction,
     userName,
-    searchProps
+    searchProps,
+    isSelfView = false,
+    avatarUrl
 }: GlobalHeaderProps) {
     const { t } = useTranslation();
     const { role } = useUserRole(); // Get current role from store
@@ -53,7 +58,8 @@ export default function GlobalHeader({
     const [showNotifications, setShowNotifications] = useState(false);
 
     // Get display name
-    const displayName = userName || (user?.user_metadata?.full_name?.split(' ')[0]) || 'Friend';
+    const displayName = userName || (user?.user_metadata?.full_name?.split(' ')[0]) || '';
+    const userFullName = userName || user?.user_metadata?.full_name || '';
 
     // Get role icon and label
     const getRoleContext = () => {
@@ -72,19 +78,21 @@ export default function GlobalHeader({
     const { icon: RoleIcon, label: RoleLabel } = getRoleContext();
 
     // Determine greeting based on time of day
-    const getGreeting = () => {
+    const getGreetingDetails = () => {
         const hour = new Date().getHours();
-        if (hour < 12) return t('goodMorning', 'Ayubowan');
-        if (hour < 18) return t('goodAfternoon', 'Ayubowan');
-        return t('goodEvening', 'Ayubowan');
+        if (hour < 12) return { text: t('goodMorning', 'Good Morning'), emoji: '🌅' };
+        if (hour < 18) return { text: t('goodAfternoon', 'Good Afternoon'), emoji: '☀️' };
+        return { text: t('goodEvening', 'Good Evening'), emoji: '🏮' };
     };
+
+    const { text: greetingText, emoji } = getGreetingDetails();
 
     return (
         <VStack sx={{ gap: '$md' as any, marginBottom: '$4' as any, paddingHorizontal: '$4' as any }}>
             <HStack sx={{ gap: '$sm' as any, alignItems: 'center', justifyContent: 'space-between' }}>
                 {/* LEFT: Greeting or Title */}
                 <HStack sx={{ gap: '$sm' as any, alignItems: 'center' }}>
-                    {/* Only show Profile Icon/Menu if specifically requested, otherwise show role icon */}
+                    {/* Only show Profile Icon/Menu if specifically requested */}
                     {showBack ? (
                         <Pressable onPress={onBack || (() => navigation.goBack())}>
                             <Box sx={{
@@ -95,34 +103,47 @@ export default function GlobalHeader({
                                 <ChevronLeft size={24} color={colors.text} />
                             </Box>
                         </Pressable>
-                    ) : showMenu ? (
+                    ) : showMenu && (
                         <Pressable onPress={() => navigation.openDrawer && navigation.openDrawer()}>
                             <Menu color={colors.text} size={24} />
                         </Pressable>
-                    ) : (
-                        <Pressable onPress={() => navigation.navigate('Self')}>
-                            <Box sx={{
-                                backgroundColor: colors.secondary,
-                                padding: 8,
-                                borderRadius: 12,
-                            }}>
-                                <RoleIcon size={20} color={colors.action} />
-                            </Box>
+                    )}
+
+                    {isSelfView && (
+                        <Pressable onPress={() => navigation.navigate('Profile')}>
+                            <Avatar sx={{ borderRadius: 12, backgroundColor: colors.secondary, width: 32, height: 32 }}>
+                                <AvatarFallbackText>{userFullName}</AvatarFallbackText>
+                                {(avatarUrl || user?.user_metadata?.avatar_url) && (
+                                    <AvatarImage
+                                        source={{ uri: avatarUrl || user?.user_metadata?.avatar_url }}
+                                        alt="Profile"
+                                    />
+                                )}
+                            </Avatar>
                         </Pressable>
                     )}
 
                     <VStack>
                         <Text
                             color={colors.textSecondary}
-                            sx={{ fontSize: '$xs' as any, letterSpacing: 1, textTransform: 'uppercase' }}
+                            sx={{
+                                fontSize: '$xs' as any,
+                                letterSpacing: 0.5,
+                                fontWeight: 'bold',
+                                fontFamily: Theme.typography.fontFamily.english
+                            }}
                         >
-                            {subtitle || RoleLabel}
+                            {title ? (subtitle || RoleLabel) : `${greetingText} ${emoji}`}
                         </Text>
                         <Text
                             color={colors.text}
-                            sx={{ fontSize: '$lg' as any, fontFamily: Theme.typography.fontFamily.english, fontWeight: 'bold' }}
+                            sx={{
+                                fontSize: '$lg' as any,
+                                fontFamily: Theme.typography.fontFamily.english,
+                                fontWeight: 'bold'
+                            }}
                         >
-                            {title ? title : (getGreeting() + ', ' + displayName)}
+                            {title ? title : (isSelfView ? (role === 'student' ? userFullName : RoleLabel) : displayName)}
                         </Text>
                     </VStack>
                 </HStack>
