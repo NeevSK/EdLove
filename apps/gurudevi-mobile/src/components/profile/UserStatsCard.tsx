@@ -1,17 +1,9 @@
 ﻿import React from 'react';
-import {
-    Box,
-    VStack,
-    HStack,
-    Text,
-    Progress,
-    ProgressFilledTrack,
-} from '@repo/ui';
-import { Theme } from '@repo/ui';
-import { UserRole } from '@repo/core';
+import { SanctuaryStatsCard } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
+import { UserRole } from '@repo/core';
 import { useTranslation } from 'react-i18next';
-import { Trophy, Users, BookOpen, Clock, Star, Shield, Globe, Activity, Database } from 'lucide-react-native';
+import { BookOpen, Users, Clock, Star, Activity, Database, Globe } from 'lucide-react-native';
 
 interface UserStatsCardProps {
     role: UserRole;
@@ -28,6 +20,7 @@ interface UserStatsCardProps {
 export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
+
     // Dynamic content based on role
     const getRoleBasedContent = () => {
         switch (role) {
@@ -92,60 +85,11 @@ export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
     const content = getRoleBasedContent();
 
     return (
-        <Box
-            sx={{
-                backgroundColor: colors.secondary,
-                borderRadius: Theme.corners.generous,
-                padding: Theme.spacing.lg,
-                marginBottom: Theme.spacing.lg,
-                borderColor: colors.border,
-                borderWidth: 1
-            }}
-        >
-            <HStack space="sm" alignItems="center" mb={Theme.spacing.md}>
-                <Trophy size={18} color={colors.warning} />
-                <Text color={colors.text as any} bold size="md">
-                    {content.title}
-                </Text>
-            </HStack>
-
-            <HStack justifyContent="space-between" mb={Theme.spacing.lg}>
-                {content.items.map((item, index) => (
-                    <VStack key={index} alignItems="center" space="xs" sx={{ flex: 1 }}>
-                        <Box
-                            sx={{
-                                backgroundColor: `${item.color}20`,
-                                padding: 10,
-                                borderRadius: 12,
-                                marginBottom: 4
-                            }}
-                        >
-                            <item.icon size={20} color={item.color} />
-                        </Box>
-                        <Text color={colors.text as any} bold size="lg">
-                            {item.value}
-                        </Text>
-                        <Text color={colors.textTertiary as any} size="xs">
-                            {item.label}
-                        </Text>
-                    </VStack>
-                ))}
-            </HStack>
-
-            {/* Gamification Progress */}
-            <VStack space="xs">
-                <HStack justifyContent="space-between">
-                    <Text color={colors.textTertiary as any} size="xs">
-                        {content.progressLabel}
-                    </Text>
-                    <Text color={colors.action as any} size="xs" bold>
-                        {content.progressValue}%
-                    </Text>
-                </HStack>
-                <Progress value={content.progressValue} w="100%" h={6} bg={colors.tertiary as any}>
-                    <ProgressFilledTrack bg={colors.action as any} />
-                </Progress>
-            </VStack>
-        </Box>
+        <SanctuaryStatsCard
+            title={content.title}
+            items={content.items}
+            progressLabel={content.progressLabel}
+            progressValue={content.progressValue}
+        />
     );
 }

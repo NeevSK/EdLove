@@ -102,8 +102,9 @@ Transform Gurudevi from a functional MVP into a polished, role-aware, gamified s
 ### 2.3 Header & Navigation Polish
 - [ ] **Remove hexagon** behind FAB button
 - [ ] **Replace profile red dot** with notification bell icon
-  - Add subtle pulse animation when notifications exist
-  - Badge count for unread notifications
+  - [x] [Inventory & Resource Integration](#inventory--resource-integration)
+- [x] [Inventory Component Fixes & Sync](#inventory-component-fixes--sync)
+- [x] [Full Database Audit & Schema Consolidation](#full-database-audit--schema-consolidation)
 - [ ] **Pagination loading** for all sections
   - Infinite scroll with skeleton loaders
   - "Load more" buttons where appropriate
@@ -204,6 +205,7 @@ Transform Gurudevi from a functional MVP into a polished, role-aware, gamified s
 **Priority**: MEDIUM | **Estimated**: 2-3 days
 
 ### 5.1 School Creation Wizard (Principals)
+Imp: When creating school go with basic+location+school+ studen type+hierarchy setup or whatever best UX way than letting fill lot and give drop downs where possible. and keep filled data, progress than letting fade away before submitting just because something happened. 
 - [ ] **Multi-step form**:
   - Step 1: Basic Info (name, contact)
   - Step 2: Location (province dropdown, district, city)
@@ -221,6 +223,9 @@ Transform Gurudevi from a functional MVP into a polished, role-aware, gamified s
   - Western, Central, Southern, Northern, Eastern, North Western, North Central, Uva, Sabaragamuwa
   - District dropdown based on province
   - City autocomplete
+- [ ] **Student type**: Boys,girl, Mixed
+- [ ] **Any other religious,race related**
+  - 
 
 ### 5.2 Classroom Creation Enhancement (Teachers)
 - [ ] **Detailed creation form**:
@@ -372,6 +377,30 @@ Transform Gurudevi from a functional MVP into a polished, role-aware, gamified s
 
 ## Next Immediate Actions
 
+### 🎨 UI & Localization
+- **Teacher View**: Updated `InventoryView` to associate requests with the correct school.
+- **Principal View**: Replaced mock data in `ResourceNeedsDashboard` with live aggregated needs.
+- **Localization**: Added full English and Sinhala support for all inventory-related strings.
+
+---
+
+## Inventory Component Fixes & Sync
+
+Resolved critical runtime and layout errors in the `InventoryView` component while ensuring database parity.
+
+### 🛠️ Core Fixes
+- **Zustand Store**: Added `user` profile to `AppState` to provide consistent `school_id` and `teacher_id` context.
+- **Type Safety**: Fixed missing `InventoryItem` and `User` type imports across classroom components.
+
+### 🍱 Style Standardization
+- Migrated legacy `bg`, `px`, `py`, `mb`, `mr`, `justifyContent`, and `alignItems` props to the unified `sx` styling system for `Box`, `HStack`, `VStack`, `Text`, `Button`, and `ModalContent`.
+
+### 🔄 Database Parity
+- Applied latest migrations to Supabase including the finalized `resource_needs` view and inventory table constraints.
+
+---
+
+## Full Database Audit & Schema Consolidation
 1. **Fix guest errors** in all sections (Phase 1.1)
 2. **Implement role-based features** (Phase 1.2)
 3. **Polish Self section UI** (Phase 2.2)

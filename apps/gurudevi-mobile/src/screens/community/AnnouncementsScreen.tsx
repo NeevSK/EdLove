@@ -31,6 +31,7 @@ import {
     ModalFooter,
     Spinner,
     Switch,
+    SkeletonCard,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';
@@ -163,14 +164,11 @@ export default function AnnouncementsScreen({
 
                     {/* Loading State */}
                     {isLoading && (
-                        <Box
-                            sx={{
-                                padding: Theme.spacing.xl,
-                                alignItems: 'center',
-                            }}
-                        >
-                            <Spinner color={Theme.colors.sanctuarySaffron} />
-                        </Box>
+                        <VStack space="md">
+                            <SkeletonCard height={120} />
+                            <SkeletonCard height={120} />
+                            <SkeletonCard height={120} />
+                        </VStack>
                     )}
 
                     {/* Error State */}

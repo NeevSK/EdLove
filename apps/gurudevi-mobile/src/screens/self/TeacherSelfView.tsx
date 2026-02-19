@@ -46,8 +46,6 @@ import { SkeletonCard } from '@repo/ui';
 import WelcomeModal from '../../components/self/WelcomeModal';
 import { useThemedColors } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
-import IdentityCard from '../../components/profile/IdentityCard';
-import UserStatsCard from '../../components/profile/UserStatsCard';
 import EditProfileModal from '../../components/profile/EditProfileModal';
 
 // Progressive Architecture: Core features always visible, others in "More Tools"
@@ -210,17 +208,13 @@ export default function TeacherSelfView() {
 
     return (
         <ScreenWrapper>
-            <GlobalHeader />
+            <GlobalHeader isSelfView avatarUrl={userProfile?.avatar_url} />
             <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
                 <ScrollView
                     sx={{ flex: 1 }}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}
                 >
-                    {/* Identity & Stats Anchor - REMOVED for specific role views to reduce redundancy */}
-                    {/* Access Profile via GlobalHeader Avatar */}
-
-
                     {/* Thuthimal Badge (Compact) */}
                     {userProfile?.is_thuthimal && (
                         <Box px="$6" mb="$3" alignItems="flex-end">

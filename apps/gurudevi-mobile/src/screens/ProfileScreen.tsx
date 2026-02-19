@@ -12,11 +12,14 @@ import {
     Text
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
+import { Theme, useThemedColors, DeleteAccountModal } from '@repo/ui';
+import { useAccountDeletion, useRewards, useTracking } from '@repo/core';
 import { supabase } from '@repo/core';
-import { Theme, useThemedColors } from '@repo/ui';
 import { hapticSuccess, hapticLight, hapticError } from '@repo/ui';
+import AchievementGallery from '../components/profile/AchievementGallery';
+import ProfileSkeleton from '../components/profile/ProfileSkeleton';
 
-import { LogOut, Settings, Trophy, MapPin, Globe, Phone, ChevronRight } from 'lucide-react-native';
+import { LogOut, Settings, Trophy, MapPin, Globe, Phone, ChevronRight, HelpCircle, MessageSquare, Trash2, Info, Heart } from 'lucide-react-native';
 // New Components
 import IdentityCard from '../components/profile/IdentityCard';
 import UserStatsCard from '../components/profile/UserStatsCard';
@@ -31,15 +34,27 @@ import { ScreenWrapper } from '@repo/ui';
 
 import { useEnvironment } from '@repo/ui';
 
+import { useNavigation } from '@react-navigation/native';
+
 export default function ProfileScreen() {
     const { t, i18n } = useTranslation();
+    const navigation = useNavigation<any>();
     const [profile, setProfile] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [isEditModalVisible, setEditModalVisible] = useState(false);
-    const [isSettingsVisible, setSettingsVisible] = useState(false);
     const { isDark } = useEnvironment();
     const colors = useThemedColors();
+    const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [isSettingsVisible, setSettingsVisible] = useState(false);
+    const { deleteAccount, isDeleting } = useAccountDeletion();
+    const { rewards, isLoading: isRewardsLoading } = useRewards();
+    const { discoverFeature } = useTracking();
+
+    useEffect(() => {
+        // Track that the user discovered the Profile section
+        discoverFeature('section_profile');
+    }, []);
 
     const currentLanguage = i18n.language;
 
@@ -126,45 +141,30 @@ export default function ProfileScreen() {
 
     async function handleDeleteAccount() {
         hapticLight();
-        Alert.alert(
-            'Delete Account',
-            'This action cannot be undone. All your data will be permanently deleted. Are you sure?',
-            [
-                {
-                    text: 'Cancel',
-                    style: 'cancel',
-                },
-                {
-                    text: 'Delete Forever',
-                    style: 'destructive',
-                    onPress: async () => {
-                        setLoading(true);
-                        try {
-                            // Note: Account deletion should be handled server-side via API
-                            // For now, inform user that feature is not yet available
-                            Alert.alert(
-                                'Feature Not Available',
-                                'Account deletion will be available soon. Please contact support if you need immediate assistance.',
-                                [{ text: 'OK' }]
-                            );
-                        } catch (error) {
-                            console.error('Error deleting account:', error);
-                            hapticError();
-                        } finally {
-                            setLoading(false);
-                        }
-                    },
-                },
-            ]
-        );
+        setDeleteModalVisible(true);
+    }
+
+    async function confirmDeleteAccount() {
+        try {
+            await deleteAccount();
+            hapticSuccess();
+            setDeleteModalVisible(false);
+            // Sign out is handled by deleteAccount
+        } catch (error) {
+            console.error('Error deleting account:', error);
+            hapticError();
+            Alert.alert(
+                'Deletion Failed',
+                'We could not delete your account at this time. Please try again later or contact support.',
+                [{ text: 'OK' }]
+            );
+        }
     }
 
     if (loading) {
         return (
             <ScreenWrapper>
-                <Center sx={{ flex: 1 }}>
-                    <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
-                </Center>
+                <ProfileSkeleton />
             </ScreenWrapper>
         );
     }
@@ -252,7 +252,11 @@ export default function ProfileScreen() {
                             <IdentityCard
                                 profile={profile}
                                 onEdit={() => setEditModalVisible(true)}
-                            // onExpand removed to hide redundant "Full View" button
+                                onViewFullProfile={() => {
+                                    hapticLight();
+                                    // @ts-ignore - Navigation typing
+                                    navigation.navigate('FullProfile', { profile });
+                                }}
                             />
                         </Center>
 
@@ -271,60 +275,16 @@ export default function ProfileScreen() {
                         <UserStatsCard
                             role={profile?.role || 'student'}
                             stats={{
-                                classesTaught: 12, // Mock data for now
-                                studentsCount: 145,
-                                guruPoints: 850,
-                                attendanceStreak: 5,
-                                assignmentsCompleted: 24
+                                classesTaught: profile?.classes_taught || 0,
+                                studentsCount: profile?.students_count || 0,
+                                guruPoints: rewards?.points || 0,
+                                attendanceStreak: profile?.attendance_streak || 0,
+                                assignmentsCompleted: profile?.assignments_count || 0
                             }}
                         />
 
-                        {/* Contact Info Section (Inlined) */}
-                        <Box sx={{ backgroundColor: colors.secondary, padding: Theme.spacing.lg, borderRadius: Theme.corners.comfortable, borderColor: colors.border, borderWidth: 1, marginHorizontal: Theme.spacing.md }}>
-                            <Heading color={colors.text} size="sm" mb="$4">
-                                {t('profile.contactInfo')}
-                            </Heading>
-                            <VStack space="md">
-                                <HStack space="md" alignItems="center">
-                                    <MapPin size={18} color={colors.textSecondary} />
-                                    <VStack>
-                                        <Text color={colors.textTertiary} size="xs">School</Text>
-                                        <Text color={colors.text}>{profile?.school_name || 'Not assigned'}</Text>
-                                    </VStack>
-                                </HStack>
-                                <HStack space="md" alignItems="center">
-                                    <Globe size={18} color={colors.textSecondary} />
-                                    <VStack>
-                                        <Text color={colors.textTertiary} size="xs">Email</Text>
-                                        <Text color={colors.text}>{profile?.email}</Text>
-                                    </VStack>
-                                </HStack>
-                                <HStack space="md" alignItems="center">
-                                    <Phone size={18} color={colors.textSecondary} />
-                                    <VStack>
-                                        <Text color={colors.textTertiary} size="xs">Phone</Text>
-                                        <Text color={colors.text}>{profile?.phone || '+94 7X XXX XXXX'}</Text>
-                                    </VStack>
-                                </HStack>
-                            </VStack>
-                        </Box>
-
-
-                        {/* Student-specific Growth & Insights */}
-                        {profile?.role === 'student' && (
-                            <Box sx={{ backgroundColor: 'rgba(251, 191, 36, 0.1)', padding: Theme.spacing.lg, borderRadius: Theme.corners.generous, borderWidth: 1, borderColor: Theme.colors.sanctuarySaffron, marginHorizontal: Theme.spacing.md }}>
-                                <HStack space="sm" alignItems="center" mb="$2">
-                                    <Trophy size={18} color={Theme.colors.sanctuarySaffron} />
-                                    <Text color={colors.text} bold>Growth & Insights</Text>
-                                </HStack>
-                                <Text color={colors.textSecondary} size="sm">
-                                    You've gained 3 new insights this week! Your learning ecology is thriving.
-                                </Text>
-                                <Button mt="$3" size="sm" variant="outline" sx={{ borderColor: Theme.colors.sanctuarySaffron }}>
-                                    <ButtonText color={Theme.colors.sanctuarySaffron}>View Progress</ButtonText>
-                                </Button>
-                            </Box>
-                        )}
+                        {/* Achievements Gallery */}
+                        <AchievementGallery unlockedBadges={rewards?.badges || []} />
 
                         {/* App Settings Card (New Entry Point) */}
                         <TouchableOpacity
@@ -368,52 +328,145 @@ export default function ProfileScreen() {
                             </HStack>
                         </TouchableOpacity>
 
-                        <SupportSection />
+                        {/* Support & FAQ Section */}
+                        <VStack px={Theme.spacing.md} space="sm">
+                            <Heading size="sm" color={colors.text} mb="$1">
+                                {t('profile.supportTitle', 'Assistance & Knowledge')}
+                            </Heading>
 
-                        {/* Account Actions - Moved to end */}
-                        <VStack space="md" mt={Theme.spacing.xl} mx={Theme.spacing.md}>
-                            {/* Logout Button */}
-                            <Button
-                                size="xl"
-                                variant="outline"
-                                action="negative"
-                                onPress={handleLogout}
-                                sx={{
-                                    borderColor: Theme.colors.emberRed,
-                                    borderWidth: 1,
+                            <TouchableOpacity
+                                onPress={() => hapticLight()}
+                                style={{
+                                    backgroundColor: colors.secondary,
                                     borderRadius: Theme.corners.comfortable,
+                                    padding: Theme.spacing.md,
+                                    borderWidth: 1,
+                                    borderColor: colors.border,
                                 }}
                             >
-                                <ButtonText color={Theme.colors.emberRed}>
-                                    {t('profile.logout') || 'Log Out'}
-                                </ButtonText>
-                                <LogOut size={20} color={Theme.colors.emberRed} style={{ marginLeft: 8 }} />
-                            </Button>
+                                <HStack justifyContent="space-between" alignItems="center">
+                                    <HStack space="md" alignItems="center">
+                                        <HelpCircle size={20} color={colors.action} />
+                                        <Text color={colors.text}>FAQ & Help Center</Text>
+                                    </HStack>
+                                    <ChevronRight size={18} color={colors.textTertiary} />
+                                </HStack>
+                            </TouchableOpacity>
 
-                            {/* Delete Account Button */}
-                            <Box sx={{
-                                mt: Theme.spacing.md,
-                                padding: Theme.spacing.md,
-                                borderRadius: Theme.corners.comfortable,
-                                backgroundColor: isDark ? '#1A0505' : '#FFF5F5',
-                                borderColor: isDark ? '#C0392B' : '#FEB2B2',
-                                borderWidth: 1,
-                                alignItems: 'center'
-                            }}>
-                                <Button
-                                    size="sm"
-                                    variant="link"
-                                    onPress={handleDeleteAccount}
-                                >
-                                    <ButtonText color={Theme.colors.emberRed} size="sm" bold>
-                                        {t('profile.deletePermanent') || "Delete Account Permanently"}
-                                    </ButtonText>
-                                </Button>
-                                <Text color={colors.textTertiary} size="xs" textAlign="center" mt="$1">
-                                    This action is permanent and cannot be undone.
-                                </Text>
-                            </Box>
+                            <TouchableOpacity
+                                onPress={() => hapticLight()}
+                                style={{
+                                    backgroundColor: colors.secondary,
+                                    borderRadius: Theme.corners.comfortable,
+                                    padding: Theme.spacing.md,
+                                    borderWidth: 1,
+                                    borderColor: colors.border,
+                                }}
+                            >
+                                <HStack justifyContent="space-between" alignItems="center">
+                                    <HStack space="md" alignItems="center">
+                                        <MessageSquare size={20} color={colors.action} />
+                                        <Text color={colors.text}>Contact Support</Text>
+                                    </HStack>
+                                    <ChevronRight size={18} color={colors.textTertiary} />
+                                </HStack>
+                            </TouchableOpacity>
                         </VStack>
+
+                        {/* About & Feedback Section */}
+                        <VStack px={Theme.spacing.md} space="sm">
+                            <Heading size="sm" color={colors.text} mb="$1">
+                                {t('profile.appInfoTitle', 'App Experience')}
+                            </Heading>
+
+                            <TouchableOpacity
+                                onPress={() => hapticLight()}
+                                style={{
+                                    backgroundColor: colors.secondary,
+                                    borderRadius: Theme.corners.comfortable,
+                                    padding: Theme.spacing.md,
+                                    borderWidth: 1,
+                                    borderColor: colors.border,
+                                }}
+                            >
+                                <HStack justifyContent="space-between" alignItems="center">
+                                    <HStack space="md" alignItems="center">
+                                        <Heart size={20} color={Theme.colors.sanctuarySaffron} />
+                                        <Text color={colors.text}>I love this app</Text>
+                                    </HStack>
+                                    <ChevronRight size={18} color={colors.textTertiary} />
+                                </HStack>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={() => hapticLight()}
+                                style={{
+                                    backgroundColor: colors.secondary,
+                                    borderRadius: Theme.corners.comfortable,
+                                    padding: Theme.spacing.md,
+                                    borderWidth: 1,
+                                    borderColor: colors.border,
+                                }}
+                            >
+                                <HStack justifyContent="space-between" alignItems="center">
+                                    <HStack space="md" alignItems="center">
+                                        <Info size={20} color={colors.textSecondary} />
+                                        <VStack>
+                                            <Text color={colors.text}>About this app</Text>
+                                            <Text color={colors.textTertiary} size="xs">Version 1.2.0 (Stable)</Text>
+                                        </VStack>
+                                    </HStack>
+                                    <ChevronRight size={18} color={colors.textTertiary} />
+                                </HStack>
+                            </TouchableOpacity>
+                        </VStack>
+
+                        {/* Account Actions Box */}
+                        <Box px={Theme.spacing.md} mt="$4">
+                            <VStack space="md" sx={{
+                                p: '$4',
+                                bg: colors.tertiary,
+                                borderRadius: Theme.corners.generous,
+                                borderWidth: 1,
+                                borderColor: colors.border
+                            }}>
+                                <TouchableOpacity
+                                    onPress={handleLogout}
+                                    style={{
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        padding: Theme.spacing.md,
+                                        backgroundColor: colors.secondary,
+                                        borderRadius: Theme.corners.comfortable,
+                                        borderWidth: 1,
+                                        borderColor: colors.border
+                                    }}
+                                >
+                                    <LogOut size={20} color={colors.error || '#EF4444'} style={{ marginRight: 8 }} />
+                                    <Text color={colors.error || '#EF4444'} bold>
+                                        {t('profile.logout', 'Log Out')}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    onPress={handleDeleteAccount}
+                                    style={{
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        padding: Theme.spacing.xs,
+                                    }}
+                                >
+                                    <Trash2 size={16} color={colors.textTertiary} style={{ marginRight: 6 }} />
+                                    <Text color={colors.textTertiary} size="xs">
+                                        {t('profile.deleteAccount', 'Delete Account')}
+                                    </Text>
+                                </TouchableOpacity>
+                            </VStack>
+                        </Box>
+
+
                     </VStack>
                 </ScrollView>
 
@@ -471,6 +524,14 @@ export default function ProfileScreen() {
                         <AppSettingsScreen navigation={undefined} />
                     </Box>
                 </Modal>
+
+                {/* Account Deletion Confirmation Modal */}
+                <DeleteAccountModal
+                    isOpen={isDeleteModalVisible}
+                    onClose={() => setDeleteModalVisible(false)}
+                    onDelete={confirmDeleteAccount}
+                    isLoading={isDeleting}
+                />
             </Box>
         </ScreenWrapper>
     );

@@ -18,3 +18,8 @@ export { default as OCRScanner } from './OCRScanner';
 export { default as HierarchyBuilder } from './principal/HierarchyBuilder';
 export { default as InviteManager } from './principal/InviteManager';
 export { default as ResourceNeedsDashboard } from './principal/ResourceNeedsDashboard';
+export { default as DashboardEcho } from './principal/DashboardEcho';
+export { default as CurriculumPulse } from './principal/CurriculumPulse';
+export { default as TeacherFeedbackModal } from './teacher/TeacherFeedbackModal';
+export { default as TeacherAdminWidget } from './TeacherAdminWidget';
+export { default as PrincipalAdminWidget } from './PrincipalAdminWidget';

@@ -33,8 +33,7 @@ import { useDecisionJournal } from '@repo/self';
 import { GlobalHeader } from '@repo/ui';
 import DailyContentCard from '../../components/self/DailyContentCard';
 import WelcomeModal from '../../components/self/WelcomeModal';
-// IdentityCard and UserStatsCard removed
-// EditProfileModal removed
+import EditProfileModal from '../../components/profile/EditProfileModal';
 
 // Principal-specific core features
 const PRINCIPAL_CORE_FEATURES = [
@@ -57,7 +56,7 @@ export default function PrincipalSelfView() {
     const [loadingUser, setLoadingUser] = useState(true);
     const [showMoreTools, setShowMoreTools] = useState(false);
     const [userProfile, setUserProfile] = useState<any>(null);
-    // Edit modal state removed
+    const [isEditModalVisible, setEditModalVisible] = useState(false);
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const colors = useThemedColors();
@@ -211,14 +210,12 @@ export default function PrincipalSelfView() {
 
     return (
         <ScreenWrapper>
-            <GlobalHeader />
+            <GlobalHeader isSelfView avatarUrl={userProfile?.avatar_url} />
             <ScrollView
                 sx={{ flex: 1 }}
                 contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}
                 showsVerticalScrollIndicator={false}
             >
-                {/* Identity & Stats Anchor - REMOVED */}
-                {/* Access Profile via GlobalHeader Avatar */}
 
                 {/* Daily Content Section */}
                 <Box mb="$4">
@@ -341,7 +338,15 @@ export default function PrincipalSelfView() {
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
             />
-            {/* EditProfileModal removed */}
+            <EditProfileModal
+                visible={isEditModalVisible}
+                onClose={() => setEditModalVisible(false)}
+                onSave={() => {
+                    setLoadingUser(true);
+                    // Re-fetch logic
+                }}
+                currentProfile={userProfile}
+            />
         </ScreenWrapper>
     );
 }

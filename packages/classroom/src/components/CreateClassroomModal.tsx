@@ -22,11 +22,17 @@ import {
     Pressable,
 } from '@repo/ui';
 import { Theme } from '@repo/ui';
-import { api, supabase } from '@repo/core';
+import {
+    api,
+    supabase,
+    SRI_LANKAN_SUBJECTS_BY_LEVEL,
+    SYLLABUS_VERSIONS,
+    CLASSROOM_THEMES
+} from '@repo/core';
 import { useTranslation } from 'react-i18next';
-import { hapticLight, hapticSuccess } from '@repo/ui';
+import { hapticLight, hapticSuccess, Textarea } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
-import { useFeatureAccess } from '@repo/core';
+import { useFeatureAccess, handleAPIError } from '@repo/core';
 import GuestConversionPrompt from '../shared/GuestConversionPrompt';
 import { useNavigation } from '@react-navigation/native';
 
@@ -64,6 +70,12 @@ export default function CreateClassroomModal({
     const [selectedClassroomId, setSelectedClassroomId] = useState<string>('');
     const [isJoining, setIsJoining] = useState(false);
     const [schoolId, setSchoolId] = useState<string | null>(null);
+
+    // New enhancement fields
+    const [description, setDescription] = useState('');
+    const [themeId, setThemeId] = useState('saffron');
+    const [syllabusId, setSyllabusId] = useState('legacy');
+    const [availableSubjects, setAvailableSubjects] = useState<readonly any[]>([]);
 
     // Guest support
     const { isGuest, canCreateClassroom } = useFeatureAccess();
@@ -120,19 +132,32 @@ export default function CreateClassroomModal({
     };
 
     const handleGradeChange = async (gradeId: string) => {
+        const grade = grades.find(g => g.id === gradeId);
         setSelectedGradeId(gradeId);
         setAvailableClassrooms([]);
         setSelectedClassroomId('');
+
+        // Update available subjects contextually
+        if (grade) {
+            const num = parseInt(grade.number);
+            let subjects: any[] = [];
+            if (num >= 1 && num <= 5) subjects = SRI_LANKAN_SUBJECTS_BY_LEVEL.primary as any;
+            else if (num >= 6 && num <= 9) subjects = SRI_LANKAN_SUBJECTS_BY_LEVEL.junior as any;
+            else if (num === 10 || num === 11) subjects = SRI_LANKAN_SUBJECTS_BY_LEVEL.ordinary_level as any;
+            else if (num === 12 || num === 13) subjects = SRI_LANKAN_SUBJECTS_BY_LEVEL.advanced_level as any;
+            setAvailableSubjects(subjects);
+        } else {
+            setAvailableSubjects([]);
+        }
+
         try {
             // Fetch classrooms for this grade
             const { data, error } = await supabase
                 .from('classrooms')
                 .select('*')
                 .eq('grade_id', gradeId)
-                .is('teacher_id', null); // Only show classes without a teacher? Or all?
+                .is('teacher_id', null);
 
-            // Let's show all for now, or maybe filter? The plan said "join existing".
-            // Usually teachers "claim" empty ones.
             if (data) {
                 setAvailableClassrooms(data);
             }
@@ -179,7 +204,9 @@ export default function CreateClassroomModal({
                     teacher_id: user.id,
                     grade_id: selectedGradeId || null,
                     section_id: selectedSectionId || null,
-                    color_theme: 'blue',
+                    color_theme: themeId,
+                    description: description.trim(),
+                    syllabus_version: syllabusId,
                 });
             }
 
@@ -187,9 +214,8 @@ export default function CreateClassroomModal({
             onSuccess(result);
             handleClose();
         } catch (err: any) {
-            console.error('Failed to process classroom operation:', err);
-            const detailMsg = err.details?.message || err.details?.details || JSON.stringify(err.details);
-            setError(`${err.message}${err.code ? ` (${err.code})` : ''}${detailMsg ? `: ${detailMsg}` : ''}`);
+            const apiError = handleAPIError(err, true);
+            setError(apiError.message);
         } finally {
             setIsSubmitting(false);
         }
@@ -198,6 +224,9 @@ export default function CreateClassroomModal({
     const handleClose = () => {
         setName('');
         setSubject('');
+        setDescription('');
+        setThemeId('saffron');
+        setSyllabusId('legacy');
         setClassType('own');
         setError(null);
         onClose();
@@ -235,7 +264,7 @@ export default function CreateClassroomModal({
                     </ModalHeader>
 
                     <ModalBody>
-                        <VStack space="xl">
+                        <VStack sx={{ gap: Theme.spacing.xl }}>
                             {error && (
                                 <Box
                                     sx={{
@@ -246,7 +275,7 @@ export default function CreateClassroomModal({
                                         borderColor: Theme.colors.emberRed,
                                     }}
                                 >
-                                    <Text color={Theme.colors.emberRed} size="sm">
+                                    <Text sx={{ color: Theme.colors.emberRed, fontSize: Theme.typography.fontSize.sm }}>
                                         {error}
                                     </Text>
                                 </Box>
@@ -255,16 +284,15 @@ export default function CreateClassroomModal({
                             {mode === 'create' && (
                                 <FormControl isRequired isInvalid={!!error}>
                                     <FormControlLabel>
-                                        <FormControlLabelText color={colors.textSecondary}>
+                                        <FormControlLabelText sx={{ color: colors.textSecondary }}>
                                             {t('classroom.labelClassName') || 'Class Name'}
                                         </FormControlLabelText>
                                     </FormControlLabel>
                                     <Input
-                                        variant="outline"
-                                        size="md"
                                         sx={{
                                             backgroundColor: colors.tertiary,
                                             borderColor: colors.border,
+                                            height: 48,
                                         }}
                                     >
                                         <InputField
@@ -283,10 +311,10 @@ export default function CreateClassroomModal({
 
                             {/* Grade & Section Selection (if in school) */}
                             {schoolId && (
-                                <VStack space="md">
+                                <VStack sx={{ gap: Theme.spacing.md }}>
                                     <FormControl isRequired>
                                         <FormControlLabel>
-                                            <FormControlLabelText color={colors.textSecondary}>
+                                            <FormControlLabelText sx={{ color: colors.textSecondary }}>
                                                 {t('classroom.selectSection') || 'Select Section'}
                                             </FormControlLabelText>
                                         </FormControlLabel>
@@ -313,7 +341,7 @@ export default function CreateClassroomModal({
                                     {selectedSectionId && grades.length > 0 && (
                                         <FormControl isRequired>
                                             <FormControlLabel>
-                                                <FormControlLabelText color={colors.textSecondary}>
+                                                <FormControlLabelText sx={{ color: colors.textSecondary }}>
                                                     {t('classroom.selectGrade') || 'Select Grade'}
                                                 </FormControlLabelText>
                                             </FormControlLabel>
@@ -342,11 +370,11 @@ export default function CreateClassroomModal({
                                     {mode === 'join' && selectedGradeId && availableClassrooms.length > 0 && (
                                         <FormControl isRequired>
                                             <FormControlLabel>
-                                                <FormControlLabelText color={colors.textSecondary}>
+                                                <FormControlLabelText sx={{ color: colors.textSecondary }}>
                                                     {t('classroom.selectClassToJoin') || 'Select Classroom to Join'}
                                                 </FormControlLabelText>
                                             </FormControlLabel>
-                                            <VStack space="sm">
+                                            <VStack sx={{ gap: Theme.spacing.sm }}>
                                                 {availableClassrooms.map((cls) => (
                                                     <Pressable
                                                         key={cls.id}
@@ -363,12 +391,12 @@ export default function CreateClassroomModal({
                                                         >
                                                             <HStack justifyContent="space-between" alignItems="center">
                                                                 <VStack>
-                                                                    <Text color={colors.text} bold>{cls.name}</Text>
-                                                                    <Text color={colors.textSecondary} size="xs">{cls.subject || 'No subject'}</Text>
+                                                                    <Text sx={{ color: colors.text, fontWeight: 'bold' }}>{cls.name}</Text>
+                                                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>{cls.subject || t('classroom.noSubject') || 'No subject'}</Text>
                                                                 </VStack>
                                                                 {selectedClassroomId === cls.id && (
                                                                     <Box sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: 10, padding: 2 }}>
-                                                                        <Text size="xs" color="white" bold sx={{ paddingHorizontal: 4 }}>SELECTED</Text>
+                                                                        <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: 'white', fontWeight: 'bold', paddingHorizontal: 4 }}>{t('common.selected') || 'SELECTED'}</Text>
                                                                     </Box>
                                                                 )}
                                                             </HStack>
@@ -380,7 +408,7 @@ export default function CreateClassroomModal({
                                     )}
 
                                     {mode === 'join' && selectedGradeId && availableClassrooms.length === 0 && (
-                                        <Text color={colors.textTertiary} size="sm" textAlign="center" sx={{ marginTop: Theme.spacing.md }}>
+                                        <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.sm, textAlign: 'center', marginTop: Theme.spacing.md }}>
                                             {t('classroom.noAvailableClasses') || 'No unassigned classrooms found for this grade.'}
                                         </Text>
                                     )}
@@ -389,14 +417,143 @@ export default function CreateClassroomModal({
 
                             {mode === 'create' && (
                                 <>
+                                    {/* Subject Selection - Context Aware */}
+                                    <FormControl>
+                                        <FormControlLabel>
+                                            <FormControlLabelText sx={{ color: colors.textSecondary }}>
+                                                {t('classroom.labelSubject') || 'Core Subject'}
+                                            </FormControlLabelText>
+                                        </FormControlLabel>
+                                        <HStack flexWrap="wrap" sx={{ gap: 8 }}>
+                                            {availableSubjects.map((sub: any) => (
+                                                <Button
+                                                    key={sub.id}
+                                                    variant={subject === sub.id ? 'solid' : 'outline'}
+                                                    size="xs"
+                                                    onPress={() => setSubject(sub.id)}
+                                                    sx={{
+                                                        backgroundColor: subject === sub.id ? Theme.colors.sanctuarySaffron : 'transparent',
+                                                        borderColor: subject === sub.id ? Theme.colors.sanctuarySaffron : colors.border,
+                                                    }}
+                                                >
+                                                    <ButtonText color={subject === sub.id ? Theme.colors.sacredWhite : colors.textSecondary}>
+                                                        {sub.en}
+                                                    </ButtonText>
+                                                </Button>
+                                            ))}
+                                            {/* Fallback for "Other" or custom */}
+                                            <Input
+                                                sx={{
+                                                    flex: 1,
+                                                    minWidth: 120,
+                                                    height: 40,
+                                                    backgroundColor: colors.tertiary,
+                                                    borderColor: colors.border,
+                                                }}
+                                            >
+                                                <InputField
+                                                    placeholder={t('classroom.customSubject') || "Other..."}
+                                                    value={availableSubjects.find(s => s.id === subject) ? '' : subject}
+                                                    onChangeText={setSubject}
+                                                    color={colors.text}
+                                                    placeholderTextColor={colors.textTertiary}
+                                                />
+                                            </Input>
+                                        </HStack>
+                                    </FormControl>
+
+                                    {/* Syllabus Version */}
+                                    <FormControl>
+                                        <FormControlLabel>
+                                            <FormControlLabelText sx={{ color: colors.textSecondary }}>
+                                                {t('classroom.syllabusVersion') || 'Syllabus Version'}
+                                            </FormControlLabelText>
+                                        </FormControlLabel>
+                                        <HStack sx={{ gap: Theme.spacing.md }}>
+                                            {SYLLABUS_VERSIONS.map((v) => (
+                                                <Button
+                                                    key={v.id}
+                                                    variant={syllabusId === v.id ? 'solid' : 'outline'}
+                                                    size="sm"
+                                                    onPress={() => setSyllabusId(v.id)}
+                                                    sx={{
+                                                        flex: 1,
+                                                        backgroundColor: syllabusId === v.id ? colors.text : 'transparent',
+                                                        borderColor: colors.border,
+                                                    }}
+                                                >
+                                                    <ButtonText color={syllabusId === v.id ? colors.secondary : colors.textSecondary}>
+                                                        {v.en.split(' ')[0]}
+                                                    </ButtonText>
+                                                </Button>
+                                            ))}
+                                        </HStack>
+                                    </FormControl>
+
+                                    {/* Theme Picker */}
+                                    <FormControl>
+                                        <FormControlLabel>
+                                            <FormControlLabelText sx={{ color: colors.textSecondary }}>
+                                                {t('classroom.theme') || 'Classroom Theme'}
+                                            </FormControlLabelText>
+                                        </FormControlLabel>
+                                        <HStack sx={{ flexWrap: 'wrap', gap: 12, paddingVertical: 4 }}>
+                                            {CLASSROOM_THEMES.map((theme) => (
+                                                <Pressable
+                                                    key={theme.id}
+                                                    onPress={() => setThemeId(theme.id)}
+                                                >
+                                                    <Box
+                                                        sx={{
+                                                            width: 32,
+                                                            height: 32,
+                                                            borderRadius: 16,
+                                                            backgroundColor: theme.color,
+                                                            borderWidth: themeId === theme.id ? 3 : 0,
+                                                            borderColor: colors.text,
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center'
+                                                        }}
+                                                    />
+                                                </Pressable>
+                                            ))}
+                                        </HStack>
+                                    </FormControl>
+
+                                    {/* Description */}
+                                    <FormControl>
+                                        <FormControlLabel>
+                                            <FormControlLabelText sx={{ color: colors.textSecondary }}>
+                                                {t('classroom.description') || 'Description'}
+                                            </FormControlLabelText>
+                                        </FormControlLabel>
+                                        <Input
+                                            sx={{
+                                                minHeight: 80,
+                                                backgroundColor: colors.tertiary,
+                                                borderColor: colors.border,
+                                            }}
+                                        >
+                                            <InputField
+                                                placeholder={t('classroom.descPlaceholder') || "e.g., Daily announcements, resource sharing for 10-A Maths."}
+                                                value={description}
+                                                onChangeText={setDescription}
+                                                multiline
+                                                numberOfLines={3}
+                                                color={colors.text}
+                                                placeholderTextColor={colors.textTertiary}
+                                            />
+                                        </Input>
+                                    </FormControl>
+
                                     {/* Classroom Type Selection */}
                                     <FormControl>
                                         <FormControlLabel>
-                                            <FormControlLabelText color={colors.textSecondary}>
+                                            <FormControlLabelText sx={{ color: colors.textSecondary }}>
                                                 {t('classroom.labelType') || 'Teacher Role for this Class'}
                                             </FormControlLabelText>
                                         </FormControlLabel>
-                                        <HStack space="md">
+                                        <HStack sx={{ gap: Theme.spacing.md }}>
                                             <Button
                                                 variant={classType === 'own' ? 'solid' : 'outline'}
                                                 action={classType === 'own' ? 'primary' : 'secondary'}
@@ -426,37 +583,6 @@ export default function CreateClassroomModal({
                                                 </ButtonText>
                                             </Button>
                                         </HStack>
-                                        <Text size="xs" color={colors.textTertiary} mt="$2">
-                                            {classType === 'own'
-                                                ? t('classroom.descOwn')
-                                                : t('classroom.descSubject')
-                                            }
-                                        </Text>
-                                    </FormControl>
-
-                                    {/* Subject Input - Always visible */}
-                                    <FormControl>
-                                        <FormControlLabel>
-                                            <FormControlLabelText color={colors.textSecondary}>
-                                                {t('classroom.labelSubject') || 'Core Subject'} {t('classroom.optional') || '(Optional)'}
-                                            </FormControlLabelText>
-                                        </FormControlLabel>
-                                        <Input
-                                            variant="outline"
-                                            size="md"
-                                            sx={{
-                                                backgroundColor: colors.tertiary,
-                                                borderColor: colors.border,
-                                            }}
-                                        >
-                                            <InputField
-                                                placeholder={t('classroom.placeholderSubject') || "e.g., Mathematics, Science"}
-                                                value={subject}
-                                                onChangeText={setSubject}
-                                                color={colors.text}
-                                                placeholderTextColor={colors.textTertiary}
-                                            />
-                                        </Input>
                                     </FormControl>
                                 </>
                             )}
@@ -464,7 +590,7 @@ export default function CreateClassroomModal({
                     </ModalBody>
 
                     <ModalFooter>
-                        <HStack space="md" sx={{ width: '100%' }}>
+                        <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
                             <Button
                                 variant="outline"
                                 action="secondary"

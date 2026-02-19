@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     VStack,
     HStack,
@@ -43,6 +44,7 @@ interface StudentListProps {
 }
 
 export default function StudentList({ classroomId, students, onRefresh }: StudentListProps) {
+    const { t } = useTranslation();
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<ClassroomStudent | null>(null);
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
@@ -57,7 +59,7 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
             onRefresh();
         } catch (error) {
             console.error('Failed to remove student:', error);
-            alert('Failed to remove student');
+            // Consider using a localized toast here in the future
         } finally {
             setIsDeleting(null);
         }
@@ -80,12 +82,14 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
     };
 
     return (
-        <VStack sx={{ flex: 1 }}>
+        <VStack sx={{ flex: 1, backgroundColor: colors.primary }}>
             <ScrollView contentContainerStyle={{ padding: Theme.spacing.md }}>
                 <VStack sx={{ gap: Theme.spacing.md }}>
                     {students.length === 0 ? (
-                        <Center sx={{ padding: Theme.spacing.xl }}>
-                            <Text sx={{ color: colors.textSecondary }}>No students in this class yet.</Text>
+                        <Center sx={{ padding: Theme.spacing.xl, marginTop: 40 }}>
+                            <Text sx={{ color: colors.textSecondary, textAlign: 'center' }}>
+                                {t('classroom.students.emptyState') || 'No students in this class yet.'}
+                            </Text>
                         </Center>
                     ) : (
                         students.map((student) => (
@@ -101,28 +105,30 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                                 }}
                             >
                                 {!student.student_id && (
-                                    <Box sx={{ position: 'absolute', top: -8, right: 12, backgroundColor: Theme.colors.amberGlow, paddingHorizontal: 6, borderRadius: 4 }}>
-                                        <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: 'black', fontWeight: '700' as any }}>UNCLAIMED</Text>
+                                    <Box sx={{ position: 'absolute', top: -Theme.spacing.xs, right: 12, backgroundColor: Theme.colors.amberGlow, paddingHorizontal: 6, borderRadius: Theme.corners.tight }}>
+                                        <Text sx={{ fontSize: 10, color: Theme.colors.black, fontWeight: '700' }}>
+                                            {t('classroom.students.unclaimed') || 'UNCLAIMED'}
+                                        </Text>
                                     </Box>
                                 )}
                                 <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                                     <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
                                         <Box
                                             sx={{
-                                                width: 36,
-                                                height: 36,
-                                                borderRadius: 18,
+                                                width: 42,
+                                                height: 42,
+                                                borderRadius: Theme.corners.full,
                                                 backgroundColor: colors.tertiary,
                                                 justifyContent: 'center',
                                                 alignItems: 'center',
                                             }}
                                         >
-                                            <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' as any }}>
+                                            <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700', fontSize: Theme.typography.fontSize.md }}>
                                                 {student.roll_number || '#'}
                                             </Text>
                                         </Box>
-                                        <VStack>
-                                            <Text sx={{ color: colors.text, fontWeight: '700' as any }}>
+                                        <VStack sx={{ flex: 1 }}>
+                                            <Text sx={{ color: colors.text, fontWeight: '700', fontSize: Theme.typography.fontSize.md }}>
                                                 {student.full_name}
                                             </Text>
                                             {student.notes && (
@@ -137,13 +143,13 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                                         {!student.student_id && student.invite_code && (
                                             <Pressable onPress={() => handleShowQr(student)}>
                                                 <Box sx={{ padding: Theme.spacing.xs }}>
-                                                    <QrCode size={18} color={Theme.colors.sanctuarySaffron} />
+                                                    <QrCode size={20} color={Theme.colors.sanctuarySaffron} />
                                                 </Box>
                                             </Pressable>
                                         )}
                                         <Pressable onPress={() => handleEditStudent(student)}>
                                             <Box sx={{ padding: Theme.spacing.xs }}>
-                                                <Edit2 size={18} color={colors.textSecondary} />
+                                                <Edit2 size={20} color={colors.textSecondary} />
                                             </Box>
                                         </Pressable>
                                         <Pressable
@@ -154,7 +160,7 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                                                 {isDeleting === student.id ? (
                                                     <ActivityIndicator size="small" color={Theme.colors.emberRed} />
                                                 ) : (
-                                                    <Trash2 size={18} color={Theme.colors.emberRed} />
+                                                    <Trash2 size={20} color={Theme.colors.emberRed} />
                                                 )}
                                             </Box>
                                         </Pressable>
@@ -175,22 +181,18 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                 }}
                 sx={{
                     position: 'absolute',
-                    right: 20,
-                    bottom: 20,
+                    right: 24,
+                    bottom: 24,
                     backgroundColor: Theme.colors.sanctuarySaffron,
-                    width: 56,
-                    height: 56,
-                    borderRadius: 28,
+                    width: 64,
+                    height: 64,
+                    borderRadius: Theme.corners.full,
                     justifyContent: 'center',
                     alignItems: 'center',
-                    elevation: 5,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.25,
-                    shadowRadius: 3.84,
+                    ...Theme.shadows.lg,
                 }}
             >
-                <Plus color={Theme.colors.white} size={28} />
+                <Plus color={Theme.colors.white} size={32} />
             </Pressable>
 
             <AddStudentModal
@@ -213,33 +215,46 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                 <ModalBackdrop />
                 <ModalContent sx={{ backgroundColor: colors.secondary, borderColor: colors.border, borderWidth: 1 }}>
                     <ModalHeader>
-                        <Heading sx={{ color: colors.text }}>Invite Student</Heading>
+                        <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}>
+                            {t('classroom.students.inviteTitle') || 'Invite Student'}
+                        </Heading>
                         <ModalCloseButton>
                             <Icon as={CloseIcon} sx={{ color: colors.textSecondary }} />
                         </ModalCloseButton>
                     </ModalHeader>
                     <ModalBody>
-                        <VStack sx={{ gap: Theme.spacing.lg, alignItems: 'center', paddingBottom: 24 }}>
-                            <Box sx={{ padding: Theme.spacing.lg, backgroundColor: 'white', borderRadius: Theme.corners.generous }}>
+                        <VStack sx={{ gap: Theme.spacing.lg, alignItems: 'center', paddingBottom: Theme.spacing.xl }}>
+                            <Box sx={{ padding: Theme.spacing.lg, backgroundColor: 'white', borderRadius: Theme.corners.generous, ...Theme.shadows.md }}>
                                 <QRCodeGenerator
                                     value={studentForQr?.invite_code || ''}
-                                    size={180}
+                                    size={200}
                                     color="black"
                                     backgroundColor="white"
                                 />
                             </Box>
                             <VStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
-                                <Heading sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.text }}>{studentForQr?.full_name}</Heading>
-                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>Individual Invite Code</Text>
+                                <Heading sx={{ fontSize: Theme.typography.fontSize.md, color: colors.text, textAlign: 'center' }}>
+                                    {studentForQr?.full_name}
+                                </Heading>
+                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>
+                                    {t('classroom.students.individualCode') || 'Individual Invite Code'}
+                                </Text>
                                 <Pressable onPress={() => copyToClipboard(studentForQr?.invite_code || '')}>
-                                    <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' as any }}>{studentForQr?.invite_code}</Text>
+                                    <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700', fontSize: Theme.typography.fontSize.lg }}>
+                                        {studentForQr?.invite_code}
+                                    </Text>
                                 </Pressable>
+                                <Text sx={{ fontSize: 10, color: colors.textTertiary, marginTop: Theme.spacing.xs }}>
+                                    {t('common.tapToCopy') || 'Tap to copy'}
+                                </Text>
                             </VStack>
                             <Button
                                 onPress={() => setStudentForQr(null)}
-                                sx={{ backgroundColor: colors.tertiary, width: '100%' }}
+                                sx={{ backgroundColor: colors.tertiary, width: '100%', borderRadius: Theme.corners.comfortable }}
                             >
-                                <ButtonText sx={{ color: colors.text }}>Close</ButtonText>
+                                <ButtonText sx={{ color: colors.text }}>
+                                    {t('common.close') || 'Close'}
+                                </ButtonText>
                             </Button>
                         </VStack>
                     </ModalBody>
@@ -248,3 +263,4 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
         </VStack>
     );
 }
+

@@ -35,7 +35,7 @@ import {
 import { TouchableOpacity, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import * as Clipboard from 'expo-clipboard';
-import { api, InviteCode, UserRole, hasRole } from '@repo/core';
+import { api, InviteCode, UserRole, hasRole, handleAPIError } from '@repo/core';
 import { Theme } from '@repo/ui';
 import { Copy, RefreshCw, Users, Shield, QrCode } from 'lucide-react-native';
 import { QRCodeGenerator } from '@repo/scanner-kit';
@@ -66,8 +66,8 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
             const codes = await api.school.getInviteCodes(schoolId);
             setInviteCodes(codes);
         } catch (err: any) {
-            console.error('Failed to load invite codes:', err);
-            setError(err.message || 'Failed to load invite codes');
+            const apiError = handleAPIError(err, true);
+            setError(apiError.message);
         } finally {
             setIsLoading(false);
         }
@@ -80,8 +80,8 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
             await api.school.generateInviteCode(schoolId, role, userId);
             await loadInviteCodes();
         } catch (err: any) {
-            console.error('Failed to generate code:', err);
-            setError(err.message || 'Failed to generate code');
+            const apiError = handleAPIError(err, true);
+            setError(apiError.message);
         } finally {
             setIsGenerating(false);
         }
@@ -101,8 +101,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                 },
             });
         } catch (err) {
-            console.error('Failed to copy code:', err);
-            Alert.alert('Error', 'Failed to copy code to clipboard.');
+            handleAPIError(err);
         }
     };
 

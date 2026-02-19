@@ -63,7 +63,7 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size="md">
+        <Modal isOpen={isOpen} onClose={onClose}>
             <ModalBackdrop />
             <ModalContent sx={{ backgroundColor: colors.secondary, borderColor: colors.border, borderWidth: 1 }}>
                 <ModalHeader>
@@ -74,12 +74,12 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
                 </ModalHeader>
                 <ModalBody>
                     {successData ? (
-                        <VStack space="lg" alignItems="center" py="$6">
+                        <VStack sx={{ gap: 16, alignItems: 'center', paddingVertical: 24 }}>
                             <Box sx={{ backgroundColor: colors.tertiary, padding: 20, borderRadius: 40 }}>
                                 <CheckCircle2 size={48} color={Theme.colors.sageGreen} />
                             </Box>
-                            <VStack space="xs" alignItems="center">
-                                <Text color={colors.text} fontWeight="$bold" size="lg">Successfully Enrolled!</Text>
+                            <VStack sx={{ gap: 4, alignItems: 'center' }}>
+                                <Text color={colors.text} sx={{ fontWeight: 'bold', fontSize: 18 }}>Successfully Enrolled!</Text>
                                 <Text color={colors.textSecondary} textAlign="center">
                                     You have successfully linked your account to your classroom record.
                                 </Text>
@@ -92,11 +92,11 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
                             </Button>
                         </VStack>
                     ) : (
-                        <VStack space="lg" pb="$4">
+                        <VStack sx={{ gap: 16, paddingBottom: 16 }}>
                             <Box sx={{ padding: Theme.spacing.md, backgroundColor: colors.tertiary, borderRadius: Theme.corners.comfortable }}>
-                                <HStack space="sm" alignItems="center">
+                                <HStack sx={{ gap: 8, alignItems: 'center' }}>
                                     <QrCode size={20} color={Theme.colors.sanctuarySaffron} />
-                                    <Text size="sm" color={colors.textSecondary}>
+                                    <Text color={colors.textSecondary} sx={{ fontSize: 14 }}>
                                         Enter the 8-character invite code provided by your teacher.
                                     </Text>
                                 </HStack>

@@ -9,7 +9,7 @@ import {
 } from '@repo/ui';
 import { Theme } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
-import { LifeBuoy, MessageCircle, AlertTriangle, ChevronRight } from 'lucide-react-native';
+import { LifeBuoy, MessageCircle, AlertTriangle, ChevronRight, Info, Star } from 'lucide-react-native';
 
 export default function SupportSection() {
     const colors = useThemedColors();
@@ -65,6 +65,18 @@ export default function SupportSection() {
                 title="Report Issue"
                 subtitle="Found a bug? Let us know"
                 onPress={handleSupport}
+            />
+            <SupportItem
+                icon={Info}
+                title="About"
+                subtitle="Mission, Version & Legal"
+                onPress={() => { }}
+            />
+            <SupportItem
+                icon={Star}
+                title="Rate Us"
+                subtitle="Support our mission with a review"
+                onPress={() => { }}
             />
         </VStack>
     );

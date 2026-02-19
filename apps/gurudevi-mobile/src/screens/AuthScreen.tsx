@@ -19,7 +19,7 @@ import {
 } from '@repo/ui';
 import { Mail } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { supabase, UserRole } from '@repo/core';
+import { supabase, UserRole, handleAPIError } from '@repo/core';
 import { Theme } from '@repo/ui';
 import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
 import { validators, validateForm } from '../utils/validators';
@@ -94,8 +94,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
         });
 
         if (error) {
-            hapticError();
-            showToast(t('auth.googleSignInError') || 'Failed to sign in with Google', "error");
+            handleAPIError(error);
             setLoading(false);
         }
     }
@@ -166,9 +165,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                 if (onSuccess) onSuccess();
             }
         } catch (error: any) {
-            console.error('❌ Auth: Error during handleAuth:', error);
-            hapticError();
-            showToast(error.message, "error");
+            handleAPIError(error);
         } finally {
             console.log('🏁 Auth: handleAuth completed');
             setLoading(false);

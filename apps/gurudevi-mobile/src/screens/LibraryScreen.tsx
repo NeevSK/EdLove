@@ -1,95 +1,192 @@
-import React, { useState } from 'react';
-import { ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
-import { Box, VStack, Text, Pressable } from '@repo/ui';
-import { GlobalHeader } from '@repo/ui';
+import React, { useState, useMemo } from 'react';
+import { FlatList, RefreshControl, ActivityIndicator } from 'react-native';
+import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, PositiveInvitation, Theme, GlobalHeader, ScreenWrapper, LibraryResourceCard, ResourceType } from '@repo/ui';
 import LotusPetalFAB from '../components/shared/LotusPetalFAB';
-import { LibraryResourceCard, ResourceType } from '@repo/ui';
 import AddResourceModal from '../components/library/AddResourceModal';
-import { Theme, useThemedColors } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { BookOpen, Search, Plus } from 'lucide-react-native';
-import { SanctuaryInput } from '@repo/ui';
+import { BookOpen, Search, Plus, Zap } from 'lucide-react-native';
 import * as Linking from 'expo-linking';
-
-import { ScreenWrapper } from '@repo/ui';
 import { api } from '../lib/api';
 import { isDemo } from '../lib/api/demo';
-import { Zap } from 'lucide-react-native';
-import { CommunityPost } from '@repo/community';
-import { LibraryResource } from '@repo/library';
-import { SkeletonCard, PositiveInvitation } from '@repo/ui';
+import { useLibrary, LibraryResource } from '@repo/library';
+import { useUserRole, useRoleFeatures, useTracking, supabase, LIBRARY_RESOURCE_CATEGORIES } from '@repo/core';
 
-// local MOCK_RESOURCES removed, now using api.library
-
-// Library categories for filtering
-const LIBRARY_CATEGORIES = ['All', 'PDFs', 'Videos', 'Docs', 'Links'] as const;
+// Categories for display (including "All")
+const LIB_UI_CATEGORIES = [{ id: 'All', en: 'All', si: 'සියල්ල', ta: 'அனைத்தும்' }, ...LIBRARY_RESOURCE_CATEGORIES];
 
 export default function LibraryScreen() {
     const { t } = useTranslation();
+    const { role } = useUserRole();
+    const { isGuest } = useRoleFeatures();
+
     const [searchQuery, setSearchQuery] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [resources, setResources] = useState<LibraryResource[]>([]);
+    const [selectedCategoryId, setSelectedCategoryId] = useState('All');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
-    const [showSearchBar, setShowSearchBar] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState<typeof LIBRARY_CATEGORIES[number]>('All');
-    const colors = useThemedColors();
 
-    const fetchResources = async () => {
-        try {
-            if (!refreshing) setLoading(true);
-            const data = await api.library.getResources();
-            setResources(data);
-        } catch (err: any) {
-            setError(err.message || 'Failed to load resources');
-        } finally {
-            setLoading(false);
-        }
-    };
+    const colors = useThemedColors();
+    const { discoverFeature } = useTracking();
 
     React.useEffect(() => {
-        fetchResources();
+        discoverFeature('section_library');
     }, []);
+
+    // Map category to API type
+    const resourceTypeFilter = useMemo(() => {
+        if (selectedCategoryId === 'All') return undefined;
+        return selectedCategoryId as any;
+    }, [selectedCategoryId]);
+
+    const {
+        resources,
+        loading,
+        fetchResources,
+        fetchNextResources,
+        hasNextResources,
+        isFetchingNextResources
+    } = useLibrary({
+        type: resourceTypeFilter,
+        search: searchQuery || undefined
+    });
 
     const handleAddResource = async (data: any) => {
         try {
-            const user = await api.auth.getUser();
+            const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
-            const newRes = await api.library.createResource(data, user.id, 'teacher');
-            setResources(prev => [newRes, ...prev]);
+            await api.library.createResource({
+                ...data,
+                subject: 'General', // Default or pick from context
+                grades: [10], // Default or pick from context
+                language: 'english',
+                visibility: 'public',
+                format: 'document'
+            }, user.id, role || 'teacher');
+            await fetchResources();
         } catch (err) {
             console.error('Failed to create resource', err);
         }
     };
 
     const handleOpenResource = (url: string) => {
+        if (!url) return;
         Linking.openURL(url).catch(err => console.error("Couldn't load page", err));
     };
 
-    // Filter by search query and category
-    const filteredResources = resources.filter(r => {
-        const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const renderCategoryItem = ({ item: cat }: { item: any }) => (
+        <Pressable
+            onPress={() => setSelectedCategoryId(cat.id)}
+        >
+            <Box
+                sx={{
+                    paddingHorizontal: Theme.spacing.lg,
+                    paddingVertical: Theme.spacing.sm,
+                    backgroundColor: selectedCategoryId === cat.id
+                        ? Theme.colors.sanctuarySaffron
+                        : colors.secondary,
+                    borderRadius: Theme.corners.comfortable,
+                    borderWidth: 1,
+                    borderColor: selectedCategoryId === cat.id
+                        ? Theme.colors.sanctuarySaffron
+                        : colors.border,
+                    marginRight: 12
+                }}
+            >
+                <Text
+                    color={selectedCategoryId === cat.id
+                        ? Theme.colors.white
+                        : colors.text
+                    }
+                    size="sm"
+                    bold={selectedCategoryId === cat.id}
+                >
+                    {cat.en}
+                </Text>
+            </Box>
+        </Pressable>
+    );
 
-        // Category filtering
-        if (selectedCategory === 'All') {
-            return matchesSearch;
+    const renderHeader = () => (
+        <VStack space="md" py="$4">
+            <VStack space="xs">
+                <Text color={colors.text} size="lg" bold>
+                    {t('library.categories') || 'Categories'}
+                </Text>
+                <FlatList
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    data={LIB_UI_CATEGORIES}
+                    renderItem={renderCategoryItem}
+                    keyExtractor={(cat) => cat.id}
+                />
+            </VStack>
+
+            {/* Quick Collections / Tags Bar */}
+            <VStack space="xs" mt="$2">
+                <Text color={colors.textSecondary} size="sm" bold>
+                    {t('library.collections') || 'Popular Collections'}
+                </Text>
+                <HStack space="sm" flexWrap="wrap">
+                    {['Grade 10', 'Mathematics', 'Past Papers', '2026 Reform'].map(tag => (
+                        <Pressable
+                            key={tag}
+                            onPress={() => setSearchQuery(tag)}
+                        >
+                            <Box sx={{
+                                paddingHorizontal: 10,
+                                paddingVertical: 4,
+                                borderRadius: 12,
+                                backgroundColor: colors.tertiary,
+                                borderWidth: 1,
+                                borderColor: colors.border
+                            }}>
+                                <Text size="xs" color={colors.textSecondary}>#{tag}</Text>
+                            </Box>
+                        </Pressable>
+                    ))}
+                </HStack>
+            </VStack>
+        </VStack>
+    );
+
+    const renderResourceItem = ({ item: res }: { item: LibraryResource }) => (
+        <LibraryResourceCard
+            key={res.id}
+            title={isDemo() ? `(Sample) ${res.title}` : res.title}
+            type={res.type as ResourceType}
+            isPublic={res.visibility === 'public'}
+            onPress={() => handleOpenResource(res.url || '')}
+            onLike={() => console.log('Like', res.id)}
+            onaddToDesk={() => console.log('Add to desk', res.id)}
+        />
+    );
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await fetchResources();
+        setRefreshing(false);
+    };
+
+    const getEmptyComponent = () => {
+        if (loading && !refreshing) {
+            return (
+                <VStack space="md">
+                    <SkeletonCard height={120} />
+                    <SkeletonCard height={120} />
+                    <SkeletonCard height={120} />
+                </VStack>
+            );
         }
-
-        const categoryMap: Record<string, string[]> = {
-            'PDFs': ['pdf'],
-            'Videos': ['video'],
-            'Docs': ['doc'],
-            'Links': ['link', 'text']
-        };
-
-        const types = categoryMap[selectedCategory] || [];
-        return matchesSearch && types.includes(r.type);
-    });
+        return (
+            <PositiveInvitation
+                context="library"
+                onAction={() => setIsAddModalOpen(true)}
+            />
+        );
+    };
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper scroll={false}>
             <GlobalHeader
                 title={t('tabs.library') || 'Library'}
                 subtitle={t('library.knowledgeSanctuary')}
@@ -100,103 +197,42 @@ export default function LibraryScreen() {
                 }}
             />
 
-
-            <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingVertical: Theme.spacing.md, paddingBottom: 100 }}
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={async () => {
-                        setRefreshing(true);
-                        await fetchResources();
-                        setRefreshing(false);
-                    }} tintColor={Theme.colors.sanctuarySaffron} />
-                }
-            >
-                {/* Horizontal Carousel for Resource Categories */}
-                <VStack space="xl">
-                    <VStack space="sm">
-                        <Text color={colors.text} size="lg" bold>
-                            {t('library.categories')}
-                        </Text>
-                        <ScrollView
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={{ gap: 12 }}
-                        >
-                            {LIBRARY_CATEGORIES.map((category) => (
-                                <Pressable
-                                    key={category}
-                                    onPress={() => setSelectedCategory(category)}
-                                >
-                                    <Box
-                                        sx={{
-                                            paddingHorizontal: Theme.spacing.lg,
-                                            paddingVertical: Theme.spacing.sm,
-                                            backgroundColor: selectedCategory === category
-                                                ? Theme.colors.sanctuarySaffron
-                                                : colors.secondary,
-                                            borderRadius: Theme.corners.comfortable,
-                                            borderWidth: 1,
-                                            borderColor: selectedCategory === category
-                                                ? Theme.colors.sanctuarySaffron
-                                                : colors.border
-                                        }}
-                                    >
-                                        <Text
-                                            color={selectedCategory === category
-                                                ? Theme.colors.white  // Pure white for high contrast on saffron
-                                                : colors.text
-                                            }
-                                            size="sm"
-                                            bold={selectedCategory === category}
-                                        >
-                                            {t(`library.types.${category.toLowerCase()}`)}
-                                        </Text>
-                                    </Box>
-                                </Pressable>
-                            ))}
-                        </ScrollView>
-                    </VStack>
-
-                    {/* Resources List */}
-                    {loading ? (
-                        <VStack space="md">
-                            <SkeletonCard height={120} />
-                            <SkeletonCard height={120} />
-                            <SkeletonCard height={120} />
-                        </VStack>
-                    ) : filteredResources.length === 0 ? (
-                        <PositiveInvitation
-                            context="library"
-                            onAction={() => setIsAddModalOpen(true)}
+            <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+                <FlatList
+                    data={resources}
+                    renderItem={renderResourceItem}
+                    keyExtractor={(item) => item.id}
+                    ListHeaderComponent={renderHeader}
+                    ListEmptyComponent={getEmptyComponent()}
+                    ListFooterComponent={isFetchingNextResources ? (
+                        <ActivityIndicator size="small" color={Theme.colors.sanctuarySaffron} style={{ padding: 20 }} />
+                    ) : null}
+                    onEndReached={() => {
+                        if (hasNextResources && !isFetchingNextResources) {
+                            fetchNextResources();
+                        }
+                    }}
+                    onEndReachedThreshold={0.5}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            tintColor={Theme.colors.sanctuarySaffron}
                         />
-                    ) : (
-                        <VStack space="md">
-                            {filteredResources.map((res) => (
-                                <LibraryResourceCard
-                                    key={res.id}
-                                    title={isDemo() ? `(Sample) ${res.title}` : res.title}
-                                    type={res.type as ResourceType}
-                                    isPublic={res.visibility === 'public'}
-                                    onPress={() => handleOpenResource(res.url)}
-                                    onLike={() => console.log('Like', res.id)}
-                                    onaddToDesk={() => console.log('Add to desk', res.id)}
-                                />
-                            ))}
-                        </VStack>
-                    )}
-                </VStack>
-            </ScrollView>
+                    }
+                    contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, paddingBottom: 100 }}
+                />
 
-            <LotusPetalFAB
-                onPress={() => setIsAddModalOpen(true)}
-            />
+                <LotusPetalFAB
+                    onPress={() => setIsAddModalOpen(true)}
+                />
 
-            <AddResourceModal
-                isOpen={isAddModalOpen}
-                onClose={() => setIsAddModalOpen(false)}
-                onAdd={handleAddResource}
-            />
+                <AddResourceModal
+                    isOpen={isAddModalOpen}
+                    onClose={() => setIsAddModalOpen(false)}
+                    onAdd={handleAddResource}
+                />
+            </Box>
         </ScreenWrapper>
     );
 }

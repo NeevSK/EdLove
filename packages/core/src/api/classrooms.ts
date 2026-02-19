@@ -5,7 +5,7 @@
  */
 
 import { supabase } from '../lib/supabase';
-import { APIError, Classroom } from './types';
+import { APIError, Classroom, PaginationParams } from './types';
 import {
     requireTeacherAccess,
     requireStudentAccess,
@@ -22,13 +22,18 @@ export const classroomsAPI = {
     /**
      * Get all classrooms for a teacher
      */
-    async getByTeacher(teacherId: string): Promise<Classroom[]> {
+    async getByTeacher(teacherId: string, params: PaginationParams = {}): Promise<Classroom[]> {
         await requireTeacherAccess(teacherId);
-        const { data, error } = await supabase
+        let query = supabase
             .from('classrooms')
             .select('*')
             .eq('teacher_id', teacherId)
             .order('name', { ascending: true });
+
+        if (params.limit) query = query.limit(params.limit);
+        if (params.offset) query = query.range(params.offset, params.offset + (params.limit || 10) - 1);
+
+        const { data, error } = await query;
 
         if (error) {
             throw new APIError('Failed to fetch teacher classrooms', error.code, error);
@@ -41,9 +46,9 @@ export const classroomsAPI = {
      * Get all classrooms for a student
      * Fetches through the classroom_students linking table
      */
-    async getByStudent(studentId: string): Promise<Classroom[]> {
+    async getByStudent(studentId: string, params: PaginationParams = {}): Promise<Classroom[]> {
         await requireStudentAccess(studentId);
-        const { data, error } = await supabase
+        let query = supabase
             .from('classroom_students')
             .select(`
                 classroom:classrooms (
@@ -59,6 +64,11 @@ export const classroomsAPI = {
                 )
             `)
             .eq('student_id', studentId);
+
+        if (params.limit) query = query.limit(params.limit);
+        if (params.offset) query = query.range(params.offset, params.offset + (params.limit || 10) - 1);
+
+        const { data, error } = await query;
 
         if (error) {
             throw new APIError('Failed to fetch student classrooms', error.code, error);
@@ -77,13 +87,18 @@ export const classroomsAPI = {
      * Get all classrooms in a school
      * Used by principals to see all classrooms
      */
-    async getBySchool(schoolId: string): Promise<Classroom[]> {
+    async getBySchool(schoolId: string, params: PaginationParams = {}): Promise<Classroom[]> {
         await requireSchoolAccess(schoolId);
-        const { data, error } = await supabase
+        let query = supabase
             .from('classrooms')
             .select('*')
             .eq('school_id', schoolId)
             .order('name', { ascending: true });
+
+        if (params.limit) query = query.limit(params.limit);
+        if (params.offset) query = query.range(params.offset, params.offset + (params.limit || 10) - 1);
+
+        const { data, error } = await query;
 
         if (error) {
             throw new APIError('Failed to fetch school classrooms', error.code, error);
@@ -96,15 +111,32 @@ export const classroomsAPI = {
      * Get a single classroom by ID
      */
     async getById(id: string): Promise<Classroom> {
+        if (id.startsWith('sample-')) {
+            return {
+                id,
+                name: 'Sample Classroom',
+                subject: 'General Studies',
+                description: 'A place for exploration and growth.',
+                teacher_id: 'mock-teacher',
+                school_id: 'mock-school',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            } as Classroom;
+        }
+
         await requireClassroomAccess(id);
         const { data, error } = await supabase
             .from('classrooms')
             .select('*')
             .eq('id', id)
-            .single();
+            .maybeSingle(); // Better than single() to avoid crash if not found
 
         if (error) {
             throw new APIError('Failed to fetch classroom', error.code, error);
+        }
+
+        if (!data) {
+            throw new APIError('Classroom not found', 'NOT_FOUND');
         }
 
         return data;

@@ -1,29 +1,48 @@
 import React, { useState } from 'react';
 import { Modal, ModalBackdrop, ModalContent, ModalHeader, ModalBody, ModalFooter, Heading, VStack, HStack, Text, Input, InputField } from '@repo/ui';
 import { SanctuaryButton } from '@repo/ui';
-import { Theme } from '@repo/ui';
-import { ResourceType } from '@repo/ui';
+import { Theme, useThemedColors } from '@repo/ui';
+import { useTranslation } from 'react-i18next';
+import { LIBRARY_RESOURCE_CATEGORIES } from '@repo/core';
+
+type LibResourceType = typeof LIBRARY_RESOURCE_CATEGORIES[number]['id'];
 
 interface AddResourceModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onAdd: (data: { title: string; type: ResourceType; url: string; description: string }) => void;
+    onAdd: (data: { title: string; type: LibResourceType; url: string; description: string; tags: string[] }) => void;
 }
 
 export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResourceModalProps) {
+    const { t } = useTranslation();
+    const colors = useThemedColors();
     const [title, setTitle] = useState('');
     const [url, setUrl] = useState('');
     const [description, setDescription] = useState('');
-    const [type, setType] = useState<ResourceType>('link');
+    const [type, setType] = useState<LibResourceType>('link');
+    const [tags, setTags] = useState('');
 
     const handleAdd = () => {
         if (!title || !url) return;
-        onAdd({ title, type, url, description });
+
+        // Process tags
+        const tagList = tags.split(',').map(tag => tag.trim().toLowerCase()).filter(tag => tag.length > 0);
+
+        onAdd({
+            title,
+            type,
+            url,
+            description,
+            tags: tagList
+        });
+
         onClose();
         // Reset
         setTitle('');
         setUrl('');
         setDescription('');
+        setType('link');
+        setTags('');
     };
 
     return (
@@ -62,19 +81,29 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
                         </Input>
 
                         <Text color={Theme.colors.mistGray} size="sm">Type</Text>
-                        <HStack space="sm">
-                            {(['link', 'pdf', 'video'] as ResourceType[]).map(t => (
+                        <HStack space="sm" flexWrap="wrap" sx={{ gap: 8 }}>
+                            {LIBRARY_RESOURCE_CATEGORIES.map(cat => (
                                 <SanctuaryButton
-                                    key={t}
-                                    onPress={() => setType(t)}
-                                    variant={type === t ? 'solid' : 'outline'}
+                                    key={cat.id}
+                                    onPress={() => setType(cat.id as LibResourceType)}
+                                    variant={type === cat.id ? 'solid' : 'outline'}
                                     size="xs"
                                     action="secondary"
                                 >
-                                    {t.toUpperCase()}
+                                    {t(`library.types.${cat.id}` as any)}
                                 </SanctuaryButton>
                             ))}
                         </HStack>
+
+                        <Text color={Theme.colors.mistGray} size="sm">Tags (comma-separated)</Text>
+                        <Input variant="outline" size="md">
+                            <InputField
+                                color={Theme.colors.sacredWhite}
+                                placeholder="e.g. grade10, maths, geometry"
+                                value={tags}
+                                onChangeText={setTags}
+                            />
+                        </Input>
                     </VStack>
                 </ModalBody>
                 <ModalFooter>

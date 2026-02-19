@@ -1,24 +1,31 @@
 import 'react-native-url-polyfill/auto';
 import './src/i18n/config'; // Initialize i18n
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GluestackUIProvider, Spinner, Center, VStack, Text } from '@repo/ui';
 import { config } from "./gluestack-ui.config";
-import { Home, School, Users, Library, User } from 'lucide-react-native';
+import { Home, School, Users, Library, User, Sparkles } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
 import * as Font from 'expo-font';
-import { supabase, useStore, UserRole, SchoolType } from '@repo/core';
+import { supabase, useStore, UserRole, SchoolType, initSentry, initPostHog, trackEvent, identifyUser } from '@repo/core';
+import { Platform } from 'react-native';
+import { PostHogProvider } from 'posthog-react-native';
+import * as Sentry from '@sentry/react-native';
 import { Theme } from '@repo/ui';
 import { fontAssets } from './src/constants/Fonts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { EnvironmentProvider } from '@repo/ui';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // Import screens and navigation
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import TabNavigator from './src/navigation/TabNavigator';
+import { AIAssistantScreen } from './src/screens';
 import LotusPetalFAB, { ActionItem } from './src/components/shared/LotusPetalFAB';
 import ErrorBoundary from './src/components/shared/ErrorBoundary';
 import { SanctuaryToast } from '@repo/ui';
@@ -28,7 +35,16 @@ import SyncManager from './src/lib/sync/SyncManager';
 // Create a client
 const queryClient = new QueryClient();
 
-export default function App() {
+// Initialize Sentry & PostHog
+initSentry();
+initPostHog().then(() => {
+  trackEvent('app_initialized', { platform: Platform.OS });
+});
+
+// Root Stack for Modals
+const RootStack = createNativeStackNavigator();
+
+function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -45,6 +61,24 @@ export default function App() {
     );
     return Promise.race([promise, timeoutPromise]);
   };
+
+  const { i18n } = useTranslation();
+
+  // Load saved language preference
+  useEffect(() => {
+    const loadLanguage = async () => {
+      try {
+        const storedLang = await AsyncStorage.getItem('user-language');
+        if (storedLang) {
+          console.log('🗣️ App: Restoring language preference:', storedLang);
+          i18n.changeLanguage(storedLang);
+        }
+      } catch (e) {
+        console.warn('Failed to load language preference', e);
+      }
+    };
+    loadLanguage();
+  }, []);
 
   // Sync showWelcome with session status
   useEffect(() => {
@@ -234,80 +268,111 @@ export default function App() {
   console.log('App: Loading finished, rendering main tree');
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <QueryClientProvider client={queryClient}>
-          <EnvironmentProvider>
-            <GluestackUIProvider config={config}>
-              <ErrorBoundary name="App Root">
-                <NavigationContainer>
-                  {(() => {
-                    const isNewUser = !onboardingCompleted;
-                    const needsWelcome = showWelcome && isNewUser;
+    <PostHogProvider
+      apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
+      options={{
+        host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
+      }}
+    >
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider>
+          <QueryClientProvider client={queryClient}>
+            <EnvironmentProvider>
+              <GluestackUIProvider config={config}>
+                <ErrorBoundary name="App Root">
+                  <NavigationContainer>
+                    <RootStack.Navigator screenOptions={{ headerShown: false }}>
+                      {(() => {
+                        const isNewUser = !onboardingCompleted;
+                        const needsWelcome = showWelcome && isNewUser;
 
-                    console.log('🗺️ Nav decision:', { onboardingCompleted, showWelcome, session: !!session, needsWelcome });
+                        console.log('🗺️ Nav decision:', { onboardingCompleted, showWelcome, session: !!session, needsWelcome });
 
-                    if (!session || needsWelcome) {
-                      return (
-                        <ErrorBoundary name="Welcome Screen">
-                          <WelcomeScreen
-                            initialShowAuth={onboardingCompleted}
-                            onNext={() => {
-                              console.log('➡️ App: onNext called from WelcomeScreen');
-                              setShowWelcome(false);
-                            }}
-                          />
-                        </ErrorBoundary>
-                      );
-                    } else if (!onboardingCompleted) {
-                      return (
-                        <ErrorBoundary name="Onboarding Screen">
-                          <OnboardingScreen
-                            isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
-                            onComplete={(name: string, role: any, wantsAccount?: boolean) => {
-                              console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
-                              const store = useStore.getState();
-                              if (name) store.setTeacherName(name);
-                              if (role) store.setUserRole(role);
-                              store.setOnboardingCompleted(true);
-                              store.setJustFinishedOnboarding(true);
-                            }}
-                          />
-                        </ErrorBoundary>
-                      );
-                    } else {
-                      return (
-                        <ErrorBoundary name="Main App">
-                          <>
-                            <TabNavigator
-                              onTabChange={(tabName: any) => {
-                                setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
-                              }}
-                            />
-                            <LotusPetalFAB
-                              currentTab={currentTab}
-                              onPress={handleFabPress}
-                              actions={getFabActions()}
-                            />
-                          </>
-                        </ErrorBoundary>
-                      );
-                    }
-                  })()}
-                  <NetworkStatusBanner />
-                  <SyncManager />
-                  <SanctuaryToast
-                    visible={toast.visible}
-                    message={toast.message}
-                    type={toast.type}
-                    onHide={hideToast}
-                  />
-                </NavigationContainer>
-              </ErrorBoundary>
-            </GluestackUIProvider>
-          </EnvironmentProvider>
-        </QueryClientProvider>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+                        if (!session || needsWelcome) {
+                          return (
+                            <RootStack.Screen name="Welcome">
+                              {() => (
+                                <ErrorBoundary name="Welcome Screen">
+                                  <WelcomeScreen
+                                    initialShowAuth={onboardingCompleted}
+                                    onNext={() => {
+                                      console.log('➡️ App: onNext called from WelcomeScreen');
+                                      setShowWelcome(false);
+                                    }}
+                                  />
+                                </ErrorBoundary>
+                              )}
+                            </RootStack.Screen>
+                          );
+                        } else if (!onboardingCompleted) {
+                          return (
+                            <RootStack.Screen name="Onboarding">
+                              {() => (
+                                <ErrorBoundary name="Onboarding Screen">
+                                  <OnboardingScreen
+                                    isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
+                                    onComplete={(name: string, role: any, wantsAccount?: boolean) => {
+                                      console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
+                                      const store = useStore.getState();
+                                      if (name) store.setTeacherName(name);
+                                      if (role) store.setUserRole(role);
+                                      store.setOnboardingCompleted(true);
+                                      store.setJustFinishedOnboarding(true);
+                                    }}
+                                  />
+                                </ErrorBoundary>
+                              )}
+                            </RootStack.Screen>
+                          );
+                        } else {
+                          return (
+                            <>
+                              <RootStack.Screen name="MainTabs">
+                                {() => (
+                                  <ErrorBoundary name="Main App">
+                                    <TabNavigator
+                                      onTabChange={(tabName: any) => {
+                                        setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
+                                      }}
+                                    />
+                                    <LotusPetalFAB
+                                      currentTab={currentTab}
+                                      onPress={handleFabPress}
+                                      actions={getFabActions()}
+                                    />
+                                  </ErrorBoundary>
+                                )}
+                              </RootStack.Screen>
+                              <RootStack.Screen
+                                name="AIAssistant"
+                                component={AIAssistantScreen}
+                                options={{
+                                  presentation: 'modal',
+                                  animation: 'slide_from_bottom'
+                                }}
+                              />
+                            </>
+                          );
+                        }
+                      })()}
+                    </RootStack.Navigator>
+                    <NetworkStatusBanner />
+                    <SyncManager />
+                    <SanctuaryToast
+                      visible={toast.visible}
+                      message={toast.message}
+                      type={toast.type}
+                      onHide={hideToast}
+                    />
+                  </NavigationContainer>
+                </ErrorBoundary>
+              </GluestackUIProvider>
+            </EnvironmentProvider>
+          </QueryClientProvider>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </PostHogProvider>
   );
 }
+
+export default Sentry.wrap(App);

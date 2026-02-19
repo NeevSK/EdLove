@@ -60,22 +60,22 @@ export default function FounderSchoolView({ schoolId, userId }: FounderSchoolVie
                 subtitle={school?.name || t('founder.educationalEcology')}
             />
             <ScrollView>
-                <VStack sx={{ padding: Theme.spacing.lg, gap: '$6' }}>
+                <VStack sx={{ padding: Theme.spacing.lg, gap: Theme.spacing.lg }}>
                     {/* Main Content */}
                     {stats && !isLoading && (
-                        <VStack sx={{ gap: '$6' }}>
+                        <VStack sx={{ gap: Theme.spacing.lg }}>
                             {(stats as any).is_sample && (
                                 <Box sx={{
                                     backgroundColor: Theme.colors.amberGlow + '22',
-                                    padding: 12,
+                                    padding: Theme.spacing.md,
                                     borderRadius: Theme.corners.comfortable,
                                     borderWidth: 1,
                                     borderColor: Theme.colors.amberGlow,
                                     flexDirection: 'row',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    gap: 8,
-                                    marginBottom: 8
+                                    gap: Theme.spacing.sm,
+                                    marginBottom: Theme.spacing.sm
                                 }}>
                                     <Zap size={16} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} />
                                     <Text sx={{ fontSize: 13, color: Theme.colors.amberGlow, fontWeight: '700' }}>
@@ -93,47 +93,47 @@ export default function FounderSchoolView({ schoolId, userId }: FounderSchoolVie
                                     ...Theme.shadows.lg
                                 }}
                             >
-                                <VStack sx={{ gap: 8 }}>
-                                    <HStack alignItems="center" sx={{ gap: 8 }}>
+                                <VStack sx={{ gap: Theme.spacing.sm }}>
+                                    <HStack alignItems="center" sx={{ gap: Theme.spacing.sm }}>
                                         <Compass color={Theme.colors.white} size={24} />
-                                        <Text color={Theme.colors.white} sx={{ fontWeight: '700', fontSize: '$lg' }}>
+                                        <Text color={Theme.colors.white} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.lg }}>
                                             {t('founder.ecologyStatus', { status: 'Balanced' })}
                                         </Text>
                                     </HStack>
-                                    <Text color="rgba(255,255,255,0.85)" sx={{ fontSize: '$sm' }}>
+                                    <Text color="rgba(255,255,255,0.85)" sx={{ fontSize: Theme.typography.fontSize.sm }}>
                                         {t('founder.visionManifesting', { count: stats?.total_sections || 0 })}
                                     </Text>
                                 </VStack>
                             </Box>
 
                             {/* Platform Metrics */}
-                            <VStack sx={{ gap: 16 }}>
-                                <Heading color={colors.text} sx={{ fontSize: '$md' }}>{t('founder.executiveOversight')}</Heading>
-                                <HStack sx={{ gap: 16 }}>
-                                    <Box sx={{ flex: 1, padding: 16, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable }}>
+                            <VStack sx={{ gap: Theme.spacing.md }}>
+                                <Heading color={colors.text} sx={{ fontSize: Theme.typography.fontSize.md }}>{t('founder.executiveOversight')}</Heading>
+                                <HStack sx={{ gap: Theme.spacing.md }}>
+                                    <Box sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable }}>
                                         <HStack justifyContent="space-between" alignItems="center">
                                             <Globe color={colors.action} size={20} />
                                             {isDemoMode && <Zap size={12} color={Theme.colors.sanctuarySaffron} fill={Theme.colors.sanctuarySaffron} />}
                                         </HStack>
-                                        <Text color={colors.text} sx={{ fontWeight: '700', fontSize: '$xl', marginTop: 8 }}>{stats?.total_students || 0}</Text>
-                                        <Text color={colors.textSecondary} sx={{ fontSize: '$xs' }}>{t('founder.totalSouls')}</Text>
+                                        <Text color={colors.text} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.xl, marginTop: Theme.spacing.sm }}>{stats?.total_students || 0}</Text>
+                                        <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>{t('founder.totalSouls')}</Text>
                                     </Box>
-                                    <Box sx={{ flex: 1, padding: 16, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable }}>
+                                    <Box sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable }}>
                                         <Zap color={colors.warning} size={20} />
-                                        <Text color={colors.text} sx={{ fontWeight: '700', fontSize: '$xl', marginTop: 8 }}>{stats?.total_teachers || 0}</Text>
-                                        <Text color={colors.textSecondary} sx={{ fontSize: '$xs' }}>{t('founder.guidingSpirits')}</Text>
+                                        <Text color={colors.text} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.xl, marginTop: Theme.spacing.sm }}>{stats?.total_teachers || 0}</Text>
+                                        <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>{t('founder.guidingSpirits')}</Text>
                                     </Box>
                                 </HStack>
                             </VStack>
 
                             {/* Ecology Health (Simulated Cross-School/Platform Trends) */}
-                            <VStack sx={{ gap: 16, marginTop: 16 }}>
-                                <Heading color={colors.textSecondary} sx={{ fontSize: '$sm' }}>{t('founder.visionaryInsights')}</Heading>
-                                <Box sx={{ padding: 16, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, borderWidth: 1, borderColor: colors.border }}>
+                            <VStack sx={{ gap: Theme.spacing.md, marginTop: Theme.spacing.md }}>
+                                <Heading color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>{t('founder.visionaryInsights')}</Heading>
+                                <Box sx={{ padding: Theme.spacing.md, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, borderWidth: 1, borderColor: colors.border }}>
                                     <HStack justifyContent="space-between" alignItems="center">
-                                        <VStack sx={{ gap: 4 }}>
+                                        <VStack sx={{ gap: Theme.spacing.xs }}>
                                             <Text color={colors.text} sx={{ fontWeight: '700' }}>{t('founder.wellnessIndex')}</Text>
-                                            <Text color={colors.success} sx={{ fontSize: '$xs' }}>{t('founder.wellnessIncrease', { percent: 12 })}</Text>
+                                            <Text color={colors.success} sx={{ fontSize: Theme.typography.fontSize.xs }}>{t('founder.wellnessIncrease', { percent: 12 })}</Text>
                                         </VStack>
                                         <Heart color={colors.error} size={24} fill={colors.error} />
                                     </HStack>
@@ -152,9 +152,9 @@ export default function FounderSchoolView({ schoolId, userId }: FounderSchoolVie
                     )}
 
                     {isLoading && (
-                        <VStack sx={{ gap: 12 }}>
+                        <VStack sx={{ gap: Theme.spacing.md }}>
                             <SkeletonCard height={120} />
-                            <HStack sx={{ gap: 12 }}>
+                            <HStack sx={{ gap: Theme.spacing.md }}>
                                 <SkeletonCard height={100} style={{ flex: 1 }} />
                                 <SkeletonCard height={100} style={{ flex: 1 }} />
                             </HStack>

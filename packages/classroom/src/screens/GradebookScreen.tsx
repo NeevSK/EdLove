@@ -79,8 +79,7 @@ export default function GradebookScreen({
         >
             <ScrollView>
                 <VStack
-                    space="lg"
-                    sx={{ padding: Theme.spacing.lg }}
+                    sx={{ padding: Theme.spacing.lg, gap: 24 }}
                 >
                     {/* Header */}
                     <HStack
@@ -90,8 +89,8 @@ export default function GradebookScreen({
                         }}
                     >
                         <Heading
-                            size="2xl"
                             color={Theme.colors.sanctuarySaffron}
+                            sx={{ fontSize: 32 }}
                         >
                             {t('grading.gradebook.title') || 'Gradebook'}
                         </Heading>
@@ -112,24 +111,23 @@ export default function GradebookScreen({
 
                     {/* Stats Summary */}
                     <HStack
-                        space="md"
                         sx={{
                             padding: Theme.spacing.md,
                             backgroundColor: Theme.colors.deepIndigo,
                             borderRadius: Theme.corners.comfortable,
+                            gap: 16
                         }}
                     >
                         <VStack sx={{ flex: 1 }}>
                             <Text
-                                size="sm"
                                 color={Theme.colors.mistGray}
+                                sx={{ fontSize: 14 }}
                             >
                                 {t('grading.gradebook.totalStudents') || 'Total Students'}
                             </Text>
                             <Text
-                                size="xl"
                                 color={Theme.colors.sacredWhite}
-                                sx={{ fontWeight: '700' }}
+                                sx={{ fontWeight: '700', fontSize: 20 }}
                             >
                                 {grades.length}
                             </Text>
@@ -137,15 +135,14 @@ export default function GradebookScreen({
 
                         <VStack sx={{ flex: 1 }}>
                             <Text
-                                size="sm"
                                 color={Theme.colors.mistGray}
+                                sx={{ fontSize: 14 }}
                             >
                                 {t('grading.gradebook.averageMarks') || 'Average'}
                             </Text>
                             <Text
-                                size="xl"
                                 color={Theme.colors.sacredWhite}
-                                sx={{ fontWeight: '700' }}
+                                sx={{ fontWeight: '700', fontSize: 20 }}
                             >
                                 {stats.averageMarks}
                             </Text>
@@ -154,8 +151,7 @@ export default function GradebookScreen({
 
                     {/* Sort Options */}
                     <HStack
-                        space="sm"
-                        sx={{ flexWrap: 'wrap' }}
+                        sx={{ flexWrap: 'wrap', gap: 8 }}
                     >
                         <Text
                             color={Theme.colors.pearlGray}
@@ -178,7 +174,7 @@ export default function GradebookScreen({
                             >
                                 <Text
                                     color={Theme.colors.sacredWhite}
-                                    size="sm"
+                                    sx={{ fontSize: 14 }}
                                 >
                                     {t('grading.gradebook.sortRank') || 'Rank'}
                                 </Text>
@@ -199,7 +195,7 @@ export default function GradebookScreen({
                             >
                                 <Text
                                     color={Theme.colors.sacredWhite}
-                                    size="sm"
+                                    sx={{ fontSize: 14 }}
                                 >
                                     {t('grading.gradebook.sortMarks') || 'Marks'}
                                 </Text>
@@ -220,7 +216,7 @@ export default function GradebookScreen({
                             >
                                 <Text
                                     color={Theme.colors.sacredWhite}
-                                    size="sm"
+                                    sx={{ fontSize: 14 }}
                                 >
                                     {t('grading.gradebook.sortName') || 'Name'}
                                 </Text>
@@ -279,9 +275,8 @@ export default function GradebookScreen({
                             }}
                         >
                             <Text
-                                size="lg"
                                 color={Theme.colors.pearlGray}
-                                textAlign="center"
+                                sx={{ textAlign: 'center', fontSize: 18 }}
                             >
                                 {t('grading.gradebook.noGrades') ||
                                     'No grades recorded yet'}

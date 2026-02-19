@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { SafeZustandStorage } from '../lib/storageWrapper';
-import { UserRole } from '../types/User';
+import { UserRole, User } from '../types/User';
 import { SchoolType } from '../constants/SriLankanSchools';
 
 export type ThemeMode = 'light' | 'dark' | 'auto' | 'system';
@@ -9,6 +9,8 @@ export type ThemeMode = 'light' | 'dark' | 'auto' | 'system';
 interface AppState {
     teacherName: string;
     setTeacherName: (name: string) => void;
+    user: User | null;
+    setUser: (user: User | null) => void;
     userRole: UserRole | null;
     setUserRole: (role: UserRole | null) => void;
     schoolType: SchoolType | null;
@@ -44,6 +46,8 @@ export const useStore = create<AppState>()(
         (set) => ({
             teacherName: 'Gurudevi',
             setTeacherName: (name) => set({ teacherName: name }),
+            user: null,
+            setUser: (user) => set({ user, userRole: user?.role || null }),
             userRole: null,
             setUserRole: (role) => set({ userRole: role }),
             schoolType: null,
@@ -85,6 +89,7 @@ export const useStore = create<AppState>()(
             storage: createJSONStorage(() => SafeZustandStorage),
             partialize: (state) => ({
                 teacherName: state.teacherName,
+                user: state.user,
                 userRole: state.userRole,
                 schoolType: state.schoolType,
                 themeMode: state.themeMode,

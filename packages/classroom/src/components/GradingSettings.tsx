@@ -19,7 +19,9 @@ import {
     RadioIcon,
     RadioLabel,
     Switch,
-    Theme
+    Theme,
+    useThemedColors,
+    hapticLight,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { ClassroomGradingSettings } from '@repo/core';
@@ -36,12 +38,14 @@ export default function GradingSettings({
     onCancel,
 }: GradingSettingsProps) {
     const { t } = useTranslation();
+    const colors = useThemedColors();
     const [gradingMode, setGradingMode] = useState<'marks' | 'gpa' | 'both'>(
         currentSettings.grading_mode
     );
     const [showRanks, setShowRanks] = useState(currentSettings.show_ranks);
 
     const handleSave = () => {
+        hapticLight();
         onSave({
             grading_mode: gradingMode,
             show_ranks: showRanks,
@@ -52,7 +56,7 @@ export default function GradingSettings({
         <Box
             sx={{
                 flex: 1,
-                backgroundColor: Theme.colors.voidIndigo,
+                backgroundColor: colors.primary,
                 padding: Theme.spacing.lg,
                 borderTopLeftRadius: Theme.corners.generous,
                 borderTopRightRadius: Theme.corners.generous,
@@ -65,7 +69,7 @@ export default function GradingSettings({
                         fontSize: Theme.typography.fontSize.xl,
                         color: Theme.colors.sanctuarySaffron,
                         marginBottom: Theme.spacing.md,
-                        fontWeight: '700' as any
+                        fontWeight: '700'
                     }}
                 >
                     {t('grading.settings.title') || 'Grading Settings'}
@@ -75,9 +79,9 @@ export default function GradingSettings({
                 <VStack sx={{ gap: Theme.spacing.md }}>
                     <Text
                         sx={{
-                            fontSize: Theme.typography.fontSize.lg,
-                            color: Theme.colors.sacredWhite,
-                            fontWeight: '600' as any
+                            fontSize: Theme.typography.fontSize.md,
+                            color: colors.text,
+                            fontWeight: '600'
                         }}
                     >
                         {t('grading.settings.modeLabel') || 'Grading Mode'}
@@ -86,7 +90,10 @@ export default function GradingSettings({
 
                     <RadioGroup
                         value={gradingMode}
-                        onChange={(value: string) => setGradingMode(value as 'marks' | 'gpa' | 'both')}
+                        onChange={(value: string) => {
+                            hapticLight();
+                            setGradingMode(value as 'marks' | 'gpa' | 'both');
+                        }}
                     >
                         <VStack sx={{ gap: Theme.spacing.sm }}>
                             {/* Marks Only */}
@@ -94,9 +101,11 @@ export default function GradingSettings({
                                 sx={{
                                     gap: Theme.spacing.md,
                                     padding: Theme.spacing.md,
-                                    backgroundColor: Theme.colors.deepIndigo,
+                                    backgroundColor: gradingMode === 'marks' ? colors.tertiary : colors.secondary,
                                     borderRadius: Theme.corners.comfortable,
-                                    alignItems: 'center'
+                                    alignItems: 'center',
+                                    borderWidth: 1,
+                                    borderColor: gradingMode === 'marks' ? Theme.colors.sanctuarySaffron : colors.border,
                                 }}
                             >
 
@@ -105,19 +114,19 @@ export default function GradingSettings({
                                         <RadioIcon />
                                     </RadioIndicator>
                                     <RadioLabel>
-                                        <VStack>
+                                        <VStack sx={{ marginLeft: Theme.spacing.sm }}>
                                             <Text
                                                 sx={{
-                                                    color: Theme.colors.sacredWhite,
-                                                    fontWeight: '600' as any
+                                                    color: colors.text,
+                                                    fontWeight: '600'
                                                 }}
                                             >
                                                 {t('grading.settings.marksOnly') || 'Marks Only'}
                                             </Text>
                                             <Text
                                                 sx={{
-                                                    fontSize: Theme.typography.fontSize.sm,
-                                                    color: Theme.colors.mistGray
+                                                    fontSize: Theme.typography.fontSize.xs,
+                                                    color: colors.textSecondary
                                                 }}
                                             >
                                                 {t('grading.settings.marksOnlyDesc') || 'Display marks out of 100'}
@@ -132,9 +141,11 @@ export default function GradingSettings({
                                 sx={{
                                     gap: Theme.spacing.md,
                                     padding: Theme.spacing.md,
-                                    backgroundColor: Theme.colors.deepIndigo,
+                                    backgroundColor: gradingMode === 'gpa' ? colors.tertiary : colors.secondary,
                                     borderRadius: Theme.corners.comfortable,
-                                    alignItems: 'center'
+                                    alignItems: 'center',
+                                    borderWidth: 1,
+                                    borderColor: gradingMode === 'gpa' ? Theme.colors.sanctuarySaffron : colors.border,
                                 }}
                             >
 
@@ -143,19 +154,19 @@ export default function GradingSettings({
                                         <RadioIcon />
                                     </RadioIndicator>
                                     <RadioLabel>
-                                        <VStack>
+                                        <VStack sx={{ marginLeft: Theme.spacing.sm }}>
                                             <Text
                                                 sx={{
-                                                    color: Theme.colors.sacredWhite,
-                                                    fontWeight: '600' as any
+                                                    color: colors.text,
+                                                    fontWeight: '600'
                                                 }}
                                             >
                                                 {t('grading.settings.gpaOnly') || 'GPA Only'}
                                             </Text>
                                             <Text
                                                 sx={{
-                                                    fontSize: Theme.typography.fontSize.sm,
-                                                    color: Theme.colors.mistGray
+                                                    fontSize: Theme.typography.fontSize.xs,
+                                                    color: colors.textSecondary
                                                 }}
                                             >
                                                 {t('grading.settings.gpaOnlyDesc') || 'Display letter grades (A-F) and GPA'}
@@ -170,9 +181,11 @@ export default function GradingSettings({
                                 sx={{
                                     gap: Theme.spacing.md,
                                     padding: Theme.spacing.md,
-                                    backgroundColor: Theme.colors.deepIndigo,
+                                    backgroundColor: gradingMode === 'both' ? colors.tertiary : colors.secondary,
                                     borderRadius: Theme.corners.comfortable,
-                                    alignItems: 'center'
+                                    alignItems: 'center',
+                                    borderWidth: 1,
+                                    borderColor: gradingMode === 'both' ? Theme.colors.sanctuarySaffron : colors.border,
                                 }}
                             >
 
@@ -181,19 +194,19 @@ export default function GradingSettings({
                                         <RadioIcon />
                                     </RadioIndicator>
                                     <RadioLabel>
-                                        <VStack>
+                                        <VStack sx={{ marginLeft: Theme.spacing.sm }}>
                                             <Text
                                                 sx={{
-                                                    color: Theme.colors.sacredWhite,
-                                                    fontWeight: '600' as any
+                                                    color: colors.text,
+                                                    fontWeight: '600'
                                                 }}
                                             >
                                                 {t('grading.settings.both') || 'Both'}
                                             </Text>
                                             <Text
                                                 sx={{
-                                                    fontSize: Theme.typography.fontSize.sm,
-                                                    color: Theme.colors.mistGray
+                                                    fontSize: Theme.typography.fontSize.xs,
+                                                    color: colors.textSecondary
                                                 }}
                                             >
                                                 {t('grading.settings.bothDesc') || 'Display marks and GPA together'}
@@ -211,25 +224,27 @@ export default function GradingSettings({
                     sx={{
                         gap: Theme.spacing.md,
                         padding: Theme.spacing.md,
-                        backgroundColor: Theme.colors.deepIndigo,
+                        backgroundColor: colors.secondary,
                         borderRadius: Theme.corners.comfortable,
                         justifyContent: 'space-between',
                         alignItems: 'center',
+                        borderWidth: 1,
+                        borderColor: colors.border,
                     }}
                 >
                     <VStack sx={{ flex: 1 }}>
                         <Text
                             sx={{
-                                color: Theme.colors.sacredWhite,
-                                fontWeight: '600' as any
+                                color: colors.text,
+                                fontWeight: '600'
                             }}
                         >
                             {t('grading.settings.showRanks') || 'Show Student Ranks'}
                         </Text>
                         <Text
                             sx={{
-                                fontSize: Theme.typography.fontSize.sm,
-                                color: Theme.colors.mistGray
+                                fontSize: Theme.typography.fontSize.xs,
+                                color: colors.textSecondary
                             }}
                         >
                             {t('grading.settings.showRanksDesc') || 'Display rankings based on grades'}
@@ -237,11 +252,14 @@ export default function GradingSettings({
                     </VStack>
                     <Switch
                         value={showRanks}
-                        onValueChange={setShowRanks}
+                        onValueChange={(val) => {
+                            hapticLight();
+                            setShowRanks(val);
+                        }}
                         sx={{
                             props: {
                                 trackColor: {
-                                    false: Theme.colors.mistGray,
+                                    false: colors.border,
                                     true: Theme.colors.sanctuarySaffron,
                                 },
                             },
@@ -256,13 +274,17 @@ export default function GradingSettings({
                     <Button
                         sx={{
                             flex: 1,
-                            borderColor: Theme.colors.mistGray,
+                            borderColor: colors.border,
                             borderWidth: 1,
                             backgroundColor: 'transparent',
+                            borderRadius: Theme.corners.comfortable,
                         }}
-                        onPress={onCancel}
+                        onPress={() => {
+                            hapticLight();
+                            onCancel();
+                        }}
                     >
-                        <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
+                        <ButtonText sx={{ color: colors.textSecondary }}>
                             {t('common.cancel') || 'Cancel'}
                         </ButtonText>
                     </Button>
@@ -271,10 +293,11 @@ export default function GradingSettings({
                         sx={{
                             flex: 1,
                             backgroundColor: Theme.colors.sanctuarySaffron,
+                            borderRadius: Theme.corners.comfortable,
                         }}
                         onPress={handleSave}
                     >
-                        <ButtonText color={Theme.colors.sacredWhite}>
+                        <ButtonText sx={{ color: Theme.colors.white }}>
                             {t('common.save') || 'Save'}
                         </ButtonText>
                     </Button>

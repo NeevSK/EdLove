@@ -16,6 +16,8 @@
         "error": "Error",
         "success": "Success",
         "greeting": "Ayubowan, {{name}}!",
+        "goodAfternoon": "Good Afternoon",
+        "send": "Send to Principal",
         "create": "Create",
         "add": "Add",
         "guidesAndSamples": "Guides & Samples",
@@ -97,7 +99,10 @@
         "openingSanctuary": "Initializing Sanctuary...",
         "login": "I have an account. Log in",
         "footer": "Education born from Love, built with Love.",
-        "privacyPactStatement": "By joining, you agree to our Sacred Privacy Pact."
+        "privacyPactStatement": "By joining, you agree to our Sacred Privacy Pact.",
+        "message": "Welcome to Gurudevi",
+        "description": "Your AI-powered educational companion.",
+        "start": "Get Started"
     },
     "tabs": {
         "self": "Self",
@@ -426,7 +431,33 @@
         "joinTitle": "Join Existing Class",
         "noClassroomsYet": "No classrooms yet",
         "teacherEmptyDesc": "Your digital workbench is ready. Create a class or join an existing one to begin.",
-        "noAvailableClasses": "No unassigned classrooms found for this grade."
+        "noAvailableClasses": "No unassigned classrooms found for this grade.",
+        "customSubject": "Custom Subject",
+        "syllabusVersion": "Syllabus Version",
+        "theme": "Theme",
+        "descPlaceholder": "Enter a description for your classroom...",
+        "inventory": {
+            "title": "Inventory",
+            "all": "All",
+            "furniture": "Furniture",
+            "supplies": "Supplies",
+            "equipment": "Equipment",
+            "quantity": "Quantity: {{count}}",
+            "reportIssue": "Report Issue",
+            "requestSupplies": "Request Supplies",
+            "updateSuccess": "Condition updated successfully",
+            "requestSent": "Supply request sent",
+            "itemName": "Item Name",
+            "itemNamePlaceholder": "e.g. Chalk, Markers",
+            "reason": "Reason (Optional)",
+            "reasonPlaceholder": "Classroom supply ran out",
+            "submit": "Submit Request",
+            "sending": "Sending...",
+            "reportDamage": "Report Damage",
+            "damagePlaceholder": "Describe the damage...",
+            "condition": "Condition",
+            "notes": "Notes"
+        }
     },
     "school": {
         "createTitle": "Initialize Sanctuary",
@@ -455,7 +486,9 @@
         "sections": {
             "vision": "SCHOOL VISION",
             "updates": "RECENT UPDATES"
-        }
+        },
+        "noGroups": "No circles found",
+        "noGroupsDesc": "Connect with others by joining a community group."
     },
     "library": {
         "title": "Library",
@@ -485,8 +518,15 @@
             "pdf": "PDFs",
             "video": "Videos",
             "doc": "Docs",
-            "link": "Links"
-        }
+            "link": "Links",
+            "lesson": "Lessons",
+            "worksheet": "Worksheets",
+            "guide": "Guides",
+            "reading": "Reading",
+            "pedagogy": "Pedagogy",
+            "other": "Other"
+        },
+        "collections": "Collections"
     },
     "profile": {
         "title": "Profile",
@@ -539,7 +579,8 @@
             "visionAlignment": "Vision Alignment",
             "coreActive": "Core Active",
             "learningGrowth": "LEARNING GROWTH",
-            "professionalGrowth": "PROFESSIONAL GROWTH"
+            "professionalGrowth": "PROFESSIONAL GROWTH",
+            "level": "Level"
         }
     },
     "invite": {
@@ -586,6 +627,115 @@
         "gpaOnly": "GPA Only",
         "both": "Both",
         "showRanks": "Show Ranks"
+    },
+    "students": {
+        "title": "Students",
+        "addStudent": "Add Student",
+        "editStudent": "Edit Student",
+        "fullName": "Full Name",
+        "fullNamePlaceholder": "E.g. John Doe",
+        "rollNumber": "Roll Number / ID",
+        "rollNumberPlaceholder": "E.g. 01",
+        "notes": "Notes",
+        "notesPlaceholder": "Add any relevant notes...",
+        "viewQR": "View Student QR",
+        "inviteCode": "Invite Code",
+        "copied": "Code copied to clipboard",
+        "removeConfirm": "Are you sure you want to remove this student?",
+        "success": {
+            "created": "Student added successfully",
+            "updated": "Student updated successfully",
+            "removed": "Student removed successfully"
+        },
+        "error": {
+            "nameRequired": "Name is required",
+            "saveFailed": "Failed to save student",
+            "fetchFailed": "Failed to load students"
+        }
+    },
+    "attendance": {
+        "status": {
+            "present": "Present",
+            "absent": "Absent",
+            "late": "Late"
+        },
+        "sheet": {
+            "title": "Attendance Sheet",
+            "swipeHint": "Swipe to mark attendance",
+            "summary": "Attendance Summary",
+            "allMarked": "All students marked for today",
+            "notMarked": "{{count}} students not marked yet"
+        },
+        "stats": {
+            "total": "Total",
+            "present": "Present",
+            "absent": "Absent",
+            "late": "Late"
+        }
+    },
+    "bulk_creation": {
+        "title": "Bulk Student Entry",
+        "howMany": "How many students do you want to add?",
+        "countPlaceholder": "Enter number (e.g., 35)",
+        "startEntry": "Start Entry",
+        "maxLimit": "Maximum 100 students at once",
+        "progress": "Student {{current}} of {{total}}",
+        "completedCount": "{{count}} completed",
+        "studentName": "Student Name *",
+        "namePlaceholder": "Enter full name",
+        "indexNumber": "Index Number *",
+        "indexPlaceholder": "Enter index number",
+        "optionalNotes": "Notes (Optional)",
+        "notesPlaceholder": "Add any notes about this student...",
+        "previous": "← Previous",
+        "skip": "Skip →",
+        "saveNext": "Save & Next →",
+        "finishReview": "Finish & Review",
+        "reviewAll": "Review All ({{count}})",
+        "reviewTitle": "Review Students",
+        "reviewDesc": "Review all students before adding to classroom",
+        "validCount": "{{count}} valid student(s)",
+        "addOneMore": "Add One More",
+        "addStudentsAction": "Add {{count}} Student(s)",
+        "backToEntry": "← Back to Entry",
+        "noName": "No name",
+        "noIndex": "No index",
+        "errors": {
+            "invalidNumber": "Please enter a number between 1 and 100",
+            "requiredFields": "Name and Index are required",
+            "noValidStudents": "No valid students to add"
+        }
+    },
+    "groups": {
+        "title": "Group Manager",
+        "subtitle": "Create temporary student groups for activities",
+        "manage": "Manage Groups",
+        "addNew": "Add New Group",
+        "edit": "Edit Group",
+        "groupName": "Group Name *",
+        "groupNamePlaceholder": "e.g., Lab Group A",
+        "description": "Description (Optional)",
+        "descriptionPlaceholder": "What is this group for?",
+        "color": "Group Color",
+        "selectStudents": "Select Students *",
+        "selectedCount": "{{count}} selected",
+        "noGroups": "No groups created yet. Tap the + button to create your first group.",
+        "loading": "Loading groups...",
+        "studentsCount": "{{count}} {{label}}",
+        "student": "student",
+        "students": "students",
+        "rollNumber": "Roll #{{number}}",
+        "success": {
+            "created": "Group created successfully",
+            "updated": "Group updated successfully",
+            "removed": "Group removed successfully"
+        },
+        "actions": {
+            "create": "Create",
+            "update": "Update",
+            "cancel": "Cancel",
+            "delete": "Delete"
+        }
     },
     "onboarding": {
         "nameTitle": "Welcome! What should we call you?",
@@ -684,6 +834,31 @@
         "tip": {
             "title": "Tip",
             "message": "These settings help Gurudevi work best for you. Auto mode is recommended for most users."
+        }
+    },
+    "invitation": {
+        "guestTitle": "Your sanctuary begins here",
+        "guestDesc": "Sign in to sync your journey across all your devices.",
+        "guestAction": "Sign In / Sign Up",
+        "communityEmptyTitle": "Join the circle of wisdom",
+        "communityEmptyDesc": "Engage with fellow educators and share your experiences.",
+        "communityEmptyAction": "Join Discussion",
+        "libraryEmptyTitle": "Your personal library awaits",
+        "libraryEmptyDesc": "Save resources, books, and insights to build your knowledge treasury.",
+        "libraryEmptyAction": "Explore Library"
+    },
+    "teacher": {
+        "actions": {
+            "principalEcho": "Principal Echo"
+        },
+        "feedback": {
+            "title": "Principal Echo",
+            "subtitle": "Send a reflection or request to administration",
+            "category": "Category",
+            "priority": "Urgency",
+            "content": "Your Reflection",
+            "placeholder": "Share your thoughts, resource needs, or concerns...",
+            "note": "This reflection will be surfaced on the Principal's Dashboard 'Echo' vistas."
         }
     }
 }

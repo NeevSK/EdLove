@@ -8,13 +8,18 @@
  */
 
 import React from 'react';
-import { useUserRole } from '@repo/core';
+import { useUserRole, useTracking } from '@repo/core';
 
 // Import role-specific views
 import { StudentSelfView, TeacherSelfView, PrincipalSelfView, FounderSelfView, AdminSelfView } from './self';
 
 export default function SelfScreen() {
     const { role } = useUserRole();
+    const { discoverFeature } = useTracking();
+
+    React.useEffect(() => {
+        discoverFeature('section_self');
+    }, []);
 
     // Route to appropriate view based on role
     if (role === 'student') {

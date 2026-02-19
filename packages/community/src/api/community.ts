@@ -9,6 +9,7 @@ import {
     GroupFilters,
     CreateGroupInput
 } from '../types';
+import { PaginationParams } from '@repo/core';
 
 // ============================================================================
 // COMMUNITY API (Announcements & Communication + Enhanced Features)
@@ -234,10 +235,14 @@ export const communityAPI = {
                 comment_count:comments(count)
             `)
             .eq('id', postId)
-            .single();
+            .maybeSingle();
 
         if (error) {
             throw new APIError('Failed to fetch post', error.code, error);
+        }
+
+        if (!data) {
+            throw new APIError('Post not found', 'NOT_FOUND');
         }
 
         // Increment view count
@@ -688,10 +693,14 @@ export const communityAPI = {
                 member_count:group_members(count)
             `)
             .eq('id', groupId)
-            .single();
+            .maybeSingle();
 
         if (error) {
             throw new APIError('Failed to fetch group', error.code, error);
+        }
+
+        if (!data) {
+            throw new APIError('Group not found', 'NOT_FOUND');
         }
 
         // Check membership

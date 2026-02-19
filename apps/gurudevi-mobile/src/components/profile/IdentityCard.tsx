@@ -30,13 +30,13 @@ const CARD_HEIGHT = 220;
 interface IdentityCardProps {
     profile: any;
     onEdit?: () => void;
-    onExpand?: () => void;
+    onViewFullProfile?: () => void;
 }
 
-export default function IdentityCard({ profile, onEdit, onExpand }: IdentityCardProps) {
+export default function IdentityCard({ profile, onEdit, onViewFullProfile }: IdentityCardProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
-    const isFlipped = useSharedValue(0); // 0 = front, 1 = back
+    const isFlipped = useSharedValue(0);
     const [flipState, setFlipState] = useState(false);
 
     const handleFlip = () => {
@@ -244,12 +244,12 @@ export default function IdentityCard({ profile, onEdit, onExpand }: IdentityCard
                         </VStack>
                     </HStack>
 
-                    {/* Expand Button (Top Right) - Only show if onExpand prop is provided */}
-                    {onExpand && (
+                    {/* Expand Button (Top Right) - Only show if onViewFullProfile prop is provided */}
+                    {onViewFullProfile && (
                         <Pressable
                             onPress={(e: any) => {
                                 e.stopPropagation();
-                                onExpand();
+                                onViewFullProfile();
                             }}
                             style={{
                                 position: 'absolute',
