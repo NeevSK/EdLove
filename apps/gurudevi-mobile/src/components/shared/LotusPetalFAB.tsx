@@ -96,7 +96,7 @@ const fabConfig: Record<TabType, { IconComponent: IconComponentType; label: stri
     }
 };
 
-const LOTUS_IMAGE = require('../../../assets/images/lotus_bloom.png');
+const LOTUS_IMAGE = require('../../assets/images/lotus_bloom.png');
 
 // ============================================================================
 // MAIN COMPONENT

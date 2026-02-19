@@ -49,8 +49,8 @@ interface MoodLotusProps {
     onMoodChange?: (mood: number) => void;
 }
 
-const LOTUS_BUD = require('../../../assets/images/lotus_bud.png');
-const LOTUS_BLOOM = require('../../../assets/images/lotus_bloom.png');
+const LOTUS_BUD = require('../../assets/images/lotus_bud.png');
+const LOTUS_BLOOM = require('../../assets/images/lotus_bloom.png');
 
 export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
     const { t } = useTranslation();
