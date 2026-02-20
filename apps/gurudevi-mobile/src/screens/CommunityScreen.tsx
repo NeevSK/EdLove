@@ -307,6 +307,11 @@ export default function CommunityScreen() {
                     <GroupsScreen
                         userId={userId}
                         onCreatePost={handleOpenCreatePost}
+                        onNavigateToGroup={(group: Group) => {
+                            // TODO: Implement actual navigation to a group details screen.
+                            // This placeholder preserves current behavior while wiring the prop.
+                            console.log('Navigate to group requested:', group.id);
+                        }}
                     />
                 )}
 
