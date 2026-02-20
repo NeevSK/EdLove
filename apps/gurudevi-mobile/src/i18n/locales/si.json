@@ -395,7 +395,8 @@
         "description": "දැන ගැනීමේ කෝෂ්ඨාගාරය",
         "browse": "බ්‍රවුස් කරන්න",
         "upload": "උඩුගත කරන්න",
-        "search": "සොයන්න"
+        "search": "සොයන්න",
+        "filterByTag": "#{{tag}} ශ්‍රේණිය අනුව පෙරීම"
     },
     "profile": {
         "title": "ප්‍රොෆයිල්",
@@ -675,5 +676,12 @@
             "requiredFields": "නම සහ දර්ශක අංකය අවශ්‍යයි",
             "noValidStudents": "එක් කිරීමට වලංගු සිසුන් නැත"
         }
+    },
+    "accessibility": {
+        "appLogo": "Gurudevi යෙදුම් ලාංඡනය",
+        "switchLanguage": "{{lang}} භාෂාවට මාරු වන්න",
+        "currentLanguage": "වත්මන් භාෂාව: {{lang}}",
+        "voiceInput": "හඬ සටහනක් පටිගත කරන්න",
+        "loading": "පූරණය වෙමින්, කරුණාකර රැඳෙන්න"
     }
 }

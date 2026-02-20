@@ -235,15 +235,33 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
         return (
             <VStack space="xl" mt="$8" px="$6" flex={1}>
                 <ProgressIndicator currentStep={index} totalSteps={8} />
-                {/* Emoji Icon */}
-                <Text size="6xl" textAlign="center" sx={{ lineHeight: 80 }}>
-                    {screen.emoji}
-                </Text>
-                <Heading size="2xl" color={colors.action} textAlign="center">{screen.title}</Heading>
-                <Text color={colors.textSecondary} textAlign="center" size="lg" fontWeight="$bold">{screen.subtitle}</Text>
-                <Box sx={{ flex: 1, justifyContent: 'center', py: '$4' }}>
-                    <Text textAlign="center" color={colors.text} size="md" lineHeight="$xl">{screen.content}</Text>
-                </Box>
+                {/* Tour content grouped as a single accessible unit */}
+                <VStack
+                    space="md"
+                    alignItems="center"
+                >
+                    {/* Emoji Icon - decorative, hidden from screen readers */}
+                    <Text
+                        size="6xl"
+                        textAlign="center"
+                        sx={{ lineHeight: 80 }}
+                        accessible={false}
+                    >
+                        {screen.emoji}
+                    </Text>
+                    <Heading
+                        size="2xl"
+                        color={colors.action}
+                        textAlign="center"
+                        accessibilityRole="header"
+                    >
+                        {screen.title}
+                    </Heading>
+                    <Text color={colors.textSecondary} textAlign="center" size="lg" fontWeight="$bold">{screen.subtitle}</Text>
+                    <Box sx={{ flex: 1, justifyContent: 'center', py: '$4' }}>
+                        <Text textAlign="center" color={colors.text} size="md" lineHeight="$xl">{screen.content}</Text>
+                    </Box>
+                </VStack>
                 <VStack space="md" mt="$auto" pb="$4">
                     <HStack space="md">
                         <Button variant="outline" onPress={handleBack} sx={{ flex: 1 }}>
