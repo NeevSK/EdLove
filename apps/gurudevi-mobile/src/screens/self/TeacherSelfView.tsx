@@ -174,6 +174,8 @@ export default function TeacherSelfView() {
                                 variant="link"
                                 action="primary"
                                 onPress={hapticLight}
+                                accessibilityLabel={t('accessibility.voiceInput')}
+                                accessibilityRole="button"
                                 sx={{
                                     borderRadius: Theme.corners.full,
                                     width: 44,
@@ -246,6 +248,9 @@ export default function TeacherSelfView() {
                                         hapticLight();
                                         setActiveFeature(feature.id);
                                     }}
+                                    accessibilityRole="button"
+                                    accessibilityLabel={t(`self.${feature.id}`)}
+                                    accessibilityState={{ selected: activeFeature === feature.id }}
                                 >
                                     <VStack
                                         alignItems="center"
@@ -286,6 +291,9 @@ export default function TeacherSelfView() {
                                     hapticLight();
                                     setShowMoreTools(!showMoreTools);
                                 }}
+                                accessibilityRole="button"
+                                accessibilityLabel={showMoreTools ? t('self.lessTools') : t('self.moreTools')}
+                                accessibilityState={{ expanded: showMoreTools }}
                             >
                                 <VStack
                                     alignItems="center"

@@ -121,6 +121,9 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
                         <Pressable
                             key={lang.code}
                             onPress={() => changeLanguage(lang.code)}
+                            accessibilityRole="button"
+                            accessibilityLabel={t('accessibility.switchLanguage', { lang: lang.label })}
+                            accessibilityState={{ selected: i18n.language?.startsWith(lang.code) }}
                             sx={{
                                 paddingHorizontal: 10,
                                 paddingVertical: 6,
@@ -161,7 +164,8 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
                             <Image
                                 source={LOGO}
                                 style={{ width: 90, height: 90, borderRadius: 12 }}
-                                alt="Gurudevi Logo"
+                                accessible={true}
+                                accessibilityLabel={t('accessibility.appLogo')}
                             />
                         </Box>
                         <VStack space="xs" alignItems="center">

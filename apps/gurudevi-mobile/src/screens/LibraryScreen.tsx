@@ -114,6 +114,88 @@ export default function LibraryScreen() {
         const url = resource.url || resource.media?.secure_url || resource.media?.url;
         if (!url) return;
         Linking.openURL(url).catch(err => console.error("Couldn't load page", err));
+    };
+
+    const renderCategoryItem = ({ item: cat }: { item: any }) => (
+        <Pressable
+            onPress={() => setSelectedCategoryId(cat.id)}
+            accessibilityRole="button"
+            accessibilityLabel={cat.en}
+            accessibilityState={{ selected: selectedCategoryId === cat.id }}
+        >
+            <Box
+                sx={{
+                    paddingHorizontal: Theme.spacing.lg,
+                    paddingVertical: Theme.spacing.sm,
+                    backgroundColor: selectedCategoryId === cat.id
+                        ? Theme.colors.sanctuarySaffron
+                        : colors.secondary,
+                    borderRadius: Theme.corners.comfortable,
+                    borderWidth: 1,
+                    borderColor: selectedCategoryId === cat.id
+                        ? Theme.colors.sanctuarySaffron
+                        : colors.border,
+                    marginRight: 12
+                }}
+            >
+                <Text
+                    color={selectedCategoryId === cat.id
+                        ? Theme.colors.white
+                        : colors.text
+                    }
+                    size="sm"
+                    bold={selectedCategoryId === cat.id}
+                >
+                    {cat.en}
+                </Text>
+            </Box>
+        </Pressable>
+    );
+
+    const renderHeader = () => (
+        <VStack space="md" py="$4">
+            <VStack space="xs">
+                <Text color={colors.text} size="lg" bold>
+                    {t('library.categories') || 'Categories'}
+                </Text>
+                <FlatList
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    data={LIB_UI_CATEGORIES}
+                    renderItem={renderCategoryItem}
+                    keyExtractor={(cat) => cat.id}
+                />
+            </VStack>
+
+            {/* Quick Collections / Tags Bar */}
+            <VStack space="xs" mt="$2">
+                <Text color={colors.textSecondary} size="sm" bold>
+                    {t('library.collections') || 'Popular Collections'}
+                </Text>
+                <HStack space="sm" flexWrap="wrap">
+                    {['Grade 10', 'Mathematics', 'Past Papers', '2026 Reform'].map(tag => (
+                        <Pressable
+                            key={tag}
+                            onPress={() => setSearchQuery(tag)}
+                            accessibilityRole="button"
+                            accessibilityLabel={t('library.filterByTag', { tag })}
+                        >
+                            <Box sx={{
+                                paddingHorizontal: 10,
+                                paddingVertical: 4,
+                                borderRadius: 12,
+                                backgroundColor: colors.tertiary,
+                                borderWidth: 1,
+                                borderColor: colors.border
+                            }}>
+                                <Text size="xs" color={colors.textSecondary}>#{tag}</Text>
+                            </Box>
+                        </Pressable>
+                    ))}
+                </HStack>
+            </VStack>
+        </VStack>
+    );
     }, []);
 
     const handlePullToDesk = useCallback((resource: LibraryResource) => {
