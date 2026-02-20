@@ -11,10 +11,11 @@ import {
     ButtonText
 } from '@repo/ui';
 import { Theme } from '@repo/ui';
-import { useCommunity, Group, Post } from '@repo/community';
+import { useCommunity, Group, Post, PinnedResourcesShelf } from '@repo/community';
 import { GlobalHeader } from '@repo/ui';
 import PostCard from '../../components/community/PostCard';
 import { Users, Settings } from 'lucide-react-native';
+import { LibraryResource } from '@repo/library';
 
 // Mock params for now, in real nav this comes from route
 interface GroupDetailScreenProps {
@@ -32,6 +33,9 @@ export default function GroupDetailScreen({ groupId = '1', navigation }: GroupDe
         member_count: 42,
         type: 'public'
     };
+
+    // Pinned resources for this group (in a real app, fetched from a pinned resources API)
+    const pinnedResources: LibraryResource[] = [];
 
     React.useEffect(() => {
         fetchPosts(groupId);
@@ -79,6 +83,12 @@ export default function GroupDetailScreen({ groupId = '1', navigation }: GroupDe
                             </Button>
                         </HStack>
                     </Box>
+
+                    {/* Pinned Resources Shelf */}
+                    <PinnedResourcesShelf
+                        resources={pinnedResources}
+                        onResourcePress={(r) => console.log('OPEN_RESOURCE', r.id)}
+                    />
 
                     {/* Feed */}
                     <Heading size="md" color={Theme.colors.pearlGray} mt="$2">Discussions</Heading>
