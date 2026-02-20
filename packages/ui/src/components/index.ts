@@ -29,6 +29,8 @@ export * from './SandboxBanner';
 export { default as SandboxBanner } from './SandboxBanner';
 
 export * from './library/LibraryResourceCard';
+export * from './library/CollectionCard';
+export * from './SmartShelf';
 export * from './DeleteAccountModal';
 export { default as DeleteAccountModal } from './DeleteAccountModal';
 
