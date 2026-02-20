@@ -27,3 +27,4 @@ export * from './lib/apiInterceptor';
 export * from './hooks/useAIAgent';
 export * from './lib/monitoring/sentry';
 export * from './lib/monitoring/posthog';
+export * from './lib/mediaUtils';
