@@ -8,7 +8,7 @@ import CreatePostModal from '../components/community/CreatePostModal';
 import { useTranslation } from 'react-i18next';
 import { MessageSquare, Users, PenTool } from 'lucide-react-native';
 import { useCommunity, Post, Group } from '@repo/community';
-import { useUserRole, useRoleFeatures, useTracking, supabase } from '@repo/core';
+import { useUserRole, useTracking, supabase } from '@repo/core';
 import { isDemo } from '../lib/api/demo';
 import CommunityPresence from '../components/self/CommunityPresence';
 import ManifestoCard from '../components/community/ManifestoCard';
@@ -19,7 +19,6 @@ type TabType = 'feed' | 'groups';
 export default function CommunityScreen() {
     const { t } = useTranslation();
     const { role } = useUserRole();
-    const { isGuest } = useRoleFeatures();
     const {
         posts,
         groups,
