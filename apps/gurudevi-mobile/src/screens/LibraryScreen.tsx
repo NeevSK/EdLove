@@ -59,7 +59,6 @@ export default function LibraryScreen() {
         fetchNextResources,
         hasNextResources,
         isFetchingNextResources,
-        isLoadingCollections,
     } = useLibrary(
         { search: searchQuery || undefined },
         { visibility: 'public', limit: 10 }
