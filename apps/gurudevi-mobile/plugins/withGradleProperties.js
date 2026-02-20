@@ -1,10 +1,11 @@
 const { withGradleProperties, withAppBuildGradle, createRunOncePlugin } = require('@expo/config-plugins');
 
 const withCustomGradleProperties = (config) => {
-    // 1. Set safe memory limits for standard CI runners (7GB total)
+    // 1. Set safe memory limits and optimize build speed for CI
     // - Heap: 3GB (leaves ~4GB for system + Node + C++ compiler)
     // - Metaspace: 512MB
     // - Parallel: False (reduces peak memory usage)
+    // - Architectures: arm64-v8a only (saves 75% compilation time on CI)
     return withGradleProperties(config, (config) => {
         const jvmArgs = '-Xmx3072m -XX:MaxMetaspaceSize=512m';
 
@@ -19,6 +20,7 @@ const withCustomGradleProperties = (config) => {
 
         updateProperty('org.gradle.jvmargs', jvmArgs);
         updateProperty('org.gradle.parallel', 'false');
+        updateProperty('reactNativeArchitectures', 'arm64-v8a');
 
         return config;
     });
