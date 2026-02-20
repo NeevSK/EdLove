@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { ScrollView, RefreshControl, ActivityIndicator } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import {
     Box,
     VStack,
