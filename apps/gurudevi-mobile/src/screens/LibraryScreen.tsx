@@ -64,15 +64,31 @@ export default function LibraryScreen() {
         { visibility: 'public', limit: 10 }
     );
 
-    // "Continue Learning" — items pulled to desk
-    const deskResources = useMemo(
-        () => resources.filter((r) => deskItems.some((d) => d.id === r.id)),
-        [resources, deskItems]
-    );
+    // "Continue Learning" — items pulled to desk (offline-first from deskItems, hydrated from resources)
+    const deskResources = useMemo<LibraryResource[]>(() => {
+        if (!deskItems || deskItems.length === 0) return [];
+
+        // Start from locally stored desk items so they show up even before/without fetched resources
+        if (!resources || resources.length === 0) {
+            // Assume DeskItem is compatible with LibraryResource at runtime; cast for typing
+            return deskItems.map((d) => d as unknown as LibraryResource);
+        }
+
+        // When resources are available, hydrate deskItems with the freshest data
+        const hydratedById = new Map(resources.map((r) => [r.id, r]));
+
+        return deskItems
+            .map((d) => hydratedById.get(d.id) ?? (d as unknown as LibraryResource))
+            .filter((r): r is LibraryResource => r != null);
+    }, [resources, deskItems]);
 
     // "New Arrivals" — recent public resources not on desk
     const newArrivals = useMemo(
-        () => resources.filter((r) => !deskItems.some((d) => d.id === r.id)).slice(0, 20),
+        () => {
+            if (!resources || resources.length === 0) return [];
+            const deskIds = new Set(deskItems?.map((d) => d.id) ?? []);
+            return resources.filter((r) => !deskIds.has(r.id)).slice(0, 20);
+        },
         [resources, deskItems]
     );
 
