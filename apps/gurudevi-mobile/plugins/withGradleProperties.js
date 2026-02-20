@@ -1,24 +1,24 @@
 const { withGradleProperties, withAppBuildGradle, createRunOncePlugin } = require('@expo/config-plugins');
 
 const withCustomGradleProperties = (config) => {
-    // 1. Increase memory to the max physical limit of standard CI runners (7GB)
-    // We'll use 6GB for Heap + 1GB for Metaspace = 7GB total.
+    // 1. Set safe memory limits for standard CI runners (7GB total)
+    // - Heap: 3GB (leaves ~4GB for system + Node + C++ compiler)
+    // - Metaspace: 512MB
+    // - Parallel: False (reduces peak memory usage)
     return withGradleProperties(config, (config) => {
-        const jvmArgs = '-Xmx6g -XX:MaxMetaspaceSize=1g';
+        const jvmArgs = '-Xmx3072m -XX:MaxMetaspaceSize=512m';
 
-        const existingProperty = config.modResults.find(
-            (prop) => prop.type === 'property' && prop.key === 'org.gradle.jvmargs'
-        );
+        const updateProperty = (key, value) => {
+            const prop = config.modResults.find((p) => p.type === 'property' && p.key === key);
+            if (prop) {
+                prop.value = value;
+            } else {
+                config.modResults.push({ type: 'property', key, value });
+            }
+        };
 
-        if (existingProperty) {
-            existingProperty.value = jvmArgs;
-        } else {
-            config.modResults.push({
-                type: 'property',
-                key: 'org.gradle.jvmargs',
-                value: jvmArgs,
-            });
-        }
+        updateProperty('org.gradle.jvmargs', jvmArgs);
+        updateProperty('org.gradle.parallel', 'false');
 
         return config;
     });
