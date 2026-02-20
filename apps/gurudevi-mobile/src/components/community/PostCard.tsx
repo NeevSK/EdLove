@@ -109,7 +109,11 @@ const PostCard = React.memo(function PostCard({
                                     <>
                                         <Text color={Theme.colors.dimGray} size="xs">•</Text>
                                         {isInterSchool && (
-                                            <Globe size={12} color={Theme.colors.sageGreen} />
+                                            <Globe
+                                                size={12}
+                                                color={Theme.colors.sageGreen}
+                                                style={{ marginRight: 4 }}
+                                            />
                                         )}
                                         <Text color={Theme.colors.sanctuarySaffron} size="xs" bold>
                                             {groupName}
