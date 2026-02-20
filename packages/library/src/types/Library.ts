@@ -64,6 +64,7 @@ export interface LibraryResource {
     school_id: string;
     created_at: string;
     updated_at: string;
+    media?: import('@repo/core').MediaAsset; // Abstracted Media Asset
 }
 
 export interface ResourceCollection {

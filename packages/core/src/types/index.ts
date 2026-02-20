@@ -13,4 +13,5 @@ export * from './Assignment';
 export * from './Resource';
 export * from './Group';
 export * from './Lesson';
+export * from './Media';
 export type { UserRole } from '../constants/SriLankanSchools';
