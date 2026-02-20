@@ -30,7 +30,6 @@ import {
     Play,
     Bookmark,
     X,
-    ChevronDown,
 } from 'lucide-react-native';
 import {
     Actionsheet,
