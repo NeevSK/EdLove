@@ -3,8 +3,8 @@ import { RefreshControl, FlatList, ActivityIndicator, ScrollView } from 'react-n
 import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, Theme } from '@repo/ui';
 import LotusPetalFAB from '../components/shared/LotusPetalFAB';
 import PostCard from '../components/community/PostCard';
-import GroupCard from '../components/community/GroupCard';
 import CreatePostModal from '../components/community/CreatePostModal';
+import GroupsScreen from './community/GroupsScreen';
 import { useTranslation } from 'react-i18next';
 import { MessageSquare, Users, PenTool } from 'lucide-react-native';
 import { useCommunity, Post, Group } from '@repo/community';
@@ -15,6 +15,8 @@ import ManifestoCard from '../components/community/ManifestoCard';
 import { useManifestos } from '@repo/community';
 
 type TabType = 'feed' | 'groups';
+
+type FeedFilter = 'all' | string;
 
 export default function CommunityScreen() {
     const { t } = useTranslation();
@@ -28,14 +30,13 @@ export default function CommunityScreen() {
         fetchNextPosts,
         hasNextPosts,
         isFetchingNextPosts,
-        fetchNextGroups,
-        hasNextGroups,
-        isFetchingNextGroups
     } = useCommunity();
     const [activeTab, setActiveTab] = useState<TabType>('feed');
+    const [activeFeedFilter, setActiveFeedFilter] = useState<FeedFilter>('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [refreshing, setRefreshing] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [createPostGroupId, setCreatePostGroupId] = useState<string | undefined>(undefined);
     const [userId, setUserId] = useState<string | undefined>(undefined);
     const [schoolId, setSchoolId] = useState<string>('mock-school');
     const colors = useThemedColors();
@@ -47,8 +48,19 @@ export default function CommunityScreen() {
 
     const { manifestos, endorse, unendorse } = useManifestos(schoolId, userId);
 
-    // Filtered data for FlatList
-    const listData = useMemo(() => (activeTab === 'feed' ? posts : groups), [activeTab, posts, groups]);
+    // Filtered data for FlatList (feed only - groups tab delegated to GroupsScreen)
+    const listData = useMemo(() => posts, [posts]);
+
+    // Derived feed filter chips: "All Updates" + one chip per joined group
+    const feedFilterChips = useMemo(() => {
+        const chips: { label: string; value: FeedFilter }[] = [
+            { label: t('community.filters.allUpdates', 'All Updates'), value: 'all' }
+        ];
+        groups.slice(0, 6).forEach((g: Group) => {
+            chips.push({ label: g.name, value: g.id });
+        });
+        return chips;
+    }, [groups, t]);
 
     // Initial data load
     useEffect(() => {
@@ -73,6 +85,49 @@ export default function CommunityScreen() {
         await loadData();
         setRefreshing(false);
     };
+
+    const handleOpenCreatePost = (groupId?: string) => {
+        setCreatePostGroupId(groupId);
+        setShowCreateModal(true);
+    };
+
+    const renderFeedFilterChips = () => (
+        <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, paddingBottom: Theme.spacing.sm }}
+            accessibilityLabel="Feed filter options"
+            accessibilityRole="tablist"
+        >
+            <HStack space="sm">
+                {feedFilterChips.map((chip) => {
+                    const isActive = activeFeedFilter === chip.value;
+                    return (
+                        <Pressable
+                            key={chip.value}
+                            onPress={() => setActiveFeedFilter(chip.value)}
+                            sx={{
+                                paddingHorizontal: Theme.spacing.md,
+                                paddingVertical: Theme.spacing.xs,
+                                backgroundColor: isActive ? Theme.colors.sanctuarySaffron : colors.secondary,
+                                borderRadius: Theme.corners.full,
+                                borderWidth: 1,
+                                borderColor: isActive ? Theme.colors.sanctuarySaffron : colors.border,
+                            }}
+                        >
+                            <Text
+                                size="sm"
+                                bold={isActive}
+                                color={isActive ? Theme.colors.white : colors.textSecondary}
+                            >
+                                {chip.label}
+                            </Text>
+                        </Pressable>
+                    );
+                })}
+            </HStack>
+        </ScrollView>
+    );
 
     const renderTabs = () => (
         <HStack space="md" mb="$4" px="$4" py="$1" pt="$4">
@@ -148,22 +203,13 @@ export default function CommunityScreen() {
                 </VStack>
             )}
 
+            {/* Feed Context Filter Chips */}
+            {renderFeedFilterChips()}
+
             {posts.length > 0 && (
                 <Text size="sm" color={Theme.colors.mistGray} bold px="$1" mt="$2">
                     {t('community.sections.updates')}
                 </Text>
-            )}
-        </VStack>
-    );
-
-    const renderGroupsHeader = () => (
-        <VStack space="md" pb="$4">
-            {!userId && (
-                <PositiveInvitation
-                    type="guest"
-                    context="community"
-                    onAction={() => { }}
-                />
             )}
         </VStack>
     );
@@ -179,63 +225,43 @@ export default function CommunityScreen() {
             );
         }
 
-        if (activeTab === 'feed') {
-            if (posts.length === 0 && userId) {
-                return (
-                    <PositiveInvitation
-                        context="community"
-                        onAction={() => setShowCreateModal(true)}
-                    />
-                );
-            }
-        } else { // groups tab
-            if (groups.length === 0 && userId) {
-                return (
-                    <PositiveInvitation
-                        context="community"
-                        title={t('community.noGroups', 'No circles found')}
-                        description={t('community.noGroupsDesc', 'Connect with others by joining a community group.')}
-                    />
-                );
-            }
+        if (posts.length === 0 && userId) {
+            return (
+                <PositiveInvitation
+                    context="community"
+                    onAction={() => handleOpenCreatePost()}
+                />
+            );
         }
         return null;
     };
 
     const renderItem = ({ item }: { item: any }) => {
-        if (activeTab === 'feed') {
-            const post = item as Post;
-            return (
-                <PostCard
-                    id={post.id}
-                    author={{
-                        id: post.author_id,
-                        name: isDemo() ? `(Sample) ${post.author_name}` : post.author_name,
-                        avatarUrl: post.author_avatar,
-                        role: post.author_role
-                    }}
-                    content={post.content}
-                    type={post.post_type as any}
-                    createdAt={post.created_at}
-                    groupName={groups.find((g: Group) => g.id === post.group_id)?.name}
-                    reactions={typeof post.reactions === 'number' ? post.reactions : 0}
-                    comments={post.comment_count || 0}
-                    onPress={() => console.log('Open Post', post.id)}
-                />
-            );
-        } else {
-            const group = item as Group;
-            return (
-                <GroupCard
-                    id={group.id}
-                    name={isDemo() ? `(Sample) ${group.name}` : group.name}
-                    memberCount={group.member_count}
-                    type={group.type as any}
-                    description={group.description}
-                    onPress={() => console.log('NAVIGATE_TO_GROUP', group.id)}
-                />
-            );
-        }
+        const post = item as Post;
+        const postGroup = groups.find((g: Group) => g.id === post.group_id);
+        const isInterSchool = postGroup?.school_id === undefined;
+        const groupName = postGroup
+            ? (isDemo() ? `(Sample) ${postGroup.name}` : postGroup.name)
+            : undefined;
+        return (
+            <PostCard
+                id={post.id}
+                author={{
+                    id: post.author_id,
+                    name: isDemo() ? `(Sample) ${post.author_name}` : post.author_name,
+                    avatarUrl: post.author_avatar,
+                    role: post.author_role
+                }}
+                content={post.content}
+                type={post.post_type as any}
+                createdAt={post.created_at}
+                groupName={groupName}
+                isInterSchool={isInterSchool && !!postGroup}
+                reactions={typeof post.reactions === 'number' ? post.reactions : 0}
+                comments={post.comment_count || 0}
+                onPress={() => console.log('Open Post', post.id)}
+            />
+        );
     };
 
     return (
@@ -253,42 +279,53 @@ export default function CommunityScreen() {
             <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
                 {renderTabs()}
 
-                <FlatList
-                    data={listData}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id}
-                    onEndReached={() => {
-                        if (activeTab === 'feed' && hasNextPosts && !isFetchingNextPosts) {
-                            fetchNextPosts();
-                        } else if (activeTab === 'groups' && hasNextGroups && !isFetchingNextGroups) {
-                            fetchNextGroups();
+                {activeTab === 'feed' ? (
+                    <FlatList
+                        data={listData}
+                        renderItem={renderItem}
+                        keyExtractor={(item) => item.id}
+                        onEndReached={() => {
+                            if (hasNextPosts && !isFetchingNextPosts) {
+                                fetchNextPosts();
+                            }
+                        }}
+                        onEndReachedThreshold={0.5}
+                        ListHeaderComponent={renderFeedHeader}
+                        ListFooterComponent={isFetchingNextPosts ? (
+                            <ActivityIndicator size="small" color={colors.action} style={{ padding: 20 }} />
+                        ) : null}
+                        ListEmptyComponent={getEmptyListComponent()}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                                tintColor={colors.action}
+                            />
                         }
-                    }}
-                    onEndReachedThreshold={0.5}
-                    ListHeaderComponent={activeTab === 'feed' ? renderFeedHeader : renderGroupsHeader}
-                    ListFooterComponent={(isFetchingNextPosts || isFetchingNextGroups) ? (
-                        <ActivityIndicator size="small" color={colors.action} style={{ padding: 20 }} />
-                    ) : null}
-                    ListEmptyComponent={getEmptyListComponent()}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={onRefresh}
-                            tintColor={colors.action}
-                        />
-                    }
-                    contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, paddingBottom: 100 }}
-                />
+                        contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, paddingBottom: 100 }}
+                    />
+                ) : (
+                    <GroupsScreen
+                        userId={userId}
+                        onCreatePost={handleOpenCreatePost}
+                        onNavigateToGroup={(group: Group) => {
+                            // TODO: Implement actual navigation to a group details screen.
+                            // This placeholder preserves current behavior while wiring the prop.
+                            console.log('Navigate to group requested:', group.id);
+                        }}
+                    />
+                )}
 
                 <LotusPetalFAB
                     currentTab="community"
-                    onPress={() => setShowCreateModal(true)}
+                    onPress={() => handleOpenCreatePost()}
                     icon={<PenTool color={Theme.colors.white} size={24} />}
                 />
 
                 <CreatePostModal
                     isOpen={showCreateModal}
-                    onClose={() => setShowCreateModal(false)}
+                    onClose={() => { setShowCreateModal(false); setCreatePostGroupId(undefined); }}
+                    groupId={createPostGroupId}
                 />
             </Box >
         </ScreenWrapper >

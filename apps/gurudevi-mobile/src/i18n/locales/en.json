@@ -526,7 +526,8 @@
             "pedagogy": "Pedagogy",
             "other": "Other"
         },
-        "collections": "Collections"
+        "collections": "Collections",
+        "filterByTag": "Filter by #{{tag}} tag"
     },
     "profile": {
         "title": "Profile",
@@ -860,5 +861,12 @@
             "placeholder": "Share your thoughts, resource needs, or concerns...",
             "note": "This reflection will be surfaced on the Principal's Dashboard 'Echo' vistas."
         }
+    },
+    "accessibility": {
+        "appLogo": "Gurudevi App Logo",
+        "switchLanguage": "Switch to {{lang}}",
+        "currentLanguage": "Current language: {{lang}}",
+        "voiceInput": "Record voice note",
+        "loading": "Loading, please wait"
     }
 }
