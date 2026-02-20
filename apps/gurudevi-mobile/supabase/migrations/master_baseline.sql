@@ -463,11 +463,11 @@ WITH CHECK (
   invitations_sent = (SELECT invitations_sent FROM public.users WHERE id = auth.uid())
 );
 
-CREATE POLICY "Teachers manage their classrooms" ON public.classrooms FOR ALL TO authenticated USING (teacher_id = auth.uid());
-CREATE POLICY "students_teacher_policy" ON public.students FOR ALL TO authenticated USING (classroom_id IN (SELECT id FROM classrooms WHERE teacher_id = auth.uid()));
+CREATE POLICY "Teachers manage their classrooms" ON public.classrooms FOR ALL TO authenticated USING (teacher_id = auth.uid()) WITH CHECK (teacher_id = auth.uid());
+CREATE POLICY "students_teacher_policy" ON public.students FOR ALL TO authenticated USING (classroom_id IN (SELECT id FROM classrooms WHERE teacher_id = auth.uid())) WITH CHECK (classroom_id IN (SELECT id FROM classrooms WHERE teacher_id = auth.uid()));
 CREATE POLICY "students_principal_policy" ON public.students FOR SELECT TO authenticated USING (classroom_id IN (SELECT c.id FROM classrooms c INNER JOIN users u ON u.id = auth.uid() WHERE u.role = 'principal' AND c.school_id = u.school_id));
 
-CREATE POLICY "Users manage own timetable" ON public.timetable FOR ALL TO authenticated USING (user_id = auth.uid());
+CREATE POLICY "Users manage own timetable" ON public.timetable FOR ALL TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
 -- Secure RLS policies with explicit WITH CHECK for inserts
 CREATE POLICY "mood_logs_privacy" ON public.mood_logs FOR ALL TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
 CREATE POLICY "journal_entries_privacy" ON public.journal_entries FOR ALL TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());

@@ -23,6 +23,11 @@ import { BookOpen, Inbox } from 'lucide-react-native';
 import * as Linking from 'expo-linking';
 import { api } from '../lib/api';
 import { isDemo } from '../lib/api/demo';
+import { useLibrary, LibraryResource } from '@repo/library';
+import { useUserRole, useTracking, supabase, LIBRARY_RESOURCE_CATEGORIES } from '@repo/core';
+
+// Categories for display (including "All")
+const LIB_UI_CATEGORIES = [{ id: 'All', en: 'All', si: 'සියල්ල', ta: 'அனைத்தும்' }, ...LIBRARY_RESOURCE_CATEGORIES];
 import { useLibrary, LibraryResource, ResourceList } from '@repo/library';
 import {
     useUserRole,

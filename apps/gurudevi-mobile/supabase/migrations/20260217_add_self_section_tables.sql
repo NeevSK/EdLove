@@ -31,7 +31,8 @@ ALTER TABLE public.timetable ENABLE ROW LEVEL SECURITY;
 -- RLS: Users can only see/modify their own timetable
 CREATE POLICY timetable_user_policy
     ON public.timetable FOR ALL TO authenticated
-    USING (user_id = auth.uid());
+    USING (user_id = auth.uid())
+    WITH CHECK (user_id = auth.uid());
 
 -- --------------------------------------------
 -- 2. MOOD LOGS (Self Section - Mood Lotus)
@@ -99,6 +100,11 @@ ALTER TABLE public.students ENABLE ROW LEVEL SECURITY;
 CREATE POLICY students_teacher_policy
     ON public.students FOR ALL TO authenticated
     USING (
+        classroom_id IN (
+            SELECT id FROM public.classrooms WHERE teacher_id = auth.uid()
+        )
+    )
+    WITH CHECK (
         classroom_id IN (
             SELECT id FROM public.classrooms WHERE teacher_id = auth.uid()
         )

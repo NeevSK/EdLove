@@ -15,8 +15,9 @@ config.resolver.nodeModulesPaths = [
     path.resolve(workspaceRoot, 'node_modules'),
 ];
 
-// 3. Force Metro to resolve workspace packages from the app's node_modules
-//    This prevents duplicate React instances across packages
+// 3. Enable hierarchical lookup so Metro can find packages across the monorepo.
+//    The workspace node_modules paths above ensure the app's React copy takes
+//    priority, avoiding duplicate React instances across packages.
 config.resolver.disableHierarchicalLookup = false;
 
 module.exports = config;
