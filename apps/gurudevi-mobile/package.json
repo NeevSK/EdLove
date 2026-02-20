@@ -9,6 +9,7 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "test": "jest",
+    "lint": "eslint src/**/*.{ts,tsx}",
     "test:watch": "jest --watch",
     "build:dev": "eas build --profile development --platform android",
     "build:dev:ios": "eas build --profile development --platform ios",
@@ -92,12 +93,15 @@
     "zustand": "^5.0.10"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:^",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/react-native": "14.0.0-beta.0",
     "@types/jest": "^29.5.14",
     "@types/react": "~19.1.10",
     "@types/react-test-renderer": "^19.1.0",
+    "eslint": "^9.38.0",
+    "eslint-plugin-react-native-a11y": "^3.5.1",
     "jest-cucumber": "^4.5.0",
     "jest-expo": "54.0.17",
     "react-native-web": "^0.21.2",

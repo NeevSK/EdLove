@@ -35,6 +35,7 @@ import {
     Edit
 } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
+import { useAccessibility } from '../../hooks/useAccessibility';
 
 // ============================================================================
 // TYPES
@@ -111,6 +112,8 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     disabled = true,
     bottomInset = Theme.spacing.lg, // Default value if not provided
 }) => {
+    const { isReduceMotionEnabled, announce } = useAccessibility();
+
     // TEMPORARY: Return null if disabled to completely hide the FAB
     if (disabled) return null;
 
@@ -194,7 +197,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     // ============================================================================
 
     useEffect(() => {
-        if (!disabled) {
+        if (!disabled && !isReduceMotionEnabled) {
             breathingScale.value = 0.95;
             breathingScale.value = withRepeat(
                 withTiming(1.02, {
@@ -207,7 +210,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         } else {
             breathingScale.value = withTiming(1.0, { duration: 200 });
         }
-    }, [disabled]);
+    }, [disabled, isReduceMotionEnabled]);
 
     // ============================================================================
     // ANIMATION STYLES
@@ -235,6 +238,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                 damping: 15,
                 stiffness: 150
             });
+            announce(showActions ? "Actions menu closed" : "Actions menu opened");
             return;
         }
 
@@ -313,6 +317,13 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         <Animated.View
             {...panResponder.panHandlers}
             style={containerStyle}
+            accessible={true}
+            accessibilityRole="image" // The FAB itself is an image/button
+            accessibilityLabel={config.label}
+            accessibilityHint={actions && actions.length > 0 ? "Double tap to view actions" : undefined}
+            accessibilityState={{ disabled, expanded: showActions }}
+            accessibilityActions={[{ name: 'activate', label: 'Activate' }]}
+            onAccessibilityAction={handlePress}
         >
             <View style={styles.contentContainer}>
                 {/* Glow Behind */}
@@ -341,10 +352,11 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                             key={index}
                             style={styles.actionBubble}
                             onPress={() => {
-                                action.onPress();
-                                setShowActions(false);
                                 triggerHaptic();
                             }}
+                            accessible={true}
+                            accessibilityRole="button"
+                            accessibilityLabel={action.label}
                         >
                             <View style={styles.actionBubbleContent}>
                                 {action.icon && (
