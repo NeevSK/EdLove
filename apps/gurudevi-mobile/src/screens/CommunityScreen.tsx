@@ -97,6 +97,8 @@ export default function CommunityScreen() {
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, paddingBottom: Theme.spacing.sm }}
+            accessibilityLabel="Feed filter options"
+            accessibilityRole="tablist"
         >
             <HStack space="sm">
                 {feedFilterChips.map((chip) => {
