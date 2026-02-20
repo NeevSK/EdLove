@@ -248,7 +248,20 @@ function CardOverlay({
     onPullToDesk,
     absolute = false,
 }: OverlayProps) {
-    const overlayStyle = absolute ? styles.overlay : { flex: 1, justifyContent: 'space-between' as const };
+    const baseOverlayStyle = [styles.overlay, { justifyContent: 'space-between' as const }];
+    const overlayStyle = absolute
+        ? baseOverlayStyle
+        : [
+              baseOverlayStyle,
+              {
+                  flex: 1,
+                  position: 'relative' as const,
+                  top: undefined,
+                  right: undefined,
+                  bottom: undefined,
+                  left: undefined,
+              },
+          ];
 
     return (
         <View style={overlayStyle}>
