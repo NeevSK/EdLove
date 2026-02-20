@@ -35,6 +35,8 @@ export const PinnedResourcesShelf: React.FC<PinnedResourcesShelfProps> = ({
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{ paddingHorizontal: 4 }}
+                accessibilityLabel="Pinned resources"
+                accessibilityRole="scrollbar"
             >
                 <HStack space="sm">
                     {resources.map((resource) => (
