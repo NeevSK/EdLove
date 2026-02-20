@@ -4,6 +4,19 @@ import { SafeZustandStorage } from '../lib/storageWrapper';
 import { UserRole, User } from '../types/User';
 import { SchoolType } from '../constants/SriLankanSchools';
 
+// ============================================================================
+// DESK ITEM - Minimal offline-first representation for Personal Desk
+// ============================================================================
+
+export interface DeskItem {
+    id: string;
+    title: string;
+    type: string;
+    url?: string;
+    thumbnailUrl?: string;
+    addedAt: string;
+}
+
 export type ThemeMode = 'light' | 'dark' | 'auto' | 'system';
 
 interface AppState {
@@ -33,6 +46,9 @@ interface AppState {
     demoLogs: Array<{ module: string; method: string; payload: any; timestamp: number }>;
     addDemoLog: (log: { module: string; method: string; payload: any }) => void;
     clearDemoLogs: () => void;
+    deskItems: DeskItem[];
+    addToDeskLocal: (item: DeskItem) => void;
+    removeFromDeskLocal: (id: string) => void;
     toast: { message: string; type: 'success' | 'error' | 'info'; visible: boolean };
     isOnline: boolean;
     networkQuality: 'excellent' | 'good' | 'fair' | 'poor' | 'offline';
@@ -74,6 +90,15 @@ export const useStore = create<AppState>()(
                 demoLogs: [...state.demoLogs, { ...log, timestamp: Date.now() }]
             })),
             clearDemoLogs: () => set({ demoLogs: [] }),
+            deskItems: [],
+            addToDeskLocal: (item) => set((state) => ({
+                deskItems: state.deskItems.some((d) => d.id === item.id)
+                    ? state.deskItems
+                    : [...state.deskItems, item],
+            })),
+            removeFromDeskLocal: (id) => set((state) => ({
+                deskItems: state.deskItems.filter((d) => d.id !== id),
+            })),
             toast: { message: '', type: 'info', visible: false },
             isOnline: true,
             networkQuality: 'good',
@@ -96,6 +121,7 @@ export const useStore = create<AppState>()(
                 onboardingCompleted: state.onboardingCompleted,
                 isExplorerMode: state.isExplorerMode,
                 dismissedSampleIds: state.dismissedSampleIds,
+                deskItems: state.deskItems,
                 // demoLogs, justFinishedOnboarding, isBridging, and toast are session-only
             }),
         }
