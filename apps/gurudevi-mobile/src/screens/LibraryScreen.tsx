@@ -36,7 +36,6 @@ import {
 export default function LibraryScreen() {
     const { t } = useTranslation();
     const { role } = useUserRole();
-    const { isGuest } = useRoleFeatures();
 
     const [searchQuery, setSearchQuery] = useState('');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
