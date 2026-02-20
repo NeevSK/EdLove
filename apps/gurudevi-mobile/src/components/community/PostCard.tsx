@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Box, HStack, VStack, Text, Avatar, AvatarFallbackText, AvatarImage } from '@repo/ui';
-import { MoreHorizontal, Heart, MessageCircle, Share2, BarChart2 } from 'lucide-react-native';
+import { MoreHorizontal, Heart, MessageCircle, Share2, BarChart2, Globe } from 'lucide-react-native';
 import { SanctuaryCard } from '@repo/ui';
 import { Theme } from '@repo/ui';
 import { formatDistanceToNow } from 'date-fns';
+import { MediaAsset } from '@repo/core';
 
 export type PostType = 'post' | 'text' | 'announcement' | 'poll';
 
@@ -23,11 +24,15 @@ interface PostCardProps {
     comments: number;
     isLiked?: boolean;
     groupName?: string;
+    isInterSchool?: boolean;
+    mediaAssets?: MediaAsset[];
     onPress?: () => void;
     onLike?: () => void;
     onComment?: () => void;
     isAnonymous?: boolean;
 }
+
+const MEDIA_HEIGHT = 220;
 
 const PostCard = React.memo(function PostCard({
     author,
@@ -38,15 +43,50 @@ const PostCard = React.memo(function PostCard({
     comments,
     isLiked,
     groupName,
+    isInterSchool,
+    mediaAssets,
     onPress,
     onLike,
     onComment,
     isAnonymous
 }: PostCardProps) {
 
+    const [activeMediaIndex, setActiveMediaIndex] = React.useState(0);
+
     // Announcement Style
     const isAnnouncement = type === 'announcement';
     const borderColor = isAnnouncement ? Theme.colors.sanctuarySaffron : 'transparent';
+
+    const renderMediaCarousel = () => {
+        if (!mediaAssets || mediaAssets.length === 0) return null;
+        const imageAssets = mediaAssets.filter((a) => a.resource_type === 'image');
+        if (imageAssets.length === 0) return null;
+
+        const activeAsset = imageAssets[activeMediaIndex];
+        return (
+            <View>
+                <Image
+                    source={{ uri: activeAsset?.secure_url || activeAsset?.url }}
+                    style={styles.mediaImage}
+                    resizeMode="cover"
+                />
+                {imageAssets.length > 1 && (
+                    <HStack space="xs" justifyContent="center" mt="$1">
+                        {imageAssets.map((_, idx) => (
+                            <TouchableOpacity key={idx} onPress={() => setActiveMediaIndex(idx)}>
+                                <View
+                                    style={[
+                                        styles.mediaDot,
+                                        { backgroundColor: idx === activeMediaIndex ? Theme.colors.sanctuarySaffron : Theme.colors.dimGray }
+                                    ]}
+                                />
+                            </TouchableOpacity>
+                        ))}
+                    </HStack>
+                )}
+            </View>
+        );
+    };
 
     return (
         <SanctuaryCard onPress={onPress} elevated={isAnnouncement}>
@@ -68,6 +108,9 @@ const PostCard = React.memo(function PostCard({
                                 {groupName && (
                                     <>
                                         <Text color={Theme.colors.dimGray} size="xs">•</Text>
+                                        {isInterSchool && (
+                                            <Globe size={12} color={Theme.colors.sageGreen} />
+                                        )}
                                         <Text color={Theme.colors.sanctuarySaffron} size="xs" bold>
                                             {groupName}
                                         </Text>
@@ -90,6 +133,9 @@ const PostCard = React.memo(function PostCard({
                 <Text color={Theme.colors.pearlGray} size="md" numberOfLines={onPress ? 3 : undefined}>
                     {content}
                 </Text>
+
+                {/* Media Carousel */}
+                {renderMediaCarousel()}
 
                 {/* Footer: Actions */}
                 <HStack justifyContent="space-between" alignItems="center" mt="$2">
@@ -132,5 +178,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-    }
+    },
+    mediaImage: {
+        width: '100%',
+        height: MEDIA_HEIGHT,
+        borderRadius: Theme.corners.comfortable,
+        marginTop: 4,
+    },
+    mediaDot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+    },
 });
