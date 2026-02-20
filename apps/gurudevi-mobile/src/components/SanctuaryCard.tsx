@@ -101,7 +101,6 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
     return (
         <View
             accessible={true}
-            accessibilityRole="none"
             accessibilityLabel={accessibilityLabel ?? title}
         >
             {renderContent()}
