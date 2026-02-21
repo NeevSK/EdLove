@@ -28,7 +28,10 @@ import {
     InputField,
     Textarea,
     TextareaInput,
+    SmartShelf,
+    CollectionCard
 } from '@repo/ui';
+import { Alert } from 'react-native';
 import {
     FileText,
     Link as LinkIcon,
@@ -38,11 +41,14 @@ import {
     Trash2,
     ExternalLink,
     Video,
+    Share2,
+    Download
 } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
 import { hapticLight, hapticSuccess } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
+import { libraryAPI } from '@repo/library';
 import { useRoute } from '@react-navigation/native';
 import { GlobalHeader } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
@@ -57,6 +63,8 @@ export default function ContentLibrary() {
     const { t } = useTranslation();
     const colors = useThemedColors();
     const showToast = useStore(state => state.showToast);
+    const addToDeskLocal = useStore(state => state.addToDeskLocal);
+    const deskItems = useStore(state => state.deskItems);
 
     // Resilient Data Hook
     const { resources, isLoading, setResources } = useResources(classroomId);
@@ -146,6 +154,45 @@ export default function ContentLibrary() {
                 setNewResourceUrl('');
                 setNewResourceContent('');
                 setNewResourceType('note');
+            }
+        }
+    );
+
+    const publishMutation = useSafeMutation(
+        (resource: ClassroomResource) => {
+            const typeMapping: Record<string, any> = {
+                note: 'note',
+                link: 'link',
+                pdf: 'pdf',
+                video: 'video',
+                text: 'reading',
+                doc: 'doc'
+            };
+            const mappedType = typeMapping[resource.type] || 'other';
+
+            return libraryAPI.createResource(
+                {
+                    title: resource.title,
+                    description: resource.description ? `${resource.description}\n\n${resource.content || ''}` : resource.content || '',
+                    type: mappedType,
+                    format: 'document',
+                    url: resource.url || '',
+                    difficulty: 'beginner',
+                    language: 'english',
+                    visibility: 'public',
+                    subject: 'General',
+                    tags: [],
+                    topics: [],
+                    grades: []
+                },
+                'current-teacher-id',
+                'teacher'
+            );
+        },
+        {
+            onSuccess: () => {
+                hapticSuccess();
+                showToast('Published to Global Library', 'success');
             }
         }
     );
@@ -258,6 +305,41 @@ export default function ContentLibrary() {
 
                     {/* Actions */}
                     <HStack sx={{ gap: Theme.spacing.small, justifyContent: 'flex-end', marginTop: Theme.spacing.small }}>
+                        <Pressable onPress={() => publishMutation.mutate(resource)}>
+                            <Box
+                                sx={{
+                                    padding: Theme.spacing.sm,
+                                    borderRadius: Theme.corners.comfortable,
+                                    backgroundColor: colors.tertiary,
+                                }}
+                            >
+                                <Share2 color={Theme.colors.amberGlow} size={18} />
+                            </Box>
+                        </Pressable>
+
+                        <Pressable onPress={() => {
+                            addToDeskLocal({
+                                id: resource.id,
+                                title: resource.title,
+                                type: resource.type,
+                                url: resource.url,
+                                thumbnailUrl: undefined,
+                                addedAt: new Date().toISOString()
+                            });
+                            showToast('Saved to Personal Desk', 'success');
+                            hapticSuccess();
+                        }}>
+                            <Box
+                                sx={{
+                                    padding: Theme.spacing.sm,
+                                    borderRadius: Theme.corners.comfortable,
+                                    backgroundColor: colors.tertiary,
+                                }}
+                            >
+                                <Download color={Theme.colors.skyBlue} size={18} />
+                            </Box>
+                        </Pressable>
+
                         <Pressable onPress={() => togglePin(resource.id)}>
                             <Box
                                 sx={{
@@ -321,6 +403,52 @@ export default function ContentLibrary() {
                 }}
             />
             <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ padding: Theme.spacing.lg, paddingBottom: 100 }}>
+                {/* Personal Desk Shelf (Import to Classroom) */}
+                {deskItems && deskItems.length > 0 && (
+                    <Box sx={{ marginBottom: Theme.spacing.lg }}>
+                        <SmartShelf
+                            title={t('library.personalDesk') || 'Your Personal Desk'}
+                            horizontalPadding={0}
+                        >
+                            {deskItems.map((item) => (
+                                <CollectionCard
+                                    key={item.id}
+                                    title={item.title}
+                                    creator="From Desk"
+                                    resourceCount={1}
+                                    subjectTag={item.type}
+                                    thumbnailUrl={item.thumbnailUrl}
+                                    verified={true}
+                                    onPress={() => {
+                                        Alert.alert(
+                                            t('library.importToClassroom') || 'Import to Classroom',
+                                            t('library.importConfirm') || `Would you like to import "${item.title}" from your desk into this classroom?`,
+                                            [
+                                                { text: t('common.cancel') || 'Cancel', style: 'cancel' },
+                                                {
+                                                    text: t('common.import') || 'Import',
+                                                    onPress: () => {
+                                                        addMutation.mutate({
+                                                            classroom_id: classroomId,
+                                                            teacher_id: 'current-teacher-id',
+                                                            title: item.title,
+                                                            description: `Imported from Personal Desk`,
+                                                            type: item.type,
+                                                            url: item.url,
+                                                            content: '',
+                                                            is_pinned: false
+                                                        });
+                                                    }
+                                                }
+                                            ]
+                                        );
+                                    }}
+                                />
+                            ))}
+                        </SmartShelf>
+                    </Box>
+                )}
+
                 {/* Resources Grid */}
                 {isLoading ? (
                     <VStack sx={{ gap: Theme.spacing.md }}>

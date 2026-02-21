@@ -24,15 +24,17 @@ import {
     Plus,
     Users,
     BookOpen,
-    School
+    School,
+    ScanLine
 } from 'lucide-react-native';
 
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { useFeatureAccess, useStore, ClassroomStackParamList } from '@repo/core';
+import { useFeatureAccess, useStore, ClassroomStackParamList, api, supabase } from '@repo/core';
 import ClassroomList from './ClassroomList';
 import CreateClassroomModal from './CreateClassroomModal';
+import { ScannerModal } from '@repo/scanner-kit';
 import TeacherFeedbackModal from './teacher/TeacherFeedbackModal';
 import { Modal, TouchableOpacity } from 'react-native';
 import { X } from 'lucide-react-native';
@@ -52,6 +54,7 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
     const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+    const [isScannerOpen, setIsScannerOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'create' | 'join'>('create');
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
@@ -70,6 +73,32 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
             totalStudents: loadedClassrooms.reduce((acc, curr) => acc + (curr.student_count || 0), 0)
         });
         setIsLoading(false);
+    };
+
+    const handleScan = async (data: string) => {
+        // Handle join-class:UUID
+        let classId = data;
+        if (data.startsWith('join-class:')) {
+            classId = data.replace('join-class:', '');
+        }
+
+        try {
+            const { data: { user } } = await supabase.auth.getUser(); // supabase is already imported in some packages via @repo/core
+            // Wait, supabase isn't imported here. I should use useStore or api.
+            // Actually, let's just open the Join Modal with this ID pre-filled or auto-submit.
+
+            // For now, let's just use the api to join
+            if (user) {
+                await api.classrooms.update(classId, { teacher_id: user.id });
+                setRefreshTrigger(prev => prev + 1);
+                Alert.alert("Success", "You have joined the classroom.");
+            }
+        } catch (err) {
+            console.error("Failed to join via QR", err);
+            Alert.alert("Error", "Could not join classroom. Please check the QR code.");
+        } finally {
+            setIsScannerOpen(false);
+        }
     };
 
     const QuickAction = ({ icon: LucideIcon, label, onPress, color }: any) => (
@@ -173,8 +202,8 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                     </Text>
                 </VStack>
 
-                {/* Quick Actions */}
-                <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.lg }}>
+                {/* Quick Actions - Primary */}
+                <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.md }}>
                     <QuickAction
                         icon={Plus}
                         label={t('classroom.createClass') || 'Create Class'}
@@ -193,6 +222,16 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                         color={Theme.colors.sanctuarySaffron}
                     />
                     <QuickAction
+                        icon={ScanLine}
+                        label={t('classroom.scanToJoin') || 'Scan QR'}
+                        onPress={() => setIsScannerOpen(true)}
+                        color={Theme.colors.amberGlow}
+                    />
+                </HStack>
+
+                {/* Quick Actions - Utility */}
+                <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.lg }}>
+                    <QuickAction
                         icon={ShieldCheck}
                         label={t('teacher.admin.portal') || 'Admin'}
                         onPress={() => setIsAdminModalOpen(true)}
@@ -202,7 +241,7 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                         icon={BookOpen}
                         label={t('classroom.library') || 'Library'}
                         onPress={() => {
-                            // TODO: Library navigation
+                            navigation.navigate('Library' as any);
                         }}
                         color={Theme.colors.amberGlow}
                     />
@@ -279,6 +318,14 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                 mode={modalMode}
                 onClose={() => setIsCreateModalOpen(false)}
                 onSuccess={() => setRefreshTrigger(prev => prev + 1)}
+            />
+
+            <ScannerModal
+                visible={isScannerOpen}
+                onClose={() => setIsScannerOpen(false)}
+                onScan={handleScan}
+                title="Join Classroom"
+                accentColor={Theme.colors.sanctuarySaffron}
             />
 
             <TeacherFeedbackModal

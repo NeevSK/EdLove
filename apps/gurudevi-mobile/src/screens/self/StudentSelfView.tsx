@@ -31,7 +31,7 @@ import { GlobalHeader } from '@repo/ui';
 import DailyContentCard from '../../components/self/DailyContentCard';
 import WelcomeModal from '../../components/self/WelcomeModal';
 import { SkeletonCard, PositiveInvitation } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
+import { useThemedColors, useBottomTabPadding } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
 import EditProfileModal from '../../components/profile/EditProfileModal';
 
@@ -59,6 +59,7 @@ export default function StudentSelfView() {
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const colors = useThemedColors();
+    const bottomPadding = useBottomTabPadding();
 
     React.useEffect(() => {
         const fetchUser = async () => {
@@ -198,11 +199,11 @@ export default function StudentSelfView() {
         : STUDENT_CORE_FEATURES;
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper scroll={false}>
             <GlobalHeader isSelfView avatarUrl={userProfile?.avatar_url} />
             <ScrollView
                 sx={{ flex: 1 }}
-                contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}
+                contentContainerStyle={{ paddingBottom: bottomPadding, paddingTop: Theme.spacing.lg }}
                 showsVerticalScrollIndicator={false}
             >
 

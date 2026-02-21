@@ -41,4 +41,5 @@ yarn-error.log*
 
 ## IDEs
 .vscode/
+.idea/
 .claude/

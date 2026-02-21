@@ -3,4 +3,5 @@ export type ClassroomStackParamList = {
     ClassroomDetails: { classroomId: string; classroomName: string };
     Attendance: { classroomId: string; classroomName: string };
     Gradebook: { classroomId: string; classroomName: string };
+    SchoolCreation: undefined;
 };

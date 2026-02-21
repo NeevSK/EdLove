@@ -136,8 +136,9 @@ export {
     ModalCloseButton
 } from '@gluestack-ui/themed/build/components/Modal';
 
-export { Icon } from '@gluestack-ui/themed/build/components/Icons';
-export { CloseIcon } from '@gluestack-ui/themed/build/components/Icons';
+import { Icon as BaseIcon, CloseIcon as BaseCloseIcon } from '@gluestack-ui/themed/build/components/Icons';
+export const Icon = BaseIcon as any;
+export const CloseIcon = BaseCloseIcon as any;
 
 // Link with relaxed types
 import { Link as BaseLink, LinkText as BaseLinkText } from '@gluestack-ui/themed/build/components/Link';
@@ -185,11 +186,15 @@ export {
     ActionsheetDragIndicatorWrapper,
 } from '@gluestack-ui/themed/build/components/Actionsheet';
 
-export {
-    Fab,
-    FabLabel,
-    FabIcon,
+import {
+    Fab as BaseFab,
+    FabLabel as BaseFabLabel,
+    FabIcon as BaseFabIcon,
 } from '@gluestack-ui/themed/build/components/Fab';
+
+export const Fab = BaseFab as any;
+export const FabLabel = BaseFabLabel as any;
+export const FabIcon = BaseFabIcon as any;
 
 export {
     Progress,

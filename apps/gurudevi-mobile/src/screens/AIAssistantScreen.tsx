@@ -68,8 +68,7 @@ export default function AIAssistantScreen() {
 
     return (
         <ScreenWrapper
-            headerVisible={false}
-            sx={{ backgroundColor: Theme.colors.voidIndigo }}
+            backgroundColor={Theme.colors.voidIndigo}
         >
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}

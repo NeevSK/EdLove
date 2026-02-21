@@ -12,7 +12,7 @@ import {
     Text
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { Theme, useThemedColors, DeleteAccountModal } from '@repo/ui';
+import { Theme, useThemedColors, useBottomTabPadding, DeleteAccountModal } from '@repo/ui';
 import { useAccountDeletion, useRewards, useTracking } from '@repo/core';
 import { supabase } from '@repo/core';
 import { hapticSuccess, hapticLight, hapticError } from '@repo/ui';
@@ -45,6 +45,7 @@ export default function ProfileScreen() {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const { isDark } = useEnvironment();
     const colors = useThemedColors();
+    const bottomPadding = useBottomTabPadding();
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
     const [isSettingsVisible, setSettingsVisible] = useState(false);
     const { deleteAccount, isDeleting } = useAccountDeletion();
@@ -170,7 +171,7 @@ export default function ProfileScreen() {
     }
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper scroll={false}>
             <GlobalHeader
                 title={t('profile.title') || 'Identity'}
                 subtitle={t('profile.subtitle') || "Sanctuary Profile"}
@@ -202,7 +203,7 @@ export default function ProfileScreen() {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{
                         paddingVertical: Theme.spacing.md,
-                        paddingBottom: 100, // Extra padding for scrolling
+                        paddingBottom: bottomPadding,
                     }}
                     refreshControl={
                         <RefreshControl

@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect, useMemo } from 'react';
 import { RefreshControl, FlatList, ActivityIndicator, ScrollView } from 'react-native';
-import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, Theme } from '@repo/ui';
+import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, Theme, useBottomTabPadding } from '@repo/ui';
 import LotusPetalFAB from '../components/shared/LotusPetalFAB';
 import PostCard from '../components/community/PostCard';
 import CreatePostModal from '../components/community/CreatePostModal';
@@ -41,6 +41,7 @@ export default function CommunityScreen() {
     const [schoolId, setSchoolId] = useState<string>('mock-school');
     const colors = useThemedColors();
     const { discoverFeature } = useTracking();
+    const bottomPadding = useBottomTabPadding();
 
     useEffect(() => {
         discoverFeature('section_community');
@@ -241,14 +242,14 @@ export default function CommunityScreen() {
         const postGroup = groups.find((g: Group) => g.id === post.group_id);
         const isInterSchool = postGroup?.school_id === undefined;
         const groupName = postGroup
-            ? (isDemo() ? `(Sample) ${postGroup.name}` : postGroup.name)
+            ? (isDemo() ? `(Sample) ${postGroup.name} ` : postGroup.name)
             : undefined;
         return (
             <PostCard
                 id={post.id}
                 author={{
                     id: post.author_id,
-                    name: isDemo() ? `(Sample) ${post.author_name}` : post.author_name,
+                    name: isDemo() ? `(Sample) ${post.author_name} ` : post.author_name,
                     avatarUrl: post.author_avatar,
                     role: post.author_role
                 }}
@@ -302,16 +303,15 @@ export default function CommunityScreen() {
                                 tintColor={colors.action}
                             />
                         }
-                        contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, paddingBottom: 100 }}
+                        contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, paddingBottom: bottomPadding }}
                     />
                 ) : (
                     <GroupsScreen
                         userId={userId}
                         onCreatePost={handleOpenCreatePost}
-                        onNavigateToGroup={(group: Group) => {
+                        onNavigateToGroup={(groupId: string) => {
                             // TODO: Implement actual navigation to a group details screen.
-                            // This placeholder preserves current behavior while wiring the prop.
-                            console.log('Navigate to group requested:', group.id);
+                            console.log('Navigate to group requested:', groupId);
                         }}
                     />
                 )}

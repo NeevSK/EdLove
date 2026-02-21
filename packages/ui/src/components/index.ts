@@ -2,7 +2,7 @@ export * from './GlobalHeader';
 export { default as GlobalHeader } from './GlobalHeader';
 
 export * from './ScreenWrapper';
-export { default as ScreenWrapper } from './ScreenWrapper';
+export { default as ScreenWrapper, useBottomTabPadding } from './ScreenWrapper';
 
 export * from './SanctuaryCard';
 export { default as SanctuaryCard } from './SanctuaryCard';

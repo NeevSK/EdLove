@@ -8,6 +8,7 @@ import {
 } from '@repo/classroom';
 import { Theme } from '@repo/ui';
 import { ClassroomStackParamList } from '@repo/core';
+import { SchoolCreationScreen } from '../screens'; // Added
 
 const Stack = createNativeStackNavigator<ClassroomStackParamList>();
 
@@ -24,6 +25,7 @@ export default function ClassroomStackNavigator() {
             <Stack.Screen name="ClassroomDetails" component={ClassroomDashboard} />
             <Stack.Screen name="Attendance" component={AttendanceScreen} />
             <Stack.Screen name="Gradebook" component={GradebookScreen} />
+            <Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} />
         </Stack.Navigator>
     );
 }

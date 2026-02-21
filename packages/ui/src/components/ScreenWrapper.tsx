@@ -15,6 +15,12 @@ interface ScreenWrapperProps {
     backgroundColor?: string;
     refreshControl?: React.ReactElement<import('react-native').RefreshControlProps>;
     style?: any;
+    hasBottomTab?: boolean;
+}
+
+export function useBottomTabPadding() {
+    const insets = useSafeAreaInsets();
+    return 80 + insets.bottom;
 }
 
 export default function ScreenWrapper({
@@ -25,7 +31,8 @@ export default function ScreenWrapper({
     scroll,
     backgroundColor,
     refreshControl,
-    style
+    style,
+    hasBottomTab = false
 }: ScreenWrapperProps) {
     const insets = useSafeAreaInsets();
     const { isDark, temporalPhase } = useEnvironment();
@@ -61,7 +68,11 @@ export default function ScreenWrapper({
                 {(scrollable || scroll) ? (
                     <ScrollView
                         style={{ flex: 1 }}
-                        contentContainerStyle={[styles.contentContainer, style]}
+                        contentContainerStyle={[
+                            styles.contentContainer,
+                            hasBottomTab && { paddingBottom: 80 + insets.bottom },
+                            style
+                        ]}
                         showsVerticalScrollIndicator={false}
                         refreshControl={refreshControl}
                     >

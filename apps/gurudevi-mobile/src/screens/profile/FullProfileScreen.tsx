@@ -11,7 +11,8 @@ import {
     useThemedColors,
     Theme,
     GlobalHeader,
-    ScreenWrapper
+    ScreenWrapper,
+    useBottomTabPadding
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { MapPin, Globe, Phone, Mail, Award, Shield } from 'lucide-react-native';
@@ -30,6 +31,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
     const { profile } = route.params;
     const { t } = useTranslation();
     const colors = useThemedColors();
+    const bottomPadding = useBottomTabPadding();
 
     if (!profile) return null;
 
@@ -57,13 +59,13 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
     ];
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper scroll={false}>
             <GlobalHeader
                 title={t('profile.fullProfile', 'Full Profile')}
                 showBack
                 onBack={() => navigation.goBack()}
             />
-            <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+            <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding }}>
                 <VStack space="xl" sx={{ padding: Theme.spacing.md }}>
 
                     {/* Identity Card Reuse */}

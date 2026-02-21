@@ -24,7 +24,8 @@ import {
     SkeletonCard,
     PositiveInvitation,
     useThemedColors,
-    ScreenWrapper
+    ScreenWrapper,
+    useBottomTabPadding
 } from '@repo/ui';
 import { Battery, Activity, BookOpen, Users, Lightbulb, Calendar } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -60,6 +61,7 @@ export default function PrincipalSelfView() {
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const colors = useThemedColors();
+    const bottomPadding = useBottomTabPadding();
 
     React.useEffect(() => {
         const fetchUser = async () => {
@@ -209,11 +211,11 @@ export default function PrincipalSelfView() {
         : PRINCIPAL_CORE_FEATURES;
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper scroll={false}>
             <GlobalHeader isSelfView avatarUrl={userProfile?.avatar_url} />
             <ScrollView
                 sx={{ flex: 1 }}
-                contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}
+                contentContainerStyle={{ paddingBottom: bottomPadding, paddingTop: Theme.spacing.lg }}
                 showsVerticalScrollIndicator={false}
             >
 
