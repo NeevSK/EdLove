@@ -239,7 +239,7 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                         icon={BookOpen}
                         label={t('classroom.library') || 'Library'}
                         onPress={() => {
-                            navigation.navigate('Library' as any);
+                            navigation.getParent()?.navigate('Library');
                         }}
                         color={Theme.colors.amberGlow}
                     />
