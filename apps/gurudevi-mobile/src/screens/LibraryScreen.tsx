@@ -78,6 +78,9 @@ export default function LibraryScreen() {
     const renderCategoryItem = ({ item: cat }: { item: any }) => (
         <Pressable
             onPress={() => setSelectedCategoryId(cat.id)}
+            accessibilityRole="button"
+            accessibilityLabel={cat.en}
+            accessibilityState={{ selected: selectedCategoryId === cat.id }}
         >
             <Box
                 sx={{
