@@ -65,7 +65,7 @@ export default function ScreenWrapper({
                 end={{ x: 1, y: 1 }}
                 style={[styles.container, safeAreaStyle]}
             >
-                {(scrollable || scroll) ? (
+                {(scroll ?? scrollable) ? (
                     <ScrollView
                         style={{ flex: 1 }}
                         contentContainerStyle={[

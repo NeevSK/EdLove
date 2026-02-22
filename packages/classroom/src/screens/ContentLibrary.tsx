@@ -65,6 +65,7 @@ export default function ContentLibrary() {
     const showToast = useStore(state => state.showToast);
     const addToDeskLocal = useStore(state => state.addToDeskLocal);
     const deskItems = useStore(state => state.deskItems);
+    const user = useStore(state => state.user);
 
     // Resilient Data Hook
     const { resources, isLoading, setResources } = useResources(classroomId);
@@ -185,7 +186,7 @@ export default function ContentLibrary() {
                     topics: [],
                     grades: []
                 },
-                'current-teacher-id',
+                user?.id || '',
                 'teacher'
             );
         },
@@ -213,7 +214,7 @@ export default function ContentLibrary() {
 
         addMutation.mutate({
             classroom_id: classroomId,
-            teacher_id: 'current-teacher-id', // TODO: Get from store
+            teacher_id: user?.id || '',
             title: newResourceTitle,
             description: newResourceDescription,
             type: newResourceType,
@@ -430,7 +431,7 @@ export default function ContentLibrary() {
                                                     onPress: () => {
                                                         addMutation.mutate({
                                                             classroom_id: classroomId,
-                                                            teacher_id: 'current-teacher-id',
+                                                            teacher_id: user?.id || '',
                                                             title: item.title,
                                                             description: `Imported from Personal Desk`,
                                                             type: item.type,

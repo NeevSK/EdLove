@@ -62,7 +62,6 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
     // Resilient Hook
     const { school, stats, isLoading, error, refreshData } = useSchoolStats(schoolId);
 
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [activeView, setActiveView] = useState<'dashboard' | 'hierarchy' | 'invites'>('dashboard');
 
     if (activeView === 'hierarchy') {
@@ -146,7 +145,7 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                                         Play around with this demo school data to see how the platform works.
                                     </Text>
                                     <SanctuaryButton
-                                        onPress={() => navigation.navigate('SchoolCreation' as any)}
+                                        onPress={() => navigation.navigate('SchoolCreation')}
                                         action="primary"
                                         size="lg"
                                         fullWidth
@@ -312,7 +311,7 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                         !isLoading && (
                             <RoleInitialState
                                 role="principal"
-                                onCreatePress={() => navigation.navigate('SchoolCreation' as any)}
+                                onCreatePress={() => navigation.navigate('SchoolCreation')}
                             />
                         )
                     )}
@@ -320,7 +319,7 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
             </ScrollView>
 
             <TouchableOpacity
-                onPress={() => navigation.navigate('SchoolCreation' as any)}
+                onPress={() => navigation.navigate('SchoolCreation')}
                 style={{
                     position: 'absolute',
                     bottom: 20,
