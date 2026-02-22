@@ -44,7 +44,7 @@ import DailyContentCard from '../../components/self/DailyContentCard';
 import ThuthimalBadge from '../../components/profile/ThuthimalBadge';
 import { SkeletonCard } from '@repo/ui';
 import WelcomeModal from '../../components/self/WelcomeModal';
-import { useThemedColors } from '@repo/ui';
+import { useThemedColors, useBottomTabPadding } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
 import EditProfileModal from '../../components/profile/EditProfileModal';
 
@@ -77,6 +77,7 @@ export default function TeacherSelfView() {
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const colors = useThemedColors();
+    const bottomPadding = useBottomTabPadding();
 
     // Get current user and profile on mount
     React.useEffect(() => {
@@ -209,13 +210,13 @@ export default function TeacherSelfView() {
     const allFeatures = showMoreTools ? [...CORE_FEATURES, ...MORE_TOOLS_FEATURES] : CORE_FEATURES;
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper scroll={false}>
             <GlobalHeader isSelfView avatarUrl={userProfile?.avatar_url} />
             <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
                 <ScrollView
                     sx={{ flex: 1 }}
                     showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ paddingBottom: 100, paddingTop: Theme.spacing.lg }}
+                    contentContainerStyle={{ paddingBottom: bottomPadding, paddingTop: Theme.spacing.lg }}
                 >
                     {/* Thuthimal Badge (Compact) */}
                     {userProfile?.is_thuthimal && (

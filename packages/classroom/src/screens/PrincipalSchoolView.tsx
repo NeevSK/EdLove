@@ -10,17 +10,18 @@
  * Mission 04: Principal's Office
  */
 
-import { useStore } from '@repo/core';
 import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useStore, ClassroomStackParamList } from '@repo/core';
 import {
     Box,
     Text,
     Heading,
     VStack,
     HStack,
-    Button,
-    ButtonText,
+    SanctuaryButton,
     ScrollView,
     Icon,
 } from '@repo/ui';
@@ -45,7 +46,6 @@ import { GlobalHeader } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 import RoleInitialState from '../components/RoleInitialState';
 import { ScreenWrapper, SandboxBanner, SkeletonCard } from '@repo/ui';
-import { CreateSchoolModal } from '../components';
 
 interface PrincipalSchoolViewProps {
     schoolId: string;
@@ -57,6 +57,7 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
     const { t } = useTranslation();
     const colors = useThemedColors();
     const { isDemoMode } = useStore();
+    const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>(); // Added for navigation
 
     // Resilient Hook
     const { school, stats, isLoading, error, refreshData } = useSchoolStats(schoolId);
@@ -125,7 +126,7 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                     {/* Stats Dashboard */}
                     {stats && !isLoading ? (
                         <VStack sx={{ gap: Theme.spacing.md }}>
-                            {/* Sandbox Alert */}
+                            {/* Sandbox Alert and Call to Action */}
                             {(stats as any).is_sample && (
                                 <Box sx={{
                                     backgroundColor: Theme.colors.amberGlow + '22',
@@ -133,16 +134,25 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                                     borderRadius: Theme.corners.comfortable,
                                     borderWidth: 1,
                                     borderColor: Theme.colors.amberGlow,
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: 8,
                                     marginBottom: Theme.spacing.sm,
                                 }}>
-                                    <Zap size={16} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} />
-                                    <Text sx={{ fontSize: 13, color: Theme.colors.amberGlow, fontWeight: '700' }}>
-                                        {t('demoMode.sandboxPerspective') || "VISIONARY SANDBOX: Institution Patterns"}
+                                    <HStack sx={{ alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: Theme.spacing.sm }}>
+                                        <Zap size={16} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} />
+                                        <Text sx={{ fontSize: 13, color: Theme.colors.amberGlow, fontWeight: '700' }}>
+                                            {t('demoMode.sandboxPerspective') || "VISIONARY SANDBOX: Institution Patterns"}
+                                        </Text>
+                                    </HStack>
+                                    <Text color={colors.textSecondary} sx={{ fontSize: 13, textAlign: 'center', marginBottom: Theme.spacing.md }}>
+                                        Play around with this demo school data to see how the platform works.
                                     </Text>
+                                    <SanctuaryButton
+                                        onPress={() => navigation.navigate('SchoolCreation' as any)}
+                                        action="primary"
+                                        size="lg"
+                                        fullWidth
+                                    >
+                                        Establish Your School
+                                    </SanctuaryButton>
                                 </Box>
                             )}
 
@@ -264,56 +274,45 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                                 <Heading sx={{ fontSize: Theme.typography.fontSize.xl }} color={colors.textSecondary}>
                                     {t('principal.school.quickActions') || 'Institutional Actions'}
                                 </Heading>
-                                <Button
-                                    sx={{
-                                        backgroundColor: colors.action,
-                                        padding: Theme.spacing.lg,
-                                    }}
+                                <SanctuaryButton
+                                    fullWidth
                                     onPress={() => setActiveView('hierarchy')}
+                                    action="primary"
+                                    size="lg"
                                 >
-                                    <ButtonText color={colors.text}>
-                                        🏫 {t('principal.actions.manageHierarchy') || 'Manage School Hierarchy'}
-                                    </ButtonText>
-                                </Button>
+                                    {`🏫 ${t('principal.actions.manageHierarchy') || 'Manage School Hierarchy'}`}
+                                </SanctuaryButton>
 
-                                <Button
-                                    sx={{
-                                        backgroundColor: colors.success,
-                                        padding: Theme.spacing.lg,
-                                    }}
+                                <SanctuaryButton
+                                    fullWidth
                                     onPress={() => setActiveView('invites')}
+                                    action="positive"
+                                    size="lg"
                                 >
-                                    <ButtonText color={colors.text}>
-                                        ✉️ {t('principal.actions.inviteStaff') || 'Invite Staff & Students'}
-                                    </ButtonText>
-                                </Button>
+                                    {`✉️ ${t('principal.actions.inviteStaff') || 'Invite Staff & Students'}`}
+                                </SanctuaryButton>
 
-                                <Button
-                                    sx={{
-                                        backgroundColor: colors.tertiary,
-                                        padding: Theme.spacing.lg,
-                                        borderWidth: 1,
-                                        borderColor: colors.border,
-                                    }}
+                                <SanctuaryButton
+                                    fullWidth
                                     onPress={() => { }}
+                                    variant="outline"
+                                    size="lg"
                                 >
-                                    <ButtonText color={colors.textSecondary}>
-                                        📊 {t('principal.actions.divisionalReport') || 'Generate Divisional Report'}
-                                    </ButtonText>
-                                </Button>
+                                    {`📊 ${t('principal.actions.divisionalReport') || 'Generate Divisional Report'}`}
+                                </SanctuaryButton>
                             </VStack>
 
                             {/* Footer Info */}
                             <HStack sx={{ justifyContent: 'center', gap: Theme.spacing.md, padding: Theme.spacing.lg }}>
-                                <Icon as={Users} color={colors.textTertiary} />
-                                <Icon as={FileText} color={colors.textTertiary} />
+                                <Icon as={Users as any} color={colors.textTertiary} />
+                                <Icon as={FileText as any} color={colors.textTertiary} />
                             </HStack>
                         </VStack>
                     ) : (
                         !isLoading && (
                             <RoleInitialState
                                 role="principal"
-                                onCreatePress={() => setIsCreateModalOpen(true)}
+                                onCreatePress={() => navigation.navigate('SchoolCreation' as any)}
                             />
                         )
                     )}
@@ -321,7 +320,7 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
             </ScrollView>
 
             <TouchableOpacity
-                onPress={() => setIsCreateModalOpen(true)}
+                onPress={() => navigation.navigate('SchoolCreation' as any)}
                 style={{
                     position: 'absolute',
                     bottom: 20,
@@ -343,14 +342,7 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                 <Plus size={24} color="white" />
             </TouchableOpacity>
 
-            <CreateSchoolModal
-                isOpen={isCreateModalOpen}
-                onClose={() => setIsCreateModalOpen(false)}
-                onSuccess={() => {
-                    if (onRefresh) onRefresh();
-                    else refreshData();
-                }}
-            />
+            {/* CreateSchoolModal removed - now uses SchoolCreationScreen */}
         </ScreenWrapper>
     );
 }

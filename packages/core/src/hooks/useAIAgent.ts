@@ -88,5 +88,5 @@ function generateResponse(input: string, role: string | null): string {
         return "Each student is a world unto themselves. What did one of them teach you today?";
     }
 
-    return reflections[Math.floor(Math.random() * reflections.length)];
+    return reflections[Math.floor(Math.random() * reflections.length)] || '';
 }

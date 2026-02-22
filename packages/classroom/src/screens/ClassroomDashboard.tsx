@@ -15,7 +15,9 @@ import {
     hapticLight,
     GlobalHeader,
     ScreenWrapper,
-    SkeletonCard
+    SkeletonCard,
+    PositiveInvitation,
+    useBottomTabPadding
 } from '@repo/ui';
 import {
     Users,
@@ -56,6 +58,7 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const [students, setStudents] = useState<any[]>([]);
     const colors = useThemedColors();
+    const bottomPadding = useBottomTabPadding();
 
     useEffect(() => {
         fetchInitialData();
@@ -164,7 +167,7 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
                 onBack={() => navigation.goBack()}
             />
 
-            <ScrollView stickyHeaderIndices={[1]} contentContainerStyle={{ paddingBottom: 100 }}>
+            <ScrollView stickyHeaderIndices={[1]} contentContainerStyle={{ paddingBottom: bottomPadding }}>
                 {/* 1. Header Area */}
                 <Box sx={{ padding: Theme.spacing.md, backgroundColor: colors.secondary }}>
                     <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>

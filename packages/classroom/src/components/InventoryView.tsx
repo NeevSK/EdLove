@@ -194,7 +194,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                         description={t('classroom.inventory.guestDesc', 'Explore the tools teachers use to manage their sacred spaces.')}
                     />
                 ) : filteredItems.length === 0 ? (
-                    <Box p="$10" alignItems="center">
+                    <Box sx={{ padding: 40, alignItems: 'center' }}>
                         <Text color={colors.textSecondary}>{t('common.noItemsFound')}</Text>
                     </Box>
                 ) : filteredItems.map(item => (

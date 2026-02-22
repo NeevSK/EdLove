@@ -4,7 +4,7 @@ import { Theme } from '../theme/Theme';
 
 interface SanctuaryButtonProps {
     onPress: () => void;
-    children: string; // The text content
+    children: React.ReactNode; // The text or content
     variant?: 'solid' | 'outline' | 'ghost' | 'link';
     isLoading?: boolean;
     isDisabled?: boolean; // Using Gluestack's isDisabled prop name

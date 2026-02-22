@@ -35,6 +35,8 @@ import { useThemedColors } from '@repo/ui';
 import { useFeatureAccess, handleAPIError } from '@repo/core';
 import GuestConversionPrompt from '../shared/GuestConversionPrompt';
 import { useNavigation } from '@react-navigation/native';
+import { ScannerModal } from '@repo/scanner-kit';
+import { ScanLine } from 'lucide-react-native';
 
 interface CreateClassroomModalProps {
     isOpen: boolean;
@@ -77,10 +79,23 @@ export default function CreateClassroomModal({
     const [syllabusId, setSyllabusId] = useState('legacy');
     const [availableSubjects, setAvailableSubjects] = useState<readonly any[]>([]);
 
+    // Scanner state
+    const [isScannerOpen, setIsScannerOpen] = useState(false);
+
     // Guest support
     const { isGuest, canCreateClassroom } = useFeatureAccess();
     const [showGuestPrompt, setShowGuestPrompt] = useState(false);
     const navigation = useNavigation();
+
+    const handleScan = (data: string) => {
+        // Assume data might be 'join-class:UUID' or just 'UUID'
+        let classId = data;
+        if (data.startsWith('join-class:')) {
+            classId = data.replace('join-class:', '');
+        }
+        setSelectedClassroomId(classId);
+        // We could auto-submit here, but letting the user see what they selected and click join is safer
+    };
 
     React.useEffect(() => {
         if (isOpen) {
@@ -309,6 +324,33 @@ export default function CreateClassroomModal({
                                 </FormControl>
                             )}
 
+                            {mode === 'join' && (
+                                <Box sx={{ marginBottom: Theme.spacing.md }}>
+                                    <Button
+                                        variant="outline"
+                                        onPress={() => setIsScannerOpen(true)}
+                                        sx={{ borderColor: Theme.colors.sanctuarySaffron }}
+                                    >
+                                        <HStack sx={{ gap: Theme.spacing.sm }} alignItems="center">
+                                            <ScanLine color={Theme.colors.sanctuarySaffron} size={20} />
+                                            <ButtonText color={Theme.colors.sanctuarySaffron}>
+                                                {t('classroom.scanQrToJoin') || 'Scan QR to Join'}
+                                            </ButtonText>
+                                        </HStack>
+                                    </Button>
+
+                                    {schoolId && (
+                                        <HStack alignItems="center" sx={{ marginVertical: Theme.spacing.md }}>
+                                            <Box sx={{ flex: 1, height: 1, backgroundColor: colors.border }} />
+                                            <Text sx={{ color: colors.textTertiary, paddingHorizontal: Theme.spacing.md, fontSize: Theme.typography.fontSize.sm }}>
+                                                {t('common.or') || 'OR'}
+                                            </Text>
+                                            <Box sx={{ flex: 1, height: 1, backgroundColor: colors.border }} />
+                                        </HStack>
+                                    )}
+                                </Box>
+                            )}
+
                             {/* Grade & Section Selection (if in school) */}
                             {schoolId && (
                                 <VStack sx={{ gap: Theme.spacing.md }}>
@@ -407,7 +449,28 @@ export default function CreateClassroomModal({
                                         </FormControl>
                                     )}
 
-                                    {mode === 'join' && selectedGradeId && availableClassrooms.length === 0 && (
+                                    {mode === 'join' && selectedClassroomId && !availableClassrooms.find(c => c.id === selectedClassroomId) && (
+                                        <Box sx={{
+                                            padding: Theme.spacing.md,
+                                            borderRadius: Theme.corners.comfortable,
+                                            backgroundColor: colors.tertiary,
+                                            borderWidth: 1,
+                                            borderColor: Theme.colors.sanctuarySaffron,
+                                            marginTop: Theme.spacing.sm
+                                        }}>
+                                            <HStack sx={{ gap: Theme.spacing.sm }} alignItems="center">
+                                                <ScanLine color={Theme.colors.sanctuarySaffron} size={20} />
+                                                <Text sx={{ color: colors.text, fontWeight: 'bold' }}>
+                                                    Scanned Classroom Ready
+                                                </Text>
+                                            </HStack>
+                                            <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs, marginTop: 4 }}>
+                                                Classroom ID: {selectedClassroomId.substring(0, 8)}...
+                                            </Text>
+                                        </Box>
+                                    )}
+
+                                    {mode === 'join' && selectedGradeId && availableClassrooms.length === 0 && !selectedClassroomId && (
                                         <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.sm, textAlign: 'center', marginTop: Theme.spacing.md }}>
                                             {t('classroom.noAvailableClasses') || 'No unassigned classrooms found for this grade.'}
                                         </Text>
@@ -630,6 +693,14 @@ export default function CreateClassroomModal({
                     </ModalFooter>
                 </ModalContent>
             </Modal>
+
+            <ScannerModal
+                visible={isScannerOpen}
+                onClose={() => setIsScannerOpen(false)}
+                onScan={handleScan}
+                title="Scan Class QR"
+                accentColor={Theme.colors.sanctuarySaffron}
+            />
         </>
     );
 }
