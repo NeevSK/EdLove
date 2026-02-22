@@ -216,7 +216,7 @@ export default function SchoolCreationScreen() {
 
                         <Box sx={{ width: '100%', marginTop: Theme.spacing.lg }}>
                             <SanctuaryButton
-                                onPress={() => (navigation as any).navigate('ClassroomList')}
+                                onPress={() => navigation.navigate('ClassroomList')}
                             >
                                 Enter Your Sanctuary
                             </SanctuaryButton>
