@@ -5,7 +5,6 @@ import {
     VStack,
     HStack,
     Heading,
-    Spinner,
     Center,
     Button,
     ButtonText,
@@ -18,14 +17,11 @@ import { supabase } from '@repo/core';
 import { hapticSuccess, hapticLight, hapticError } from '@repo/ui';
 import AchievementGallery from '../components/profile/AchievementGallery';
 import ProfileSkeleton from '../components/profile/ProfileSkeleton';
-
-import { LogOut, Settings, Trophy, MapPin, Globe, Phone, ChevronRight, HelpCircle, MessageSquare, Trash2, Info, Heart } from 'lucide-react-native';
+import { LogOut, Settings, ChevronRight, HelpCircle, MessageSquare, Trash2, Info, Heart } from 'lucide-react-native';
 // New Components
 import IdentityCard from '../components/profile/IdentityCard';
 import UserStatsCard from '../components/profile/UserStatsCard';
-import SupportSection from '../components/profile/SupportSection';
 import ThuthimalBadge from '../components/profile/ThuthimalBadge';
-import EditProfileModal from '../components/profile/EditProfileModal';
 import { GlobalHeader } from '@repo/ui';
 import AppSettingsScreen from './AppSettingsScreen';
 import { Modal, TouchableOpacity } from 'react-native';
@@ -42,7 +38,6 @@ export default function ProfileScreen() {
     const [profile, setProfile] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-    const [isEditModalVisible, setEditModalVisible] = useState(false);
     const { isDark } = useEnvironment();
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
@@ -252,11 +247,10 @@ export default function ProfileScreen() {
                         <Center>
                             <IdentityCard
                                 profile={profile}
-                                onEdit={() => setEditModalVisible(true)}
-                                onViewFullProfile={() => {
+                                onEdit={() => {
                                     hapticLight();
                                     // @ts-ignore - Navigation typing
-                                    navigation.navigate('FullProfile', { profile });
+                                    navigation.navigate('FullProfile', { profile, editable: true });
                                 }}
                             />
                         </Center>
@@ -299,17 +293,22 @@ export default function ProfileScreen() {
                                 padding: Theme.spacing.lg,
                                 borderWidth: 1,
                                 borderColor: colors.border,
-                                marginHorizontal: Theme.spacing.md
+                                marginHorizontal: Theme.spacing.md,
+                                shadowColor: colors.shadow,
+                                shadowOffset: { width: 0, height: 2 },
+                                shadowOpacity: 0.08,
+                                shadowRadius: 8,
+                                elevation: 2,
                             }}
                         >
                             <HStack justifyContent="space-between" alignItems="center">
                                 <HStack space="md" alignItems="center">
                                     <Box
                                         style={{
-                                            width: 44,
-                                            height: 44,
+                                            width: 46,
+                                            height: 46,
                                             borderRadius: 14,
-                                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                            backgroundColor: `${colors.action}18`,
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                         }}
@@ -325,7 +324,20 @@ export default function ProfileScreen() {
                                         </Text>
                                     </VStack>
                                 </HStack>
-                                <ChevronRight size={20} color={colors.textSecondary} />
+                                <Box
+                                    style={{
+                                        width: 32,
+                                        height: 32,
+                                        borderRadius: 10,
+                                        backgroundColor: colors.tertiary,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        borderWidth: 1,
+                                        borderColor: colors.border,
+                                    }}
+                                >
+                                    <ChevronRight size={18} color={colors.textSecondary} />
+                                </Box>
                             </HStack>
                         </TouchableOpacity>
 
@@ -343,11 +355,27 @@ export default function ProfileScreen() {
                                     padding: Theme.spacing.md,
                                     borderWidth: 1,
                                     borderColor: colors.border,
+                                    shadowColor: colors.shadow,
+                                    shadowOffset: { width: 0, height: 1 },
+                                    shadowOpacity: 0.06,
+                                    shadowRadius: 4,
+                                    elevation: 1,
                                 }}
                             >
                                 <HStack justifyContent="space-between" alignItems="center">
                                     <HStack space="md" alignItems="center">
-                                        <HelpCircle size={20} color={colors.action} />
+                                        <Box
+                                            style={{
+                                                width: 36,
+                                                height: 36,
+                                                borderRadius: 10,
+                                                backgroundColor: `${colors.action}15`,
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            <HelpCircle size={18} color={colors.action} />
+                                        </Box>
                                         <Text color={colors.text}>FAQ & Help Center</Text>
                                     </HStack>
                                     <ChevronRight size={18} color={colors.textTertiary} />
@@ -362,11 +390,27 @@ export default function ProfileScreen() {
                                     padding: Theme.spacing.md,
                                     borderWidth: 1,
                                     borderColor: colors.border,
+                                    shadowColor: colors.shadow,
+                                    shadowOffset: { width: 0, height: 1 },
+                                    shadowOpacity: 0.06,
+                                    shadowRadius: 4,
+                                    elevation: 1,
                                 }}
                             >
                                 <HStack justifyContent="space-between" alignItems="center">
                                     <HStack space="md" alignItems="center">
-                                        <MessageSquare size={20} color={colors.action} />
+                                        <Box
+                                            style={{
+                                                width: 36,
+                                                height: 36,
+                                                borderRadius: 10,
+                                                backgroundColor: `${colors.action}15`,
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            <MessageSquare size={18} color={colors.action} />
+                                        </Box>
                                         <Text color={colors.text}>Contact Support</Text>
                                     </HStack>
                                     <ChevronRight size={18} color={colors.textTertiary} />
@@ -388,11 +432,27 @@ export default function ProfileScreen() {
                                     padding: Theme.spacing.md,
                                     borderWidth: 1,
                                     borderColor: colors.border,
+                                    shadowColor: colors.shadow,
+                                    shadowOffset: { width: 0, height: 1 },
+                                    shadowOpacity: 0.06,
+                                    shadowRadius: 4,
+                                    elevation: 1,
                                 }}
                             >
                                 <HStack justifyContent="space-between" alignItems="center">
                                     <HStack space="md" alignItems="center">
-                                        <Heart size={20} color={Theme.colors.sanctuarySaffron} />
+                                        <Box
+                                            style={{
+                                                width: 36,
+                                                height: 36,
+                                                borderRadius: 10,
+                                                backgroundColor: `${Theme.colors.sanctuarySaffron}18`,
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            <Heart size={18} color={Theme.colors.sanctuarySaffron} />
+                                        </Box>
                                         <Text color={colors.text}>I love this app</Text>
                                     </HStack>
                                     <ChevronRight size={18} color={colors.textTertiary} />
@@ -407,11 +467,27 @@ export default function ProfileScreen() {
                                     padding: Theme.spacing.md,
                                     borderWidth: 1,
                                     borderColor: colors.border,
+                                    shadowColor: colors.shadow,
+                                    shadowOffset: { width: 0, height: 1 },
+                                    shadowOpacity: 0.06,
+                                    shadowRadius: 4,
+                                    elevation: 1,
                                 }}
                             >
                                 <HStack justifyContent="space-between" alignItems="center">
                                     <HStack space="md" alignItems="center">
-                                        <Info size={20} color={colors.textSecondary} />
+                                        <Box
+                                            style={{
+                                                width: 36,
+                                                height: 36,
+                                                borderRadius: 10,
+                                                backgroundColor: `${colors.textSecondary}15`,
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            <Info size={18} color={colors.textSecondary} />
+                                        </Box>
                                         <VStack>
                                             <Text color={colors.text}>About this app</Text>
                                             <Text color={colors.textTertiary} size="xs">Version 1.2.0 (Stable)</Text>
@@ -470,14 +546,6 @@ export default function ProfileScreen() {
 
                     </VStack>
                 </ScrollView>
-
-                {/* Edit Profile Modal */}
-                <EditProfileModal
-                    visible={isEditModalVisible}
-                    onClose={() => setEditModalVisible(false)}
-                    onSave={fetchProfile}
-                    currentProfile={profile}
-                />
 
                 {/* App Settings Modal */}
                 <Modal
