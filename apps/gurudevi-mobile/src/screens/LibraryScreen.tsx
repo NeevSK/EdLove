@@ -146,6 +146,8 @@ export default function LibraryScreen() {
                         <Pressable
                             key={tag}
                             onPress={() => setSearchQuery(tag)}
+                            accessibilityRole="button"
+                            accessibilityLabel={`Filter by tag: ${tag}`}
                         >
                             <Box sx={{
                                 paddingHorizontal: 10,
