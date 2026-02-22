@@ -16,6 +16,7 @@ export interface ThemeColors {
 
     // Text
     text: string;
+    textPrimary: string;
     textSecondary: string;
     textTertiary: string;
 
@@ -61,6 +62,7 @@ function getBaseThemeColors(isDark: boolean): ThemeColors {
 
             // Dark mode text
             text: baseColors.sacredWhite,
+            textPrimary: baseColors.sacredWhite,
             textSecondary: baseColors.pearlGray,
             textTertiary: baseColors.mistGray,
 
@@ -84,6 +86,7 @@ function getBaseThemeColors(isDark: boolean): ThemeColors {
 
             // Light mode text
             text: baseColors.charcoalTruth,
+            textPrimary: baseColors.charcoalTruth,
             textSecondary: baseColors.slateGray,
             textTertiary: baseColors.stoneGray,
 

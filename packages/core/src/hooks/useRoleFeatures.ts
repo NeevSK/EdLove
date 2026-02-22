@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useUserRole } from './useUserRole';
 import { useFeatureAccess } from './useFeatureAccess';
-import { UserRole } from '../types/User';
+import { UserRole } from '../types';
 
 export interface RoleFeatures {
     // Visibility flags

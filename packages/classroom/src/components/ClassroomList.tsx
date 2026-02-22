@@ -115,21 +115,17 @@ export default function ClassroomList({
                 if (isGuest) {
                     if (role === 'teacher') {
                         const sampleId = 'sample-c1';
-                        if (!dismissedSampleIds.includes(sampleId)) {
-                            const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
-                            if (sample) {
-                                (sample as any).is_sample = true;
-                                data = [sample];
-                            }
+                        const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
+                        if (sample && !dismissedSampleIds.includes(sampleId)) {
+                            (sample as any).is_sample = true;
+                            data = [sample];
                         }
                     } else if (role === 'principal') {
                         const sampleSchoolId = 'sample-school-1';
-                        if (!dismissedSampleIds.includes(sampleSchoolId)) {
-                            const sampleSchool = MOCK_CLASSROOMS.find((c: any) => c.id === sampleSchoolId);
-                            if (sampleSchool) {
-                                (sampleSchool as any).is_sample = true;
-                                data = [sampleSchool];
-                            }
+                        const sampleSchool = MOCK_CLASSROOMS.find((c: any) => c.id === sampleSchoolId);
+                        if (sampleSchool && !dismissedSampleIds.includes(sampleSchoolId)) {
+                            (sampleSchool as any).is_sample = true;
+                            data = [sampleSchool];
                         }
                     } else if (role === 'student' || !role) {
                         const sampleId = 'sample-c1';
@@ -147,46 +143,37 @@ export default function ClassroomList({
                     }
 
                     const pagination = { limit: PAGE_SIZE, offset: 0 };
+                    let realData: Classroom[] = [];
+
                     if (role === 'teacher') {
-                        data = await api.classrooms.getByTeacher(user.id, pagination);
+                        realData = await api.classrooms.getByTeacher(user.id, pagination);
                     } else if (role === 'student') {
-                        data = await api.classrooms.getByStudent(user.id, pagination);
-                        data.sort((a, b) => a.name.localeCompare(b.name));
+                        realData = await api.classrooms.getByStudent(user.id, pagination);
                     } else if (role === 'principal') {
-                        data = await api.classrooms.getBySchool(user.id, pagination);
+                        realData = await api.classrooms.getBySchool(user.id, pagination);
                     }
 
-                    setHasMore(data.length === PAGE_SIZE);
+                    // If real data exists, use it and ignore samples
+                    if (realData.length > 0) {
+                        data = realData;
+                        setHasMore(realData.length === PAGE_SIZE);
+                    } else {
+                        // If no real data, try to show sample if not dismissed
+                        let sampleToShow: any = null;
+                        if (role === 'teacher' || role === 'student' || !role) {
+                            sampleToShow = MOCK_CLASSROOMS.find((c: any) => c.id === 'sample-c1');
+                        } else if (role === 'principal') {
+                            sampleToShow = MOCK_CLASSROOMS.find((c: any) => c.id === 'sample-school-1');
+                        }
+
+                        if (sampleToShow && !dismissedSampleIds.includes(sampleToShow.id)) {
+                            (sampleToShow as any).is_sample = true;
+                            data = [sampleToShow];
+                        }
+                        setHasMore(false);
+                    }
+
                     setPage(1);
-
-                    if (role === 'teacher' && data.length === 0) {
-                        const sampleId = 'sample-c1';
-                        if (!dismissedSampleIds.includes(sampleId)) {
-                            const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
-                            if (sample) {
-                                (sample as any).is_sample = true;
-                                data = [sample];
-                            }
-                        }
-                    } else if (role === 'principal' && data.length === 0) {
-                        const sampleSchoolId = 'sample-school-1';
-                        if (!dismissedSampleIds.includes(sampleSchoolId)) {
-                            const sampleSchool = MOCK_CLASSROOMS.find((c: any) => c.id === sampleSchoolId);
-                            if (sampleSchool) {
-                                (sampleSchool as any).is_sample = true;
-                                data = [sampleSchool];
-                            }
-                        }
-                    } else if (role === 'student' && data.length === 0) {
-                        const sampleId = 'sample-c1';
-                        if (!dismissedSampleIds.includes(sampleId)) {
-                            const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
-                            if (sample) {
-                                (sample as any).is_sample = true;
-                                data = [sample];
-                            }
-                        }
-                    }
                 }
 
                 if (isMounted) {

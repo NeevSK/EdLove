@@ -1,120 +1,131 @@
-/**
- * GradeHeadView Component
- * 
- * Grade Overview for Grade Heads
- * Displays all classes in a specific grade
- */
-
 import React from 'react';
-import { Box, Text, Heading, VStack, Center, ScrollView, Spinner, HStack } from '@repo/ui';
-import { Theme } from '@repo/ui';
-import { useTranslation } from 'react-i18next';
-import { GlobalHeader } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
-import RoleInitialState from '../components/RoleInitialState';
-import { ScreenWrapper } from '@repo/ui';
-import { useSchoolStats } from '../hooks/classroom/useSchoolStats';
-import { Zap } from 'lucide-react-native';
-import { useFeatureAccess } from '@repo/core';
-import { SkeletonCard, PositiveInvitation } from '@repo/ui';
-import { hapticLight } from '@repo/ui';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import {
+    Box,
+    Text,
+    HStack,
+    VStack,
+    Theme,
+    SanctuaryButton,
+    LotusPetalFAB,
+    ScreenWrapper
+} from '@repo/ui';
+import { useAIAgent, useStore } from '@repo/core';
+import { BookOpen, Users, AlertCircle } from 'lucide-react-native';
 
-// Shared container styling for role-based views removed in favor of ScreenWrapper and useThemedColors
-
-interface GradeHeadViewProps {
-    schoolId?: string;
-    userId?: string;
-}
-
-export default function GradeHeadView({ schoolId, userId }: GradeHeadViewProps) {
-    const { t } = useTranslation();
-    const colors = useThemedColors();
-    const { isGuest } = useFeatureAccess();
-    const { school, stats, isLoading } = useSchoolStats(schoolId || '');
-
-    const hasData = stats && (stats.total_classrooms > 0 || stats.total_students > 0);
+export default function GradeHeadView({ schoolId, userId }: { schoolId?: string; userId?: string }) {
+    const { activeGaps, refreshStatus } = useAIAgent();
+    const userRole = useStore((state: any) => state.userRole);
 
     return (
-        <ScreenWrapper>
-            <VStack sx={{ padding: 24, flex: 1, backgroundColor: colors.primary, gap: 24 }}>
-                <GlobalHeader
-                    title={t('role.grade_head') || 'Grade Overview'}
-                    subtitle={school?.name}
-                />
+        <ScreenWrapper backgroundColor={Theme.colors.voidIndigo}>
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+                <VStack gap="$4">
+                    {/* Header */}
+                    <Box sx={{ paddingVertical: '$xl' as any }}>
+                        <Text sx={{
+                            fontSize: '$2xl' as any,
+                            fontWeight: '700',
+                            color: Theme.colors.sacredWhite
+                        }}>
+                            Grade Coordination
+                        </Text>
+                        <Text sx={{ color: Theme.colors.starlightGray }}>
+                            Overview of grade status and teacher coordination.
+                        </Text>
+                    </Box>
 
-                {isLoading ? (
-                    <VStack sx={{ gap: 16 }}>
-                        <SkeletonCard height={100} />
-                        <HStack sx={{ gap: 16 }}>
-                            <SkeletonCard height={100} style={{ flex: 1 }} />
-                            <SkeletonCard height={100} style={{ flex: 1 }} />
-                        </HStack>
-                        <SkeletonCard height={150} />
-                    </VStack>
-                ) : hasData ? (
-                    <ScrollView showsVerticalScrollIndicator={false}>
-                        <VStack sx={{ gap: 24 }}>
-                            {(stats as any).is_sample && (
-                                <Box sx={{
-                                    backgroundColor: Theme.colors.amberGlow + '22',
-                                    padding: 12,
-                                    borderRadius: Theme.corners.comfortable,
-                                    borderWidth: 1,
-                                    borderColor: Theme.colors.amberGlow,
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: 8,
-                                    marginBottom: 8
-                                }}>
-                                    <Zap size={16} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} />
-                                    <Text sx={{ fontSize: 13, color: Theme.colors.amberGlow, fontWeight: '700' }}>
-                                        {t('demoMode.sandboxPerspective') || "VISIONARY SANDBOX: Previewing potential institutional patterns"}
-                                    </Text>
-                                </Box>
-                            )}
-
-                            {/* Dashboard Stats */}
-                            <HStack sx={{ gap: 16 }}>
-                                <Box sx={{ flex: 1, padding: 16, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, borderLeftWidth: 4, borderLeftColor: colors.action }}>
-                                    <Text color={colors.textTertiary} sx={{ fontSize: 12, fontWeight: '700' }}>{t('principal.stats.totalStudents') || 'Total Students'}</Text>
-                                    <Text color={colors.text} sx={{ fontSize: 24, fontWeight: '700', marginTop: 4 }}>{stats.total_students}</Text>
-                                </Box>
-                                <Box sx={{ flex: 1, padding: 16, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, borderLeftWidth: 4, borderLeftColor: colors.success }}>
-                                    <Text color={colors.textTertiary} sx={{ fontSize: 12, fontWeight: '700' }}>{t('principal.stats.activeClassrooms') || 'Active Classes'}</Text>
-                                    <Text color={colors.text} sx={{ fontSize: 24, fontWeight: '700', marginTop: 4 }}>{stats.total_classrooms}</Text>
-                                </Box>
-                            </HStack>
-
-                            <Box sx={{ padding: 24, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, alignItems: 'center', borderStyle: 'dashed', borderWidth: 1, borderColor: colors.border }}>
-                                <Text color={colors.textTertiary} sx={{ textAlign: 'center' }}>
-                                    {t('classroom.gradeDataRefinement') || "Grade-level metrics are being synchronized. Your academic coordination dashboard will appear here."}
-                                </Text>
-                            </Box>
-
-                            {isGuest && (
-                                <PositiveInvitation
-                                    type="guest"
-                                    onAction={() => {
-                                        hapticLight();
-                                        // TODO: Redirect to login/signup
+                    {/* Proactive Agent Notifications */}
+                    {activeGaps.length > 0 && (
+                        <VStack gap="$3">
+                            <Text sx={{ fontWeight: '600', fontSize: '$sm' as any, color: Theme.colors.sanctuarySaffron }}>
+                                AI SUGGESTIONS
+                            </Text>
+                            {activeGaps.map((gap: any) => (
+                                <Box
+                                    key={gap.id}
+                                    sx={{
+                                        padding: '$md' as any,
+                                        borderRadius: '$lg' as any,
+                                        backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                                        borderWidth: 1,
+                                        borderColor: Theme.colors.sanctuarySaffron
                                     }}
-                                />
-                            )}
+                                >
+                                    <HStack gap="$3" alignItems="center">
+                                        <AlertCircle color={Theme.colors.sanctuarySaffron} size={20} />
+                                        <VStack sx={{ flex: 1 }}>
+                                            <Text sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>{gap.title}</Text>
+                                            <Text sx={{ fontSize: '$sm' as any, color: Theme.colors.starlightGray }}>{gap.description}</Text>
+                                        </VStack>
+                                    </HStack>
+                                    <Box sx={{ marginTop: '$3' as any }}>
+                                        <SanctuaryButton
+                                            onPress={() => console.log('Executing relief:', gap.suggestedAction)}
+                                            size="sm"
+                                            variant="solid"
+                                        >
+                                            Assign Relief Teacher
+                                        </SanctuaryButton>
+                                    </Box>
+                                </Box>
+                            ))}
                         </VStack>
-                    </ScrollView>
-                ) : (
-                    <RoleInitialState
-                        role="grade_head"
-                        onCreatePress={() => {
-                            console.log('Grade Head creating first report/view');
-                        }}
-                        onSamplePress={(item) => {
-                            console.log('Grade Head Sample pressed:', item.title);
-                        }}
-                    />
-                )}
-            </VStack>
+                    )}
+
+                    {/* Operational Overview */}
+                    <HStack gap="$3">
+                        <Box sx={styles.statBox}>
+                            <Text sx={{ fontSize: '$xs' as any, color: Theme.colors.starlightGray }}>CLASSES</Text>
+                            <Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: Theme.colors.sacredWhite }}>5</Text>
+                        </Box>
+                        <Box sx={styles.statBox}>
+                            <Text sx={{ fontSize: '$xs' as any, color: Theme.colors.starlightGray }}>STUDENTS</Text>
+                            <Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: Theme.colors.sacredWhite }}>210</Text>
+                        </Box>
+                    </HStack>
+
+                    {/* Quick Coordination */}
+                    <VStack gap="$2">
+                        <Text sx={{ fontWeight: '600', fontSize: '$sm' as any, color: Theme.colors.starlightGray }}>
+                            GRADE MANAGEMENT
+                        </Text>
+                        <SanctuaryButton onPress={() => { }} variant="outline">
+                            <HStack gap="$2" alignItems="center">
+                                <BookOpen size={18} color={Theme.colors.sacredWhite} />
+                                <Text sx={{ color: Theme.colors.sacredWhite }}>Curriculum Alignment Pulse</Text>
+                            </HStack>
+                        </SanctuaryButton>
+                        <SanctuaryButton onPress={() => { }} variant="outline">
+                            <HStack gap="$2" alignItems="center">
+                                <Users size={18} color={Theme.colors.sacredWhite} />
+                                <Text sx={{ color: Theme.colors.sacredWhite }}>Student Wellbeing Reports</Text>
+                            </HStack>
+                        </SanctuaryButton>
+                    </VStack>
+                </VStack>
+            </ScrollView>
+
+            <LotusPetalFAB
+                currentTab="grade"
+                hasActiveGaps={activeGaps.length > 0}
+                onPress={() => refreshStatus()}
+            />
         </ScreenWrapper>
     );
 }
+
+const styles = StyleSheet.create({
+    scrollContent: {
+        padding: Theme.spacing.lg,
+        paddingBottom: 100,
+    },
+    statBox: {
+        flex: 1,
+        padding: Theme.spacing.md,
+        borderRadius: Theme.corners.comfortable,
+        backgroundColor: Theme.colors.midnightBlue,
+        borderWidth: 1,
+        borderColor: Theme.colors.border,
+    }
+});

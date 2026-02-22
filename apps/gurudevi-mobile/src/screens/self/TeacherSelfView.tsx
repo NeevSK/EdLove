@@ -46,7 +46,6 @@ import { SkeletonCard } from '@repo/ui';
 import WelcomeModal from '../../components/self/WelcomeModal';
 import { useThemedColors, useBottomTabPadding } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
-import EditProfileModal from '../../components/profile/EditProfileModal';
 
 // Progressive Architecture: Core features always visible, others in "More Tools"
 const CORE_FEATURES = [
@@ -73,7 +72,6 @@ export default function TeacherSelfView() {
     const [loadingUser, setLoadingUser] = useState(true);
     const [showMoreTools, setShowMoreTools] = useState(false);
     const [userProfile, setUserProfile] = useState<any>(null);
-    const [isEditModalVisible, setEditModalVisible] = useState(false);
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const colors = useThemedColors();
@@ -357,16 +355,6 @@ export default function TeacherSelfView() {
             <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
-            />
-            <EditProfileModal
-                visible={isEditModalVisible}
-                onClose={() => setEditModalVisible(false)}
-                onSave={() => {
-                    setLoadingUser(true);
-                    // Trigger re-fetch - could be better but this is simple for now
-                    window.dispatchEvent(new Event('refresh-profile')); // Not ideal in RN, but let's just re-mount logic or similar
-                }}
-                currentProfile={userProfile}
             />
         </ScreenWrapper>
     );

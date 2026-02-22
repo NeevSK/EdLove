@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { FlatList, RefreshControl, ActivityIndicator } from 'react-native';
-import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, PositiveInvitation, Theme, GlobalHeader, ScreenWrapper, LibraryResourceCard, ResourceType, SmartShelf, CollectionCard, useBottomTabPadding } from '@repo/ui';
-import LotusPetalFAB from '../components/shared/LotusPetalFAB';
+import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, PositiveInvitation, Theme, GlobalHeader, ScreenWrapper, LibraryResourceCard, ResourceType, SmartShelf, CollectionCard, useBottomTabPadding, LotusPetalFAB } from '@repo/ui';
 import AddResourceModal from '../components/library/AddResourceModal';
 import { useTranslation } from 'react-i18next';
 import { BookOpen, Search, Plus, Zap } from 'lucide-react-native';
@@ -295,6 +294,7 @@ export default function LibraryScreen() {
                 />
 
                 <LotusPetalFAB
+                    currentTab="library"
                     onPress={() => setIsAddModalOpen(true)}
                 />
 

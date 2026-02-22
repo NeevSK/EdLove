@@ -812,4 +812,99 @@ export const communityAPI = {
             is_moderator: false,
         };
     },
+    /**
+     * MEMBER MANAGEMENT (No Trust)
+     */
+    async getPendingMembers(groupId: string): Promise<any[]> {
+        const { data, error } = await supabase
+            .from('group_members')
+            .select(`
+                *,
+                user:users(full_name, avatar_url, role, index_number, nic_number)
+            `)
+            .eq('group_id', groupId)
+            .eq('status', 'pending');
+
+        if (error) throw error;
+        return data;
+    },
+
+    async handleMemberRequest(groupId: string, userId: string, status: 'active' | 'rejected'): Promise<void> {
+        const { error } = await supabase
+            .from('group_members')
+            .update({ status, reviewed_at: new Date().toISOString() })
+            .eq('group_id', groupId)
+            .eq('user_id', userId);
+
+        if (error) throw error;
+    },
+
+    async approveAllPending(groupId: string): Promise<void> {
+        const { error } = await supabase
+            .from('group_members')
+            .update({ status: 'active', reviewed_at: new Date().toISOString() })
+            .eq('group_id', groupId)
+            .eq('status', 'pending');
+
+        if (error) throw error;
+    },
+
+    async updateJoiningPolicy(groupId: string, policy: string): Promise<void> {
+        const { error } = await supabase
+            .from('community_groups')
+            .update({ join_policy: policy })
+            .eq('id', groupId);
+
+        if (error) throw error;
+
+        if (policy === 'open') {
+            await this.approveAllPending(groupId);
+        }
+    },
+
+    async createSanctuaryGroup(data: {
+        name: string;
+        description: string;
+        school_id: string;
+        creator_id: string;
+        classroom_id?: string;
+    }): Promise<any> {
+        const { data: group, error } = await supabase
+            .from('community_groups')
+            .insert([{
+                ...data,
+                join_policy: 'restricted',
+                visibility: 'public'
+            }])
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        // Auto-add creator as admin
+        await supabase
+            .from('group_members')
+            .insert([{
+                group_id: group.id,
+                user_id: data.creator_id,
+                is_admin: true,
+                is_moderator: true,
+                status: 'active'
+            }]);
+
+        return group;
+    },
+
+    async getGroupMembers(groupId: string): Promise<any[]> {
+        const { data, error } = await supabase
+            .from('group_members')
+            .select(`
+                *,
+                user:users(full_name, avatar_url, role)
+            `)
+            .eq('group_id', groupId);
+
+        if (error) throw error;
+        return data;
+    }
 };

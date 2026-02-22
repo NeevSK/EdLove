@@ -2,9 +2,8 @@ import React from 'react';
 import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import LotusPetalFAB from '../components/shared/LotusPetalFAB';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '@repo/ui';
+import { Theme, LotusPetalFAB } from '@repo/ui';
 import ErrorBoundary from '../components/shared/ErrorBoundary';
 
 // Icons

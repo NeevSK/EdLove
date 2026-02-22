@@ -12,7 +12,7 @@ import { supabase, useUserRole, hasRole, ADMIN_ROLES, MANAGEMENT_ROLES, useRoleF
 import React, { useEffect, useState } from 'react';
 import { Box, VStack, Theme, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, hapticLight } from '@repo/ui';
 import { PrincipalSchoolView, SectionHeadView, GradeHeadView, FounderSchoolView/*, AdminSchoolView*/ } from './';
-import { ClassroomList, TeacherDashboard } from '../components';
+import { ClassroomList, TeacherDashboard, StudentDashboard, NoSchoolOnboarding } from '../components';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 
@@ -23,7 +23,7 @@ export default function ClassroomScreen() {
     const { role } = useUserRole();
     const { isGuest } = useRoleFeatures();
     const [loading, setLoading] = useState(true);
-    const [principalData, setPrincipalData] = useState<{ schoolId: string, userId: string } | null>(null);
+    const [principalData, setPrincipalData] = useState<{ schoolId: string | null, userId: string, profileCompleted: boolean, realClassCount: number } | null>(null);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     useEffect(() => {
@@ -37,14 +37,31 @@ export default function ClassroomScreen() {
             if (user) {
                 const { data, error } = await supabase
                     .from('users')
-                    .select('school_id')
+                    .select('school_id, profile_completed')
                     .eq('id', user.id)
                     .maybeSingle();
+
+                let realClassCount = 0;
+                if (role === 'student') {
+                    const { count } = await supabase
+                        .from('classroom_students')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('student_id', user.id);
+                    realClassCount = count || 0;
+                } else if (role === 'teacher') {
+                    const { count } = await supabase
+                        .from('classrooms')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('teacher_id', user.id);
+                    realClassCount = count || 0;
+                }
 
                 if (data) {
                     setPrincipalData({
                         userId: user.id,
-                        schoolId: data.school_id
+                        schoolId: data.school_id,
+                        profileCompleted: data.profile_completed || false,
+                        realClassCount
                     });
                 }
             }
@@ -67,15 +84,31 @@ export default function ClassroomScreen() {
         );
     }
 
-    // Role-based routing
-    if (principalData) {
-        if (role === 'founder') return <FounderSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchRoleData} />;
-        // if (role === 'admin') return <AdminSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchRoleData} />;
-        if (role === 'principal' || role === 'developer') return <PrincipalSchoolView schoolId={principalData.schoolId} userId={principalData.userId} onRefresh={fetchRoleData} />;
+    // 1. Profile & School Barrier (No Trust) - BUT show samples if guest or no school
+    // Actually, if they are verified but NO school, they should still see samples in a dashboard.
+    // The previous logic was blocking them at NoSchoolOnboarding.
+    // Let's refine: if profile is not completed, they MUST complete it.
+    if (principalData && !principalData.profileCompleted) {
+        return (
+            <ScreenWrapper>
+                <GlobalHeader title="Sanctuary Entry" subtitle="Verification Required" />
+                <NoSchoolOnboarding
+                    userId={principalData.userId}
+                    profileCompleted={principalData.profileCompleted}
+                    onRefresh={fetchRoleData}
+                />
+            </ScreenWrapper>
+        );
     }
 
-    if (role === 'section_head') return <SectionHeadView schoolId={principalData?.schoolId} userId={principalData?.userId} />;
-    if (role === 'grade_head') return <GradeHeadView schoolId={principalData?.schoolId} userId={principalData?.userId} />;
+    // 2. Role-based routing
+    if (principalData) {
+        if (role === 'founder') return <FounderSchoolView schoolId={principalData.schoolId || ''} userId={principalData.userId} onRefresh={fetchRoleData} />;
+        if (role === 'principal' || role === 'developer') return <PrincipalSchoolView schoolId={principalData.schoolId || ''} userId={principalData.userId} onRefresh={fetchRoleData} />;
+    }
+
+    if (role === 'section_head') return <SectionHeadView schoolId={principalData?.schoolId || undefined} userId={principalData?.userId} />;
+    if (role === 'grade_head') return <GradeHeadView schoolId={principalData?.schoolId || undefined} userId={principalData?.userId} />;
 
     // Teacher View
     if (role === 'teacher') {
@@ -84,7 +117,23 @@ export default function ClassroomScreen() {
                 <GlobalHeader title="Classroom 💛" subtitle={undefined} />
                 <Box sx={{ flex: 1 }}>
                     <TeacherDashboard
-                        schoolId={principalData?.schoolId}
+                        schoolId={principalData?.schoolId || undefined}
+                        userId={principalData?.userId}
+                        onRefresh={fetchRoleData}
+                    />
+                </Box>
+            </ScreenWrapper>
+        );
+    }
+
+    // Student View (Enhanced)
+    if (role === 'student' && principalData?.realClassCount && principalData?.realClassCount > 0) {
+        return (
+            <ScreenWrapper>
+                <GlobalHeader title={t('classroom.mySanctuaries') || 'My Sanctuaries'} subtitle={undefined} />
+                <Box sx={{ flex: 1 }}>
+                    <StudentDashboard
+                        schoolId={principalData?.schoolId || undefined}
                         userId={principalData?.userId}
                         onRefresh={fetchRoleData}
                     />

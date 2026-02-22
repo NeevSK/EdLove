@@ -1,8 +1,7 @@
-// export * from './Community'; // Moved to @repo/community
 export * from './Grade';
 export * from './Inventory';
-// export * from './Wellbeing'; // Moved to @repo/self
-export * from './Attendance';
+export * from './Media';
+export * from './Onboarding';
 export * from './navigation';
 export * from './User';
 export * from './Classroom';
@@ -13,5 +12,6 @@ export * from './Assignment';
 export * from './Resource';
 export * from './Group';
 export * from './Lesson';
-export * from './Media';
+export * from './Attendance';
+export * from './School';
 export type { UserRole } from '../constants/SriLankanSchools';

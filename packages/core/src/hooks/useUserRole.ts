@@ -6,7 +6,7 @@
  */
 
 import { useStore } from '../store/useStore';
-import { UserRole } from '../types/User';
+import { UserRole } from '../types';
 import { SchoolType } from '../constants/SriLankanSchools';
 
 interface UseUserRoleReturn {
@@ -17,6 +17,6 @@ interface UseUserRoleReturn {
 export function useUserRole(): UseUserRoleReturn {
     const role = useStore(state => state.userRole);
     const schoolType = useStore(state => state.schoolType);
-    
+
     return { role, schoolType };
 }

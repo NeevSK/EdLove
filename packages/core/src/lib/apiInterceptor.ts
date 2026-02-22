@@ -28,13 +28,14 @@ function mapErrorToMessage(error: any): string {
         return 'Your session has reached a peaceful end. Please sign in again.';
     }
     if (message.includes('Invalid login credentials')) {
-        return 'Those credentials don\'t seem to match our scrolls. Please try again.';
+        return "Those credentials don't seem to match our scrolls. Please try again.";
     }
 
     // PostgREST / Database Errors
     if (code === '23505') return 'This record already exists in our archives.';
     if (code === '23503') return 'This action is restricted by existing relations.';
-    if (code === '42P01') return 'We couldn\'t find the requested section in our database.';
+    if (code === '42P01') return "We couldn't find the requested section in our database.";
+    if (code === '42501') return "Huh! You are a newbie aren't you?";
 
     // Default Fallback
     if (message.length > 0 && !message.includes('PostgreSQL')) {

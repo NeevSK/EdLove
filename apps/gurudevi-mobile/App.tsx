@@ -125,7 +125,9 @@ function App() {
         }
       }
     } catch (error) {
-      console.warn('❌ Profile: Fetching encountered an error (continuing with defaults):', error);
+      console.warn('❌ Profile: Fetching encountered an error:', error);
+      const { handleAPIError } = require('@repo/core');
+      handleAPIError(error);
     }
   };
 
@@ -251,20 +253,25 @@ function App() {
   };
 
   if (loading || !fontsLoaded) {
-    console.log('App: Still loading...', { loading, fontsLoaded });
     return (
-      <GluestackUIProvider config={config}>
-        <Center sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
-          <VStack space="md" alignItems="center">
-            <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
-            <Text color={Theme.colors.white} size="sm">
-              {loading ? 'Initializing Sanctuary...' : 'Preparing Fonts...'}
-            </Text>
-          </VStack>
-        </Center>
-      </GluestackUIProvider>
+      <SafeAreaProvider>
+        <GluestackUIProvider config={config}>
+          <Center sx={{ flex: 1, backgroundColor: Theme.colors.midnightBlue }}>
+            <VStack space="md" alignItems="center">
+              <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+              <Text sx={{ color: Theme.colors.sacredWhite, fontSize: '$sm' as any }}>
+                Initializing Sanctuary...
+              </Text>
+            </VStack>
+          </Center>
+        </GluestackUIProvider>
+      </SafeAreaProvider>
     );
   }
+
+  const isNewUser = !onboardingCompleted;
+  const needsWelcome = showWelcome && isNewUser;
+
   console.log('App: Loading finished, rendering main tree');
 
   return (
@@ -282,87 +289,74 @@ function App() {
                 <ErrorBoundary name="App Root">
                   <NavigationContainer>
                     <RootStack.Navigator screenOptions={{ headerShown: false }}>
-                      {(() => {
-                        const isNewUser = !onboardingCompleted;
-                        const needsWelcome = showWelcome && isNewUser;
-
-                        console.log('🗺️ Nav decision:', { onboardingCompleted, showWelcome, session: !!session, needsWelcome });
-
-                        if (!session || needsWelcome) {
-                          return (
-                            <RootStack.Screen name="Welcome">
-                              {() => (
-                                <ErrorBoundary name="Welcome Screen">
-                                  <WelcomeScreen
-                                    initialShowAuth={onboardingCompleted}
-                                    onNext={() => {
-                                      console.log('➡️ App: onNext called from WelcomeScreen');
-                                      setShowWelcome(false);
-                                    }}
-                                  />
-                                </ErrorBoundary>
-                              )}
-                            </RootStack.Screen>
-                          );
-                        } else if (!onboardingCompleted) {
-                          return (
-                            <RootStack.Screen name="Onboarding">
-                              {() => (
-                                <ErrorBoundary name="Onboarding Screen">
-                                  <OnboardingScreen
-                                    isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
-                                    onComplete={(name: string, role: any, wantsAccount?: boolean) => {
-                                      console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
-                                      const store = useStore.getState();
-                                      if (name) store.setTeacherName(name);
-                                      if (role) store.setUserRole(role);
-                                      store.setOnboardingCompleted(true);
-                                      store.setJustFinishedOnboarding(true);
-                                    }}
-                                  />
-                                </ErrorBoundary>
-                              )}
-                            </RootStack.Screen>
-                          );
-                        } else {
-                          return (
-                            <>
-                              <RootStack.Screen name="MainTabs">
-                                {() => (
-                                  <ErrorBoundary name="Main App">
-                                    <TabNavigator
-                                      onTabChange={(tabName: any) => {
-                                        setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
-                                      }}
-                                    />
-                                    <LotusPetalFAB
-                                      currentTab={currentTab}
-                                      onPress={handleFabPress}
-                                      actions={getFabActions()}
-                                    />
-                                  </ErrorBoundary>
-                                )}
-                              </RootStack.Screen>
-                              <RootStack.Screen
-                                name="AIAssistant"
-                                component={AIAssistantScreen}
-                                options={{
-                                  presentation: 'modal',
-                                  animation: 'slide_from_bottom'
+                      {(!session || needsWelcome) ? (
+                        <RootStack.Screen name="Welcome">
+                          {() => (
+                            <ErrorBoundary name="Welcome Screen">
+                              <WelcomeScreen
+                                initialShowAuth={onboardingCompleted}
+                                onNext={() => {
+                                  console.log('➡️ App: onNext called from WelcomeScreen');
+                                  setShowWelcome(false);
                                 }}
                               />
-                            </>
-                          );
-                        }
-                      })()}
+                            </ErrorBoundary>
+                          )}
+                        </RootStack.Screen>
+                      ) : !onboardingCompleted ? (
+                        <RootStack.Screen name="Onboarding">
+                          {() => (
+                            <ErrorBoundary name="Onboarding Screen">
+                              <OnboardingScreen
+                                isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
+                                onComplete={(name: string, role: any, wantsAccount?: boolean) => {
+                                  console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
+                                  const store = useStore.getState();
+                                  if (name) store.setTeacherName(name);
+                                  if (role) store.setUserRole(role);
+                                  store.setOnboardingCompleted(true);
+                                  store.setJustFinishedOnboarding(true);
+                                }}
+                              />
+                            </ErrorBoundary>
+                          )}
+                        </RootStack.Screen>
+                      ) : (
+                        <>
+                          <RootStack.Screen name="Main">
+                            {() => (
+                              <ErrorBoundary name="Main Tabs">
+                                <TabNavigator onTabChange={(tab: any) => setCurrentTab(tab)} />
+                              </ErrorBoundary>
+                            )}
+                          </RootStack.Screen>
+                          <RootStack.Screen
+                            name="AIAssistant"
+                            component={AIAssistantScreen}
+                            options={{
+                              presentation: 'modal',
+                              animation: 'slide_from_bottom'
+                            }}
+                          />
+                        </>
+                      )}
                     </RootStack.Navigator>
-                    <NetworkStatusBanner />
+
                     <SyncManager />
-                    <SanctuaryToast
-                      visible={toast.visible}
-                      message={toast.message}
-                      type={toast.type}
-                      onHide={hideToast}
+                    <NetworkStatusBanner />
+
+                    {toast.visible && (
+                      <SanctuaryToast
+                        message={toast.message}
+                        type={toast.type}
+                        visible={toast.visible}
+                        onHide={hideToast}
+                      />
+                    )}
+
+                    <LotusPetalFAB
+                      actions={getFabActions()}
+                      onPress={handleFabPress}
                     />
                   </NavigationContainer>
                 </ErrorBoundary>

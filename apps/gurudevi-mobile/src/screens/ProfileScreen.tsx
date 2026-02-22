@@ -252,7 +252,6 @@ export default function ProfileScreen() {
                         <Center>
                             <IdentityCard
                                 profile={profile}
-                                onEdit={() => setEditModalVisible(true)}
                                 onViewFullProfile={() => {
                                     hapticLight();
                                     // @ts-ignore - Navigation typing
@@ -471,13 +470,7 @@ export default function ProfileScreen() {
                     </VStack>
                 </ScrollView>
 
-                {/* Edit Profile Modal */}
-                <EditProfileModal
-                    visible={isEditModalVisible}
-                    onClose={() => setEditModalVisible(false)}
-                    onSave={fetchProfile}
-                    currentProfile={profile}
-                />
+
 
                 {/* App Settings Modal */}
                 <Modal

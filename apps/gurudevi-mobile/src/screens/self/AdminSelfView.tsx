@@ -25,7 +25,6 @@ import DailyContentCard from '../../components/self/DailyContentCard';
 import WelcomeModal from '../../components/self/WelcomeModal';
 import { SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useThemedColors, useBottomTabPadding, ScreenWrapper } from '@repo/ui';
-import EditProfileModal from '../../components/profile/EditProfileModal';
 
 const ADMIN_CORE_FEATURES = [
     { id: 'balance', icon: Activity, category: 'core' },
@@ -47,7 +46,6 @@ export default function AdminSelfView() {
     const [loadingUser, setLoadingUser] = useState(true);
     const [showMoreTools, setShowMoreTools] = useState(false);
     const [userProfile, setUserProfile] = useState<any>(null);
-    const [isEditModalVisible, setEditModalVisible] = useState(false);
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const colors = useThemedColors();
@@ -191,15 +189,6 @@ export default function AdminSelfView() {
 
             <ShadowAgentDrawer />
             <WelcomeModal isOpen={justFinishedOnboarding} onClose={() => setJustFinishedOnboarding(false)} />
-            <EditProfileModal
-                visible={isEditModalVisible}
-                onClose={() => setEditModalVisible(false)}
-                onSave={() => {
-                    setLoadingUser(true);
-                    // Re-fetch logic
-                }}
-                currentProfile={userProfile}
-            />
         </ScreenWrapper>
     );
 }

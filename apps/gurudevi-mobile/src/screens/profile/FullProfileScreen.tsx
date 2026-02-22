@@ -15,8 +15,10 @@ import {
     useBottomTabPadding
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Globe, Phone, Mail, Award, Shield } from 'lucide-react-native';
+import { MapPin, Globe, Phone, Mail, Award, Shield, User as UserIcon, Fingerprint } from 'lucide-react-native';
 import IdentityCard from '../../components/profile/IdentityCard';
+import EditProfileModal from '../../components/profile/EditProfileModal';
+import { supabase } from '@repo/core';
 
 interface FullProfileScreenProps {
     route: {
@@ -28,10 +30,32 @@ interface FullProfileScreenProps {
 }
 
 export default function FullProfileScreen({ route, navigation }: FullProfileScreenProps) {
-    const { profile } = route.params;
+    const [profile, setProfile] = React.useState(route.params.profile);
+    const [isEditModalVisible, setEditModalVisible] = React.useState(false);
     const { t } = useTranslation();
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
+
+    const fetchProfile = async () => {
+        if (!profile?.id) return;
+        const { data, error } = await supabase
+            .from('users')
+            .select(`
+                *,
+                schools (
+                    name
+                )
+            `)
+            .eq('id', profile.id)
+            .single();
+
+        if (data) {
+            setProfile({
+                ...data,
+                school_name: data.schools?.name || null
+            });
+        }
+    };
 
     if (!profile) return null;
 
@@ -55,7 +79,17 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
             icon: Shield,
             label: t('profile.role', 'Role'),
             value: t(`role.${profile.role}`, profile.role)
-        }
+        },
+        ...(profile.role === 'student' ? [{
+            icon: Fingerprint,
+            label: t('profile.indexNumber', 'Index Number'),
+            value: profile.index_number || t('common.notProvided', 'Not provided')
+        }] : []),
+        ...(profile.role === 'teacher' || profile.role === 'principal' ? [{
+            icon: UserIcon,
+            label: t('profile.nicNumber', 'NIC Number'),
+            value: profile.nic_number || t('common.notProvided', 'Not provided')
+        }] : [])
     ];
 
     return (
@@ -110,6 +144,40 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                         </VStack>
                     </Box>
 
+                    {/* Bio Section */}
+                    {profile.bio && (
+                        <Box
+                            sx={{
+                                backgroundColor: colors.secondary,
+                                borderRadius: Theme.corners.comfortable,
+                                padding: Theme.spacing.lg,
+                                borderWidth: 1,
+                                borderColor: colors.border
+                            }}
+                        >
+                            <Heading size="sm" color={colors.text} mb="$2">
+                                {t('profile.bio', 'Bio')}
+                            </Heading>
+                            <Text size="md" color={colors.textSecondary}>
+                                {profile.bio}
+                            </Text>
+                        </Box>
+                    )}
+
+                    {/* Unified Edit Button */}
+                    <Box px={Theme.spacing.md} mb={Theme.spacing.xl}>
+                        <Button
+                            size="xl"
+                            action="primary"
+                            onPress={() => setEditModalVisible(true)}
+                            sx={{
+                                backgroundColor: Theme.colors.sanctuarySaffron,
+                                borderRadius: Theme.corners.comfortable
+                            }}
+                        >
+                            <ButtonText color={Theme.colors.white}>{t('profile.editProfile', 'Edit Profile')}</ButtonText>
+                        </Button>
+                    </Box>
                     {/* Additional Metadata if needed */}
                     {profile.created_at && (
                         <Box alignItems="center" mt="$4">
@@ -118,9 +186,17 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                             </Text>
                         </Box>
                     )}
-
                 </VStack>
             </ScrollView>
+
+            <EditProfileModal
+                visible={isEditModalVisible}
+                onClose={() => setEditModalVisible(false)}
+                onSave={() => {
+                    fetchProfile();
+                }}
+                currentProfile={profile}
+            />
         </ScreenWrapper>
     );
 }

@@ -399,7 +399,13 @@ export type NotificationType =
   | 'feedback_response'
   | 'resource_endorsed'
   | 'badge_awarded'
-  | 'post_reaction';
+  | 'post_reaction'
+  | 'school_join_request'
+  | 'classroom_join_request'
+  | 'join_request_approved'
+  | 'join_request_rejected'
+  | 'space_removal'
+  | 'user_reported';
 
 export interface Notification {
   id: string;

@@ -34,7 +34,7 @@ export const MOCK_CLASSROOMS: Classroom[] = [
     {
         id: 'sample-c1',
         school_id: 'mock-school',
-        name: 'Grade 10B - Science [Sample]',
+        name: 'Grade 10B',
         subject: 'Science',
         description: 'A sample sanctuary to explore our features',
         color_theme: '#10B981',
@@ -46,7 +46,7 @@ export const MOCK_CLASSROOMS: Classroom[] = [
     {
         id: 'sample-school-1',
         school_id: 'sample-school',
-        name: 'Wisdom Academy [Sample School]',
+        name: 'Gurudevi Life School',
         subject: 'General',
         description: 'A sample school to explore administrative features',
         color_theme: '#8B5CF6',

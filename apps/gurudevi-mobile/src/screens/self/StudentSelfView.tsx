@@ -33,7 +33,6 @@ import WelcomeModal from '../../components/self/WelcomeModal';
 import { SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useThemedColors, useBottomTabPadding } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
-import EditProfileModal from '../../components/profile/EditProfileModal';
 
 // Student-specific core features
 const STUDENT_CORE_FEATURES = [
@@ -55,7 +54,6 @@ export default function StudentSelfView() {
     const [loadingUser, setLoadingUser] = useState(true);
     const [showMoreTools, setShowMoreTools] = useState(false);
     const [userProfile, setUserProfile] = useState<any>(null);
-    const [isEditModalVisible, setEditModalVisible] = useState(false);
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const colors = useThemedColors();
@@ -327,15 +325,6 @@ export default function StudentSelfView() {
             <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
-            />
-            <EditProfileModal
-                visible={isEditModalVisible}
-                onClose={() => setEditModalVisible(false)}
-                onSave={() => {
-                    setLoadingUser(true);
-                    // Re-fetch logic
-                }}
-                currentProfile={userProfile}
             />
         </ScreenWrapper>
     );

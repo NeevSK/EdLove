@@ -29,6 +29,7 @@ import {
     SYLLABUS_VERSIONS,
     CLASSROOM_THEMES
 } from '@repo/core';
+import { communityAPI } from '@repo/community';
 import { useTranslation } from 'react-i18next';
 import { hapticLight, hapticSuccess, Textarea } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
@@ -223,6 +224,17 @@ export default function CreateClassroomModal({
                     description: description.trim(),
                     syllabus_version: syllabusId,
                 });
+
+                // Create linked sanctuary group
+                if (result && schoolId) {
+                    await communityAPI.createSanctuaryGroup({
+                        name: `${name.trim()} Sanctuary`,
+                        description: `A sacred space for the ${name.trim()} classroom ${subject ? `(${subject}) ` : ''}discussions and heart-sharing.`,
+                        school_id: schoolId,
+                        creator_id: user.id,
+                        classroom_id: result.id
+                    });
+                }
             }
 
             hapticSuccess();

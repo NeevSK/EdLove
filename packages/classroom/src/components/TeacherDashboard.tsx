@@ -31,7 +31,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { useFeatureAccess, useStore, ClassroomStackParamList, api, supabase } from '@repo/core';
+import { useFeatureAccess, useStore, ClassroomStackParamList, api, supabase, onboardingAPI } from '@repo/core';
 import ClassroomList from './ClassroomList';
 import CreateClassroomModal from './CreateClassroomModal';
 import { ScannerModal } from '@repo/scanner-kit';
@@ -64,6 +64,17 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
         activeClasses: 0,
         totalStudents: 0
     });
+
+    const [pendingRequests, setPendingRequests] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (userId) fetchPendingRequests();
+    }, [userId]);
+
+    const fetchPendingRequests = async () => {
+        // Mocking fetching pending classroom join requests for this teacher's classrooms
+        // In a real app, this would be a join between classroom_join_requests and classrooms
+    };
 
     // We'll update stats whenever the classroom list changes
     const handleClassroomsLoaded = (loadedClassrooms: any[]) => {

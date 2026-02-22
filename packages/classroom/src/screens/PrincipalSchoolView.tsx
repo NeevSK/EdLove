@@ -14,7 +14,7 @@ import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useStore, ClassroomStackParamList } from '@repo/core';
+import { useStore, ClassroomStackParamList, useAIAgent } from '@repo/core';
 import {
     Box,
     Text,
@@ -24,12 +24,20 @@ import {
     SanctuaryButton,
     ScrollView,
     Icon,
+    LotusPetalFAB,
+    ScreenWrapper,
+    SandboxBanner,
+    SkeletonCard,
+    GlobalHeader,
+    useThemedColors
 } from '@repo/ui';
 import {
     Plus,
     Users,
     Zap,
-    FileText
+    FileText,
+    CalendarCheck,
+    AlertCircle
 } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
@@ -42,10 +50,7 @@ import {
     CurriculumPulse,
     PrincipalAdminWidget
 } from '../components';
-import { GlobalHeader } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
 import RoleInitialState from '../components/RoleInitialState';
-import { ScreenWrapper, SandboxBanner, SkeletonCard } from '@repo/ui';
 
 interface PrincipalSchoolViewProps {
     schoolId: string;
@@ -61,6 +66,7 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
 
     // Resilient Hook
     const { school, stats, isLoading, error, refreshData } = useSchoolStats(schoolId);
+    const { generateTimetable, isThinking, lastTimetableDraft } = useAIAgent();
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [activeView, setActiveView] = useState<'dashboard' | 'hierarchy' | 'invites'>('dashboard');
@@ -249,6 +255,63 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                                 </Box>
                             </HStack>
 
+                            {/* Agentic Structural Repair: Timetable */}
+                            <Box sx={{
+                                marginTop: Theme.spacing.md,
+                                padding: Theme.spacing.lg,
+                                backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                                borderRadius: Theme.corners.generous,
+                                borderWidth: 1,
+                                borderColor: 'rgba(59, 130, 246, 0.2)',
+                            }}>
+                                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: Theme.spacing.sm }}>
+                                    <HStack sx={{ gap: 8, alignItems: 'center' }}>
+                                        <CalendarCheck size={20} color={Theme.colors.gurudeviBlue} />
+                                        <Text sx={{ fontWeight: '700', color: colors.text }}>Timetable Completion</Text>
+                                    </HStack>
+                                    <Box sx={{
+                                        paddingHorizontal: 8,
+                                        paddingVertical: 2,
+                                        borderRadius: 12,
+                                        backgroundColor: Theme.colors.gurudeviBlue + '33'
+                                    }}>
+                                        <Text sx={{ fontSize: 10, color: Theme.colors.gurudeviBlue, fontWeight: '700' }}>AGENTIC</Text>
+                                    </Box>
+                                </HStack>
+
+                                {lastTimetableDraft ? (
+                                    <VStack sx={{ gap: 8 }}>
+                                        <HStack sx={{ gap: 8, alignItems: 'center' }}>
+                                            <AlertCircle size={16} color={Theme.colors.amberGlow} />
+                                            <Text sx={{ fontSize: 13, color: colors.text }}>
+                                                Draft generated with {lastTimetableDraft.conflicts} conflicts.
+                                            </Text>
+                                        </HStack>
+                                        <SanctuaryButton
+                                            onPress={() => console.log('Reviewing draft')}
+                                            variant="solid"
+                                            size="sm"
+                                        >
+                                            Review Draft Schedule
+                                        </SanctuaryButton>
+                                    </VStack>
+                                ) : (
+                                    <VStack sx={{ gap: Theme.spacing.md }}>
+                                        <Text sx={{ fontSize: 13, color: colors.textSecondary }}>
+                                            The annual schedule is incomplete. Your Agent can draft a balanced timetable based on current preferences.
+                                        </Text>
+                                        <SanctuaryButton
+                                            onPress={() => generateTimetable(schoolId)}
+                                            action="primary"
+                                            size="md"
+                                            isLoading={isThinking}
+                                        >
+                                            {isThinking ? 'Creating Draft...' : 'Draft Annual Timetable'}
+                                        </SanctuaryButton>
+                                    </VStack>
+                                )}
+                            </Box>
+
                             {/* Resource Needs Section */}
                             <Box sx={{ marginTop: Theme.spacing.md }}>
                                 <PrincipalAdminWidget onAction={(action) => console.log('Principal Admin Action:', action)} />
@@ -319,28 +382,10 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                 </VStack>
             </ScrollView>
 
-            <TouchableOpacity
+            <LotusPetalFAB
+                currentTab="principal"
                 onPress={() => navigation.navigate('SchoolCreation' as any)}
-                style={{
-                    position: 'absolute',
-                    bottom: 20,
-                    right: 20,
-                    width: 56,
-                    height: 56,
-                    borderRadius: 28,
-                    backgroundColor: Theme.colors.sanctuarySaffron,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    elevation: 5,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.25,
-                    shadowRadius: 3.84,
-                    zIndex: 10
-                }}
-            >
-                <Plus size={24} color="white" />
-            </TouchableOpacity>
+            />
 
             {/* CreateSchoolModal removed - now uses SchoolCreationScreen */}
         </ScreenWrapper>

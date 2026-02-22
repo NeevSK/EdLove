@@ -46,6 +46,8 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
     const [loading, setLoading] = useState(false);
     const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+    const [nicNumber, setNicNumber] = useState('');
+    const [indexNumber, setIndexNumber] = useState('');
     const setStoreRole = useStore(state => state.setUserRole);
 
     useEffect(() => {
@@ -55,6 +57,8 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
             setBio(currentProfile.bio || '');
             setSelectedRole(currentProfile.role);
             setAvatarUrl(currentProfile.avatar_url);
+            setNicNumber(currentProfile.nic_number || '');
+            setIndexNumber(currentProfile.index_number || '');
         }
     }, [currentProfile]);
 
@@ -94,7 +98,9 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
             const updates: any = {
                 full_name: fullName,
                 phone: phone,
-                bio: bio
+                bio: bio,
+                nic_number: (selectedRole === 'teacher' || selectedRole === 'principal') ? nicNumber : null,
+                index_number: selectedRole === 'student' ? indexNumber : null
             };
 
             // Handle Avatar Upload to Cloudinary
@@ -260,6 +266,48 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                         />
                                     </Input>
                                 </VStack>
+
+                                {/* NIC Number (Teachers/Principals) */}
+                                {(selectedRole === 'teacher' || selectedRole === 'principal') && (
+                                    <VStack space="xs">
+                                        <Text color={Theme.colors.dimGray} size="sm">{t('profile.nicNumber') || 'NIC Number'}</Text>
+                                        <Input
+                                            size="xl"
+                                            variant="outline"
+                                            style={styles.input}
+                                            isDisabled={loading}
+                                        >
+                                            <InputField
+                                                color={Theme.colors.sacredWhite}
+                                                value={nicNumber}
+                                                onChangeText={setNicNumber}
+                                                placeholder="e.g. 19XXXXXXXXXX"
+                                                placeholderTextColor={Theme.colors.stoneGray}
+                                            />
+                                        </Input>
+                                    </VStack>
+                                )}
+
+                                {/* Index Number (Students) */}
+                                {selectedRole === 'student' && (
+                                    <VStack space="xs">
+                                        <Text color={Theme.colors.dimGray} size="sm">{t('profile.indexNumber') || 'Index Number'}</Text>
+                                        <Input
+                                            size="xl"
+                                            variant="outline"
+                                            style={styles.input}
+                                            isDisabled={loading}
+                                        >
+                                            <InputField
+                                                color={Theme.colors.sacredWhite}
+                                                value={indexNumber}
+                                                onChangeText={setIndexNumber}
+                                                placeholder="e.g. STU-XXXXX"
+                                                placeholderTextColor={Theme.colors.stoneGray}
+                                            />
+                                        </Input>
+                                    </VStack>
+                                )}
 
                                 {/* Role Selector (Developer Mode) */}
                                 <Box>

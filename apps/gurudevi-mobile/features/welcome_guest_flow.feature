@@ -11,11 +11,10 @@ Feature: Guest User Onboarding
     When I see the Welcome Screen
     Then I should see the app logo
     And I should see a heading "Gurudevi"
-    And I should see a subtitle "The Digital Sanctuary for Educators"
+    And I should see a subtitle "Education Born with love, Given with love"
     And I should see a privacy checkbox that is checked by default
     And I should see a primary button "Explore as Guest"
-    And I should see subtext "No account needed • Full access"
-    And I should see a secondary button "Already have an account? Log In"
+    And I should see a secondary button "I have an account - Log In"
 
   Scenario: Starting Guest Session
     Given I have accepted the privacy policy

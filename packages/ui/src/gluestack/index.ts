@@ -14,11 +14,17 @@
 // ============================================================================
 // Layout Components
 // ============================================================================
-export { Box } from '@gluestack-ui/themed/build/components/Box';
-export { Center } from '@gluestack-ui/themed/build/components/Center';
-export { HStack } from '@gluestack-ui/themed/build/components/HStack';
-export { VStack } from '@gluestack-ui/themed/build/components/VStack';
-export { View } from '@gluestack-ui/themed/build/components/View';
+import { Box as BaseBox } from '@gluestack-ui/themed/build/components/Box';
+import { Center as BaseCenter } from '@gluestack-ui/themed/build/components/Center';
+import { HStack as BaseHStack } from '@gluestack-ui/themed/build/components/HStack';
+import { VStack as BaseVStack } from '@gluestack-ui/themed/build/components/VStack';
+import { View as BaseView } from '@gluestack-ui/themed/build/components/View';
+
+export const Box = BaseBox as any;
+export const Center = BaseCenter as any;
+export const HStack = BaseHStack as any;
+export const VStack = BaseVStack as any;
+export const View = BaseView as any;
 export { ScrollView } from '@gluestack-ui/themed/build/components/ScrollView';
 export { Pressable } from '@gluestack-ui/themed/build/components/Pressable';
 
@@ -45,7 +51,8 @@ export const useToast = BaseUseToast as any;
 // ============================================================================
 // Typography & Presentation
 // ============================================================================
-export { Text } from '@gluestack-ui/themed/build/components/Text';
+import { Text as BaseText } from '@gluestack-ui/themed/build/components/Text';
+export const Text = BaseText as any;
 import { Heading as BaseHeading } from '@gluestack-ui/themed/build/components/Heading';
 export const Heading = BaseHeading as any;
 export { Divider } from '@gluestack-ui/themed/build/components/Divider';

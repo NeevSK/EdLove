@@ -1,7 +1,6 @@
 ﻿import React, { useState, useEffect, useMemo } from 'react';
 import { RefreshControl, FlatList, ActivityIndicator, ScrollView } from 'react-native';
-import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, Theme, useBottomTabPadding } from '@repo/ui';
-import LotusPetalFAB from '../components/shared/LotusPetalFAB';
+import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, Theme, useBottomTabPadding, LotusPetalFAB } from '@repo/ui';
 import PostCard from '../components/community/PostCard';
 import CreatePostModal from '../components/community/CreatePostModal';
 import GroupsScreen from './community/GroupsScreen';
@@ -319,7 +318,6 @@ export default function CommunityScreen() {
                 <LotusPetalFAB
                     currentTab="community"
                     onPress={() => handleOpenCreatePost()}
-                    icon={<PenTool color={Theme.colors.white} size={24} />}
                 />
 
                 <CreatePostModal

@@ -15,16 +15,14 @@
     "dependencies": {
         "@repo/core": "workspace:*",
         "@repo/ui": "workspace:*",
+        "@repo/community": "workspace:*",
         "@repo/scanner-kit": "workspace:*",
         "react-i18next": "^14.0.0",
         "lucide-react-native": "*"
     },
     "devDependencies": {
         "@repo/typescript-config": "workspace:*",
-        "react": "18.2.0",
-        "react-native": "0.73.6",
-        "react-i18next": "^14.0.0",
-        "@types/react": "~18.2.45",
+        "@types/react": "~19.1.10",
         "@gluestack-ui/themed": "^1.1.2"
     },
     "peerDependencies": {

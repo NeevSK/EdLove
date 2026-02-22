@@ -208,25 +208,31 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile }: Ide
                                 )}
                             </HStack>
 
-                            <Text color={colors.text as any} size="xl" bold numberOfLines={2}>
+                            <Text color={colors.text as any} size="xl" bold numberOfLines={1}>
                                 {profile?.full_name || 'Guest User'}
                             </Text>
 
-                            <Text color={colors.textTertiary as any} size="sm" numberOfLines={1}>
+                            <Text color={colors.textTertiary as any} size="xs" numberOfLines={1} mb={2}>
                                 {profile?.school_name || t('profile.noSchoolConnected')}
                             </Text>
 
-                            {/* Edit Button (Stops Propagation to open modal instead of flip) */}
+                            {/* Identification Row */}
+                            {(profile?.nic_number || profile?.index_number) && (
+                                <Box bg={`${colors.action}10`} px={8} py={2} borderRadius={6} alignSelf="flex-start">
+                                    <Text color={colors.action} size="xxs" bold>
+                                        {profile?.role === 'student' ? 'INDEX:' : 'NIC:'} {profile?.nic_number || profile?.index_number}
+                                    </Text>
+                                </Box>
+                            )}
+
+                            {/* Edit Button (Now leads to Full Profile) */}
                             <Pressable
                                 onPress={(e: any) => {
                                     e.stopPropagation();
-                                    onEdit?.();
+                                    onViewFullProfile?.();
                                 }}
                                 style={{
-                                    marginTop: 8,
-                                    // Increase touch target
-                                    padding: 8,
-                                    margin: -8,
+                                    marginTop: 4,
                                     zIndex: 10
                                 }}
                             >
@@ -237,7 +243,7 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile }: Ide
                                 >
                                     <Edit3 size={12} color={colors.action} />
                                     <Text color={colors.action} size="xs" bold>
-                                        {(t('common.edit') || 'Edit').toUpperCase()} {t('profile.title').toUpperCase()}
+                                        {(t('common.edit') || 'Edit').toUpperCase()}
                                     </Text>
                                 </HStack>
                             </Pressable>
@@ -284,6 +290,9 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile }: Ide
                             />
                         </Box>
                         <Text color={colors.text} mt={Theme.spacing.md} bold>
+                            {profile?.role === 'student' ? (profile?.index_number || 'STU-SCAN') : (profile?.nic_number || 'GURU-SCAN')}
+                        </Text>
+                        <Text color={colors.textSecondary} size="xs">
                             {t('profile.scanToConnect')}
                         </Text>
                     </Center>
