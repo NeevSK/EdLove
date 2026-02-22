@@ -9,17 +9,17 @@ import {
     Box,
     HStack,
     Text,
+    useThemedColors,
+    Theme,
 } from '@repo/ui';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
     withRepeat,
     withTiming,
-    withSpring,
     Easing,
 } from 'react-native-reanimated';
 import { Users } from 'lucide-react-native';
-import { Theme } from '@repo/ui';
 import { supabase } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 
@@ -30,6 +30,7 @@ interface CommunityPresenceProps {
 
 export default function CommunityPresence({ compact = false, userVibe = 'active' }: CommunityPresenceProps) {
     const { t } = useTranslation();
+    const colors = useThemedColors();
     const [onlineCount, setOnlineCount] = useState<number>(0);
     const [isLoading, setIsLoading] = useState(true);
     const [dominantVibe, setDominantVibe] = useState<string>('active');
@@ -110,12 +111,10 @@ export default function CommunityPresence({ compact = false, userVibe = 'active'
             if (!error && count !== null) {
                 setOnlineCount(count);
             } else {
-                // If query fails, don't show misleading data
                 setOnlineCount(0);
             }
         } catch (error) {
             console.error('Error fetching online teachers:', error);
-            // On error, show 0 rather than fake data
             setOnlineCount(0);
         } finally {
             setIsLoading(false);
@@ -130,7 +129,7 @@ export default function CommunityPresence({ compact = false, userVibe = 'active'
     if (isLoading) {
         return (
             <HStack space="sm" alignItems="center" justifyContent="center" py="$4">
-                <Text color={Theme.colors.mistGray} size="sm" italic>
+                <Text color={colors.textSecondary} size="sm" italic>
                     {t('community.connecting') || "Connecting to Sanctuary Network..."}
                 </Text>
             </HStack>
@@ -142,7 +141,7 @@ export default function CommunityPresence({ compact = false, userVibe = 'active'
             case 'reflecting': return Theme.colors.twilightPurple;
             case 'teaching': return Theme.colors.dawnGold;
             case 'planning': return Theme.colors.skyBlue;
-            default: return Theme.colors.sageGreen;
+            default: return colors.success;
         }
     };
 
@@ -153,16 +152,18 @@ export default function CommunityPresence({ compact = false, userVibe = 'active'
             <HStack
                 space="xs"
                 alignItems="center"
-                sx={{
+                style={{
                     paddingHorizontal: Theme.spacing.md,
                     paddingVertical: Theme.spacing.sm,
-                    backgroundColor: Theme.colors.deepIndigo,
+                    backgroundColor: colors.secondary,
                     borderRadius: Theme.corners.comfortable,
+                    borderWidth: 1,
+                    borderColor: colors.border,
                 }}
             >
                 <Animated.View style={pulseStyle}>
                     <Box
-                        sx={{
+                        style={{
                             width: 8,
                             height: 8,
                             borderRadius: 4,
@@ -171,9 +172,8 @@ export default function CommunityPresence({ compact = false, userVibe = 'active'
                     />
                 </Animated.View>
                 <Text
-                    color={Theme.colors.mistGray}
+                    color={colors.textSecondary}
                     size="sm"
-                    sx={{ fontWeight: Theme.typography.fontWeight.medium }}
                 >
                     {onlineCount} teachers {dominantVibe !== 'active' ? `are ${dominantVibe}` : 'online'}
                 </Text>
@@ -183,8 +183,8 @@ export default function CommunityPresence({ compact = false, userVibe = 'active'
 
     return (
         <Box
-            sx={{
-                backgroundColor: Theme.colors.midnightBlue,
+            style={{
+                backgroundColor: colors.secondary,
                 padding: Theme.spacing.lg,
                 borderRadius: Theme.corners.comfortable,
                 borderWidth: 1,
@@ -193,7 +193,7 @@ export default function CommunityPresence({ compact = false, userVibe = 'active'
         >
             <HStack space="md" alignItems="center">
                 {/* Animated pulse indicator */}
-                <Box sx={{ position: 'relative' }}>
+                <Box style={{ position: 'relative' }}>
                     <Users
                         color={vibeColor}
                         size={32}
@@ -215,16 +215,16 @@ export default function CommunityPresence({ compact = false, userVibe = 'active'
                 </Box>
 
                 {/* Count and message */}
-                <Box sx={{ flex: 1 }}>
+                <Box style={{ flex: 1 }}>
                     <Text
-                        color={Theme.colors.sacredWhite}
+                        color={colors.text}
                         size="2xl"
-                        sx={{ fontWeight: Theme.typography.fontWeight.bold }}
+                        bold
                     >
                         {onlineCount} Teachers
                     </Text>
                     <Text
-                        color={Theme.colors.mistGray}
+                        color={colors.textSecondary}
                         size="sm"
                     >
                         Currently {dominantVibe !== 'active' ? dominantVibe : 'online'}
@@ -234,9 +234,9 @@ export default function CommunityPresence({ compact = false, userVibe = 'active'
 
             {/* Comforting message */}
             <Text
-                color={Theme.colors.pearlGray}
+                color={colors.textTertiary}
                 size="sm"
-                sx={{
+                style={{
                     marginTop: Theme.spacing.md,
                     fontStyle: 'italic',
                 }}
