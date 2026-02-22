@@ -50,6 +50,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
     const { t } = useTranslation();
     const colors = useThemedColors();
     const showToast = useStore(state => state.showToast);
+    const user = useStore(state => state.user);
 
     // Resilient Data Hook
     const { resources, isLoading, setResources } = useResources(classroomId);
@@ -67,7 +68,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
         async (variables: { title: string; type: 'link' | 'pdf' | 'note'; content: string }) => {
             return api.resources.create({
                 classroom_id: classroomId,
-                teacher_id: 'current-teacher-id', // TODO: Get from auth context
+                teacher_id: user?.id || '',
                 title: variables.title,
                 type: variables.type,
                 url: variables.type === 'link' || variables.type === 'pdf' ? variables.content : undefined,
