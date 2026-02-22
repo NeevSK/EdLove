@@ -250,7 +250,7 @@ export default function ProfileScreen() {
                                 onEdit={() => {
                                     hapticLight();
                                     // @ts-ignore - Navigation typing
-                                    navigation.navigate('FullProfile', { profile, editable: true });
+                                    navigation.navigate('FullProfile', { profile });
                                 }}
                             />
                         </Center>

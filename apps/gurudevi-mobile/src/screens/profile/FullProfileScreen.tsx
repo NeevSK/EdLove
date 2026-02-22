@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ScrollView, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import {
     Box,
@@ -14,7 +14,7 @@ import {
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { MapPin, Mail, Phone, Shield, Edit3, Check, X, User, FileText } from 'lucide-react-native';
-import { supabase, useStore, UserRole } from '@repo/core';
+import { supabase } from '@repo/core';
 import { hapticSuccess, hapticLight, hapticError } from '@repo/ui';
 import IdentityCard from '../../components/profile/IdentityCard';
 
@@ -22,7 +22,6 @@ interface FullProfileScreenProps {
     route: {
         params: {
             profile: any;
-            editable?: boolean;
         }
     };
     navigation: any;
@@ -40,7 +39,6 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
     const { t } = useTranslation();
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
-    const setStoreRole = useStore(state => state.setUserRole);
 
     const [profile, setProfile] = useState<any>(initialProfile);
     const [editingField, setEditingField] = useState<string | null>(null);
@@ -48,11 +46,21 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
     // Per-field edit state: { fieldKey: { value, saved, saving, error } }
     const [fieldStates, setFieldStates] = useState<Record<string, EditState>>({});
 
+    // Track all auto-dismiss timers so they can be cleared on unmount
+    const dismissTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+
     useEffect(() => {
         if (initialProfile) {
             setProfile(initialProfile);
         }
     }, [initialProfile]);
+
+    // Clear all pending dismiss timers when the screen unmounts
+    useEffect(() => {
+        return () => {
+            dismissTimers.current.forEach(id => clearTimeout(id));
+        };
+    }, []);
 
     if (!profile) return null;
 
@@ -81,26 +89,20 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
         setFieldStates(prev => ({ ...prev, [field]: { ...prev[field], saving: true, error: null } }));
 
         try {
-            const updates: any = { [field]: state.value };
-
             const { error } = await supabase
                 .from('users')
-                .update(updates)
+                .update({ [field]: state.value })
                 .eq('id', profile.id);
 
             if (error) throw error;
-
-            if (field === 'role') {
-                setStoreRole(state.value as UserRole);
-            }
 
             setProfile((prev: any) => ({ ...prev, [field]: state.value }));
             setFieldStates(prev => ({ ...prev, [field]: { ...prev[field], saving: false, saved: true, error: null } }));
             setEditingField(null);
             hapticSuccess();
 
-            // Clear the saved tick after 3 seconds
-            setTimeout(() => {
+            // Clear the saved tick after 3 seconds; store the timer id to cancel on unmount
+            const timerId = setTimeout(() => {
                 setFieldStates(prev => {
                     if (prev[field]?.saved) {
                         const next = { ...prev };
@@ -110,10 +112,14 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                     return prev;
                 });
             }, 3000);
+            dismissTimers.current.push(timerId);
         } catch (err) {
             console.error('Error saving field:', err);
             hapticError();
-            setFieldStates(prev => ({ ...prev, [field]: { ...prev[field], saving: false, error: 'Failed to save' } }));
+            setFieldStates(prev => ({
+                ...prev,
+                [field]: { ...prev[field], saving: false, error: t('common.saveFailed', 'Failed to save') },
+            }));
         }
     };
 
@@ -187,6 +193,12 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                             ) : (
                                 <Text size="md" color={colors.text} bold>
                                     {currentValue || t('common.notProvided', 'Not provided')}
+                                </Text>
+                            )}
+                            {/* Inline error message */}
+                            {state?.error && (
+                                <Text size="xs" color={colors.error} style={{ marginTop: 4 }}>
+                                    {state.error}
                                 </Text>
                             )}
                         </VStack>
@@ -325,7 +337,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                 <EditableRow
                                     field="role"
                                     label={t('profile.role', 'Role')}
-                                    currentValue={profile.role}
+                                    currentValue={t(`role.${profile.role}`, profile.role)}
                                     icon={Shield}
                                     readOnly
                                 />
