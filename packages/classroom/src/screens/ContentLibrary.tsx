@@ -161,6 +161,10 @@ export default function ContentLibrary() {
 
     const publishMutation = useSafeMutation(
         (resource: ClassroomResource) => {
+            if (!user?.id) {
+                showToast('Please sign in to publish resources', 'error');
+                return Promise.reject(new Error('Not authenticated'));
+            }
             const typeMapping: Record<string, any> = {
                 note: 'note',
                 link: 'link',
@@ -186,7 +190,7 @@ export default function ContentLibrary() {
                     topics: [],
                     grades: []
                 },
-                user?.id || '',
+                user.id,
                 'teacher'
             );
         },
@@ -211,10 +215,14 @@ export default function ContentLibrary() {
 
     const addResource = () => {
         if (!newResourceTitle.trim()) return;
+        if (!user?.id) {
+            showToast('Please sign in to add resources', 'error');
+            return;
+        }
 
         addMutation.mutate({
             classroom_id: classroomId,
-            teacher_id: user?.id || '',
+            teacher_id: user.id,
             title: newResourceTitle,
             description: newResourceDescription,
             type: newResourceType,
@@ -429,9 +437,13 @@ export default function ContentLibrary() {
                                                 {
                                                     text: t('common.import') || 'Import',
                                                     onPress: () => {
+                                                        if (!user?.id) {
+                                                            showToast('Please sign in to import resources', 'error');
+                                                            return;
+                                                        }
                                                         addMutation.mutate({
                                                             classroom_id: classroomId,
-                                                            teacher_id: user?.id || '',
+                                                            teacher_id: user.id,
                                                             title: item.title,
                                                             description: `Imported from Personal Desk`,
                                                             type: item.type,
