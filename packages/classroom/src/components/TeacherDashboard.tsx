@@ -83,9 +83,7 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
         }
 
         try {
-            const { data: { user } } = await supabase.auth.getUser(); // supabase is already imported in some packages via @repo/core
-            // Wait, supabase isn't imported here. I should use useStore or api.
-            // Actually, let's just open the Join Modal with this ID pre-filled or auto-submit.
+            const { data: { user } } = await supabase.auth.getUser();
 
             // For now, let's just use the api to join
             if (user) {
