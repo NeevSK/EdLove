@@ -13,6 +13,8 @@ interface SanctuaryButtonProps {
     size?: 'xs' | 'sm' | 'md' | 'lg';
     fullWidth?: boolean;
     action?: 'primary' | 'secondary' | 'negative' | 'positive';
+    accessibilityLabel?: string;
+    accessibilityHint?: string;
 }
 
 export default function SanctuaryButton({
@@ -25,7 +27,9 @@ export default function SanctuaryButton({
     rightIcon,
     size = 'md',
     fullWidth = false,
-    action = 'primary'
+    action = 'primary',
+    accessibilityLabel,
+    accessibilityHint
 }: SanctuaryButtonProps) {
 
     // Determine colors based on action and variant
@@ -77,6 +81,14 @@ export default function SanctuaryButton({
             isDisabled={isDisabled || isLoading}
             isFocusVisible={false}
             onPress={onPress}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel={accessibilityLabel || (typeof children === 'string' ? children : undefined)}
+            accessibilityHint={accessibilityHint}
+            accessibilityState={{
+                disabled: isDisabled || isLoading,
+                busy: isLoading
+            }}
             sx={{
                 width: fullWidth ? '100%' : 'auto',
                 backgroundColor: getBgColor(),

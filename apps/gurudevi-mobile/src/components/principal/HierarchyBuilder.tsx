@@ -35,7 +35,7 @@ import {
 import { TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';
-import { Section, Grade } from '../../lib/api/school';
+import { Section, Grade } from '@repo/core';
 import { Theme } from '@repo/ui';
 
 import { useThemedColors } from '@repo/ui';

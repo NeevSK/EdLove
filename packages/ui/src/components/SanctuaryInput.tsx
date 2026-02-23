@@ -32,6 +32,8 @@ interface SanctuaryInputProps {
     multiline?: boolean;
     numberOfLines?: number;
     autoFocus?: boolean;
+    accessibilityLabel?: string;
+    accessibilityHint?: string;
 }
 
 export default function SanctuaryInput({
@@ -49,7 +51,9 @@ export default function SanctuaryInput({
     isDisabled = false,
     multiline = false,
     numberOfLines = 1,
-    autoFocus = false
+    autoFocus = false,
+    accessibilityLabel,
+    accessibilityHint
 }: SanctuaryInputProps) {
     const hasError = isInvalid || !!error;
     const colors = useThemedColors();
@@ -71,6 +75,14 @@ export default function SanctuaryInput({
                 variant="outline"
                 isDisabled={isDisabled}
                 isInvalid={hasError}
+                accessible={true}
+                accessibilityLabel={accessibilityLabel || label}
+                accessibilityHint={accessibilityHint}
+                accessibilityRole="text"
+                accessibilityState={{
+                    disabled: isDisabled,
+                    invalid: hasError
+                }}
                 {...({ size: 'md' } as any)}
                 sx={{
                     borderColor: hasError ? colors.error : colors.border,

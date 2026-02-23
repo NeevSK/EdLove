@@ -87,7 +87,7 @@ export async function requireClassroomAccess(classroomId: string) {
     // Check if user is the teacher of this classroom
     const { data: classroom, error } = await supabase
         .from('classrooms')
-        .select('teacher_id, school_id, section_id')
+        .select('teacher_id, school_id, section_id, grade_id')
         .eq('id', classroomId)
         .single();
 
@@ -100,19 +100,40 @@ export async function requireClassroomAccess(classroomId: string) {
         return user;
     }
 
+    // For non-teacher roles, verify against the DB to ensure role/school_id are up to date
+    const { data: userData } = await supabase
+        .from('users')
+        .select('role, school_id, section_id, grade_id')
+        .eq('id', user.id)
+        .single();
+
+    if (!userData) {
+        throw new APIError('User profile not found', 'NOT_FOUND');
+    }
+
+    const actualRole = userData.role;
+    const actualSchoolId = userData.school_id;
+    const actualSectionId = userData.section_id;
+    const actualGradeId = userData.grade_id;
+
     // Administrative roles (Principals/Founders) have access to all classrooms in their school
     const ADMIN_ROLES = ['principal', 'founder', 'admin', 'developer'];
-    if (ADMIN_ROLES.includes(userRole)) {
-        const userSchoolId = user.user_metadata?.school_id || user.app_metadata?.school_id;
-        if (classroom.school_id === userSchoolId) {
+    if (ADMIN_ROLES.includes(actualRole)) {
+        if (classroom.school_id === actualSchoolId) {
             return user;
         }
     }
 
     // Section heads have access to classrooms in their section
-    if (userRole === 'section_head') {
-        const userSectionId = user.user_metadata?.section_id || user.app_metadata?.section_id;
-        if (classroom.section_id === userSectionId) {
+    if (actualRole === 'section_head') {
+        if (classroom.section_id === actualSectionId) {
+            return user;
+        }
+    }
+
+    // Grade heads have access to classrooms in their grade
+    if (actualRole === 'grade_head') {
+        if (classroom.grade_id === actualGradeId) {
             return user;
         }
     }
@@ -179,15 +200,25 @@ export async function requireStudentAccess(studentId: string) {
  */
 export async function requireSchoolAccess(schoolId: string) {
     const user = await requireAuth();
-    const userRole = user.user_metadata?.role || user.app_metadata?.role;
-    const userSchoolId = user.user_metadata?.school_id || user.app_metadata?.school_id;
 
-    if (userRole === 'principal' && userSchoolId === schoolId) {
-        return user;
+    // Live verification against the DB
+    const { data: userData } = await supabase
+        .from('users')
+        .select('role, school_id')
+        .eq('id', user.id)
+        .single();
+
+    if (!userData) {
+        throw new APIError('User profile not found', 'NOT_FOUND');
     }
 
-    // Teachers can also access their own school data (e.g. for school-wide announcements)
-    if (userRole === 'teacher' && userSchoolId === schoolId) {
+    const actualRole = userData.role;
+    const actualSchoolId = userData.school_id;
+
+    // Staff roles (Principal, Teacher, Grade Head, Section Head, etc.) can access their own school's data
+    const STAFF_ROLES = ['principal', 'teacher', 'grade_head', 'section_head', 'founder', 'admin', 'developer'];
+
+    if (STAFF_ROLES.includes(actualRole) && actualSchoolId === schoolId) {
         return user;
     }
 

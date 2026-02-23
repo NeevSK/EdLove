@@ -15,5 +15,6 @@ export { default as DeleteAccountModal } from './DeleteAccountModal';
 export { default as SanctuaryStatsCard } from './SanctuaryStatsCard';
 export { default as StepIndicator } from './StepIndicator';
 export { default as LotusPetalFAB } from './LotusPetalFAB';
+export type { ActionItem, TabType } from './LotusPetalFAB';
 
 export { default as LoadingOverlay } from './LoadingOverlay';

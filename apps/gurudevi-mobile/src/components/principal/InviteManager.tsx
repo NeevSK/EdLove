@@ -36,7 +36,7 @@ import { TouchableOpacity, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import * as Clipboard from 'expo-clipboard';
 import { api } from '../../lib/api';
-import { InviteCode } from '../../lib/api/school';
+import { InviteCode } from '@repo/core';
 import { Theme } from '@repo/ui';
 import { Copy, RefreshCw, Users, Shield, QrCode } from 'lucide-react-native';
 import { UserRole, ADMIN_ROLES, hasRole } from '@repo/core';

@@ -147,6 +147,11 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                 onPress={handlePress}
                 style={[styles.container, { bottom: bottomInset }]}
                 disabled={disabled}
+                accessible={true}
+                accessibilityRole="button"
+                accessibilityLabel={hasActiveGaps ? `Agent Insight Available: ${config.label}` : config.label}
+                accessibilityHint={actions && actions.length > 0 ? 'Double tap to open actions' : 'Double tap to activate'}
+                accessibilityState={{ disabled }}
             >
                 <Animated.View style={[styles.fabWrapper, containerStyle]}>
                     {/* Breathing Glow */}
@@ -212,6 +217,9 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                                         setIsDrawerVisible(false);
                                         action.onPress();
                                     }}
+                                    accessible={true}
+                                    accessibilityRole="button"
+                                    accessibilityLabel={action.label}
                                     style={({ pressed }) => [
                                         styles.actionItem,
                                         pressed && { backgroundColor: 'rgba(255,255,255,0.05)' }

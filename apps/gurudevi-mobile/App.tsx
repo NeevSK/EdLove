@@ -26,11 +26,12 @@ import WelcomeScreen from './src/screens/WelcomeScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import TabNavigator from './src/navigation/TabNavigator';
 import { AIAssistantScreen } from './src/screens';
-import LotusPetalFAB, { ActionItem } from './src/components/shared/LotusPetalFAB';
+import { SanctuaryToast, LotusPetalFAB } from '@repo/ui';
+import type { ActionItem } from '@repo/ui';
 import ErrorBoundary from './src/components/shared/ErrorBoundary';
-import { SanctuaryToast } from '@repo/ui';
 import NetworkStatusBanner from './src/components/shared/NetworkStatusBanner';
 import SyncManager from './src/lib/sync/SyncManager';
+import { LanguageUtils } from './src/utils/LanguageUtils';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -66,18 +67,7 @@ function App() {
 
   // Load saved language preference
   useEffect(() => {
-    const loadLanguage = async () => {
-      try {
-        const storedLang = await AsyncStorage.getItem('user-language');
-        if (storedLang) {
-          console.log('🗣️ App: Restoring language preference:', storedLang);
-          i18n.changeLanguage(storedLang);
-        }
-      } catch (e) {
-        console.warn('Failed to load language preference', e);
-      }
-    };
-    loadLanguage();
+    LanguageUtils.init();
   }, []);
 
   // Sync showWelcome with session status
