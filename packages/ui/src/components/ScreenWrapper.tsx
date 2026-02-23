@@ -11,7 +11,7 @@ interface ScreenWrapperProps {
     title?: string;
     showBack?: boolean;
     scrollable?: boolean;
-    scroll?: boolean; // Alias for scrollable for backward compatibility
+    scroll?: boolean; // When provided, overrides scrollable. Pass scroll={false} to disable scrolling even when scrollable defaults to true.
     backgroundColor?: string;
     refreshControl?: React.ReactElement<import('react-native').RefreshControlProps>;
     style?: any;
@@ -65,7 +65,7 @@ export default function ScreenWrapper({
                 end={{ x: 1, y: 1 }}
                 style={[styles.container, safeAreaStyle]}
             >
-                {(scrollable || scroll) ? (
+                {(scroll ?? scrollable) ? (
                     <ScrollView
                         style={{ flex: 1 }}
                         contentContainerStyle={[

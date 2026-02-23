@@ -77,6 +77,9 @@ export default function LibraryScreen() {
     const renderCategoryItem = ({ item: cat }: { item: any }) => (
         <Pressable
             onPress={() => setSelectedCategoryId(cat.id)}
+            accessibilityRole="button"
+            accessibilityLabel={cat.en}
+            accessibilityState={{ selected: selectedCategoryId === cat.id }}
         >
             <Box
                 sx={{
@@ -142,6 +145,8 @@ export default function LibraryScreen() {
                         <Pressable
                             key={tag}
                             onPress={() => setSearchQuery(tag)}
+                            accessibilityRole="button"
+                            accessibilityLabel={`Filter by tag: ${tag}`}
                         >
                             <Box sx={{
                                 paddingHorizontal: 10,
