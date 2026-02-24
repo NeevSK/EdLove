@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, ButtonText, ButtonSpinner, ButtonIcon } from '../gluestack';
 import { Theme } from '../theme/Theme';
+import { useTheme } from '../hooks/useTheme';
 
 interface SanctuaryButtonProps {
     onPress: () => void;
@@ -31,17 +32,18 @@ export default function SanctuaryButton({
     accessibilityLabel,
     accessibilityHint
 }: SanctuaryButtonProps) {
+    const { accent, glass } = useTheme();
 
     // Determine colors based on action and variant
     const getBgColor = () => {
         if (variant === 'outline' || variant === 'ghost' || variant === 'link') return 'transparent';
 
         switch (action) {
-            case 'primary': return Theme.colors.sanctuarySaffron; // Gold
-            case 'secondary': return Theme.colors.gurudeviBlue;   // Blue
-            case 'negative': return Theme.colors.emberRed;
-            case 'positive': return Theme.colors.sageGreen;
-            default: return Theme.colors.sanctuarySaffron;
+            case 'primary': return accent.action;
+            case 'secondary': return glass.surface.bg;
+            case 'negative': return accent.danger;
+            case 'positive': return accent.reward;
+            default: return accent.action;
         }
     };
 
@@ -53,11 +55,11 @@ export default function SanctuaryButton({
         }
 
         switch (action) {
-            case 'primary': return Theme.colors.sanctuarySaffron;
-            case 'secondary': return Theme.colors.gurudeviBlue;
-            case 'negative': return Theme.colors.emberRed;
-            case 'positive': return Theme.colors.sageGreen;
-            default: return Theme.colors.sanctuarySaffron;
+            case 'primary': return accent.action;
+            case 'secondary': return accent.action;
+            case 'negative': return accent.danger;
+            case 'positive': return accent.reward;
+            default: return accent.action;
         }
     };
 
@@ -65,11 +67,11 @@ export default function SanctuaryButton({
         if (variant !== 'outline') return 'transparent';
 
         switch (action) {
-            case 'primary': return Theme.colors.sanctuarySaffron;
-            case 'secondary': return Theme.colors.gurudeviBlue;
-            case 'negative': return Theme.colors.emberRed;
-            case 'positive': return Theme.colors.sageGreen;
-            default: return Theme.colors.sanctuarySaffron;
+            case 'primary': return accent.action;
+            case 'secondary': return accent.action;
+            case 'negative': return accent.danger;
+            case 'positive': return accent.reward;
+            default: return accent.action;
         }
     };
 
@@ -100,7 +102,7 @@ export default function SanctuaryButton({
                     transform: [{ scale: 0.98 }]
                 },
                 // Custom handling for 'secondary' styling that might conflict with Gluestack defaults
-                ...(variant === 'solid' && action === 'secondary' ? { backgroundColor: Theme.colors.gurudeviBlue } : {})
+                ...(variant === 'solid' && action === 'secondary' ? { backgroundColor: glass.surface.bg } : {})
             }}
         >
             {isLoading ? (
