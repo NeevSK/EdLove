@@ -23,6 +23,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { BadgeCheck, BookOpen, Bookmark } from 'lucide-react-native';
 import { Theme } from '../../theme/Theme';
+import { useThemedColors } from '../../hooks/useThemedColors';
 
 // ============================================================================
 // CONSTANTS
@@ -60,7 +61,7 @@ export function CollectionCard({
     onPress,
     onPullToDesk,
 }: CollectionCardProps) {
-    const isDark = useColorScheme() === 'dark';
+    const colors = useThemedColors();
 
     const styles = useMemo(
         () =>
@@ -74,7 +75,7 @@ export function CollectionCard({
                     height: CARD_HEIGHT,
                     borderRadius: Theme.corners.generous,
                     overflow: 'hidden',
-                    backgroundColor: isDark ? Theme.colors.deepIndigo : Theme.colors.lotusWhite,
+                    backgroundColor: colors.secondary,
                     ...Theme.shadows.md,
                 },
                 image: {
@@ -111,15 +112,17 @@ export function CollectionCard({
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: 3,
-                    backgroundColor: 'rgba(0,0,0,0.55)',
+                    backgroundColor: colors.overlay,
                     paddingHorizontal: 6,
                     paddingVertical: 3,
                     borderRadius: Theme.corners.tight,
+                    borderWidth: 0.5,
+                    borderColor: colors.border,
                 },
                 verifiedText: {
                     fontSize: 10,
                     fontWeight: '600',
-                    color: Theme.colors.sageGreen,
+                    color: colors.success,
                 },
                 gradient: {
                     padding: Theme.spacing.sm,
@@ -128,13 +131,13 @@ export function CollectionCard({
                 title: {
                     fontSize: Theme.typography.fontSize.sm,
                     fontWeight: '700',
-                    color: Theme.colors.sacredWhite,
+                    color: colors.text,
                     marginBottom: 3,
                     lineHeight: 18,
                 },
                 creator: {
                     fontSize: 11,
-                    color: Theme.colors.pearlGray,
+                    color: colors.textSecondary,
                     marginBottom: Theme.spacing.sm,
                 },
                 bottomRow: {
@@ -146,14 +149,16 @@ export function CollectionCard({
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: 4,
-                    backgroundColor: 'rgba(0,0,0,0.5)',
+                    backgroundColor: colors.overlay,
                     paddingHorizontal: 7,
                     paddingVertical: 3,
                     borderRadius: Theme.corners.tight,
+                    borderWidth: 0.5,
+                    borderColor: colors.border,
                 },
                 countText: {
                     fontSize: 11,
-                    color: Theme.colors.pearlGray,
+                    color: colors.textSecondary,
                     fontWeight: '600',
                 },
                 deskButton: {
@@ -164,13 +169,13 @@ export function CollectionCard({
                     borderColor: Theme.colors.sanctuarySaffron,
                 },
             }),
-        [isDark]
+        [colors]
     );
 
     const gradientColors: [string, string, string] = [
         'transparent',
-        'rgba(0,0,0,0.55)',
-        'rgba(0,0,0,0.92)',
+        colors.secondary + 'CC', // Dynamic secondary with 80% alpha
+        colors.primary, // Dynamic primary at the bottom
     ];
 
     const cardContent = (
@@ -252,16 +257,16 @@ function CardOverlay({
     const overlayStyle = absolute
         ? baseOverlayStyle
         : [
-              baseOverlayStyle,
-              {
-                  flex: 1,
-                  position: 'relative' as const,
-                  top: undefined,
-                  right: undefined,
-                  bottom: undefined,
-                  left: undefined,
-              },
-          ];
+            baseOverlayStyle,
+            {
+                flex: 1,
+                position: 'relative' as const,
+                top: undefined,
+                right: undefined,
+                bottom: undefined,
+                left: undefined,
+            },
+        ];
 
     return (
         <View style={overlayStyle}>

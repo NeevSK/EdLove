@@ -25,7 +25,8 @@ export default function ProfileStackNavigator() {
                 component={FullProfileScreen}
                 options={{
                     headerShown: false,
-                    presentation: 'card'
+                    presentation: 'modal',
+                    animation: 'slide_from_bottom',
                 }}
             />
         </Stack.Navigator>

@@ -7,6 +7,10 @@ import {
     Text,
     Pressable,
     Center,
+    Theme,
+    useThemedColors,
+    hapticLight,
+    hapticSuccess
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import Animated, {
@@ -14,26 +18,23 @@ import Animated, {
     useAnimatedStyle,
     withSpring,
     interpolate,
-    withTiming,
-    Easing,
 } from 'react-native-reanimated';
-import { ShieldCheck, Edit3, Compass, Database } from 'lucide-react-native';
+import { User, GraduationCap, Briefcase, Crown, ShieldAlert, Compass } from 'lucide-react-native';
 import { QRCodeGenerator } from '@repo/scanner-kit';
-import { Theme } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
-import { hapticLight, hapticSuccess } from '@repo/ui';
+import { UserProfile } from '@repo/profile';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_WIDTH = SCREEN_WIDTH - Theme.spacing.xl * 2;
 const CARD_HEIGHT = 220;
 
 interface IdentityCardProps {
-    profile: any;
+    profile: UserProfile | null;
     onEdit?: () => void;
     onViewFullProfile?: () => void;
+    style?: any;
 }
 
-export default function IdentityCard({ profile, onEdit, onViewFullProfile }: IdentityCardProps) {
+export default function IdentityCard({ profile, onEdit, onViewFullProfile, style }: IdentityCardProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
     const isFlipped = useSharedValue(0);
@@ -70,13 +71,39 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile }: Ide
         };
     });
 
-    // Role-specific badge text
-    const getRoleBadge = () => {
-        if (profile?.role === 'founder') return t('profile.stats.visionAlignment');
-        if (profile?.role === 'admin' || profile?.role === 'developer') return t('profile.stats.coreActive');
-        if (profile?.role === 'student') return `LVL ${profile?.level || 3}`;
-        return '70%'; // Default
-    };
+    // Role-specific badge logic
+    const roleConfig = useMemo(() => {
+        const role = profile?.role || 'guest';
+        switch (role) {
+            case 'teacher':
+                return { label: 'Teacher 🌱', icon: Briefcase, color: colors.action };
+            case 'student':
+                return { label: 'Student 📚', icon: GraduationCap, color: colors.success };
+            case 'principal':
+                return { label: 'Principal 🏛️', icon: Crown, color: colors.warning };
+            case 'founder':
+                return { label: 'Founder 🌸', icon: Compass, color: colors.warning };
+            case 'admin':
+            case 'developer':
+                return { label: 'Guardian 🛡️', icon: ShieldAlert, color: colors.action };
+            default:
+                return { label: 'Explorer 🌿', icon: User, color: colors.textTertiary };
+        }
+    }, [profile?.role, profile?.level, colors]);
+
+    // Dynamic Profile Completion Calculator
+    const completionPercentage = useMemo(() => {
+        if (!profile) return 0;
+        const fields = [
+            'full_name',
+            'phone',
+            'bio',
+            'avatar_url',
+            profile.role === 'student' ? 'index_number' : 'nic_number'
+        ];
+        const filledFields = fields.filter(f => !!profile[f]);
+        return Math.round((filledFields.length / fields.length) * 100);
+    }, [profile]);
 
     const styles = useMemo(() => StyleSheet.create({
         // ... (rest of styles omitted for brevity, keeping same)
@@ -156,7 +183,15 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile }: Ide
 
     return (
         <Pressable onPress={handleFlip}>
-            <Box style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}>
+            <Box style={[{
+                width: CARD_WIDTH,
+                height: CARD_HEIGHT,
+                shadowColor: colors.glow,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.6,
+                shadowRadius: 20,
+                elevation: 10,
+            }, style]}>
                 {/* FRONT SIDE - IDENTITY */}
                 <Animated.View style={[styles.cardCommon, frontStyle]}>
                     <Box style={styles.glassLayer} />
@@ -173,19 +208,16 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile }: Ide
                                     />
                                 ) : (
                                     <Center style={styles.avatarPlaceholder}>
-                                        <Text
-                                            color={colors.action as any}
-                                            size="3xl"
-                                            bold
-                                        >
-                                            {profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : 'G'}
-                                        </Text>
+                                        <roleConfig.icon
+                                            size={40}
+                                            color={colors.action}
+                                        />
                                     </Center>
                                 )}
                             </Box>
                             <Box style={styles.completionBadge}>
                                 <Text color={colors.primary as any} size="xs" bold>
-                                    {getRoleBadge()}
+                                    {completionPercentage}%
                                 </Text>
                             </Box>
                         </Box>
@@ -194,18 +226,9 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile }: Ide
                         <VStack space="xs" flex={1}>
                             <HStack alignItems="center" space="xs">
                                 <Text color={colors.textSecondary as any} size="xs" bold textTransform="uppercase">
-                                    {profile?.role === 'teacher' && 'Teacher 🌱'}
-                                    {profile?.role === 'student' && 'Student 📚'}
-                                    {profile?.role === 'principal' && 'Principal 🏛️'}
-                                    {profile?.role === 'founder' && 'Founder 🌸'}
-                                    {(profile?.role === 'admin' || profile?.role === 'developer') && 'Guardian 🛡️'}
-                                    {!profile?.role && (t('profile.guestUser') || 'Guest Explorer 🌿')}
+                                    {roleConfig.label}
                                 </Text>
-                                {profile?.role === 'founder' && <Compass size={14} color={colors.warning} />}
-                                {(profile?.role === 'admin' || profile?.role === 'developer') && <Database size={14} color={colors.action} />}
-                                {profile?.school_name && !['founder', 'admin', 'developer'].includes(profile?.role) && (
-                                    <ShieldCheck size={14} color={colors.success} />
-                                )}
+                                <roleConfig.icon size={14} color={roleConfig.color} />
                             </HStack>
 
                             <Text color={colors.text as any} size="xl" bold numberOfLines={1}>
@@ -224,52 +247,8 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile }: Ide
                                     </Text>
                                 </Box>
                             )}
-
-                            {/* Edit Button (Now leads to Full Profile) */}
-                            <Pressable
-                                onPress={(e: any) => {
-                                    e.stopPropagation();
-                                    onViewFullProfile?.();
-                                }}
-                                style={{
-                                    marginTop: 4,
-                                    zIndex: 10
-                                }}
-                            >
-                                <HStack
-                                    space="xs"
-                                    alignItems="center"
-                                    style={styles.editButton}
-                                >
-                                    <Edit3 size={12} color={colors.action} />
-                                    <Text color={colors.action} size="xs" bold>
-                                        {(t('common.edit') || 'Edit').toUpperCase()}
-                                    </Text>
-                                </HStack>
-                            </Pressable>
                         </VStack>
                     </HStack>
-
-                    {/* Expand Button (Top Right) - Only show if onViewFullProfile prop is provided */}
-                    {onViewFullProfile && (
-                        <Pressable
-                            onPress={(e: any) => {
-                                e.stopPropagation();
-                                onViewFullProfile();
-                            }}
-                            style={{
-                                position: 'absolute',
-                                top: 10,
-                                right: 10,
-                                padding: 8,
-                                zIndex: 10
-                            }}
-                        >
-                            <Text color={colors.textTertiary} size="xs" bold>
-                                {t('common.fullView') || 'FULL VIEW'} ↗
-                            </Text>
-                        </Pressable>
-                    )}
 
                     {/* Decorative Elements */}
                     <RNImage

@@ -108,30 +108,50 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
     };
 
     return (
-        <VStack space="md" mt={Theme.spacing.lg}>
-            <Heading color={colors.textSecondary as any} size="sm">
-                Sanctuary Achievements
-            </Heading>
-            <SanctuaryCard variant="glass">
+        <VStack mt={Theme.spacing.lg}>
+            <Box
+                sx={{
+                    backgroundColor: colors.secondary,
+                    borderRadius: Theme.corners.generous,
+                    padding: Theme.spacing.xl,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    shadowColor: colors.glow,
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 15,
+                    elevation: 5,
+                }}
+            >
+                <Heading
+                    color={colors.textSecondary as any}
+                    size="sm"
+                    mt={Theme.spacing.sm}
+                    mb={Theme.spacing.md}
+                >
+                    Sanctuary Achievements
+                </Heading>
                 <HStack style={styles.galleryGrid}>
                     {achievements.map((item) => (
                         <AchievementItem key={item.id} achievement={item} />
                     ))}
                 </HStack>
-            </SanctuaryCard>
+            </Box>
         </VStack>
     );
 }
 
 const styles = StyleSheet.create({
     galleryGrid: {
+        flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        paddingVertical: Theme.spacing.sm,
+        justifyContent: 'flex-start',
+        gap: Theme.spacing.md,
     },
     itemContainer: {
-        width: '30%',
-        marginBottom: Theme.spacing.md,
+        width: '28%',
+        alignItems: 'center',
+        marginBottom: Theme.spacing.xs,
     },
     unlockedIcon: {
         borderWidth: 1,

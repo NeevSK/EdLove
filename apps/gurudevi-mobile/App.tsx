@@ -25,8 +25,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import TabNavigator from './src/navigation/TabNavigator';
-import { AIAssistantScreen } from './src/screens';
-import { SanctuaryToast, LotusPetalFAB } from '@repo/ui';
+import { AIAssistantScreen, AuthScreen } from './src/screens';
+import { SanctuaryToast, ToastProvider } from '@repo/ui';
 import type { ActionItem } from '@repo/ui';
 import ErrorBoundary from './src/components/shared/ErrorBoundary';
 import NetworkStatusBanner from './src/components/shared/NetworkStatusBanner';
@@ -67,7 +67,10 @@ function App() {
 
   // Load saved language preference
   useEffect(() => {
-    LanguageUtils.init();
+    async function initLanguage() {
+      await LanguageUtils.init();
+    }
+    initLanguage();
   }, []);
 
   // Sync showWelcome with session status
@@ -265,72 +268,81 @@ function App() {
   console.log('App: Loading finished, rendering main tree');
 
   return (
-    <PostHogProvider
-      apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
-      options={{
-        host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
-      }}
-    >
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <SafeAreaProvider>
-          <QueryClientProvider client={queryClient}>
-            <EnvironmentProvider>
-              <GluestackUIProvider config={config}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <QueryClientProvider client={queryClient}>
+          <EnvironmentProvider>
+            <GluestackUIProvider config={config}>
+              <ToastProvider>
                 <ErrorBoundary name="App Root">
-                  <NavigationContainer>
-                    <RootStack.Navigator screenOptions={{ headerShown: false }}>
-                      {(!session || needsWelcome) ? (
-                        <RootStack.Screen name="Welcome">
-                          {() => (
-                            <ErrorBoundary name="Welcome Screen">
-                              <WelcomeScreen
-                                initialShowAuth={onboardingCompleted}
-                                onNext={() => {
-                                  console.log('➡️ App: onNext called from WelcomeScreen');
-                                  setShowWelcome(false);
-                                }}
-                              />
-                            </ErrorBoundary>
-                          )}
-                        </RootStack.Screen>
-                      ) : !onboardingCompleted ? (
-                        <RootStack.Screen name="Onboarding">
-                          {() => (
-                            <ErrorBoundary name="Onboarding Screen">
-                              <OnboardingScreen
-                                isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
-                                onComplete={(name: string, role: any, wantsAccount?: boolean) => {
-                                  console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
-                                  const store = useStore.getState();
-                                  if (name) store.setTeacherName(name);
-                                  if (role) store.setUserRole(role);
-                                  store.setOnboardingCompleted(true);
-                                  store.setJustFinishedOnboarding(true);
-                                }}
-                              />
-                            </ErrorBoundary>
-                          )}
-                        </RootStack.Screen>
-                      ) : (
-                        <>
-                          <RootStack.Screen name="Main">
+                  <PostHogProvider
+                    apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
+                    options={{
+                      host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
+                    }}
+                    autocapture={false}
+                  >
+                    <NavigationContainer>
+                      <RootStack.Navigator screenOptions={{ headerShown: false }}>
+                        {(!session || needsWelcome) ? (
+                          <RootStack.Screen name="Welcome">
                             {() => (
-                              <ErrorBoundary name="Main Tabs">
-                                <TabNavigator onTabChange={(tab: any) => setCurrentTab(tab)} />
+                              <ErrorBoundary name="Welcome Screen">
+                                <WelcomeScreen
+                                  initialShowAuth={onboardingCompleted}
+                                  onNext={() => {
+                                    console.log('➡️ App: onNext called from WelcomeScreen');
+                                    setShowWelcome(false);
+                                  }}
+                                />
                               </ErrorBoundary>
                             )}
                           </RootStack.Screen>
-                          <RootStack.Screen
-                            name="AIAssistant"
-                            component={AIAssistantScreen}
-                            options={{
-                              presentation: 'modal',
-                              animation: 'slide_from_bottom'
-                            }}
-                          />
-                        </>
-                      )}
-                    </RootStack.Navigator>
+                        ) : !onboardingCompleted ? (
+                          <RootStack.Screen name="Onboarding">
+                            {() => (
+                              <ErrorBoundary name="Onboarding Screen">
+                                <OnboardingScreen
+                                  isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
+                                  onComplete={(name: string, role: any, wantsAccount?: boolean) => {
+                                    console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
+                                    const store = useStore.getState();
+                                    if (name) store.setTeacherName(name);
+                                    if (role) store.setUserRole(role);
+                                    store.setOnboardingCompleted(true);
+                                    store.setJustFinishedOnboarding(true);
+                                  }}
+                                />
+                              </ErrorBoundary>
+                            )}
+                          </RootStack.Screen>
+                        ) : (
+                          <>
+                            <RootStack.Screen name="Main">
+                              {() => (
+                                <ErrorBoundary name="Main Tabs">
+                                  <TabNavigator onTabChange={(tab: any) => setCurrentTab(tab)} />
+                                </ErrorBoundary>
+                              )}
+                            </RootStack.Screen>
+                            <RootStack.Screen
+                              name="AIAssistant"
+                              component={AIAssistantScreen}
+                              options={{
+                                presentation: 'modal',
+                                animation: 'slide_from_bottom'
+                              }}
+                            />
+                            <RootStack.Screen
+                              name="Auth"
+                              component={AuthScreen}
+                              options={{ presentation: 'modal' }}
+                            />
+
+                          </>
+                        )}
+                      </RootStack.Navigator>
+                    </NavigationContainer>
 
                     <SyncManager />
                     <NetworkStatusBanner />
@@ -343,19 +355,14 @@ function App() {
                         onHide={hideToast}
                       />
                     )}
-
-                    <LotusPetalFAB
-                      actions={getFabActions()}
-                      onPress={handleFabPress}
-                    />
-                  </NavigationContainer>
+                  </PostHogProvider>
                 </ErrorBoundary>
-              </GluestackUIProvider>
-            </EnvironmentProvider>
-          </QueryClientProvider>
-        </SafeAreaProvider>
-      </GestureHandlerRootView>
-    </PostHogProvider>
+              </ToastProvider>
+            </GluestackUIProvider>
+          </EnvironmentProvider>
+        </QueryClientProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
 

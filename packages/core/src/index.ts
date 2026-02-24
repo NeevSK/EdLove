@@ -14,3 +14,5 @@ export * from './lib/monitoring/posthog';
 export * from './lib/storage';
 export * from './lib/storageWrapper';
 export * from './lib/guestDataManager';
+export * from './lib/cloudinary';
+export { isDemo } from './api/demo';

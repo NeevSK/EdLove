@@ -4,3 +4,8 @@ export type ClassroomStackParamList = {
     Attendance: { classroomId: string; classroomName: string };
     Gradebook: { classroomId: string; classroomName: string };
 };
+
+export type ProfileStackParamList = {
+    ProfileMain: undefined;
+    FullProfile: { profile: any };
+};

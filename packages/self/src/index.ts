@@ -14,3 +14,4 @@ export * from './hooks/useMood';
 export * from './hooks/useJournal';
 export * from './hooks/useTomorrowPrep';
 export * from './hooks/useStudentGoals';
+export { default as CommunityPresence } from './components/CommunityPresence';

@@ -5,3 +5,9 @@ export type ClassroomStackParamList = {
     Gradebook: { classroomId: string; classroomName: string };
     SchoolCreation: undefined;
 };
+
+export type CommunityStackParamList = {
+    CommunityMain: undefined;
+    GroupDetails: { groupId: string; groupName?: string };
+    Announcements: undefined;
+};

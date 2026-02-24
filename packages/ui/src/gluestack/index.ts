@@ -124,11 +124,15 @@ export { Switch } from '@gluestack-ui/themed/build/components/Switch';
 // ============================================================================
 // Avatar Components
 // ============================================================================
-export {
-    Avatar,
-    AvatarFallbackText,
-    AvatarImage
+import {
+    Avatar as BaseAvatar,
+    AvatarFallbackText as BaseAvatarFallbackText,
+    AvatarImage as BaseAvatarImage
 } from '@gluestack-ui/themed/build/components/Avatar';
+
+export const Avatar = BaseAvatar as any;
+export const AvatarFallbackText = BaseAvatarFallbackText as any;
+export const AvatarImage = BaseAvatarImage as any;
 
 // ============================================================================
 // Modal Components
@@ -155,9 +159,13 @@ export const LinkText = BaseLinkText as any;
 import { Check } from 'lucide-react-native';
 export const CheckIcon = Check;
 
-export { Image } from '@gluestack-ui/themed/build/components/Image';
+import { Image as BaseImage } from '@gluestack-ui/themed/build/components/Image';
+export const Image = BaseImage as any;
 export { FlatList } from '@gluestack-ui/themed/build/components/FlatList';
 export { SectionList } from '@gluestack-ui/themed/build/components/SectionList';
+
+// Animations
+export { FadeInDown, FadeInUp, FadeInRight, FadeInLeft } from 'react-native-reanimated';
 
 export {
     Checkbox,

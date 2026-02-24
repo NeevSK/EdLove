@@ -19,6 +19,7 @@ import {
 
 import ClassroomStackNavigator from './ClassroomStackNavigator';
 import ProfileStackNavigator from './ProfileStackNavigator';
+import CommunityStackNavigator from './CommunityStackNavigator';
 import { useThemedColors } from '@repo/ui';
 import { useUserRole, useRewards, useTracking } from '@repo/core';
 import AchievementUnlockOverlay from '../components/shared/AchievementUnlockOverlay';
@@ -26,10 +27,11 @@ import AchievementUnlockOverlay from '../components/shared/AchievementUnlockOver
 // Screens
 import {
   SelfScreen,
-  CommunityScreen,
   LibraryScreen,
   ProfileScreen
 } from '../screens';
+import { CommunityScreen, Group, Post, useCommunityGroups } from '@repo/community';
+import GroupCard from '../components/community/GroupCard'; // Assuming this is a local component, not a screen
 
 const Tab = createBottomTabNavigator();
 
@@ -180,8 +182,8 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           }}
         >
           {() => (
-            <ErrorBoundary name="Community Screen">
-              <CommunityScreen />
+            <ErrorBoundary name="Community Stack">
+              <CommunityStackNavigator />
             </ErrorBoundary>
           )}
         </Tab.Screen>

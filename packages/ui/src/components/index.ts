@@ -18,3 +18,4 @@ export { default as LotusPetalFAB } from './LotusPetalFAB';
 export type { ActionItem, TabType } from './LotusPetalFAB';
 
 export { default as LoadingOverlay } from './LoadingOverlay';
+export { LivingGlow } from './LivingGlow';

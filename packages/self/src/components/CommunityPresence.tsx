@@ -1,4 +1,4 @@
-﻿/**
+/**
  * COMMUNITY PRESENCE
  * Shows how many teachers are currently online
  * Provides instant comfort and combats teacher isolation
@@ -8,28 +8,37 @@ import React, { useState, useEffect } from 'react';
 import {
     Box,
     HStack,
+    VStack,
     Text,
+    useThemedColors,
+    Theme,
+    LivingGlow,
+    SanctuaryCard,
 } from '@repo/ui';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
     withRepeat,
     withTiming,
-    withSpring,
     Easing,
 } from 'react-native-reanimated';
-import { Users } from 'lucide-react-native';
-import { Theme } from '@repo/ui';
+import { Users, Info } from 'lucide-react-native';
 import { supabase } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 
 interface CommunityPresenceProps {
     compact?: boolean;
-    userVibe?: string; // Current user's vibe: 'reflecting', 'teaching', 'planning'
+    userVibe?: string;
+    userRole?: 'teacher' | 'student' | 'admin';
 }
 
-export default function CommunityPresence({ compact = false, userVibe = 'active' }: CommunityPresenceProps) {
+export default function CommunityPresence({
+    compact = false,
+    userVibe = 'active',
+    userRole = 'teacher'
+}: CommunityPresenceProps) {
     const { t } = useTranslation();
+    const colors = useThemedColors();
     const [onlineCount, setOnlineCount] = useState<number>(0);
     const [isLoading, setIsLoading] = useState(true);
     const [dominantVibe, setDominantVibe] = useState<string>('active');
@@ -39,10 +48,9 @@ export default function CommunityPresence({ compact = false, userVibe = 'active'
     const pulseOpacity = useSharedValue(0.6);
 
     useEffect(() => {
-        // Pulse animation
         pulseScale.value = withRepeat(
-            withTiming(1.2, {
-                duration: 1500,
+            withTiming(1.3, {
+                duration: 2500,
                 easing: Easing.inOut(Easing.ease),
             }),
             -1,
@@ -51,26 +59,24 @@ export default function CommunityPresence({ compact = false, userVibe = 'active'
 
         pulseOpacity.value = withRepeat(
             withTiming(1, {
-                duration: 1500,
+                duration: 2500,
                 easing: Easing.inOut(Easing.ease),
             }),
             -1,
             true
         );
 
-        fetchOnlineTeachers();
+        fetchOnlineUsers();
 
-        // Set up real-time subscription for presence
-        const channel = supabase.channel('online-presence');
+        // Specific channel for the user's role to focus the resonance
+        const channel = supabase.channel(`online-${userRole}`);
 
-        // Update count and vibes when presence changes
         channel
             .on('presence', { event: 'sync' }, () => {
                 const state = channel.presenceState();
                 const presences = Object.values(state).flat();
                 setOnlineCount(presences.length);
 
-                // Determine dominant vibe
                 const vibes: Record<string, number> = {};
                 presences.forEach((p: any) => {
                     const v = p.vibe || 'active';
@@ -82,10 +88,17 @@ export default function CommunityPresence({ compact = false, userVibe = 'active'
                     setDominantVibe(sortedVibes[0][0]);
                 }
             })
+            .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+                console.log('User joined sanctuary:', key, newPresences);
+            })
+            .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+                console.log('User left sanctuary:', key, leftPresences);
+            })
             .subscribe(async (status) => {
                 if (status === 'SUBSCRIBED') {
                     await channel.track({
                         vibe: userVibe,
+                        role: userRole,
                         online_at: new Date().toISOString(),
                     });
                 }
@@ -94,29 +107,21 @@ export default function CommunityPresence({ compact = false, userVibe = 'active'
         return () => {
             supabase.removeChannel(channel);
         };
-    }, []);
+    }, [userVibe, userRole]);
 
-    const fetchOnlineTeachers = async () => {
+    const fetchOnlineUsers = async () => {
         try {
-            // Query for users who have been active in the last 5 minutes
+            // Fallback to DB query for initial count if presence is still syncing
             const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-
             const { count, error } = await supabase
                 .from('users')
                 .select('id', { count: 'exact', head: true })
-                .eq('role', 'teacher')
+                .eq('role', userRole)
                 .gte('last_seen_at', fiveMinutesAgo);
 
-            if (!error && count !== null) {
-                setOnlineCount(count);
-            } else {
-                // If query fails, don't show misleading data
-                setOnlineCount(0);
-            }
+            if (!error && count !== null) setOnlineCount(count > 0 ? count : 0);
         } catch (error) {
-            console.error('Error fetching online teachers:', error);
-            // On error, show 0 rather than fake data
-            setOnlineCount(0);
+            console.error('Error fetching online users:', error);
         } finally {
             setIsLoading(false);
         }
@@ -127,26 +132,28 @@ export default function CommunityPresence({ compact = false, userVibe = 'active'
         opacity: pulseOpacity.value,
     }));
 
-    if (isLoading) {
-        return (
-            <HStack space="sm" alignItems="center" justifyContent="center" py="$4">
-                <Text color={Theme.colors.mistGray} size="sm" italic>
-                    {t('community.connecting') || "Connecting to Sanctuary Network..."}
-                </Text>
-            </HStack>
-        );
-    }
-
     const getVibeColor = (vibe: string) => {
         switch (vibe) {
-            case 'reflecting': return Theme.colors.twilightPurple;
-            case 'teaching': return Theme.colors.dawnGold;
-            case 'planning': return Theme.colors.skyBlue;
-            default: return Theme.colors.sageGreen;
+            case 'reflecting': return colors.glow;
+            case 'teaching': return colors.action;
+            case 'studying': return colors.primary;
+            case 'planning': return colors.success;
+            default: return colors.action;
         }
     };
 
     const vibeColor = getVibeColor(dominantVibe);
+    const roleLabel = userRole === 'teacher' ? t('community.teachers', 'Teachers') : t('community.students', 'Students');
+
+    if (isLoading) {
+        return (
+            <HStack space="sm" alignItems="center" justifyContent="center" py="$4">
+                <Text color={colors.textTertiary} size="sm" italic>
+                    {t('community.connecting') || "Joining the Sanctuary Circle..."}
+                </Text>
+            </HStack>
+        );
+    }
 
     if (compact) {
         return (
@@ -156,8 +163,10 @@ export default function CommunityPresence({ compact = false, userVibe = 'active'
                 sx={{
                     paddingHorizontal: Theme.spacing.md,
                     paddingVertical: Theme.spacing.sm,
-                    backgroundColor: Theme.colors.deepIndigo,
+                    backgroundColor: colors.overlay,
                     borderRadius: Theme.corners.comfortable,
+                    borderWidth: 1,
+                    borderColor: vibeColor,
                 }}
             >
                 <Animated.View style={pulseStyle}>
@@ -170,79 +179,61 @@ export default function CommunityPresence({ compact = false, userVibe = 'active'
                         }}
                     />
                 </Animated.View>
-                <Text
-                    color={Theme.colors.mistGray}
-                    size="sm"
-                    sx={{ fontWeight: Theme.typography.fontWeight.medium }}
-                >
-                    {onlineCount} teachers {dominantVibe !== 'active' ? `are ${dominantVibe}` : 'online'}
+                <Text color={colors.textSecondary} size="sm" bold>
+                    {onlineCount} {roleLabel} {t('community.online', 'Online')}
                 </Text>
             </HStack>
         );
     }
 
     return (
-        <Box
-            sx={{
-                backgroundColor: Theme.colors.midnightBlue,
-                padding: Theme.spacing.lg,
-                borderRadius: Theme.corners.comfortable,
-                borderWidth: 1,
-                borderColor: vibeColor,
-            }}
-        >
+        <VStack space="md" p={compact ? 0 : "$4"}>
             <HStack space="md" alignItems="center">
-                {/* Animated pulse indicator */}
                 <Box sx={{ position: 'relative' }}>
-                    <Users
-                        color={vibeColor}
-                        size={32}
-                    />
+                    <Users color={vibeColor} size={28} />
                     <Animated.View
                         style={[
                             pulseStyle,
                             {
                                 position: 'absolute',
-                                top: -4,
-                                right: -4,
-                                width: 12,
-                                height: 12,
-                                borderRadius: 6,
+                                top: -2,
+                                right: -2,
+                                width: 10,
+                                height: 10,
+                                borderRadius: 5,
                                 backgroundColor: vibeColor,
                             },
                         ]}
                     />
                 </Box>
 
-                {/* Count and message */}
-                <Box sx={{ flex: 1 }}>
-                    <Text
-                        color={Theme.colors.sacredWhite}
-                        size="2xl"
-                        sx={{ fontWeight: Theme.typography.fontWeight.bold }}
-                    >
-                        {onlineCount} Teachers
+                <VStack sx={{ flex: 1 }}>
+                    <Text color={colors.text} size="lg" bold>
+                        {onlineCount} {roleLabel} in Sanctuary
                     </Text>
-                    <Text
-                        color={Theme.colors.mistGray}
-                        size="sm"
-                    >
-                        Currently {dominantVibe !== 'active' ? dominantVibe : 'online'}
+                    <Text color={colors.textSecondary} size="sm">
+                        {t('community.currently', 'Currently')} {dominantVibe !== 'active' ? t(`community.vibes.${dominantVibe}`, dominantVibe) : t('community.active', 'active')}
                     </Text>
-                </Box>
+                </VStack>
             </HStack>
 
-            {/* Comforting message */}
-            <Text
-                color={Theme.colors.pearlGray}
-                size="sm"
+            <Box
                 sx={{
-                    marginTop: Theme.spacing.md,
-                    fontStyle: 'italic',
+                    padding: Theme.spacing.md,
+                    backgroundColor: colors.overlay,
+                    borderRadius: Theme.corners.comfortable,
+                    borderLeftWidth: 3,
+                    borderLeftColor: vibeColor,
+                    marginTop: Theme.spacing.xs
                 }}
             >
-                You're not alone in this journey 🌟
-            </Text>
-        </Box>
+                <Text color={colors.textPrimary} size="sm" italic>
+                    {userRole === 'teacher'
+                        ? t('community.comfortMessage', "You are with all other teachers in this journey. The circle is open.")
+                        : t('community.studentComfort', "Learning together, growing together. The circle is here for you.")
+                    } 🌟
+                </Text>
+            </Box>
+        </VStack>
     );
 }

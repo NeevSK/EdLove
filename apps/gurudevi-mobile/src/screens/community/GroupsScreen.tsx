@@ -1,37 +1,35 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { FlatList, ActivityIndicator } from 'react-native';
-import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, PositiveInvitation, Theme } from '@repo/ui';
+import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, PositiveInvitation, Theme, FadeInDown } from '@repo/ui';
+import Animated from 'react-native-reanimated';
 import GroupCard from '../../components/community/GroupCard';
-import { useCommunity, Group } from '@repo/community';
+import { useCommunityGroups, Group, Post } from '@repo/community';
 import { useTranslation } from 'react-i18next';
 import { isDemo } from '../../lib/api/demo';
-import { Compass, Shield } from 'lucide-react-native';
+import { Compass, Shield, Users, Plus } from 'lucide-react-native';
 
 type GroupsSubTab = 'sanctuary' | 'galaxy';
 
 interface GroupsScreenProps {
     userId?: string;
+    schoolId?: string;
     onCreatePost?: (groupId?: string) => void;
-    onNavigateToGroup?: (groupId: string) => void;
+    onNavigateToGroup: (groupId: string) => void;
 }
 
-export default function GroupsScreen({ userId, onCreatePost, onNavigateToGroup }: GroupsScreenProps) {
+export default function GroupsScreen({ userId, schoolId, onCreatePost, onNavigateToGroup }: GroupsScreenProps) {
     const { t } = useTranslation();
-    const { groups, loading, fetchNextGroups, hasNextGroups, isFetchingNextGroups } = useCommunity();
+    const {
+        sanctuaryGroups,
+        galaxyGroups,
+        loading,
+        fetchNextGroups,
+        hasNextGroups,
+        isFetchingNextGroups
+    } = useCommunityGroups({ schoolId, userId });
+
     const colors = useThemedColors();
     const [activeSubTab, setActiveSubTab] = useState<GroupsSubTab>('sanctuary');
-
-    // "My Sanctuary": school-specific joined groups (school_id is set)
-    const sanctuaryGroups = useMemo(
-        () => groups.filter((g: Group) => g.is_member && g.school_id),
-        [groups]
-    );
-
-    // "Galaxy": discoverable inter-school or groups not yet joined (school_id absent or not joined)
-    const galaxyGroups = useMemo(
-        () => groups.filter((g: Group) => !g.is_member || !g.school_id),
-        [groups]
-    );
 
     const activeGroups = activeSubTab === 'sanctuary' ? sanctuaryGroups : galaxyGroups;
 
@@ -79,12 +77,44 @@ export default function GroupsScreen({ userId, onCreatePost, onNavigateToGroup }
                         bold
                         color={activeSubTab === 'galaxy' ? Theme.colors.white : colors.text}
                     >
-                        {t('community.groups.galaxy', 'Galaxy')}
+                        {t('community.groups.galaxy', 'Infinite Galaxy')}
                     </Text>
                 </HStack>
             </Pressable>
         </HStack>
     );
+
+    const renderGalaxyActions = () => {
+        if (activeSubTab !== 'galaxy') return null;
+
+        return (
+            <Animated.View entering={FadeInDown.duration(600).delay(200).springify()}>
+                <Pressable
+                    onPress={() => onCreatePost?.()}
+                    sx={{
+                        marginHorizontal: Theme.spacing.md,
+                        marginBottom: Theme.spacing.md,
+                        padding: Theme.spacing.md,
+                        backgroundColor: Theme.colors.glassHighlight,
+                        borderRadius: Theme.corners.comfortable,
+                        borderWidth: 1,
+                        borderColor: Theme.colors.glassBorder,
+                        borderStyle: 'dashed',
+                        alignItems: 'center',
+                    }}
+                >
+                    <HStack space="sm" alignItems="center">
+                        <Box sx={{ p: '$1', borderRadius: '$full', backgroundColor: Theme.colors.gurudeviViolet }}>
+                            <Plus size={14} color="white" />
+                        </Box>
+                        <Text color={Theme.colors.sacredWhite} bold>
+                            {t('community.groups.create', 'Found a New Circle')}
+                        </Text>
+                    </HStack>
+                </Pressable>
+            </Animated.View>
+        );
+    };
 
     const getEmptyComponent = () => {
         if (loading) {
@@ -110,26 +140,33 @@ export default function GroupsScreen({ userId, onCreatePost, onNavigateToGroup }
         return (
             <PositiveInvitation
                 context="community"
-                title={t('community.groups.noGalaxy', 'No groups to discover')}
-                description={t('community.groups.noGalaxyDesc', 'Check back later for new inter-school groups and clubs.')}
+                title={t('community.groups.noGalaxy', 'Galaxy Waiting to Bloom')}
+                description={t('community.groups.noGalaxyDesc', 'Be the first to create a club, interest group, or inter-school circle.')}
+                onAction={() => onCreatePost?.()} // Triggers group creation flow
             />
         );
     };
 
-    const renderItem = ({ item }: { item: Group }) => (
-        <GroupCard
-            id={item.id}
-            name={isDemo() ? `(Sample) ${item.name}` : item.name}
-            memberCount={item.member_count}
-            type={item.type as any}
-            description={item.description}
-            onPress={() => onNavigateToGroup?.(item.id)}
-        />
-    );
+    const renderItem = ({ item, index }: { item: Group, index: number }) => {
+        const animationDelay = Math.min(index * 100, 800);
+        return (
+            <Animated.View entering={FadeInDown.duration(400).delay(animationDelay).springify()}>
+                <GroupCard
+                    id={item.id}
+                    name={isDemo() ? `(Sample) ${item.name}` : item.name}
+                    memberCount={item.member_count}
+                    type={item.type as any}
+                    description={item.description}
+                    onPress={() => onNavigateToGroup(item.id)}
+                />
+            </Animated.View>
+        );
+    };
 
     return (
         <Box sx={{ flex: 1 }}>
             {renderSubTabs()}
+            {renderGalaxyActions()}
             <FlatList
                 data={activeGroups}
                 renderItem={renderItem}

@@ -30,6 +30,7 @@ export interface ThemeColors {
     border: string;
     overlay: string;
     shadow: string;
+    glow: string;
 }
 
 /**
@@ -76,6 +77,7 @@ function getBaseThemeColors(isDark: boolean): ThemeColors {
             border: 'rgba(255,255,255,0.1)',
             overlay: baseColors.overlayDark,
             shadow: baseColors.shadowDark,
+            glow: baseColors.shadowAmbient, // Default glow for dark mode
         };
     } else {
         return {
@@ -100,6 +102,7 @@ function getBaseThemeColors(isDark: boolean): ThemeColors {
             border: 'rgba(0,0,0,0.1)',
             overlay: baseColors.overlayLight,
             shadow: baseColors.shadowLight,
+            glow: baseColors.shadowFocus, // Default glow for light mode
         };
     }
 }
@@ -140,6 +143,7 @@ function modulateForTemporalPhase(
                 secondary: isDark ? '#1E293B' : '#F0F9FF', // Lighter Sky Blue
                 tertiary: isDark ? '#0F172A' : '#E0F7FF', // Consistent Blue
                 action: '#F59E0B', // Sunrise Amber/Saffron preserved for action
+                glow: '#FDBA74', // Luminous Peach/Amber for Dawn
             };
 
         case 'day':
@@ -149,6 +153,7 @@ function modulateForTemporalPhase(
                 action: baseColors.sanctuarySaffron, // Warm energy for clarity
                 // Ensure shadows are ambient but not overly blue in day mode
                 shadow: isDark ? baseColors.shadowDark : 'rgba(0, 0, 0, 0.1)',
+                glow: '#FF9800', // Vivid Saffron Glow for Day
             };
 
         case 'evening':
@@ -159,6 +164,7 @@ function modulateForTemporalPhase(
                 tertiary: isDark
                     ? baseColors.midnightBlue
                     : '#F5E6D3', // Warmer cream for light mode
+                glow: '#FF7043', // Deep Luminous Saffron for Evening
             };
 
         case 'night':
@@ -169,6 +175,7 @@ function modulateForTemporalPhase(
                 textSecondary: isDark
                     ? baseColors.dimGray // More muted text
                     : baseColors.slateGray,
+                glow: isDark ? '#60A5FA' : '#818CF8', // Bright Bioluminescent Blue for Night
             };
 
         default:

@@ -79,6 +79,11 @@ export const colors = {
         }
     },
 
+    // Flattened Glass Tokens (Reactive to theme/temporal phase if needed, currently static for depth)
+    glassBg: 'rgba(15, 23, 42, 0.6)',      // Dark mode default
+    glassBorder: 'rgba(255, 255, 255, 0.1)',
+    glassHighlight: 'rgba(255, 255, 255, 0.05)',
+
     // Overlays & Shadows
     shadowDark: 'rgba(0, 0, 0, 0.3)',
     shadowLight: 'rgba(148, 163, 184, 0.3)', // Cool Grey for light mode

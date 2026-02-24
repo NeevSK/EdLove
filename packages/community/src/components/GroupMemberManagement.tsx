@@ -135,12 +135,18 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                             <Shield size={12} color={colors.textSecondary} />
                                             <Text sx={{ fontSize: 12, color: colors.textSecondary }}>{request.user?.role.toUpperCase()}</Text>
                                         </HStack>
-                                        {request.user?.index_number && (
-                                            <Text sx={{ fontSize: 10, color: Theme.colors.sanctuarySaffron }}>Index: {request.user.index_number}</Text>
-                                        )}
-                                        {request.user?.nic_number && (
-                                            <Text sx={{ fontSize: 10, color: Theme.colors.sanctuarySaffron }}>NIC: {request.user.nic_number}</Text>
-                                        )}
+                                        <HStack space="md" alignItems="center" mt="$1">
+                                            {request.user?.index_number && (
+                                                <Box px="$2" py="$0.5" sx={{ backgroundColor: 'rgba(230, 126, 34, 0.1)', borderRadius: Theme.corners.tight, borderWidth: 1, borderColor: 'rgba(230, 126, 34, 0.3)' }}>
+                                                    <Text sx={{ fontSize: 10, color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}>INDEX: {request.user.index_number}</Text>
+                                                </Box>
+                                            )}
+                                            {request.user?.nic_number && (
+                                                <Box px="$2" py="$0.5" sx={{ backgroundColor: 'rgba(230, 126, 34, 0.1)', borderRadius: Theme.corners.tight, borderWidth: 1, borderColor: 'rgba(230, 126, 34, 0.3)' }}>
+                                                    <Text sx={{ fontSize: 10, color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}>NIC: {request.user.nic_number}</Text>
+                                                </Box>
+                                            )}
+                                        </HStack>
                                     </VStack>
                                     <HStack sx={{ gap: Theme.spacing.sm }}>
                                         <Pressable

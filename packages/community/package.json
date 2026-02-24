@@ -9,6 +9,7 @@
     },
     "scripts": {
         "lint": "eslint .",
+        "check-types": "tsc --noEmit",
         "clean": "rm -rf .turbo node_modules dist"
     },
     "dependencies": {

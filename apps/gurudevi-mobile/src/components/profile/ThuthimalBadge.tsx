@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Flower2 } from 'lucide-react-native';
-import { Theme } from '@repo/ui';
+import { Theme, useThemedColors } from '@repo/ui';
 
 interface ThuthimalBadgeProps {
     gifterName?: string;
@@ -18,6 +18,8 @@ interface ThuthimalBadgeProps {
  * Design: Elegant, warm, honoring - not flashy
  */
 export default function ThuthimalBadge({ gifterName = 'Anonymous', giftedAt, compact = false }: ThuthimalBadgeProps) {
+    const colors = useThemedColors();
+
     const displayName = gifterName || 'Anonymous';
 
     if (compact) {
@@ -34,7 +36,16 @@ export default function ThuthimalBadge({ gifterName = 'Anonymous', giftedAt, com
 
     // Full version for Self screen
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, {
+            backgroundColor: colors.secondary,
+            borderColor: colors.border,
+            shadowColor: colors.glow,
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.5,
+            shadowRadius: 15,
+            elevation: 5,
+            borderLeftColor: Theme.colors.sanctuarySaffron,
+        }]}>
             {/* Icon and Title Row */}
             <View style={styles.header}>
                 <Flower2 size={24} color={Theme.colors.sanctuarySaffron} />
@@ -56,10 +67,10 @@ export default function ThuthimalBadge({ gifterName = 'Anonymous', giftedAt, com
             {/* Date if provided */}
             {giftedAt && (
                 <Text style={styles.date}>
-                    Gifted on {new Date(giftedAt).toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
+                    Gifted on {new Date(giftedAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
                     })}
                 </Text>
             )}
@@ -70,17 +81,10 @@ export default function ThuthimalBadge({ gifterName = 'Anonymous', giftedAt, com
 const styles = StyleSheet.create({
     // Full version styles
     container: {
-        backgroundColor: Theme.colors.lotusWhite, // Warm cream, same as motivation cards
         borderRadius: 16,
         padding: 20,
         marginBottom: 16,
         borderLeftWidth: 4,
-        borderLeftColor: Theme.colors.sanctuarySaffron,
-        shadowColor: Theme.colors.shadowDark,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
     },
     header: {
         flexDirection: 'row',

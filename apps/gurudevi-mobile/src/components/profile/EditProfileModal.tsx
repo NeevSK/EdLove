@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { Modal, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import {
@@ -29,6 +28,7 @@ import { X, Save, User, Briefcase, ChevronDown, Camera } from 'lucide-react-nati
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { supabase, useStore, UserRole, uploadToCloudinary, handleAPIError } from '@repo/core';
+import { hapticSuccess, hapticLight, hapticError } from '@repo/ui';
 import * as ImagePicker from 'expo-image-picker';
 
 interface EditProfileModalProps {
@@ -103,7 +103,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                 index_number: selectedRole === 'student' ? indexNumber : null
             };
 
-            // Handle Avatar Upload to Cloudinary
+            // Handle Avatar Upload
             if (avatarUrl && avatarUrl.startsWith('file://')) {
                 try {
                     const uploadedUrl = await uploadToCloudinary(avatarUrl, 'image');
@@ -175,12 +175,12 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                         <Image
                                             source={{ uri: avatarUrl || 'https://via.placeholder.com/150' }}
                                             alt="Profile"
-                                            style={{
+                                            sx={{
                                                 width: 100,
                                                 height: 100,
-                                                borderRadius: 50,
+                                                borderRadius: "$full" as any,
                                                 borderWidth: 2,
-                                                borderColor: Theme.colors.sanctuarySaffron
+                                                borderColor: "$sanctuarySaffron"
                                             }}
                                         />
                                         <Pressable
@@ -200,7 +200,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                         </Pressable>
                                     </Box>
                                     <Text color={Theme.colors.mistGray} size="xs" mt="$2">
-                                        {t('profile.uploadComingSoon') || 'Upload feature coming soon'}
+                                        {t('profile.tapToChange', 'Tap icon to change photo')}
                                     </Text>
                                 </Center>
 
