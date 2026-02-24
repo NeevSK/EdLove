@@ -6,5 +6,6 @@ export * from './utils/DeviceUtils';
 export * from './utils/haptics';
 export * from './utils/themeColors';
 export * from './hooks/useAccessibility';
+export * from './hooks/useTheme';
 export * from './gluestack';
 export * from './providers/ToastProvider';
