@@ -112,8 +112,8 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             marginBottom: insets.bottom > 0 ? 0 : 4,
           },
           tabBarBackground: () => (
-            // Optional: Add BlurView here for glass tab bar
-            <View style={{ flex: 1, backgroundColor: colors.secondary }} />
+            // Semi-transparent glass bar — SanctuaryBackground shows through
+            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.25)' }} />
           ),
         }}
       >

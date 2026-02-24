@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Platform, KeyboardAvoidingView, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Theme } from '../theme/Theme';
 import { useEnvironment } from '../context';
 import { getThemeColors } from '../utils/themeColors';
