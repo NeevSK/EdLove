@@ -1,12 +1,14 @@
 /**
  * GURUDEVI THEME SYSTEM
  * Sanctuary Design Tokens
- * 
+ *
  * This file contains all design constants used throughout the app.
  * Never use hardcoded colors, spacing, or magic numbers directly in components.
- * 
+ *
  * Philosophy: Every value has meaning and serves the sanctuary aesthetic.
  */
+
+import type { TemporalPhase } from '../context/types';
 
 // ============================================================================
 // COLORS - Sanctuary Palette
@@ -375,3 +377,266 @@ export const Theme = {
 };
 
 export default Theme;
+
+// ============================================================================
+// PHASE TOKEN MATRIX — The Living Theme System
+// ============================================================================
+// These are the ONLY color values that phase-aware components should use.
+// Consume via useTheme() hook, never reference phases directly in components.
+
+export interface GlassTokens {
+    surface:  { bg: string; opacity: number; blurAmount: number; border: string };
+    modal:    { bg: string; opacity: number; blurAmount: number; border: string };
+    interact: { bg: string; opacity: number; blurAmount: number; border: string };
+}
+
+export interface GlowTokens {
+    soft:    { color: string; radius: number; opacity: number };
+    primary: { color: string; radius: number; opacity: number };
+    action:  { color: string; radius: number; opacity: number };
+    reward:  { color: string; radius: number; opacity: number };
+}
+
+export interface AccentTokens {
+    action:  string;   // Primary interactive — buttons, links, active chips
+    reward:  string;   // Achievements, celebrations, milestones
+    danger:  string;   // Destructive actions
+    muted:   string;   // Disabled / secondary states
+}
+
+export interface TextTokens {
+    primary:   string;
+    secondary: string;
+    inverse:   string;  // Text on accent backgrounds
+    muted:     string;
+}
+
+export interface PhaseTokens {
+    gradientNodes: [string, string, string];  // AnimatedGradientMesh color nodes
+    glass: GlassTokens;
+    glow: GlowTokens;
+    accent: AccentTokens;
+    text: TextTokens;
+}
+
+/** Full matrix: phase → themeMode → resolved tokens */
+export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: PhaseTokens }> = {
+
+    predawn: {
+        dark: {
+            gradientNodes: ['#020617', '#0A0F1E', '#1E1B4B'],
+            glass: {
+                surface:  { bg: 'rgba(10,15,30,0.72)',  opacity: 0.72, blurAmount: 16, border: 'rgba(255,255,255,0.08)' },
+                modal:    { bg: 'rgba(2,6,23,0.85)',    opacity: 0.85, blurAmount: 24, border: 'rgba(255,255,255,0.06)' },
+                interact: { bg: 'rgba(30,27,75,0.40)',  opacity: 0.40, blurAmount: 8,  border: 'rgba(255,255,255,0.10)' },
+            },
+            glow: {
+                soft:    { color: '#6D28D9', radius: 12, opacity: 0.15 },
+                primary: { color: '#6D28D9', radius: 20, opacity: 0.35 },
+                action:  { color: '#6D28D9', radius: 16, opacity: 0.50 },
+                reward:  { color: '#B45309', radius: 24, opacity: 0.60 },
+            },
+            accent: { action: '#7C3AED', reward: '#B45309', danger: '#EF4444', muted: '#374151' },
+            text:   { primary: '#F8FAFC', secondary: '#94A3B8', inverse: '#0F172A', muted: '#475569' },
+        },
+        light: {
+            gradientNodes: ['#E8EAF6', '#F3F4F6', '#DDD6FE'],
+            glass: {
+                surface:  { bg: 'rgba(255,255,255,0.55)', opacity: 0.55, blurAmount: 16, border: 'rgba(0,0,0,0.08)' },
+                modal:    { bg: 'rgba(255,255,255,0.70)', opacity: 0.70, blurAmount: 24, border: 'rgba(0,0,0,0.06)' },
+                interact: { bg: 'rgba(255,255,255,0.35)', opacity: 0.35, blurAmount: 8,  border: 'rgba(0,0,0,0.10)' },
+            },
+            glow: {
+                soft:    { color: '#7C3AED', radius: 10, opacity: 0.10 },
+                primary: { color: '#7C3AED', radius: 18, opacity: 0.25 },
+                action:  { color: '#7C3AED', radius: 14, opacity: 0.35 },
+                reward:  { color: '#D97706', radius: 20, opacity: 0.45 },
+            },
+            accent: { action: '#7C3AED', reward: '#D97706', danger: '#DC2626', muted: '#9CA3AF' },
+            text:   { primary: '#0F172A', secondary: '#475569', inverse: '#FFFFFF', muted: '#94A3B8' },
+        },
+    },
+
+    dawn: {
+        dark: {
+            gradientNodes: ['#0F172A', '#1E293B', '#312E81'],
+            glass: {
+                surface:  { bg: 'rgba(30,41,59,0.70)',  opacity: 0.70, blurAmount: 16, border: 'rgba(255,255,255,0.10)' },
+                modal:    { bg: 'rgba(15,23,42,0.82)',   opacity: 0.82, blurAmount: 24, border: 'rgba(255,255,255,0.08)' },
+                interact: { bg: 'rgba(49,46,129,0.35)',  opacity: 0.35, blurAmount: 8,  border: 'rgba(255,255,255,0.12)' },
+            },
+            glow: {
+                soft:    { color: '#E67E22', radius: 12, opacity: 0.18 },
+                primary: { color: '#E67E22', radius: 20, opacity: 0.40 },
+                action:  { color: '#E67E22', radius: 16, opacity: 0.55 },
+                reward:  { color: '#DB7093', radius: 24, opacity: 0.60 },
+            },
+            accent: { action: '#E67E22', reward: '#DB7093', danger: '#EF4444', muted: '#334155' },
+            text:   { primary: '#F8FAFC', secondary: '#CBD5E1', inverse: '#0F172A', muted: '#64748B' },
+        },
+        light: {
+            gradientNodes: ['#FFF7ED', '#FFFBF5', '#FDE68A'],
+            glass: {
+                surface:  { bg: 'rgba(255,247,237,0.65)', opacity: 0.65, blurAmount: 16, border: 'rgba(234,88,12,0.15)' },
+                modal:    { bg: 'rgba(255,251,245,0.78)', opacity: 0.78, blurAmount: 24, border: 'rgba(234,88,12,0.10)' },
+                interact: { bg: 'rgba(253,230,138,0.30)', opacity: 0.30, blurAmount: 8,  border: 'rgba(234,88,12,0.20)' },
+            },
+            glow: {
+                soft:    { color: '#EA580C', radius: 10, opacity: 0.12 },
+                primary: { color: '#EA580C', radius: 20, opacity: 0.30 },
+                action:  { color: '#EA580C', radius: 16, opacity: 0.40 },
+                reward:  { color: '#E11D48', radius: 22, opacity: 0.45 },
+            },
+            accent: { action: '#EA580C', reward: '#E11D48', danger: '#DC2626', muted: '#9CA3AF' },
+            text:   { primary: '#1C0A00', secondary: '#78350F', inverse: '#FFFFFF', muted: '#A16207' },
+        },
+    },
+
+    morning: {
+        dark: {  // Fallback only — morning is a light phase
+            gradientNodes: ['#0F172A', '#134E4A', '#064E3B'],
+            glass: {
+                surface:  { bg: 'rgba(6,78,59,0.50)',  opacity: 0.50, blurAmount: 16, border: 'rgba(255,255,255,0.12)' },
+                modal:    { bg: 'rgba(15,23,42,0.80)',  opacity: 0.80, blurAmount: 24, border: 'rgba(255,255,255,0.10)' },
+                interact: { bg: 'rgba(20,83,45,0.35)',  opacity: 0.35, blurAmount: 8,  border: 'rgba(255,255,255,0.15)' },
+            },
+            glow: {
+                soft:    { color: '#16A34A', radius: 12, opacity: 0.20 },
+                primary: { color: '#16A34A', radius: 20, opacity: 0.45 },
+                action:  { color: '#16A34A', radius: 16, opacity: 0.55 },
+                reward:  { color: '#EA580C', radius: 24, opacity: 0.65 },
+            },
+            accent: { action: '#16A34A', reward: '#EA580C', danger: '#EF4444', muted: '#374151' },
+            text:   { primary: '#F8FAFC', secondary: '#86EFAC', inverse: '#0F172A', muted: '#6EE7B7' },
+        },
+        light: {
+            gradientNodes: ['#F0F9FF', '#E0F2FE', '#DCFCE7'],
+            glass: {
+                surface:  { bg: 'rgba(240,249,255,0.68)', opacity: 0.68, blurAmount: 16, border: 'rgba(22,163,74,0.15)' },
+                modal:    { bg: 'rgba(255,255,255,0.80)',  opacity: 0.80, blurAmount: 24, border: 'rgba(22,163,74,0.10)' },
+                interact: { bg: 'rgba(220,252,231,0.45)',  opacity: 0.45, blurAmount: 8,  border: 'rgba(22,163,74,0.20)' },
+            },
+            glow: {
+                soft:    { color: '#16A34A', radius: 10, opacity: 0.12 },
+                primary: { color: '#16A34A', radius: 20, opacity: 0.28 },
+                action:  { color: '#16A34A', radius: 16, opacity: 0.38 },
+                reward:  { color: '#EA580C', radius: 22, opacity: 0.50 },
+            },
+            accent: { action: '#16A34A', reward: '#EA580C', danger: '#DC2626', muted: '#9CA3AF' },
+            text:   { primary: '#0F172A', secondary: '#166534', inverse: '#FFFFFF', muted: '#6B7280' },
+        },
+    },
+
+    afternoon: {
+        dark: {  // Fallback only
+            gradientNodes: ['#0F172A', '#1E3A5F', '#0C4A6E'],
+            glass: {
+                surface:  { bg: 'rgba(14,36,95,0.55)',  opacity: 0.55, blurAmount: 16, border: 'rgba(255,255,255,0.12)' },
+                modal:    { bg: 'rgba(15,23,42,0.82)',   opacity: 0.82, blurAmount: 24, border: 'rgba(255,255,255,0.10)' },
+                interact: { bg: 'rgba(2,132,199,0.30)',  opacity: 0.30, blurAmount: 8,  border: 'rgba(255,255,255,0.15)' },
+            },
+            glow: {
+                soft:    { color: '#0284C7', radius: 12, opacity: 0.20 },
+                primary: { color: '#0284C7', radius: 20, opacity: 0.45 },
+                action:  { color: '#0284C7', radius: 16, opacity: 0.55 },
+                reward:  { color: '#D97706', radius: 24, opacity: 0.65 },
+            },
+            accent: { action: '#0284C7', reward: '#D97706', danger: '#EF4444', muted: '#374151' },
+            text:   { primary: '#F8FAFC', secondary: '#BAE6FD', inverse: '#0F172A', muted: '#7DD3FC' },
+        },
+        light: {
+            gradientNodes: ['#FAFAFA', '#F1F5F9', '#E0F2FE'],
+            glass: {
+                surface:  { bg: 'rgba(255,255,255,0.72)', opacity: 0.72, blurAmount: 16, border: 'rgba(2,132,199,0.12)' },
+                modal:    { bg: 'rgba(255,255,255,0.85)', opacity: 0.85, blurAmount: 24, border: 'rgba(2,132,199,0.08)' },
+                interact: { bg: 'rgba(224,242,254,0.50)', opacity: 0.50, blurAmount: 8,  border: 'rgba(2,132,199,0.18)' },
+            },
+            glow: {
+                soft:    { color: '#0284C7', radius: 10, opacity: 0.10 },
+                primary: { color: '#0284C7', radius: 18, opacity: 0.25 },
+                action:  { color: '#0284C7', radius: 14, opacity: 0.35 },
+                reward:  { color: '#D97706', radius: 20, opacity: 0.48 },
+            },
+            accent: { action: '#0284C7', reward: '#D97706', danger: '#DC2626', muted: '#9CA3AF' },
+            text:   { primary: '#0F172A', secondary: '#475569', inverse: '#FFFFFF', muted: '#94A3B8' },
+        },
+    },
+
+    dusk: {
+        dark: {
+            gradientNodes: ['#0C1A2E', '#0E2A4A', '#134E7A'],
+            glass: {
+                surface:  { bg: 'rgba(14,42,74,0.70)',  opacity: 0.70, blurAmount: 16, border: 'rgba(14,165,233,0.15)' },
+                modal:    { bg: 'rgba(12,26,46,0.85)',  opacity: 0.85, blurAmount: 24, border: 'rgba(14,165,233,0.10)' },
+                interact: { bg: 'rgba(20,78,122,0.40)', opacity: 0.40, blurAmount: 8,  border: 'rgba(14,165,233,0.20)' },
+            },
+            glow: {
+                soft:    { color: '#0EA5E9', radius: 14, opacity: 0.20 },
+                primary: { color: '#0EA5E9', radius: 22, opacity: 0.45 },
+                action:  { color: '#0EA5E9', radius: 18, opacity: 0.60 },
+                reward:  { color: '#F97316', radius: 26, opacity: 0.70 },
+            },
+            accent: { action: '#0EA5E9', reward: '#F97316', danger: '#EF4444', muted: '#334155' },
+            text:   { primary: '#F0F9FF', secondary: '#BAE6FD', inverse: '#0C1A2E', muted: '#7DD3FC' },
+        },
+        light: {  // Fallback only — dusk is a dark phase
+            gradientNodes: ['#FFF7ED', '#FEE2E2', '#FECACA'],
+            glass: {
+                surface:  { bg: 'rgba(255,247,237,0.65)', opacity: 0.65, blurAmount: 16, border: 'rgba(249,115,22,0.15)' },
+                modal:    { bg: 'rgba(255,255,255,0.78)',  opacity: 0.78, blurAmount: 24, border: 'rgba(249,115,22,0.10)' },
+                interact: { bg: 'rgba(254,226,226,0.40)',  opacity: 0.40, blurAmount: 8,  border: 'rgba(249,115,22,0.20)' },
+            },
+            glow: {
+                soft:    { color: '#F97316', radius: 10, opacity: 0.12 },
+                primary: { color: '#F97316', radius: 20, opacity: 0.30 },
+                action:  { color: '#F97316', radius: 16, opacity: 0.40 },
+                reward:  { color: '#0EA5E9', radius: 22, opacity: 0.45 },
+            },
+            accent: { action: '#F97316', reward: '#0EA5E9', danger: '#DC2626', muted: '#9CA3AF' },
+            text:   { primary: '#0F172A', secondary: '#9A3412', inverse: '#FFFFFF', muted: '#6B7280' },
+        },
+    },
+
+    night: {
+        dark: {
+            gradientNodes: ['#020617', '#0F172A', '#1E1B4B'],
+            glass: {
+                surface:  { bg: 'rgba(15,23,42,0.72)',  opacity: 0.72, blurAmount: 16, border: 'rgba(253,217,37,0.08)' },
+                modal:    { bg: 'rgba(2,6,23,0.88)',    opacity: 0.88, blurAmount: 24, border: 'rgba(253,217,37,0.06)' },
+                interact: { bg: 'rgba(30,27,75,0.42)',  opacity: 0.42, blurAmount: 8,  border: 'rgba(253,217,37,0.12)' },
+            },
+            glow: {
+                soft:    { color: '#FDD925', radius: 14, opacity: 0.18 },
+                primary: { color: '#FDD925', radius: 24, opacity: 0.42 },
+                action:  { color: '#FDD925', radius: 18, opacity: 0.58 },
+                reward:  { color: '#8B5CF6', radius: 28, opacity: 0.70 },
+            },
+            accent: { action: '#FDD925', reward: '#8B5CF6', danger: '#EF4444', muted: '#374151' },
+            text:   { primary: '#F8FAFC', secondary: '#E2E8F0', inverse: '#020617', muted: '#64748B' },
+        },
+        light: {  // Fallback only — night is a dark phase
+            gradientNodes: ['#1E1B4B', '#312E81', '#4338CA'],
+            glass: {
+                surface:  { bg: 'rgba(49,46,129,0.30)', opacity: 0.30, blurAmount: 16, border: 'rgba(253,217,37,0.20)' },
+                modal:    { bg: 'rgba(30,27,75,0.45)',  opacity: 0.45, blurAmount: 24, border: 'rgba(253,217,37,0.15)' },
+                interact: { bg: 'rgba(67,56,202,0.25)', opacity: 0.25, blurAmount: 8,  border: 'rgba(253,217,37,0.25)' },
+            },
+            glow: {
+                soft:    { color: '#FDD925', radius: 12, opacity: 0.15 },
+                primary: { color: '#FDD925', radius: 22, opacity: 0.35 },
+                action:  { color: '#FDD925', radius: 16, opacity: 0.45 },
+                reward:  { color: '#8B5CF6', radius: 24, opacity: 0.55 },
+            },
+            accent: { action: '#FDD925', reward: '#8B5CF6', danger: '#EF4444', muted: '#6B7280' },
+            text:   { primary: '#F8FAFC', secondary: '#C7D2FE', inverse: '#1E1B4B', muted: '#818CF8' },
+        },
+    },
+};
+
+/** The single resolver — this is what all components call via useTheme() */
+export function resolvePhaseTokens(
+    phase: TemporalPhase,
+    isDark: boolean
+): PhaseTokens {
+    return phaseMatrix[phase][isDark ? 'dark' : 'light'];
+}
