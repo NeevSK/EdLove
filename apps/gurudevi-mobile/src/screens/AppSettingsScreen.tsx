@@ -209,12 +209,12 @@ export default function AppSettingsScreen({ navigation }: any) {
   const getTemporalDescription = () => {
     const time = new Date().toLocaleTimeString(i18n.language, { hour: 'numeric', minute: '2-digit' });
     const phases = {
-      predawn:   t('settings.temporal.predawn',   'Deep quiet (12-6 AM)'),
+      predawn:   t('settings.temporal.predawn',   'Deep quiet (4-6 AM)'),
       dawn:      t('settings.temporal.dawn',      'Gentle awakening (6-9 AM)'),
       morning:   t('settings.temporal.morning',   'Active start (9 AM-12 PM)'),
       afternoon: t('settings.temporal.afternoon', 'Full energy (12-5 PM)'),
       dusk:      t('settings.temporal.dusk',      'Winding down (5-8 PM)'),
-      night:     t('settings.temporal.night',     'Restful (8 PM-12 AM)'),
+      night:     t('settings.temporal.night',     'Restful (8 PM-4 AM)'),
     };
     return `${phases[temporalPhase]} • ${time}`;
   };

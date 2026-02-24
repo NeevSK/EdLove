@@ -9,12 +9,12 @@ import NetInfo from '@react-native-community/netinfo';
 
 /**
  * Determines the temporal phase based on current time
- * - Predawn: 12 AM - 6 AM
- * - Dawn:    6 AM - 9 AM
- * - Morning: 9 AM - 12 PM
- * - Afternoon: 12 PM - 5 PM
- * - Dusk:    5 PM - 8 PM
- * - Night:   8 PM - 12 AM
+ * - Predawn:   4 AM - 6 AM  (dark)
+ * - Dawn:      6 AM - 9 AM  (light)
+ * - Morning:   9 AM - 12 PM (light)
+ * - Afternoon: 12 PM - 5 PM (light)
+ * - Dusk:      5 PM - 8 PM  (dark)
+ * - Night:     8 PM - 4 AM  (dark, wraps midnight)
  */
 export function getTemporalPhase(): TemporalPhase {
     const hour = new Date().getHours();
