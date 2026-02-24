@@ -9,30 +9,29 @@ import NetInfo from '@react-native-community/netinfo';
 
 /**
  * Determines the temporal phase based on current time
- * - Dawn: 5 AM - 8 AM
- * - Day: 8 AM - 5 PM
- * - Evening: 5 PM - 8 PM
- * - Night: 8 PM - 5 AM
+ * - Predawn: 12 AM - 6 AM
+ * - Dawn:    6 AM - 9 AM
+ * - Morning: 9 AM - 12 PM
+ * - Afternoon: 12 PM - 5 PM
+ * - Dusk:    5 PM - 8 PM
+ * - Night:   8 PM - 12 AM
  */
 export function getTemporalPhase(): TemporalPhase {
     const hour = new Date().getHours();
-
-    if (hour >= 5 && hour < 8) {
-        return 'dawn';
-    } else if (hour >= 8 && hour < 17) {
-        return 'day';
-    } else if (hour >= 17 && hour < 20) {
-        return 'evening';
-    } else {
-        return 'night';
-    }
+    if (hour >= 4  && hour < 6)  return 'predawn';
+    if (hour >= 6  && hour < 9)  return 'dawn';
+    if (hour >= 9  && hour < 12) return 'morning';
+    if (hour >= 12 && hour < 17) return 'afternoon';
+    if (hour >= 17 && hour < 20) return 'dusk';
+    return 'night';
 }
 
 /**
  * Determines if current temporal phase should use dark theme
  */
 export function shouldUseDarkTheme(phase: TemporalPhase): boolean {
-    return phase === 'night' || phase === 'evening';
+    return phase === 'predawn' || phase === 'dusk' || phase === 'night';
+    // dawn, morning, afternoon → light world
 }
 
 /**

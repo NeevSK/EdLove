@@ -146,25 +146,43 @@ function modulateForTemporalPhase(
                 glow: '#FDBA74', // Luminous Peach/Amber for Dawn
             };
 
-        case 'day':
-            // Day: Bright, energetic, high contrast
+        case 'predawn':
+            // Predawn: Deep dark, transitioning from night
+            return {
+                ...baseTheme,
+                primary: isDark ? '#080C14' : '#C7D8E8',
+                secondary: isDark ? '#0F1624' : '#DDE9F2',
+                action: baseColors.twilightPurple,
+                glow: '#7C9CC0', // Cool steel blue for predawn
+            };
+
+        case 'morning':
+            // Morning: Bright, energetic, high contrast
             return {
                 ...baseTheme,
                 action: baseColors.sanctuarySaffron, // Warm energy for clarity
-                // Ensure shadows are ambient but not overly blue in day mode
                 shadow: isDark ? baseColors.shadowDark : 'rgba(0, 0, 0, 0.1)',
-                glow: '#FF9800', // Vivid Saffron Glow for Day
+                glow: '#FF9800', // Vivid Saffron Glow for Morning
             };
 
-        case 'evening':
-            // Evening: Warm transition to rest
+        case 'afternoon':
+            // Afternoon: Full brightness, sustained energy
+            return {
+                ...baseTheme,
+                action: baseColors.sanctuarySaffron,
+                shadow: isDark ? baseColors.shadowDark : 'rgba(0, 0, 0, 0.12)',
+                glow: '#FFA726', // Slightly warmer amber for afternoon
+            };
+
+        case 'dusk':
+            // Dusk: Warm transition to rest
             return {
                 ...baseTheme,
                 action: baseColors.sanctuarySaffron, // Warmer saffron
                 tertiary: isDark
                     ? baseColors.midnightBlue
                     : '#F5E6D3', // Warmer cream for light mode
-                glow: '#FF7043', // Deep Luminous Saffron for Evening
+                glow: '#FF7043', // Deep Luminous Saffron for Dusk
             };
 
         case 'night':
