@@ -36,13 +36,18 @@ export function SanctuaryBackground() {
         currentNodes.current = gradientNodes;
 
         fadeAnim.setValue(0);
-        Animated.timing(fadeAnim, {
+        const animation = Animated.timing(fadeAnim, {
             toValue: 1,
             duration: 2000,
             useNativeDriver: true,
-        }).start();
+        });
+        animation.start();
+
+        return () => animation.stop();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [phase]); // Re-run only when phase changes
+    }, [phase]); // Re-run only when phase changes.
+    // Note: isDark theme-mode toggles do NOT trigger a crossfade here by design —
+    // they take effect at the next phase boundary.
 
     return (
         <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
