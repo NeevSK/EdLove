@@ -59,12 +59,7 @@ export default function ScreenWrapper({
                 backgroundColor={colors.primary}
             />
 
-            <LinearGradient
-                colors={gradientColors as [string, string]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={[styles.container, safeAreaStyle]}
-            >
+            <View style={[styles.container, safeAreaStyle, { backgroundColor: 'transparent' }]}>
                 {(scroll ?? scrollable) ? (
                     <ScrollView
                         style={{ flex: 1 }}
@@ -83,7 +78,7 @@ export default function ScreenWrapper({
                         {children}
                     </View>
                 )}
-            </LinearGradient>
+            </View>
         </KeyboardAvoidingView>
     );
 }

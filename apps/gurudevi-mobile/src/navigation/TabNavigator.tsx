@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { Theme, LotusPetalFAB } from '@repo/ui';
+import { Theme, LotusPetalFAB, SanctuaryBackground } from '@repo/ui';
 import ErrorBoundary from '../components/shared/ErrorBoundary';
 
 // Icons
@@ -68,6 +68,9 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
 
   return (
     <View style={{ flex: 1 }}>
+      {/* Living backdrop — renders behind all tabs */}
+      <SanctuaryBackground />
+
       <Tab.Navigator
         id="MainTabs"
         initialRouteName="Self"
@@ -89,7 +92,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: colors.secondary, // Use secondary for a cleaner look
+            backgroundColor: 'transparent', // Transparent so SanctuaryBackground shows through
             borderTopColor: colors.border,
             borderTopWidth: 1,
             height: 60 + insets.bottom, // Dynamic height including safe area
