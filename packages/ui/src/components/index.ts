@@ -19,3 +19,4 @@ export type { ActionItem, TabType } from './LotusPetalFAB';
 
 export { default as LoadingOverlay } from './LoadingOverlay';
 export { LivingGlow } from './LivingGlow';
+export { SanctuaryBackground } from './SanctuaryBackground';
