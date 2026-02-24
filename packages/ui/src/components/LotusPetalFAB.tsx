@@ -21,6 +21,7 @@ import Animated, {
 import * as Haptics from 'expo-haptics';
 import { Theme, typography } from '../theme/Theme';
 import { useThemedColors } from '../hooks/useThemedColors';
+import { useTheme } from '../hooks/useTheme';
 import { hapticLight } from '../utils/haptics';
 import { useAccessibility } from '../hooks/useAccessibility';
 import { Modal } from 'react-native';
@@ -89,6 +90,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     const { isReduceMotionEnabled, announce } = useAccessibility();
 
     const colors = useThemedColors();
+    const { glow, accent } = useTheme();
     const config = useMemo(() => fabConfig[currentTab] || fabConfig.self, [currentTab]);
 
     // Reanimated Shared Values
@@ -166,7 +168,11 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                             backgroundColor: Theme.colors.sanctuarySaffron,
                             alignItems: 'center',
                             justifyContent: 'center',
-                            ...Theme.shadows.glow,
+                            shadowColor: glow.primary.color,
+                            shadowOpacity: glow.primary.opacity,
+                            shadowRadius: glow.primary.radius,
+                            shadowOffset: { width: 0, height: 0 },
+                            elevation: 10,
                         }}
                     >
                         <Text style={styles.emojiText}>{hasActiveGaps ? '❗' : config.emoji}</Text>
