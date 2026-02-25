@@ -77,7 +77,7 @@
 ### “How much is needed?” (practical estimate)
 1. **A11y:** very high effort needed
    - Add accessibility labels/roles/hints to ~171 interactive elements currently missing explicit metadata.
-   - Add alt/accessibility labels to ~5 image usages missing metadata.
+   - Add accessibility labels/roles/metadata to ~5 image usages missing accessibility information (e.g., via `accessibilityLabel` or appropriate wrappers).
    - Run screen-reader QA pass on primary flows (Auth, Onboarding, Profile, Self, Classroom).
 
 2. **Localization (`si`, `ta`):** medium-high effort needed
