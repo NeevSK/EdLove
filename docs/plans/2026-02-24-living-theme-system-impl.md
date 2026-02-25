@@ -871,35 +871,35 @@ git commit -m "feat(theme): SanctuaryChip and SanctuaryInput use useTheme() toke
 
 ---
 
-## Task 10: LotusPetalFAB — enable and use useTheme()
+## Task 10: FAB — apply useTheme() phase-aware glow (emoji FABs only)
+
+> **Decision (2026-02-24):** Keep the per-section emoji FABs (`packages/ui/src/components/LotusPetalFAB.tsx`, 56px emoji).
+> Do NOT enable `apps/gurudevi-mobile/src/components/shared/LotusPetalFAB.tsx` (lotus image, 72px) — it remains `disabled=true` and kept as a future option.
+>
+> **Rationale:** Emoji FABs are section/tab-aligned, less cluttered, and already working. The lotus image FAB is preserved in code but undecided — enabling it felt screen-cluttered. Community and Library FABs may occasionally be shadowed by the bottom navbar — that is acceptable for now.
 
 **Files:**
-- Modify: `apps/gurudevi-mobile/src/components/shared/LotusPetalFAB.tsx`
+- Modify: `packages/ui/src/components/LotusPetalFAB.tsx` (apply `useTheme()` glow tokens only — no structural changes)
 
-**Step 1: Enable the FAB**
-
-Change `disabled = true` default to `disabled = false`:
-```typescript
-// Line ~112:
-// BEFORE: disabled = true,
-// AFTER:  disabled = false,
-```
-
-**Step 2: Apply glow token**
+**Step 1: Apply glow token to emoji FAB**
 
 ```typescript
-import { useTheme } from '@repo/ui';
+import { useTheme } from '../hooks/useTheme';
+
+// Inside the FAB component:
 const { glow, accent } = useTheme();
-
-// FAB shadow: shadowColor=glow.primary.color, shadowRadius=glow.primary.radius, shadowOpacity=glow.primary.opacity
-// FAB background tint: accent.action (subtle overlay on the lotus image)
+// Apply to the TouchableOpacity / Animated.View:
+// shadowColor: glow.primary.color
+// shadowRadius: glow.primary.radius
+// shadowOpacity: glow.primary.opacity
+// backgroundColor tint: accent.action at 15% opacity
 ```
 
-**Step 3: Commit**
+**Step 2: Commit**
 
 ```bash
-git add apps/gurudevi-mobile/src/components/shared/LotusPetalFAB.tsx
-git commit -m "feat(theme): enable LotusPetalFAB; apply phase-aware glow tokens"
+git add packages/ui/src/components/LotusPetalFAB.tsx
+git commit -m "feat(theme): apply phase-aware glow tokens to emoji LotusPetalFAB; lotus image FAB remains disabled"
 ```
 
 ---
