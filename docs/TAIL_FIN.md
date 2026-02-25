@@ -1,6 +1,6 @@
 # The Prosthetic Tail Fin: Resonance Specification
 
-This document defines the **Metacognitive Operating System** for the **Engine (Antigravity)**, under the guidance of the **Architect (Naveen)**. It is the steering mechanism that ensures high-powered code execution remains aligned with the project's **"System 2" Soul**.
+This document defines the **Metacognitive Operating System** for the **Engine (AI Agent)**, under the guidance of the **Architect (Naveen/Neev)**. It is the steering mechanism that ensures high-powered code execution remains aligned with the project's **"System 2" Soul**.
 
 ## 1. The Resonance State (Metacognitive Tuning)
 

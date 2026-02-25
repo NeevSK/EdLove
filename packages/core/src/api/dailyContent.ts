@@ -1,4 +1,5 @@
 ﻿import { supabase } from '../lib/supabase';
+import { withResilience } from '../offline/resilience';
 import { APIError } from './types';
 
 // ============================================================================
@@ -21,14 +22,13 @@ export const dailyContentAPI = {
      * Returns the most recent motivation quote and "did you know" fact
      */
     async getTodaysContent(): Promise<{ motivation: DailyContent | null; didYouKnow: DailyContent | null }> {
-        try {
+        return withResilience(async () => {
             // Fetch motivation quote
             const { data: motivationData, error: motivationError } = await supabase
                 .rpc('get_daily_content_for_today', { content_type: 'motivation' })
                 .single();
 
             if (motivationError && motivationError.code !== 'PGRST116') {
-                // PGRST116 is "no rows returned" - that's okay
                 console.warn('Failed to fetch motivation:', motivationError);
             }
 
@@ -45,9 +45,10 @@ export const dailyContentAPI = {
                 motivation: (motivationData as DailyContent) || null,
                 didYouKnow: (didYouKnowData as DailyContent) || null,
             };
-        } catch (error) {
-            throw new APIError('Failed to fetch daily content', 'FETCH_FAILED', error);
-        }
+        }, {
+            key: 'daily_content_today',
+            ttl: 24 * 60 * 60 * 1000 // Cache for 24 hours
+        }) || { motivation: null, didYouKnow: null };
     },
 
     /**

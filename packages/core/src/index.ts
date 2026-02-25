@@ -1,4 +1,5 @@
 export * from './api';
+export * from './offline/resilience';
 export * from './hooks';
 export * from './store/useStore';
 export * from './types';

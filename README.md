@@ -2,6 +2,9 @@
 
 The digital sanctuary for educational transformation.
 
+> [!IMPORTANT]
+> **AI Agents**: Read `AGENT_RESONANCE.md` and `docs/TAIL_FIN.md` before starting work. Adhere to "System 2" reflective development.
+
 ---
 
 ## 🌟 The Structure

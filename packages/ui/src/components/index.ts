@@ -14,6 +14,9 @@ export * from './SmartShelf';
 export { default as DeleteAccountModal } from './DeleteAccountModal';
 export { default as SanctuaryStatsCard } from './SanctuaryStatsCard';
 export { default as StepIndicator } from './StepIndicator';
+export * from './BreathAnimation';
+export * from './DailyResonanceCard';
+export * from './GlassCard';
 export { default as LotusPetalFAB } from './LotusPetalFAB';
 export type { ActionItem, TabType } from './LotusPetalFAB';
 

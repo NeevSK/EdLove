@@ -14,6 +14,7 @@ import { classroomStudentsAPI } from './classroomStudents';
 import { classroomsAPI } from './classrooms';
 import { onboardingAPI } from './onboarding';
 import { inventoryAPI } from './inventory';
+import { dailyContentAPI } from './dailyContent';
 
 export * from './mockData';
 export * from './types';
@@ -37,7 +38,8 @@ export {
     lessonMaterialsAPI,
     assignmentsAPI,
     classroomStudentsAPI,
-    onboardingAPI
+    onboardingAPI,
+    dailyContentAPI
 };
 
 /**
@@ -64,7 +66,8 @@ export const api = {
     inventory: inventoryAPI,
     rewards: rewardsAPI,
     tracking: trackingAPI,
-    onboarding: onboardingAPI
+    onboarding: onboardingAPI,
+    dailyContent: dailyContentAPI
 };
 
 export default api;

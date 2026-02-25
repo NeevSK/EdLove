@@ -150,9 +150,11 @@ export default function TeacherSelfView() {
                         <Box
                             sx={{
                                 flex: 1,
-                                backgroundColor: colors.secondary,
+                                backgroundColor: Theme.colors.glassBg,
                                 borderRadius: Theme.corners.comfortable,
                                 padding: Theme.spacing.md,
+                                borderWidth: 1,
+                                borderColor: Theme.colors.glassBorder,
                                 minHeight: 150
                             }}
                         >
@@ -170,7 +172,6 @@ export default function TeacherSelfView() {
                         <HStack space="md" justifyContent="flex-end">
                             <Button
                                 size="md"
-                                variant="link"
                                 action="primary"
                                 onPress={hapticLight}
                                 accessibilityLabel={t('accessibility.voiceInput')}
@@ -179,7 +180,9 @@ export default function TeacherSelfView() {
                                     borderRadius: Theme.corners.full,
                                     width: 44,
                                     height: 44,
-                                    backgroundColor: colors.tertiary
+                                    backgroundColor: Theme.colors.glassHighlight,
+                                    borderWidth: 1,
+                                    borderColor: Theme.colors.glassBorder
                                 }}
                             >
                                 <Mic color={colors.action} size={20} />
@@ -261,11 +264,11 @@ export default function TeacherSelfView() {
                                             borderRadius: Theme.corners.generous,
                                             backgroundColor: activeFeature === feature.id
                                                 ? Theme.colors.sanctuarySaffron
-                                                : colors.secondary,
+                                                : Theme.colors.glassHighlight,
                                             borderWidth: 1,
                                             borderColor: activeFeature === feature.id
                                                 ? Theme.colors.sanctuarySaffron
-                                                : colors.border,
+                                                : Theme.colors.glassBorder,
                                         }}
                                     >
                                         <feature.icon

@@ -275,14 +275,14 @@ function App() {
             <GluestackUIProvider config={config}>
               <ToastProvider>
                 <ErrorBoundary name="App Root">
-                  <PostHogProvider
-                    apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
-                    options={{
-                      host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
-                    }}
-                    autocapture={false}
-                  >
-                    <NavigationContainer>
+                  <NavigationContainer>
+                    <PostHogProvider
+                      apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
+                      options={{
+                        host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
+                      }}
+                      autocapture={true}
+                    >
                       <RootStack.Navigator screenOptions={{ headerShown: false }}>
                         {(!session || needsWelcome) ? (
                           <RootStack.Screen name="Welcome">
@@ -342,27 +342,27 @@ function App() {
                           </>
                         )}
                       </RootStack.Navigator>
-                    </NavigationContainer>
+                    </PostHogProvider>
+                  </NavigationContainer>
 
-                    <SyncManager />
-                    <NetworkStatusBanner />
+                  <SyncManager />
+                  <NetworkStatusBanner />
 
-                    {toast.visible && (
-                      <SanctuaryToast
-                        message={toast.message}
-                        type={toast.type}
-                        visible={toast.visible}
-                        onHide={hideToast}
-                      />
-                    )}
-                  </PostHogProvider>
+                  {toast.visible && (
+                    <SanctuaryToast
+                      message={toast.message}
+                      type={toast.type}
+                      visible={toast.visible}
+                      onHide={hideToast}
+                    />
+                  )}
                 </ErrorBoundary>
               </ToastProvider>
             </GluestackUIProvider>
           </EnvironmentProvider>
         </QueryClientProvider>
       </SafeAreaProvider>
-    </GestureHandlerRootView>
+    </GestureHandlerRootView >
   );
 }
 

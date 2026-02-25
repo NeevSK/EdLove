@@ -28,6 +28,7 @@
     4.2 content upload, download, share, save, etc
     4.3 feedback loops or reactions, uptoves etc
     4.4 content sync with permision or when shared in personal library in classroom section for all users in proper way.
+    4.5 Need to collect, curate content for library as defaultss
 
 
 5. community section
