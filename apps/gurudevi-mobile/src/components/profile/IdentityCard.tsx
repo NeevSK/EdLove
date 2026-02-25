@@ -30,10 +30,9 @@ const CARD_HEIGHT = 220;
 interface IdentityCardProps {
     profile: any;
     onEdit?: () => void;
-    onViewFullProfile?: () => void;
 }
 
-export default function IdentityCard({ profile, onEdit, onViewFullProfile }: IdentityCardProps) {
+export default function IdentityCard({ profile, onEdit }: IdentityCardProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
     const isFlipped = useSharedValue(0);
@@ -244,26 +243,7 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile }: Ide
                         </VStack>
                     </HStack>
 
-                    {/* Expand Button (Top Right) - Only show if onViewFullProfile prop is provided */}
-                    {onViewFullProfile && (
-                        <Pressable
-                            onPress={(e: any) => {
-                                e.stopPropagation();
-                                onViewFullProfile();
-                            }}
-                            style={{
-                                position: 'absolute',
-                                top: 10,
-                                right: 10,
-                                padding: 8,
-                                zIndex: 10
-                            }}
-                        >
-                            <Text color={colors.textTertiary} size="xs" bold>
-                                {t('common.fullView') || 'FULL VIEW'} ↗
-                            </Text>
-                        </Pressable>
-                    )}
+
 
                     {/* Decorative Elements */}
                     <RNImage
