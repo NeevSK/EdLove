@@ -37,7 +37,7 @@ const STEP_LABELS = [
 export default function SchoolCreationScreen() {
     const { t } = useTranslation();
     const colors = useThemedColors();
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
     const { user, setUser, setDemoMode } = useStore();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [successData, setSuccessData] = useState<{ schoolId: string; groupId: string; schoolName: string } | null>(null);
@@ -242,7 +242,7 @@ export default function SchoolCreationScreen() {
             />
 
             <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}>
-                <Box sx={{ p: '$4' as any }}>
+                <Box sx={{ p: 16 }}>
                     {renderStep()}
                 </Box>
             </ScrollView>
@@ -259,7 +259,7 @@ export default function SchoolCreationScreen() {
                 borderTopColor: colors.border,
                 paddingBottom: 40 // Safe area handling
             }}>
-                <HStack sx={{ gap: '$md' as any }}>
+                <HStack sx={{ gap: Theme.spacing.md }}>
                     {state.step > 1 && (
                         <Box sx={{ flex: 1 }}>
                             <SanctuaryButton

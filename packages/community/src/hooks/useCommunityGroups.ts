@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useCommunity } from './useCommunity';
-import type { Group } from '../types';
+import type { Group, CommunityGroup } from '../types';
 
 export interface UseCommunityGroupsOptions {
     schoolId?: string;
@@ -33,13 +33,13 @@ export function useCommunityGroups(options: UseCommunityGroupsOptions = {}) {
 
     // "My Sanctuary": school-specific joined groups (school_id matches)
     const sanctuaryGroups = useMemo(
-        () => (groups || []).filter((g: any) => g.is_member && g.school_id === options.schoolId),
+        () => (groups as CommunityGroup[] || []).filter((g) => g.is_member && g.school_id === options.schoolId),
         [groups, options.schoolId]
     );
 
     // "Global Galaxy": groups not in the user's school or not joined
     const galaxyGroups = useMemo(
-        () => (groups || []).filter((g: any) => !g.is_member || g.school_id !== options.schoolId),
+        () => (groups as CommunityGroup[] || []).filter((g) => !g.is_member || g.school_id !== options.schoolId),
         [groups, options.schoolId]
     );
 
