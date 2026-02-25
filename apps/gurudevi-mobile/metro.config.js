@@ -18,6 +18,12 @@ config.resolver.nodeModulesPaths = [
 
 // 3. CRITICAL: Disable hierarchical lookup so Metro does NOT walk up into
 //    packages/*/node_modules and find react/react-native via a different path.
+//    This is a BREAKING CHANGE to Metro's module resolution behaviour in the monorepo.
+//    Any updates to this setting MUST be mirrored in the documentation:
+//      - apps/gurudevi-mobile/README.md ("Metro configuration" section)
+//      - docs/migrations/metro-disable-hierarchical-lookup.md
+//    so that other developers understand why hierarchical lookup is disabled and
+//    how it impacts adding packages or debugging resolution issues.
 config.resolver.disableHierarchicalLookup = true;
 
 // 4. Aggressive blockList to ensure Metro NEVER follows paths into package-level React.
