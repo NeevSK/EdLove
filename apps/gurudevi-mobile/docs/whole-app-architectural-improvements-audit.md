@@ -10,6 +10,12 @@ This app has strong modular intent (workspace packages, scanner-kit, domain APIs
 
 **Overall architecture maturity estimate: 56/100** (good foundation, needs consolidation + reliability hardening).
 
+Scoring is heuristic across five dimensions:
+- **Domain boundaries & ownership (25%)** – clarity of package boundaries, single source of truth per domain.
+- **Flow orchestration & contract consistency (25%)** – centralized routing, typed payloads, stable APIs.
+- **Reliability & observability (20%)** – error handling, logging, metrics, and incident readiness.
+- **Testing & release discipline (20%)** – automated coverage of critical journeys, CI/CD and rollout safety.
+- **Security & compliance posture (10%)** – authz/authn integration, data handling, and hardening basics.
 ---
 
 ## 1) Domain ownership & package boundaries
