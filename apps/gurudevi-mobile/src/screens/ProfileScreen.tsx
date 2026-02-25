@@ -33,7 +33,8 @@ import ProfileListItem from '../components/profile/ProfileListItem';
 
 import Animated, { FadeInDown, useSharedValue, useAnimatedStyle, withSequence, withTiming, withRepeat } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
-import { useProfile } from '@repo/profile';
+import { useProfile, useProfileCompletion } from '@repo/profile';
+import { SanctuaryProgressBar } from '@repo/ui';
 
 // --- Constants ---
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -41,8 +42,8 @@ const CARD_WIDTH = SCREEN_WIDTH - Theme.spacing.xl;
 
 // --- Internal Sub-Components ---
 
-const IdentitySection = ({ profile, navigation, colors, t, onGuestAction }: any) => {
-    const isGuest = !profile?.email || profile?.email?.includes('anonymous');
+const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, completionResult }: any) => {
+    const isGuest = !profile || profile?.is_anonymous === true;
 
     return (
         <Center>
@@ -57,6 +58,17 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction }: any)
                     navigation.navigate(isGuest ? 'Auth' : 'FullProfile', { profile });
                 }}
             />
+
+            {/* Progress bar — registered users only, between card and button */}
+            {!isGuest && (
+                <SanctuaryProgressBar
+                    percentage={completionResult.percentage}
+                    isComplete={completionResult.isComplete}
+                    nextHint={completionResult.nextHint}
+                    style={{ width: CARD_WIDTH, marginTop: Theme.spacing.md }}
+                />
+            )}
+
             <TouchableOpacity
                 onPress={() => {
                     hapticLight();
@@ -322,7 +334,8 @@ export default function ProfileScreen() {
         rewards
     } = useProfile();
 
-    const { isDark } = useEnvironment();
+    const { isDark, role } = useEnvironment();
+    const completionResult = useProfileCompletion(profile, role ?? null);
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -484,6 +497,7 @@ export default function ProfileScreen() {
                                 colors={colors}
                                 t={t}
                                 onGuestAction={triggerBannerShake}
+                                completionResult={completionResult}
                             />
                         </Animated.View>
 
