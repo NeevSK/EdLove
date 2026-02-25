@@ -1,3 +1,23 @@
+# Week 4 Task Checklist (Feb 25, 2026)
+
+## 📋 Implementation Plans
+
+Reference detailed implementation plans before starting work:
+
+- **Profile Completion System** (Tasks 2.1.5, 2.2.2, 2.2.3):
+  - 📘 Design: `docs/plans/2026-02-25-profile-completion-system-design.md`
+  - 📗 Implementation: `docs/plans/2026-02-25-profile-completion-implementation.md` (9 tasks: SSOT manifest, hooks, components, UI updates, avatar upload, celebration)
+  - Status: ✅ **In Progress** (execute in separate session with `superpowers:executing-plans`)
+
+- **Living Theme System** (Completed Week 3):
+  - 📘 Design: `docs/plans/2026-02-24-living-theme-system-design.md`
+  - 📗 Implementation: `docs/plans/2026-02-24-living-theme-system-impl.md`
+  - Status: ✅ **Complete** (Living tokens, 6-phase matrix, `useTheme()` hook, feature flags)
+
+---
+
+## ✅ Task Checklist
+
 1. need to map features/funtions/componets for each role to self and community section. 
 
 2. in profile screen for all roles: 
@@ -7,13 +27,16 @@
      ✔️   2.1.2 remove view, edit profile button from id card
      ✔️  2.1.3 add View/Edit profile button below(outside of ID in the screen of profile screen) ID card. which should bring slowly the fullprofile screen from down.
      ✔️  2.1.4 in ID card it should shown Name, School and Role of user
-    2.1.5 make the profile completion tracker and the indicator around avatar dynamically functional with profile details - no hardcoding or simpler way of calculating the percentage.
-        
+    2.1.5 ⏳ make the profile completion tracker and the indicator around avatar dynamically functional with profile details - no hardcoding or simpler way of calculating the percentage.
+        📗 Plan: `docs/plans/2026-02-25-profile-completion-implementation.md` (Tasks 1-9)
+        Details: PROFILE_SECTIONS manifest (SSOT), useProfileCompletion hook, SanctuaryProgressBar, AvatarDisplay, IdentityCard cleanup, ProfileScreen bar, FullProfileScreen bar+celebration
 
     2.2 Fullprofile view
-       ✔️ 2.2.1 in fullprofile view everything should be editable inline(without opening new screens) with a pencil icon for start editing and green tick for success. 
-        2.2.2 add default avatar for all profiles from icons and it should be visible in every related place such as id card, global header in self view.
-        2.2.3 when ID card opened in full profile view it should center aligned.
+       ✔️ 2.2.1 in fullprofile view everything should be editable inline(without opening new screens) with a pencil icon for start editing and green tick for success.
+        2.2.2 ⏳ add default avatar for all profiles from icons and it should be visible in every related place such as id card, global header in self view.
+        📗 Plan: Tasks 4-5 in `docs/plans/2026-02-25-profile-completion-implementation.md`
+        2.2.3 ⏳ when ID card opened in full profile view it should center aligned.
+        📗 Plan: Task 7 in `docs/plans/2026-02-25-profile-completion-implementation.md`
 
     2.3 light background color in components
     2.4 layout animation or on screen artistic drawing
