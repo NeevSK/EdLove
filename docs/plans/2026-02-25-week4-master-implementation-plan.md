@@ -8,16 +8,28 @@
 
 **Tech Stack:** React Native (Expo SDK 51), TypeScript strict, Supabase Realtime, React Query infinite queries, `react-native-reanimated` v3, `@gluestack-ui/themed`.
 
-**Already done (skip):** 2.1.1, 2.1.2, 2.1.3, 2.1.4, 2.2.1, 5.2.1, 5.2.2, 5.2.3
+**Already done (skip):** 2.1.1, 2.1.2, 2.1.3, 2.1.4, 2.2.1, 5.2.1, 5.2.2, 5.2.3, 10.3.1, 2.1.5, 10.3.2, 2.2.2, 3, 2.2.3, 2.3, 2.4, 2.5, 2.6
+
+> **Session 1 (P0+P1+P2) completed:**
+> - **10.3.1** — PostHog already nested inside NavigationContainer in App.tsx.
+> - **2.1.5** — `useProfileCompletion`, `profileSections.ts`, `AvatarDisplay`, `SanctuaryProgressBar` all implemented.
+> - **2.2.2** — `UserAvatar` in @repo/ui (display-only, no circular dep). GlobalHeader uses it.
+> - **10.3.2** — CommunityScreen chips migrated to `HorizontalChipRow` (FlatList-backed).
+> - **3** — `SanctuaryChip`, `HorizontalChipRow`, `SanctuaryCarousel` created in @repo/ui.
+> - **2.2.3** — FullProfileScreen IdentityCard already inside `<Center>` (confirmed done).
+> - **2.3** — IdentityCard + AchievementGallery hardcoded colors/sizes → Theme tokens. SanctuaryStatsCard marginBottom fixed.
+> - **2.4** — ProfileScreen already had all FadeInDown staggered animations (confirmed done).
+> - **2.5** — Both stat cards already use `Theme.spacing.xl` padding (confirmed done).
+> - **2.6** — `LogoutModal` created in @repo/ui (replaces `Alert.alert` in ProfileScreen). `DeleteAccountModal` redesigned with Theme token colors + school-data-retention message (2.6.1).
 
 ---
 
 ## Execution Order (priority → sequence)
 
 ```
-P0  Bugs        → Tasks 10.3.1, 10.3.2
-P1  Foundation  → Tasks 2.2.2, 2.1.5, 3
-P2  Profile     → Tasks 2.2.3, 2.3, 2.4, 2.5, 2.6
+P0  Bugs        → Tasks 10.3.1 ✅, 10.3.2 ✅
+P1  Foundation  → Tasks 2.2.2 ✅, 2.1.5 ✅, 3 ✅
+P2  Profile     → Tasks 2.2.3 ✅, 2.3 ✅, 2.4 ✅, 2.5 ✅, 2.6 ✅
 P3  Header/Self → Tasks 6.1, 6.2, 8.1, 8.2, 8.3, Task 1
 P4  Community   → Tasks 5.1.1, 5.2.4, 5.2.5
 P5  Library     → Tasks 4.1, 4.2, 4.3, 4.4

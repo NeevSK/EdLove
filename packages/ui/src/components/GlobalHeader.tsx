@@ -10,8 +10,8 @@ import { useTheme } from '../hooks/useTheme';
 import SanctuaryInput from './SanctuaryInput';
 import { hapticLight, hapticMedium } from '../utils/haptics';
 import NotificationDrawer from './NotificationDrawer';
-import { TouchableOpacity, Image } from 'react-native';
-import { Avatar, AvatarFallbackText, AvatarImage } from '../gluestack';
+import { TouchableOpacity } from 'react-native';
+import { UserAvatar } from './UserAvatar';
 
 interface GlobalHeaderProps {
     title?: string;
@@ -112,31 +112,34 @@ export default function GlobalHeader({
                     )}
 
                     {isSelfView && (
-                        <Pressable onPress={() => navigation.navigate('Profile')}>
-                            <Avatar sx={{ borderRadius: 12, backgroundColor: colors.secondary, width: 32, height: 32 }}>
-                                <AvatarFallbackText>{userFullName}</AvatarFallbackText>
-                                {(avatarUrl || user?.user_metadata?.avatar_url) && (
-                                    <AvatarImage
-                                        source={{ uri: avatarUrl || user?.user_metadata?.avatar_url }}
-                                        alt="Profile"
-                                    />
-                                )}
-                            </Avatar>
+                        <Pressable
+                            onPress={() => navigation.navigate('Profile')}
+                            style={{ marginRight: Theme.spacing.md }}
+                        >
+                            <UserAvatar
+                                avatarUrl={avatarUrl || user?.user_metadata?.avatar_url}
+                                fullName={userFullName}
+                                role={role}
+                                size={32}
+                                borderRadius={12}
+                            />
                         </Pressable>
                     )}
 
                     <VStack>
-                        <Text
-                            color={text.secondary}
-                            sx={{
-                                fontSize: '$xs' as any,
-                                letterSpacing: 0.5,
-                                fontWeight: 'bold',
-                                fontFamily: Theme.typography.fontFamily.english
-                            }}
-                        >
-                            {title ? (subtitle || RoleLabel) : `${greetingText} ${emoji}`}
-                        </Text>
+                        {(subtitle || (!title && greetingText)) && (
+                            <Text
+                                color={text.secondary}
+                                sx={{
+                                    fontSize: '$xs' as any,
+                                    letterSpacing: 0.5,
+                                    fontWeight: 'bold',
+                                    fontFamily: Theme.typography.fontFamily.english
+                                }}
+                            >
+                                {title ? subtitle : `${greetingText} ${emoji}`}
+                            </Text>
+                        )}
                         <Text
                             color={text.primary}
                             sx={{

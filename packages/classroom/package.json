@@ -16,6 +16,7 @@
         "@repo/core": "workspace:*",
         "@repo/ui": "workspace:*",
         "@repo/community": "workspace:*",
+        "@repo/library": "workspace:*",
         "@repo/scanner-kit": "workspace:*",
         "react-i18next": "^14.0.0",
         "lucide-react-native": "*"
@@ -23,7 +24,10 @@
     "devDependencies": {
         "@repo/typescript-config": "workspace:*",
         "@types/react": "~19.1.10",
-        "@gluestack-ui/themed": "^1.1.2"
+        "eslint": "^9.38.0",
+        "@repo/eslint-config": "workspace:*",
+        "@gluestack-ui/themed": "^1.1.2",
+        "typescript": "^5.3.3"
     },
     "peerDependencies": {
         "react": "*",

@@ -15,9 +15,11 @@ import { classroomsAPI } from './classrooms';
 import { onboardingAPI } from './onboarding';
 import { inventoryAPI } from './inventory';
 import { dailyContentAPI } from './dailyContent';
+import { thuthimalAPI } from './thuthimal';
 
 export * from './mockData';
 export * from './types';
+export * from './thuthimal';
 
 // Simplified named exports for direct access
 export {
@@ -39,7 +41,8 @@ export {
     assignmentsAPI,
     classroomStudentsAPI,
     onboardingAPI,
-    dailyContentAPI
+    dailyContentAPI,
+    thuthimalAPI,
 };
 
 /**
@@ -67,7 +70,8 @@ export const api = {
     rewards: rewardsAPI,
     tracking: trackingAPI,
     onboarding: onboardingAPI,
-    dailyContent: dailyContentAPI
+    dailyContent: dailyContentAPI,
+    thuthimal: thuthimalAPI,
 };
 
 export default api;

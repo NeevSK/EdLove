@@ -155,6 +155,6 @@ const styles = StyleSheet.create({
     },
     unlockedIcon: {
         borderWidth: 1,
-        borderColor: '#E67E2240', // Semi-transparent primary
+        borderColor: `${Theme.colors.sanctuarySaffron}40`, // sanctuarySaffron at ~25% opacity
     }
 });

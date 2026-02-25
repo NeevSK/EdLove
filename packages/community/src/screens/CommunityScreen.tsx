@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect, useMemo } from 'react';
-import { RefreshControl, FlatList, ActivityIndicator, ScrollView } from 'react-native';
-import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, Theme, useBottomTabPadding, LotusPetalFAB, FadeInDown } from '@repo/ui';
+import { RefreshControl, FlatList, ActivityIndicator } from 'react-native';
+import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, Theme, useBottomTabPadding, LotusPetalFAB, FadeInDown, HorizontalChipRow } from '@repo/ui';
 import Animated from 'react-native-reanimated';
 import PostCard from '../components/PostCard';
 import CreatePostModal from '../components/CreatePostModal';
@@ -96,47 +96,14 @@ export default function CommunityScreen() {
 
     const renderFeedFilterChips = () => (
         <Animated.View entering={FadeInDown.delay(300).springify()}>
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                    paddingHorizontal: Theme.spacing.md,
-                    paddingBottom: Theme.spacing.sm
+            <HorizontalChipRow
+                chips={feedFilterChips}
+                selectedValue={activeFeedFilter}
+                onSelect={(value) => {
+                    setActiveFeedFilter(value);
+                    fetchPosts(value);
                 }}
-                accessibilityLabel="Feed filter options"
-                accessibilityRole="tablist"
-            >
-                <HStack space="sm">
-                    {feedFilterChips.map((chip) => {
-                        const isActive = activeFeedFilter === chip.value;
-                        return (
-                            <Pressable
-                                key={chip.value}
-                                onPress={() => {
-                                    setActiveFeedFilter(chip.value);
-                                    fetchPosts(chip.value);
-                                }}
-                                sx={{
-                                    paddingHorizontal: Theme.spacing.md,
-                                    paddingVertical: Theme.spacing.xs,
-                                    borderRadius: Theme.corners.full,
-                                    backgroundColor: isActive ? Theme.colors.sanctuarySaffron : Theme.colors.glassHighlight,
-                                    borderWidth: 1,
-                                    borderColor: isActive ? Theme.colors.sanctuarySaffron : Theme.colors.glassBorder,
-                                }}
-                            >
-                                <Text
-                                    size="sm"
-                                    bold={isActive}
-                                    color={isActive ? Theme.colors.black : colors.textSecondary}
-                                >
-                                    {chip.label}
-                                </Text>
-                            </Pressable>
-                        );
-                    })}
-                </HStack>
-            </ScrollView>
+            />
         </Animated.View>
     );
 

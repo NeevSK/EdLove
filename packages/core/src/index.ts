@@ -9,6 +9,7 @@ export * from './lib/mediaUtils';
 export * from './lib/permissions';
 export * from './lib/authorization';
 export * from './lib/apiInterceptor';
+export * from './lib/sync';
 export * from './lib/grading';
 export * from './lib/monitoring/sentry';
 export * from './lib/monitoring/posthog';

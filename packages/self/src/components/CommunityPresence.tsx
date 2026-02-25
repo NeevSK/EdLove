@@ -4,7 +4,7 @@
  * Provides instant comfort and combats teacher isolation
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     Box,
     HStack,
@@ -12,8 +12,6 @@ import {
     Text,
     useThemedColors,
     Theme,
-    LivingGlow,
-    SanctuaryCard,
 } from '@repo/ui';
 import Animated, {
     useAnimatedStyle,
@@ -22,7 +20,7 @@ import Animated, {
     withTiming,
     Easing,
 } from 'react-native-reanimated';
-import { Users, Info } from 'lucide-react-native';
+import { Users } from 'lucide-react-native';
 import { supabase } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 
@@ -46,6 +44,24 @@ export default function CommunityPresence({
     // Pulsing animation for the indicator
     const pulseScale = useSharedValue(1);
     const pulseOpacity = useSharedValue(0.6);
+
+    const fetchOnlineUsers = useCallback(async () => {
+        try {
+            // Fallback to DB query for initial count if presence is still syncing
+            const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+            const { count, error } = await supabase
+                .from('users')
+                .select('id', { count: 'exact', head: true })
+                .eq('role', userRole)
+                .gte('last_seen_at', fiveMinutesAgo);
+
+            if (!error && count !== null) setOnlineCount(count > 0 ? count : 0);
+        } catch (error) {
+            console.error('Error fetching online users:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [userRole]);
 
     useEffect(() => {
         pulseScale.value = withRepeat(
@@ -78,14 +94,16 @@ export default function CommunityPresence({
                 setOnlineCount(presences.length);
 
                 const vibes: Record<string, number> = {};
-                presences.forEach((p: any) => {
-                    const v = p.vibe || 'active';
+                presences.forEach((p: unknown) => {
+                    const presence = p as { vibe?: string };
+                    const v = presence.vibe || 'active';
                     vibes[v] = (vibes[v] || 0) + 1;
                 });
 
                 const sortedVibes = Object.entries(vibes).sort((a, b) => b[1] - a[1]);
                 if (sortedVibes.length > 0) {
-                    setDominantVibe(sortedVibes[0][0]);
+                    const topVibe = sortedVibes[0]?.[0];
+                    if (topVibe) setDominantVibe(topVibe);
                 }
             })
             .on('presence', { event: 'join' }, ({ key, newPresences }) => {
@@ -107,25 +125,7 @@ export default function CommunityPresence({
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [userVibe, userRole]);
-
-    const fetchOnlineUsers = async () => {
-        try {
-            // Fallback to DB query for initial count if presence is still syncing
-            const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-            const { count, error } = await supabase
-                .from('users')
-                .select('id', { count: 'exact', head: true })
-                .eq('role', userRole)
-                .gte('last_seen_at', fiveMinutesAgo);
-
-            if (!error && count !== null) setOnlineCount(count > 0 ? count : 0);
-        } catch (error) {
-            console.error('Error fetching online users:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    }, [userVibe, userRole, fetchOnlineUsers, pulseOpacity, pulseScale]);
 
     const pulseStyle = useAnimatedStyle(() => ({
         transform: [{ scale: pulseScale.value }],
@@ -149,7 +149,7 @@ export default function CommunityPresence({
         return (
             <HStack space="sm" alignItems="center" justifyContent="center" py="$4">
                 <Text color={colors.textTertiary} size="sm" italic>
-                    {t('community.connecting') || "Joining the Sanctuary Circle..."}
+                    {t('community.connecting', 'Joining the Sanctuary Circle...')}
                 </Text>
             </HStack>
         );

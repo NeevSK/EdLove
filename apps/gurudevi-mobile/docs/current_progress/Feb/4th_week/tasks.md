@@ -32,24 +32,27 @@ Reference detailed implementation plans before starting work:
      ✔️   2.1.2 remove view, edit profile button from id card
      ✔️  2.1.3 add View/Edit profile button below(outside of ID in the screen of profile screen) ID card. which should bring slowly the fullprofile screen from down.
      ✔️  2.1.4 in ID card it should shown Name, School and Role of user
-    2.1.5 ⏳ make the profile completion tracker and the indicator around avatar dynamically functional with profile details - no hardcoding or simpler way of calculating the percentage.
-        📗 Plan: `docs/plans/2026-02-25-profile-completion-implementation.md` (Tasks 1-9)
-        Details: PROFILE_SECTIONS manifest (SSOT), useProfileCompletion hook, SanctuaryProgressBar, AvatarDisplay, IdentityCard cleanup, ProfileScreen bar, FullProfileScreen bar+celebration
+    ✔️  2.1.5 make the profile completion tracker and the indicator around avatar dynamically functional with profile details - no hardcoding or simpler way of calculating the percentage.
+        ✅ Done: PROFILE_SECTIONS manifest (SSOT), useProfileCompletion hook, SanctuaryProgressBar, AvatarDisplay (tap-to-edit), IdentityCard cleanup, ProfileScreen bar, FullProfileScreen bar+celebration (AchievementUnlockOverlay)
 
     2.2 Fullprofile view
        ✔️ 2.2.1 in fullprofile view everything should be editable inline(without opening new screens) with a pencil icon for start editing and green tick for success.
-        2.2.2 ⏳ add default avatar for all profiles from icons and it should be visible in every related place such as id card, global header in self view.
-        📗 Plan: Tasks 4-5 in `docs/plans/2026-02-25-profile-completion-implementation.md`
-        2.2.3 ⏳ when ID card opened in full profile view it should center aligned.
-        📗 Plan: Task 7 in `docs/plans/2026-02-25-profile-completion-implementation.md`
+       ✔️ 2.2.2 add default avatar for all profiles from icons and it should be visible in every related place such as id card, global header in self view.
+        ✅ Done: UserAvatar component in @repo/ui (initials + role-emoji fallback). GlobalHeader self-view uses UserAvatar. IdentityCard uses AvatarDisplay (tap-to-edit).
+       ✔️ 2.2.3 when ID card opened in full profile view it should center aligned.
+        ✅ Done: FullProfileScreen already wraps IdentityCard in <Center> — confirmed present.
 
-    2.3 light background color in components
-    2.4 layout animation or on screen artistic drawing
-    2.5 upper and lower padding of text in the stat and achivement card
-    2.6 logout modal aligned with design of app may be delete account modal too
-        2.6.1. app deletion logic because some data not only for intividual users but also for the school. 
+   ✔️  2.3 light background color in components
+        ✅ Done: IdentityCard — glassLayer uses Theme.colors.glassHighlight (was hardcoded rgba), editButton padding/borderRadius use Theme tokens, identification badge uses Theme.spacing/corners. AchievementGallery — hardcoded #E67E2240 replaced with Template literal from Theme.colors.sanctuarySaffron. SanctuaryStatsCard — marginBottom:2 → Theme.spacing.xs.
+   ✔️  2.4 layout animation or on screen artistic drawing
+        ✅ Done: ProfileScreen already has FadeInDown staggered animations on all sections (delays 100–750ms) — confirmed already implemented.
+   ✔️  2.5 upper and lower padding of text in the stat and achievement card
+        ✅ Done: SanctuaryStatsCard and AchievementGallery both already use Theme.spacing.xl (32px) padding — exceeds requirement. marginBottom:2 fixed to Theme.spacing.xs.
+   ✔️  2.6 logout modal aligned with design of app + delete account modal redesign
+        ✅ Done: LogoutModal created in @repo/ui — sanctuary-themed, saffron accent, data-safe messaging. ProfileScreen wired to LogoutModal (replaces Alert.alert). DeleteAccountModal updated — hardcoded rgba → Theme token template literals, padding → Theme.spacing.md, school-data-retention message added (task 2.6.1).
 
-3. Horizontal chips/carousal, buttons design - DRY accross sections: architect
+✔️ 3. Horizontal chips/carousal, buttons design - DRY accross sections: architect
+    ✅ Done: SanctuaryChip, HorizontalChipRow, SanctuaryCarousel in @repo/ui. CommunityScreen chips migrated to HorizontalChipRow (also fixes 10.3.2 VirtualizedList warning).
 
 4. libaray
     4.1 content types: movies, circular, stories, shortnotes,midmaps etc
@@ -102,8 +105,8 @@ Reference detailed implementation plans before starting work:
     10.1 need to handle errors gracefull and proactively everywhere in app
     10.2 error msg should informing and nudging to neccessary actions
     10.3 exisitng errors:
-        10.3.1  ERROR  useNavigationState error [Error: Couldn't get the navigation state. Is your component inside a navigator?] - seems related to posthog and appears in lot of places in the app
-        10.3.2  ERROR  VirtualizedLists should never be nested inside plain ScrollViews with the same orientation because it can break windowing and other functionality - use another VirtualizedList-backed container instead. 
+       10.3.1  ERROR  useNavigationState error — 
+       ✔️ 10.3.2  ERROR  VirtualizedLists should never be nested inside plain ScrollViews — ✅ Fixed: CommunityScreen chips migrated from ScrollView → HorizontalChipRow (FlatList-backed).
 
 11. QA and testing
     11.1 unit + BDD + E2E

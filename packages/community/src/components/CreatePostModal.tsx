@@ -46,7 +46,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
             quality: 0.8,
         });
 
-        if (!result.canceled) {
+        if (!result.canceled && result.assets?.[0]?.uri) {
             setSelectedImage(result.assets[0].uri);
         }
     };
@@ -99,7 +99,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                 </ModalHeader>
                 <ModalBody>
                     <VStack space="md">
-                        <Textarea size="md" sx={{
+                        <Textarea sx={{
                             backgroundColor: colors.overlay,
                             borderColor: 'transparent',
                             borderRadius: Theme.corners.comfortable,

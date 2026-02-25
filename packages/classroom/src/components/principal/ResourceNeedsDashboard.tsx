@@ -103,8 +103,8 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
     }
 
     return (
-        <VStack sx={{ gap: Theme.spacing.lg }}>
-            <VStack sx={{ gap: Theme.spacing.xs }}>
+        <VStack space="lg">
+            <VStack space="xs">
                 <Heading color={colors.text} sx={{ fontSize: 24 }}>
                     {t('principal.resources.title') || 'Resource Vistas'}
                 </Heading>
@@ -113,7 +113,7 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
                 </Text>
             </VStack>
 
-            <VStack sx={{ gap: Theme.spacing.md }}>
+            <VStack space="md">
                 {needs.map((need) => {
                     const Icon = ICON_MAP[need.icon] || ICON_MAP.other;
                     const priorityColor = (PRIORITY_COLORS as any)[need.priority] || colors.textTertiary;
@@ -129,7 +129,7 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
                                 borderLeftColor: priorityColor,
                             }}
                         >
-                            <HStack sx={{ gap: Theme.spacing.md, alignItems: "center" }}>
+                            <HStack space="md" sx={{ alignItems: "center" }}>
                                 <Box
                                     sx={{
                                         width: 48,
@@ -143,8 +143,8 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
                                     <Icon color={priorityColor} size={24} />
                                 </Box>
 
-                                <VStack sx={{ gap: Theme.spacing.xs, flex: 1 }}>
-                                    <HStack sx={{ alignItems: "center", gap: Theme.spacing.sm }}>
+                                <VStack space="xs" sx={{ flex: 1 }}>
+                                    <HStack space="sm" sx={{ alignItems: "center" }}>
                                         <Text
                                             color={colors.text}
                                             sx={{ fontWeight: typography.fontWeight.semibold, fontSize: 18 }}

@@ -3,7 +3,7 @@ export * from './api/community';
 export * from './hooks/useCommunity';
 export * from './hooks/useCommunityFilters';
 export * from './hooks/useManifestos';
-export * from './hooks/useCommunityFilters';
+export * from './hooks/useCommunityGroups';
 export * from './api/sacredMissions';
 
 // Components

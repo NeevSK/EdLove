@@ -3,7 +3,7 @@ import './src/i18n/config'; // Initialize i18n
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GluestackUIProvider, Spinner, Center, VStack, Text } from '@repo/ui';
@@ -26,6 +26,9 @@ import WelcomeScreen from './src/screens/WelcomeScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import TabNavigator from './src/navigation/TabNavigator';
 import { AIAssistantScreen, AuthScreen } from './src/screens';
+import QRHandlerScreen from './src/screens/QRHandlerScreen';
+import ThuthimalClaimScreen from './src/screens/ThuthimalClaimScreen';
+import { useQRDeepLink, redeemPendingQRAction } from './src/hooks/useQRDeepLink';
 import { SanctuaryToast, ToastProvider } from '@repo/ui';
 import type { ActionItem } from '@repo/ui';
 import ErrorBoundary from './src/components/shared/ErrorBoundary';
@@ -35,6 +38,9 @@ import { LanguageUtils } from './src/utils/LanguageUtils';
 
 // Create a client
 const queryClient = new QueryClient();
+
+// Navigation ref for imperative navigation outside React tree (deep links, auth callbacks)
+export const navigationRef = createNavigationContainerRef<any>();
 
 // Initialize Sentry & PostHog
 initSentry();
@@ -202,6 +208,14 @@ function App() {
 
   // Monitor network connectivity - REMOVED redundant listener (Centralized in EnvironmentContext)
 
+  // QR deep link listener — routes incoming gurudevi://qr?... links to QRHandlerScreen
+  useQRDeepLink((payload) => {
+    if (navigationRef.isReady() && session) {
+      navigationRef.navigate('QRHandler', { payload });
+    }
+    // If not ready/authenticated, useQRDeepLink already stores in AsyncStorage as fallback
+  });
+
   const handleFabPress = () => {
     // TODO: Implement specific actions for each tab
     console.log(`FAB pressed in ${currentTab} tab`);
@@ -275,7 +289,7 @@ function App() {
             <GluestackUIProvider config={config}>
               <ToastProvider>
                 <ErrorBoundary name="App Root">
-                  <NavigationContainer>
+                  <NavigationContainer ref={navigationRef}>
                     <PostHogProvider
                       apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
                       options={{
@@ -338,7 +352,22 @@ function App() {
                               component={AuthScreen}
                               options={{ presentation: 'modal' }}
                             />
-
+                            <RootStack.Screen
+                              name="QRHandler"
+                              component={QRHandlerScreen}
+                              options={{
+                                presentation: 'modal',
+                                animation: 'fade_from_bottom',
+                              }}
+                            />
+                            <RootStack.Screen
+                              name="ThuthimalClaim"
+                              component={ThuthimalClaimScreen}
+                              options={{
+                                presentation: 'modal',
+                                animation: 'fade_from_bottom',
+                              }}
+                            />
                           </>
                         )}
                       </RootStack.Navigator>

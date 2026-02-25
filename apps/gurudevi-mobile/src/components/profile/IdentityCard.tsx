@@ -20,7 +20,7 @@ import Animated, {
     interpolate,
 } from 'react-native-reanimated';
 import { User, GraduationCap, Briefcase, Crown, ShieldAlert, Compass } from 'lucide-react-native';
-import { QRCodeGenerator } from '@repo/scanner-kit';
+import { QRCodeGenerator, QRBuilder } from '@repo/scanner-kit';
 import { UserProfile, AvatarDisplay } from '@repo/profile';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -110,13 +110,13 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile, style
         },
         glassLayer: {
             ...StyleSheet.absoluteFillObject,
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            backgroundColor: Theme.colors.glassHighlight,
         },
         editButton: {
             backgroundColor: `${colors.action}10`,
-            paddingHorizontal: 12,
-            paddingVertical: 6,
-            borderRadius: 20,
+            paddingHorizontal: Theme.spacing.sm,
+            paddingVertical: Theme.spacing.xs,
+            borderRadius: Theme.corners.comfortable,
             alignSelf: 'flex-start',
         },
         watermark: {
@@ -173,7 +173,7 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile, style
 
                             {/* Identification Row */}
                             {(profile?.nic_number || profile?.index_number) && (
-                                <Box bg={`${colors.action}10`} px={8} py={2} borderRadius={6} alignSelf="flex-start">
+                                <Box bg={`${colors.action}10`} px={Theme.spacing.sm} py={Theme.spacing.xs} borderRadius={Theme.corners.tight} alignSelf="flex-start">
                                     <Text color={colors.action} size="xxs" bold>
                                         {profile?.role === 'student' ? 'INDEX:' : 'NIC:'} {profile?.nic_number || profile?.index_number}
                                     </Text>
@@ -196,12 +196,16 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile, style
                     <Center h="100%">
                         <Box p={Theme.spacing.md} bg="white" borderRadius={Theme.corners.comfortable}>
                             <QRCodeGenerator
-                                value={profile?.id || 'gurudevi-guest'}
+                                value={
+                                    profile?.id
+                                        ? QRBuilder.userInvite(profile.id, profile.role || 'unknown')
+                                        : 'gurudevi-guest'
+                                }
                                 size={120}
                             />
                         </Box>
                         <Text color={colors.text} mt={Theme.spacing.md} bold>
-                            {profile?.role === 'student' ? (profile?.index_number || 'STU-SCAN') : (profile?.nic_number || 'GURU-SCAN')}
+                            INVITE
                         </Text>
                         <Text color={colors.textSecondary} size="xs">
                             {t('profile.scanToConnect')}

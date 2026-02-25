@@ -4,7 +4,8 @@
  * Modal for adding or editing a student in a classroom.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { TouchableOpacity } from 'react-native';
 import {
     VStack,
     HStack,
@@ -32,6 +33,7 @@ import {
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { studentsAPI, Student } from '@repo/core';
+import OCRStudentImport from './OCRStudentImport';
 
 interface AddStudentModalProps {
     isOpen: boolean;
@@ -40,6 +42,8 @@ interface AddStudentModalProps {
     classroomId: string;
     studentToEdit: Student | null;
 }
+
+type AddStudentTab = 'manual' | 'scan';
 
 export const AddStudentModal = ({
     isOpen,
@@ -50,6 +54,7 @@ export const AddStudentModal = ({
 }: AddStudentModalProps) => {
     const { t } = useTranslation();
     const toast = useToast();
+    const [activeTab, setActiveTab] = useState<AddStudentTab>('manual');
     const [fullName, setFullName] = useState('');
     const [rollNumber, setRollNumber] = useState('');
     const [notes, setNotes] = useState('');
@@ -153,6 +158,56 @@ export const AddStudentModal = ({
                     </ModalCloseButton>
                 </ModalHeader>
                 <ModalBody>
+                    {/* Tab switcher — only shown when adding (not editing) */}
+                    {!studentToEdit && (
+                        <HStack sx={{ gap: 0, marginBottom: Theme.spacing.md, borderRadius: Theme.corners.comfortable, overflow: 'hidden', borderWidth: 1, borderColor: Theme.colors.mistGray }}>
+                            {(['manual', 'scan'] as AddStudentTab[]).map(tab => (
+                                <TouchableOpacity
+                                    key={tab}
+                                    onPress={() => setActiveTab(tab)}
+                                    style={{
+                                        flex: 1,
+                                        paddingVertical: 10,
+                                        alignItems: 'center',
+                                        backgroundColor: activeTab === tab ? Theme.colors.sanctuarySaffron : 'transparent',
+                                    }}
+                                >
+                                    <Text style={{
+                                        color: activeTab === tab ? Theme.colors.voidIndigo : Theme.colors.pearlGray,
+                                        fontWeight: activeTab === tab ? '700' : '400',
+                                        fontSize: 14,
+                                    }}>
+                                        {tab === 'manual' ? '✏️ Manual' : '📷 Scan Register'}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </HStack>
+                    )}
+
+                    {/* Scan Register tab */}
+                    {activeTab === 'scan' && !studentToEdit && (
+                        <OCRStudentImport
+                            classroomId={classroomId}
+                            onImported={(count) => {
+                                toast.show({
+                                    placement: 'top',
+                                    render: ({ id }: { id: string }) => (
+                                        <SanctuaryToast
+                                            message={`${count} student${count !== 1 ? 's' : ''} imported successfully`}
+                                            type="success"
+                                            visible
+                                            onHide={() => toast.close(id)}
+                                        />
+                                    ),
+                                });
+                                onSuccess();
+                            }}
+                            onCancel={onClose}
+                        />
+                    )}
+
+                    {/* Manual entry tab */}
+                    {(activeTab === 'manual' || studentToEdit) && (
                     <VStack sx={{ gap: Theme.spacing.md, paddingVertical: Theme.spacing.md }}>
                         <VStack sx={{ gap: Theme.spacing.xs }}>
                             <Text sx={{ color: Theme.colors.sacredWhite, fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}>
@@ -216,6 +271,7 @@ export const AddStudentModal = ({
                             </Input>
                         </VStack>
                     </VStack>
+                    )}
                 </ModalBody>
                 <ModalFooter sx={{ gap: Theme.spacing.md }}>
                     <Button

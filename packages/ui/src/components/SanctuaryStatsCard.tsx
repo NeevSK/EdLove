@@ -74,7 +74,7 @@ export default function SanctuaryStatsCard({
                                 backgroundColor: `${item.color}20`,
                                 padding: Theme.spacing.sm,
                                 borderRadius: Theme.corners.comfortable,
-                                marginBottom: 2
+                                marginBottom: Theme.spacing.xs
                             }}
                         >
                             <item.icon size={20} color={item.color} />

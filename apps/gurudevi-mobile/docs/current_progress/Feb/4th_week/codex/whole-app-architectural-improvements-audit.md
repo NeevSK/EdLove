@@ -18,7 +18,7 @@ Scoring is heuristic across five dimensions:
 - **Security & compliance posture (10%)** – authz/authn integration, data handling, and hardening basics.
 ---
 
-## 1) Domain ownership & package boundaries
+## 1) Domain ownership & package boundaries (Update: Tried some fixes. not a priority right now)
 
 ### Findings
 - Mobile app still contains near-fork API layers under `src/lib/api/*` while also consuming package APIs.
@@ -35,7 +35,7 @@ Scoring is heuristic across five dimensions:
 
 ---
 
-## 2) Contract consistency and flow orchestration
+## 2) Contract consistency and flow orchestration (Top priority yet i think we did it with some level)
 
 ### Findings
 - Multiple feature flows (QR, invite, role setup) are routed ad hoc at component level.
@@ -52,7 +52,7 @@ Scoring is heuristic across five dimensions:
 
 ---
 
-## 3) Security and trust boundaries
+## 3) Security and trust boundaries (secondary level priority now)
 
 ### Findings
 - Critical actions are initiated client-side with optimistic assumptions.
@@ -68,7 +68,7 @@ Scoring is heuristic across five dimensions:
 
 ---
 
-## 4) Reliability and offline behavior
+## 4) Reliability and offline behavior (top most priority  )
 
 ### Findings
 - There is sync/queue capability, but replay outcomes, idempotency, and conflict strategy are not uniformly standardized across domains.
@@ -100,7 +100,7 @@ Scoring is heuristic across five dimensions:
 
 ---
 
-## 6) Performance and rendering discipline
+## 6) Performance and rendering discipline(top priority)
 
 ### Findings
 - Large feature components combine data fetching + orchestration + rendering + local state.

@@ -48,7 +48,7 @@ export const dailyContentAPI = {
         }, {
             key: 'daily_content_today',
             ttl: 24 * 60 * 60 * 1000 // Cache for 24 hours
-        }) || { motivation: null, didYouKnow: null };
+        }) as Promise<{ motivation: DailyContent | null; didYouKnow: DailyContent | null }>;
     },
 
     /**

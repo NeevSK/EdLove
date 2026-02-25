@@ -14,6 +14,7 @@ import {
     useThemedColors,
     useBottomTabPadding,
     DeleteAccountModal,
+    LogoutModal,
     GlobalHeader,
     ScreenWrapper,
     useEnvironment
@@ -339,6 +340,8 @@ export default function ProfileScreen() {
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
+    const [isLoggingOut, setLoggingOut] = useState(false);
     const [isSettingsVisible, setSettingsVisible] = useState(false);
     const { deleteAccount, isDeleting } = useAccountDeletion();
     const { discoverFeature } = useTracking();
@@ -362,26 +365,21 @@ export default function ProfileScreen() {
         discoverFeature('section_profile');
     }, []);
 
-    const handleLogout = async () => {
+    const handleLogout = () => {
         hapticLight();
-        Alert.alert(
-            t('profile.logoutConfirmTitle', 'Log Out'),
-            t('profile.logoutConfirmMessage', 'Are you sure you want to sign out?'),
-            [
-                { text: t('common.cancel', 'Cancel'), style: 'cancel' },
-                {
-                    text: t('profile.logout', 'Log Out'),
-                    style: 'destructive',
-                    onPress: async () => {
-                        try {
-                            await logout();
-                        } catch (error) {
-                            hapticError();
-                        }
-                    },
-                },
-            ]
-        );
+        setLogoutModalVisible(true);
+    };
+
+    const confirmLogout = async () => {
+        setLoggingOut(true);
+        try {
+            await logout();
+            setLogoutModalVisible(false);
+        } catch (error) {
+            hapticError();
+        } finally {
+            setLoggingOut(false);
+        }
     };
 
     const handleDeleteAccount = () => {
@@ -622,6 +620,13 @@ export default function ProfileScreen() {
                     onClose={() => setDeleteModalVisible(false)}
                     onDelete={confirmDeleteAccount}
                     isLoading={isDeleting}
+                />
+
+                <LogoutModal
+                    isOpen={isLogoutModalVisible}
+                    onClose={() => setLogoutModalVisible(false)}
+                    onLogout={confirmLogout}
+                    isLoading={isLoggingOut}
                 />
             </Box>
         </ScreenWrapper>

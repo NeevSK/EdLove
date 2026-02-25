@@ -30,9 +30,15 @@
       "@types/react": "19.1.10",
       "@types/react-dom": "19.1.1",
       "nitro-modules": "0.33.9"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "@img/sharp-win32-x64",
+      "sharp",
+      "turbo",
+      "supabase"
+    ]
   },
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@10.30.2",
   "engines": {
     "node": ">=18"
   },

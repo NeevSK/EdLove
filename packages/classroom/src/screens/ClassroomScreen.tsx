@@ -13,8 +13,10 @@ import React, { useEffect, useState } from 'react';
 import { Box, VStack, Theme, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, hapticLight } from '@repo/ui';
 import { PrincipalSchoolView, SectionHeadView, GradeHeadView, FounderSchoolView/*, AdminSchoolView*/ } from './';
 import { ClassroomList, TeacherDashboard, StudentDashboard, NoSchoolOnboarding } from '../components';
+import { useClassroomRoleData } from '../hooks';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import { SanctuaryNudge } from '@repo/ui';
 
 export default function ClassroomScreen() {
     const colors = useThemedColors();
@@ -22,55 +24,12 @@ export default function ClassroomScreen() {
     const navigation = useNavigation<any>();
     const { role } = useUserRole();
     const { isGuest } = useRoleFeatures();
-    const [loading, setLoading] = useState(true);
-    const [principalData, setPrincipalData] = useState<{ schoolId: string | null, userId: string, profileCompleted: boolean, realClassCount: number } | null>(null);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const { data: classroomData, loading, fetchRoleData } = useClassroomRoleData(refreshTrigger);
 
     useEffect(() => {
         fetchRoleData();
     }, [role]);
-
-    const fetchRoleData = async () => {
-        setLoading(true);
-        try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                const { data, error } = await supabase
-                    .from('users')
-                    .select('school_id, profile_completed')
-                    .eq('id', user.id)
-                    .maybeSingle();
-
-                let realClassCount = 0;
-                if (role === 'student') {
-                    const { count } = await supabase
-                        .from('classroom_students')
-                        .select('*', { count: 'exact', head: true })
-                        .eq('student_id', user.id);
-                    realClassCount = count || 0;
-                } else if (role === 'teacher') {
-                    const { count } = await supabase
-                        .from('classrooms')
-                        .select('*', { count: 'exact', head: true })
-                        .eq('teacher_id', user.id);
-                    realClassCount = count || 0;
-                }
-
-                if (data) {
-                    setPrincipalData({
-                        userId: user.id,
-                        schoolId: data.school_id,
-                        profileCompleted: data.profile_completed || false,
-                        realClassCount
-                    });
-                }
-            }
-        } catch (error) {
-            console.error('Error fetching role data:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     if (loading) {
         return (
@@ -84,31 +43,30 @@ export default function ClassroomScreen() {
         );
     }
 
-    // 1. Profile & School Barrier (No Trust) - BUT show samples if guest or no school
-    // Actually, if they are verified but NO school, they should still see samples in a dashboard.
-    // The previous logic was blocking them at NoSchoolOnboarding.
-    // Let's refine: if profile is not completed, they MUST complete it.
-    if (principalData && !principalData.profileCompleted) {
-        return (
-            <ScreenWrapper>
-                <GlobalHeader title="Sanctuary Entry" subtitle="Verification Required" />
-                <NoSchoolOnboarding
-                    userId={principalData.userId}
-                    profileCompleted={principalData.profileCompleted}
-                    onRefresh={fetchRoleData}
+    // Nudge for incomplete profiles
+    const renderNudge = () => {
+        if (classroomData && !classroomData.profileCompleted && !isGuest) {
+            return (
+                <SanctuaryNudge
+                    title="Sanctuary Entry"
+                    description="Complete your profile to unlock full school features."
+                    actionLabel="Finish"
+                    onAction={() => navigation.navigate('Profile')}
+                    icon="🌿"
                 />
-            </ScreenWrapper>
-        );
-    }
+            );
+        }
+        return null;
+    };
 
     // 2. Role-based routing
-    if (principalData) {
-        if (role === 'founder') return <FounderSchoolView schoolId={principalData.schoolId || ''} userId={principalData.userId} onRefresh={fetchRoleData} />;
-        if (role === 'principal' || role === 'developer') return <PrincipalSchoolView schoolId={principalData.schoolId || ''} userId={principalData.userId} onRefresh={fetchRoleData} />;
+    if (classroomData) {
+        if (role === 'founder') return <FounderSchoolView schoolId={classroomData.schoolId || ''} userId={classroomData.userId} onRefresh={fetchRoleData} />;
+        if (role === 'principal' || role === 'developer') return <PrincipalSchoolView schoolId={classroomData.schoolId || ''} userId={classroomData.userId} onRefresh={fetchRoleData} />;
     }
 
-    if (role === 'section_head') return <SectionHeadView schoolId={principalData?.schoolId || undefined} userId={principalData?.userId} />;
-    if (role === 'grade_head') return <GradeHeadView schoolId={principalData?.schoolId || undefined} userId={principalData?.userId} />;
+    if (role === 'section_head') return <SectionHeadView schoolId={classroomData?.schoolId || undefined} userId={classroomData?.userId} />;
+    if (role === 'grade_head') return <GradeHeadView schoolId={classroomData?.schoolId || undefined} userId={classroomData?.userId} />;
 
     // Teacher View
     if (role === 'teacher') {
@@ -116,9 +74,10 @@ export default function ClassroomScreen() {
             <ScreenWrapper>
                 <GlobalHeader title="Classroom 💛" subtitle={undefined} />
                 <Box sx={{ flex: 1 }}>
+                    {renderNudge()}
                     <TeacherDashboard
-                        schoolId={principalData?.schoolId || undefined}
-                        userId={principalData?.userId}
+                        schoolId={classroomData?.schoolId || undefined}
+                        userId={classroomData?.userId}
                         onRefresh={fetchRoleData}
                     />
                 </Box>
@@ -127,14 +86,15 @@ export default function ClassroomScreen() {
     }
 
     // Student View (Enhanced)
-    if (role === 'student' && principalData?.realClassCount && principalData?.realClassCount > 0) {
+    if (role === 'student' && classroomData?.realClassCount && classroomData?.realClassCount > 0) {
         return (
             <ScreenWrapper>
                 <GlobalHeader title={t('classroom.mySanctuaries') || 'My Sanctuaries'} subtitle={undefined} />
                 <Box sx={{ flex: 1 }}>
+                    {renderNudge()}
                     <StudentDashboard
-                        schoolId={principalData?.schoolId || undefined}
-                        userId={principalData?.userId}
+                        schoolId={classroomData?.schoolId || undefined}
+                        userId={classroomData?.userId}
                         onRefresh={fetchRoleData}
                     />
                 </Box>
@@ -142,15 +102,15 @@ export default function ClassroomScreen() {
         );
     }
 
-    // Default/Student View
-    const isStudentRole = role === 'student';
-    const headerTitle = isStudentRole ? (t('classroom.journeyTitle') || 'Learning Journey') : (t('classroom.initializing') || 'Sanctuary Initialization');
-    const headerSubtitle = isStudentRole ? (t('classroom.mySanctuary') || 'My Sanctuary') : (t('classroom.identifyingRole') || 'Preparing your workspace...');
+    // Default/Guest View
+    const headerTitle = isGuest ? (t('classroom.welcome') || 'Welcome to Sanctuary') : (t('classroom.journeyTitle') || 'Learning Journey');
+    const headerSubtitle = isGuest ? (t('classroom.explore') || 'Explore Sample Sanctuaries') : (t('classroom.mySanctuary') || 'My Sanctuary');
 
     return (
         <ScreenWrapper>
-            <GlobalHeader title={headerTitle} subtitle={headerSubtitle} />
+            <GlobalHeader title={headerTitle} subtitle={isGuest ? undefined : headerSubtitle} />
             <Box sx={{ flex: 1, padding: Theme.spacing.lg }}>
+                {renderNudge()}
                 <ClassroomList
                     refreshTrigger={refreshTrigger}
                     onClassroomPress={(classroom) => {

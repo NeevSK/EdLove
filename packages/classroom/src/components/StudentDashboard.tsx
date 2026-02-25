@@ -13,6 +13,8 @@ import {
     SandboxBanner,
     hapticLight
 } from '@repo/ui';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { TouchableOpacity } from 'react-native';
 import {
     Zap,
     BookOpen,
@@ -117,100 +119,107 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: Theme.spacing.lg }}>
 
                 {/* Learning Journey Greeting */}
-                <VStack sx={{ gap: 4, marginBottom: Theme.spacing.lg }}>
-                    <Heading color={colors.text} sx={{ fontSize: Theme.typography.fontSize.xl }}>
-                        {t('classroom.studentDashboardHeading') || 'Your Learning Journey'} 🌟
-                    </Heading>
-                    <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>
-                        {t('classroom.studentDashboardIntro') || 'Step into your sanctuaries and grow with love.'}
-                    </Text>
-                </VStack>
+                <Animated.View entering={FadeInDown.duration(400)}>
+                    <VStack sx={{ gap: 4, marginBottom: Theme.spacing.lg }}>
+                        <Heading color={colors.text} sx={{ fontSize: Theme.typography.fontSize.xl }}>
+                            {t('classroom.studentDashboardHeading') || 'Your Learning Journey'} 🌟
+                        </Heading>
+                        <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>
+                            {t('classroom.studentDashboardIntro') || 'Step into your sanctuaries and grow with love.'}
+                        </Text>
+                    </VStack>
+                </Animated.View>
 
                 {/* Quick Shortcuts */}
-                <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.xl, justifyContent: 'space-between' }}>
-                    <QuickAction
-                        icon={BookOpen}
-                        label={t('classroom.library') || 'Library'}
-                        onPress={() => navigation.navigate('Library' as any)}
-                        color={Theme.colors.amberGlow}
-                    />
-                    <QuickAction
-                        icon={MessageSquare}
-                        label={t('community.sanctuaries') || 'Sanctuaries'}
-                        onPress={() => navigation.navigate('Community' as any)}
-                        color={Theme.colors.gurudeviBlue}
-                    />
-                    <QuickAction
-                        icon={Star}
-                        label={t('student.rewards') || 'Rewards'}
-                        onPress={() => { }} // TODO: Add rewards navigation
-                        color={Theme.colors.sanctuarySaffron}
-                    />
-                    <QuickAction
-                        icon={Layout}
-                        label={t('student.timetable') || 'Timetable'}
-                        onPress={() => { }} // TODO: Add timetable navigation
-                        color={Theme.colors.sageGreen}
-                    />
-                </HStack>
+                <Animated.View entering={FadeInDown.delay(50)}>
+                    <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.xl, justifyContent: 'space-between' }}>
+                        <QuickAction
+                            icon={BookOpen}
+                            label={t('classroom.library') || 'Library'}
+                            onPress={() => navigation.navigate('Library' as any)}
+                            color={Theme.colors.amberGlow}
+                        />
+                        <QuickAction
+                            icon={MessageSquare}
+                            label={t('community.sanctuaries') || 'Sanctuaries'}
+                            onPress={() => navigation.navigate('Community' as any)}
+                            color={Theme.colors.gurudeviBlue}
+                        />
+                        <QuickAction
+                            icon={Star}
+                            label={t('student.rewards') || 'Rewards'}
+                            onPress={() => { }} // TODO: Add rewards navigation
+                            color={Theme.colors.sanctuarySaffron}
+                        />
+                        <QuickAction
+                            icon={Layout}
+                            label={t('student.timetable') || 'Timetable'}
+                            onPress={() => { }} // TODO: Add timetable navigation
+                            color={Theme.colors.sageGreen}
+                        />
+                    </HStack>
+                </Animated.View>
 
                 {/* Growth Stats */}
-                <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.xl }}>
-                    <StatWidget
-                        icon={ClipboardCheck}
-                        label={t('student.activeClasses') || 'My Classes'}
-                        value={stats.enrolledClasses}
-                        color={Theme.colors.gurudeviBlue}
-                    />
-                    <StatWidget
-                        icon={Zap}
-                        label={t('student.pendingTasks') || 'Assignments'}
-                        value={stats.pendingAssignments}
-                        color={Theme.colors.amberGlow}
-                    />
-                </HStack>
+                <Animated.View entering={FadeInDown.delay(100)}>
+                    <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.xl }}>
+                        <StatWidget
+                            icon={ClipboardCheck}
+                            label={t('student.activeClasses') || 'My Classes'}
+                            value={stats.enrolledClasses}
+                            color={Theme.colors.gurudeviBlue}
+                        />
+                        <StatWidget
+                            icon={Zap}
+                            label={t('student.pendingTasks') || 'Assignments'}
+                            value={stats.pendingAssignments}
+                            color={Theme.colors.amberGlow}
+                        />
+                    </HStack>
+                </Animated.View>
 
                 {/* Enrolled Sanctuaries Section */}
-                <VStack sx={{ gap: Theme.spacing.md }}>
-                    <Heading color={colors.text} sx={{ fontSize: Theme.typography.fontSize.lg }}>
-                        {t('classroom.yourSanctuaries') || 'Your Sanctuaries'} 🍃
-                    </Heading>
+                <Animated.View entering={FadeInDown.delay(150)}>
+                    <VStack sx={{ gap: Theme.spacing.md }}>
+                        <Heading color={colors.text} sx={{ fontSize: Theme.typography.fontSize.lg }}>
+                            {t('classroom.yourSanctuaries') || 'Your Sanctuaries'} 🍃
+                        </Heading>
 
-                    <ClassroomList
-                        onClassroomPress={(classroom) => {
-                            hapticLight();
-                            navigation.navigate('Classroom' as any, {
-                                screen: 'ClassroomDetails',
-                                params: {
-                                    classroomId: classroom.id,
-                                    classroomName: classroom.name
-                                }
-                            });
-                        }}
-                        onDataLoaded={handleClassroomsLoaded}
-                        isNested={true}
-                        refreshTrigger={refreshTrigger}
-                        emptyContent={
-                            <PositiveInvitation
-                                context="classroom"
-                                onAction={() => { }} // Handled by ClassroomScreen usually
-                            />
-                        }
-                    />
-
-                    {isGuest && (
-                        <PositiveInvitation
-                            type="guest"
-                            onAction={() => {
+                        <ClassroomList
+                            onClassroomPress={(classroom) => {
                                 hapticLight();
-                                // TODO: Conversion navigation
+                                navigation.navigate('Classroom' as any, {
+                                    screen: 'ClassroomDetails',
+                                    params: {
+                                        classroomId: classroom.id,
+                                        classroomName: classroom.name
+                                    }
+                                });
                             }}
+                            onDataLoaded={handleClassroomsLoaded}
+                            isNested={true}
+                            refreshTrigger={refreshTrigger}
+                            emptyContent={
+                                <PositiveInvitation
+                                    context="classroom"
+                                    onAction={() => { }} // Handled by ClassroomScreen usually
+                                />
+                            }
                         />
-                    )}
-                </VStack>
+
+                        {isGuest && (
+                            <PositiveInvitation
+                                type="guest"
+                                onAction={() => {
+                                    hapticLight();
+                                    // TODO: Conversion navigation
+                                }}
+                            />
+                        )}
+                    </VStack>
+                </Animated.View>
             </ScrollView>
         </VStack>
     );
 }
 
-import { TouchableOpacity } from 'react-native';

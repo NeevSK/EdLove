@@ -36,7 +36,7 @@ import { useThemedColors } from '@repo/ui';
 import { useFeatureAccess, handleAPIError } from '@repo/core';
 import GuestConversionPrompt from '../shared/GuestConversionPrompt';
 import { useNavigation } from '@react-navigation/native';
-import { ScannerModal } from '@repo/scanner-kit';
+import { ScannerModal, resolveQR } from '@repo/scanner-kit';
 import { ScanLine } from 'lucide-react-native';
 
 interface CreateClassroomModalProps {
@@ -89,12 +89,13 @@ export default function CreateClassroomModal({
     const navigation = useNavigation();
 
     const handleScan = (data: string) => {
-        // Assume data might be 'join-class:UUID' or just 'UUID'
-        let classId = data;
-        if (data.startsWith('join-class:')) {
-            classId = data.replace('join-class:', '');
+        const result = resolveQR(data);
+        if (!result.ok || result.payload.action !== 'join_class') {
+            // Fallback: treat raw string as classroom ID for unknown formats
+            setSelectedClassroomId(data);
+            return;
         }
-        setSelectedClassroomId(classId);
+        setSelectedClassroomId(result.payload.classroom_id);
         // We could auto-submit here, but letting the user see what they selected and click join is safer
     };
 

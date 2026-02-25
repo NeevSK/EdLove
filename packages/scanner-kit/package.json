@@ -6,7 +6,11 @@
         ".": "./src/index.ts"
     },
     "scripts": {
-        "check-types": "tsc --noEmit"
+        "check-types": "tsc --noEmit",
+        "lint": "eslint ."
+    },
+    "dependencies": {
+        "@repo/core": "workspace:*"
     },
     "peerDependencies": {
         "@react-native-ml-kit/text-recognition": "*",
@@ -25,6 +29,8 @@
     "devDependencies": {
         "@repo/typescript-config": "workspace:*",
         "@types/react": "~19.1.10",
+        "eslint": "^9.38.0",
+        "@repo/eslint-config": "workspace:*",
         "typescript": "~5.9.2"
     }
 }
