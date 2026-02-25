@@ -158,6 +158,7 @@ Because no benchmark dataset is included, this is a qualitative readiness estima
    - `gurudevi://qr/v1?action=join_class&classroom_id=...`
    - `...action=join_group&group_id=...`
    - `...action=claim_invite&invite_code=...`
+   - **Linking note:** the current Expo/Android config only declares intent filters for `gurudevi://auth/callback`. To use `gurudevi://qr/v1?...` as the canonical payload in shared QR links, expand the app’s deep-link configuration (e.g. add an `intentFilter` for the `gurudevi` scheme with a `qr` host and `/v1` path, or equivalent) so these URLs are actually routed into the mobile app.
 2. Build a single QR resolver module:
    - parse + validate + route + error taxonomy.
 3. Replace ad-hoc handlers in `AuthScreen`, `TeacherDashboard`, `CreateClassroomModal` with resolver.
