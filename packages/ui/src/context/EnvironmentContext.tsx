@@ -38,6 +38,8 @@ const STORAGE_KEYS = {
     IS_VEIL_ACTIVE: '@gurudevi/is_veil_active',
 };
 
+const LIVING_THEME_KEY = '@env_living_theme';
+
 // Create the context
 const EnvironmentContext = createContext<EnvironmentContextValue | undefined>(undefined);
 
@@ -62,6 +64,7 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
     const [fidelityLevel, setFidelityLevelState] = useState<FidelityLevel>('auto');
     const [language, setLanguageState] = useState<Language>('en');
     const [isVeilActive, setIsVeilActive] = useState(false);
+    const [enableLivingTheme, setEnableLivingThemeState] = useState<boolean>(true);
     const [temporalPhase, setTemporalPhase] = useState<TemporalPhase>(() => getTemporalPhase());
     const systemColorScheme = useColorScheme();
     const [reality, setReality] = useState<RealityState>({
@@ -85,10 +88,11 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
     useEffect(() => {
         async function loadSettings() {
             try {
-                const [fidelity, lang, veil] = await Promise.all([
+                const [fidelity, lang, veil, livingTheme] = await Promise.all([
                     AsyncStorage.getItem(STORAGE_KEYS.FIDELITY_LEVEL),
                     AsyncStorage.getItem(STORAGE_KEYS.LANGUAGE),
                     AsyncStorage.getItem(STORAGE_KEYS.IS_VEIL_ACTIVE),
+                    AsyncStorage.getItem(LIVING_THEME_KEY),
                 ]);
 
                 if (fidelity) setFidelityLevelState(fidelity as FidelityLevel);
@@ -97,6 +101,7 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
                     i18n.changeLanguage(lang);
                 }
                 if (veil) setIsVeilActive(veil === 'true');
+                if (livingTheme !== null) setEnableLivingThemeState(livingTheme === 'true');
             } catch (error) {
                 console.warn('Failed to load environment settings:', error);
             }
@@ -244,6 +249,15 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
         }
     }, [isVeilActive]);
 
+    const setEnableLivingTheme = useCallback(async (enabled: boolean) => {
+        setEnableLivingThemeState(enabled);
+        try {
+            await AsyncStorage.setItem(LIVING_THEME_KEY, String(enabled));
+        } catch (error) {
+            console.warn('Failed to save living theme state:', error);
+        }
+    }, []);
+
     // Construct the context value
     const value: EnvironmentContextValue = {
         // State
@@ -257,6 +271,7 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
         language,
         reality,
         isVeilActive,
+        enableLivingTheme,
 
         // Actions
         setThemeMode,
@@ -264,6 +279,7 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
         setLanguage,
         toggleVeil,
         refreshReality,
+        setEnableLivingTheme,
     };
 
     return (

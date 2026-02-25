@@ -633,6 +633,39 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
     },
 };
 
+/**
+ * Classic static tokens — fallback when Living Theme System is disabled.
+ * Derived from the original Theme.colors palette.
+ * Used by useTheme() when enableLivingTheme = false.
+ *
+ * Color sources from Theme.colors:
+ *   accent.action  → gurudeviBlue   (#3B82F6)
+ *   accent.reward  → sanctuarySaffron (#E67E22)
+ *   gradient nodes → deepIndigo / midnightBlue / twilightBlue area (deep navy)
+ *   text.primary   → sacredWhite    (#F8FAFC)
+ *   text.secondary → pearlGray      (#94A3B8)  / starlightGray
+ *   text.inverse   → deepIndigo     (#0F172A)  / charcoalTruth
+ *   text.muted     → mistGray       (#64748B)
+ */
+export const CLASSIC_TOKENS: PhaseTokens = {
+    gradientNodes: ['#0F172A', '#1E293B', '#312E81'],  // deepIndigo → midnightBlue → deep indigo
+    glass: {
+        surface:  { bg: 'rgba(30,41,59,0.72)',  opacity: 0.72, blurAmount: 16, border: 'rgba(255,255,255,0.10)' },
+        modal:    { bg: 'rgba(15,23,42,0.85)',  opacity: 0.85, blurAmount: 24, border: 'rgba(255,255,255,0.08)' },
+        interact: { bg: 'rgba(49,46,129,0.35)', opacity: 0.35, blurAmount: 8,  border: 'rgba(255,255,255,0.12)' },
+    },
+    glow: {
+        soft:    { color: '#3B82F6', radius: 10, opacity: 0.15 },  // gurudeviBlue
+        primary: { color: '#3B82F6', radius: 20, opacity: 0.35 },
+        action:  { color: '#3B82F6', radius: 16, opacity: 0.50 },
+        reward:  { color: '#E67E22', radius: 22, opacity: 0.55 },  // sanctuarySaffron
+    },
+    accent: { action: '#3B82F6', reward: '#E67E22', danger: '#EF4444', muted: '#374151' },
+    //                gurudeviBlue     sanctuarySaffron  emberRed-equiv    dimmer
+    text: { primary: '#F8FAFC', secondary: '#94A3B8', inverse: '#0F172A', muted: '#64748B' },
+    //                sacredWhite       pearlGray          deepIndigo        mistGray
+};
+
 /** The single resolver — this is what all components call via useTheme() */
 export function resolvePhaseTokens(
     phase: TemporalPhase,

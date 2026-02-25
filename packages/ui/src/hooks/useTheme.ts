@@ -8,7 +8,7 @@
  *   const { accent, glass, glow, text, gradientNodes, isDark } = useTheme();
  */
 import { useEnvironment } from '../context/EnvironmentContext';
-import { resolvePhaseTokens, PhaseTokens } from '../theme/Theme';
+import { resolvePhaseTokens, CLASSIC_TOKENS, PhaseTokens } from '../theme/Theme';
 import type { TemporalPhase } from '../context/types';
 
 export interface UseThemeReturn extends PhaseTokens {
@@ -21,11 +21,13 @@ export interface UseThemeReturn extends PhaseTokens {
 }
 
 export function useTheme(): UseThemeReturn {
-    const { temporalPhase, isDark, reality, effectiveFidelity } = useEnvironment();
+    const { temporalPhase, isDark, reality, effectiveFidelity, enableLivingTheme } = useEnvironment();
 
-    const tokens = resolvePhaseTokens(temporalPhase, isDark);
+    const tokens = enableLivingTheme
+        ? resolvePhaseTokens(temporalPhase, isDark)
+        : CLASSIC_TOKENS;
 
-    const animationsEnabled = effectiveFidelity === 'high';
+    const animationsEnabled = enableLivingTheme && effectiveFidelity === 'high';
     const blurEnabled = effectiveFidelity === 'high' && reality.deviceTier !== 'low';
 
     return {

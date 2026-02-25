@@ -75,6 +75,9 @@ export interface EnvironmentState {
 
     // Privacy
     isVeilActive: boolean; // "The Veil" - privacy toggle
+
+    /** Whether the Living Theme System is active (phase-aware tokens) or classic (static) */
+    enableLivingTheme: boolean;
 }
 
 /**
@@ -86,6 +89,7 @@ export interface EnvironmentActions {
     setLanguage: (language: Language) => Promise<void>;
     toggleVeil: () => Promise<void>;
     refreshReality: () => Promise<void>;
+    setEnableLivingTheme: (enabled: boolean) => Promise<void>;
 }
 
 /**
