@@ -14,6 +14,11 @@ Reference detailed implementation plans before starting work:
   - 📗 Implementation: `docs/plans/2026-02-24-living-theme-system-impl.md`
   - Status: ✅ **Complete** (Living tokens, 6-phase matrix, `useTheme()` hook, feature flags)
 
+- **Week 4 Master Plan** (All remaining tasks):
+  - 📗 Full Plan: `docs/plans/2026-02-25-week4-master-implementation-plan.md` (1782 lines, 66 KB)
+  - Execution order: P0 (bugs) → P1-P8 (features, polish, infra)
+  - Status: 📋 Reference for prioritized execution across all domains
+
 ---
 
 ## ✅ Task Checklist
