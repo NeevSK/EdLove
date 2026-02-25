@@ -453,7 +453,6 @@ export default function ProfileScreen() {
                     <VStack space="2xl">
                         {/* Guest Promotion Banner */}
                         {profile?.is_anonymous && (
-<<<<<<< HEAD
                             <Box sx={{
                                 mx: '$4',
                                 p: '$4',
@@ -741,30 +740,13 @@ export default function ProfileScreen() {
                             </TouchableOpacity>
                         </VStack>
 
-                        {/* Account Actions Box */}
-                        <Box px={Theme.spacing.md} mt="$4">
-                            <VStack space="md" sx={{
-                                p: '$4',
-                                bg: colors.tertiary,
-                                borderRadius: Theme.corners.generous,
-                                borderWidth: 1,
-                                borderColor: colors.border
-                            }}>
-                                <TouchableOpacity
-                                    onPress={handleLogout}
-                                    style={{
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        padding: Theme.spacing.md,
-                                        backgroundColor: colors.secondary,
-=======
+                        {/* Guest Promotion Banner */}
+                        {profile?.is_anonymous && (
                             <Center>
                                 <Animated.View style={[{ width: CARD_WIDTH }, animatedBannerStyle]}>
                                     <Box sx={{
                                         p: Theme.spacing.md,
                                         bg: colors.action,
->>>>>>> origin/main-innovate
                                         borderRadius: Theme.corners.comfortable,
                                         shadowColor: colors.action,
                                         shadowOffset: { width: 0, height: 4 },
@@ -772,25 +754,25 @@ export default function ProfileScreen() {
                                         shadowRadius: 8,
                                         elevation: 4
                                     }}>
-                                    <VStack space="sm">
-                                        <Heading size="md" color="white">{t('profile.guestTitle', 'Guest Explorer')}</Heading>
-                                        <Text color="white" size="sm">
-                                            {t('profile.guestDesc', 'You are exploring as a guest. Create an account to save your sanctuary permanently.')}
-                                        </Text>
-                                        <Button
-                                            size="sm"
-                                            onPress={() => {
-                                                hapticSuccess();
-                                                navigation.navigate('Auth');
-                                            }}
-                                            sx={{ bg: 'white', alignSelf: 'flex-start', mt: '$2' }}
-                                        >
-                                            <ButtonText color={colors.action}>{t('auth.createAccount', 'Create Account')}</ButtonText>
-                                        </Button>
-                                    </VStack>
-                                </Box>
-                            </Animated.View>
-                        </Center>
+                                        <VStack space="sm">
+                                            <Heading size="md" color="white">{t('profile.guestTitle', 'Guest Explorer')}</Heading>
+                                            <Text color="white" sx={{ fontSize: '$sm' }}>
+                                                {t('profile.guestDesc', 'You are exploring as a guest. Create an account to save your sanctuary permanently.')}
+                                            </Text>
+                                            <Button
+                                                size="sm"
+                                                onPress={() => {
+                                                    hapticSuccess();
+                                                    navigation.navigate('Auth');
+                                                }}
+                                                sx={{ bg: 'white', alignSelf: 'flex-start', mt: '$2' }}
+                                            >
+                                                <ButtonText color={colors.action}>{t('auth.createAccount', 'Create Account')}</ButtonText>
+                                            </Button>
+                                        </VStack>
+                                    </Box>
+                                </Animated.View>
+                            </Center>
                         )}
 
                         <Animated.View entering={FadeInDown.delay(100).duration(500)}>

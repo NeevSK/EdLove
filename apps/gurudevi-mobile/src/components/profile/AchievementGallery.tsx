@@ -144,13 +144,6 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
                 </HStack>
             </Box>
         </VStack>
-                <HStack style={styles.galleryGrid}>
-                    {achievements.map((item) => (
-                        <AchievementItem key={item.id} achievement={item} />
-                    ))}
-                </HStack>
-            </Box >
-        </VStack >
     );
 }
 

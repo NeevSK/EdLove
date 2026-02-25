@@ -113,6 +113,7 @@ export default function CommunityScreen() {
                 <CommunityHearth
                     manifestos={manifestos}
                     userRole={userRole}
+                    userId={userId || 'guest'}
                     onPressSpotlight={(postId) => {
                         // Spotlight usually leads to a specific post view or group
                         console.log('Spotlight pressed:', postId);

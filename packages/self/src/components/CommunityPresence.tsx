@@ -13,7 +13,7 @@ import {
     Text,
     Heading,
     Spinner,
-} from '@gluestack-ui/themed';
+} from '@repo/ui';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -22,7 +22,8 @@ import Animated, {
     Easing,
 } from 'react-native-reanimated';
 import { Users, WifiOff } from 'lucide-react-native';
-import { supabase, Theme, useThemedColors } from '@repo/core';
+import { supabase } from '@repo/core';
+import { Theme, useThemedColors } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 
 interface CommunityPresenceProps {
@@ -140,10 +141,10 @@ export default function CommunityPresence({
     const getVibeColor = (vibe: string) => {
         switch (vibe.toLowerCase()) {
             case 'active': return colors.action;
-            case 'focused': return Theme.colors.sanctuaryBlue;
-            case 'reflecting': return Theme.colors.twilightPurple;
-            case 'teaching': return Theme.colors.dawnGold;
-            case 'planning': return Theme.colors.skyBlue;
+            case 'focused': return colors.action;
+            case 'reflecting': return colors.secondary;
+            case 'teaching': return colors.success;
+            case 'planning': return colors.action;
             default: return colors.success;
         }
     };
@@ -155,7 +156,7 @@ export default function CommunityPresence({
         return (
             <HStack space="md" alignItems="center" p={compact ? 0 : "$4"} opacity={0.6}>
                 <Spinner size="small" color={colors.action} />
-                <Text size="sm" color={colors.textSecondary}>Locating Sanctuary Presence...</Text>
+                <Text color={colors.textSecondary} sx={{ fontSize: '$sm' }}>Locating Sanctuary Presence...</Text>
             </HStack>
         );
     }

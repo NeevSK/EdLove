@@ -28,6 +28,7 @@ interface CommunityHearthProps {
     spotlightPost?: Post;
     userRole?: 'teacher' | 'student' | 'admin';
     userVibe?: string;
+    userId: string;
     onEndorseManifesto?: (id: string) => void;
     onPressSpotlight?: (id: string) => void;
 }
@@ -37,6 +38,7 @@ export default function CommunityHearth({
     spotlightPost,
     userRole = 'teacher',
     userVibe = 'active',
+    userId,
     onEndorseManifesto,
     onPressSpotlight,
 }: CommunityHearthProps) {
@@ -48,7 +50,7 @@ export default function CommunityHearth({
     const slides: { key: string; content: React.ReactNode }[] = [
         {
             key: 'presence',
-            content: <CommunityPresence compact={false} userRole={userRole} userVibe={userVibe} />
+            content: <CommunityPresence compact={false} userRole={userRole} userVibe={userVibe} userId={userId} />
         }
     ];
 
