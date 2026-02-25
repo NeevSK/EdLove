@@ -3,7 +3,12 @@
 The digital sanctuary for educational transformation.
 
 > [!IMPORTANT]
-> **AI Agents**: Read `AGENT_RESONANCE.md` and `docs/TAIL_FIN.md` before starting work. Adhere to "System 2" reflective development.
+> **AI Agents**: Before starting work, read:
+> 1. **`.cursorrules`** — AI agent behavior rules (System 2 reflective mode)
+> 2. **`AGENT_RESONANCE.md`** — Architectural topology & metacognitive directives
+> 3. **`docs/TAIL_FIN.md`** — Aesthetic standards & design resonance
+>
+> These enforce "Library First", topological awareness, and proactive reparation. Not optional.
 
 ---
 
