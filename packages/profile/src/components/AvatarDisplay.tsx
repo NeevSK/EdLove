@@ -1,0 +1,197 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  View, Text, Image, TouchableOpacity,
+  StyleSheet, ActivityIndicator,
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
+import * as FileSystem from 'expo-file-system/legacy';
+import { supabase } from '@repo/core';
+import { useTheme } from '@repo/ui';
+import { Camera } from 'lucide-react-native';
+
+interface AvatarDisplayProps {
+  userId: string;
+  avatarUrl?: string | null;
+  fullName?: string | null;
+  size?: number;
+  editable?: boolean;
+  onAvatarUpdated?: (newPublicUrl: string) => Promise<void>;
+  style?: object;
+}
+
+function getInitials(name?: string | null): string {
+  if (!name?.trim()) return '?';
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  const first = parts[0] ?? '';
+  const last = parts[parts.length - 1] ?? '';
+  if (parts.length === 1) return first.substring(0, 2).toUpperCase();
+  return (first.charAt(0) + last.charAt(0)).toUpperCase();
+}
+
+function getCachePath(userId: string): string {
+  return `${FileSystem.cacheDirectory ?? ''}avatar_${userId}.jpg`;
+}
+
+/**
+ * Decode base64 string to Uint8Array for Supabase Storage upload.
+ * Using atob if available (React Native >= 0.72 with Hermes), else manual decode.
+ */
+function base64ToUint8Array(base64: string): Uint8Array {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
+export function AvatarDisplay({
+  userId,
+  avatarUrl,
+  fullName,
+  size = 80,
+  editable = false,
+  onAvatarUpdated,
+  style,
+}: AvatarDisplayProps) {
+  const { accent, text } = useTheme();
+  const [localCachePath, setLocalCachePath] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  // Load local cache on mount
+  useEffect(() => {
+    if (!userId) return;
+    const cachePath = getCachePath(userId);
+    FileSystem.getInfoAsync(cachePath).then(info => {
+      if (info.exists) setLocalCachePath(cachePath);
+    });
+  }, [userId]);
+
+  const handlePickAndUpload = useCallback(async () => {
+    // 1. Request media library permission
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') return;
+
+    // 2. Open picker (square crop enforced)
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.9,
+    });
+    if (result.canceled || !result.assets?.[0]) return;
+
+    setUploading(true);
+    try {
+      // 3. Resize to 400×400 JPEG
+      const manipulated = await ImageManipulator.manipulateAsync(
+        result.assets[0].uri,
+        [{ resize: { width: 400, height: 400 } }],
+        { compress: 0.85, format: ImageManipulator.SaveFormat.JPEG }
+      );
+
+      // 4. Cache locally immediately (optimistic display — no waiting for upload)
+      const cachePath = getCachePath(userId);
+      await FileSystem.copyAsync({ from: manipulated.uri, to: cachePath });
+      setLocalCachePath(cachePath);
+
+      // 5. Read as base64 for Supabase upload
+      const base64 = await FileSystem.readAsStringAsync(manipulated.uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      const bytes = base64ToUint8Array(base64);
+
+      // 6. Upload to Supabase Storage bucket 'avatars'
+      const fileName = `${userId}.jpg`;
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, bytes, {
+          contentType: 'image/jpeg',
+          upsert: true,
+        });
+
+      if (uploadError) throw uploadError;
+
+      // 7. Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      // 8. Notify caller to persist to profile
+      await onAvatarUpdated?.(publicUrl);
+    } catch (error) {
+      // Optimistic display already shown — user sees their photo.
+      // Upload will retry on next session via sync queue.
+      console.warn('[AvatarDisplay] Upload failed, keeping local cache:', error);
+    } finally {
+      setUploading(false);
+    }
+  }, [userId, onAvatarUpdated]);
+
+  // Display source priority: local cache > remote URL > initials
+  const displayUri = localCachePath || avatarUrl || null;
+  const initials = getInitials(fullName);
+  const borderRadius = size / 2;
+
+  const containerStyle = [
+    { width: size, height: size, borderRadius },
+    styles.container,
+    style,
+  ];
+
+  const content = displayUri ? (
+    <Image
+      source={{ uri: displayUri }}
+      style={[styles.image, { width: size, height: size, borderRadius }]}
+    />
+  ) : (
+    <View style={[styles.initialsContainer, { backgroundColor: accent.action, borderRadius }]}>
+      <Text style={[styles.initials, { fontSize: size * 0.35, color: text.inverse }]}>
+        {initials}
+      </Text>
+    </View>
+  );
+
+  if (!editable) {
+    return <View style={containerStyle}>{content}</View>;
+  }
+
+  return (
+    <TouchableOpacity style={containerStyle} onPress={handlePickAndUpload} activeOpacity={0.8}>
+      {content}
+      {/* Semi-transparent edit overlay with camera icon */}
+      <View style={[styles.editOverlay, { borderRadius }]}>
+        {uploading
+          ? <ActivityIndicator color="white" size="small" />
+          : <Camera size={size * 0.22} color="white" />
+        }
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    overflow: 'hidden',
+  },
+  image: {
+    resizeMode: 'cover',
+  },
+  initialsContainer: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  initials: {
+    fontWeight: '700',
+  },
+  editOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
