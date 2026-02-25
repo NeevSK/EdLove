@@ -647,7 +647,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
  *   text.inverse   → deepIndigo     (#0F172A)  / charcoalTruth
  *   text.muted     → mistGray       (#64748B)
  */
-export const CLASSIC_TOKENS: PhaseTokens = {
+export const CLASSIC_TOKENS = {
     gradientNodes: ['#0F172A', '#1E293B', '#312E81'],  // deepIndigo → midnightBlue → deep indigo
     glass: {
         surface:  { bg: 'rgba(30,41,59,0.72)',  opacity: 0.72, blurAmount: 16, border: 'rgba(255,255,255,0.10)' },
@@ -664,7 +664,7 @@ export const CLASSIC_TOKENS: PhaseTokens = {
     //                gurudeviBlue     sanctuarySaffron  emberRed-equiv    dimmer
     text: { primary: '#F8FAFC', secondary: '#94A3B8', inverse: '#0F172A', muted: '#64748B' },
     //                sacredWhite       pearlGray          deepIndigo        mistGray
-};
+} as const satisfies PhaseTokens;
 
 /** The single resolver — this is what all components call via useTheme() */
 export function resolvePhaseTokens(

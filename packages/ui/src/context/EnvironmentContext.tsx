@@ -33,12 +33,11 @@ import {
 
 // Storage keys
 const STORAGE_KEYS = {
-    FIDELITY_LEVEL: '@gurudevi/fidelity_level',
-    LANGUAGE: '@gurudevi/language',
-    IS_VEIL_ACTIVE: '@gurudevi/is_veil_active',
+    FIDELITY_LEVEL:      '@gurudevi/fidelity_level',
+    LANGUAGE:            '@gurudevi/language',
+    IS_VEIL_ACTIVE:      '@gurudevi/is_veil_active',
+    ENABLE_LIVING_THEME: '@gurudevi/enable_living_theme',
 };
-
-const LIVING_THEME_KEY = '@env_living_theme';
 
 // Create the context
 const EnvironmentContext = createContext<EnvironmentContextValue | undefined>(undefined);
@@ -92,7 +91,7 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
                     AsyncStorage.getItem(STORAGE_KEYS.FIDELITY_LEVEL),
                     AsyncStorage.getItem(STORAGE_KEYS.LANGUAGE),
                     AsyncStorage.getItem(STORAGE_KEYS.IS_VEIL_ACTIVE),
-                    AsyncStorage.getItem(LIVING_THEME_KEY),
+                    AsyncStorage.getItem(STORAGE_KEYS.ENABLE_LIVING_THEME),
                 ]);
 
                 if (fidelity) setFidelityLevelState(fidelity as FidelityLevel);
@@ -252,7 +251,7 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
     const setEnableLivingTheme = useCallback(async (enabled: boolean) => {
         setEnableLivingThemeState(enabled);
         try {
-            await AsyncStorage.setItem(LIVING_THEME_KEY, String(enabled));
+            await AsyncStorage.setItem(STORAGE_KEYS.ENABLE_LIVING_THEME, String(enabled));
         } catch (error) {
             console.warn('Failed to save living theme state:', error);
         }

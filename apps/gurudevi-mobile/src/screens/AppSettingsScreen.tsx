@@ -877,7 +877,7 @@ function SelectionModal({ title, options, onSelect, onClose, colors }: Selection
         </VStack>
 
         <Button
-          onSelect={onClose}
+          onPress={onClose}
           sx={{
             marginTop: Theme.spacing.md,
             backgroundColor: colors.tertiary,
