@@ -85,7 +85,12 @@ export default function SyncManager() {
 
                 if (errorType === 'PERMANENT' || retryCount >= MAX_RETRIES) {
                     // Fail to DLQ (Reparative state)
-                    console.error(`[SyncManager] Terminating: ${item.name}`, error);
+                    console.error(
+                        `[SyncManager] Terminating: ${item.name} – reason=${
+                            errorType === 'PERMANENT' ? 'PERMANENT_ERROR' : 'MAX_RETRIES_EXCEEDED'
+                        } (retryCount=${retryCount}/${MAX_RETRIES})`,
+                        error
+                    );
                     moveToDeadLetter(item.id, error.message);
                     updateEntry(item.id, 'dead_letter', error.message);
 
