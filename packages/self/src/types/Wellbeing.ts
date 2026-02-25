@@ -99,7 +99,7 @@ export interface ContextualMoment {
 export interface FeatureMetadata {
     id: string;
     label: string;
-    icon: any; // Lucide icon component
+    icon: React.ComponentType; // Lucide icon component
     category: 'core' | 'contextual' | 'discover';
     timing?: {
         startTime?: string; // HH:mm

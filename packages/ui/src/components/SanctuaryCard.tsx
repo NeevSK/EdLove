@@ -11,7 +11,7 @@
  */
 
 import React, { FC, useMemo } from 'react';
-import { View, Pressable, Text, StyleSheet, TextStyle, Platform, useColorScheme } from 'react-native';
+import { View, Pressable, Text, StyleSheet, TextStyle } from 'react-native';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -19,7 +19,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { BlurView } from 'expo-blur';
 import { Theme, typography } from '../theme/Theme';
-import { IS_LOW_POWER_MODE } from '../utils/DeviceUtils';
+import { useTheme } from '../hooks/useTheme';
 
 // ============================================================================
 // TYPES
@@ -53,13 +53,11 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
     elevated = false,
     variant = 'glass', // Default to glass
 }) => {
-    const isDark = useColorScheme() === 'dark';
+    const { isDark, glass, glow, blurEnabled } = useTheme();
 
-    // Check if we should use glass (High Power + Glass Variant supported)
-    // Android BlurView can be expensive, so check performance/variant
-    const useGlass = !IS_LOW_POWER_MODE && variant === 'glass' && Platform.OS !== 'android';
-    // Note: Expo Blur on Android is improved but still heavy. Defaulting to solid for safety unless explicitly tuned.
-    // Use semi-transparent solid background for "faux-glass" on generally.
+    // Check if we should use glass (blur enabled + glass variant)
+    const useGlass = blurEnabled && variant === 'glass';
+    // Note: blurEnabled accounts for device tier and fidelity settings.
 
     // Shared value for lift animation
     const scale = useSharedValue(LIFT_SCALE_NORMAL);
@@ -69,20 +67,22 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
     // ============================================================================
 
     const cardStyles = useMemo(() => {
-        const glassTokens = isDark ? Theme.colors.glass.dark : Theme.colors.glass.light;
-
         return {
             container: {
                 borderRadius: Theme.corners.generous,
                 overflow: 'hidden' as const, // For BlurView
                 borderWidth: 1,
-                borderColor: useGlass ? glassTokens.border : 'rgba(255,255,255,0.05)',
+                borderColor: useGlass ? glass.surface.border : 'rgba(255,255,255,0.05)',
                 backgroundColor: useGlass
-                    ? glassTokens.surface
+                    ? glass.surface.bg
                     : (isDark ? Theme.colors.midnightBlue : Theme.colors.creamSilence), // Solid Fallback
             },
             elevated: {
-                ...Theme.shadows.md,
+                shadowColor: glow.soft.color,
+                shadowOpacity: glow.soft.opacity,
+                shadowRadius: glow.soft.radius,
+                shadowOffset: { width: 0, height: 4 },
+                elevation: 4,
                 // On Android, elevation needs a solid background to cast shadow properly if not careful
                 // We rely on the container background
             },
@@ -107,7 +107,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
                 opacity: 0.2,
             },
         };
-    }, [isDark, useGlass, elevated]);
+    }, [isDark, useGlass, elevated, glass, glow]);
 
     // ============================================================================
     // ANIMATION: LIFT EFFECT (when pressable)

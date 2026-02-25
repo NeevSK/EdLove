@@ -15,6 +15,7 @@ import {
 import { AlertCircle } from 'lucide-react-native';
 import { Theme } from '../theme/Theme';
 import { useThemedColors } from '../hooks/useThemedColors';
+import { useTheme } from '../hooks/useTheme';
 
 interface SanctuaryInputProps {
     label?: string;
@@ -32,6 +33,8 @@ interface SanctuaryInputProps {
     multiline?: boolean;
     numberOfLines?: number;
     autoFocus?: boolean;
+    accessibilityLabel?: string;
+    accessibilityHint?: string;
 }
 
 export default function SanctuaryInput({
@@ -49,17 +52,20 @@ export default function SanctuaryInput({
     isDisabled = false,
     multiline = false,
     numberOfLines = 1,
-    autoFocus = false
+    autoFocus = false,
+    accessibilityLabel,
+    accessibilityHint
 }: SanctuaryInputProps) {
     const hasError = isInvalid || !!error;
     const colors = useThemedColors();
+    const { accent, glass, text } = useTheme();
 
     return (
         <FormControl isInvalid={hasError} isDisabled={isDisabled}>
             {label && (
                 <FormControlLabel sx={{ marginBottom: '$2' as any }}>
                     <FormControlLabelText
-                        color={colors.textSecondary}
+                        color={text.secondary}
                         sx={{ fontSize: '$sm' as any, fontWeight: '$medium' }}
                     >
                         {label}
@@ -71,18 +77,26 @@ export default function SanctuaryInput({
                 variant="outline"
                 isDisabled={isDisabled}
                 isInvalid={hasError}
+                accessible={true}
+                accessibilityLabel={accessibilityLabel || label}
+                accessibilityHint={accessibilityHint}
+                accessibilityRole="text"
+                accessibilityState={{
+                    disabled: isDisabled,
+                    invalid: hasError
+                }}
                 {...({ size: 'md' } as any)}
                 sx={{
-                    borderColor: hasError ? colors.error : colors.border,
-                    backgroundColor: colors.secondary,
+                    borderColor: hasError ? colors.error : glass.surface.border,
+                    backgroundColor: glass.surface.bg,
                     borderRadius: Theme.corners.comfortable,
                     minHeight: multiline ? (24 * numberOfLines + 24) : 48,
                     paddingHorizontal: Theme.spacing.md,
                     borderWidth: 1,
                     ':focus': {
-                        borderColor: colors.action,
+                        borderColor: accent.action,
                         borderWidth: 2,
-                        backgroundColor: colors.tertiary
+                        backgroundColor: glass.surface.bg
                     },
                     ':disabled': {
                         opacity: 0.5,
@@ -102,8 +116,8 @@ export default function SanctuaryInput({
                     onChangeText={onChangeText}
                     autoFocus={autoFocus}
                     type={type}
-                    color={colors.text}
-                    placeholderTextColor={colors.textTertiary}
+                    color={text.primary}
+                    placeholderTextColor={text.muted}
                     multiline={multiline}
                     numberOfLines={numberOfLines}
                     textAlignVertical={multiline ? 'top' : 'center'}

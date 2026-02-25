@@ -84,8 +84,8 @@ export const useTimetable = (activeDay: number) => {
                     JSON.stringify(data)
                 );
             }
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : String(err));
             console.error('Error fetching timetable:', err);
             // Don't throw - just log for authenticated users
         } finally {
@@ -143,10 +143,10 @@ export const useTimetable = (activeDay: number) => {
                 // Replace temp with real
                 setPeriods(prev => prev.map(p => p.id === tempId ? data : p));
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             // Rollback
             setPeriods(previousPeriods);
-            setError(err.message);
+            setError(err instanceof Error ? err.message : String(err));
             throw err;
         }
     };
@@ -158,7 +158,7 @@ export const useTimetable = (activeDay: number) => {
         try {
             if (isAnonymous) {
                 // Guest mode: Update local storage
-                await GuestDataManager.updateTimetablePeriod(id, updates as any);
+                await GuestDataManager.updateTimetablePeriod(id, updates as Partial<Period>);
             } else {
                 // Authenticated mode: Update Supabase
                 const { error } = await supabase
@@ -168,9 +168,9 @@ export const useTimetable = (activeDay: number) => {
 
                 if (error) throw error;
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             setPeriods(previousPeriods);
-            setError(err.message);
+            setError(err instanceof Error ? err.message : String(err));
             throw err;
         }
     };
@@ -192,9 +192,9 @@ export const useTimetable = (activeDay: number) => {
 
                 if (error) throw error;
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             setPeriods(previousPeriods);
-            setError(err.message);
+            setError(err instanceof Error ? err.message : String(err));
             throw err;
         }
     };

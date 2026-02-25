@@ -6,115 +6,188 @@
  */
 
 import React from 'react';
-import { Box, Text, Heading, VStack, Center, ScrollView, Spinner, HStack } from '@repo/ui';
-import { Theme } from '@repo/ui';
-import { useTranslation } from 'react-i18next';
-import { GlobalHeader } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
-import RoleInitialState from '../components/RoleInitialState';
-import { ScreenWrapper } from '@repo/ui';
-import { useSchoolStats } from '../hooks/classroom/useSchoolStats';
-import { Zap } from 'lucide-react-native';
-import { useFeatureAccess } from '@repo/core';
-import { SkeletonCard, PositiveInvitation } from '@repo/ui';
-import { hapticLight } from '@repo/ui';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import {
+    Box,
+    Text,
+    HStack,
+    VStack,
+    Theme,
+    SanctuaryButton,
+    LotusPetalFAB,
+    ScreenWrapper
+} from '@repo/ui';
+import { useAIAgent, useStore } from '@repo/core';
+import { Calendar, Users, AlertCircle, CheckCircle2, CalendarCheck } from 'lucide-react-native';
 
-// Shared container styling for role-based views removed in favor of ScreenWrapper and useThemedColors
-
-interface SectionHeadViewProps {
-    schoolId?: string;
-    userId?: string;
-}
-
-export default function SectionHeadView({ schoolId, userId }: SectionHeadViewProps) {
-    const { t } = useTranslation();
-    const colors = useThemedColors();
-    const { isGuest } = useFeatureAccess();
-    const { school, stats, isLoading } = useSchoolStats(schoolId || '');
-
-    const hasData = stats && (stats.total_sections > 0 || stats.total_students > 0);
+export default function SectionHeadView({ schoolId, userId }: { schoolId?: string; userId?: string }) {
+    const { activeGaps, refreshStatus, generateTimetable, isThinking, lastTimetableDraft } = useAIAgent();
+    const userRole = useStore((state: any) => state.userRole);
 
     return (
-        <ScreenWrapper>
-            <VStack sx={{ padding: 24, flex: 1, backgroundColor: colors.primary, gap: 24 }}>
-                <GlobalHeader
-                    title={t('role.section_head') || 'Section Overview'}
-                    subtitle={school?.name}
-                />
+        <ScreenWrapper backgroundColor={Theme.colors.voidIndigo}>
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+                <VStack gap="$4">
+                    {/* Header */}
+                    <Box sx={{ paddingVertical: '$xl' as any }}>
+                        <Text sx={{
+                            fontSize: '$2xl' as any,
+                            fontWeight: '700',
+                            color: Theme.colors.sacredWhite
+                        }}>
+                            Section Coordination
+                        </Text>
+                        <Text sx={{ color: Theme.colors.starlightGray }}>
+                            Monitoring section activity and teacher coordination.
+                        </Text>
+                    </Box>
 
-                {isLoading ? (
-                    <VStack sx={{ gap: 16 }}>
-                        <SkeletonCard height={100} />
-                        <HStack sx={{ gap: 16 }}>
-                            <SkeletonCard height={100} style={{ flex: 1 }} />
-                            <SkeletonCard height={100} style={{ flex: 1 }} />
-                        </HStack>
-                        <SkeletonCard height={150} />
-                    </VStack>
-                ) : hasData ? (
-                    <ScrollView showsVerticalScrollIndicator={false}>
-                        <VStack sx={{ gap: 24 }}>
-                            {(stats as any).is_sample && (
-                                <Box sx={{
-                                    backgroundColor: Theme.colors.amberGlow + '22',
-                                    padding: 12,
-                                    borderRadius: Theme.corners.comfortable,
-                                    borderWidth: 1,
-                                    borderColor: Theme.colors.amberGlow,
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: 8,
-                                    marginBottom: 8
-                                }}>
-                                    <Zap size={16} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} />
-                                    <Text sx={{ fontSize: 13, color: Theme.colors.amberGlow, fontWeight: '700' }}>
-                                        {t('demoMode.sandboxPerspective') || "VISIONARY SANDBOX: Previewing potential institutional patterns"}
-                                    </Text>
-                                </Box>
-                            )}
-
-                            {/* Dashboard Stats (Simplified version of Principal view) */}
-                            <HStack sx={{ gap: 16 }}>
-                                <Box sx={{ flex: 1, padding: 16, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, borderLeftWidth: 4, borderLeftColor: colors.action }}>
-                                    <Text color={colors.textTertiary} sx={{ fontSize: 12, fontWeight: '700' }}>{t('principal.stats.totalStudents') || 'Total Students'}</Text>
-                                    <Text color={colors.text} sx={{ fontSize: 24, fontWeight: '700', marginTop: 4 }}>{stats.total_students}</Text>
-                                </Box>
-                                <Box sx={{ flex: 1, padding: 16, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, borderLeftWidth: 4, borderLeftColor: colors.success }}>
-                                    <Text color={colors.textTertiary} sx={{ fontSize: 12, fontWeight: '700' }}>{t('principal.stats.activeClassrooms') || 'Active Classes'}</Text>
-                                    <Text color={colors.text} sx={{ fontSize: 24, fontWeight: '700', marginTop: 4 }}>{stats.total_classrooms}</Text>
-                                </Box>
-                            </HStack>
-
-                            <Box sx={{ padding: 24, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, alignItems: 'center', borderStyle: 'dashed', borderWidth: 1, borderColor: colors.border }}>
-                                <Text color={colors.textTertiary} sx={{ textAlign: 'center' }}>
-                                    {t('classroom.sectionDataRefinement') || "Detailed section analytics are being synchronized. Your departmental overview will appear here."}
-                                </Text>
-                            </Box>
-
-                            {isGuest && (
-                                <PositiveInvitation
-                                    type="guest"
-                                    onAction={() => {
-                                        hapticLight();
-                                        // TODO: Redirect to login/signup
+                    {/* Proactive Agent Notifications */}
+                    {activeGaps.length > 0 && (
+                        <VStack gap="$3">
+                            <Text sx={{ fontWeight: '600', fontSize: '$sm' as any, color: Theme.colors.sanctuarySaffron }}>
+                                AI SUGGESTIONS
+                            </Text>
+                            {activeGaps.map((gap: any) => (
+                                <Box
+                                    key={gap.id}
+                                    sx={{
+                                        padding: '$md' as any,
+                                        borderRadius: '$lg' as any,
+                                        backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                                        borderWidth: 1,
+                                        borderColor: Theme.colors.sanctuarySaffron
                                     }}
-                                />
-                            )}
+                                >
+                                    <HStack gap="$3" alignItems="center">
+                                        <AlertCircle color={Theme.colors.sanctuarySaffron} size={20} />
+                                        <VStack sx={{ flex: 1 }}>
+                                            <Text sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>{gap.title}</Text>
+                                            <Text sx={{ fontSize: '$sm' as any, color: Theme.colors.starlightGray }}>{gap.description}</Text>
+                                        </VStack>
+                                    </HStack>
+                                    <Box sx={{ marginTop: '$3' as any }}>
+                                        <SanctuaryButton
+                                            onPress={() => console.log('Executing relief:', gap.suggestedAction)}
+                                            size="sm"
+                                            variant="solid"
+                                        >
+                                            Assign Relief Teacher
+                                        </SanctuaryButton>
+                                    </Box>
+                                </Box>
+                            ))}
                         </VStack>
-                    </ScrollView>
-                ) : (
-                    <RoleInitialState
-                        role="section_head"
-                        onCreatePress={() => {
-                            console.log('Section Head creating first report/view');
-                        }}
-                        onSamplePress={(item) => {
-                            console.log('Section Head Sample pressed:', item.title);
-                        }}
-                    />
-                )}
-            </VStack>
+                    )}
+
+                    {/* Agentic Structural Repair: Timetable */}
+                    <Box sx={{
+                        marginTop: Theme.spacing.md,
+                        padding: Theme.spacing.lg,
+                        backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                        borderRadius: Theme.corners.generous,
+                        borderWidth: 1,
+                        borderColor: 'rgba(59, 130, 246, 0.2)',
+                    }}>
+                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: Theme.spacing.sm }}>
+                            <HStack sx={{ gap: 8, alignItems: 'center' }}>
+                                <CalendarCheck size={20} color={Theme.colors.gurudeviBlue} />
+                                <Text sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>Timetable Review</Text>
+                            </HStack>
+                            <Box sx={{
+                                paddingHorizontal: 8,
+                                paddingVertical: 2,
+                                borderRadius: 12,
+                                backgroundColor: Theme.colors.gurudeviBlue + '33'
+                            }}>
+                                <Text sx={{ fontSize: 10, color: Theme.colors.gurudeviBlue, fontWeight: '700' }}>AGENTIC</Text>
+                            </Box>
+                        </HStack>
+
+                        {lastTimetableDraft ? (
+                            <VStack sx={{ gap: 8 }}>
+                                <HStack sx={{ gap: 8, alignItems: 'center' }}>
+                                    <AlertCircle size={16} color={Theme.colors.amberGlow} />
+                                    <Text sx={{ fontSize: 13, color: Theme.colors.sacredWhite }}>
+                                        Draft generated for your section.
+                                    </Text>
+                                </HStack>
+                                <SanctuaryButton
+                                    onPress={() => console.log('Reviewing draft')}
+                                    variant="solid"
+                                    size="sm"
+                                >
+                                    Review Section Draft
+                                </SanctuaryButton>
+                            </VStack>
+                        ) : (
+                            <VStack sx={{ gap: Theme.spacing.md }}>
+                                I can help you review and update the current schedule for this section.
+                                <SanctuaryButton
+                                    onPress={() => generateTimetable('current-school')}
+                                    action="primary"
+                                    size="md"
+                                    isLoading={isThinking}
+                                >
+                                    {isThinking ? 'Creating Draft...' : 'Create Schedule Draft'}
+                                </SanctuaryButton>
+                            </VStack>
+                        )}
+                    </Box>
+
+                    {/* Operational Overview */}
+                    <HStack gap="$3">
+                        <Box sx={styles.statBox}>
+                            <Text sx={{ fontSize: '$xs' as any, color: Theme.colors.starlightGray }}>CLASSES</Text>
+                            <Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: Theme.colors.sacredWhite }}>12</Text>
+                        </Box>
+                        <Box sx={styles.statBox}>
+                            <Text sx={{ fontSize: '$xs' as any, color: Theme.colors.starlightGray }}>TEACHERS</Text>
+                            <Text sx={{ fontWeight: '700', fontSize: '$xl' as any, color: Theme.colors.sacredWhite }}>8</Text>
+                        </Box>
+                    </HStack>
+
+                    {/* Quick Coordination */}
+                    <VStack gap="$2">
+                        <Text sx={{ fontWeight: '600', fontSize: '$sm' as any, color: Theme.colors.starlightGray }}>
+                            QUICK COORDINATION
+                        </Text>
+                        <SanctuaryButton onPress={() => { }} variant="outline">
+                            <HStack gap="$2" alignItems="center">
+                                <Calendar size={18} color={Theme.colors.sacredWhite} />
+                                <Text sx={{ color: Theme.colors.sacredWhite }}>Review Section Schedule</Text>
+                            </HStack>
+                        </SanctuaryButton>
+                        <SanctuaryButton onPress={() => { }} variant="outline">
+                            <HStack gap="$2" alignItems="center">
+                                <Users size={18} color={Theme.colors.sacredWhite} />
+                                <Text sx={{ color: Theme.colors.sacredWhite }}>Staff Workload Balance</Text>
+                            </HStack>
+                        </SanctuaryButton>
+                    </VStack>
+                </VStack>
+            </ScrollView>
+
+            <LotusPetalFAB
+                currentTab="section"
+                hasActiveGaps={activeGaps.length > 0}
+                onPress={() => refreshStatus()}
+            />
         </ScreenWrapper>
     );
 }
+
+const styles = StyleSheet.create({
+    scrollContent: {
+        padding: Theme.spacing.lg,
+        paddingBottom: 100,
+    },
+    statBox: {
+        flex: 1,
+        padding: Theme.spacing.md,
+        borderRadius: Theme.corners.comfortable,
+        backgroundColor: Theme.colors.midnightBlue,
+        borderWidth: 1,
+        borderColor: Theme.colors.border,
+    }
+});

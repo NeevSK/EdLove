@@ -34,9 +34,9 @@
     "@react-navigation/native": "^7.1.8",
     "@types/react": "~19.1.10",
     "i18next": "^25.8.0",
-    "react": "19.1.0",
     "react-i18next": "^16.5.4",
-    "react-native": "0.81.5",
+    "eslint": "^9.38.0",
+    "@repo/eslint-config": "workspace:*",
     "typescript": "~5.9.2"
   }
 }

@@ -3,7 +3,7 @@ import './src/i18n/config'; // Initialize i18n
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GluestackUIProvider, Spinner, Center, VStack, Text } from '@repo/ui';
@@ -25,15 +25,22 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import TabNavigator from './src/navigation/TabNavigator';
-import { AIAssistantScreen } from './src/screens';
-import LotusPetalFAB, { ActionItem } from './src/components/shared/LotusPetalFAB';
+import { AIAssistantScreen, AuthScreen } from './src/screens';
+import QRHandlerScreen from './src/screens/QRHandlerScreen';
+import ThuthimalClaimScreen from './src/screens/ThuthimalClaimScreen';
+import { useQRDeepLink, redeemPendingQRAction } from './src/hooks/useQRDeepLink';
+import { SanctuaryToast, ToastProvider } from '@repo/ui';
+import type { ActionItem } from '@repo/ui';
 import ErrorBoundary from './src/components/shared/ErrorBoundary';
-import { SanctuaryToast } from '@repo/ui';
 import NetworkStatusBanner from './src/components/shared/NetworkStatusBanner';
 import SyncManager from './src/lib/sync/SyncManager';
+import { LanguageUtils } from './src/utils/LanguageUtils';
 
 // Create a client
 const queryClient = new QueryClient();
+
+// Navigation ref for imperative navigation outside React tree (deep links, auth callbacks)
+export const navigationRef = createNavigationContainerRef<any>();
 
 // Initialize Sentry & PostHog
 initSentry();
@@ -66,18 +73,10 @@ function App() {
 
   // Load saved language preference
   useEffect(() => {
-    const loadLanguage = async () => {
-      try {
-        const storedLang = await AsyncStorage.getItem('user-language');
-        if (storedLang) {
-          console.log('🗣️ App: Restoring language preference:', storedLang);
-          i18n.changeLanguage(storedLang);
-        }
-      } catch (e) {
-        console.warn('Failed to load language preference', e);
-      }
-    };
-    loadLanguage();
+    async function initLanguage() {
+      await LanguageUtils.init();
+    }
+    initLanguage();
   }, []);
 
   // Sync showWelcome with session status
@@ -125,7 +124,9 @@ function App() {
         }
       }
     } catch (error) {
-      console.warn('❌ Profile: Fetching encountered an error (continuing with defaults):', error);
+      console.warn('❌ Profile: Fetching encountered an error:', error);
+      const { handleAPIError } = require('@repo/core');
+      handleAPIError(error);
     }
   };
 
@@ -207,6 +208,14 @@ function App() {
 
   // Monitor network connectivity - REMOVED redundant listener (Centralized in EnvironmentContext)
 
+  // QR deep link listener — routes incoming gurudevi://qr?... links to QRHandlerScreen
+  useQRDeepLink((payload) => {
+    if (navigationRef.isReady() && session) {
+      navigationRef.navigate('QRHandler', { payload });
+    }
+    // If not ready/authenticated, useQRDeepLink already stores in AsyncStorage as fallback
+  });
+
   const handleFabPress = () => {
     // TODO: Implement specific actions for each tab
     console.log(`FAB pressed in ${currentTab} tab`);
@@ -251,127 +260,138 @@ function App() {
   };
 
   if (loading || !fontsLoaded) {
-    console.log('App: Still loading...', { loading, fontsLoaded });
     return (
-      <GluestackUIProvider config={config}>
-        <Center sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
-          <VStack space="md" alignItems="center">
-            <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
-            <Text color={Theme.colors.white} size="sm">
-              {loading ? 'Initializing Sanctuary...' : 'Preparing Fonts...'}
-            </Text>
-          </VStack>
-        </Center>
-      </GluestackUIProvider>
+      <SafeAreaProvider>
+        <GluestackUIProvider config={config}>
+          <Center sx={{ flex: 1, backgroundColor: Theme.colors.midnightBlue }}>
+            <VStack space="md" alignItems="center">
+              <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+              <Text sx={{ color: Theme.colors.sacredWhite, fontSize: '$sm' as any }}>
+                Initializing Sanctuary...
+              </Text>
+            </VStack>
+          </Center>
+        </GluestackUIProvider>
+      </SafeAreaProvider>
     );
   }
+
+  const isNewUser = !onboardingCompleted;
+  const needsWelcome = showWelcome && isNewUser;
+
   console.log('App: Loading finished, rendering main tree');
 
   return (
-    <PostHogProvider
-      apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
-      options={{
-        host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
-      }}
-    >
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <SafeAreaProvider>
-          <QueryClientProvider client={queryClient}>
-            <EnvironmentProvider>
-              <GluestackUIProvider config={config}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <QueryClientProvider client={queryClient}>
+          <EnvironmentProvider>
+            <GluestackUIProvider config={config}>
+              <ToastProvider>
                 <ErrorBoundary name="App Root">
-                  <NavigationContainer>
-                    <RootStack.Navigator screenOptions={{ headerShown: false }}>
-                      {(() => {
-                        const isNewUser = !onboardingCompleted;
-                        const needsWelcome = showWelcome && isNewUser;
-
-                        console.log('🗺️ Nav decision:', { onboardingCompleted, showWelcome, session: !!session, needsWelcome });
-
-                        if (!session || needsWelcome) {
-                          return (
-                            <RootStack.Screen name="Welcome">
+                  <NavigationContainer ref={navigationRef}>
+                    <PostHogProvider
+                      apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
+                      options={{
+                        host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
+                      }}
+                      autocapture={true}
+                    >
+                      <RootStack.Navigator screenOptions={{ headerShown: false }}>
+                        {(!session || needsWelcome) ? (
+                          <RootStack.Screen name="Welcome">
+                            {() => (
+                              <ErrorBoundary name="Welcome Screen">
+                                <WelcomeScreen
+                                  initialShowAuth={onboardingCompleted}
+                                  onNext={() => {
+                                    console.log('➡️ App: onNext called from WelcomeScreen');
+                                    setShowWelcome(false);
+                                  }}
+                                />
+                              </ErrorBoundary>
+                            )}
+                          </RootStack.Screen>
+                        ) : !onboardingCompleted ? (
+                          <RootStack.Screen name="Onboarding">
+                            {() => (
+                              <ErrorBoundary name="Onboarding Screen">
+                                <OnboardingScreen
+                                  isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
+                                  onComplete={(name: string, role: any, wantsAccount?: boolean) => {
+                                    console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
+                                    const store = useStore.getState();
+                                    if (name) store.setTeacherName(name);
+                                    if (role) store.setUserRole(role);
+                                    store.setOnboardingCompleted(true);
+                                    store.setJustFinishedOnboarding(true);
+                                  }}
+                                />
+                              </ErrorBoundary>
+                            )}
+                          </RootStack.Screen>
+                        ) : (
+                          <>
+                            <RootStack.Screen name="Main">
                               {() => (
-                                <ErrorBoundary name="Welcome Screen">
-                                  <WelcomeScreen
-                                    initialShowAuth={onboardingCompleted}
-                                    onNext={() => {
-                                      console.log('➡️ App: onNext called from WelcomeScreen');
-                                      setShowWelcome(false);
-                                    }}
-                                  />
+                                <ErrorBoundary name="Main Tabs">
+                                  <TabNavigator onTabChange={(tab: any) => setCurrentTab(tab)} />
                                 </ErrorBoundary>
                               )}
                             </RootStack.Screen>
-                          );
-                        } else if (!onboardingCompleted) {
-                          return (
-                            <RootStack.Screen name="Onboarding">
-                              {() => (
-                                <ErrorBoundary name="Onboarding Screen">
-                                  <OnboardingScreen
-                                    isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
-                                    onComplete={(name: string, role: any, wantsAccount?: boolean) => {
-                                      console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
-                                      const store = useStore.getState();
-                                      if (name) store.setTeacherName(name);
-                                      if (role) store.setUserRole(role);
-                                      store.setOnboardingCompleted(true);
-                                      store.setJustFinishedOnboarding(true);
-                                    }}
-                                  />
-                                </ErrorBoundary>
-                              )}
-                            </RootStack.Screen>
-                          );
-                        } else {
-                          return (
-                            <>
-                              <RootStack.Screen name="MainTabs">
-                                {() => (
-                                  <ErrorBoundary name="Main App">
-                                    <TabNavigator
-                                      onTabChange={(tabName: any) => {
-                                        setCurrentTab(tabName as 'self' | 'classroom' | 'community' | 'library' | 'profile');
-                                      }}
-                                    />
-                                    <LotusPetalFAB
-                                      currentTab={currentTab}
-                                      onPress={handleFabPress}
-                                      actions={getFabActions()}
-                                    />
-                                  </ErrorBoundary>
-                                )}
-                              </RootStack.Screen>
-                              <RootStack.Screen
-                                name="AIAssistant"
-                                component={AIAssistantScreen}
-                                options={{
-                                  presentation: 'modal',
-                                  animation: 'slide_from_bottom'
-                                }}
-                              />
-                            </>
-                          );
-                        }
-                      })()}
-                    </RootStack.Navigator>
-                    <NetworkStatusBanner />
-                    <SyncManager />
+                            <RootStack.Screen
+                              name="AIAssistant"
+                              component={AIAssistantScreen}
+                              options={{
+                                presentation: 'modal',
+                                animation: 'slide_from_bottom'
+                              }}
+                            />
+                            <RootStack.Screen
+                              name="Auth"
+                              component={AuthScreen}
+                              options={{ presentation: 'modal' }}
+                            />
+                            <RootStack.Screen
+                              name="QRHandler"
+                              component={QRHandlerScreen}
+                              options={{
+                                presentation: 'modal',
+                                animation: 'fade_from_bottom',
+                              }}
+                            />
+                            <RootStack.Screen
+                              name="ThuthimalClaim"
+                              component={ThuthimalClaimScreen}
+                              options={{
+                                presentation: 'modal',
+                                animation: 'fade_from_bottom',
+                              }}
+                            />
+                          </>
+                        )}
+                      </RootStack.Navigator>
+                    </PostHogProvider>
+                  </NavigationContainer>
+
+                  <SyncManager />
+                  <NetworkStatusBanner />
+
+                  {toast.visible && (
                     <SanctuaryToast
-                      visible={toast.visible}
                       message={toast.message}
                       type={toast.type}
+                      visible={toast.visible}
                       onHide={hideToast}
                     />
-                  </NavigationContainer>
+                  )}
                 </ErrorBoundary>
-              </GluestackUIProvider>
-            </EnvironmentProvider>
-          </QueryClientProvider>
-        </SafeAreaProvider>
-      </GestureHandlerRootView>
-    </PostHogProvider>
+              </ToastProvider>
+            </GluestackUIProvider>
+          </EnvironmentProvider>
+        </QueryClientProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView >
   );
 }
 

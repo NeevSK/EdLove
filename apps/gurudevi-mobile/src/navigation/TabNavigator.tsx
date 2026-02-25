@@ -2,9 +2,8 @@ import React from 'react';
 import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import LotusPetalFAB from '../components/shared/LotusPetalFAB';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '@repo/ui';
+import { Theme, LotusPetalFAB, SanctuaryBackground } from '@repo/ui';
 import ErrorBoundary from '../components/shared/ErrorBoundary';
 
 // Icons
@@ -20,6 +19,7 @@ import {
 
 import ClassroomStackNavigator from './ClassroomStackNavigator';
 import ProfileStackNavigator from './ProfileStackNavigator';
+import CommunityStackNavigator from './CommunityStackNavigator';
 import { useThemedColors } from '@repo/ui';
 import { useUserRole, useRewards, useTracking } from '@repo/core';
 import AchievementUnlockOverlay from '../components/shared/AchievementUnlockOverlay';
@@ -27,10 +27,11 @@ import AchievementUnlockOverlay from '../components/shared/AchievementUnlockOver
 // Screens
 import {
   SelfScreen,
-  CommunityScreen,
   LibraryScreen,
   ProfileScreen
 } from '../screens';
+import { CommunityScreen, Group, Post, useCommunityGroups } from '@repo/community';
+import GroupCard from '../components/community/GroupCard'; // Assuming this is a local component, not a screen
 
 const Tab = createBottomTabNavigator();
 
@@ -67,6 +68,9 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
 
   return (
     <View style={{ flex: 1 }}>
+      {/* Living backdrop — renders behind all tabs */}
+      <SanctuaryBackground />
+
       <Tab.Navigator
         id="MainTabs"
         initialRouteName="Self"
@@ -88,7 +92,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: colors.secondary, // Use secondary for a cleaner look
+            backgroundColor: 'transparent', // Transparent so SanctuaryBackground shows through
             borderTopColor: colors.border,
             borderTopWidth: 1,
             height: 60 + insets.bottom, // Dynamic height including safe area
@@ -108,8 +112,8 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             marginBottom: insets.bottom > 0 ? 0 : 4,
           },
           tabBarBackground: () => (
-            // Optional: Add BlurView here for glass tab bar
-            <View style={{ flex: 1, backgroundColor: colors.secondary }} />
+            // Semi-transparent glass bar — SanctuaryBackground shows through
+            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.25)' }} />
           ),
         }}
       >
@@ -181,8 +185,8 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           }}
         >
           {() => (
-            <ErrorBoundary name="Community Screen">
-              <CommunityScreen />
+            <ErrorBoundary name="Community Stack">
+              <CommunityStackNavigator />
             </ErrorBoundary>
           )}
         </Tab.Screen>

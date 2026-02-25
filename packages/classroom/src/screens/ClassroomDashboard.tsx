@@ -17,7 +17,15 @@ import {
     ScreenWrapper,
     SkeletonCard,
     PositiveInvitation,
-    useBottomTabPadding
+    useBottomTabPadding,
+    Modal,
+    ModalBackdrop,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    Input,
+    InputField,
 } from '@repo/ui';
 import {
     Users,
@@ -60,6 +68,21 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
 
+    // Lessons/Content Management State
+    const [showAddMonthModal, setShowAddMonthModal] = useState(false);
+    const [newMonthTitle, setNewMonthTitle] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showAddContentModal, setShowAddContentModal] = useState(false);
+    const [contentType, setContentType] = useState<'material' | 'assignment'>('material');
+    const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+    const [formTitle, setFormTitle] = useState('');
+    const [formDescription, setFormDescription] = useState('');
+    const [formType, setFormType] = useState<'pdf' | 'link' | 'note'>('note');
+    const [formUrl, setFormUrl] = useState('');
+    const [formDueDate, setFormDueDate] = useState('');
+
     useEffect(() => {
         fetchInitialData();
     }, [classroomId]);
@@ -78,6 +101,85 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleAddMonth = async () => {
+        if (!newMonthTitle.trim()) return;
+        setIsSubmitting(true);
+        try {
+            const lessons = await api.lessons.getAll(classroomId);
+            const maxOrder = lessons.reduce((max, l) => Math.max(max, l.order_index), 0);
+
+            await api.lessons.create({
+                classroom_id: classroomId,
+                title: newMonthTitle,
+                order_index: maxOrder + 1,
+            });
+            setShowAddMonthModal(false);
+            setNewMonthTitle('');
+            setRefreshTrigger(prev => prev + 1);
+            await fetchInitialData();
+        } catch (error) {
+            console.error('Failed to add month:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleAddContent = async () => {
+        if (!formTitle.trim() || !activeLessonId) return;
+        setIsSubmitting(true);
+        try {
+            let targetLessonId = activeLessonId;
+
+            // If activeLessonId is actually the month title (virtual lesson)
+            // we need to create the lesson record first
+            if (!targetLessonId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+                const newLesson = await api.lessons.create({
+                    classroom_id: classroomId,
+                    title: targetLessonId,
+                    content: `Materials for ${targetLessonId}`,
+                    order_index: 0,
+                });
+                targetLessonId = newLesson.id;
+            }
+
+            if (contentType === 'material') {
+                await api.lessonMaterials.create({
+                    classroom_id: classroomId,
+                    lesson_id: targetLessonId,
+                    title: formTitle,
+                    type: formType,
+                    url: (formType === 'pdf' || formType === 'link') ? formUrl : undefined,
+                    content: formType === 'note' ? formDescription : undefined,
+                    is_pinned: false,
+                });
+            } else {
+                await api.assignments.create({
+                    classroom_id: classroomId,
+                    lesson_id: targetLessonId,
+                    title: formTitle,
+                    description: formDescription,
+                    due_date: formDueDate || undefined,
+                });
+            }
+            setShowAddContentModal(false);
+            resetForm();
+            setRefreshTrigger(prev => prev + 1);
+        } catch (error) {
+            console.error('Failed to add content:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const resetForm = () => {
+        setFormTitle('');
+        setFormDescription('');
+        setFormType('note');
+        setFormUrl('');
+        setFormDueDate('');
+        setActiveLessonId(null);
     };
 
     const isClassTeacher = useMemo(() => {
@@ -119,12 +221,20 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
                 return (
                     <LessonFeed
                         classroomId={classroomId}
-                        isTeacher={true}
-                        refreshTrigger={0}
+                        isTeacher={isClassTeacher}
+                        refreshTrigger={refreshTrigger}
                         onOpenLesson={(id: string) => console.log('Open Lesson', id)}
                         onOpenAssignment={(id: string) => console.log('Open Assignment', id)}
-                        onAddMaterial={() => { }} // TODO: Connect modals
-                        onAddAssignment={() => { }}
+                        onAddMaterial={(lessonId) => {
+                            setActiveLessonId(lessonId);
+                            setContentType('material');
+                            setShowAddContentModal(true);
+                        }}
+                        onAddAssignment={(lessonId) => {
+                            setActiveLessonId(lessonId);
+                            setContentType('assignment');
+                            setShowAddContentModal(true);
+                        }}
                     />
                 );
             case 'inventory':
@@ -179,11 +289,30 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
                                 {classroomName}
                             </Heading>
                         </VStack>
-                        {classroom?.subject && (
-                            <Box sx={{ backgroundColor: colors.tertiary, paddingHorizontal: Theme.spacing.sm, paddingVertical: Theme.spacing.xs, borderRadius: Theme.corners.full }}>
-                                <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '700' as any, color: Theme.colors.sanctuarySaffron }}>{classroom.subject}</Text>
-                            </Box>
-                        )}
+                        <HStack sx={{ gap: 8, alignItems: 'center' }}>
+                            {activeFeature === 'lessons' && isClassTeacher && (
+                                <Button
+                                    size="sm"
+                                    action="primary"
+                                    onPress={() => setShowAddMonthModal(true)}
+                                    sx={{
+                                        backgroundColor: Theme.colors.sanctuarySaffron,
+                                        borderRadius: Theme.corners.comfortable,
+                                        height: 36,
+                                    }}
+                                >
+                                    <HStack alignItems="center" sx={{ gap: 4 }}>
+                                        <Plus size={16} color={Theme.colors.white} />
+                                        <ButtonText color={Theme.colors.white}>Module</ButtonText>
+                                    </HStack>
+                                </Button>
+                            )}
+                            {classroom?.subject && (
+                                <Box sx={{ backgroundColor: colors.tertiary, paddingHorizontal: Theme.spacing.sm, paddingVertical: Theme.spacing.xs, borderRadius: Theme.corners.full }}>
+                                    <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '700' as any, color: Theme.colors.sanctuarySaffron }}>{classroom.subject}</Text>
+                                </Box>
+                            )}
+                        </HStack>
                     </HStack>
                 </Box>
 
@@ -244,6 +373,146 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
                     {renderFeatureContent()}
                 </Box>
             </ScrollView>
+
+            {/* Modals */}
+            <Modal isOpen={showAddMonthModal} onClose={() => setShowAddMonthModal(false)}>
+                <ModalBackdrop />
+                <ModalContent sx={{ backgroundColor: colors.secondary }}>
+                    <ModalHeader>
+                        <Heading color={colors.text} sx={{ fontSize: 18 }}>Add Monthly Module</Heading>
+                    </ModalHeader>
+                    <ModalBody>
+                        <VStack sx={{ gap: 16 }}>
+                            <Text color={colors.textSecondary} sx={{ fontSize: 14 }}>Give this month a title (e.g., "September 2026")</Text>
+                            <Input sx={{ backgroundColor: colors.tertiary, borderColor: 'transparent' }}>
+                                <InputField
+                                    placeholder="Enter title..."
+                                    value={newMonthTitle}
+                                    onChangeText={setNewMonthTitle}
+                                    color={colors.text}
+                                />
+                            </Input>
+                        </VStack>
+                    </ModalBody>
+                    <ModalFooter>
+                        <HStack sx={{ gap: 8 }}>
+                            <Button variant="outline" action="secondary" onPress={() => setShowAddMonthModal(false)}>
+                                <ButtonText color={colors.textTertiary}>Cancel</ButtonText>
+                            </Button>
+                            <Button action="primary" onPress={handleAddMonth} isDisabled={!newMonthTitle.trim() || isSubmitting}>
+                                {isSubmitting ? <Spinner color={Theme.colors.white} /> : <ButtonText color={Theme.colors.white}>Create</ButtonText>}
+                            </Button>
+                        </HStack>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+
+            {/* Add Content Modal (Material or Assignment) */}
+            <Modal isOpen={showAddContentModal} onClose={() => {
+                setShowAddContentModal(false);
+                resetForm();
+            }}>
+                <ModalBackdrop />
+                <ModalContent sx={{ backgroundColor: colors.secondary, maxWidth: 500 }}>
+                    <ModalHeader>
+                        <Heading color={colors.text} sx={{ fontSize: 18 }}>
+                            {contentType === 'material' ? 'Add Academic Material' : 'Create Assignment'}
+                        </Heading>
+                    </ModalHeader>
+                    <ModalBody>
+                        <VStack sx={{ gap: 16 }}>
+                            {contentType === 'material' && (
+                                <VStack sx={{ gap: 4 }}>
+                                    <Text color={Theme.colors.mistGray} sx={{ fontSize: 14 }}>Type</Text>
+                                    <HStack sx={{ gap: 8 }}>
+                                        {(['note', 'link', 'pdf'] as const).map((type) => (
+                                            <Pressable key={type} onPress={() => setFormType(type)} style={{ flex: 1 }}>
+                                                <Box sx={{
+                                                    padding: Theme.spacing.sm,
+                                                    borderRadius: Theme.corners.tight,
+                                                    backgroundColor: formType === type ? Theme.colors.sanctuarySaffron : colors.tertiary,
+                                                    alignItems: 'center'
+                                                }}>
+                                                    <Text color={formType === type ? Theme.colors.white : colors.textSecondary} sx={{ fontSize: 12, fontWeight: 'bold' }}>{type.toUpperCase()}</Text>
+                                                </Box>
+                                            </Pressable>
+                                        ))}
+                                    </HStack>
+                                </VStack>
+                            )}
+
+                            <VStack sx={{ gap: 4 }}>
+                                <Text color={colors.textSecondary} sx={{ fontSize: 14 }}>Title</Text>
+                                <Input sx={{ backgroundColor: colors.tertiary, borderColor: 'transparent' }}>
+                                    <InputField
+                                        placeholder="Enter title..."
+                                        value={formTitle}
+                                        onChangeText={setFormTitle}
+                                        color={colors.text}
+                                    />
+                                </Input>
+                            </VStack>
+
+                            {(contentType === 'assignment' || formType === 'note') && (
+                                <VStack sx={{ gap: 4 }}>
+                                    <Text color={colors.textSecondary} sx={{ fontSize: 14 }}>Description / Content</Text>
+                                    <Input sx={{ backgroundColor: colors.tertiary, borderColor: 'transparent', minHeight: 80 }}>
+                                        <InputField
+                                            placeholder="Enter details..."
+                                            value={formDescription}
+                                            onChangeText={setFormDescription}
+                                            color={colors.text}
+                                            multiline
+                                        />
+                                    </Input>
+                                </VStack>
+                            )}
+
+                            {contentType === 'material' && (formType === 'pdf' || formType === 'link') && (
+                                <VStack sx={{ gap: 4 }}>
+                                    <Text color={colors.textSecondary} sx={{ fontSize: 14 }}>URL</Text>
+                                    <Input sx={{ backgroundColor: colors.tertiary, borderColor: 'transparent' }}>
+                                        <InputField
+                                            placeholder="https://..."
+                                            value={formUrl}
+                                            onChangeText={setFormUrl}
+                                            color={colors.text}
+                                            autoCapitalize="none"
+                                        />
+                                    </Input>
+                                </VStack>
+                            )}
+
+                            {contentType === 'assignment' && (
+                                <VStack sx={{ gap: 4 }}>
+                                    <Text color={colors.textSecondary} sx={{ fontSize: 14 }}>Due Date (Optional)</Text>
+                                    <Input sx={{ backgroundColor: colors.tertiary, borderColor: 'transparent' }}>
+                                        <InputField
+                                            placeholder="YYYY-MM-DD"
+                                            value={formDueDate}
+                                            onChangeText={setFormDueDate}
+                                            color={colors.text}
+                                        />
+                                    </Input>
+                                </VStack>
+                            )}
+                        </VStack>
+                    </ModalBody>
+                    <ModalFooter>
+                        <HStack sx={{ gap: 8 }}>
+                            <Button variant="outline" action="secondary" onPress={() => {
+                                setShowAddContentModal(false);
+                                resetForm();
+                            }}>
+                                <ButtonText color={colors.textTertiary}>Cancel</ButtonText>
+                            </Button>
+                            <Button action="primary" onPress={handleAddContent} isDisabled={!formTitle.trim() || isSubmitting}>
+                                {isSubmitting ? <Spinner color={Theme.colors.white} /> : <ButtonText color={Theme.colors.white}>Add</ButtonText>}
+                            </Button>
+                        </HStack>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </ScreenWrapper>
     );
 }

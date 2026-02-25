@@ -114,19 +114,29 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
     };
 
     return (
-        <VStack space="md" style={{ marginTop: Theme.spacing.lg, marginHorizontal: Theme.spacing.md }}>
-            <Heading color={colors.textSecondary as any} size="sm">
-                {t('achievements.title', 'Sanctuary Achievements')}
-            </Heading>
+        <VStack mt={Theme.spacing.lg} px={Theme.spacing.md}>
             <Box
-                style={{
+                sx={{
                     backgroundColor: colors.secondary,
-                    borderRadius: Theme.corners.comfortable,
-                    padding: Theme.spacing.md,
+                    borderRadius: Theme.corners.generous,
+                    padding: Theme.spacing.xl,
                     borderWidth: 1,
                     borderColor: colors.border,
+                    shadowColor: colors.glow,
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 15,
+                    elevation: 5,
                 }}
             >
+                <Heading
+                    color={colors.textSecondary as any}
+                    size="sm"
+                    mt={Theme.spacing.sm}
+                    mb={Theme.spacing.md}
+                >
+                    {t('achievements.title', 'Sanctuary Achievements')}
+                </Heading>
                 <HStack style={styles.galleryGrid}>
                     {achievements.map((item) => (
                         <AchievementItem key={item.id} achievement={item} />
@@ -134,17 +144,30 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
                 </HStack>
             </Box>
         </VStack>
+                <HStack style={styles.galleryGrid}>
+                    {achievements.map((item) => (
+                        <AchievementItem key={item.id} achievement={item} />
+                    ))}
+                </HStack>
+            </Box >
+        </VStack >
     );
 }
 
 const styles = StyleSheet.create({
     galleryGrid: {
+        flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        paddingVertical: Theme.spacing.sm,
+        justifyContent: 'flex-start',
+        gap: Theme.spacing.md,
     },
     itemContainer: {
-        width: '30%',
-        marginBottom: Theme.spacing.md,
+        width: '28%',
+        alignItems: 'center',
+        marginBottom: Theme.spacing.xs,
     },
+    unlockedIcon: {
+        borderWidth: 1,
+        borderColor: `${Theme.colors.sanctuarySaffron}40`, // sanctuarySaffron at ~25% opacity
+    }
 });

@@ -7,7 +7,10 @@ import {
     CreateCommentInput,
     CommunityGroup,
     GroupFilters,
-    CreateGroupInput
+    CreateGroupInput,
+    ReportStatus,
+    GroupReport,
+    ReportContentInput
 } from '../types';
 import { PaginationParams } from '@repo/core';
 
@@ -734,9 +737,6 @@ export const communityAPI = {
         };
     },
 
-    /**
-     * Create a new group
-     */
     async createGroup(
         input: CreateGroupInput,
         creatorId: string,
@@ -748,6 +748,7 @@ export const communityAPI = {
                 {
                     ...input,
                     creator_id: creatorId,
+                    school_id: input.school_id, // Explicitly link to school context
                     allow_posts: input.allow_posts !== false, // Default true
                     allow_announcements: input.allow_announcements !== false, // Default true
                     require_post_approval: input.require_post_approval || false,
@@ -812,4 +813,171 @@ export const communityAPI = {
             is_moderator: false,
         };
     },
+    /**
+     * MEMBER MANAGEMENT (No Trust)
+     */
+    async getPendingMembers(groupId: string): Promise<any[]> {
+        const { data, error } = await supabase
+            .from('group_members')
+            .select(`
+                *,
+                user:users(full_name, avatar_url, role, index_number, nic_number)
+            `)
+            .eq('group_id', groupId)
+            .eq('status', 'pending');
+
+        if (error) throw error;
+        return data;
+    },
+
+    async handleMemberRequest(groupId: string, userId: string, status: 'active' | 'rejected'): Promise<void> {
+        const { error } = await supabase
+            .from('group_members')
+            .update({ status, reviewed_at: new Date().toISOString() })
+            .eq('group_id', groupId)
+            .eq('user_id', userId);
+
+        if (error) throw error;
+    },
+
+    async approveAllPending(groupId: string): Promise<void> {
+        const { error } = await supabase
+            .from('group_members')
+            .update({ status: 'active', reviewed_at: new Date().toISOString() })
+            .eq('group_id', groupId)
+            .eq('status', 'pending');
+
+        if (error) throw error;
+    },
+
+    async updateJoiningPolicy(groupId: string, policy: string): Promise<void> {
+        const { error } = await supabase
+            .from('community_groups')
+            .update({ join_policy: policy })
+            .eq('id', groupId);
+
+        if (error) throw error;
+
+        if (policy === 'open') {
+            await this.approveAllPending(groupId);
+        }
+    },
+
+    async createSanctuaryGroup(data: {
+        name: string;
+        description: string;
+        school_id: string;
+        creator_id: string;
+        classroom_id?: string;
+    }): Promise<any> {
+        const { data: group, error } = await supabase
+            .from('community_groups')
+            .insert([{
+                ...data,
+                join_policy: 'restricted',
+                visibility: 'public'
+            }])
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        // Auto-add creator as admin
+        await supabase
+            .from('group_members')
+            .insert([{
+                group_id: group.id,
+                user_id: data.creator_id,
+                is_admin: true,
+                is_moderator: true,
+                status: 'active'
+            }]);
+
+        return group;
+    },
+
+    async getGroupMembers(groupId: string): Promise<any[]> {
+        const { data, error } = await supabase
+            .from('group_members')
+            .select(`
+                *,
+                user:users(full_name, avatar_url, role)
+            `)
+            .eq('group_id', groupId);
+
+        if (error) throw error;
+        return data;
+    },
+
+    /**
+     * Join a group
+     */
+    async joinGroup(groupId: string, userId: string, userRole: string): Promise<void> {
+        // Check if group is public/open
+        const { data: group, error: groupError } = await supabase
+            .from('community_groups')
+            .select('join_policy')
+            .eq('id', groupId)
+            .single();
+
+        if (groupError) throw groupError;
+
+        const status = group.join_policy === 'open' ? 'active' : 'pending';
+
+        const { error } = await supabase
+            .from('group_members')
+            .upsert([
+                {
+                    group_id: groupId,
+                    user_id: userId,
+                    user_role: userRole,
+                    status,
+                },
+            ]);
+
+        if (error) throw error;
+    },
+
+    /**
+     * REPORTING & SAFETY
+     * "No Trust but Full Care" infrastructure
+     */
+
+    async reportContent(
+        input: ReportContentInput,
+        reporterId: string
+    ): Promise<GroupReport> {
+        const { data, error } = await supabase
+            .from('group_reports')
+            .insert([{
+                group_id: input.group_id,
+                post_id: input.post_id,
+                target_user_id: input.target_user_id,
+                reporter_id: reporterId,
+                reason: input.reason,
+                details: input.details,
+                status: 'pending'
+            }])
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    },
+
+    async getGroupReports(groupId: string): Promise<GroupReport[]> {
+        const { data, error } = await supabase
+            .from('group_reports')
+            .select(`
+                *,
+                reporter:users!group_reports_reporter_id_fkey(full_name),
+                target_user:users!group_reports_target_user_id_fkey(full_name),
+                post:community_posts!group_reports_post_id_fkey(content)
+            `)
+            .eq('group_id', groupId)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return data || [];
+    }
 };

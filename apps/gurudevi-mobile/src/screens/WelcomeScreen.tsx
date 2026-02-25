@@ -27,6 +27,7 @@ import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
 import AuthScreen from './AuthScreen';
 import { ScreenWrapper } from '@repo/ui';
 import { authAPI, handleAPIError } from '@repo/core';
+import { LanguageUtils } from '../utils/LanguageUtils';
 
 const { width } = Dimensions.get('window');
 const LOGO = require('../../assets/icon.png');
@@ -52,8 +53,7 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
 
     const changeLanguage = async (langCode: string) => {
         hapticLight();
-        await i18n.changeLanguage(langCode);
-        await AsyncStorage.setItem('user-language', langCode);
+        await LanguageUtils.setLanguage(langCode as 'en' | 'si' | 'ta');
     };
 
     const showTermsToast = () => {

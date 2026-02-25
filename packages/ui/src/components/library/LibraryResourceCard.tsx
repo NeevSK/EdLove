@@ -5,6 +5,7 @@ import { FileText, Video, Link, File, Heart, Plus } from 'lucide-react-native';
 import SanctuaryCard from '../SanctuaryCard';
 import SanctuaryButton from '../SanctuaryButton';
 import { Theme } from '../../theme/Theme';
+import { useThemedColors } from '../../hooks/useThemedColors';
 
 export type ResourceType = 'pdf' | 'video' | 'link' | 'text' | 'doc' | 'note';
 
@@ -19,13 +20,13 @@ interface LibraryResourceCardProps {
     isLiked?: boolean;
 }
 
-const TYPE_CONFIG: Record<ResourceType, { icon: any, color: string, label: string }> = {
-    pdf: { icon: File, color: Theme.colors.emberRed, label: 'PDF' },
-    video: { icon: Video, color: Theme.colors.skyBlue, label: 'Video' },
-    link: { icon: Link, color: Theme.colors.sanctuarySaffron, label: 'Link' },
-    text: { icon: FileText, color: Theme.colors.sageGreen, label: 'Article' },
-    doc: { icon: FileText, color: Theme.colors.deepIndigo, label: 'Document' },
-    note: { icon: FileText, color: Theme.colors.sageGreen, label: 'Note' },
+const TYPE_CONFIG: Record<ResourceType, { icon: any, color: keyof typeof Theme.colors, label: string }> = {
+    pdf: { icon: File, color: 'emberRed', label: 'PDF' },
+    video: { icon: Video, color: 'skyBlue', label: 'Video' },
+    link: { icon: Link, color: 'sanctuarySaffron', label: 'Link' },
+    text: { icon: FileText, color: 'sageGreen', label: 'Article' },
+    doc: { icon: FileText, color: 'deepIndigo', label: 'Document' },
+    note: { icon: FileText, color: 'sageGreen', label: 'Note' },
 };
 
 export function LibraryResourceCard({
@@ -38,6 +39,7 @@ export function LibraryResourceCard({
     onLike,
     isLiked
 }: LibraryResourceCardProps) {
+    const colors = useThemedColors();
     const config = TYPE_CONFIG[type] || TYPE_CONFIG.text;
     const Icon = config.icon;
 
@@ -45,27 +47,27 @@ export function LibraryResourceCard({
         title: {
             fontSize: Theme.typography.fontSize.md,
             fontWeight: '600',
-            color: Theme.colors.sacredWhite,
+            color: colors.text,
             marginBottom: 4,
         },
         description: {
             fontSize: Theme.typography.fontSize.sm,
-            color: Theme.colors.mistGray,
+            color: colors.textSecondary,
             marginBottom: 8,
         },
         typeLabel: {
             marginTop: 4,
             fontSize: 10,
             fontWeight: '700',
-            color: Theme.colors.sacredWhite,
+            color: colors.text, // Better resonance with adaptive text
             textAlign: 'center',
         },
         badge: {
             fontSize: 10,
             fontWeight: '600',
-            color: Theme.colors.lotusWhite,
+            color: colors.textSecondary,
         },
-    }), []);
+    }), [colors]);
 
     const renderFooter = () => (
         <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginTop: Theme.spacing.small }}>
@@ -102,18 +104,20 @@ export function LibraryResourceCard({
             footer={renderFooter()}
             elevated
         >
-            <HStack sx={{ gap: Theme.spacing.small, alignItems: 'flex-start' }}>
-                {/* Icon Box */}
+            <HStack sx={{ gap: Theme.spacing.small, alignItems: 'center' }}>
+                {/* Icon Box - Using SanctuaryCard-like depth for consistency */}
                 <Box
                     sx={{
-                        backgroundColor: Theme.colors.deepIndigo,
+                        backgroundColor: colors.secondary, // Phase-aware background
                         padding: Theme.spacing.md,
                         borderRadius: Theme.corners.comfortable,
                         alignItems: 'center',
-                        justifyContent: 'center'
+                        justifyContent: 'center',
+                        borderWidth: 1,
+                        borderColor: colors.border // Phase-aware border
                     }}
                 >
-                    <Icon color={config.color} size={24} />
+                    <Icon color={colors.action} size={24} />
                     <Text style={styles.typeLabel}>{config.label}</Text>
                 </Box>
 
@@ -130,10 +134,13 @@ export function LibraryResourceCard({
                     {isPublic && (
                         <Box sx={{
                             alignSelf: 'flex-start',
-                            backgroundColor: 'rgba(255,255,255,0.1)',
+                            backgroundColor: colors.tertiary,
                             paddingHorizontal: 6,
+                            paddingVertical: 2,
                             borderRadius: 4,
-                            marginTop: 4
+                            marginTop: 4,
+                            borderWidth: 0.5,
+                            borderColor: colors.border
                         }}>
                             <Text style={styles.badge}>Public Resource</Text>
                         </Box>

@@ -7,6 +7,10 @@ import {
     Text,
     Pressable,
     Center,
+    Theme,
+    useThemedColors,
+    hapticLight,
+    hapticSuccess
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import Animated, {
@@ -14,25 +18,23 @@ import Animated, {
     useAnimatedStyle,
     withSpring,
     interpolate,
-    withTiming,
-    Easing,
 } from 'react-native-reanimated';
-import { ShieldCheck, Edit3, Compass, Database } from 'lucide-react-native';
-import { QRCodeGenerator } from '@repo/scanner-kit';
-import { Theme } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
-import { hapticLight, hapticSuccess } from '@repo/ui';
+import { User, GraduationCap, Briefcase, Crown, ShieldAlert, Compass } from 'lucide-react-native';
+import { QRCodeGenerator, QRBuilder } from '@repo/scanner-kit';
+import { UserProfile, AvatarDisplay } from '@repo/profile';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_WIDTH = SCREEN_WIDTH - Theme.spacing.xl * 2;
 const CARD_HEIGHT = 220;
 
 interface IdentityCardProps {
-    profile: any;
+    profile: UserProfile | null;
     onEdit?: () => void;
+    onViewFullProfile?: () => void;
+    style?: any;
 }
 
-export default function IdentityCard({ profile, onEdit }: IdentityCardProps) {
+export default function IdentityCard({ profile, onEdit, onViewFullProfile, style }: IdentityCardProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
     const isFlipped = useSharedValue(0);
@@ -69,13 +71,25 @@ export default function IdentityCard({ profile, onEdit }: IdentityCardProps) {
         };
     });
 
-    // Role-specific badge text
-    const getRoleBadge = () => {
-        if (profile?.role === 'founder') return t('profile.stats.visionAlignment');
-        if (profile?.role === 'admin' || profile?.role === 'developer') return t('profile.stats.coreActive');
-        if (profile?.role === 'student') return `LVL ${profile?.level || 3}`;
-        return '70%'; // Default
-    };
+    // Role-specific badge logic
+    const roleConfig = useMemo(() => {
+        const role = profile?.role || 'guest';
+        switch (role) {
+            case 'teacher':
+                return { label: 'Teacher 🌱', icon: Briefcase, color: colors.action };
+            case 'student':
+                return { label: 'Student 📚', icon: GraduationCap, color: colors.success };
+            case 'principal':
+                return { label: 'Principal 🏛️', icon: Crown, color: colors.warning };
+            case 'founder':
+                return { label: 'Founder 🌸', icon: Compass, color: colors.warning };
+            case 'admin':
+            case 'developer':
+                return { label: 'Guardian 🛡️', icon: ShieldAlert, color: colors.action };
+            default:
+                return { label: 'Explorer 🌿', icon: User, color: colors.textTertiary };
+        }
+    }, [profile?.role, profile?.level, colors]);
 
     const styles = useMemo(() => StyleSheet.create({
         // ... (rest of styles omitted for brevity, keeping same)
@@ -96,51 +110,13 @@ export default function IdentityCard({ profile, onEdit }: IdentityCardProps) {
         },
         glassLayer: {
             ...StyleSheet.absoluteFillObject,
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        },
-        progressRing: {
-            position: 'absolute',
-            top: -4,
-            left: -4,
-            width: 88,
-            height: 88,
-            borderRadius: 44,
-            borderWidth: 2,
-            borderColor: colors.action,
-            opacity: 0.6,
-            borderStyle: 'dashed',
-        },
-        avatarContainer: {
-            width: 80,
-            height: 80,
-            borderRadius: 40,
-            overflow: 'hidden',
-            borderWidth: 2,
-            borderColor: colors.primary,
-        },
-        avatarImage: {
-            width: '100%',
-            height: '100%',
-        },
-        avatarPlaceholder: {
-            width: '100%',
-            height: '100%',
-            backgroundColor: `${colors.action}15`,
-        },
-        completionBadge: {
-            position: 'absolute',
-            bottom: -6,
-            alignSelf: 'center',
-            backgroundColor: colors.action,
-            paddingHorizontal: 6,
-            paddingVertical: 2,
-            borderRadius: 10,
+            backgroundColor: Theme.colors.glassHighlight,
         },
         editButton: {
             backgroundColor: `${colors.action}10`,
-            paddingHorizontal: 12,
-            paddingVertical: 6,
-            borderRadius: 20,
+            paddingHorizontal: Theme.spacing.sm,
+            paddingVertical: Theme.spacing.xs,
+            borderRadius: Theme.corners.comfortable,
             alignSelf: 'flex-start',
         },
         watermark: {
@@ -155,94 +131,56 @@ export default function IdentityCard({ profile, onEdit }: IdentityCardProps) {
 
     return (
         <Pressable onPress={handleFlip}>
-            <Box style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}>
+            <Box style={[{
+                width: CARD_WIDTH,
+                height: CARD_HEIGHT,
+                shadowColor: colors.glow,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.6,
+                shadowRadius: 20,
+                elevation: 10,
+            }, style]}>
                 {/* FRONT SIDE - IDENTITY */}
                 <Animated.View style={[styles.cardCommon, frontStyle]}>
                     <Box style={styles.glassLayer} />
 
                     <HStack space="lg" alignItems="center" h="100%" p={Theme.spacing.xl}>
-                        {/* Avatar with Ring */}
-                        <Box>
-                            <Box style={styles.progressRing} />
-                            <Box style={styles.avatarContainer}>
-                                {profile?.avatar_url ? (
-                                    <RNImage
-                                        source={{ uri: profile.avatar_url }}
-                                        style={styles.avatarImage}
-                                    />
-                                ) : (
-                                    <Center style={styles.avatarPlaceholder}>
-                                        <Text
-                                            color={colors.action as any}
-                                            size="3xl"
-                                            bold
-                                        >
-                                            {profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : 'G'}
-                                        </Text>
-                                    </Center>
-                                )}
-                            </Box>
-                            <Box style={styles.completionBadge}>
-                                <Text color={colors.primary as any} size="xs" bold>
-                                    {getRoleBadge()}
-                                </Text>
-                            </Box>
-                        </Box>
+                        {/* Avatar — AvatarDisplay handles image / initials / offline */}
+                        <AvatarDisplay
+                            userId={profile?.id || ''}
+                            avatarUrl={profile?.avatar_url}
+                            fullName={profile?.full_name}
+                            size={80}
+                            editable={false}
+                        />
 
                         {/* Details */}
                         <VStack space="xs" flex={1}>
                             <HStack alignItems="center" space="xs">
                                 <Text color={colors.textSecondary as any} size="xs" bold textTransform="uppercase">
-                                    {profile?.role === 'teacher' && 'Teacher 🌱'}
-                                    {profile?.role === 'student' && 'Student 📚'}
-                                    {profile?.role === 'principal' && 'Principal 🏛️'}
-                                    {profile?.role === 'founder' && 'Founder 🌸'}
-                                    {(profile?.role === 'admin' || profile?.role === 'developer') && 'Guardian 🛡️'}
-                                    {!profile?.role && (t('profile.guestUser') || 'Guest Explorer 🌿')}
+                                    {roleConfig.label}
                                 </Text>
-                                {profile?.role === 'founder' && <Compass size={14} color={colors.warning} />}
-                                {(profile?.role === 'admin' || profile?.role === 'developer') && <Database size={14} color={colors.action} />}
-                                {profile?.school_name && !['founder', 'admin', 'developer'].includes(profile?.role) && (
-                                    <ShieldCheck size={14} color={colors.success} />
-                                )}
+                                <roleConfig.icon size={14} color={roleConfig.color} />
                             </HStack>
 
-                            <Text color={colors.text as any} size="xl" bold numberOfLines={2}>
+                            <Text color={colors.text as any} size="xl" bold numberOfLines={1}>
                                 {profile?.full_name || 'Guest User'}
                             </Text>
 
-                            <Text color={colors.textTertiary as any} size="sm" numberOfLines={1}>
+                            <Text color={colors.textTertiary as any} size="xs" numberOfLines={1} mb={2}>
                                 {profile?.school_name || t('profile.noSchoolConnected')}
                             </Text>
 
-                            {/* Edit Button (Stops Propagation to open modal instead of flip) */}
-                            <Pressable
-                                onPress={(e: any) => {
-                                    e.stopPropagation();
-                                    onEdit?.();
-                                }}
-                                style={{
-                                    marginTop: 8,
-                                    // Increase touch target
-                                    padding: 8,
-                                    margin: -8,
-                                    zIndex: 10
-                                }}
-                            >
-                                <HStack
-                                    space="xs"
-                                    alignItems="center"
-                                    style={styles.editButton}
-                                >
-                                    <Edit3 size={12} color={colors.action} />
-                                    <Text color={colors.action} size="xs" bold>
-                                        {(t('common.edit') || 'Edit').toUpperCase()} {t('profile.title').toUpperCase()}
+                            {/* Identification Row */}
+                            {(profile?.nic_number || profile?.index_number) && (
+                                <Box bg={`${colors.action}10`} px={Theme.spacing.sm} py={Theme.spacing.xs} borderRadius={Theme.corners.tight} alignSelf="flex-start">
+                                    <Text color={colors.action} size="xxs" bold>
+                                        {profile?.role === 'student' ? 'INDEX:' : 'NIC:'} {profile?.nic_number || profile?.index_number}
                                     </Text>
-                                </HStack>
-                            </Pressable>
+                                </Box>
+                            )}
                         </VStack>
                     </HStack>
-
 
 
                     {/* Decorative Elements */}
@@ -259,11 +197,18 @@ export default function IdentityCard({ profile, onEdit }: IdentityCardProps) {
                     <Center h="100%">
                         <Box p={Theme.spacing.md} bg="white" borderRadius={Theme.corners.comfortable}>
                             <QRCodeGenerator
-                                value={profile?.id || 'gurudevi-guest'}
+                                value={
+                                    profile?.id
+                                        ? QRBuilder.userInvite(profile.id, profile.role || 'unknown')
+                                        : 'gurudevi-guest'
+                                }
                                 size={120}
                             />
                         </Box>
                         <Text color={colors.text} mt={Theme.spacing.md} bold>
+                            INVITE
+                        </Text>
+                        <Text color={colors.textSecondary} size="xs">
                             {t('profile.scanToConnect')}
                         </Text>
                     </Center>

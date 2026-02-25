@@ -12,14 +12,20 @@ import { useUserRole, useTracking } from '@repo/core';
 
 // Import role-specific views
 import { StudentSelfView, TeacherSelfView, PrincipalSelfView, FounderSelfView, AdminSelfView } from './self';
+import PulseDashboard from './self/PulseDashboard';
 
 export default function SelfScreen() {
     const { role } = useUserRole();
     const { discoverFeature } = useTracking();
+    const [showPulse, setShowPulse] = React.useState(true);
 
     React.useEffect(() => {
         discoverFeature('section_self');
     }, []);
+
+    if (showPulse) {
+        return <PulseDashboard onEnterDetails={() => setShowPulse(false)} />;
+    }
 
     // Route to appropriate view based on role
     if (role === 'student') {

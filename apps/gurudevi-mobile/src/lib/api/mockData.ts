@@ -1,4 +1,4 @@
-import { Classroom, Student, ClassroomResource, Lesson, Assignment } from './types';
+import { Classroom, Student, ClassroomResource, Lesson, Assignment } from '@repo/core';
 
 export const MOCK_CLASSROOMS: Classroom[] = [
     {
@@ -59,11 +59,11 @@ export const MOCK_CLASSROOMS: Classroom[] = [
 ];
 
 export const MOCK_STUDENTS: Student[] = [
-    { id: 'm-s1', full_name: 'Nimal Silva', grade: '10', class_id: 'mock-c1', created_at: new Date().toISOString() },
-    { id: 'm-s2', full_name: 'Kamal Perera', grade: '10', class_id: 'mock-c1', created_at: new Date().toISOString() },
-    { id: 'm-s3', full_name: 'Sunethra Devi', grade: '11', class_id: 'mock-c2', created_at: new Date().toISOString() },
-    { id: 'm-s4', full_name: 'Anura Kumara', grade: '10', class_id: 'mock-c3', created_at: new Date().toISOString() },
-    { id: 'm-s5', full_name: 'Pavaltharani S.', grade: '10', class_id: 'mock-c1', created_at: new Date().toISOString() },
+    { id: 'm-s1', full_name: 'Nimal Silva', class_id: 'mock-c1', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: 'm-s2', full_name: 'Kamal Perera', class_id: 'mock-c1', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: 'm-s3', full_name: 'Sunethra Devi', class_id: 'mock-c2', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: 'm-s4', full_name: 'Anura Kumara', class_id: 'mock-c3', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: 'm-s5', full_name: 'Pavaltharani S.', class_id: 'mock-c1', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
 ];
 
 export const MOCK_RESOURCES: ClassroomResource[] = [

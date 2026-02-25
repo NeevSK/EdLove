@@ -40,17 +40,29 @@ export default function DeleteAccountModal({ isOpen, onClose, onDelete, isLoadin
                 <ModalBody>
                     <VStack {...({ space: "md", py: "$2" } as any)}>
                         <Text {...({ color: Theme.colors.pearlGray, size: "md" } as any)}>
-                            This action is <Text {...({ bold: true, color: Theme.colors.sacredWhite } as any)}>irreversible</Text>. All your data, including classrooms, community posts, library contributions, and personal growth history, will be permanently removed from the Gurudevi sanctuary.
+                            This action is <Text {...({ bold: true, color: Theme.colors.sacredWhite } as any)}>irreversible</Text>. Your personal profile, settings, and private data will be permanently removed from the Gurudevi sanctuary.
                         </Text>
+                        {/* Data scope clarification — task 2.6.1 */}
                         <Box sx={{
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            padding: 12,
+                            backgroundColor: `${Theme.colors.glassBorder}`,
+                            padding: Theme.spacing.md,
                             borderRadius: Theme.corners.comfortable,
                             borderWidth: 1,
-                            borderColor: 'rgba(239, 68, 68, 0.2)'
+                            borderColor: `${Theme.colors.glassBorder}`,
+                        }}>
+                            <Text {...({ color: Theme.colors.starlightGray, size: "sm" } as any)}>
+                                School records (attendance, grades, community posts) are retained for institutional integrity and cannot be removed by individuals.
+                            </Text>
+                        </Box>
+                        <Box sx={{
+                            backgroundColor: `${Theme.colors.emberRed}18`,
+                            padding: Theme.spacing.md,
+                            borderRadius: Theme.corners.comfortable,
+                            borderWidth: 1,
+                            borderColor: `${Theme.colors.emberRed}33`,
                         }}>
                             <Text {...({ color: Theme.colors.emberRed, bold: true, size: "sm" } as any)}>
-                                Wait! If you just want to take a break, you can simply sign out. Deleting your account will erase everything forever.
+                                Just need a break? You can sign out instead — your sanctuary will be waiting for you.
                             </Text>
                         </Box>
                     </VStack>

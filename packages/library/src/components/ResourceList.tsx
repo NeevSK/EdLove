@@ -1,25 +1,11 @@
 /**
  * RESOURCE LIST - Telegram-Style High-Density Resource List
  *
- * A compact, information-rich list component for LibraryResources:
- * - File type icon (PDF, Video, Link, Doc, Note) with color-coded indicator
- * - Title + subject tag in compact rows
- * - Metadata: file size and duration from the `media` object (provider-agnostic)
- * - "Flash-Play" expandable preview via a bottom-sheet action sheet
- * - "Pull to Desk" shortcut per row
- *
- * Philosophy: Reduce friction from "Finding" to "Learning" (Flash-Play principle).
+ * Refactored for Sanctuary Resonance.
  */
 
-import React, { useState, useCallback } from 'react';
-import {
-    View,
-    Text,
-    Pressable,
-    StyleSheet,
-    FlatList,
-    useColorScheme,
-} from 'react-native';
+import React, { useState, useCallback, useMemo } from 'react';
+import { FlatList, useColorScheme } from 'react-native';
 import {
     FileText,
     Video,
@@ -37,13 +23,21 @@ import {
     ActionsheetContent,
     ActionsheetDragIndicator,
     ActionsheetDragIndicatorWrapper,
+    VStack,
+    HStack,
+    Box,
+    Text,
+    Theme,
+    SanctuaryCard,
+    SanctuaryButton,
+    useThemedColors,
+    LivingGlow
 } from '@repo/ui';
-import { Theme } from '@repo/ui';
 import { getMediaUrl, formatFileSize, formatDuration } from '@repo/core';
 import type { LibraryResource } from '../types';
 
 // ============================================================================
-// CONSTANTS
+// CONSTANTS & CONFIG
 // ============================================================================
 
 type DisplayResourceType = 'pdf' | 'video' | 'link' | 'doc' | 'note' | 'other';
@@ -62,14 +56,9 @@ const TYPE_CONFIG: Record<
 
 function resolveDisplayType(type: string): DisplayResourceType {
     if (type in TYPE_CONFIG) return type as DisplayResourceType;
-    if (type === 'lesson' || type === 'reading' || type === 'guide') return 'doc';
-    if (type === 'worksheet' || type === 'pedagogy') return 'doc';
+    if (['lesson', 'reading', 'guide', 'worksheet', 'pedagogy'].includes(type)) return 'doc';
     return 'other';
 }
-
-// ============================================================================
-// TYPES
-// ============================================================================
 
 export interface ResourceListProps {
     resources: LibraryResource[];
@@ -81,10 +70,6 @@ export interface ResourceListProps {
     refreshing?: boolean;
     onRefresh?: () => void;
 }
-
-// ============================================================================
-// COMPONENT
-// ============================================================================
 
 export function ResourceList({
     resources,
@@ -116,7 +101,7 @@ export function ResourceList({
     );
 
     return (
-        <>
+        <Box sx={{ flex: 1 }}>
             <FlatList
                 data={resources}
                 renderItem={renderItem}
@@ -128,10 +113,9 @@ export function ResourceList({
                 refreshing={refreshing}
                 onRefresh={onRefresh}
                 showsVerticalScrollIndicator={false}
-                ItemSeparatorComponent={ItemSeparator}
+                contentContainerStyle={{ paddingBottom: 100 }}
             />
 
-            {/* Flash-Play Bottom Sheet */}
             <FlashPlaySheet
                 resource={flashPlayResource}
                 onClose={handleCloseFlashPlay}
@@ -140,7 +124,7 @@ export function ResourceList({
                     handleCloseFlashPlay();
                 }}
             />
-        </>
+        </Box>
     );
 }
 
@@ -156,12 +140,11 @@ interface ResourceRowProps {
 }
 
 function ResourceRow({ resource, onOpen, onFlashPlay, onPullToDesk }: ResourceRowProps) {
-    const isDark = useColorScheme() === 'dark';
+    const colors = useThemedColors();
     const displayType = resolveDisplayType(resource.type);
     const config = TYPE_CONFIG[displayType];
     const Icon = config.icon;
 
-    const mediaUrl = getMediaUrl(resource.media);
     const fileSize = formatFileSize(resource.media?.bytes);
     const duration = formatDuration(resource.media?.duration);
     const metaParts = [
@@ -170,127 +153,74 @@ function ResourceRow({ resource, onOpen, onFlashPlay, onPullToDesk }: ResourceRo
         duration,
     ].filter(Boolean);
 
-    const styles = rowStyles(isDark);
-
     return (
-        <Pressable onPress={onOpen} style={styles.container}>
-            {/* File Type Icon */}
-            <View style={[styles.iconBox, { backgroundColor: `${config.color}18` }]}>
-                <Icon color={config.color} size={20} />
-                <Text style={[styles.typeLabel, { color: config.color }]}>{config.label}</Text>
-            </View>
+        <Box sx={{ marginBottom: 8 }}>
+            <SanctuaryCard onPress={onOpen}>
+                <HStack space="md" alignItems="center" sx={{ padding: 8 }}>
+                    {/* File Type Icon - Refined Glass Effect */}
+                    <Box
+                        sx={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: Theme.corners.comfortable,
+                            backgroundColor: `${config.color}15`,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderWidth: 1,
+                            borderColor: `${config.color}30`,
+                        }}
+                    >
+                        <Icon color={config.color} size={20} />
+                        <Text size="2xs" bold color={config.color} sx={{ marginTop: 2 }}>{config.label}</Text>
+                    </Box>
 
-            {/* Content */}
-            <View style={styles.content}>
-                <Text style={styles.title} numberOfLines={2}>{resource.title}</Text>
-                <View style={styles.metaRow}>
-                    <Text style={styles.subject}>{resource.subject}</Text>
-                    {metaParts.length > 0 && (
-                        <Text style={styles.meta}>{metaParts.join(' · ')}</Text>
-                    )}
-                </View>
-                {resource.verified && (
-                    <Text style={styles.verified}>✓ Verified</Text>
-                )}
-            </View>
+                    {/* Content */}
+                    <VStack sx={{ flex: 1, gap: 2 }}>
+                        <Text color={colors.text} size="sm" bold numberOfLines={1}>{resource.title}</Text>
+                        <HStack space="xs" alignItems="center">
+                            <Text size="xs" color={colors.textSecondary}>{resource.subject}</Text>
+                            {metaParts.length > 0 && (
+                                <>
+                                    <Box sx={{ width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border }} />
+                                    <Text size="xs" color={colors.textTertiary}>{metaParts.join(' · ')}</Text>
+                                </>
+                            )}
+                        </HStack>
+                        {resource.verified && (
+                            <HStack space="xs" alignItems="center">
+                                <Box sx={{ backgroundColor: Theme.colors.sageGreen, borderRadius: 4, paddingHorizontal: 4 }}>
+                                    <Text size="2xs" color="white" bold>VERIFIED</Text>
+                                </Box>
+                            </HStack>
+                        )}
+                    </VStack>
 
-            {/* Actions */}
-            <View style={styles.actions}>
-                {(mediaUrl || resource.url) && (
-                    <Pressable onPress={onFlashPlay} style={styles.actionButton} hitSlop={8}>
-                        <Play color={Theme.colors.sanctuarySaffron} size={16} />
-                    </Pressable>
-                )}
-                {onPullToDesk && (
-                    <Pressable onPress={onPullToDesk} style={styles.actionButton} hitSlop={8}>
-                        <Bookmark color={Theme.colors.pearlGray} size={16} />
-                    </Pressable>
-                )}
-            </View>
-        </Pressable>
-    );
-}
-
-function rowStyles(isDark: boolean) {
-    return StyleSheet.create({
-        container: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: Theme.spacing.md,
-            paddingVertical: 10,
-            backgroundColor: isDark ? Theme.colors.deepIndigo : Theme.colors.white,
-            gap: Theme.spacing.sm,
-        },
-        iconBox: {
-            width: 44,
-            height: 44,
-            borderRadius: Theme.corners.comfortable,
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 2,
-        },
-        typeLabel: {
-            fontSize: 9,
-            fontWeight: '700',
-            letterSpacing: 0.3,
-        },
-        content: {
-            flex: 1,
-            gap: 3,
-        },
-        title: {
-            fontSize: Theme.typography.fontSize.sm,
-            fontWeight: '600',
-            color: isDark ? Theme.colors.sacredWhite : Theme.colors.charcoalTruth,
-            lineHeight: 18,
-        },
-        metaRow: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: Theme.spacing.sm,
-            flexWrap: 'wrap',
-        },
-        subject: {
-            fontSize: 11,
-            color: isDark ? Theme.colors.pearlGray : Theme.colors.stoneGray,
-            fontWeight: '500',
-        },
-        meta: {
-            fontSize: 11,
-            color: isDark ? Theme.colors.mistGray : Theme.colors.stoneGray,
-        },
-        verified: {
-            fontSize: 10,
-            color: Theme.colors.sageGreen,
-            fontWeight: '600',
-        },
-        actions: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 6,
-        },
-        actionButton: {
-            padding: 6,
-        },
-    });
-}
-
-// ============================================================================
-// ITEM SEPARATOR
-// ============================================================================
-
-function ItemSeparator() {
-    const isDark = useColorScheme() === 'dark';
-    return (
-        <View
-            style={{
-                height: 1,
-                marginLeft: 44 + Theme.spacing.md * 2 + Theme.spacing.sm,
-                backgroundColor: isDark
-                    ? 'rgba(255,255,255,0.06)'
-                    : 'rgba(0,0,0,0.06)',
-            }}
-        />
+                    {/* Actions */}
+                    <HStack space="xs" alignItems="center">
+                        <SanctuaryButton
+                            onPress={onFlashPlay}
+                            variant="ghost"
+                            size="xs"
+                            action="secondary"
+                            leftIcon={Play}
+                        >
+                            {''}
+                        </SanctuaryButton>
+                        {onPullToDesk && (
+                            <SanctuaryButton
+                                onPress={onPullToDesk}
+                                variant="ghost"
+                                size="xs"
+                                action="secondary"
+                                leftIcon={Bookmark}
+                            >
+                                {''}
+                            </SanctuaryButton>
+                        )}
+                    </HStack>
+                </HStack>
+            </SanctuaryCard>
+        </Box>
     );
 }
 
@@ -305,7 +235,7 @@ interface FlashPlaySheetProps {
 }
 
 function FlashPlaySheet({ resource, onClose, onOpenFull }: FlashPlaySheetProps) {
-    const isDark = useColorScheme() === 'dark';
+    const colors = useThemedColors();
 
     if (!resource) return null;
 
@@ -315,82 +245,6 @@ function FlashPlaySheet({ resource, onClose, onOpenFull }: FlashPlaySheetProps) 
     const fileSize = formatFileSize(resource.media?.bytes);
     const duration = formatDuration(resource.media?.duration);
 
-    const styles = StyleSheet.create({
-        header: {
-            flexDirection: 'row',
-            alignItems: 'flex-start',
-            gap: Theme.spacing.md,
-            paddingHorizontal: Theme.spacing.lg,
-            paddingTop: Theme.spacing.md,
-            paddingBottom: Theme.spacing.sm,
-        },
-        iconBox: {
-            width: 52,
-            height: 52,
-            borderRadius: Theme.corners.comfortable,
-            backgroundColor: `${config.color}18`,
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 3,
-        },
-        typeLabel: {
-            fontSize: 9,
-            fontWeight: '700',
-            color: config.color,
-        },
-        meta: {
-            flex: 1,
-            gap: 4,
-        },
-        title: {
-            fontSize: Theme.typography.fontSize.md,
-            fontWeight: '700',
-            color: isDark ? Theme.colors.sacredWhite : Theme.colors.charcoalTruth,
-            lineHeight: 22,
-        },
-        creator: {
-            fontSize: 13,
-            color: isDark ? Theme.colors.pearlGray : Theme.colors.stoneGray,
-        },
-        metaText: {
-            fontSize: 12,
-            color: isDark ? Theme.colors.mistGray : Theme.colors.stoneGray,
-        },
-        description: {
-            fontSize: Theme.typography.fontSize.sm,
-            color: isDark ? Theme.colors.pearlGray : Theme.colors.slateGray,
-            lineHeight: 20,
-            paddingHorizontal: Theme.spacing.lg,
-            marginBottom: Theme.spacing.md,
-        },
-        actions: {
-            flexDirection: 'row',
-            paddingHorizontal: Theme.spacing.lg,
-            paddingBottom: Theme.spacing.xl,
-            gap: Theme.spacing.md,
-        },
-        openButton: {
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: Theme.spacing.sm,
-            backgroundColor: Theme.colors.sanctuarySaffron,
-            paddingVertical: 12,
-            borderRadius: Theme.corners.comfortable,
-        },
-        openButtonText: {
-            fontSize: Theme.typography.fontSize.md,
-            fontWeight: '700',
-            color: Theme.colors.white,
-        },
-        closeButton: {
-            padding: 12,
-            borderRadius: Theme.corners.comfortable,
-            backgroundColor: isDark ? Theme.colors.midnightBlue : Theme.colors.sandStone,
-        },
-    });
-
     const metaParts = [
         fileSize,
         duration,
@@ -398,48 +252,65 @@ function FlashPlaySheet({ resource, onClose, onOpenFull }: FlashPlaySheetProps) 
     ].filter(Boolean).join(' · ');
 
     return (
-        <Actionsheet isOpen onClose={onClose}>
+        <Actionsheet isOpen={!!resource} onClose={onClose}>
             <ActionsheetBackdrop />
-            <ActionsheetContent>
+            <ActionsheetContent sx={{ backgroundColor: Theme.colors.voidIndigo }}>
                 <ActionsheetDragIndicatorWrapper>
                     <ActionsheetDragIndicator />
                 </ActionsheetDragIndicatorWrapper>
 
-                {/* Resource Header */}
-                <View style={styles.header}>
-                    <View style={styles.iconBox}>
-                        <Icon color={config.color} size={24} />
-                        <Text style={styles.typeLabel}>{config.label}</Text>
-                    </View>
-                    <View style={styles.meta}>
-                        <Text style={styles.title} numberOfLines={2}>{resource.title}</Text>
-                        <Text style={styles.creator}>{resource.creator_name}</Text>
-                        {metaParts ? (
-                            <Text style={styles.metaText}>{metaParts}</Text>
-                        ) : null}
-                    </View>
-                </View>
+                <VStack space="lg" p="$4" sx={{ width: '100%' }}>
+                    <HStack space="md" alignItems="center">
+                        <Box
+                            sx={{
+                                width: 56,
+                                height: 56,
+                                borderRadius: Theme.corners.comfortable,
+                                backgroundColor: `${config.color}20`,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderWidth: 1,
+                                borderColor: `${config.color}40`,
+                            }}
+                        >
+                            <Icon color={config.color} size={28} />
+                            <Text size="2xs" bold color={config.color}>{config.label}</Text>
+                        </Box>
+                        <VStack sx={{ flex: 1 }}>
+                            <Text color={Theme.colors.sacredWhite} size="md" bold numberOfLines={2}>{resource.title}</Text>
+                            <Text color={Theme.colors.mistGray} size="sm">{resource.creator_name}</Text>
+                            {metaParts ? <Text color={Theme.colors.dimGray} size="xs">{metaParts}</Text> : null}
+                        </VStack>
+                    </HStack>
 
-                {/* Description preview */}
-                {resource.description ? (
-                    <Text style={styles.description} numberOfLines={3}>
-                        {resource.description}
-                    </Text>
-                ) : null}
+                    {resource.description ? (
+                        <Box sx={{ backgroundColor: Theme.colors.glassHighlight, padding: 12, borderRadius: Theme.corners.comfortable }}>
+                            <Text color={Theme.colors.pearlGray} size="sm" sx={{ lineHeight: 20 }} numberOfLines={3}>
+                                {resource.description}
+                            </Text>
+                        </Box>
+                    ) : null}
 
-                {/* Actions */}
-                <View style={styles.actions}>
-                    <Pressable onPress={onOpenFull} style={styles.openButton}>
-                        <Play color={Theme.colors.white} size={18} />
-                        <Text style={styles.openButtonText}>Open Resource</Text>
-                    </Pressable>
-                    <Pressable onPress={onClose} style={styles.closeButton}>
-                        <X
-                            color={isDark ? Theme.colors.pearlGray : Theme.colors.stoneGray}
-                            size={20}
-                        />
-                    </Pressable>
-                </View>
+                    <HStack space="md">
+                        <Box sx={{ flex: 1 }}>
+                            <SanctuaryButton
+                                onPress={onOpenFull}
+                                action="primary"
+                                leftIcon={Play}
+                            >
+                                Open Resonance
+                            </SanctuaryButton>
+                        </Box>
+                        <SanctuaryButton
+                            onPress={onClose}
+                            variant="outline"
+                            action="secondary"
+                            leftIcon={X}
+                        >
+                            {''}
+                        </SanctuaryButton>
+                    </HStack>
+                </VStack>
             </ActionsheetContent>
         </Actionsheet>
     );

@@ -38,7 +38,7 @@ import * as Clipboard from 'expo-clipboard';
 import { api, InviteCode, UserRole, hasRole, handleAPIError } from '@repo/core';
 import { Theme } from '@repo/ui';
 import { Copy, RefreshCw, Users, Shield, QrCode } from 'lucide-react-native';
-import { QRCodeGenerator } from '@repo/scanner-kit';
+import { QRCodeGenerator, QRBuilder } from '@repo/scanner-kit';
 
 interface InviteManagerProps {
     schoolId: string;
@@ -139,7 +139,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
             }}
         >
             <ScrollView>
-                <VStack sx={{ padding: Theme.spacing.lg, gap: Theme.spacing.lg }}>
+                <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
                     {/* Header */}
                     <HStack
                         sx={{
@@ -175,7 +175,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                     </Text>
 
                     {/* Generate Buttons */}
-                    <VStack sx={{ gap: Theme.spacing.md }}>
+                    <VStack space="md">
                         <Button
                             sx={{
                                 backgroundColor: Theme.colors.sageGreen,
@@ -192,7 +192,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                             </ButtonText>
                         </Button>
 
-                        <HStack sx={{ gap: Theme.spacing.md }}>
+                        <HStack space="md">
                             <Button
                                 sx={{
                                     flex: 1,
@@ -266,7 +266,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
 
                     {/* Active Codes List */}
                     {!isLoading && inviteCodes.length > 0 && (
-                        <VStack sx={{ gap: Theme.spacing.md }}>
+                        <VStack space="md">
                             <Text
                                 color={Theme.colors.pearlGray}
                                 sx={{
@@ -295,9 +295,9 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                                             alignItems: 'center',
                                         }}
                                     >
-                                        <VStack sx={{ gap: Theme.spacing.xs, flex: 1 }}>
+                                        <VStack space="xs" sx={{ flex: 1 }}>
                                             {/* Code */}
-                                            <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}>
+                                            <HStack space="sm" sx={{ alignItems: 'center' }}>
                                                 <Text
                                                     color={Theme.colors.sacredWhite}
                                                     sx={{
@@ -308,7 +308,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                                                 >
                                                     {invite.code}
                                                 </Text>
-                                                <HStack sx={{ gap: Theme.spacing.xs }}>
+                                                <HStack space="xs">
                                                     <Button
                                                         size="xs"
                                                         variant="link"
@@ -333,7 +333,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
 
 
                                             {/* Role Badge */}
-                                            <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}>
+                                            <HStack space="sm" sx={{ alignItems: 'center' }}>
                                                 <Box
                                                     sx={{
                                                         paddingHorizontal: Theme.spacing.sm,
@@ -405,6 +405,67 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                     )}
                 </VStack>
             </ScrollView>
+
+            {/* QR Code Modal — shows invite QR when principal taps the QR icon */}
+            <Modal
+                isOpen={qrCodeData !== null}
+                onClose={() => setQrCodeData(null)}
+            >
+                <ModalBackdrop />
+                <ModalContent
+                    sx={{
+                        backgroundColor: Theme.colors.deepIndigo,
+                        borderRadius: Theme.corners.generous,
+                        padding: Theme.spacing.xl,
+                        alignItems: 'center',
+                        maxWidth: 320,
+                    }}
+                >
+                    <ModalHeader>
+                        <ModalHeading
+                            color={Theme.colors.sanctuarySaffron}
+                            sx={{ textAlign: 'center', fontSize: 18, fontWeight: '600' }}
+                        >
+                            {qrCodeData
+                                ? `${getRoleIcon(qrCodeData.role)} ${qrCodeData.role.toUpperCase()} INVITE`
+                                : 'Invite QR'}
+                        </ModalHeading>
+                        <ModalCloseButton onPress={() => setQrCodeData(null)} />
+                    </ModalHeader>
+                    <ModalBody sx={{ alignItems: 'center', paddingVertical: Theme.spacing.lg }}>
+                        {qrCodeData && (
+                            <>
+                                <QRCodeGenerator
+                                    value={QRBuilder.invite(
+                                        qrCodeData.code,
+                                        schoolId,
+                                        qrCodeData.role,
+                                    )}
+                                    size={220}
+                                    color={Theme.colors.voidIndigo}
+                                    backgroundColor={Theme.colors.sacredWhite}
+                                    label={qrCodeData.code}
+                                    errorCorrectionLevel="H"
+                                    borderRadius={12}
+                                    padding={16}
+                                />
+                                <Text
+                                    color={Theme.colors.pearlGray}
+                                    sx={{ marginTop: Theme.spacing.md, textAlign: 'center', fontSize: 13 }}
+                                >
+                                    Scan to join as {qrCodeData.role}
+                                </Text>
+                                <Text
+                                    color={Theme.colors.mistGray}
+                                    sx={{ marginTop: Theme.spacing.xs, textAlign: 'center', fontSize: 12, fontFamily: 'monospace' }}
+                                >
+                                    Code: {qrCodeData.code}
+                                </Text>
+                            </>
+                        )}
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </Box >
     );
 }

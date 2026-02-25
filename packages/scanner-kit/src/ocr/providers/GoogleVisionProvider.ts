@@ -1,0 +1,42 @@
+/**
+ * GoogleVisionProvider — cloud OCR via Google Cloud Vision API
+ *
+ * Calls the Supabase Edge Function `ocr-proxy` which holds the API key
+ * server-side. Never exposes credentials to the app bundle.
+ *
+ * Pro-gated: the caller is responsible for checking `user.is_pro` before
+ * instantiating this provider; the edge function enforces it a second time.
+ *
+ * Strengths: superior printed text, multi-language detection, high throughput.
+ */
+
+import { supabase } from '@repo/core';
+import type { OCRProvider, OCRRawResult, OCRBlock } from '../types';
+
+export class GoogleVisionProvider implements OCRProvider {
+  readonly name = 'google_vision' as const;
+
+  async recognize(imageUri: string): Promise<OCRRawResult> {
+    // Convert local file URI to base64 for transmission
+    const base64 = await uriToBase64(imageUri);
+
+    const { data, error } = await supabase.functions.invoke('ocr-proxy', {
+      body: { provider: 'google_vision', imageBase64: base64 },
+    });
+
+    if (error) throw new Error(`GoogleVisionProvider: ${error.message}`);
+    if (!data) throw new Error('GoogleVisionProvider: empty response from ocr-proxy');
+
+    // ocr-proxy returns pre-normalized OCRRawResult
+    return data as OCRRawResult;
+  }
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+async function uriToBase64(uri: string): Promise<string> {
+  // expo-file-system/legacy — the sub-path export for SDK 51+ legacy FileSystem APIs.
+  // @ts-ignore — type declarations for the sub-path export may be absent in some package configs
+  const { readAsStringAsync, EncodingType } = await import('expo-file-system/legacy');
+  return readAsStringAsync(uri, { encoding: EncodingType.Base64 });
+}

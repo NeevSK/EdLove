@@ -1,7 +1,7 @@
 ﻿import { SafeZustandStorage, useStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { api } from '../../lib/api';
-import { InventoryItem, InventoryRequest } from '../../lib/api/types';
+import { InventoryItem, InventoryRequest } from '@repo/core';
 
 // Key for persisting inventory in the low-level storage
 const INVENTORY_CACHE_KEY = 'gurudevi-inventory-cache';

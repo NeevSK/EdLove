@@ -15,35 +15,37 @@ interface Props {
 interface State {
     hasError: boolean;
     error: Error | null;
+    isRecovering: boolean; // Recursion guard
 }
 
 export default class ErrorBoundary extends Component<Props, State> {
     public state: State = {
         hasError: false,
         error: null,
+        isRecovering: false,
     };
 
     public static getDerivedStateFromError(error: Error): State {
-        return { hasError: true, error };
+        return { hasError: true, error, isRecovering: false };
     }
 
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         console.error(`Error in ${this.props.name}:`, error, errorInfo);
 
+        // Recursive protection: If we are already recovering and hit another error, something is fundamentally broken
+        if (this.state.isRecovering) {
+            console.error('Critical: Recursive error detected in ErrorBoundary itself.');
+            return;
+        }
+
+        this.setState({ isRecovering: true });
+
         // Call custom error handler if provided
         this.props.onError?.(error, errorInfo);
-
-        // TODO: Send to error tracking service (e.g., Sentry)
-        // Sentry.captureException(error, { 
-        //     contexts: { 
-        //         react: errorInfo,
-        //         boundary: { name: this.props.name }
-        //     } 
-        // });
     }
 
     private handleReset = () => {
-        this.setState({ hasError: false, error: null });
+        this.setState({ hasError: false, error: null, isRecovering: false });
     };
 
     public render() {

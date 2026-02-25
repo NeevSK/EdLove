@@ -16,8 +16,8 @@ import { TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ClassroomGradingSettings } from '@repo/core';
 import { useGradebook } from '../hooks/useGradebook';
-import GradebookTable from './GradebookTable';
-import GradingSettings from './GradingSettings';
+import GradebookTable from './grading/GradebookTable';
+import GradingSettings from './grading/GradingSettings';
 import { Theme } from '@repo/ui';
 
 interface GradebookViewProps {

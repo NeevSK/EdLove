@@ -1,10 +1,4 @@
-/**
- * User Type Definitions
- * Defines user roles and user profile structure for Gurudevi
- */
-
 import { UserRole } from '../constants/SriLankanSchools';
-export type { UserRole };
 
 /**
  * User Profile Interface
@@ -20,6 +14,11 @@ export interface User {
     updated_at?: string;         // ISO timestamp (optional)
     avatar_url?: string;         // Profile picture URL (optional)
     is_anonymous?: boolean;      // NEW: Flag for anonymous/guest users
+    profile_completed: boolean;  // NEW: Flag for "No Trust" barrier
+    bio?: string;                // User bio
+    role_label?: string;         // Personalized role label (e.g. "Physics Teacher")
+    index_number?: string;       // NEW: Mandatory for students
+    nic_number?: string;         // NEW: Mandatory for teachers
     onboarding_completed?: boolean; // Flag indicating if user has completed onboarding
     onboarding_completed_at?: string; // Timestamp when onboarding was completed
 }

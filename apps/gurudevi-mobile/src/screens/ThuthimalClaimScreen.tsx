@@ -1,0 +1,317 @@
+/**
+ * ThuthimalClaimScreen — Flower of Gratitude gift claim experience
+ *
+ * Navigated to from QRHandlerScreen when a thuthimal_gift QR is scanned.
+ * Shows the gifter's name, claims the one-time token, upgrades user to Pro,
+ * and celebrates with warm sanctuary aesthetics.
+ *
+ * Philosophy: Non-transactional, dignified, honors teaching as sacred work.
+ */
+
+import React, { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import {
+  Box,
+  VStack,
+  HStack,
+  Text,
+  Heading,
+  Spinner,
+  ScreenWrapper,
+  Theme,
+} from '@repo/ui';
+import { useThemedColors } from '@repo/ui';
+import { hapticSuccess, hapticError } from '@repo/ui';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { supabase, thuthimalAPI } from '@repo/core';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withDelay,
+  withSequence,
+  withTiming,
+  FadeInDown,
+} from 'react-native-reanimated';
+import { TouchableOpacity } from 'react-native';
+
+type ClaimRouteParams = {
+  ThuthimalClaim: {
+    gift_token: string;
+    gifter_name: string;
+  };
+};
+
+type ClaimState = 'loading' | 'success' | 'already_claimed' | 'error';
+
+export default function ThuthimalClaimScreen() {
+  const navigation = useNavigation<any>();
+  const route = useRoute<RouteProp<ClaimRouteParams, 'ThuthimalClaim'>>();
+  const colors = useThemedColors();
+  const [claimState, setClaimState] = useState<ClaimState>('loading');
+  const [gifterName, setGifterName] = useState(route.params?.gifter_name ?? 'Someone special');
+
+  // Flower bloom animation
+  const flowerScale = useSharedValue(0);
+  const flowerOpacity = useSharedValue(0);
+
+  const flowerStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: flowerScale.value }],
+    opacity: flowerOpacity.value,
+  }));
+
+  useEffect(() => {
+    claimGift();
+  }, []);
+
+  const claimGift = async () => {
+    const { gift_token } = route.params;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigation.navigate('Auth');
+        return;
+      }
+
+      const result = await thuthimalAPI.claimGift(gift_token, user.id);
+
+      if (result.success) {
+        setGifterName(result.gifter_name ?? gifterName);
+        setClaimState('success');
+        hapticSuccess();
+        // Bloom animation
+        flowerScale.value = withDelay(
+          200,
+          withSequence(
+            withSpring(1.3, { damping: 8, stiffness: 100 }),
+            withSpring(1.0, { damping: 12, stiffness: 120 }),
+          ),
+        );
+        flowerOpacity.value = withTiming(1, { duration: 400 });
+      } else if (result.error === 'already_claimed_or_invalid') {
+        setClaimState('already_claimed');
+        hapticError();
+      } else {
+        setClaimState('error');
+        hapticError();
+      }
+    } catch (err) {
+      console.error('ThuthimalClaimScreen error:', err);
+      setClaimState('error');
+      hapticError();
+    }
+  };
+
+  const handleContinue = () => {
+    navigation.navigate('Main', { screen: 'Profile' });
+  };
+
+  if (claimState === 'loading') {
+    return (
+      <ScreenWrapper>
+        <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}>
+            <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+            <Text sx={{ color: Theme.colors.pearlGray, textAlign: 'center' }}>
+              Receiving the flower of gratitude...
+            </Text>
+          </VStack>
+        </Box>
+      </ScreenWrapper>
+    );
+  }
+
+  if (claimState === 'already_claimed') {
+    return (
+      <ScreenWrapper>
+        <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}>
+          <Animated.View entering={FadeInDown.duration(500)}>
+            <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}>
+              <Text sx={{ fontSize: 56, textAlign: 'center' }}>🌸</Text>
+              <Heading
+                sx={{ textAlign: 'center', fontSize: Theme.typography.fontSize['2xl'] }}
+                color={Theme.colors.pearlGray as any}
+              >
+                This flower has already bloomed
+              </Heading>
+              <Text sx={{ color: Theme.colors.mistGray, textAlign: 'center', lineHeight: 22 }}>
+                This Thuthimal gift has already been received by someone.{'\n'}
+                Each flower of gratitude blooms only once.
+              </Text>
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                style={[styles.button, { backgroundColor: Theme.colors.deepIndigo }]}
+              >
+                <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>Go Back</Text>
+              </TouchableOpacity>
+            </VStack>
+          </Animated.View>
+        </Box>
+      </ScreenWrapper>
+    );
+  }
+
+  if (claimState === 'error') {
+    return (
+      <ScreenWrapper>
+        <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}>
+          <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}>
+            <Text sx={{ fontSize: 48 }}>⚠️</Text>
+            <Heading
+              sx={{ textAlign: 'center' }}
+              color={Theme.colors.emberRed as any}
+            >
+              Something went wrong
+            </Heading>
+            <Text sx={{ color: Theme.colors.pearlGray, textAlign: 'center' }}>
+              We couldn't process this gift. Please try again or contact support.
+            </Text>
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={[styles.button, { backgroundColor: Theme.colors.deepIndigo }]}
+            >
+              <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>Go Back</Text>
+            </TouchableOpacity>
+          </VStack>
+        </Box>
+      </ScreenWrapper>
+    );
+  }
+
+  // SUCCESS STATE — warm, sacred, non-transactional
+  return (
+    <ScreenWrapper>
+      <Box
+        sx={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: Theme.spacing.xl,
+          backgroundColor: Theme.colors.voidIndigo,
+        }}
+      >
+        {/* Flower */}
+        <Animated.View style={[styles.flowerContainer, flowerStyle]}>
+          <Text style={styles.flowerEmoji}>🌸</Text>
+        </Animated.View>
+
+        <Animated.View entering={FadeInDown.delay(400).duration(600)}>
+          <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg, marginTop: Theme.spacing.xl }}>
+            {/* Sinhala title */}
+            <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 28, letterSpacing: 2, textAlign: 'center' }}>
+              තුතිමල්
+            </Text>
+
+            <Heading
+              sx={{
+                textAlign: 'center',
+                fontSize: Theme.typography.fontSize['2xl'],
+                fontWeight: '700',
+              }}
+              color={Theme.colors.sacredWhite as any}
+            >
+              A Flower of Gratitude
+            </Heading>
+
+            {/* Gift message */}
+            <Box
+              sx={{
+                backgroundColor: `${Theme.colors.sanctuarySaffron}18`,
+                borderRadius: Theme.corners.generous,
+                borderWidth: 1,
+                borderColor: `${Theme.colors.sanctuarySaffron}40`,
+                padding: Theme.spacing.lg,
+                width: '100%',
+              }}
+            >
+              <Text
+                sx={{
+                  color: Theme.colors.pearlGray,
+                  textAlign: 'center',
+                  lineHeight: 24,
+                  fontSize: 16,
+                }}
+              >
+                Your Pro subscription is a gift of gratitude from
+              </Text>
+              <Text
+                sx={{
+                  color: Theme.colors.sacredWhite,
+                  textAlign: 'center',
+                  fontWeight: '700',
+                  fontSize: 22,
+                  marginTop: Theme.spacing.sm,
+                }}
+              >
+                {gifterName}
+              </Text>
+              <Text
+                sx={{
+                  color: Theme.colors.mistGray,
+                  textAlign: 'center',
+                  fontSize: 13,
+                  marginTop: Theme.spacing.sm,
+                }}
+              >
+                A recognition of your sacred work as an educator.
+              </Text>
+            </Box>
+
+            {/* Pro status confirmation */}
+            <HStack
+              sx={{
+                backgroundColor: `${Theme.colors.sageGreen}20`,
+                borderRadius: Theme.corners.comfortable,
+                borderWidth: 1,
+                borderColor: `${Theme.colors.sageGreen}40`,
+                paddingHorizontal: Theme.spacing.lg,
+                paddingVertical: Theme.spacing.md,
+                alignItems: 'center',
+                gap: Theme.spacing.sm,
+              }}
+            >
+              <Text sx={{ fontSize: 20 }}>✨</Text>
+              <Text sx={{ color: Theme.colors.sageGreen, fontWeight: '600' }}>
+                Pro is now active on your account
+              </Text>
+            </HStack>
+
+            {/* Continue button */}
+            <TouchableOpacity
+              onPress={handleContinue}
+              style={[
+                styles.button,
+                {
+                  backgroundColor: Theme.colors.sanctuarySaffron,
+                  width: '100%',
+                  marginTop: Theme.spacing.md,
+                },
+              ]}
+            >
+              <Text sx={{ color: Theme.colors.voidIndigo, fontWeight: '700', fontSize: 16, textAlign: 'center' }}>
+                Enter the Sanctuary ✦
+              </Text>
+            </TouchableOpacity>
+          </VStack>
+        </Animated.View>
+      </Box>
+    </ScreenWrapper>
+  );
+}
+
+const styles = StyleSheet.create({
+  flowerContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  flowerEmoji: {
+    fontSize: 80,
+    textAlign: 'center',
+  },
+  button: {
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: Theme.corners.comfortable,
+    alignItems: 'center',
+  },
+});

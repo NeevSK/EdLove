@@ -44,39 +44,49 @@ export default function SanctuaryStatsCard({
             sx={{
                 backgroundColor: colors.secondary,
                 borderRadius: Theme.corners.generous,
-                padding: Theme.spacing.lg,
-                marginBottom: Theme.spacing.lg,
+                padding: Theme.spacing.xl,
                 borderColor: colors.border,
                 borderWidth: 1,
-                marginHorizontal: Theme.spacing.md
+                shadowColor: colors.glow,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.5,
+                shadowRadius: 15,
+                elevation: 5,
             }}
         >
-            <HStack {...({ space: "sm", alignItems: "center", mb: Theme.spacing.md } as any)}>
+            <HStack {...({
+                space: "sm",
+                alignItems: "center",
+                mt: Theme.spacing.sm,
+                mb: Theme.spacing.md
+            } as any)}>
                 {showTrophy && <Trophy size={18} color={Theme.colors.sanctuarySaffron} />}
                 <Text {...({ color: colors.text, bold: true, size: "md" } as any)}>
                     {title}
                 </Text>
             </HStack>
 
-            <HStack {...({ justifyContent: "space-between", mb: Theme.spacing.lg } as any)}>
+            <HStack {...({ justifyContent: "space-between", mb: Theme.spacing.md } as any)}>
                 {items.map((item, index) => (
-                    <VStack key={index} {...({ alignItems: "center", space: "xs", sx: { flex: 1 } } as any)}>
+                    <VStack key={index} {...({ alignItems: "center", justifyContent: "center", space: "xs", sx: { flex: 1 } } as any)}>
                         <Box
                             sx={{
                                 backgroundColor: `${item.color}20`,
-                                padding: 10,
-                                borderRadius: 12,
-                                marginBottom: 4
+                                padding: Theme.spacing.sm,
+                                borderRadius: Theme.corners.comfortable,
+                                marginBottom: Theme.spacing.xs
                             }}
                         >
                             <item.icon size={20} color={item.color} />
                         </Box>
-                        <Text {...({ color: colors.text, bold: true, size: "lg" } as any)}>
-                            {item.value}
-                        </Text>
-                        <Text {...({ color: colors.textTertiary, size: "xs" } as any)}>
-                            {item.label}
-                        </Text>
+                        <VStack alignItems="center" space={0}>
+                            <Text {...({ color: colors.text, bold: true, size: "lg", textAlign: "center" } as any)}>
+                                {item.value}
+                            </Text>
+                            <Text {...({ color: colors.textTertiary, size: "xxs", textAlign: "center" } as any)}>
+                                {item.label}
+                            </Text>
+                        </VStack>
                     </VStack>
                 ))}
             </HStack>

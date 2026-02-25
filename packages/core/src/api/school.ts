@@ -1,57 +1,18 @@
 ﻿import { supabase } from '../lib/supabase';
 import { APIError } from './types';
-import { UserRole } from '../types';
+import {
+    School,
+    Section,
+    SchoolGrade as Grade,
+    Announcement,
+    InviteCode,
+    SchoolStats,
+    UserRole
+} from '../types';
 
 // ============================================================================
 // SCHOOL API (Principal Functions)
 // ============================================================================
-
-export interface School {
-    id: string;
-    name: string;
-    type: 'primary' | 'secondary' | 'mixed';
-    created_at: string;
-}
-
-export interface Section {
-    id: string;
-    school_id: string;
-    name: string; // e.g., "Primary", "Secondary"
-    created_at: string;
-}
-
-export interface Grade {
-    id: string;
-    section_id: string;
-    number: number; // 1-13
-    created_at: string;
-}
-
-export interface Announcement {
-    id: string;
-    school_id: string;
-    author_id: string;
-    content: string;
-    is_pinned: boolean;
-    created_at: string;
-}
-
-export interface InviteCode {
-    code: string;
-    school_id: string;
-    role: UserRole;
-    created_by: string;
-    used: boolean;
-    created_at: string;
-    expires_at?: string;
-}
-
-export interface SchoolStats {
-    total_students: number;
-    total_teachers: number;
-    total_classrooms: number;
-    total_sections: number;
-}
 
 export const schoolAPI = {
     /**
@@ -338,4 +299,18 @@ export const schoolAPI = {
 
         return data;
     },
+
+    /**
+     * Search for schools by name
+     */
+    async searchSchools(query: string): Promise<School[]> {
+        const { data, error } = await supabase
+            .from('schools')
+            .select('*')
+            .ilike('name', `%${query}%`)
+            .limit(10);
+
+        if (error) throw error;
+        return data || [];
+    }
 };

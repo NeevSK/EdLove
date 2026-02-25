@@ -16,6 +16,7 @@ import {
     SandboxBanner,
     hapticLight
 } from '@repo/ui';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Alert } from 'react-native';
 import {
     Zap,
@@ -31,10 +32,10 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { useFeatureAccess, useStore, ClassroomStackParamList, api, supabase } from '@repo/core';
+import { useFeatureAccess, useStore, ClassroomStackParamList, api, supabase, onboardingAPI } from '@repo/core';
 import ClassroomList from './ClassroomList';
 import CreateClassroomModal from './CreateClassroomModal';
-import { ScannerModal } from '@repo/scanner-kit';
+import { ScannerModal, resolveQR } from '@repo/scanner-kit';
 import TeacherFeedbackModal from './teacher/TeacherFeedbackModal';
 import { Modal, TouchableOpacity } from 'react-native';
 import { X } from 'lucide-react-native';
@@ -65,6 +66,17 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
         totalStudents: 0
     });
 
+    const [pendingRequests, setPendingRequests] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (userId) fetchPendingRequests();
+    }, [userId]);
+
+    const fetchPendingRequests = async () => {
+        // Mocking fetching pending classroom join requests for this teacher's classrooms
+        // In a real app, this would be a join between classroom_join_requests and classrooms
+    };
+
     // We'll update stats whenever the classroom list changes
     const handleClassroomsLoaded = (loadedClassrooms: any[]) => {
         setClassrooms(loadedClassrooms);
@@ -76,26 +88,33 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
     };
 
     const handleScan = async (data: string) => {
-        // Handle join-class:UUID
-        let classId = data;
-        if (data.startsWith('join-class:')) {
-            classId = data.replace('join-class:', '');
+        setIsScannerOpen(false);
+        const result = resolveQR(data);
+
+        if (!result.ok) {
+            Alert.alert("Invalid QR", "This QR code is not recognised by Gurudevi.");
+            return;
         }
+
+        const { payload } = result;
 
         try {
             const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
 
-            // For now, let's just use the api to join
-            if (user) {
-                await api.classrooms.update(classId, { teacher_id: user.id });
+            if (payload.action === 'join_class') {
+                await api.classrooms.update(payload.classroom_id, { teacher_id: user.id });
                 setRefreshTrigger(prev => prev + 1);
-                Alert.alert("Success", "You have joined the classroom.");
+                Alert.alert("Joined!", "You have joined the classroom.");
+            } else if (payload.action === 'join_school') {
+                // School QR scanned from teacher dashboard — navigate to onboarding
+                Alert.alert("School QR", "Open the school join flow to continue.");
+            } else {
+                Alert.alert("QR Scanned", `Action: ${payload.action} — not handled here.`);
             }
         } catch (err) {
-            console.error("Failed to join via QR", err);
-            Alert.alert("Error", "Could not join classroom. Please check the QR code.");
-        } finally {
-            setIsScannerOpen(false);
+            console.error("Failed to handle QR", err);
+            Alert.alert("Error", "Could not process QR. Please try again.");
         }
     };
 
@@ -194,121 +213,130 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
             {isDemoMode && <SandboxBanner />}
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: Theme.spacing.lg }}>
                 {/* Greeting Intro */}
-                <VStack sx={{ gap: 4, marginBottom: Theme.spacing.md, marginTop: Theme.spacing.sm }}>
-                    <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>
-                        {t('classroom.dashboardIntro') || 'Lead the classroom with love and care.'}
-                    </Text>
-                </VStack>
+                <Animated.View entering={FadeInDown.delay(50)}>
+                    <VStack sx={{ gap: 4, marginBottom: Theme.spacing.md, marginTop: Theme.spacing.sm }}>
+                        <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>
+                            {t('classroom.dashboardIntro') || 'Lead the classroom with love and care.'}
+                        </Text>
+                    </VStack>
+                </Animated.View>
 
                 {/* Quick Actions - Primary */}
-                <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.md }}>
-                    <QuickAction
-                        icon={Plus}
-                        label={t('classroom.createClass') || 'Create Class'}
-                        onPress={() => {
-                            setModalMode('create');
-                            setIsCreateModalOpen(true);
-                        }}
-                    />
-                    <QuickAction
-                        icon={Users}
-                        label={t('classroom.joinClass') || 'Join Class'}
-                        onPress={() => {
-                            setModalMode('join');
-                            setIsCreateModalOpen(true);
-                        }}
-                        color={Theme.colors.sanctuarySaffron}
-                    />
-                    <QuickAction
-                        icon={ScanLine}
-                        label={t('classroom.scanToJoin') || 'Scan QR'}
-                        onPress={() => setIsScannerOpen(true)}
-                        color={Theme.colors.amberGlow}
-                    />
-                </HStack>
-
-                {/* Quick Actions - Utility */}
-                <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.lg }}>
-                    <QuickAction
-                        icon={ShieldCheck}
-                        label={t('teacher.admin.portal') || 'Admin'}
-                        onPress={() => setIsAdminModalOpen(true)}
-                        color={Theme.colors.sageGreen}
-                    />
-                    <QuickAction
-                        icon={BookOpen}
-                        label={t('classroom.library') || 'Library'}
-                        onPress={() => {
-                            navigation.getParent()?.navigate('Library');
-                        }}
-                        color={Theme.colors.amberGlow}
-                    />
-                    <QuickAction
-                        icon={MessageCircle}
-                        label={t('teacher.actions.principalEcho') || 'Principal Echo'}
-                        onPress={() => setIsFeedbackModalOpen(true)}
-                        color={Theme.colors.emberRed}
-                    />
-                </HStack>
-
-                {/* Statistics */}
-                <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.sm }}>
-                    <StatCard
-                        icon={School}
-                        label={t('classroom.statActiveClasses') || 'Active Classes'}
-                        value={stats.activeClasses}
-                    />
-                    <StatCard
-                        icon={Users}
-                        label={t('classroom.statTotalStudents') || 'Total Students'}
-                        value={stats.totalStudents}
-                    />
-                </HStack>
-
-
-                {/* Classroom List Section */}
-                <VStack sx={{ gap: Theme.spacing.md }}>
-                    <HStack justifyContent="space-between" alignItems="center">
-                        <Heading color={colors.text} sx={{ fontSize: Theme.typography.fontSize.lg }}>
-                            {t('classroom.yourClassrooms') || 'Your Classrooms'} 🍃
-                        </Heading>
-                    </HStack>
-
-                    <ClassroomList
-                        onClassroomPress={(classroom) => {
-                            hapticLight();
-                            navigation.navigate('Classroom' as any, {
-                                screen: 'ClassroomDetails',
-                                params: {
-                                    classroomId: classroom.id,
-                                    classroomName: classroom.name
-                                }
-                            });
-                        }}
-                        onDataLoaded={handleClassroomsLoaded}
-                        isNested={true}
-                        refreshTrigger={refreshTrigger}
-                        emptyContent={
-                            <PositiveInvitation
-                                context="classroom"
-                                onAction={() => {
-                                    setModalMode('create');
-                                    setIsCreateModalOpen(true);
-                                }}
-                            />
-                        }
-                    />
-
-                    {isGuest && (
-                        <PositiveInvitation
-                            type="guest"
-                            onAction={() => {
-                                hapticLight();
-                                // TODO: Conversion navigation
+                <Animated.View entering={FadeInDown.delay(100)}>
+                    <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.md }}>
+                        <QuickAction
+                            icon={Plus}
+                            label={t('classroom.createClass') || 'Create Class'}
+                            onPress={() => {
+                                setModalMode('create');
+                                setIsCreateModalOpen(true);
                             }}
                         />
-                    )}
-                </VStack>
+                        <QuickAction
+                            icon={Users}
+                            label={t('classroom.joinClass') || 'Join Class'}
+                            onPress={() => {
+                                setModalMode('join');
+                                setIsCreateModalOpen(true);
+                            }}
+                            color={Theme.colors.sanctuarySaffron}
+                        />
+                        <QuickAction
+                            icon={ScanLine}
+                            label={t('classroom.scanToJoin') || 'Scan QR'}
+                            onPress={() => setIsScannerOpen(true)}
+                            color={Theme.colors.amberGlow}
+                        />
+                    </HStack>
+                </Animated.View>
+
+                {/* Quick Actions - Utility */}
+                <Animated.View entering={FadeInDown.delay(150)}>
+                    <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.lg }}>
+                        <QuickAction
+                            icon={ShieldCheck}
+                            label={t('teacher.admin.portal') || 'Admin'}
+                            onPress={() => setIsAdminModalOpen(true)}
+                            color={Theme.colors.sageGreen}
+                        />
+                        <QuickAction
+                            icon={BookOpen}
+                            label={t('classroom.library') || 'Library'}
+                            onPress={() => {
+                                navigation.getParent()?.navigate('Library');
+                            }}
+                            color={Theme.colors.amberGlow}
+                        />
+                        <QuickAction
+                            icon={MessageCircle}
+                            label={t('teacher.actions.principalEcho') || 'Principal Echo'}
+                            onPress={() => setIsFeedbackModalOpen(true)}
+                            color={Theme.colors.emberRed}
+                        />
+                    </HStack>
+                </Animated.View>
+
+                {/* Statistics */}
+                <Animated.View entering={FadeInDown.delay(200)}>
+                    <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.sm }}>
+                        <StatCard
+                            icon={School}
+                            label={t('classroom.statActiveClasses') || 'Active Classes'}
+                            value={stats.activeClasses}
+                        />
+                        <StatCard
+                            icon={Users}
+                            label={t('classroom.statTotalStudents') || 'Total Students'}
+                            value={stats.totalStudents}
+                        />
+                    </HStack>
+                </Animated.View>
+
+                {/* Classroom List Section */}
+                <Animated.View entering={FadeInDown.delay(250)}>
+                    <VStack sx={{ gap: Theme.spacing.md }}>
+                        <HStack justifyContent="space-between" alignItems="center">
+                            <Heading color={colors.text} sx={{ fontSize: Theme.typography.fontSize.lg }}>
+                                {t('classroom.yourClassrooms') || 'Your Classrooms'} 🍃
+                            </Heading>
+                        </HStack>
+
+                        <ClassroomList
+                            onClassroomPress={(classroom) => {
+                                hapticLight();
+                                navigation.navigate('Classroom' as any, {
+                                    screen: 'ClassroomDetails',
+                                    params: {
+                                        classroomId: classroom.id,
+                                        classroomName: classroom.name
+                                    }
+                                });
+                            }}
+                            onDataLoaded={handleClassroomsLoaded}
+                            isNested={true}
+                            refreshTrigger={refreshTrigger}
+                            emptyContent={
+                                <PositiveInvitation
+                                    context="classroom"
+                                    onAction={() => {
+                                        setModalMode('create');
+                                        setIsCreateModalOpen(true);
+                                    }}
+                                />
+                            }
+                        />
+
+                        {isGuest && (
+                            <PositiveInvitation
+                                type="guest"
+                                onAction={() => {
+                                    hapticLight();
+                                    // TODO: Conversion navigation
+                                }}
+                            />
+                        )}
+                    </VStack>
+                </Animated.View>
             </ScrollView>
 
             <CreateClassroomModal

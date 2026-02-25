@@ -30,15 +30,34 @@ function createDemoProxy<T extends object>(moduleName: string, target: T): T {
 }
 
 
-const wrappedLibraryAPI = createDemoProxy('library', libraryAPI);
-const wrappedCommunityAPI = createDemoProxy('community', communityAPI);
+
 
 // Combine APIs into a single object for backward compatibility
 export const api = {
-    ...coreAPI,
-    library: wrappedLibraryAPI,
-    community: wrappedCommunityAPI,
-    self: selfAPI,
+    // Core Modules
+    auth: createDemoProxy('auth', coreAPI.auth),
+    tasks: createDemoProxy('tasks', coreAPI.tasks),
+    notes: createDemoProxy('notes', coreAPI.notes),
+    lessons: createDemoProxy('lessons', coreAPI.lessons),
+    students: createDemoProxy('students', coreAPI.students),
+    attendance: createDemoProxy('attendance', coreAPI.attendance),
+    resources: createDemoProxy('resources', coreAPI.resources),
+    groups: createDemoProxy('groups', coreAPI.groups),
+    lessonMaterials: createDemoProxy('lessonMaterials', coreAPI.lessonMaterials),
+    assignments: createDemoProxy('assignments', coreAPI.assignments),
+    classroomStudents: createDemoProxy('classroomStudents', coreAPI.classroomStudents),
+    classrooms: createDemoProxy('classrooms', coreAPI.classrooms),
+    grading: createDemoProxy('grading', coreAPI.grading),
+    school: createDemoProxy('school', coreAPI.school),
+    inventory: createDemoProxy('inventory', coreAPI.inventory),
+    rewards: createDemoProxy('rewards', coreAPI.rewards),
+    tracking: createDemoProxy('tracking', coreAPI.tracking),
+    onboarding: createDemoProxy('onboarding', coreAPI.onboarding),
+
+    // Package Modules
+    library: createDemoProxy('library', libraryAPI),
+    community: createDemoProxy('community', communityAPI),
+    self: createDemoProxy('self', selfAPI),
 };
 
 export * from '@repo/core';

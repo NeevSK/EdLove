@@ -1,29 +1,63 @@
 import { useState, useCallback } from 'react';
 import { useStore } from '../store/useStore';
+import { ReliefCoordinator, TimetableScheduler, CoordinationGap } from '../api/agents';
 
 export interface Message {
     id: string;
     role: 'user' | 'assistant';
     content: string;
     timestamp: number;
+    gap?: CoordinationGap; // Link to a specific school gap if any
 }
 
 /**
- * useAIAgent hook
- * Manages the conversational state with "Mr. AI Agent".
- * Implements a Socratic dialogue pattern where the agent reflects and asks deepening questions.
+ * useAIAgent hook (Workflow Assistant)
+ * Manages the conversational state and proactive interventions.
  */
 export function useAIAgent() {
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
             role: 'assistant',
-            content: 'Welcome to the Sanctuary. I am here to reflect with you on your journey. What is on your mind today?',
+            content: 'Welcome to the Sanctuary. I am monitoring the school flow. How can I assist you today?',
             timestamp: Date.now(),
         },
     ]);
     const [isThinking, setIsThinking] = useState(false);
+    const [activeGaps, setActiveGaps] = useState<CoordinationGap[]>([]);
+    const [lastTimetableDraft, setLastTimetableDraft] = useState<any>(null);
     const userRole = useStore((state) => state.userRole);
+
+    /**
+     * Workflow Assistant: Structural Repair
+     * Triggers the TimetableScheduler to heal annual structural gaps.
+     */
+    const generateTimetable = useCallback(async (schoolId: string) => {
+        setIsThinking(true);
+        // Simulate processing time for "Agentic Deliberation"
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        const draft = TimetableScheduler.generateDraft(schoolId, {
+            maxDailyPeriods: 7,
+            mandatorySubjects: ['Math', 'Science', 'Sinhala', 'English'],
+            teacherPreferences: true
+        });
+
+        setLastTimetableDraft(draft);
+        setIsThinking(false);
+        return draft;
+    }, []);
+
+    /**
+     * Checks for operational gaps based on role.
+     */
+    const refreshStatus = useCallback(() => {
+        const gaps = ReliefCoordinator.checkSectionStatus('current-school');
+        setActiveGaps(gaps);
+
+        // If high priority gap exists, the agent might proactively message (handled in UI or here)
+        return gaps;
+    }, []);
 
     const sendMessage = useCallback(async (content: string) => {
         if (!content.trim()) return;
@@ -58,7 +92,11 @@ export function useAIAgent() {
     return {
         messages,
         isThinking,
+        activeGaps,
+        lastTimetableDraft,
         sendMessage,
+        refreshStatus,
+        generateTimetable,
         clearHistory,
     };
 }

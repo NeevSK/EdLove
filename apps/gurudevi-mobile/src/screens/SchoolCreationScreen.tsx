@@ -15,7 +15,7 @@ import {
 } from '@repo/ui';
 import { useSchoolCreation, SRI_LANKAN_PROVINCES, SRI_LANKAN_DISTRICTS, STUDENT_TYPES, useStore, schoolAPI } from '@repo/core';
 import { communityAPI } from '@repo/community';
-import { QRCodeGenerator } from '@repo/scanner-kit';
+import { QRCodeGenerator, QRBuilder } from '@repo/scanner-kit';
 import { useTranslation } from 'react-i18next';
 import { ArrowRight, ArrowLeft, Check, Zap } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -37,7 +37,7 @@ const STEP_LABELS = [
 export default function SchoolCreationScreen() {
     const { t } = useTranslation();
     const colors = useThemedColors();
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
     const { user, setUser, setDemoMode } = useStore();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [successData, setSuccessData] = useState<{ schoolId: string; groupId: string; schoolName: string } | null>(null);
@@ -177,42 +177,29 @@ export default function SchoolCreationScreen() {
                             </Text>
                         </VStack>
 
-                        {/* QR Codes Grid */}
-                        <HStack sx={{ gap: Theme.spacing.md, width: '100%', flexWrap: 'wrap' }}>
-                            {/* School QR */}
-                            <Box sx={{
-                                flex: 1,
-                                minWidth: 160,
-                                alignItems: 'center',
-                                backgroundColor: colors.secondary,
-                                padding: Theme.spacing.lg,
-                                borderRadius: Theme.corners.comfortable,
-                                borderWidth: 1,
-                                borderColor: colors.border
-                            }}>
-                                <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: 'bold', color: Theme.colors.sanctuarySaffron, marginBottom: Theme.spacing.md, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 }}>
-                                    School Identity
-                                </Text>
-                                <QRCodeGenerator value={successData.schoolId} label={successData.schoolId.split('-')[0]} />
-                            </Box>
-
-                            {/* Community HQ QR */}
-                            <Box sx={{
-                                flex: 1,
-                                minWidth: 160,
-                                alignItems: 'center',
-                                backgroundColor: colors.secondary,
-                                padding: Theme.spacing.lg,
-                                borderRadius: Theme.corners.comfortable,
-                                borderWidth: 1,
-                                borderColor: colors.border
-                            }}>
-                                <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: 'bold', color: Theme.colors.sageGreen, marginBottom: Theme.spacing.md, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 }}>
-                                    Community HQ
-                                </Text>
-                                <QRCodeGenerator value={`join-group:${successData.groupId}`} label={successData.groupId.split('-')[0]} />
-                            </Box>
-                        </HStack>
+                        {/* School QR — scanning joins school + its community group in one action */}
+                        <Box sx={{
+                            width: '100%',
+                            alignItems: 'center',
+                            backgroundColor: colors.secondary,
+                            padding: Theme.spacing.xl,
+                            borderRadius: Theme.corners.comfortable,
+                            borderWidth: 1,
+                            borderColor: colors.border
+                        }}>
+                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: 'bold', color: Theme.colors.sanctuarySaffron, marginBottom: Theme.spacing.md, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 }}>
+                                Share this QR to invite others
+                            </Text>
+                            <QRCodeGenerator
+                                value={QRBuilder.school(successData.schoolId, successData.groupId)}
+                                size={180}
+                                label={successData.schoolName}
+                                errorCorrectionLevel="H"
+                            />
+                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textSecondary, marginTop: Theme.spacing.md, textAlign: 'center' }}>
+                                Scanning joins {successData.schoolName} and its Community HQ group
+                            </Text>
+                        </Box>
 
                         <Box sx={{ width: '100%', marginTop: Theme.spacing.lg }}>
                             <SanctuaryButton
@@ -242,7 +229,7 @@ export default function SchoolCreationScreen() {
             />
 
             <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}>
-                <Box sx={{ p: '$4' as any }}>
+                <Box sx={{ p: 16 }}>
                     {renderStep()}
                 </Box>
             </ScrollView>
@@ -259,7 +246,7 @@ export default function SchoolCreationScreen() {
                 borderTopColor: colors.border,
                 paddingBottom: 40 // Safe area handling
             }}>
-                <HStack sx={{ gap: '$md' as any }}>
+                <HStack sx={{ gap: Theme.spacing.md }}>
                     {state.step > 1 && (
                         <Box sx={{ flex: 1 }}>
                             <SanctuaryButton

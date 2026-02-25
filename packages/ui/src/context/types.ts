@@ -8,7 +8,17 @@ import { UserRole } from '@repo/core';
 /**
  * Temporal Phase - Time of day affecting theme and behavior
  */
-export type TemporalPhase = 'dawn' | 'day' | 'evening' | 'night';
+export type TemporalPhase = 'predawn' | 'dawn' | 'morning' | 'afternoon' | 'dusk' | 'night';
+
+/** Maps 6-phase to 4-phase for legacy consumers */
+export const PHASE_FALLBACK: Record<TemporalPhase, 'dawn' | 'day' | 'evening' | 'night'> = {
+    predawn:   'dawn',
+    dawn:      'dawn',
+    morning:   'day',
+    afternoon: 'day',
+    dusk:      'evening',
+    night:     'night',
+};
 
 export type ThemeMode = 'light' | 'dark' | 'auto' | 'system';
 
@@ -65,6 +75,9 @@ export interface EnvironmentState {
 
     // Privacy
     isVeilActive: boolean; // "The Veil" - privacy toggle
+
+    /** Whether the Living Theme System is active (phase-aware tokens) or classic (static) */
+    enableLivingTheme: boolean;
 }
 
 /**
@@ -76,6 +89,7 @@ export interface EnvironmentActions {
     setLanguage: (language: Language) => Promise<void>;
     toggleVeil: () => Promise<void>;
     refreshReality: () => Promise<void>;
+    setEnableLivingTheme: (enabled: boolean) => Promise<void>;
 }
 
 /**

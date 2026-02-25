@@ -6,11 +6,12 @@ import { useUserRole, useStore } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { Bell, Menu, GraduationCap, School, Crown, Search, X, ChevronLeft } from 'lucide-react-native';
 import { useThemedColors } from '../hooks/useThemedColors';
+import { useTheme } from '../hooks/useTheme';
 import SanctuaryInput from './SanctuaryInput';
 import { hapticLight, hapticMedium } from '../utils/haptics';
 import NotificationDrawer from './NotificationDrawer';
-import { TouchableOpacity, Image } from 'react-native';
-import { Avatar, AvatarFallbackText, AvatarImage } from '../gluestack';
+import { TouchableOpacity } from 'react-native';
+import { UserAvatar } from './UserAvatar';
 
 interface GlobalHeaderProps {
     title?: string;
@@ -48,6 +49,7 @@ export default function GlobalHeader({
     const user = useStore((state: any) => state.user); // Get user details
     const navigation = useNavigation<any>();
     const colors = useThemedColors();
+    const { glass, text, accent, isDark, blurEnabled } = useTheme();
 
     const [isSearchActive, setIsSearchActive] = useState(false);
     // Use internal state if searchProps is not provided
@@ -100,43 +102,46 @@ export default function GlobalHeader({
                                 padding: 8,
                                 borderRadius: 12,
                             }}>
-                                <ChevronLeft size={24} color={colors.text} />
+                                <ChevronLeft size={24} color={text.primary} />
                             </Box>
                         </Pressable>
                     ) : showMenu && (
                         <Pressable onPress={() => navigation.openDrawer && navigation.openDrawer()}>
-                            <Menu color={colors.text} size={24} />
+                            <Menu color={text.primary} size={24} />
                         </Pressable>
                     )}
 
                     {isSelfView && (
-                        <Pressable onPress={() => navigation.navigate('Profile')}>
-                            <Avatar sx={{ borderRadius: 12, backgroundColor: colors.secondary, width: 32, height: 32 }}>
-                                <AvatarFallbackText>{userFullName}</AvatarFallbackText>
-                                {(avatarUrl || user?.user_metadata?.avatar_url) && (
-                                    <AvatarImage
-                                        source={{ uri: avatarUrl || user?.user_metadata?.avatar_url }}
-                                        alt="Profile"
-                                    />
-                                )}
-                            </Avatar>
+                        <Pressable
+                            onPress={() => navigation.navigate('Profile')}
+                            style={{ marginRight: Theme.spacing.md }}
+                        >
+                            <UserAvatar
+                                avatarUrl={avatarUrl || user?.user_metadata?.avatar_url}
+                                fullName={userFullName}
+                                role={role}
+                                size={32}
+                                borderRadius={12}
+                            />
                         </Pressable>
                     )}
 
                     <VStack>
+                        {(subtitle || (!title && greetingText)) && (
+                            <Text
+                                color={text.secondary}
+                                sx={{
+                                    fontSize: '$xs' as any,
+                                    letterSpacing: 0.5,
+                                    fontWeight: 'bold',
+                                    fontFamily: Theme.typography.fontFamily.english
+                                }}
+                            >
+                                {title ? subtitle : `${greetingText} ${emoji}`}
+                            </Text>
+                        )}
                         <Text
-                            color={colors.textSecondary}
-                            sx={{
-                                fontSize: '$xs' as any,
-                                letterSpacing: 0.5,
-                                fontWeight: 'bold',
-                                fontFamily: Theme.typography.fontFamily.english
-                            }}
-                        >
-                            {title ? (subtitle || RoleLabel) : `${greetingText} ${emoji}`}
-                        </Text>
-                        <Text
-                            color={colors.text}
+                            color={text.primary}
                             sx={{
                                 fontSize: '$lg' as any,
                                 fontFamily: Theme.typography.fontFamily.english,
@@ -163,9 +168,9 @@ export default function GlobalHeader({
                                 backgroundColor: isSearchActive ? colors.tertiary : 'transparent'
                             }}>
                                 {isSearchActive ? (
-                                    <X size={22} color={colors.text} />
+                                    <X size={22} color={text.primary} />
                                 ) : (
-                                    <Search size={22} color={colors.text} />
+                                    <Search size={22} color={text.primary} />
                                 )}
                             </Box>
                         </TouchableOpacity>
@@ -177,7 +182,7 @@ export default function GlobalHeader({
                             setShowNotifications(true);
                         }}>
                             <Box sx={{ position: 'relative' }}>
-                                <Bell size={24} color={colors.text} />
+                                <Bell size={24} color={text.primary} />
                                 {/* Notification Dot */}
                                 <Box sx={{
                                     position: 'absolute',
@@ -186,7 +191,7 @@ export default function GlobalHeader({
                                     width: 8,
                                     height: 8,
                                     borderRadius: 4,
-                                    backgroundColor: Theme.colors.sanctuarySaffron,
+                                    backgroundColor: accent.action,
                                     borderWidth: 1,
                                     borderColor: colors.primary
                                 }} />

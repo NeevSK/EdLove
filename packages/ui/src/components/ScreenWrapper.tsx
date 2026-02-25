@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Platform, KeyboardAvoidingView, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Theme } from '../theme/Theme';
 import { useEnvironment } from '../context';
 import { getThemeColors } from '../utils/themeColors';
@@ -59,12 +58,7 @@ export default function ScreenWrapper({
                 backgroundColor={colors.primary}
             />
 
-            <LinearGradient
-                colors={gradientColors as [string, string]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={[styles.container, safeAreaStyle]}
-            >
+            <View style={[styles.container, safeAreaStyle, { backgroundColor: 'transparent' }]}>
                 {(scroll ?? scrollable) ? (
                     <ScrollView
                         style={{ flex: 1 }}
@@ -83,7 +77,7 @@ export default function ScreenWrapper({
                         {children}
                     </View>
                 )}
-            </LinearGradient>
+            </View>
         </KeyboardAvoidingView>
     );
 }

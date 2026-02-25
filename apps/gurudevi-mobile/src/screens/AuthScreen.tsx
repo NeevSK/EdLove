@@ -23,7 +23,8 @@ import { supabase, UserRole, handleAPIError } from '@repo/core';
 import { Theme } from '@repo/ui';
 import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
 import { validators, validateForm } from '../utils/validators';
-import { ScannerModal } from '@repo/scanner-kit';
+import { ScannerModal, resolveQR } from '@repo/scanner-kit';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScreenWrapper } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 import GuestDataSyncModal from '../components/shared/GuestDataSyncModal';
@@ -381,10 +382,46 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
             <ScannerModal
                 visible={showScanner}
                 onClose={() => setShowScanner(false)}
-                onScan={(data) => {
+                onScan={async (data) => {
                     hapticSuccess();
-                    showToast("Code Scanned!", "success");
                     setShowScanner(false);
+                    const result = resolveQR(data);
+                    if (!result.ok) {
+                        showToast('Unrecognized QR — try a Gurudevi invite code', 'error');
+                        return;
+                    }
+                    const { payload } = result;
+                    switch (payload.action) {
+                        case 'user_invite':
+                            await AsyncStorage.setItem(
+                                'pending_invite',
+                                JSON.stringify({ inviter_id: payload.inviter_id, inviter_role: payload.inviter_role }),
+                            );
+                            showToast('Invited by a Gurudevi member — sign up to connect!', 'success');
+                            break;
+                        case 'claim_invite':
+                            await AsyncStorage.setItem(
+                                'pending_invite',
+                                JSON.stringify({ invite_code: payload.invite_code, school_id: payload.school_id, role: payload.role }),
+                            );
+                            showToast(`School invite scanned — sign up to join as ${payload.role}!`, 'success');
+                            break;
+                        case 'thuthimal_gift':
+                            await AsyncStorage.setItem(
+                                'pending_thuthimal_claim',
+                                JSON.stringify({ gift_token: payload.gift_token, gifter_name: payload.gifter_name }),
+                            );
+                            showToast('Gift QR scanned — sign in to claim your Thuthimal!', 'success');
+                            break;
+                        case 'join_school':
+                        case 'join_class':
+                        case 'join_group':
+                            await AsyncStorage.setItem('pending_qr_action', JSON.stringify(payload));
+                            showToast('QR scanned — sign in to join!', 'success');
+                            break;
+                        default:
+                            showToast('Sign in first, then scan this QR inside the app.', 'success');
+                    }
                 }}
                 title="Scan Invite Code"
             />

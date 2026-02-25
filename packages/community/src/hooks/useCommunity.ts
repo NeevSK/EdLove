@@ -1,10 +1,7 @@
 import { storage, StorageKeys, requireAuth } from '@repo/core';
-import { CommunityPost, CommunityGroup } from '../types';
+import { CommunityPost, CommunityGroup, Group, Post } from '../types';
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { communityAPI } from '../api/community';
-
-export type Group = CommunityGroup;
-export type Post = CommunityPost;
 
 // Keys for React Query
 export const COMMUNITY_KEYS = {
@@ -64,6 +61,8 @@ export const useCommunity = () => {
                         author_role: 'teacher',
                         post_type: newPost.post_type || 'discussion',
                         visibility: 'school',
+                        media_url: newPost.media_url,
+                        media_type: newPost.media_type,
                         is_anonymous: false,
                         comment_count: 0,
                         view_count: 0,
@@ -85,6 +84,28 @@ export const useCommunity = () => {
         onSettled: (data, error, variables) => {
             queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(variables.group_id) });
         },
+    });
+
+    // Create Group Mutation
+    const createGroupMutation = useMutation({
+        mutationFn: async (input: any) => {
+            const user = await requireAuth();
+            return communityAPI.createGroup(input, user.id, 'teacher'); // TODO: Get actual role
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.groups() });
+        }
+    });
+
+    // Join Group Mutation
+    const joinGroupMutation = useMutation({
+        mutationFn: async ({ groupId, userId, userRole }: { groupId: string, userId: string, userRole: string }) => {
+            return communityAPI.joinGroup(groupId, userId, userRole);
+        },
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.groups() });
+            // Also invalidate specific group if we have query for it
+        }
     });
 
     return {
@@ -110,6 +131,12 @@ export const useCommunity = () => {
 
         createPost: createPostMutation.mutateAsync,
         isCreatingPost: createPostMutation.isPending,
+
+        createGroup: createGroupMutation.mutateAsync,
+        isCreatingGroup: createGroupMutation.isPending,
+
+        joinGroup: joinGroupMutation.mutateAsync,
+        isJoiningGroup: joinGroupMutation.isPending,
 
         loading: groupsInfiniteQuery.isLoading || postsInfiniteQuery.isLoading,
         error: (groupsInfiniteQuery.error || postsInfiniteQuery.error) ? ((groupsInfiniteQuery.error || postsInfiniteQuery.error) as Error).message : null,

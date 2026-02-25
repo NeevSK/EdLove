@@ -16,6 +16,10 @@ export type FeedbackStatus = 'pending' | 'under_review' | 'approved' | 'implemen
 export type GroupType = 'class' | 'grade' | 'subject' | 'club' | 'general' | 'teachers_only' | 'admin_only';
 export type GroupJoinPolicy = 'open' | 'approval_required' | 'invite_only' | 'restricted';
 
+// Simplified Domain Aliases
+export type Group = CommunityGroup;
+export type Post = CommunityPost;
+
 export interface CommunityPost {
     id: string;
     author_id: string;
@@ -40,6 +44,10 @@ export interface CommunityPost {
     feedback_status?: FeedbackStatus;
     feedback_response?: string;
     feedback_responder_id?: string;
+
+    // Media
+    media_url?: string;
+    media_type?: 'image' | 'video' | 'audio' | 'document';
 
     // Engagement
     reactions: Record<string, number>;
@@ -101,6 +109,8 @@ export interface CreatePostInput {
     urgency?: Urgency;
     group_id?: string;
     classroom_id?: string;
+    media_url?: string;
+    media_type?: 'image' | 'video' | 'audio' | 'document';
 }
 
 export interface CreateCommentInput {
@@ -296,6 +306,7 @@ export interface CommunityGroup {
     cover_image_url?: string;
     tags: string[];
     school_id?: string; // Optional - for school-specific groups
+    classroom_id?: string; // Optional - for classroom-linked sanctuary groups
     creator_id: string;
     creator_name: string;
     created_at: string;
@@ -359,4 +370,30 @@ export interface CreateGroupInput {
     image_url?: string;
     tags?: string[];
     school_id?: string;
+}
+
+// ============================================================================
+// REPORTING & SAFETY TYPES
+// ============================================================================
+
+export type ReportStatus = 'pending' | 'reviewed' | 'resolved';
+
+export interface GroupReport {
+    id: string;
+    group_id: string | null;
+    reporter_id: string;
+    target_user_id: string | null;
+    post_id: string | null;
+    reason: string;
+    details?: string;
+    status: ReportStatus;
+    created_at: string;
+}
+
+export interface ReportContentInput {
+    group_id?: string;
+    post_id?: string;
+    target_user_id?: string;
+    reason: string;
+    details?: string;
 }

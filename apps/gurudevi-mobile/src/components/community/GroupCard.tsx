@@ -34,18 +34,20 @@ const GroupCard = React.memo(function GroupCard({
     return (
         <SanctuaryCard onPress={onPress}>
             <HStack space="md" alignItems="center">
-                {/* Icon Box */}
+                {/* Icon Box: Glass Protocol Refinement */}
                 <Box
                     sx={{
-                        width: 48,
-                        height: 48,
+                        width: 52,
+                        height: 52,
                         borderRadius: Theme.corners.comfortable,
-                        backgroundColor: Theme.colors.deepIndigo,
+                        backgroundColor: 'rgba(255,255,255,0.05)',
                         justifyContent: 'center',
-                        alignItems: 'center'
+                        alignItems: 'center',
+                        borderWidth: 1,
+                        borderColor: 'rgba(255,255,255,0.1)',
                     }}
                 >
-                    <Text size="xl" bold color={Theme.colors.sanctuarySaffron}>
+                    <Text size="xl" bold color={type === 'public' ? Theme.colors.gurudeviViolet : Theme.colors.sanctuarySaffron}>
                         {name.charAt(0).toUpperCase()}
                     </Text>
                 </Box>
@@ -57,14 +59,17 @@ const GroupCard = React.memo(function GroupCard({
                     </HStack>
 
                     {description && (
-                        <Text color={Theme.colors.mistGray} size="sm" numberOfLines={1}>
+                        <Text color={Theme.colors.mistGray} size="sm" numberOfLines={2}>
                             {description}
                         </Text>
                     )}
 
-                    <Text color={Theme.colors.dimGray} size="xs" mt="$1">
-                        {memberCount} members • {type.charAt(0).toUpperCase() + type.slice(1)} Group
-                    </Text>
+                    <HStack space="xs" alignItems="center" mt="$1">
+                        <Users size={12} color={Theme.colors.dimGray} />
+                        <Text color={Theme.colors.dimGray} size="xs">
+                            {memberCount} • {type.charAt(0).toUpperCase() + type.slice(1)}
+                        </Text>
+                    </HStack>
                 </VStack>
             </HStack>
         </SanctuaryCard>

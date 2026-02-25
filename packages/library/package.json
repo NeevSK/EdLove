@@ -9,20 +9,25 @@
     },
     "scripts": {
         "lint": "eslint .",
+        "check-types": "tsc --noEmit",
         "clean": "rm -rf .turbo node_modules dist"
     },
     "dependencies": {
         "@repo/core": "workspace:*",
         "@repo/ui": "workspace:*",
         "react-i18next": "^16.5.4",
-        "lucide-react-native": "^0.563.0"
+        "lucide-react-native": "^0.563.0",
+        "react-native-reanimated": "~4.1.1",
+        "expo-linking": "~8.0.11"
     },
     "devDependencies": {
         "@repo/typescript-config": "workspace:*",
-        "react": "19.1.0",
-        "react-native": "0.81.5",
         "react-i18next": "^16.5.4",
-        "@types/react": "~19.1.10"
+        "@types/react": "~19.1.10",
+        "eslint": "^9.38.0",
+        "@repo/eslint-config": "workspace:*",
+        "react-native": "0.81.5",
+        "typescript": "~5.9.2"
     },
     "peerDependencies": {
         "react": "*",

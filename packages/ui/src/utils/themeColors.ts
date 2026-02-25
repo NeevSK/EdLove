@@ -16,6 +16,7 @@ export interface ThemeColors {
 
     // Text
     text: string;
+    textPrimary: string;
     textSecondary: string;
     textTertiary: string;
 
@@ -29,6 +30,7 @@ export interface ThemeColors {
     border: string;
     overlay: string;
     shadow: string;
+    glow: string;
 }
 
 /**
@@ -61,6 +63,7 @@ function getBaseThemeColors(isDark: boolean): ThemeColors {
 
             // Dark mode text
             text: baseColors.sacredWhite,
+            textPrimary: baseColors.sacredWhite,
             textSecondary: baseColors.pearlGray,
             textTertiary: baseColors.mistGray,
 
@@ -74,6 +77,7 @@ function getBaseThemeColors(isDark: boolean): ThemeColors {
             border: 'rgba(255,255,255,0.1)',
             overlay: baseColors.overlayDark,
             shadow: baseColors.shadowDark,
+            glow: baseColors.shadowAmbient, // Default glow for dark mode
         };
     } else {
         return {
@@ -84,6 +88,7 @@ function getBaseThemeColors(isDark: boolean): ThemeColors {
 
             // Light mode text
             text: baseColors.charcoalTruth,
+            textPrimary: baseColors.charcoalTruth,
             textSecondary: baseColors.slateGray,
             textTertiary: baseColors.stoneGray,
 
@@ -97,6 +102,7 @@ function getBaseThemeColors(isDark: boolean): ThemeColors {
             border: 'rgba(0,0,0,0.1)',
             overlay: baseColors.overlayLight,
             shadow: baseColors.shadowLight,
+            glow: baseColors.shadowFocus, // Default glow for light mode
         };
     }
 }
@@ -137,25 +143,46 @@ function modulateForTemporalPhase(
                 secondary: isDark ? '#1E293B' : '#F0F9FF', // Lighter Sky Blue
                 tertiary: isDark ? '#0F172A' : '#E0F7FF', // Consistent Blue
                 action: '#F59E0B', // Sunrise Amber/Saffron preserved for action
+                glow: '#FDBA74', // Luminous Peach/Amber for Dawn
             };
 
-        case 'day':
-            // Day: Bright, energetic, high contrast
+        case 'predawn':
+            // Predawn: Deep dark, transitioning from night
+            return {
+                ...baseTheme,
+                primary: isDark ? '#080C14' : '#C7D8E8',
+                secondary: isDark ? '#0F1624' : '#DDE9F2',
+                action: baseColors.twilightPurple,
+                glow: '#7C9CC0', // Cool steel blue for predawn
+            };
+
+        case 'morning':
+            // Morning: Bright, energetic, high contrast
             return {
                 ...baseTheme,
                 action: baseColors.sanctuarySaffron, // Warm energy for clarity
-                // Ensure shadows are ambient but not overly blue in day mode
                 shadow: isDark ? baseColors.shadowDark : 'rgba(0, 0, 0, 0.1)',
+                glow: '#FF9800', // Vivid Saffron Glow for Morning
             };
 
-        case 'evening':
-            // Evening: Warm transition to rest
+        case 'afternoon':
+            // Afternoon: Full brightness, sustained energy
+            return {
+                ...baseTheme,
+                action: baseColors.sanctuarySaffron,
+                shadow: isDark ? baseColors.shadowDark : 'rgba(0, 0, 0, 0.12)',
+                glow: '#FFA726', // Slightly warmer amber for afternoon
+            };
+
+        case 'dusk':
+            // Dusk: Warm transition to rest
             return {
                 ...baseTheme,
                 action: baseColors.sanctuarySaffron, // Warmer saffron
                 tertiary: isDark
                     ? baseColors.midnightBlue
                     : '#F5E6D3', // Warmer cream for light mode
+                glow: '#FF7043', // Deep Luminous Saffron for Dusk
             };
 
         case 'night':
@@ -166,6 +193,7 @@ function modulateForTemporalPhase(
                 textSecondary: isDark
                     ? baseColors.dimGray // More muted text
                     : baseColors.slateGray,
+                glow: isDark ? '#60A5FA' : '#818CF8', // Bright Bioluminescent Blue for Night
             };
 
         default:

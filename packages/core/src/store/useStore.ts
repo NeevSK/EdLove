@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { SafeZustandStorage } from '../lib/storageWrapper';
-import { UserRole, User } from '../types/User';
+import { UserRole, User } from '../types';
 import { SchoolType } from '../constants/SriLankanSchools';
 
 // ============================================================================

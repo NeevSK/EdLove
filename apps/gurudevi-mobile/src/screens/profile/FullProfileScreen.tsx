@@ -1,44 +1,72 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ScrollView, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { ScrollView, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
 import {
     Box,
     VStack,
-    HStack,
     Text,
     Heading,
     useThemedColors,
     Theme,
     GlobalHeader,
     ScreenWrapper,
-    useBottomTabPadding
+    useBottomTabPadding,
+    Center,
+    useEnvironment,
+    SanctuaryProgressBar,
+    hapticSuccess,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Mail, Phone, Shield, Edit3, Check, X, User, FileText } from 'lucide-react-native';
+import { MapPin, Mail, Phone, Shield, Edit3, Check, X, User as UserIcon, FileText, Fingerprint, Briefcase, GraduationCap, BookOpen, School } from 'lucide-react-native';
+import { hapticLight, hapticError } from '@repo/ui';
 import { supabase } from '@repo/core';
-import { hapticSuccess, hapticLight, hapticError } from '@repo/ui';
 import IdentityCard from '../../components/profile/IdentityCard';
+import AchievementUnlockOverlay from '../../components/shared/AchievementUnlockOverlay';
+import Reanimated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withTiming,
+} from 'react-native-reanimated';
 
-interface FullProfileScreenProps {
-    route: {
-        params: {
-            profile: any;
-        }
-    };
-    navigation: any;
-}
+import { useProfile, EditableItem, UserProfile, useProfileCompletion, AvatarDisplay } from '@repo/profile';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { ProfileStackParamList } from '../../types/navigation';
 
-interface EditState {
-    value: string;
-    saved: boolean;
-    saving: boolean;
-    error: string | null;
-}
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const CARD_WIDTH = SCREEN_WIDTH - Theme.spacing.xl * 2;
+
+type FullProfileScreenProps = NativeStackScreenProps<ProfileStackParamList, 'FullProfile'>;
 
 export default function FullProfileScreen({ route, navigation }: FullProfileScreenProps) {
     const { profile: initialProfile } = route.params;
+    const { updateField } = useProfile();
     const { t } = useTranslation();
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
+    const { role } = useEnvironment();
+    const completionResult = useProfileCompletion(profile, role ?? null);
+    const [showCelebration, setShowCelebration] = useState(false);
+
+    // Animated opacity for bar fade-out on completion
+    const barOpacity = useSharedValue(1);
+    const barAnimStyle = useAnimatedStyle(() => ({
+        opacity: barOpacity.value,
+    }));
+
+    // Watch for first-time 100% and trigger celebration
+    useEffect(() => {
+        if (
+            completionResult.isComplete &&
+            !completionResult.hasSeenCompletionCelebration
+        ) {
+            setShowCelebration(true);
+            hapticSuccess();
+            completionResult.markCompletionCelebrationSeen();
+            const timer = setTimeout(() => {
+                barOpacity.value = withTiming(0, { duration: 800 });
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [completionResult.isComplete, completionResult.hasSeenCompletionCelebration]);
 
     const [profile, setProfile] = useState<any>(initialProfile);
     const [editingField, setEditingField] = useState<string | null>(null);
@@ -63,301 +91,235 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
     }, []);
 
     if (!profile) return null;
-
-    const startEdit = (field: string, currentValue: string) => {
-        hapticLight();
-        setEditingField(field);
-        setFieldStates(prev => ({
-            ...prev,
-            [field]: { value: currentValue || '', saved: false, saving: false, error: null }
-        }));
-    };
-
-    const cancelEdit = (field: string) => {
-        setEditingField(null);
-        setFieldStates(prev => {
-            const next = { ...prev };
-            delete next[field];
-            return next;
-        });
-    };
-
-    const saveField = async (field: string) => {
-        const state = fieldStates[field];
-        if (!state || !profile?.id) return;
-
-        setFieldStates(prev => ({ ...prev, [field]: { ...prev[field], saving: true, error: null } }));
-
-        try {
-            const { error } = await supabase
-                .from('users')
-                .update({ [field]: state.value })
-                .eq('id', profile.id);
-
-            if (error) throw error;
-
-            setProfile((prev: any) => ({ ...prev, [field]: state.value }));
-            setFieldStates(prev => ({ ...prev, [field]: { ...prev[field], saving: false, saved: true, error: null } }));
-            setEditingField(null);
-            hapticSuccess();
-
-            // Clear the saved tick after 3 seconds; store the timer id to cancel on unmount
-            const timerId = setTimeout(() => {
-                setFieldStates(prev => {
-                    if (prev[field]?.saved) {
-                        const next = { ...prev };
-                        delete next[field];
-                        return next;
-                    }
-                    return prev;
-                });
-            }, 3000);
-            dismissTimers.current.push(timerId);
-        } catch (err) {
-            console.error('Error saving field:', err);
-            hapticError();
-            setFieldStates(prev => ({
-                ...prev,
-                [field]: { ...prev[field], saving: false, error: t('common.saveFailed', 'Failed to save') },
-            }));
+    const handleSave = async (field: string, value: any) => {
+        // Handle array-based professional fields transformation before passing to hook
+        let valueToSave = value;
+        if ((field === 'subjects_taught' || field === 'qualifications') && typeof value === 'string') {
+            valueToSave = value.split(',').map(s => s.trim()).filter(s => s !== '');
+        } else if (field === 'experience_years' && typeof value === 'string') {
+            valueToSave = parseInt(value, 10) || 0;
         }
+
+        const result = await updateField(field as keyof UserProfile, valueToSave);
+        if (result) {
+            setProfile((prev: any) => ({ ...prev, [field]: valueToSave }));
+        }
+        return result;
     };
+};
 
-    const EditableRow = ({
-        field,
-        label,
-        currentValue,
-        icon: Icon,
-        multiline = false,
-        readOnly = false,
-    }: {
-        field: string;
-        label: string;
-        currentValue: string;
-        icon: any;
-        multiline?: boolean;
-        readOnly?: boolean;
-    }) => {
-        const state = fieldStates[field];
-        const isEditing = editingField === field;
-        const isSaved = state?.saved;
+return (
+    <ScreenWrapper scroll={false}>
+        <GlobalHeader
+            title={t('profile.fullProfile', 'Profile Details')}
+            showBack
+            onBack={() => navigation.goBack()}
+        />
+        <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + 40 }}>
+            <VStack space="2xl" sx={{ paddingVertical: Theme.spacing.md }}>
 
-        return (
-            <Box
-                style={{
-                    backgroundColor: colors.tertiary,
-                    borderRadius: Theme.corners.comfortable,
-                    padding: Theme.spacing.md,
-                    borderWidth: 1,
-                    borderColor: isSaved ? colors.success : colors.border,
-                }}
-            >
-                <HStack justifyContent="space-between" alignItems="flex-start">
-                    <HStack space="md" alignItems="flex-start" style={{ flex: 1 }}>
-                        <Box
-                            style={{
-                                width: 36,
-                                height: 36,
-                                borderRadius: 10,
-                                backgroundColor: `${colors.action}15`,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                marginTop: 2,
-                            }}
-                        >
-                            <Icon size={18} color={colors.action} />
-                        </Box>
-                        <VStack style={{ flex: 1 }}>
-                            <Text size="xs" color={colors.textSecondary} style={{ marginBottom: 4 }}>
-                                {label}
-                            </Text>
-                            {isEditing ? (
-                                <TextInput
-                                    value={state?.value ?? ''}
-                                    onChangeText={(val) =>
-                                        setFieldStates(prev => ({ ...prev, [field]: { ...prev[field], value: val } }))
-                                    }
-                                    multiline={multiline}
-                                    numberOfLines={multiline ? 3 : 1}
-                                    style={{
-                                        color: colors.text,
-                                        fontSize: 16,
-                                        borderBottomWidth: 1,
-                                        borderBottomColor: colors.action,
-                                        paddingVertical: 4,
-                                        minHeight: multiline ? 64 : 32,
-                                    }}
-                                    autoFocus
-                                    returnKeyType={multiline ? 'default' : 'done'}
+                {/* Identity Card Preview - Centered */}
+                <Center>
+                    <Box>
+                        <IdentityCard profile={profile} />
+                    </Box>
+                </Center>
+
+                {/* Editable Avatar — tap to change photo */}
+                <Center mt={Theme.spacing.lg}>
+                    <AvatarDisplay
+                        userId={profile.id}
+                        avatarUrl={profile.avatar_url}
+                        fullName={profile.full_name}
+                        size={72}
+                        editable={true}
+                        onAvatarUpdated={async (url) => {
+                            await updateField('avatar_url', url);
+                            hapticSuccess();
+                        }}
+                    />
+                    <Text size="xs" color={colors.textTertiary} mt={Theme.spacing.xs}>
+                        Tap to update your photo
+                    </Text>
+                </Center>
+
+                {/* Completion bar — animated, fades out on 100% */}
+                <Reanimated.View style={barAnimStyle}>
+                    <SanctuaryProgressBar
+                        percentage={completionResult.percentage}
+                        isComplete={completionResult.isComplete}
+                        nextHint={completionResult.nextHint}
+                        style={{
+                            paddingHorizontal: Theme.spacing.xl,
+                            marginTop: Theme.spacing.md,
+                            marginBottom: Theme.spacing.xs,
+                        }}
+                    />
+                </Reanimated.View>
+
+                {/* Detailed Information */}
+                <Center>
+                    <Box
+                        sx={{
+                            backgroundColor: colors.secondary,
+                            borderRadius: Theme.corners.generous,
+                            padding: Theme.spacing.lg,
+                            borderWidth: 1,
+                            borderColor: colors.border,
+                            width: CARD_WIDTH,
+                            ...Theme.shadows.md
+                        }}
+                    >
+                        <Heading size="md" color={colors.text} mb="$4">
+                            {t('profile.personalDetails', 'Identity & Contact')}
+                        </Heading>
+
+                        <VStack space="xl">
+                            <EditableItem
+                                icon={UserIcon}
+                                label={t('profile.fullName', 'Full Name')}
+                                value={profile.full_name}
+                                field="full_name"
+                                placeholder="Enter full name"
+                                onSave={handleSave}
+                            />
+
+                            <EditableItem
+                                icon={Phone}
+                                label={t('profile.phone', 'Phone Number')}
+                                value={profile.phone}
+                                field="phone"
+                                placeholder="+94 XX XXX XXXX"
+                                onSave={handleSave}
+                            />
+
+                            {profile.role === 'student' ? (
+                                <EditableItem
+                                    icon={Fingerprint}
+                                    label={t('profile.indexNumber', 'Index Number')}
+                                    value={profile.index_number}
+                                    field="index_number"
+                                    placeholder="STU-XXXXX"
+                                    onSave={handleSave}
                                 />
                             ) : (
-                                <Text size="md" color={colors.text} bold>
-                                    {currentValue || t('common.notProvided', 'Not provided')}
-                                </Text>
-                            )}
-                            {/* Inline error message */}
-                            {state?.error && (
-                                <Text size="xs" color={colors.error} style={{ marginTop: 4 }}>
-                                    {state.error}
-                                </Text>
+                                <EditableItem
+                                    icon={Fingerprint}
+                                    label={t('profile.nicNumber', 'NIC Number')}
+                                    value={profile.nic_number}
+                                    field="nic_number"
+                                    placeholder="19XXXXXXXXXX"
+                                    onSave={handleSave}
+                                />
                             )}
                         </VStack>
-                    </HStack>
+                    </Box>
+                </Center>
 
-                    {/* Action icons */}
-                    <HStack space="sm" alignItems="center" style={{ marginTop: 4 }}>
-                        {isSaved && !isEditing && (
-                            <Box
-                                style={{
-                                    width: 28,
-                                    height: 28,
-                                    borderRadius: 14,
-                                    backgroundColor: `${colors.success}20`,
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <Check size={16} color={colors.success} />
-                            </Box>
-                        )}
-                        {!readOnly && (
-                            isEditing ? (
-                                <HStack space="sm">
-                                    <TouchableOpacity
-                                        onPress={() => cancelEdit(field)}
-                                        style={styles.actionBtn}
-                                    >
-                                        <X size={16} color={colors.textSecondary} />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        onPress={() => saveField(field)}
-                                        disabled={state?.saving}
-                                        style={[styles.actionBtn, { backgroundColor: `${colors.action}20` }]}
-                                    >
-                                        <Check size={16} color={colors.action} />
-                                    </TouchableOpacity>
-                                </HStack>
-                            ) : (
-                                <TouchableOpacity
-                                    onPress={() => startEdit(field, currentValue)}
-                                    style={styles.actionBtn}
-                                >
-                                    <Edit3 size={16} color={colors.textTertiary} />
-                                </TouchableOpacity>
-                            )
-                        )}
-                    </HStack>
-                </HStack>
-            </Box>
-        );
-    };
-
-    return (
-        <ScreenWrapper scroll={false}>
-            <GlobalHeader
-                title={t('profile.editProfile', 'Edit Profile')}
-                showBack
-                onBack={() => navigation.goBack()}
-            />
-            <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                style={{ flex: 1 }}
-            >
-                <ScrollView
-                    contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}
-                    showsVerticalScrollIndicator={false}
-                >
-                    <VStack space="xl" style={{ padding: Theme.spacing.md }}>
-
-                        {/* Identity Card */}
-                        <IdentityCard profile={profile} />
-
-                        {/* Centered User ID */}
-                        <Box alignItems="center">
-                            <Text size="xs" color={colors.textTertiary} style={{ textAlign: 'center' }}>
-                                {t('profile.userId', 'User ID')}
-                            </Text>
-                            <Text
-                                size="xs"
-                                color={colors.textTertiary}
-                                style={{ textAlign: 'center', fontFamily: 'monospace', marginTop: 2 }}
-                            >
-                                {profile.id}
-                            </Text>
-                        </Box>
-
-                        {/* Editable Fields */}
+                {/* Professional Details Section - Educational Staff Only */}
+                {['teacher', 'principal', 'grade_head', 'section_head'].includes(profile.role) && (
+                    <Center>
                         <Box
-                            style={{
+                            sx={{
                                 backgroundColor: colors.secondary,
-                                borderRadius: Theme.corners.comfortable,
+                                borderRadius: Theme.corners.generous,
                                 padding: Theme.spacing.lg,
                                 borderWidth: 1,
                                 borderColor: colors.border,
+                                width: CARD_WIDTH,
+                                ...Theme.shadows.md
                             }}
                         >
-                            <Heading size="md" color={colors.text} style={{ marginBottom: Theme.spacing.md }}>
-                                {t('profile.personalDetails', 'Personal Details')}
+                            <Heading size="md" color={colors.text} mb="$4">
+                                {t('profile.professionalDetails', 'Professional Branding')}
                             </Heading>
 
-                            <VStack space="md">
-                                <EditableRow
-                                    field="full_name"
-                                    label={t('profile.fullName', 'Full Name')}
-                                    currentValue={profile.full_name}
-                                    icon={User}
-                                />
-                                <EditableRow
-                                    field="phone"
-                                    label={t('profile.phone', 'Phone Number')}
-                                    currentValue={profile.phone}
-                                    icon={Phone}
-                                />
-                                <EditableRow
-                                    field="bio"
-                                    label={t('profile.bio', 'Bio')}
-                                    currentValue={profile.bio}
-                                    icon={FileText}
-                                    multiline
-                                />
-                                <EditableRow
-                                    field="email"
-                                    label={t('profile.email', 'Email')}
-                                    currentValue={profile.email}
-                                    icon={Mail}
-                                    readOnly
-                                />
-                                <EditableRow
+                            <VStack space="xl">
+                                <EditableItem
+                                    icon={School}
+                                    label={t('profile.currentSchool', 'Sanctuary Institution')}
+                                    value={profile.school_name || ''}
                                     field="school_name"
-                                    label={t('profile.school', 'School')}
-                                    currentValue={profile.school_name}
-                                    icon={MapPin}
-                                    readOnly
+                                    placeholder={t('profile.noSchool', 'Affiliate with a school')}
+                                    onSave={async () => { }} // Read-only for now or needs school Picker
                                 />
-                                <EditableRow
-                                    field="role"
-                                    label={t('profile.role', 'Role')}
-                                    currentValue={t(`role.${profile.role}`, profile.role)}
-                                    icon={Shield}
-                                    readOnly
+
+                                <EditableItem
+                                    icon={Briefcase}
+                                    label={t('profile.experience', 'Years of Experience')}
+                                    value={profile.experience_years?.toString()}
+                                    field="experience_years"
+                                    placeholder="0"
+                                    onSave={handleSave}
+                                />
+
+                                <EditableItem
+                                    icon={BookOpen}
+                                    label={t('profile.subjects', 'Specialized Subjects')}
+                                    value={Array.isArray(profile.subjects_taught) ? profile.subjects_taught.join(', ') : profile.subjects_taught}
+                                    field="subjects_taught"
+                                    placeholder="Math, Physics..."
+                                    onSave={handleSave}
+                                />
+
+                                <EditableItem
+                                    icon={GraduationCap}
+                                    label={t('profile.qualifications', 'Degrees & Certifications')}
+                                    value={Array.isArray(profile.qualifications) ? profile.qualifications.join(', ') : profile.qualifications}
+                                    field="qualifications"
+                                    placeholder="B.A, M.Sc, etc."
+                                    onSave={handleSave}
                                 />
                             </VStack>
                         </Box>
+                    </Center>
+                )}
 
-                        {/* Member Since */}
-                        {profile.created_at && (
-                            <Box alignItems="center">
-                                <Text size="xs" color={colors.textTertiary}>
-                                    {t('profile.memberSince', 'Member since')} {new Date(profile.created_at).toLocaleDateString()}
-                                </Text>
-                            </Box>
-                        )}
+                {/* Bio Section */}
+                <Center>
+                    <Box
+                        sx={{
+                            backgroundColor: colors.secondary,
+                            borderRadius: Theme.corners.generous,
+                            padding: Theme.spacing.lg,
+                            borderWidth: 1,
+                            borderColor: colors.border,
+                            width: CARD_WIDTH,
+                            ...Theme.shadows.md
+                        }}
+                    >
+                        <Heading size="md" color={colors.text} mb="$4">
+                            {t('profile.aboutMe', 'Your Story')}
+                        </Heading>
+                        <EditableItem
+                            field="bio"
+                            label={t('profile.bio', 'Bio')}
+                            value={profile.bio}
+                            icon={FileText}
+                            placeholder={t('profile.tellUsAboutYourself', 'Tell us about yourself...')}
+                            onSave={handleSave}
+                            multiline={true}
+                        />
+                    </Box>
+                </Center>
 
-                    </VStack>
-                </ScrollView>
-            </KeyboardAvoidingView>
-        </ScreenWrapper>
-    );
+                {/* App Version Info */}
+                <Box alignItems="center" mt="$4">
+                    <Text size="xs" color={colors.textTertiary}>
+                        v1.2.0 • Sanctuary ID: {profile.id?.substring(0, 8)}
+                    </Text>
+                </Box>
+            </VStack>
+        </ScrollView>
+
+        {/* Overlay rendered outside ScrollView — uses position:absolute internally */}
+        <AchievementUnlockOverlay
+            title="✨ Profile Complete!"
+            visible={showCelebration}
+            onHide={() => setShowCelebration(false)}
+        />
+    </ScreenWrapper>
+);
 }
 
 const styles = StyleSheet.create({

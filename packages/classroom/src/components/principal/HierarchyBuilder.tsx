@@ -128,7 +128,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
             }}
         >
             <ScrollView>
-                <VStack sx={{ padding: Theme.spacing.lg, gap: Theme.spacing.lg }}>
+                <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
                     {/* Header */}
                     <HStack
                         sx={{
@@ -233,16 +233,16 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                             </HStack>
 
                             {/* Grades List */}
-                            <VStack sx={{ paddingLeft: Theme.spacing.lg, gap: Theme.spacing.sm }}>
+                            <VStack space="sm" sx={{ paddingLeft: Theme.spacing.lg }}>
                                 {gradesBySection[section.id]?.length ? (
                                     gradesBySection[section.id]?.map((grade) => (
                                         <HStack
                                             key={grade.id}
+                                            space="sm"
                                             sx={{
                                                 padding: Theme.spacing.sm,
                                                 backgroundColor: colors.tertiary,
                                                 borderRadius: Theme.corners.tight,
-                                                gap: Theme.spacing.sm,
                                             }}
                                         >
                                             <Text color={colors.textTertiary}>└─</Text>

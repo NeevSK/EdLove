@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { Modal, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import {
@@ -29,6 +28,7 @@ import { X, Save, User, Briefcase, ChevronDown, Camera } from 'lucide-react-nati
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { supabase, useStore, UserRole, uploadToCloudinary, handleAPIError } from '@repo/core';
+import { hapticSuccess, hapticLight, hapticError } from '@repo/ui';
 import * as ImagePicker from 'expo-image-picker';
 
 interface EditProfileModalProps {
@@ -46,6 +46,8 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
     const [loading, setLoading] = useState(false);
     const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+    const [nicNumber, setNicNumber] = useState('');
+    const [indexNumber, setIndexNumber] = useState('');
     const setStoreRole = useStore(state => state.setUserRole);
 
     useEffect(() => {
@@ -55,6 +57,8 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
             setBio(currentProfile.bio || '');
             setSelectedRole(currentProfile.role);
             setAvatarUrl(currentProfile.avatar_url);
+            setNicNumber(currentProfile.nic_number || '');
+            setIndexNumber(currentProfile.index_number || '');
         }
     }, [currentProfile]);
 
@@ -94,10 +98,12 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
             const updates: any = {
                 full_name: fullName,
                 phone: phone,
-                bio: bio
+                bio: bio,
+                nic_number: (selectedRole === 'teacher' || selectedRole === 'principal') ? nicNumber : null,
+                index_number: selectedRole === 'student' ? indexNumber : null
             };
 
-            // Handle Avatar Upload to Cloudinary
+            // Handle Avatar Upload
             if (avatarUrl && avatarUrl.startsWith('file://')) {
                 try {
                     const uploadedUrl = await uploadToCloudinary(avatarUrl, 'image');
@@ -169,12 +175,12 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                         <Image
                                             source={{ uri: avatarUrl || 'https://via.placeholder.com/150' }}
                                             alt="Profile"
-                                            style={{
+                                            sx={{
                                                 width: 100,
                                                 height: 100,
-                                                borderRadius: 50,
+                                                borderRadius: "$full" as any,
                                                 borderWidth: 2,
-                                                borderColor: Theme.colors.sanctuarySaffron
+                                                borderColor: "$sanctuarySaffron"
                                             }}
                                         />
                                         <Pressable
@@ -194,7 +200,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                         </Pressable>
                                     </Box>
                                     <Text color={Theme.colors.mistGray} size="xs" mt="$2">
-                                        {t('profile.uploadComingSoon') || 'Upload feature coming soon'}
+                                        {t('profile.tapToChange', 'Tap icon to change photo')}
                                     </Text>
                                 </Center>
 
@@ -260,6 +266,48 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                         />
                                     </Input>
                                 </VStack>
+
+                                {/* NIC Number (Teachers/Principals) */}
+                                {(selectedRole === 'teacher' || selectedRole === 'principal') && (
+                                    <VStack space="xs">
+                                        <Text color={Theme.colors.dimGray} size="sm">{t('profile.nicNumber') || 'NIC Number'}</Text>
+                                        <Input
+                                            size="xl"
+                                            variant="outline"
+                                            style={styles.input}
+                                            isDisabled={loading}
+                                        >
+                                            <InputField
+                                                color={Theme.colors.sacredWhite}
+                                                value={nicNumber}
+                                                onChangeText={setNicNumber}
+                                                placeholder="e.g. 19XXXXXXXXXX"
+                                                placeholderTextColor={Theme.colors.stoneGray}
+                                            />
+                                        </Input>
+                                    </VStack>
+                                )}
+
+                                {/* Index Number (Students) */}
+                                {selectedRole === 'student' && (
+                                    <VStack space="xs">
+                                        <Text color={Theme.colors.dimGray} size="sm">{t('profile.indexNumber') || 'Index Number'}</Text>
+                                        <Input
+                                            size="xl"
+                                            variant="outline"
+                                            style={styles.input}
+                                            isDisabled={loading}
+                                        >
+                                            <InputField
+                                                color={Theme.colors.sacredWhite}
+                                                value={indexNumber}
+                                                onChangeText={setIndexNumber}
+                                                placeholder="e.g. STU-XXXXX"
+                                                placeholderTextColor={Theme.colors.stoneGray}
+                                            />
+                                        </Input>
+                                    </VStack>
+                                )}
 
                                 {/* Role Selector (Developer Mode) */}
                                 <Box>

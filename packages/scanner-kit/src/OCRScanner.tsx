@@ -1,11 +1,13 @@
 // OCR Scanner Component
-// Uses @react-native-ml-kit/text-recognition to scan student registers
 // Supports Sinhala, Tamil, English handwritten and printed text
+// Provider-agnostic: uses OCRPipeline (MLKit by default, cloud for Pro users)
 
 import React, { useState } from 'react';
 import { Image, Alert, View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import TextRecognition from '@react-native-ml-kit/text-recognition';
+import { defaultOCRPipeline, OCRPipeline } from './ocr/OCRPipeline';
+import { parseStudents, ParsedStudent } from './ocr/parsers/StudentParser';
+import type { OCRProviderName } from './ocr/types';
 
 export interface ScannedStudent {
     name: string;
@@ -26,7 +28,19 @@ interface OCRScannerProps {
         tertiary?: string;
         accent?: string;
         success?: string;
+        warning?: string;
     };
+    /**
+     * OCR provider to use. Defaults to 'mlkit' (free, on-device).
+     * Pass 'google_vision' or 'openai_vision' for Pro cloud backends.
+     * The pipeline auto-falls back to mlkit if the cloud provider fails.
+     */
+    providerName?: OCRProviderName;
+    /**
+     * Custom pipeline instance. If omitted, uses defaultOCRPipeline.
+     * Inject a Pro pipeline (with cloud providers registered) from the host app.
+     */
+    pipeline?: OCRPipeline;
 }
 
 const DEFAULT_COLORS = {
@@ -38,13 +52,20 @@ const DEFAULT_COLORS = {
     tertiary: '#0f3460',
     accent: '#f5a623',
     success: '#4caf50',
+    warning: '#f59e0b',
 };
 
-export default function OCRScanner({ onStudentsScanned, onCancel, colors: colorsProp }: OCRScannerProps) {
+export default function OCRScanner({
+    onStudentsScanned,
+    onCancel,
+    colors: colorsProp,
+    providerName = 'mlkit',
+    pipeline = defaultOCRPipeline,
+}: OCRScannerProps) {
     const colors = { ...DEFAULT_COLORS, ...colorsProp };
     const [imageUri, setImageUri] = useState<string | null>(null);
     const [scannedText, setScannedText] = useState<string>('');
-    const [parsedStudents, setParsedStudents] = useState<ScannedStudent[]>([]);
+    const [parsedStudents, setParsedStudents] = useState<ParsedStudent[]>([]);
     const [step, setStep] = useState<'capture' | 'processing' | 'review'>('capture');
     const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -98,19 +119,19 @@ export default function OCRScanner({ onStudentsScanned, onCancel, colors: colors
         }
     };
 
-    // Process image with ML Kit Text Recognition
+    // Process image using the injected OCR pipeline
     const processImage = async (uri: string) => {
         setStep('processing');
 
         try {
-            const result = await TextRecognition.recognize(uri);
+            const ocrResult = await pipeline.recognize(uri, { provider: providerName });
 
-            if (!result || !result.text) {
+            if (!ocrResult.text && ocrResult.blocks.length === 0) {
                 throw new Error('No text detected in image');
             }
 
-            setScannedText(result.text);
-            const students = parseStudentData(result.text);
+            setScannedText(ocrResult.text);
+            const students = parseStudents(ocrResult);
 
             if (students.length === 0) {
                 throw new Error('No student data could be parsed from the image');
@@ -125,72 +146,6 @@ export default function OCRScanner({ onStudentsScanned, onCancel, colors: colors
             setStep('capture');
             setImageUri(null);
         }
-    };
-
-    // Parse student data from recognized text
-    const parseStudentData = (text: string): ScannedStudent[] => {
-        const students: ScannedStudent[] = [];
-        const lines = text.split('\n').filter(line => line.trim().length > 0);
-
-        for (let i = 0; i < lines.length; i++) {
-            const line = (lines[i] || '').trim();
-
-            if (
-                line.toLowerCase().includes('name') ||
-                line.toLowerCase().includes('index') ||
-                line.toLowerCase().includes('no.') ||
-                line.toLowerCase().includes('නම') ||
-                line.toLowerCase().includes('எண்') ||
-                line.length < 3
-            ) {
-                continue;
-            }
-
-            if (line.includes('|') || line.includes('\t')) {
-                const parts = line.split(/[|\t]/).map(p => p.trim());
-                if (parts.length >= 2) {
-                    students.push({
-                        name: parts[0] || '',
-                        index_number: parts[1] || '',
-                        notes: parts.length > 2 ? parts.slice(2).join(' ') : undefined,
-                    });
-                    continue;
-                }
-            }
-
-            const spaceSplit = line.split(/\s{2,}/).map(p => p.trim());
-            if (spaceSplit.length >= 2) {
-                const possibleIndex = spaceSplit.find(part => /\d+/.test(part));
-                const name = spaceSplit[0];
-                if (possibleIndex && name) {
-                    students.push({
-                        name,
-                        index_number: possibleIndex,
-                        notes: spaceSplit.slice(1).filter(p => p !== possibleIndex).join(' ') || undefined,
-                    });
-                    continue;
-                }
-            }
-
-            const hasNumbers = /\d+/.test(line);
-            const hasText = /[a-zA-Z\u0D80-\u0DFF\u0B80-\u0BFF]{3,}/.test(line);
-
-            if (hasNumbers && hasText) {
-                const nameMatch = line.match(/^([a-zA-Z\u0D80-\u0DFF\u0B80-\u0BFF\s]+)/);
-                const indexMatch = line.match(/(\d+)/);
-                if (nameMatch && indexMatch) {
-                    students.push({
-                        name: (nameMatch[1] || '').trim(),
-                        index_number: indexMatch[1] || '',
-                    });
-                }
-            }
-        }
-
-        return students.filter(
-            (student, index, self) =>
-                index === self.findIndex(s => s.name === student.name)
-        );
     };
 
     const handleConfirm = () => {
@@ -298,7 +253,8 @@ export default function OCRScanner({ onStudentsScanned, onCancel, colors: colors
                             {parsedStudents.map((student, index) => (
                                 <View key={index} style={{
                                     backgroundColor: colors.tertiary, padding: 16, borderRadius: 12,
-                                    borderLeftWidth: 4, borderLeftColor: colors.success,
+                                    borderLeftWidth: 4,
+                                    borderLeftColor: student.uncertain ? colors.warning : colors.success,
                                     borderWidth: 1, borderColor: colors.border,
                                 }}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -306,8 +262,18 @@ export default function OCRScanner({ onStudentsScanned, onCancel, colors: colors
                                             <Text style={{ color: colors.text, fontWeight: '600' }}>{student.name}</Text>
                                             <Text style={{ color: colors.textSecondary, fontSize: 13 }}>Index: {student.index_number}</Text>
                                             {student.notes && <Text style={{ color: colors.textSecondary, fontSize: 13 }}>{student.notes}</Text>}
+                                            {student.uncertain && (
+                                                <Text style={{ color: colors.warning, fontSize: 11 }}>
+                                                    ⚠ Low confidence — please verify
+                                                </Text>
+                                            )}
                                         </View>
-                                        <Text style={{ color: colors.success, fontSize: 18 }}>✓</Text>
+                                        <Text style={{
+                                            color: student.uncertain ? colors.warning : colors.success,
+                                            fontSize: 18,
+                                        }}>
+                                            {student.uncertain ? '?' : '✓'}
+                                        </Text>
                                     </View>
                                 </View>
                             ))}

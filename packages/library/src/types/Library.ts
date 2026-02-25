@@ -151,3 +151,16 @@ export interface CreateCollectionInput {
     grades: number[];
     estimated_duration?: string;
 }
+
+// ============================================================================
+// UI CONSTANTS (Library First Protocol)
+// ============================================================================
+
+export const LIBRARY_UI_CATEGORIES = [
+    { id: 'All', en: 'All', si: 'සියල්ල', ta: 'அனைத்தும்' },
+    { id: 'lesson', en: 'Lessons', si: 'පාඩම්', ta: 'பாடங்கள்' },
+    { id: 'worksheet', en: 'Worksheets', si: 'වැඩපත්', ta: 'பயிற்சித் தாள்கள்' },
+    { id: 'guide', en: 'Guides', si: 'මඟපෙන්වන්නන්', ta: 'வழிகாட்டிகள்' },
+    { id: 'video', en: 'Videos', si: 'වීඩියෝ', ta: 'வீடியோக்கள்' },
+    { id: 'pedagogy', en: 'Pedagogy', si: 'ශික්ෂණ විද්‍යාව', ta: 'கற்பித்தல் முறை' },
+];
