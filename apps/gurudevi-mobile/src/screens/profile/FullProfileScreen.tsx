@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, Dimensions } from 'react-native';
 import {
     Box,
@@ -11,12 +11,21 @@ import {
     ScreenWrapper,
     useBottomTabPadding,
     Center,
+    useEnvironment,
+    SanctuaryProgressBar,
+    hapticSuccess,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { MapPin, Phone, User as UserIcon, Fingerprint, FileText, Briefcase, GraduationCap, BookOpen, School } from 'lucide-react-native';
 import IdentityCard from '../../components/profile/IdentityCard';
+import AchievementUnlockOverlay from '../../components/shared/AchievementUnlockOverlay';
+import Reanimated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withTiming,
+} from 'react-native-reanimated';
 
-import { useProfile, EditableItem, UserProfile } from '@repo/profile';
+import { useProfile, EditableItem, UserProfile, useProfileCompletion, AvatarDisplay } from '@repo/profile';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ProfileStackParamList } from '../../types/navigation';
 
@@ -30,6 +39,31 @@ export default function FullProfileScreen({ navigation }: FullProfileScreenProps
     const { t } = useTranslation();
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
+    const { role } = useEnvironment();
+    const completionResult = useProfileCompletion(profile, role ?? null);
+    const [showCelebration, setShowCelebration] = useState(false);
+
+    // Animated opacity for bar fade-out on completion
+    const barOpacity = useSharedValue(1);
+    const barAnimStyle = useAnimatedStyle(() => ({
+        opacity: barOpacity.value,
+    }));
+
+    // Watch for first-time 100% and trigger celebration
+    useEffect(() => {
+        if (
+            completionResult.isComplete &&
+            !completionResult.hasSeenCompletionCelebration
+        ) {
+            setShowCelebration(true);
+            hapticSuccess();
+            completionResult.markCompletionCelebrationSeen();
+            const timer = setTimeout(() => {
+                barOpacity.value = withTiming(0, { duration: 800 });
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [completionResult.isComplete, completionResult.hasSeenCompletionCelebration]);
 
     if (!profile) return null;
 
@@ -61,6 +95,38 @@ export default function FullProfileScreen({ navigation }: FullProfileScreenProps
                             <IdentityCard profile={profile} />
                         </Box>
                     </Center>
+
+                    {/* Editable Avatar — tap to change photo */}
+                    <Center mt={Theme.spacing.lg}>
+                        <AvatarDisplay
+                            userId={profile.id}
+                            avatarUrl={profile.avatar_url}
+                            fullName={profile.full_name}
+                            size={72}
+                            editable={true}
+                            onAvatarUpdated={async (url) => {
+                                await updateField('avatar_url', url);
+                                hapticSuccess();
+                            }}
+                        />
+                        <Text size="xs" color={colors.textTertiary} mt={Theme.spacing.xs}>
+                            Tap to update your photo
+                        </Text>
+                    </Center>
+
+                    {/* Completion bar — animated, fades out on 100% */}
+                    <Reanimated.View style={barAnimStyle}>
+                        <SanctuaryProgressBar
+                            percentage={completionResult.percentage}
+                            isComplete={completionResult.isComplete}
+                            nextHint={completionResult.nextHint}
+                            style={{
+                                paddingHorizontal: Theme.spacing.xl,
+                                marginTop: Theme.spacing.md,
+                                marginBottom: Theme.spacing.xs,
+                            }}
+                        />
+                    </Reanimated.View>
 
                     {/* Detailed Information */}
                     <Center>
@@ -216,6 +282,13 @@ export default function FullProfileScreen({ navigation }: FullProfileScreenProps
                     </Box>
                 </VStack>
             </ScrollView>
+
+            {/* Overlay rendered outside ScrollView — uses position:absolute internally */}
+            <AchievementUnlockOverlay
+                title="✨ Profile Complete!"
+                visible={showCelebration}
+                onHide={() => setShowCelebration(false)}
+            />
         </ScreenWrapper>
     );
 }
