@@ -387,7 +387,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                     setShowScanner(false);
                     const result = resolveQR(data);
                     if (!result.ok) {
-                        showToast('Unrecognised QR — try a Gurudevi invite code', 'error');
+                        showToast('Unrecognized QR — try a Gurudevi invite code', 'error');
                         return;
                     }
                     const { payload } = result;
