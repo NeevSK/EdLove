@@ -176,6 +176,8 @@ export default function AppSettingsScreen({ navigation }: any) {
     isVeilActive,
     toggleVeil,
     reality,
+    enableLivingTheme,
+    setEnableLivingTheme,
   } = useEnvironment();
   const { isDemoMode, setDemoMode } = useStore();
 
@@ -282,6 +284,53 @@ export default function AppSettingsScreen({ navigation }: any) {
           accessibilityLabel={t('settings.fidelity.title', 'Visual Quality')}
           accessibilityHint={t('settings.fidelity.hint', 'Control visual effects and animations quality')}
         />
+
+        {/* Living Theme Toggle */}
+        <Box sx={{
+          backgroundColor: colors.secondary,
+          borderRadius: Theme.corners.comfortable,
+          padding: Theme.spacing.md,
+          marginBottom: Theme.spacing.sm,
+          borderWidth: 1,
+          borderColor: enableLivingTheme ? colors.action : colors.border,
+        }}>
+          <HStack space="md" alignItems="center" justifyContent="space-between">
+            <HStack space="md" alignItems="center" flex={1}>
+              <Box sx={{
+                width: 40, height: 40,
+                borderRadius: Theme.corners.comfortable,
+                backgroundColor: enableLivingTheme ? colors.action : colors.tertiary,
+                alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Sparkles size={24} color={enableLivingTheme ? Theme.colors.white : colors.textTertiary}
+                  fill={enableLivingTheme ? Theme.colors.white : 'transparent'} />
+              </Box>
+              <VStack flex={1} space="xs">
+                <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: Theme.typography.fontWeight.semibold, color: colors.text }}>
+                  {t('settings.living_theme.title', 'Living Theme')}
+                </Text>
+                <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary }}>
+                  {enableLivingTheme
+                    ? t('settings.living_theme.on', 'Phase-aware colors shift with the time of day')
+                    : t('settings.living_theme.off', 'Classic calm — simple static appearance')}
+                </Text>
+              </VStack>
+            </HStack>
+            <Switch
+              value={enableLivingTheme}
+              onValueChange={async (val) => {
+                await setEnableLivingTheme(val);
+                hapticLight();
+              }}
+              trackColor={{ false: colors.tertiary, true: colors.action }}
+              thumbColor={Theme.colors.white}
+              accessible={true}
+              accessibilityRole="switch"
+              accessibilityLabel={t('settings.living_theme.title', 'Living Theme')}
+              accessibilityState={{ checked: enableLivingTheme }}
+            />
+          </HStack>
+        </Box>
 
         {/* Language & Localization */}
         <SectionHeader
