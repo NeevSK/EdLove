@@ -21,7 +21,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { User, GraduationCap, Briefcase, Crown, ShieldAlert, Compass } from 'lucide-react-native';
 import { QRCodeGenerator } from '@repo/scanner-kit';
-import { UserProfile } from '@repo/profile';
+import { UserProfile, AvatarDisplay } from '@repo/profile';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_WIDTH = SCREEN_WIDTH - Theme.spacing.xl * 2;
@@ -91,20 +91,6 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile, style
         }
     }, [profile?.role, profile?.level, colors]);
 
-    // Dynamic Profile Completion Calculator
-    const completionPercentage = useMemo(() => {
-        if (!profile) return 0;
-        const fields = [
-            'full_name',
-            'phone',
-            'bio',
-            'avatar_url',
-            profile.role === 'student' ? 'index_number' : 'nic_number'
-        ];
-        const filledFields = fields.filter(f => !!profile[f]);
-        return Math.round((filledFields.length / fields.length) * 100);
-    }, [profile]);
-
     const styles = useMemo(() => StyleSheet.create({
         // ... (rest of styles omitted for brevity, keeping same)
         cardCommon: {
@@ -125,44 +111,6 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile, style
         glassLayer: {
             ...StyleSheet.absoluteFillObject,
             backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        },
-        progressRing: {
-            position: 'absolute',
-            top: -4,
-            left: -4,
-            width: 88,
-            height: 88,
-            borderRadius: 44,
-            borderWidth: 2,
-            borderColor: colors.action,
-            opacity: 0.6,
-            borderStyle: 'dashed',
-        },
-        avatarContainer: {
-            width: 80,
-            height: 80,
-            borderRadius: 40,
-            overflow: 'hidden',
-            borderWidth: 2,
-            borderColor: colors.primary,
-        },
-        avatarImage: {
-            width: '100%',
-            height: '100%',
-        },
-        avatarPlaceholder: {
-            width: '100%',
-            height: '100%',
-            backgroundColor: `${colors.action}15`,
-        },
-        completionBadge: {
-            position: 'absolute',
-            bottom: -6,
-            alignSelf: 'center',
-            backgroundColor: colors.action,
-            paddingHorizontal: 6,
-            paddingVertical: 2,
-            borderRadius: 10,
         },
         editButton: {
             backgroundColor: `${colors.action}10`,
@@ -197,30 +145,14 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile, style
                     <Box style={styles.glassLayer} />
 
                     <HStack space="lg" alignItems="center" h="100%" p={Theme.spacing.xl}>
-                        {/* Avatar with Ring */}
-                        <Box>
-                            <Box style={styles.progressRing} />
-                            <Box style={styles.avatarContainer}>
-                                {profile?.avatar_url ? (
-                                    <RNImage
-                                        source={{ uri: profile.avatar_url }}
-                                        style={styles.avatarImage}
-                                    />
-                                ) : (
-                                    <Center style={styles.avatarPlaceholder}>
-                                        <roleConfig.icon
-                                            size={40}
-                                            color={colors.action}
-                                        />
-                                    </Center>
-                                )}
-                            </Box>
-                            <Box style={styles.completionBadge}>
-                                <Text color={colors.primary as any} size="xs" bold>
-                                    {completionPercentage}%
-                                </Text>
-                            </Box>
-                        </Box>
+                        {/* Avatar — AvatarDisplay handles image / initials / offline */}
+                        <AvatarDisplay
+                            userId={profile?.id || ''}
+                            avatarUrl={profile?.avatar_url}
+                            fullName={profile?.full_name}
+                            size={80}
+                            editable={false}
+                        />
 
                         {/* Details */}
                         <VStack space="xs" flex={1}>
