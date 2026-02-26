@@ -1,4 +1,5 @@
 import { UserRole } from '../constants/SriLankanSchools';
+export type { UserRole };
 
 /**
  * User Profile Interface

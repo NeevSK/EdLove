@@ -1,6 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
-  "summary": "Changes to Onboarding/Home logic with Triple-Helix BDD and generic Supabase audit.",
-  "updatedAt": "2026-02-11T06:23:05.383095800Z",
-  "version": "1"
-}

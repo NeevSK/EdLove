@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_WALKTHROUGH",
-  "summary": "Complete end-to-end guide for establishing the Gurudevi database in Supabase. Includes detailed steps for running SQL, verifying RLS policies, understanding what RLS does, testing authentication, and troubleshooting common issues. Designed for users unfamiliar with Supabase.",
-  "updatedAt": "2026-02-04T09:05:20.743960800Z"
-}

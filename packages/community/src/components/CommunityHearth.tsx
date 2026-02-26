@@ -18,6 +18,7 @@ import { ScrollView, Dimensions, NativeSyntheticEvent, NativeScrollEvent, Pressa
 import Animated, { LinearTransition } from 'react-native-reanimated';
 import { Post } from '@repo/community';
 import { CommunityPresence } from '@repo/self';
+import { UserRole } from '@repo/core';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH - (Theme.spacing.md * 2);
@@ -26,7 +27,7 @@ const AUTO_SWIPE_INTERVAL = 6000;
 interface CommunityHearthProps {
     manifestos?: SanctuaryManifesto[];
     spotlightPost?: Post;
-    userRole?: 'teacher' | 'student' | 'admin';
+    userRole?: UserRole | string | null;
     userVibe?: string;
     userId: string;
     onEndorseManifesto?: (id: string) => void;
@@ -50,7 +51,7 @@ export default function CommunityHearth({
     const slides: { key: string; content: React.ReactNode }[] = [
         {
             key: 'presence',
-            content: <CommunityPresence compact={false} userRole={userRole} userVibe={userVibe} userId={userId} />
+            content: <CommunityPresence compact={false} userRole={userRole as any} userVibe={userVibe} userId={userId} />
         }
     ];
 

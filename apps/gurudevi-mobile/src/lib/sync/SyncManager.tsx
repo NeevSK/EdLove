@@ -1,6 +1,6 @@
 ﻿
 import React, { useEffect } from 'react';
-import { useStore, useMutationQueue, useMutationAuditLog, MUTATION_REGISTRY } from '@repo/core';
+import { useStore, useMutationQueue, useMutationAuditLog, MUTATION_REGISTRY, classifyError } from '@repo/core';
 
 /**
  * SyncManager
@@ -25,28 +25,6 @@ export default function SyncManager() {
             processQueue();
         }
     }, [isOnline, queue.length, isSyncing]);
-
-    /**
-     * Resonant Error Classifier
-     */
-    const getErrorType = (error: any): 'TRANSIENT' | 'PERMANENT' => {
-        const msg = error.message?.toLowerCase() || '';
-        const code = error.code;
-
-        // Permanent: Won't fix itself on retry (Auth, Schema, Logic)
-        if (
-            code === '23505' || // Unique violation
-            code === '42501' || // Insufficient privilege
-            code === '42P01' || // Relation doesn't exist
-            msg.includes('invalid jwt') ||
-            msg.includes('permission denied')
-        ) {
-            return 'PERMANENT';
-        }
-
-        // Transient: Network, timeout, rate limit, server 5xx
-        return 'TRANSIENT';
-    };
 
     const processQueue = async () => {
         setSyncing(true);
@@ -80,21 +58,18 @@ export default function SyncManager() {
                 processedCount++;
 
             } catch (error: any) {
-                const errorType = getErrorType(error);
+                const errorType = classifyError(error);
                 const retryCount = (item.retryCount || 0) + 1;
 
                 if (errorType === 'PERMANENT' || retryCount >= MAX_RETRIES) {
-                    // Fail to DLQ (Reparative state)
-                    console.error(
-                        `[SyncManager] Terminating: ${item.name} – reason=${
-                            errorType === 'PERMANENT' ? 'PERMANENT_ERROR' : 'MAX_RETRIES_EXCEEDED'
-                        } (retryCount=${retryCount}/${MAX_RETRIES})`,
-                        error
-                    );
+                    // Terminal State: Permanent Failure or Max Retries
+                    const exitReason = errorType === 'PERMANENT' ? 'PERMANENT_FAILURE' : 'MAX_RETRIES_EXCEEDED';
+                    console.error(`[SyncManager] Terminal: ${item.name} – reason=${exitReason}`, error);
+
                     moveToDeadLetter(item.id, error.message);
                     updateEntry(item.id, 'dead_letter', error.message);
 
-                    showToast(`Sync failed: ${item.name} needs review`, 'error');
+                    showToast(`Action required: ${item.name} failed permanentely`, 'error');
                 } else {
                     // Transient failure - retry with exponential backoff
                     const backoffMs = Math.min(Math.pow(2, retryCount) * 1000, 30000);

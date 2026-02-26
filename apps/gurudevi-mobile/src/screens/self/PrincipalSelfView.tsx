@@ -6,7 +6,7 @@
  * More Tools: Staff wellbeing overview (aggregated), Leadership wisdom, Monthly reflection
  */
 
-import { supabase, useStore, useSafeMutation } from '@repo/core';
+import { supabase, useStore, useSafeMutation, useUserRole } from '@repo/core';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -51,54 +51,29 @@ const PRINCIPAL_MORE_TOOLS = [
 export default function PrincipalSelfView() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
+    const { userId, role, isGuest } = useUserRole();
+    const user = useStore(state => state.user);
     const [activeFeature, setActiveFeature] = useState('energy');
-    const [userId, setUserId] = useState<string | null>(null);
-    const [loadingUser, setLoadingUser] = useState(true);
     const [showMoreTools, setShowMoreTools] = useState(false);
-    const [userProfile, setUserProfile] = useState<any>(null);
+
+    // We rely mostly on the offline store now for fast render
+    const userProfile = user ? {
+        id: user.id,
+        full_name: user.full_name || user.email?.split('@')[0],
+        email: user.email,
+        role: user.role || 'principal',
+        avatar_url: user.avatar_url,
+        school_name: null // Simplified, will add actual lookup if needed
+    } : null;
+
+    // Remove the slow, manual loading effect
+    const loadingUser = false;
+
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
 
-    React.useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) {
-                    setUserId(user.id);
-                    const { data: profile } = await supabase
-                        .from('users')
-                        .select(`
-                            *,
-                            schools (
-                                name
-                            )
-                        `)
-                        .eq('id', user.id)
-                        .single();
-
-                    if (profile) {
-                        setUserProfile({
-                            ...profile,
-                            school_name: profile.schools?.name || null
-                        });
-                    } else {
-                        setUserProfile({
-                            id: user.id,
-                            full_name: user.user_metadata?.full_name || user.email?.split('@')[0],
-                            email: user.email,
-                            role: user.user_metadata?.role || 'principal',
-                            school_name: null
-                        });
-                    }
-                }
-            } finally {
-                setLoadingUser(false);
-            }
-        };
-        fetchUser();
-    }, []);
 
     const renderFeature = () => {
         if (!userId && activeFeature !== 'energy') {

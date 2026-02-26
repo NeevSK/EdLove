@@ -25,7 +25,7 @@ import {
 } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { supabase, api } from '@repo/core';
+import { supabase, api, FlowResolver } from '@repo/core';
 import { communityAPI } from '@repo/community';
 import type { QRPayload } from '@repo/scanner-kit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -62,88 +62,35 @@ export default function QRHandlerScreen() {
         return;
       }
 
-      switch (p.action) {
-        case 'join_school': {
-          setMessage('Joining school...');
-          // Update user's school_id
-          await supabase
-            .from('users')
-            .update({ school_id: p.school_id })
-            .eq('id', user.id);
-          // Join community group
-          await communityAPI.joinGroup(p.group_id, user.id, 'student');
-          hapticSuccess();
-          setStatus('success');
-          setMessage('Joined! Navigating to your school...');
-          setTimeout(() => navigation.navigate('Main', { screen: 'Classroom' }), 1500);
-          break;
-        }
+      const result = await FlowResolver.resolveQR(p, user.id);
 
-        case 'join_class': {
-          setMessage('Joining classroom...');
-          await api.classrooms.update(p.classroom_id, { teacher_id: user.id });
-          hapticSuccess();
-          setStatus('success');
-          setMessage('Joined classroom successfully!');
-          setTimeout(() => navigation.navigate('Main', { screen: 'Classroom' }), 1500);
-          break;
-        }
+      if (result.outcome === 'success') {
+        hapticSuccess();
+        setStatus('success');
+        setMessage(result.message);
 
-        case 'join_group': {
-          setMessage('Joining community group...');
-          await communityAPI.joinGroup(p.group_id, user.id, 'student');
-          hapticSuccess();
-          setStatus('success');
-          setMessage('Joined group!');
-          setTimeout(() => navigation.navigate('Main', { screen: 'Community' }), 1500);
-          break;
-        }
+        if (result.intent) {
+          // Map Abstract Core Intent -> Mobile Specific Navigation
+          const intentMap: Record<string, () => void> = {
+            'GOTO_CLASSROOM': () => navigation.navigate('Main', { screen: 'Classroom' }),
+            'GOTO_COMMUNITY': () => navigation.navigate('Main', { screen: 'Community' }),
+            'GOTO_SELF': () => navigation.navigate('Main', { screen: 'Self' }),
+            'GOTO_THUTHIMAL_CLAIM': () => navigation.replace('ThuthimalClaim', result.params)
+          };
 
-        case 'claim_invite': {
-          setMessage(`Claiming ${p.role} invite...`);
-          // Apply invite: update user role + school association
-          await supabase
-            .from('users')
-            .update({ role: p.role, school_id: p.school_id })
-            .eq('id', user.id);
-          // Mark invite code used
-          await supabase
-            .from('invite_codes')
-            .update({ used: true })
-            .eq('code', p.invite_code);
-          hapticSuccess();
-          setStatus('success');
-          setMessage(`Joined as ${p.role}!`);
-          setTimeout(() => navigation.navigate('Main', { screen: 'Classroom' }), 1500);
-          break;
+          const action = intentMap[result.intent];
+          if (action) {
+            setTimeout(action, 1500);
+          }
         }
-
-        case 'user_invite': {
-          // Store attribution — no immediate action needed
-          await AsyncStorage.setItem(
-            'referral_attribution',
-            JSON.stringify({ inviter_id: p.inviter_id, inviter_role: p.inviter_role }),
-          );
-          hapticSuccess();
-          setStatus('success');
-          setMessage("Welcome! You've been invited to Gurudevi.");
-          setTimeout(() => navigation.goBack(), 2000);
-          break;
+      } else if (result.outcome === 'redirect') {
+        setStatus('success');
+        setMessage(result.message);
+        if (result.intent === 'GOTO_THUTHIMAL_CLAIM') {
+          navigation.replace('ThuthimalClaim', result.params);
         }
-
-        case 'thuthimal_gift': {
-          // Navigate to dedicated claim screen
-          navigation.replace('ThuthimalClaim', {
-            gift_token: p.gift_token,
-            gifter_name: p.gifter_name,
-          });
-          return;
-        }
-
-        default:
-          setStatus('error');
-          setMessage('Unknown QR action.');
-          setTimeout(() => navigation.goBack(), 2000);
+      } else {
+        throw new Error(result.message);
       }
     } catch (err) {
       console.error('QRHandlerScreen error:', err);

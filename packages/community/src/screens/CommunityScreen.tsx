@@ -25,7 +25,7 @@ type FeedFilter = 'all' | string;
 export default function CommunityScreen() {
     const { t } = useTranslation();
     const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
-    const { role } = useUserRole();
+    const { role: userRole, schoolId, userId, isGuest } = useUserRole();
     const {
         posts,
         groups,
@@ -44,8 +44,6 @@ export default function CommunityScreen() {
     const [createPostGroupId, setCreatePostGroupId] = useState<string | undefined>(undefined);
     const [reportPostId, setReportPostId] = useState<string | undefined>(undefined);
     const [showReportModal, setShowReportModal] = useState(false);
-    const [userId, setUserId] = useState<string | undefined>(undefined);
-    const [schoolId, setSchoolId] = useState<string>('mock-school');
     const colors = useThemedColors();
     const { discoverFeature } = useTracking();
     const bottomPadding = useBottomTabPadding();
@@ -54,9 +52,7 @@ export default function CommunityScreen() {
         discoverFeature('section_community');
     }, []);
 
-    const [userRole, setUserRole] = useState<'teacher' | 'student' | 'admin'>('teacher');
-
-    const { manifestos, endorse, unendorse } = useManifestos(schoolId, userId);
+    const { manifestos, endorse, unendorse } = useManifestos(schoolId, userId ?? undefined);
 
     // Filtered data for FlatList
     const listData = useMemo(() => posts, [posts]);
@@ -70,16 +66,6 @@ export default function CommunityScreen() {
     }, []);
 
     const loadData = async () => {
-        try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                setUserId(user.id);
-                setSchoolId(user.user_metadata?.school_id || 'mock-school');
-                setUserRole(user.user_metadata?.role || 'teacher');
-            }
-        } catch (e) {
-            console.error('Auth error in CommunityScreen', e);
-        }
         await Promise.all([fetchGroups(), fetchPosts('all')]);
     };
 
@@ -124,7 +110,7 @@ export default function CommunityScreen() {
     };
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper scroll={false}>
             <Box sx={{ flex: 1, backgroundColor: colors.secondary }}>
                 <GlobalHeader title={t('community.title', 'Heal & Bloom')} />
 
@@ -197,7 +183,7 @@ export default function CommunityScreen() {
                                         setShowReportModal(true);
                                     }}
                                     isSample={item.id.startsWith('stub-') || item.id.startsWith('mock-')}
-                                    currentUserId={userId}
+                                    currentUserId={userId ?? undefined}
                                 />
                             </Animated.View>
                         )}
@@ -228,7 +214,7 @@ export default function CommunityScreen() {
                     />
                 ) : (
                     <GroupsScreen
-                        userId={userId}
+                        userId={userId ?? undefined}
                         schoolId={schoolId}
                         onCreatePost={handleOpenCreatePost}
                         onNavigateToGroup={(groupId: string) => {

@@ -1,6 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
-  "summary": "Implementation plan to align user roles with the `users` table and integrate the onboarding flow into the main `App.tsx` routing. It also includes UI refinements for `founder` and `admin` roles.",
-  "updatedAt": "2026-02-11T02:04:23.827786200Z",
-  "version": "5"
-}

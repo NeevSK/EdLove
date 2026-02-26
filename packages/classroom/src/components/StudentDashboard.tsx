@@ -148,17 +148,36 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
                         <QuickAction
                             icon={Star}
                             label={t('student.rewards') || 'Rewards'}
-                            onPress={() => { }} // TODO: Add rewards navigation
+                            onPress={() => {
+                                hapticLight();
+                                useStore.getState().showToast(t('common.comingSoon') || 'Rewards are blossoming soon! 🌸', 'info');
+                            }}
                             color={Theme.colors.sanctuarySaffron}
                         />
                         <QuickAction
                             icon={Layout}
                             label={t('student.timetable') || 'Timetable'}
-                            onPress={() => { }} // TODO: Add timetable navigation
+                            onPress={() => {
+                                hapticLight();
+                                useStore.getState().showToast(t('common.comingSoon') || 'Timetables are in preparation. 🍃', 'info');
+                            }}
                             color={Theme.colors.sageGreen}
                         />
                     </HStack>
                 </Animated.View>
+
+                {isGuest && (
+                    <Animated.View entering={FadeInDown.delay(75)}>
+                        <PositiveInvitation
+                            type="guest"
+                            context="classroom"
+                            onAction={() => {
+                                hapticLight();
+                                navigation.navigate('Auth' as any);
+                            }}
+                        />
+                    </Animated.View>
+                )}
 
                 {/* Growth Stats */}
                 <Animated.View entering={FadeInDown.delay(100)}>

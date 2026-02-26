@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
-  "summary": "Implementation plan to complete the missing foundation pieces (Theme system, i18n, fonts, roles/permissions) according to BUILD_ORDER.md Phase 1",
-  "updatedAt": "2026-02-03T11:57:25.862456800Z"
-}

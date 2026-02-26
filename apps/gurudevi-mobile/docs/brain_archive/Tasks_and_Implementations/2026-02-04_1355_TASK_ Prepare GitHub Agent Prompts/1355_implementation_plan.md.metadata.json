@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
-  "summary": "Plan to secure Supabase credentials and guide user through manual project setup. Includes refactoring supabase.ts, creating .env, and providing SQL schema and setup guide.",
-  "updatedAt": "2026-02-04T08:25:15.410616500Z"
-}

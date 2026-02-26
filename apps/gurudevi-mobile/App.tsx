@@ -61,22 +61,11 @@ function App() {
   const toast = useStore((state) => state.toast);
   const hideToast = useStore((state) => state.hideToast);
 
-  // Create a helper for Supabase queries with timeout
-  const withTimeout = async (promise: any, timeoutMs: number = 5000): Promise<any> => {
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error(`Operation timed out after ${timeoutMs}ms`)), timeoutMs)
-    );
-    return Promise.race([promise, timeoutPromise]);
-  };
-
   const { i18n } = useTranslation();
 
   // Load saved language preference
   useEffect(() => {
-    async function initLanguage() {
-      await LanguageUtils.init();
-    }
-    initLanguage();
+    LanguageUtils.init();
   }, []);
 
   // Sync showWelcome with session status
@@ -87,18 +76,18 @@ function App() {
     }
   }, [session]);
 
-  // Extract user profile fetching logic to avoid duplication
+  // Extract user profile fetching logic
   const fetchAndSetUserProfile = async (userId: string) => {
     console.log(`🚀 Profile: Fetching for user ${userId}...`);
     try {
-      const { data: userProfile, error } = await withTimeout((supabase
+      const { data: userProfile, error } = await supabase
         .from('users')
         .select('role, school_id, onboarding_completed')
         .eq('id', userId)
-        .maybeSingle()) as any);
+        .maybeSingle();
 
       if (error) {
-        console.warn('⚠️ Profile: Table fetch returned error (maybe new user or missing table):', error.message);
+        console.warn('⚠️ Profile: Table fetch returned error:', error.message);
         return;
       }
 
@@ -107,14 +96,13 @@ function App() {
         const { setUserRole, setOnboardingCompleted } = useStore.getState();
         setUserRole(userProfile.role as UserRole | null);
         setOnboardingCompleted(!!userProfile.onboarding_completed);
-        console.log('📝 Store updated:', { role: userProfile.role, onboardingCompleted: !!userProfile.onboarding_completed });
 
         if (userProfile.school_id) {
-          const { data: schoolData } = await withTimeout((supabase
+          const { data: schoolData } = await supabase
             .from('schools')
             .select('type')
             .eq('id', userProfile.school_id)
-            .single()) as any);
+            .single();
 
           if (schoolData) {
             useStore.getState().setSchoolType(schoolData.type as SchoolType | null);
@@ -135,12 +123,12 @@ function App() {
     async function loadFonts() {
       console.log('🚀 Startup: Loading fonts...');
       try {
-        await withTimeout(Font.loadAsync(fontAssets), 7000);
-        console.log('✅ Startup: Fonts loaded successfully');
+        await Font.loadAsync(fontAssets);
+        console.log('✅ Startup: Fonts loaded');
         setFontsLoaded(true);
       } catch (error) {
-        console.warn('⚠️ Startup: Font loading failed or timed out:', error);
-        setFontsLoaded(true);
+        console.warn('⚠️ Startup: Font loading failed:', error);
+        setFontsLoaded(true); // Proceed anyway
       }
     }
     loadFonts();
@@ -149,48 +137,32 @@ function App() {
   useEffect(() => {
     console.log('🚀 Startup: Initializing Auth session...');
 
-    // Safety switch: Force loading to false after 10 seconds no matter what
-    const safetyTimeout = setTimeout(() => {
-      if (loading) {
-        console.warn('🚨 SAFETY TIMEOUT: App initialization took too long, forcing start');
-        setLoading(false);
-      }
-    }, 12000);
-
     const checkSession = async () => {
       try {
-        // Initial session check with 5s timeout
-        console.log('🚀 Startup: Checking getSession()...');
-        const { data: { session }, error } = await withTimeout(supabase.auth.getSession() as any, 8000);
-
+        // Initial session check - non-blocking for fonts/UI
+        const { data: { session }, error } = await supabase.auth.getSession();
         if (error) throw error;
 
         setSession(session);
-        console.log('🚀 Startup: Session check complete. Session exists:', !!session);
-
         if (session?.user) {
-          await fetchAndSetUserProfile(session.user.id);
-        } else {
-          console.log('💡 Startup: No session found (New User flow)');
+          fetchAndSetUserProfile(session.user.id); // Fire and forget background sync
         }
       } catch (error) {
-        console.warn('❌ Startup: Auth session check failed or timed out:', error);
+        console.warn('❌ Startup: Auth session check failed:', error);
       } finally {
+        // Unblock UI as soon as we have an initial answer (or error)
         setLoading(false);
-        clearTimeout(safetyTimeout);
-        console.log('🏁 Startup: Initialization sequence finished');
       }
     };
 
     checkSession();
-    // ... rest of the existing code
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('🔄 Auth Change:', event, !!session ? '(Session exists)' : '(No session)');
       setSession(session);
 
       if (session?.user) {
-        await fetchAndSetUserProfile(session.user.id);
+        fetchAndSetUserProfile(session.user.id);
       } else {
         const { setUserRole, setSchoolType, setTeacherName, setOnboardingCompleted } = useStore.getState();
         setUserRole(null);
@@ -202,7 +174,6 @@ function App() {
 
     return () => {
       subscription.unsubscribe();
-      clearTimeout(safetyTimeout);
     };
   }, []);
 
@@ -295,7 +266,7 @@ function App() {
                       options={{
                         host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
                       }}
-                      autocapture={true}
+                      autocapture={false}
                     >
                       <RootStack.Navigator screenOptions={{ headerShown: false }}>
                         {(!session || needsWelcome) ? (

@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_OTHER",
-  "summary": "Analysis of Behavior Driven Development (BDD) suitability for the Alpha launch. Recommends a 'Pragmatic BDD' approach using Jest/RNTL without the overhead of Cucumber/Gherkin.",
-  "updatedAt": "2026-02-10T13:14:09.243644700Z"
-}

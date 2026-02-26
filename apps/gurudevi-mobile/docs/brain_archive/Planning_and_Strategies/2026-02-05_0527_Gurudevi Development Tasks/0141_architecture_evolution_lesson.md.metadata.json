@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_OTHER",
-  "summary": "Educational document explaining the 'Why Now?' of the architectural refactor.\nCovers:\n1. Speed vs. Structure (Monolith Phase)\n2. The Parallelism Tipping Point (Agent Phase)\n3. Conway's Law (Software mirrors Team)\n4. key Lesson: Just-in-Time Architecture.",
-  "updatedAt": "2026-02-04T20:11:41.234497Z"
-}

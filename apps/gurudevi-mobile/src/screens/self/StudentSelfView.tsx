@@ -26,7 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
 import { MoodLotus, ShadowAgentDrawer } from '../../components/self';
-import { supabase, useStore } from '@repo/core';
+import { supabase, useStore, useUserRole } from '@repo/core';
 import { GlobalHeader } from '@repo/ui';
 import DailyContentCard from '../../components/self/DailyContentCard';
 import WelcomeModal from '../../components/self/WelcomeModal';
@@ -49,54 +49,29 @@ const STUDENT_MORE_TOOLS = [
 export default function StudentSelfView() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
+    const { userId, role, isGuest } = useUserRole();
+    const user = useStore(state => state.user);
     const [activeFeature, setActiveFeature] = useState('mood');
-    const [userId, setUserId] = useState<string | null>(null);
-    const [loadingUser, setLoadingUser] = useState(true);
     const [showMoreTools, setShowMoreTools] = useState(false);
-    const [userProfile, setUserProfile] = useState<any>(null);
+
+    // We rely mostly on the offline store now for fast render
+    const userProfile = user ? {
+        id: user.id,
+        full_name: user.full_name || user.email?.split('@')[0],
+        email: user.email,
+        role: user.role || 'student',
+        avatar_url: user.avatar_url,
+        school_name: null // Simplified, will add actual lookup if needed
+    } : null;
+
+    // Remove the slow, manual loading effect
+    const loadingUser = false;
+
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
 
-    React.useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) {
-                    setUserId(user.id);
-                    const { data: profile } = await supabase
-                        .from('users')
-                        .select(`
-                            *,
-                            schools (
-                                name
-                            )
-                        `)
-                        .eq('id', user.id)
-                        .single();
-
-                    if (profile) {
-                        setUserProfile({
-                            ...profile,
-                            school_name: profile.schools?.name || null
-                        });
-                    } else {
-                        setUserProfile({
-                            id: user.id,
-                            full_name: user.user_metadata?.full_name || user.email?.split('@')[0],
-                            email: user.email,
-                            role: user.user_metadata?.role || 'student',
-                            school_name: null
-                        });
-                    }
-                }
-            } finally {
-                setLoadingUser(false);
-            }
-        };
-        fetchUser();
-    }, []);
 
     const renderFeature = () => {
         if (!userId) {

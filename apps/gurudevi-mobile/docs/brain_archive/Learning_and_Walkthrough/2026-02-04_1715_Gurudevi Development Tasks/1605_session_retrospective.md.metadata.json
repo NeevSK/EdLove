@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_OTHER",
-  "summary": "Comprehensive retrospective of today's session covering what was built, key decisions made, technical achievements, and what's ready to use. Includes database schema (7 tables), authentication system, Sri Lankan school hierarchy, invite system foundations, and flexible signup flow. Documents 667 lines of code across 8 files, 3 SQL schemas, and full multilingual support.",
-  "updatedAt": "2026-02-04T10:35:51.325229100Z"
-}

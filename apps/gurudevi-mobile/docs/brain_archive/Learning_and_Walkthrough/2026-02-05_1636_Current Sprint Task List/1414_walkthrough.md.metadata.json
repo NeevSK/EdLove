@@ -1,6 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_WALKTHROUGH",
-  "summary": "Documented fixes for Theme initialization, `useMemo` invalid hook calls, and LibraryScreen render errors.",
-  "updatedAt": "2026-02-05T11:06:36.135520900Z",
-  "version": "1"
-}

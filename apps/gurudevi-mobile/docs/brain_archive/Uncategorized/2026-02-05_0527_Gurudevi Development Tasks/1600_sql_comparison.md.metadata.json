@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_OTHER",
-  "summary": "Comparison between GPT 4.5 mini's simplified SQL and the improved version. Explains what GPT's code does right, what's missing, improvements made (proper policy names, all CRUD policies, authenticated users, better indexing), and why the new version is production-ready.",
-  "updatedAt": "2026-02-04T10:30:28.164972500Z"
-}

@@ -1,6 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
-  "summary": "Major Strategy Update:\n1.  **Mobile Paused**: Waiting for friend's push.\n2.  **Web Strategy**: \"Incremental Unfolding\" (Whole Canvas). We will scaffold the navigation for *all* domains immediately, honoring the full vision, even if pages are skeletal.\n3.  **Agent Explanation**: Added a note about Sequential vs Parallel workflows.",
-  "updatedAt": "2026-02-02T03:37:47.003328600Z",
-  "version": "4"
-}

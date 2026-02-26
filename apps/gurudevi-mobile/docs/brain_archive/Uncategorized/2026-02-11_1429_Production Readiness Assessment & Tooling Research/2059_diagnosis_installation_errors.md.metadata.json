@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_OTHER",
-  "summary": "Detailed technical analysis of the BDD tool installation failures. Explains the React 19 peer dependency conflicts and the proposed pnpm override solution.",
-  "updatedAt": "2026-02-10T15:29:40.466062500Z"
-}

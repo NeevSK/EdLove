@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_WALKTHROUGH",
-  "summary": "Complete walkthrough of the Supabase schema audit process. Documents findings showing 25+ deployed tables, identifies which migrations have been applied, and provides next steps for cleanup and verification of remaining migrations.",
-  "updatedAt": "2026-02-11T10:44:55.311163600Z"
-}

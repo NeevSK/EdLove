@@ -31,7 +31,8 @@ export default function ClassroomScreen() {
         fetchRoleData();
     }, [role]);
 
-    if (loading) {
+    // 1. Loading state (only if no data at all)
+    if (loading && !classroomData) {
         return (
             <ScreenWrapper>
                 <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.lg }}>
@@ -85,8 +86,8 @@ export default function ClassroomScreen() {
         );
     }
 
-    // Student View (Enhanced)
-    if (role === 'student' && classroomData?.realClassCount && classroomData?.realClassCount > 0) {
+    // Student View (Instant Routing)
+    if ((role as any) === 'student' || (isGuest && (role as any) === 'student')) {
         return (
             <ScreenWrapper>
                 <GlobalHeader title={t('classroom.mySanctuaries') || 'My Sanctuaries'} subtitle={undefined} />

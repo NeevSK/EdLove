@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
-  "summary": "Strategy to bypass broken React 19 Native renderer by using React 19 DOM renderer for BDD logic verification.",
-  "updatedAt": "2026-02-11T01:29:11.462143200Z"
-}

@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
-  "summary": "Implementation plan for setting up Pure BDD (Behavior Driven Development) infrastructure in the Gurudevi Mobile project. This includes installing dependencies, configuring Jest, and establishing the feature/step-definition directory structure.",
-  "updatedAt": "2026-02-10T14:45:25.396354300Z"
-}

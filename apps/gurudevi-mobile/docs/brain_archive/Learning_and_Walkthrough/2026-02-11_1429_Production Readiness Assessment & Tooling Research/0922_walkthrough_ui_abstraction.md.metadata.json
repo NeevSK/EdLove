@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_WALKTHROUGH",
-  "summary": "Walkthrough of UI Abstraction Layer implementation, documenting the creation of src/ui/index.ts, migration of core files, and verification results. Includes before/after comparisons, architectural benefits, and next steps for completing the migration.",
-  "updatedAt": "2026-02-11T03:52:09.997974400Z"
-}

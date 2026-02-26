@@ -18,3 +18,4 @@ export * from './lib/storageWrapper';
 export * from './lib/guestDataManager';
 export * from './lib/cloudinary';
 export { isDemo } from './api/demo';
+export * from './lib/flows/FlowResolver';

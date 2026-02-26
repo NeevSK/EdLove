@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_WALKTHROUGH",
-  "summary": "Walkthrough of fixing the 'Classroom' screen render error, adding missing translation keys, and migrating from expo-av to expo-audio.",
-  "updatedAt": "2026-02-06T10:15:13.170271100Z"
-}

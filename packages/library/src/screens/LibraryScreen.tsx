@@ -18,7 +18,9 @@ import {
     LotusPetalFAB,
     FadeInDown,
     SanctuaryButton,
-    LivingGlow
+    LivingGlow,
+    HorizontalChipRow,
+    SanctuaryChip
 } from '@repo/ui';
 import Animated from 'react-native-reanimated';
 import AddResourceModal from '../components/AddResourceModal';
@@ -95,18 +97,10 @@ export default function LibraryScreen() {
         Linking.openURL(url).catch(err => console.error("Couldn't load page", err));
     };
 
-    const renderCategoryItem = ({ item: cat }: { item: any }) => (
-        <Box sx={{ marginRight: 8 }}>
-            <SanctuaryButton
-                onPress={() => setSelectedCategoryId(cat.id)}
-                variant={selectedCategoryId === cat.id ? 'solid' : 'outline'}
-                action="secondary"
-                size="xs"
-            >
-                {cat.en}
-            </SanctuaryButton>
-        </Box>
-    );
+    const chipData = useMemo(() => LIBRARY_UI_CATEGORIES.map(cat => ({
+        label: cat.en,
+        value: cat.id
+    })), []);
 
     const { deskItems, removeFromDeskLocal } = useStore();
     const handleCollectionPullToDesk = (id: string, name: string) => { };
@@ -119,45 +113,37 @@ export default function LibraryScreen() {
     };
 
     const renderHeader = () => (
-        <VStack space="md" py="$4">
+        <VStack space="md" py="$4" px={Theme.spacing.md}>
             <Animated.View entering={FadeInDown.delay(150).springify()}>
                 <VStack space="xs">
                     <Text color={colors.text} size="lg" bold>
                         {t('library.categories') || 'Categories'}
                     </Text>
-                    <FlatList
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        data={LIBRARY_UI_CATEGORIES}
-                        renderItem={renderCategoryItem}
-                        keyExtractor={(cat) => cat.id}
-                        contentContainerStyle={{ paddingVertical: 8 }}
+                    <HorizontalChipRow
+                        chips={chipData}
+                        selectedValue={selectedCategoryId}
+                        onSelect={setSelectedCategoryId}
+                        size="sm"
+                        paddingHorizontal={0} // Padding handled by parent container
                     />
                 </VStack>
             </Animated.View>
 
             <Animated.View entering={FadeInDown.delay(300).springify()}>
                 <VStack space="xs" mt="$2">
-                    <Text color={colors.textSecondary} size="sm" bold>
+                    <Text color={colors.textSecondary} size="sm" bold mb="$1">
                         {t('library.collections') || 'Popular Collections'}
                     </Text>
                     <HStack space="sm" flexWrap="wrap">
                         {['Grade 10', 'Mathematics', 'Past Papers', '2026 Reform'].map(tag => (
-                            <Pressable
+                            <SanctuaryChip
                                 key={tag}
+                                label={tag}
+                                selected={searchQuery === tag}
                                 onPress={() => setSearchQuery(tag)}
-                            >
-                                <Box sx={{
-                                    paddingHorizontal: 12,
-                                    paddingVertical: 6,
-                                    borderRadius: Theme.corners.comfortable,
-                                    backgroundColor: colors.tertiary,
-                                    borderWidth: 1,
-                                    borderColor: colors.border
-                                }}>
-                                    <Text size="xs" color={colors.textSecondary}>#{tag}</Text>
-                                </Box>
-                            </Pressable>
+                                variant="tag"
+                                size="sm"
+                            />
                         ))}
                     </HStack>
                 </VStack>

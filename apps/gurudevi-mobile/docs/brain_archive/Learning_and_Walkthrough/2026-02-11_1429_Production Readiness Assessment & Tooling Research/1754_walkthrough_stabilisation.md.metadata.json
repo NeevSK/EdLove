@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_WALKTHROUGH",
-  "summary": "Comprehensive walkthrough of the TypeScript stabilization process, explaining the cause of the stack overflow and documenting the fixes applied to reach a zero-error build.",
-  "updatedAt": "2026-02-10T12:24:46.207688200Z"
-}

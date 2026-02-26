@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
-  "summary": "Surgical synchronization of React versions to resolve the 'Incompatible React versions' error in Expo SDK 54.",
-  "updatedAt": "2026-02-10T16:57:18.641858100Z"
-}

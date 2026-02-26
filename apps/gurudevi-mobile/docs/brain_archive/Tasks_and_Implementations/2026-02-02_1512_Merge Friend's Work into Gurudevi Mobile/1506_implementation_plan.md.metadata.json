@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
-  "summary": "Plan for safely merging friend's work from the master branch's apps/mobile directory into the main branch's apps/gurudevi-mobile directory, addressing the divergent Git histories and different project structures.",
-  "updatedAt": "2026-02-02T09:36:29.496011400Z"
-}

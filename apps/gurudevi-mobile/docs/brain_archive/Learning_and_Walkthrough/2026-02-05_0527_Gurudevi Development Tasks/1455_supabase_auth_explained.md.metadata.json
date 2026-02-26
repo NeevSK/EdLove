@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_OTHER",
-  "summary": "Comprehensive explanation of how Supabase authentication works in Gurudevi. Covers auth.users vs public.users separation, password storage, email verification issue, and step-by-step fix to disable email confirmation for development. Includes detailed diagrams of the auth flow and troubleshooting guide.",
-  "updatedAt": "2026-02-04T09:25:24.356447Z"
-}

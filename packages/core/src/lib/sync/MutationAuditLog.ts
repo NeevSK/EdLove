@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { SafeZustandStorage } from '../../lib/storageWrapper';
 
-export type MutationOutcome = 'queued' | 'syncing' | 'success' | 'retrying' | 'dead_letter' | 'discarded';
+import { MutationOutcome } from './types';
 
 export interface AuditEntry {
     id: string;               // Same UUID as QueuedMutation.id

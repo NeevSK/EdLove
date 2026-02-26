@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
-  "summary": "Plan to implement invitation acceptance logic using Supabase and verify it via BDD.",
-  "updatedAt": "2026-02-11T01:53:18.317888400Z"
-}

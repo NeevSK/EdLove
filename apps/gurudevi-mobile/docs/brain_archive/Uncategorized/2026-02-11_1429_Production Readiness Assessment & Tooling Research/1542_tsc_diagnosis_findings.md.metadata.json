@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_OTHER",
-  "summary": "Comprehensive diagnosis of the TypeScript compilation stack overflow issue, documenting successful individual file compilations, known errors in TabNavigator and App files, and proposing a file-by-file fix strategy as an alternative to resolving the full build recursion.",
-  "updatedAt": "2026-02-10T10:12:44.628858100Z"
-}

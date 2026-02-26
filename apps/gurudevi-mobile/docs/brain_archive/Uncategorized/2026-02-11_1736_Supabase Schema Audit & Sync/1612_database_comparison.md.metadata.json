@@ -1,6 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_OTHER",
-  "summary": "Updated comparison report with final verification results showing 7 migrations not applied. Documents that a consolidated migration file has been created combining all missing features with bug fixes (incorrect table name in enhance_invitations).",
-  "updatedAt": "2026-02-11T11:05:34.092920800Z",
-  "version": "1"
-}

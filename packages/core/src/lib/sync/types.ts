@@ -31,3 +31,12 @@ export interface MutationQueueState {
     clearDeadLetterQueue: () => void;
     setSyncing: (isSyncing: boolean) => void;
 }
+
+export type MutationOutcome = 'success' | 'transient_failure' | 'permanent_failure' | 'terminal_abort' | 'queued' | 'syncing' | 'retrying' | 'dead_letter' | 'discarded';
+
+export interface MutationResult {
+    outcome: MutationOutcome;
+    error?: string;
+    retryCount: number;
+    timestamp: number;
+}

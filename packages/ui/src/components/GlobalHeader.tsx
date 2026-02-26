@@ -114,15 +114,16 @@ export default function GlobalHeader({
                     {isSelfView && (
                         <Pressable
                             onPress={() => navigation.navigate('Profile')}
-                            style={{ marginRight: Theme.spacing.md }}
                         >
-                            <UserAvatar
-                                avatarUrl={avatarUrl || user?.user_metadata?.avatar_url}
-                                fullName={userFullName}
-                                role={role}
-                                size={32}
-                                borderRadius={12}
-                            />
+                            <Box sx={{ marginRight: '$4' }}>
+                                <UserAvatar
+                                    avatarUrl={avatarUrl || user?.user_metadata?.avatar_url}
+                                    fullName={userFullName}
+                                    role={role}
+                                    size={32}
+                                    borderRadius={12}
+                                />
+                            </Box>
                         </Pressable>
                     )}
 

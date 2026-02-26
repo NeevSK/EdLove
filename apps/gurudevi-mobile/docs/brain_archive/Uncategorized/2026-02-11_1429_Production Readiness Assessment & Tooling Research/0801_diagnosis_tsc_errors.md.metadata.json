@@ -1,5 +1,0 @@
-{
-  "artifactType": "ARTIFACT_TYPE_OTHER",
-  "summary": "Detailed diagnosis of TypeScript compiler crashes, onboarding persistence gaps, and BDD test library mismatches. Explains why @ts-nocheck was previously used and outlines a path to fix the root causes without it.",
-  "updatedAt": "2026-02-11T02:31:48.938860600Z"
-}
