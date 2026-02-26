@@ -24,7 +24,7 @@ config.resolver.nodeModulesPaths = [
 //      - docs/migrations/metro-disable-hierarchical-lookup.md
 //    so that other developers understand why hierarchical lookup is disabled and
 //    how it impacts adding packages or debugging resolution issues.
-config.resolver.disableHierarchicalLookup = true;
+config.resolver.disableHierarchicalLookup = false;
 
 // 4. Aggressive blockList to ensure Metro NEVER follows paths into package-level React.
 config.resolver.blockList = [

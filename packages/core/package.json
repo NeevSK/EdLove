@@ -13,31 +13,29 @@
         "clean": "rm -rf .turbo node_modules"
     },
     "peerDependencies": {
-        "@react-native-async-storage/async-storage": "^1.21.0",
+        "@react-native-async-storage/async-storage": "2.2.0",
         "@supabase/supabase-js": "^2.39.0",
-        "expo-constants": "~15.4.5",
-        "expo-secure-store": "*",
+        "expo-constants": "*",
+        "expo-secure-store": "~55.0.8",
         "react": "*",
         "react-native": "*",
-        "react-native-mmkv": "^2.11.0",
+        "react-native-mmkv": "*",
         "react-native-url-polyfill": "*",
-        "zustand": "^4.5.0"
+        "zustand": "^4.5.0",
+        "@sentry/react-native": "*"
     },
     "devDependencies": {
-        "@react-native-async-storage/async-storage": "^1.21.0",
         "@supabase/supabase-js": "^2.39.0",
         "@tanstack/react-query": "^5.17.0",
         "@types/react": "~18.2.45",
         "eslint": "^9.38.0",
         "@repo/eslint-config": "workspace:*",
-        "expo-constants": "~15.4.5",
-        "react-native-mmkv": "^2.11.0",
         "typescript": "^5.3.3",
+        "tailwindcss": "~3.4.17",
         "zustand": "^4.5.0"
     },
     "dependencies": {
         "@tanstack/react-query": "^5.17.0",
-        "@sentry/react-native": "^8.1.0",
         "posthog-react-native": "^4.35.1"
     }
 }
