@@ -1,5 +1,5 @@
 ﻿import { Alert } from 'react-native';
-import { isDemo } from './demo';
+import { isDemo } from '@repo/core';
 import * as MOCK from './mockData';
 import { hapticWarning } from '@repo/ui';
 import i18n from 'i18next';
@@ -61,10 +61,10 @@ export function interceptApiCall(moduleName: string, methodName: string, origina
             // Block write operations in demo mode
             console.log(`[DEMO MODE] Blocked write operation: ${registryKey}.${methodName}`);
             // Return a successful mock response without executing real DB writes
-            return Promise.resolve({ 
-                success: true, 
+            return Promise.resolve({
+                success: true,
                 message: 'Demo mode: Operation simulated successfully',
-                data: null 
+                data: null
             });
         }
     }

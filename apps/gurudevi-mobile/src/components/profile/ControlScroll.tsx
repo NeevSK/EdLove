@@ -13,7 +13,7 @@ import { Globe, Moon, Database, ChevronRight, Check, X, Sun, Zap, Smartphone } f
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { hapticLight, hapticSuccess } from '@repo/ui';
-import { useTheme, ThemeMode } from '../../hooks/useTheme';
+import { useTheme, ThemeMode } from '@repo/ui';
 
 interface ControlScrollProps {
     currentLanguage: string;

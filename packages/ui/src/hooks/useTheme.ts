@@ -18,10 +18,22 @@ export interface UseThemeReturn extends PhaseTokens {
     animationsEnabled: boolean;
     /** Whether blur effects should be used */
     blurEnabled: boolean;
+    /** Current theme mode (system, light, dark, auto) */
+    themeMode: ThemeMode;
+    /** Action to update theme mode */
+    setThemeMode: (mode: ThemeMode) => void;
 }
 
 export function useTheme(): UseThemeReturn {
-    const { temporalPhase, isDark, reality, effectiveFidelity, enableLivingTheme } = useEnvironment();
+    const {
+        temporalPhase,
+        isDark,
+        reality,
+        effectiveFidelity,
+        enableLivingTheme,
+        themeMode,
+        setThemeMode
+    } = useEnvironment();
 
     const tokens = enableLivingTheme
         ? resolvePhaseTokens(temporalPhase, isDark)
@@ -36,5 +48,7 @@ export function useTheme(): UseThemeReturn {
         phase: temporalPhase,
         animationsEnabled,
         blurEnabled,
+        themeMode,
+        setThemeMode,
     };
 }

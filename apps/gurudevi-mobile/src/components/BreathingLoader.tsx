@@ -21,7 +21,7 @@ import Animated, {
     Easing,
 } from 'react-native-reanimated';
 import { Theme } from '@repo/ui';
-import { useAccessibility } from '../hooks/useAccessibility';
+import { useAccessibility } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 
 interface BreathingLoaderProps {

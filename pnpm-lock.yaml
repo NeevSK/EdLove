@@ -12,6 +12,7 @@ overrides:
   react-test-renderer: 19.2.0
   '@types/react': 19.2.14
   '@types/react-dom': 19.2.1
+  '@types/react-native': workspace:*
   glob: ^11.0.0
   rimraf: ^6.0.0
   inflight: '*'
@@ -42,6 +43,9 @@ importers:
         specifier: ^7.6.3
         version: 7.7.4
     devDependencies:
+      '@repo/types-shim':
+        specifier: workspace:*
+        version: link:packages/types-shim
       '@testing-library/react-native':
         specifier: 14.0.0-beta.0
         version: 14.0.0-beta.0(jest@30.2.0(@types/node@25.3.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)(test-renderer@0.14.0(@types/react@19.2.14)(react@19.2.0))
@@ -98,10 +102,10 @@ importers:
         version: 1.0.57
       '@gluestack-ui/config':
         specifier: ^1.1.20
-        version: 1.1.20(@gluestack-style/react@1.0.57)(@gluestack-ui/themed@1.1.73(79bf526167dd8439b7c1aa7a4c3c74cf))
+        version: 1.1.20(e85457bbbb069ac7455daae484019570)
       '@gluestack-ui/themed':
         specifier: ^1.1.73
-        version: 1.1.73(79bf526167dd8439b7c1aa7a4c3c74cf)
+        version: 1.1.73(@gluestack-style/react@1.0.57)(nativewind@4.2.2(react-native-reanimated@4.2.1(react-native-worklets@0.7.2(@babel/core@7.29.0)(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-safe-area-context@5.6.2(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-svg@15.15.3(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)(tailwindcss@3.4.19(yaml@2.8.2)))(react-dom@19.2.0(react@19.2.0))(react-native-svg@15.15.3(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-web@0.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
       '@react-native-async-storage/async-storage':
         specifier: 2.2.0
         version: 2.2.0(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))
@@ -473,7 +477,7 @@ importers:
     devDependencies:
       '@gluestack-ui/themed':
         specifier: ^1.1.2
-        version: 1.1.73(79bf526167dd8439b7c1aa7a4c3c74cf)
+        version: 1.1.73(@gluestack-style/react@1.0.57)(nativewind@4.2.2(react-native-reanimated@4.2.1(react-native-worklets@0.7.2(@babel/core@7.29.0)(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-safe-area-context@5.6.2(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-svg@15.15.3(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)(tailwindcss@3.4.19(yaml@2.8.2)))(react-dom@19.2.0(react@19.2.0))(react-native-svg@15.15.3(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-web@0.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -814,6 +818,8 @@ importers:
         specifier: ^5.3.3
         version: 5.9.3
 
+  packages/types-shim: {}
+
   packages/typescript-config: {}
 
   packages/ui:
@@ -823,10 +829,10 @@ importers:
         version: 1.0.57
       '@gluestack-ui/config':
         specifier: ^1.1.20
-        version: 1.1.20(@gluestack-style/react@1.0.57)(@gluestack-ui/themed@1.1.73(79bf526167dd8439b7c1aa7a4c3c74cf))
+        version: 1.1.20(e85457bbbb069ac7455daae484019570)
       '@gluestack-ui/themed':
         specifier: ^1.1.73
-        version: 1.1.73(79bf526167dd8439b7c1aa7a4c3c74cf)
+        version: 1.1.73(@gluestack-style/react@1.0.57)(nativewind@4.2.2(react-native-reanimated@4.2.1(react-native-worklets@0.7.2(@babel/core@7.29.0)(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-safe-area-context@5.6.2(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-svg@15.15.3(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)(tailwindcss@3.4.19(yaml@2.8.2)))(react-dom@19.2.0(react@19.2.0))(react-native-svg@15.15.3(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-web@0.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
       '@react-native-async-storage/async-storage':
         specifier: '*'
         version: 2.2.0(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))
@@ -2228,7 +2234,7 @@ packages:
     resolution: {integrity: sha512-Gx1vTRzP05liSn6qRJ4Kk/OoZUm5A19VjkcFQTtOplldMqmcfj83+cfY2Be+8goqWJD9MXk0kBineE15QeqZtg==}
     peerDependencies:
       '@gluestack-style/react': '>=1.0.57'
-      '@types/react-native': '>=0.72'
+      '@types/react-native': workspace:*
       react: 19.2.0
       react-dom: 19.2.0
       react-native: 0.83.2
@@ -4079,10 +4085,6 @@ packages:
     resolution: {integrity: sha512-/EEvYBdT3BflCWvTMO7YkYBHVE9Ci6XdqZciZANQgKpaiDRGOLIlRo91jbTNRQjgPFWVaRxcYc0luVNFitz57A==}
     peerDependencies:
       '@types/react': 19.2.14
-
-  '@types/react-native@0.73.0':
-    resolution: {integrity: sha512-6ZRPQrYM72qYKGWidEttRe6M5DZBEV5F+MHMHqd4TTYx0tfkcdrUFGdef6CCxY0jXU7wldvd/zA/b0A/kTeJmA==}
-    deprecated: This is a stub types definition. react-native provides its own type definitions, so you do not need this installed.
 
   '@types/react-reconciler@0.31.0':
     resolution: {integrity: sha512-wa1KtV3SHKnWeLHfZFg/7nrPSe/Ejdn+qbanNX4V6i9I7C3ECKPfBnC1KM3ef58KFWEohLmTvoTH5XuEIKGX2g==}
@@ -10786,10 +10788,10 @@ snapshots:
     transitivePeerDependencies:
       - react-native
 
-  '@gluestack-ui/config@1.1.20(@gluestack-style/react@1.0.57)(@gluestack-ui/themed@1.1.73(79bf526167dd8439b7c1aa7a4c3c74cf))':
+  '@gluestack-ui/config@1.1.20(e85457bbbb069ac7455daae484019570)':
     dependencies:
       '@gluestack-style/react': 1.0.57
-      '@gluestack-ui/themed': 1.1.73(79bf526167dd8439b7c1aa7a4c3c74cf)
+      '@gluestack-ui/themed': 1.1.73(@gluestack-style/react@1.0.57)(nativewind@4.2.2(react-native-reanimated@4.2.1(react-native-worklets@0.7.2(@babel/core@7.29.0)(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-safe-area-context@5.6.2(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-svg@15.15.3(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)(tailwindcss@3.4.19(yaml@2.8.2)))(react-dom@19.2.0(react@19.2.0))(react-native-svg@15.15.3(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-web@0.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
 
   '@gluestack-ui/divider@0.1.10(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
@@ -11030,7 +11032,7 @@ snapshots:
     transitivePeerDependencies:
       - react-native
 
-  '@gluestack-ui/themed@1.1.73(79bf526167dd8439b7c1aa7a4c3c74cf)':
+  '@gluestack-ui/themed@1.1.73(@gluestack-style/react@1.0.57)(nativewind@4.2.2(react-native-reanimated@4.2.1(react-native-worklets@0.7.2(@babel/core@7.29.0)(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-safe-area-context@5.6.2(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-svg@15.15.3(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)(tailwindcss@3.4.19(yaml@2.8.2)))(react-dom@19.2.0(react@19.2.0))(react-native-svg@15.15.3(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-web@0.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@expo/html-elements': 55.0.3(react-native-web@0.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
       '@gluestack-style/animation-resolver': 1.0.4(@gluestack-style/react@1.0.57)
@@ -11067,7 +11069,6 @@ snapshots:
       '@gluestack-ui/toast': 1.0.9(react-dom@19.2.0(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
       '@gluestack-ui/tooltip': 0.1.44(react-dom@19.2.0(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
       '@legendapp/motion': 2.5.3(nativewind@4.2.2(react-native-reanimated@4.2.1(react-native-worklets@0.7.2(@babel/core@7.29.0)(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-safe-area-context@5.6.2(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native-svg@15.15.3(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)(tailwindcss@3.4.19(yaml@2.8.2)))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
-      '@types/react-native': 0.73.0(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0)
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
       react-native: 0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0)
@@ -13268,19 +13269,6 @@ snapshots:
   '@types/react-dom@19.2.1(@types/react@19.2.14)':
     dependencies:
       '@types/react': 19.2.14
-
-  '@types/react-native@0.73.0(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0)':
-    dependencies:
-      react-native: 0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0)
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@react-native-community/cli'
-      - '@react-native/metro-config'
-      - '@types/react'
-      - bufferutil
-      - react
-      - supports-color
-      - utf-8-validate
 
   '@types/react-reconciler@0.31.0(@types/react@19.2.14)':
     dependencies:
