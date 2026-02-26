@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { StudentAttendance, AttendanceStatus } from '../types/attendance';
+import { StudentAttendance, AttendanceStatus } from '@repo/core';
 
 export const useAttendance = (initialStudents: StudentAttendance[] = []) => {
     const [students, setStudents] = useState<StudentAttendance[]>(initialStudents);
