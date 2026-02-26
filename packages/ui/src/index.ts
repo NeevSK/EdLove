@@ -10,5 +10,7 @@ export * from './utils/haptics';
 export * from './utils/themeColors';
 export * from './hooks/useAccessibility';
 export * from './hooks/useTheme';
+export * from './hooks/useDemoBridge';
+export * from './hooks/useQRDeepLink';
 export * from './gluestack';
 export * from './providers/ToastProvider';

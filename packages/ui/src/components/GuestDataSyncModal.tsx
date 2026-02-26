@@ -17,7 +17,7 @@ import {
 } from '@repo/ui';
 import { Theme } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
-import { GuestDataSync } from '../../lib/guestDataSync';
+import { GuestDataSync } from '@repo/core';
 import { Check, AlertCircle, Cloud, Database } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -88,7 +88,7 @@ export default function GuestDataSyncModal({
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={handleSkip} size="lg">
+        <Modal isOpen={isOpen} onClose={handleSkip}>
             <ModalBackdrop />
             <ModalContent
                 sx={{

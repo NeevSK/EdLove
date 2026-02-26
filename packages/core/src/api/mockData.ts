@@ -217,3 +217,23 @@ export const MOCK_COMMUNITY_POSTS: any[] = [
 ];
 
 
+export const MOCK_ANNOUNCEMENTS: any[] = [
+    {
+        id: 'ann-1',
+        school_id: 'sample-school',
+        author_id: 'mock-principal',
+        author_name: 'Principal Maitreya',
+        content: 'Welcome to the Sanctuary of Learning. Today we begin our journey into resonance and mindfulness.',
+        is_pinned: true,
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 'ann-2',
+        school_id: 'sample-school',
+        author_id: 'mock-principal',
+        author_name: 'Principal Maitreya',
+        content: 'New community features are now live. Connect with your peers in the Wisdom Council.',
+        is_pinned: false,
+        created_at: new Date(Date.now() - 86400000).toISOString()
+    }
+];

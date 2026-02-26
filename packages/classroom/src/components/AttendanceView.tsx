@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Spinner, Text } from '@repo/ui';
 import AttendanceSheet from './AttendanceSheet';
-import { StudentAttendance } from '../types/attendance';
+import { StudentAttendance } from '@repo/core';
 import { api, ClassroomStudent } from '@repo/core';
 import { Theme } from '@repo/ui';
 

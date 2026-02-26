@@ -16,19 +16,20 @@ import {
     Pressable,
     Divider,
     Spinner,
+    useThemedColors,
+    hapticLight,
+    hapticSuccess,
+    hapticError,
+    ScreenWrapper,
+    GuestDataSyncModal,
 } from '@repo/ui';
 import { Mail } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { supabase, UserRole, handleAPIError } from '@repo/core';
+import { supabase, UserRole, handleAPIError, GuestDataSync } from '@repo/core';
 import { Theme } from '@repo/ui';
-import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
 import { validators, validateForm } from '../utils/validators';
 import { ScannerModal, resolveQR } from '@repo/scanner-kit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ScreenWrapper } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
-import GuestDataSyncModal from '../components/shared/GuestDataSyncModal';
-import { GuestDataSync } from '../lib/guestDataSync';
 
 // Google 'G' icon rendered with plain RN — no react-native-svg needed
 const GoogleIcon = ({ size = 20 }: { size?: number }) => (
@@ -424,6 +425,17 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                     }
                 }}
                 title="Scan Invite Code"
+            />
+            <GuestDataSyncModal
+                isOpen={showSyncModal}
+                userId={newUserId}
+                onSyncComplete={() => {
+                    setShowSyncModal(false);
+                    if (onSuccess) onSuccess();
+                }}
+                onClose={() => {
+                    setShowSyncModal(false);
+                }}
             />
         </ScreenWrapper>
     );

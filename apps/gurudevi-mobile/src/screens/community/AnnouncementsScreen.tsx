@@ -34,7 +34,7 @@ import {
     SkeletonCard,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { api } from '../../lib/api';
+import { api } from '@repo/core';
 import { AnnouncementWithAuthor } from '@repo/community';
 import { Theme } from '@repo/ui';
 import { UserRole, hasRole, STAFF_ROLES, ADMIN_ROLES } from '@repo/core';

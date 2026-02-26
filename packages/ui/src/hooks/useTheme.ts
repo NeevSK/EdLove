@@ -9,7 +9,7 @@
  */
 import { useEnvironment } from '../context/EnvironmentContext';
 import { resolvePhaseTokens, CLASSIC_TOKENS, PhaseTokens } from '../theme/Theme';
-import type { TemporalPhase } from '../context/types';
+import type { TemporalPhase, ThemeMode } from '../context/types';
 
 export interface UseThemeReturn extends PhaseTokens {
     isDark: boolean;

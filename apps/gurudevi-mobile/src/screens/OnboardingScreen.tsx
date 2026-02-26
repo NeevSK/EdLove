@@ -37,7 +37,7 @@ import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 import AuthScreen from './AuthScreen';
-import { ProgressIndicator } from '../components/ProgressIndicator';
+import { ProgressIndicator } from '@repo/ui';
 
 interface OnboardingScreenProps {
     onComplete: (name: string, role: UserRole, wantsAccount?: boolean) => void;

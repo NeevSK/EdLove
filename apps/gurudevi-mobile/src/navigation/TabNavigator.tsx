@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Theme, LotusPetalFAB, SanctuaryBackground } from '@repo/ui';
-import ErrorBoundary from '../components/shared/ErrorBoundary';
+import { ErrorBoundary, AchievementUnlockOverlay } from '@repo/ui';
 
 // Icons
 import {
@@ -22,7 +22,6 @@ import ProfileStackNavigator from './ProfileStackNavigator';
 import CommunityStackNavigator from './CommunityStackNavigator';
 import { useThemedColors } from '@repo/ui';
 import { useUserRole, useRewards, useTracking } from '@repo/core';
-import AchievementUnlockOverlay from '../components/shared/AchievementUnlockOverlay';
 
 // Screens
 import {
@@ -31,7 +30,8 @@ import {
   ProfileScreen
 } from '../screens';
 import { CommunityScreen, Group, Post, useCommunityGroups } from '@repo/community';
-import GroupCard from '../components/community/GroupCard'; // Assuming this is a local component, not a screen
+// Assuming this is a local component, not a screen
+
 
 const Tab = createBottomTabNavigator();
 

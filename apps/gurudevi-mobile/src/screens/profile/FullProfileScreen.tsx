@@ -14,13 +14,14 @@ import {
     useEnvironment,
     SanctuaryProgressBar,
     hapticSuccess,
+    AchievementUnlockOverlay,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { MapPin, Mail, Phone, Shield, Edit3, Check, X, User as UserIcon, FileText, Fingerprint, Briefcase, GraduationCap, BookOpen, School } from 'lucide-react-native';
 import { hapticLight, hapticError } from '@repo/ui';
 import { supabase } from '@repo/core';
 import IdentityCard from '../../components/profile/IdentityCard';
-import AchievementUnlockOverlay from '../../components/shared/AchievementUnlockOverlay';
+
 import Reanimated, {
     useSharedValue,
     useAnimatedStyle,

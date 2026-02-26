@@ -8,3 +8,4 @@ export * from './useSafeMutation';
 export * from './useSchoolCreation';
 export * from './useAccountDeletion';
 export { useMutationQueue } from '../lib/sync/useMutationQueue';
+export * from './useTaskActions';

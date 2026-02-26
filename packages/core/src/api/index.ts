@@ -15,11 +15,14 @@ import { classroomsAPI } from './classrooms';
 import { onboardingAPI } from './onboarding';
 import { inventoryAPI } from './inventory';
 import { dailyContentAPI } from './dailyContent';
+import { communityAPI } from './community';
 import { thuthimalAPI } from './thuthimal';
+
 
 export * from './mockData';
 export * from './types';
 export * from './thuthimal';
+export * from './resonantProxy';
 
 // Simplified named exports for direct access
 export {
@@ -72,6 +75,7 @@ export const api = {
     onboarding: onboardingAPI,
     dailyContent: dailyContentAPI,
     thuthimal: thuthimalAPI,
+    community: communityAPI,
 };
 
 export default api;

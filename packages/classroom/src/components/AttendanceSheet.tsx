@@ -30,8 +30,7 @@ import { useThemedColors } from '@repo/ui';
 import { useAttendance } from '../hooks/useAttendance';
 
 // Types
-import { AttendanceStatus } from '../types/attendance';
-import type { StudentAttendance } from '../types/attendance';
+import { AttendanceStatus, StudentAttendance } from '@repo/core';
 
 interface AttendanceSheetProps {
     classroomId: string;

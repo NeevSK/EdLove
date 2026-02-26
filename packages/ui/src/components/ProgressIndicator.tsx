@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, HStack, VStack, Box } from '@gluestack-ui/themed';
+import { Text, HStack, VStack, Box } from '@repo/ui';
 import { Theme } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 
@@ -29,7 +29,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
     const colors = useThemedColors();
 
     return (
-        <VStack space="md" alignItems="center" sx={{ width: '100%' }}>
+        <VStack space="md" alignItems="center" style={{ width: '100%' }}>
             {/* Dot Indicators */}
             <HStack space="xs" alignItems="center" justifyContent="center">
                 {Array.from({ length: totalSteps }).map((_, index) => {

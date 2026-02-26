@@ -20,7 +20,7 @@ import { Theme } from '@repo/ui';
 import { ArrowRight, HelpCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
-import { validateInviteCode, InviteCodeData } from '../lib/inviteCodes';
+import { validateInviteCode, InviteCodeData } from '@repo/core';
 
 interface InviteCodeEntryProps {
     onCodeValidated: (codeData: InviteCodeData) => void;

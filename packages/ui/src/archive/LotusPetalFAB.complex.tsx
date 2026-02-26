@@ -35,7 +35,7 @@ import {
     Edit
 } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
-import { useAccessibility } from '../../hooks/useAccessibility';
+import { useAccessibility } from '../hooks/useAccessibility';
 
 // ============================================================================
 // TYPES

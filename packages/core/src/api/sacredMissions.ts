@@ -1,6 +1,5 @@
 ﻿import { supabase } from '../lib/supabase';
-import { PostVisibility, UserRole } from '../types/Community';
-
+// types are defined below
 export type ManifestoVibe = 'visionary' | 'supportive' | 'academic' | 'wellbeing';
 export type ManifestoStatus = 'active' | 'archived' | 'fulfilled';
 

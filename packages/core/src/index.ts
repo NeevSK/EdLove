@@ -19,3 +19,5 @@ export * from './lib/guestDataManager';
 export * from './lib/cloudinary';
 export { isDemo } from './api/demo';
 export * from './lib/flows/FlowResolver';
+export * from './lib/guestDataSync';
+export * from './lib/inviteCodes';

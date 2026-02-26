@@ -3,7 +3,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ClassroomStackParamList } from '@repo/core';
 import AttendanceSheet from '../components/AttendanceSheet';
-import { StudentAttendance } from '../types/attendance';
+import { StudentAttendance } from '@repo/core';
 import { api, ClassroomStudent, useStore, useSafeMutation } from '@repo/core';
 import { Theme, hapticSuccess, Button, ButtonText, Spinner, Text, Box, VStack } from '@repo/ui';
 import { useTranslation } from 'react-i18next';

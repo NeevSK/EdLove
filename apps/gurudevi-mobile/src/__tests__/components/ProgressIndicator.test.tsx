@@ -1,7 +1,7 @@
 // TDD Unit Tests for ProgressIndicator Component
 import React from 'react';
 import { render, screen } from '@testing-library/react-native';
-import { ProgressIndicator } from '../../components/ProgressIndicator';
+import { ProgressIndicator } from '@repo/ui';
 
 describe('ProgressIndicator Component', () => {
     it('renders correct number of dots', () => {

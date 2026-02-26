@@ -7,7 +7,7 @@
 
 import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet, Text, TextStyle } from 'react-native';
-import ErrorMessage from '../components/shared/ErrorMessage';
+import { ErrorMessage } from '@repo/ui';
 import { Theme } from '@repo/ui';
 
 export default function ErrorMessageDemo() {

@@ -21,6 +21,18 @@ export * from './GlassCard';
 export { default as LotusPetalFAB } from './LotusPetalFAB';
 export type { ActionItem, TabType } from './LotusPetalFAB';
 
+export { default as LotusDropdown } from './LotusDropdown';
+export { default as LotusLoader } from './LotusLoader';
+export { default as ErrorMessage } from './ErrorMessage';
+export { default as EmptyState } from './EmptyState';
+export { default as AchievementUnlockOverlay } from './AchievementUnlockOverlay';
+export { default as NetworkStatusBanner } from './NetworkStatusBanner';
+export * from './EnvironmentGuard';
+export { default as ErrorBoundary } from './ErrorBoundary';
+export { default as GuestDataSyncModal } from './GuestDataSyncModal';
+export { ProgressIndicator } from './ProgressIndicator';
+export { default as BreathingLoader } from './BreathingLoader';
+
 export { default as LoadingOverlay } from './LoadingOverlay';
 export { LivingGlow } from './LivingGlow';
 export { SanctuaryBackground } from './SanctuaryBackground';
