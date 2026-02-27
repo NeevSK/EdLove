@@ -24,7 +24,7 @@ jobs:
           cache: 'pnpm'
 
       - name: 📦 Install dependencies
-        run: pnpm install --network-timeout 100000
+        run: pnpm install --fetch-timeout 100000
 
       - name: ✨ Lint
         run: pnpm lint

@@ -82,7 +82,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: 📦 Install dependencies
-        run: pnpm install --network-timeout 100000
+        run: pnpm install --fetch-timeout 100000
 
       - name: 🚀 Build App
         run: |
