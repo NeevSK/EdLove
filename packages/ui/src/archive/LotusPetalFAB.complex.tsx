@@ -34,7 +34,7 @@ import {
     Upload,
     Edit
 } from 'lucide-react-native';
-import { Theme } from './theme/Theme';;
+import { Theme } from './theme/Theme';
 import { useAccessibility } from '../hooks/useAccessibility';
 
 // ============================================================================
