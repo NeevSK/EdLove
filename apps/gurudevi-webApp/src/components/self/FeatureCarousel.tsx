@@ -1,5 +1,5 @@
 import React from 'react';
-import { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 interface Feature {
     id: string;
@@ -29,8 +29,8 @@ const FeatureCarousel: React.FC<FeatureCarouselProps> = ({
                     key={feature.id}
                     onClick={() => onSelectFeature(feature.id)}
                     className={`flex-shrink-0 w-24 h-20 rounded-2xl border transition-all flex flex-col items-center justify-center space-y-1.5 snap-center ${activeFeature === feature.id
-                            ? 'bg-orange-400 border-orange-400 text-white shadow-lg shadow-orange-400/20'
-                            : 'bg-[#16213e]/40 border-gray-700/30 text-gray-400 hover:border-orange-400/50'
+                        ? 'bg-orange-400 border-orange-400 text-white shadow-lg shadow-orange-400/20'
+                        : 'bg-[#16213e]/40 border-gray-700/30 text-gray-400 hover:border-orange-400/50'
                         }`}
                 >
                     <feature.icon className={`w-6 h-6 ${activeFeature === feature.id ? 'text-white' : 'text-gray-400'}`} />
@@ -44,8 +44,8 @@ const FeatureCarousel: React.FC<FeatureCarouselProps> = ({
             <button
                 onClick={onToggleMoreTools}
                 className={`flex-shrink-0 w-24 h-20 rounded-2xl border border-dashed transition-all flex flex-col items-center justify-center space-y-1 snap-center ${showMoreTools
-                        ? 'bg-orange-400 border-orange-400 text-white'
-                        : 'bg-[#16213e]/20 border-gray-700/50 text-gray-400 hover:border-orange-400/50'
+                    ? 'bg-orange-400 border-orange-400 text-white'
+                    : 'bg-[#16213e]/20 border-gray-700/50 text-gray-400 hover:border-orange-400/50'
                     }`}
             >
                 <span className="text-xl font-bold">{showMoreTools ? '−' : '+'}</span>
