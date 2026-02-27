@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         width: DRAWER_WIDTH,
         borderRightWidth: 1,
-        shadowColor: '#000',
+        shadowColor: Theme.colors.shadowViolet,
         shadowOffset: { width: 4, height: 0 },
         shadowOpacity: 0.15,
         shadowRadius: 15,

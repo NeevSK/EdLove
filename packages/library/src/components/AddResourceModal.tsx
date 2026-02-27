@@ -62,7 +62,7 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalBackdrop />
-            <ModalContent sx={{ backgroundColor: Theme.colors.midnightBlue, borderRadius: Theme.corners.comfortable }}>
+            <ModalContent sx={{ backgroundColor: Theme.colors.shroud, borderRadius: Theme.corners.comfortable }}>
                 <ModalHeader>
                     <VStack>
                         <Heading color={Theme.colors.sacredWhite} size="md">Contribute to the Sanctuary</Heading>
@@ -73,7 +73,7 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
                     <VStack space="md" mt="$4">
                         <VStack space="xs">
                             <Text color={Theme.colors.mistGray} size="xs" bold>Resource Information</Text>
-                            <Input sx={{ backgroundColor: Theme.colors.glassHighlight, borderColor: Theme.colors.glassBorder }}>
+                            <Input sx={{ backgroundColor: Theme.colors.glass.dark.highlight, borderColor: Theme.colors.glass.dark.border }}>
                                 <InputField
                                     color={Theme.colors.sacredWhite}
                                     placeholder="Resource Title (e.g. Unit 5 Past Paper)"
@@ -83,7 +83,7 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
                             </Input>
                         </VStack>
 
-                        <Input sx={{ backgroundColor: Theme.colors.glassHighlight, borderColor: Theme.colors.glassBorder }}>
+                        <Input sx={{ backgroundColor: Theme.colors.glass.dark.highlight, borderColor: Theme.colors.glass.dark.border }}>
                             <InputField
                                 color={Theme.colors.sacredWhite}
                                 placeholder="Universal Resource Link (URL)"
@@ -122,7 +122,7 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
 
                         <VStack space="xs">
                             <Text color={Theme.colors.mistGray} size="xs" bold>Searchable Tags</Text>
-                            <Input sx={{ backgroundColor: Theme.colors.glassHighlight, borderColor: Theme.colors.glassBorder }}>
+                            <Input sx={{ backgroundColor: Theme.colors.glass.dark.highlight, borderColor: Theme.colors.glass.dark.border }}>
                                 <InputField
                                     color={Theme.colors.sacredWhite}
                                     placeholder="e.g. grade10, maths, geometry"

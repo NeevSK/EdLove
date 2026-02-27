@@ -289,7 +289,7 @@ function CardOverlay({
                 <Text style={styles.creator} numberOfLines={1}>{creator}</Text>
                 <View style={styles.bottomRow}>
                     <View style={styles.countBadge}>
-                        <BookOpen color={Theme.colors.pearlGray} size={11} />
+                        <BookOpen color={Theme.colors.starlightGray} size={11} />
                         <Text style={styles.countText}>{resourceCount} Items</Text>
                     </View>
                     {onPullToDesk && (

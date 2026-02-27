@@ -55,7 +55,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             }
 
             return (
-                <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+                <Box sx={{ flex: 1, backgroundColor: Theme.colors.ink }}>
                     <Center sx={{ flex: 1, padding: Theme.spacing.xl }}>
                         <VStack space="xl" alignItems="center" maxWidth={300}>
                             <Box sx={{
@@ -70,7 +70,7 @@ export default class ErrorBoundary extends Component<Props, State> {
                                 Something went wrong
                             </Heading>
 
-                            <Text color={Theme.colors.pearlGray} textAlign="center">
+                            <Text color={Theme.colors.starlightGray} textAlign="center">
                                 We've encountered an unexpected issue. The sanctuary is momentarily disrupted.
                             </Text>
 
@@ -87,7 +87,7 @@ export default class ErrorBoundary extends Component<Props, State> {
                             {__DEV__ && this.state.error && (
                                 <Box sx={{
                                     padding: Theme.spacing.md,
-                                    backgroundColor: Theme.colors.midnightBlue,
+                                    backgroundColor: Theme.colors.shroud,
                                     borderRadius: Theme.corners.comfortable,
                                     marginTop: Theme.spacing.lg,
                                     width: '100%'

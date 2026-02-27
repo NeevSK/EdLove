@@ -1,6 +1,8 @@
-import React from 'react';
-import { View, ViewProps } from 'react-native';
+import React, { useState } from 'react';
+import { View, ViewProps, LayoutChangeEvent, StyleSheet } from 'react-native';
 import { Theme } from '../theme/Theme';
+import { useTheme } from '../hooks/useTheme';
+import { LivingCard } from '../components-native/LivingCard';
 
 interface GlassCardProps extends ViewProps {
     children: React.ReactNode;
@@ -9,24 +11,44 @@ interface GlassCardProps extends ViewProps {
 
 /**
  * GlassCard - Implements the "Glass Protocol"
- * A translucent, layered card for sanctuary depth.
+ * A translucent, layered card for sanctuary depth, now powered by Skia LivingCard.
  */
-export const GlassCard = ({ children, style, ...props }: GlassCardProps) => {
+export const GlassCard = ({ children, style, onLayout, ...props }: GlassCardProps) => {
+    const { phase } = useTheme();
+    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+    const handleLayout = (event: LayoutChangeEvent) => {
+        const { width, height } = event.nativeEvent.layout;
+        setDimensions({ width, height });
+        if (onLayout) onLayout(event);
+    };
+
     return (
         <View
             style={[
                 {
-                    backgroundColor: Theme.colors.glassHighlight,
-                    borderRadius: Theme.corners.comfortable,
-                    borderWidth: 1,
-                    borderColor: Theme.colors.glassBorder,
+                    borderRadius: Theme.corners.generous,
                     padding: Theme.spacing.md,
                     overflow: 'hidden',
+                    backgroundColor: 'transparent',
                 },
                 style,
             ]}
+            onLayout={handleLayout}
             {...props}
         >
+            {dimensions.width > 0 && (
+                <View style={StyleSheet.absoluteFill}>
+                    <LivingCard
+                        width={dimensions.width}
+                        height={dimensions.height}
+                        phase={phase}
+                        cornerRadius={Theme.corners.generous}
+                    >
+                        {children}
+                    </LivingCard>
+                </View>
+            )}
             {children}
         </View>
     );

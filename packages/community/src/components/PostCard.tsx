@@ -72,7 +72,7 @@ const PostCard = React.memo(function PostCard({
                             style={StyleSheet.absoluteFill}
                             resizeMode="cover"
                         />
-                        <Box sx={{ ...StyleSheet.absoluteFillObject, backgroundColor: Theme.colors.glassHighlight }} />
+                        <Box sx={{ ...StyleSheet.absoluteFillObject, backgroundColor: Theme.colors.glass.dark.highlight }} />
                     </Box>
                 </Box>
             );

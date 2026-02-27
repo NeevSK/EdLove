@@ -113,7 +113,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
         <Box
           p={Theme.spacing.xl}
           sx={{
-            backgroundColor: Theme.colors.deepIndigo,
+            backgroundColor: Theme.colors.ink,
             borderRadius: Theme.corners.comfortable
           }}
         >
@@ -144,7 +144,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                 <Box
                   p="$3"
                   sx={{
-                    backgroundColor: Theme.colors.midnightBlue,
+                    backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                     borderLeftWidth: 3,
                     borderLeftColor: Theme.colors.sanctuarySaffron
@@ -163,7 +163,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                 <Box
                   p="$3"
                   sx={{
-                    backgroundColor: Theme.colors.midnightBlue,
+                    backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                     borderLeftWidth: 3,
                     borderLeftColor: Theme.colors.sanctuarySaffron
@@ -243,7 +243,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
       <Box
         p={Theme.spacing.xl}
         sx={{
-          backgroundColor: Theme.colors.deepIndigo,
+          backgroundColor: Theme.colors.ink,
           borderRadius: Theme.corners.comfortable,
           minHeight: 250
         }}
@@ -273,7 +273,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                 variant="outline"
                 size="md"
                 sx={{
-                  backgroundColor: Theme.colors.midnightBlue,
+                  backgroundColor: Theme.colors.ink,
                   borderWidth: 1,
                   borderColor: Theme.colors.transparent,
                   minHeight: 100
@@ -322,7 +322,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
           onPress={handleBack}
           isDisabled={currentStep === 0}
           sx={{
-            borderColor: Theme.colors.deepIndigo,
+            borderColor: Theme.colors.ink,
             borderRadius: Theme.corners.comfortable,
             flex: 1
           }}

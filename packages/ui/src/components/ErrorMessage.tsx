@@ -86,7 +86,7 @@ const ErrorMessage: FC<ErrorMessageProps> = ({
         switch (type) {
             case 'gentle':
                 return {
-                    backgroundColor: Theme.colors.deepIndigo,
+                    backgroundColor: Theme.colors.shroud,
                     textColor: Theme.colors.sacredWhite,
                     Icon: Info,
                 };

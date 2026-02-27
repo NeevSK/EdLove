@@ -69,7 +69,7 @@ export default function AchievementUnlockOverlay({
         <Animated.View style={[styles.container, animatedStyle]}>
             <Box sx={{
                 width: width * 0.85,
-                backgroundColor: Theme.colors.voidIndigo,
+                backgroundColor: Theme.colors.ink,
                 borderRadius: Theme.corners.generous,
                 padding: Theme.spacing.lg,
                 borderWidth: 2,

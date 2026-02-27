@@ -148,7 +148,7 @@ export const AddStudentModal = ({
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalBackdrop />
-            <ModalContent sx={{ backgroundColor: Theme.colors.voidIndigo, borderColor: Theme.colors.mistGray, borderWidth: 1 }}>
+            <ModalContent sx={{ backgroundColor: Theme.colors.ink, borderColor: Theme.colors.mistGray, borderWidth: 1 }}>
                 <ModalHeader>
                     <Heading sx={{ color: Theme.colors.sanctuarySaffron, fontSize: Theme.typography.fontSize.lg }}>
                         {studentToEdit ? (t('students.editStudent') || 'Edit Student') : (t('students.addStudent') || 'Add Student')}
@@ -173,7 +173,7 @@ export const AddStudentModal = ({
                                     }}
                                 >
                                     <Text style={{
-                                        color: activeTab === tab ? Theme.colors.voidIndigo : Theme.colors.pearlGray,
+                                        color: activeTab === tab ? Theme.colors.ink : Theme.colors.starlightGray,
                                         fontWeight: activeTab === tab ? '700' : '400',
                                         fontSize: 14,
                                     }}>
@@ -208,69 +208,69 @@ export const AddStudentModal = ({
 
                     {/* Manual entry tab */}
                     {(activeTab === 'manual' || studentToEdit) && (
-                    <VStack sx={{ gap: Theme.spacing.md, paddingVertical: Theme.spacing.md }}>
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                            <Text sx={{ color: Theme.colors.sacredWhite, fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}>
-                                {t('students.fullName') || 'Full Name'} *
-                            </Text>
-                            <Input
-                                sx={{
-                                    backgroundColor: Theme.colors.deepIndigo,
-                                    borderColor: Theme.colors.mistGray,
-                                    borderRadius: Theme.corners.comfortable
-                                }}
-                            >
-                                <InputField
-                                    placeholder={t('students.fullNamePlaceholder') || "E.g. John Doe"}
-                                    value={fullName}
-                                    onChangeText={setFullName}
-                                    sx={{ color: Theme.colors.sacredWhite }}
-                                />
-                            </Input>
-                        </VStack>
+                        <VStack sx={{ gap: Theme.spacing.md, paddingVertical: Theme.spacing.md }}>
+                            <VStack sx={{ gap: Theme.spacing.xs }}>
+                                <Text sx={{ color: Theme.colors.sacredWhite, fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}>
+                                    {t('students.fullName') || 'Full Name'} *
+                                </Text>
+                                <Input
+                                    sx={{
+                                        backgroundColor: Theme.colors.ink,
+                                        borderColor: Theme.colors.mistGray,
+                                        borderRadius: Theme.corners.comfortable
+                                    }}
+                                >
+                                    <InputField
+                                        placeholder={t('students.fullNamePlaceholder') || "E.g. John Doe"}
+                                        value={fullName}
+                                        onChangeText={setFullName}
+                                        sx={{ color: Theme.colors.sacredWhite }}
+                                    />
+                                </Input>
+                            </VStack>
 
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                            <Text sx={{ color: Theme.colors.sacredWhite, fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}>
-                                {t('students.rollNumber') || 'Roll Number / ID'}
-                            </Text>
-                            <Input
-                                sx={{
-                                    backgroundColor: Theme.colors.deepIndigo,
-                                    borderColor: Theme.colors.mistGray,
-                                    borderRadius: Theme.corners.comfortable
-                                }}
-                            >
-                                <InputField
-                                    placeholder={t('students.rollNumberPlaceholder') || "E.g. 01"}
-                                    value={rollNumber}
-                                    onChangeText={setRollNumber}
-                                    sx={{ color: Theme.colors.sacredWhite }}
-                                />
-                            </Input>
-                        </VStack>
+                            <VStack sx={{ gap: Theme.spacing.xs }}>
+                                <Text sx={{ color: Theme.colors.sacredWhite, fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}>
+                                    {t('students.rollNumber') || 'Roll Number / ID'}
+                                </Text>
+                                <Input
+                                    sx={{
+                                        backgroundColor: Theme.colors.ink,
+                                        borderColor: Theme.colors.mistGray,
+                                        borderRadius: Theme.corners.comfortable
+                                    }}
+                                >
+                                    <InputField
+                                        placeholder={t('students.rollNumberPlaceholder') || "E.g. 01"}
+                                        value={rollNumber}
+                                        onChangeText={setRollNumber}
+                                        sx={{ color: Theme.colors.sacredWhite }}
+                                    />
+                                </Input>
+                            </VStack>
 
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                            <Text sx={{ color: Theme.colors.sacredWhite, fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}>
-                                {t('students.notes') || 'Notes'}
-                            </Text>
-                            <Input
-                                sx={{
-                                    backgroundColor: Theme.colors.deepIndigo,
-                                    borderColor: Theme.colors.mistGray,
-                                    borderRadius: Theme.corners.comfortable,
-                                    minHeight: 80
-                                }}
-                            >
-                                <InputField
-                                    placeholder={t('students.notesPlaceholder') || "Add any relevant notes..."}
-                                    value={notes}
-                                    onChangeText={setNotes}
-                                    multiline
-                                    sx={{ color: Theme.colors.sacredWhite, textAlignVertical: 'top' as any }}
-                                />
-                            </Input>
+                            <VStack sx={{ gap: Theme.spacing.xs }}>
+                                <Text sx={{ color: Theme.colors.sacredWhite, fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}>
+                                    {t('students.notes') || 'Notes'}
+                                </Text>
+                                <Input
+                                    sx={{
+                                        backgroundColor: Theme.colors.ink,
+                                        borderColor: Theme.colors.mistGray,
+                                        borderRadius: Theme.corners.comfortable,
+                                        minHeight: 80
+                                    }}
+                                >
+                                    <InputField
+                                        placeholder={t('students.notesPlaceholder') || "Add any relevant notes..."}
+                                        value={notes}
+                                        onChangeText={setNotes}
+                                        multiline
+                                        sx={{ color: Theme.colors.sacredWhite, textAlignVertical: 'top' as any }}
+                                    />
+                                </Input>
+                            </VStack>
                         </VStack>
-                    </VStack>
                     )}
                 </ModalBody>
                 <ModalFooter sx={{ gap: Theme.spacing.md }}>

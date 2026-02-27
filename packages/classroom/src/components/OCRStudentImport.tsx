@@ -124,12 +124,12 @@ export default function OCRStudentImport({
         onStudentsScanned={handleScanned}
         onCancel={onCancel}
         colors={{
-          primary: Theme.colors.voidIndigo,
-          secondary: Theme.colors.deepIndigo,
+          primary: Theme.colors.ink,
+          secondary: Theme.colors.ink,
           border: Theme.colors.mistGray,
           text: Theme.colors.sacredWhite,
-          textSecondary: Theme.colors.pearlGray,
-          tertiary: Theme.colors.deepIndigo,
+          textSecondary: Theme.colors.starlightGray,
+          tertiary: Theme.colors.ink,
           accent: Theme.colors.sanctuarySaffron,
           success: Theme.colors.sageGreen,
         }}
@@ -141,7 +141,7 @@ export default function OCRStudentImport({
     return (
       <VStack sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: Theme.spacing.lg }}>
         <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 32 }}>⏳</Text>
-        <Text sx={{ color: Theme.colors.pearlGray, textAlign: 'center' }}>
+        <Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}>
           Importing students...
         </Text>
       </VStack>
@@ -171,7 +171,7 @@ export default function OCRStudentImport({
           <TouchableOpacity key={index} onPress={() => toggleStudent(index)}>
             <View
               style={{
-                backgroundColor: Theme.colors.deepIndigo,
+                backgroundColor: Theme.colors.ink,
                 borderRadius: Theme.corners.comfortable,
                 borderWidth: 1,
                 borderLeftWidth: 4,
@@ -194,7 +194,7 @@ export default function OCRStudentImport({
                   <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>
                     {student.name}
                   </Text>
-                  <Text sx={{ color: Theme.colors.pearlGray, fontSize: 13 }}>
+                  <Text sx={{ color: Theme.colors.starlightGray, fontSize: 13 }}>
                     Index: {student.index_number}
                   </Text>
                   {student.uncertain && student.selected && (
@@ -246,7 +246,7 @@ export default function OCRStudentImport({
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: Theme.colors.voidIndigo, fontWeight: '700' }}>
+          <Text style={{ color: Theme.colors.ink, fontWeight: '700' }}>
             Import {selectedCount} Student{selectedCount !== 1 ? 's' : ''}
           </Text>
         </TouchableOpacity>

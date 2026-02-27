@@ -102,6 +102,7 @@ export const colors = {
 
     success: '#8FBC8F',             // sageGreen
     warning: '#FFB84D',             // amberGlow
+    glassBorder: 'rgba(252, 249, 242, 0.12)', // Sacred White based (Default)
 } as const;
 
 // ============================================================================

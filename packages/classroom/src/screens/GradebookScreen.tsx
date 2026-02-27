@@ -74,7 +74,7 @@ export default function GradebookScreen({
         <Box
             sx={{
                 flex: 1,
-                backgroundColor: Theme.colors.voidIndigo,
+                backgroundColor: Theme.colors.ink,
             }}
         >
             <ScrollView>
@@ -113,7 +113,7 @@ export default function GradebookScreen({
                     <HStack
                         sx={{
                             padding: Theme.spacing.md,
-                            backgroundColor: Theme.colors.deepIndigo,
+                            backgroundColor: Theme.colors.ink,
                             borderRadius: Theme.corners.comfortable,
                             gap: 16
                         }}
@@ -154,7 +154,7 @@ export default function GradebookScreen({
                         sx={{ flexWrap: 'wrap', gap: 8 }}
                     >
                         <Text
-                            color={Theme.colors.pearlGray}
+                            color={Theme.colors.starlightGray}
                             sx={{ marginRight: Theme.spacing.sm }}
                         >
                             {t('grading.gradebook.sortBy') || 'Sort by:'}
@@ -168,7 +168,7 @@ export default function GradebookScreen({
                                     backgroundColor:
                                         sortBy === 'rank'
                                             ? Theme.colors.sanctuarySaffron
-                                            : Theme.colors.deepIndigo,
+                                            : Theme.colors.ink,
                                     borderRadius: Theme.corners.tight,
                                 }}
                             >
@@ -189,7 +189,7 @@ export default function GradebookScreen({
                                     backgroundColor:
                                         sortBy === 'marks'
                                             ? Theme.colors.sanctuarySaffron
-                                            : Theme.colors.deepIndigo,
+                                            : Theme.colors.ink,
                                     borderRadius: Theme.corners.tight,
                                 }}
                             >
@@ -210,7 +210,7 @@ export default function GradebookScreen({
                                     backgroundColor:
                                         sortBy === 'name'
                                             ? Theme.colors.sanctuarySaffron
-                                            : Theme.colors.deepIndigo,
+                                            : Theme.colors.ink,
                                     borderRadius: Theme.corners.tight,
                                 }}
                             >
@@ -234,7 +234,7 @@ export default function GradebookScreen({
                         >
                             <Spinner color={Theme.colors.sanctuarySaffron} />
                             <Text
-                                color={Theme.colors.pearlGray}
+                                color={Theme.colors.starlightGray}
                                 sx={{ marginTop: Theme.spacing.md }}
                             >
                                 {t('common.loading') || 'Loading...'}
@@ -275,7 +275,7 @@ export default function GradebookScreen({
                             }}
                         >
                             <Text
-                                color={Theme.colors.pearlGray}
+                                color={Theme.colors.starlightGray}
                                 sx={{ textAlign: 'center', fontSize: 18 }}
                             >
                                 {t('grading.gradebook.noGrades') ||

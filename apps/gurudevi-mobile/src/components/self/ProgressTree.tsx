@@ -191,7 +191,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
                     alignItems: 'center',
                     justifyContent: 'center',
                     padding: Theme.spacing.xl,
-                    backgroundColor: Theme.colors.deepIndigo,
+                    backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                     minHeight: 200,
                     position: 'relative',
@@ -253,7 +253,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
             {/* Gentle progress indicator */}
             <Box
                 sx={{
-                    backgroundColor: Theme.colors.midnightBlue,
+                    backgroundColor: Theme.colors.ink,
                     padding: Theme.spacing.md,
                     borderRadius: Theme.corners.comfortable,
                 }}
@@ -272,7 +272,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
                             sx={{
                                 width: '100%',
                                 height: 8,
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: Theme.colors.ink,
                                 borderRadius: 4,
                                 overflow: 'hidden',
                             }}
@@ -300,7 +300,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
             <Box
                 sx={{
                     padding: Theme.spacing.md,
-                    backgroundColor: Theme.colors.deepIndigo,
+                    backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                 }}
             >
