@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Moon, CheckCircle, Circle } from 'lucide-react';
+import SectionHeader from '../common/SectionHeader';
 
 const EVENING_RITUALS = [
     { id: 'screen_off', label: 'Screens Off', duration: '30m before' },
@@ -19,13 +20,12 @@ const WindDown: React.FC = () => {
 
     return (
         <div className="flex flex-col space-y-6 animate-in fade-in duration-700">
-            <div className="text-center space-y-2">
-                <h3 className="text-xl font-bold text-white flex items-center justify-center space-x-2">
-                    <Moon className="w-6 h-6 text-purple-400" />
-                    <span>Wind Down</span>
-                </h3>
-                <p className="text-gray-400 text-sm">Prepare your body and mind for restorative rest.</p>
-            </div>
+            <SectionHeader
+                title="Wind Down"
+                subtitle="Prepare your body and mind for restorative rest."
+                icon={Moon}
+                iconColor="text-purple-400"
+            />
 
             <div className="bg-purple-500/5 border border-purple-500/10 rounded-2xl p-6 flex flex-col items-center space-y-4">
                 <Moon className="w-12 h-12 text-purple-500 animate-pulse" />
@@ -43,8 +43,8 @@ const WindDown: React.FC = () => {
                         key={ritual.id}
                         onClick={() => toggleRitual(ritual.id)}
                         className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${completed.includes(ritual.id)
-                            ? 'bg-purple-500/10 border-purple-500/20 text-purple-400'
-                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                                ? 'bg-purple-500/10 border-purple-500/20 text-purple-400'
+                                : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
                             }`}
                     >
                         <div className="flex flex-col items-start">
