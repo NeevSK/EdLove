@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Battery, BatteryLow, BatteryMedium, BatteryFull, Zap } from 'lucide-react';
+import { BatteryLow, BatteryMedium, BatteryFull, Zap } from 'lucide-react';
 
 const EnergyForecast: React.FC = () => {
     const [energy, setEnergy] = useState<number>(70);
