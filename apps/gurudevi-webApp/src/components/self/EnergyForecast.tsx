@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BatteryLow, BatteryMedium, BatteryFull, Zap } from 'lucide-react';
+import SectionHeader from '../common/SectionHeader';
 
 const EnergyForecast: React.FC = () => {
     const [energy, setEnergy] = useState<number>(70);
@@ -18,13 +19,12 @@ const EnergyForecast: React.FC = () => {
 
     return (
         <div className="flex flex-col items-center space-y-8 animate-in fade-in duration-700">
-            <div className="text-center space-y-2">
-                <h3 className="text-xl font-bold text-white flex items-center justify-center space-x-2">
-                    <Zap className="w-6 h-6 text-yellow-500" />
-                    <span>Energy Forecast</span>
-                </h3>
-                <p className="text-gray-400 text-sm">Listen to your inner battery. Adjust your rhythm.</p>
-            </div>
+            <SectionHeader
+                title="Energy Forecast"
+                subtitle="Listen to your inner battery. Adjust your rhythm."
+                icon={Zap}
+                iconColor="text-yellow-500"
+            />
 
             <div className="relative flex flex-col items-center space-y-4">
                 <div className="relative">
