@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import FeatureCarousel from '../../components/self/FeatureCarousel';
 import MoodLotus from '../../components/self/MoodLotus';
+import FireJournal from '../../components/self/FireJournal';
 import { Flower, Flame, Repeat, Sparkles, Heart, Lightbulb, Calendar, Battery, Moon, MessageCircle } from 'lucide-react';
 
 const CORE_FEATURES = [
@@ -26,11 +27,18 @@ const TeacherSelfView: React.FC = () => {
     const allFeatures = showMoreTools ? [...CORE_FEATURES, ...MORE_TOOLS_FEATURES] : CORE_FEATURES;
 
     const renderFeature = () => {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[300px] text-gray-400 italic">
-                {activeFeature.charAt(0).toUpperCase() + activeFeature.slice(1)} Feature Coming Soon...
-            </div>
-        );
+        switch (activeFeature) {
+            case 'mood':
+                return <MoodLotus />;
+            case 'fire':
+                return <FireJournal />;
+            default:
+                return (
+                    <div className="flex flex-col items-center justify-center min-h-[300px] text-gray-400 italic">
+                        {activeFeature.charAt(0).toUpperCase() + activeFeature.slice(1)} Feature Coming Soon...
+                    </div>
+                );
+        }
     };
 
     return (
