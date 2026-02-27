@@ -21,8 +21,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { EnvironmentProvider } from '@repo/ui';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from '@repo/ui';
-import { NoiseOverlay } from '@repo/ui/native';
-
 // Import screens and navigation
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';

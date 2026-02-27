@@ -8,8 +8,8 @@ import Animated, {
     Easing,
     withSequence
 } from 'react-native-reanimated';
-import { Text, VStack, Center } from '../gluestack';;
-import { Theme } from '../theme/Theme';;
+import { Text, VStack, Center } from '../gluestack';
+import { Theme } from '../theme/Theme';
 import { Flower } from 'lucide-react-native';
 
 interface LotusLoaderProps {

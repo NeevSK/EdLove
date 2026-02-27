@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 // @ts-ignore - Temporary until we decide on demo logic location
 import { isDemo } from '@repo/core';
 import { Compass, Shield, Users, Plus } from 'lucide-react-native';
-import { Group } from '../index';;
+import { Group } from '../index';
 
 type GroupsSubTab = 'sanctuary' | 'galaxy';
 

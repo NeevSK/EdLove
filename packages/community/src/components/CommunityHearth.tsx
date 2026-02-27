@@ -16,7 +16,7 @@ import { SanctuaryManifesto } from '../api/sacredMissions';
 import { Star, Sparkles, Megaphone, Users } from 'lucide-react-native';
 import { ScrollView, Dimensions, NativeSyntheticEvent, NativeScrollEvent, Pressable } from 'react-native';
 import Animated, { LinearTransition } from 'react-native-reanimated';
-import { Post } from '../index';;
+import { Post } from '../index';
 import { CommunityPresence } from '@repo/self';
 import { UserRole } from '@repo/core';
 
