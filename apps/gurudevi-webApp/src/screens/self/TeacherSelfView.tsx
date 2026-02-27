@@ -7,6 +7,7 @@ import JoyJar from '../../components/self/JoyJar';
 import GratitudeGlimmers from '../../components/self/GratitudeGlimmers';
 import WisdomSeeds from '../../components/self/WisdomSeeds';
 import TomorrowPrep from '../../components/self/TomorrowPrep';
+import EnergyForecast from '../../components/self/EnergyForecast';
 import { Flower, Flame, Repeat, Sparkles, Heart, Lightbulb, Calendar, Battery, Moon, MessageCircle } from 'lucide-react';
 
 const CORE_FEATURES = [
@@ -47,6 +48,8 @@ const TeacherSelfView: React.FC = () => {
                 return <WisdomSeeds />;
             case 'tomorrowPrep':
                 return <TomorrowPrep />;
+            case 'energyForecast':
+                return <EnergyForecast />;
             default:
                 return (
                     <div className="flex flex-col items-center justify-center min-h-[300px] text-gray-400 italic">
