@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import FeatureCarousel from '../../components/self/FeatureCarousel';
+import MoodLotus from '../../components/self/MoodLotus';
 import { Flower, Flame, Repeat, Sparkles, Heart, Lightbulb, Calendar, Battery, Moon, MessageCircle } from 'lucide-react';
 
 const CORE_FEATURES = [
