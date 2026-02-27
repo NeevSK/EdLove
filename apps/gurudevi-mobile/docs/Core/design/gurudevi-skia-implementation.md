@@ -394,7 +394,7 @@ If a web version of Gurudevi ever arrives — it imports from '@gurudevi/ui' onl
 This is the highest-impact, lowest-risk change. Adds organic grain across entire app. Touches nothing existing. Immediately makes every surface feel alive instead of digital.
 
 ```typescript
-// apps/gurudevi-mobile/src/components/skia/NoiseOverlay.tsx
+// packages/ui/src/components-native/NoiseOverlay.tsx
 
 import React from 'react';
 import { StyleSheet, useWindowDimensions } from 'react-native';
@@ -470,7 +470,7 @@ Find the root layout file — likely `apps/gurudevi-mobile/app/_layout.tsx` or `
 Add NoiseOverlay as the last child, after all navigation:
 
 ```typescript
-import { NoiseOverlay } from '../components/skia';
+import { NoiseOverlay } from '@gurudevi/ui/native';
 
 // Inside your root component return:
 return (
@@ -502,7 +502,7 @@ const isWarmPhase = ['morning', 'afternoon', 'evening'].includes(currentPhase);
 Wraps existing card children with subsurface scattering quality background. Does not replace existing cards — wraps them.
 
 ```typescript
-// apps/gurudevi-mobile/src/components/skia/LivingCard.tsx
+// packages/ui/src/components-native/LivingCard.tsx
 
 import React from 'react';
 import { View, ViewStyle, StyleSheet } from 'react-native';
@@ -609,7 +609,7 @@ export const LivingCard: React.FC<LivingCardProps> = ({
 Enhances existing BlurView glass with Skia luminous border and subtle inner glow. Wraps the existing BlurView — does not replace it.
 
 ```typescript
-// apps/gurudevi-mobile/src/components/skia/TemporalGlass.tsx
+// packages/ui/src/components-native/TemporalGlass.tsx
 
 import React from 'react';
 import { View, ViewStyle, StyleSheet } from 'react-native';
@@ -738,7 +738,7 @@ cat apps/gurudevi-mobile/src/navigation/TabNavigator.tsx
 After fixing blur, wrap the tab bar with TemporalGlass to add the luminous edge:
 
 ```typescript
-import { TemporalGlass } from '../components/skia';
+import { TemporalGlass } from '@gurudevi/ui/native';
 
 // In your tab bar render, wrap the BlurView container:
 <TemporalGlass
@@ -852,7 +852,7 @@ Run app. Verify text does not bleed through glass.
 Expected outcome: Glass feels like material, not muddy overlay.
 
 **STEP 4 — NoiseOverlay Global**
-Create `apps/gurudevi-mobile/src/components/skia/NoiseOverlay.tsx` (Section 4).
+Create `packages/ui/src/components-native/NoiseOverlay.tsx` (Section 4).
 Add to root layout (Section 4).
 Run app. Verify subtle grain visible, no performance issues.
 Expected outcome: Every surface gains organic texture. Digital flatness gone.
