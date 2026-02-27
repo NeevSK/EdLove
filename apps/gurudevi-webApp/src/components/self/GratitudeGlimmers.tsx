@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Heart, Send, Sparkle } from 'lucide-react';
+import { Heart, Plus, Sparkles } from 'lucide-react';
+import SectionHeader from '../common/SectionHeader';
 
 interface Glimmer {
     id: string;
@@ -18,13 +19,11 @@ const GratitudeGlimmers: React.FC = () => {
 
     return (
         <div className="flex flex-col space-y-6 animate-in fade-in duration-700">
-            <div className="text-center space-y-2">
-                <h3 className="text-xl font-bold text-white flex items-center justify-center space-x-2">
-                    <Heart className="w-6 h-6 text-pink-500" />
-                    <span>Gratitude Glimmers</span>
-                </h3>
-                <p className="text-gray-400 text-sm">Find the light in small moments.</p>
-            </div>
+            <SectionHeader
+                title="Gratitude Glimmers"
+                subtitle="Notice the subtle brilliance in the ordinary."
+                icon={Heart}
+            />
 
             <div className="flex space-x-2">
                 <input
@@ -32,25 +31,28 @@ const GratitudeGlimmers: React.FC = () => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="I am grateful for..."
-                    className="flex-1 bg-black/20 border border-gray-700/50 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-pink-500/50 transition-all"
+                    className="flex-1 bg-pink-900/5 border border-pink-900/20 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-pink-500/50 transition-all italic"
+                    onKeyPress={(e) => e.key === 'Enter' && addGlimmer()}
                 />
                 <button
                     onClick={addGlimmer}
                     disabled={!input.trim()}
-                    className="p-3 bg-pink-600 hover:bg-pink-500 text-white rounded-xl disabled:opacity-50 transition-all"
+                    className="p-3 bg-pink-600 hover:bg-pink-500 text-white rounded-xl disabled:opacity-50 transition-all shadow-lg shadow-pink-900/40"
                 >
-                    <Send className="w-5 h-5" />
+                    <Plus className="w-6 h-6" />
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-2 hide-scrollbar">
+            <div className="grid grid-cols-1 gap-3 max-h-64 overflow-y-auto pr-2 hide-scrollbar">
                 {glimmers.map((glimmer) => (
                     <div
                         key={glimmer.id}
-                        className="p-4 bg-pink-500/5 border border-pink-500/10 rounded-2xl flex items-center space-x-3 group animate-in zoom-in-95 duration-500"
+                        className="group relative bg-[#16213e]/40 p-5 rounded-2xl border border-pink-900/10 hover:border-pink-500/30 transition-all animate-in zoom-in duration-500"
                     >
-                        <Sparkle className="w-4 h-4 text-pink-400 opacity-50 group-hover:scale-125 transition-transform" />
-                        <span className="text-white text-sm font-medium">{glimmer.text}</span>
+                        <div className="absolute top-2 right-2 text-pink-500/20 group-hover:text-pink-500 transition-colors">
+                            <Sparkles className="w-4 h-4" />
+                        </div>
+                        <p className="text-white text-sm font-medium leading-relaxed italic">"{glimmer.text}"</p>
                     </div>
                 ))}
             </div>
