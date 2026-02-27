@@ -27,7 +27,7 @@ For every file you are about to create, ask:
 Yes, multiple apps will use it  →  goes in packages/
 No, only gurudevi-mobile needs it  →  stays in apps/gurudevi-mobile/src/
 Uses React Native primitives (won't work on web)  →  stays in apps/gurudevi-mobile/src/
-Uses Skia specifically  →  stays in apps/gurudevi-mobile/src/components/skia/
+Uses Skia specifically  →  goes in packages/ui/src/components-native/
 Is a screen  →  always in apps/gurudevi-mobile/src/screens/
 Is navigation  →  always in apps/gurudevi-mobile/src/navigation/
 ```
@@ -53,7 +53,7 @@ gurudevi-monorepo/
 │   │       │   ├── TabNavigator.tsx
 │   │       │   └── [space]Navigator.tsx
 │   │       ├── components/
-│   │       │   └── skia/         ← ALL Skia components — ONLY here
+│   │       │   └── skia/         ← Optional app-level wrappers; canonical Skia is in packages/ui/src/components-native/
 │   │       │       ├── index.ts
 │   │       │       ├── NoiseOverlay.tsx
 │   │       │       ├── LivingCard.tsx
@@ -194,9 +194,9 @@ import { colors } from '@gurudevi/design-tokens';
 ```typescript
 // apps/gurudevi-mobile imports from packages — OK
 import { SanctuaryCard } from '@gurudevi/ui';
-import { NoiseOverlay } from '../components/skia'; // Local Skia
+import { NoiseOverlay } from '@gurudevi/ui/native'; // Canonical Skia import
 
-// NEVER import Skia from packages — it doesn't belong there
+// Skia imports must come from @gurudevi/ui/native only
 // NEVER import screen components from packages — screens are always local
 ```
 
