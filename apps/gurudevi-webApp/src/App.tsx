@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { GraduationCap } from 'lucide-react';
 import GlobalHeader from './components/layout/GlobalHeader';
 import BottomTabs from './components/layout/BottomTabs';
