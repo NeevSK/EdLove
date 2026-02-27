@@ -1,5 +1,6 @@
 import React from 'react';
 import { Heart, GraduationCap, Library, Users } from 'lucide-react';
+import ThemedIcon from '../common/ThemedIcon';
 
 interface BottomTabsProps {
     activeTab: string;
@@ -12,33 +13,33 @@ const BottomTabs: React.FC<BottomTabsProps> = ({ activeTab, onTabChange }) => {
             <div className="max-w-md mx-auto grid grid-cols-4 h-20">
                 <button
                     onClick={() => onTabChange('self')}
-                    className={`flex flex-col items-center justify-center space-y-1 ${activeTab === 'self' ? 'text-orange-400' : 'text-gray-500'}`}
+                    className={`flex flex-col items-center justify-center space-y-1 transition-all ${activeTab === 'self' ? 'text-orange-400' : 'text-gray-500'}`}
                 >
-                    <Heart className={`w-6 h-6 ${activeTab === 'self' ? 'fill-orange-400' : ''}`} />
+                    <ThemedIcon icon={Heart} active={activeTab === 'self'} size={24} />
                     <span className="text-[10px] font-bold uppercase tracking-tighter">Self</span>
                 </button>
 
                 <button
                     onClick={() => onTabChange('classroom')}
-                    className={`flex flex-col items-center justify-center space-y-1 ${activeTab === 'classroom' ? 'text-orange-400' : 'text-gray-500'}`}
+                    className={`flex flex-col items-center justify-center space-y-1 transition-all ${activeTab === 'classroom' ? 'text-orange-400' : 'text-gray-500'}`}
                 >
-                    <GraduationCap className="w-6 h-6" />
+                    <ThemedIcon icon={GraduationCap} active={activeTab === 'classroom'} size={24} />
                     <span className="text-[10px] font-bold uppercase tracking-tighter">Classroom</span>
                 </button>
 
                 <button
                     onClick={() => onTabChange('library')}
-                    className={`flex flex-col items-center justify-center space-y-1 ${activeTab === 'library' ? 'text-orange-400' : 'text-gray-500'}`}
+                    className={`flex flex-col items-center justify-center space-y-1 transition-all ${activeTab === 'library' ? 'text-orange-400' : 'text-gray-500'}`}
                 >
-                    <Library className="w-6 h-6" />
+                    <ThemedIcon icon={Library} active={activeTab === 'library'} size={24} />
                     <span className="text-[10px] font-bold uppercase tracking-tighter">Library</span>
                 </button>
 
                 <button
                     onClick={() => onTabChange('community')}
-                    className={`flex flex-col items-center justify-center space-y-1 ${activeTab === 'community' ? 'text-orange-400' : 'text-gray-500'}`}
+                    className={`flex flex-col items-center justify-center space-y-1 transition-all ${activeTab === 'community' ? 'text-orange-400' : 'text-gray-500'}`}
                 >
-                    <Users className="w-6 h-6" />
+                    <ThemedIcon icon={Users} active={activeTab === 'community'} size={24} />
                     <span className="text-[10px] font-bold uppercase tracking-tighter">Community</span>
                 </button>
             </div>
