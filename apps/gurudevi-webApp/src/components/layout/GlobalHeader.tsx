@@ -1,4 +1,5 @@
 import React from 'react';
+import ProfileAvatar from '../common/ProfileAvatar';
 
 const GlobalHeader: React.FC = () => {
     return (
@@ -8,9 +9,7 @@ const GlobalHeader: React.FC = () => {
                     <div className="w-8 h-8 bg-orange-400 rounded-lg flex items-center justify-center font-black text-[#1a1a2e]">G</div>
                     <h1 className="text-lg font-black tracking-tight text-white uppercase">Gurudevi</h1>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-gray-800 border border-gray-700 overflow-hidden">
-                    <div className="w-full h-full bg-orange-400/20" />
-                </div>
+                <ProfileAvatar size={32} />
             </div>
         </header>
     );
