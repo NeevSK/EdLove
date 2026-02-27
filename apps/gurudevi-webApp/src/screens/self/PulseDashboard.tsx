@@ -1,5 +1,7 @@
 import React from 'react';
 import Greeting from '../../components/self/Greeting';
+import DailyResonanceCard from '../../components/self/DailyResonanceCard';
+import { Sparkles, BookOpen } from 'lucide-react';
 
 interface PulseDashboardProps {
     onEnterDetails?: () => void;
