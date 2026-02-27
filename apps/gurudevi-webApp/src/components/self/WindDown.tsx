@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Moon, Sparkles, CheckCircle, Circle } from 'lucide-react';
+import { Moon, CheckCircle, Circle } from 'lucide-react';
 
 const EVENING_RITUALS = [
     { id: 'screen_off', label: 'Screens Off', duration: '30m before' },
@@ -43,8 +43,8 @@ const WindDown: React.FC = () => {
                         key={ritual.id}
                         onClick={() => toggleRitual(ritual.id)}
                         className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${completed.includes(ritual.id)
-                                ? 'bg-purple-500/10 border-purple-500/20 text-purple-400'
-                                : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                            ? 'bg-purple-500/10 border-purple-500/20 text-purple-400'
+                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
                             }`}
                     >
                         <div className="flex flex-col items-start">
