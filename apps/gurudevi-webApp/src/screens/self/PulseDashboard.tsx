@@ -1,8 +1,8 @@
 import React from 'react';
 import Greeting from '../../components/self/Greeting';
-import DailyResonanceCard from '../../components/self/DailyResonanceCard';
-import PulseActionItem from '../../components/self/PulseActionItem';
-import { Sparkles, BookOpen, Calendar } from 'lucide-react';
+import DailyResonanceSection from '../../components/self/DailyResonanceSection';
+import ActionList from '../../components/self/ActionList';
+import { ArrowRight, Heart } from 'lucide-react';
 
 interface PulseDashboardProps {
     onEnterDetails?: () => void;
@@ -10,54 +10,29 @@ interface PulseDashboardProps {
 
 const PulseDashboard: React.FC<PulseDashboardProps> = ({ onEnterDetails }) => {
     return (
-        <div className="flex-1 flex flex-col space-y-6 px-4 pt-8 pb-24 max-w-2xl mx-auto w-full">
+        <div className="flex flex-col space-y-8 px-6 pt-6 pb-24 max-w-md mx-auto w-full">
             <Greeting />
 
-            <div className="space-y-6 flex flex-col">
-                <DailyResonanceCard
-                    title="Daily Spark"
-                    content="May your day be filled with peace and resonance."
-                    author="Sanctuary"
-                    icon={Sparkles}
-                    type="motivation"
-                />
+            <DailyResonanceSection />
 
-                <DailyResonanceCard
-                    title="Seed of Wisdom"
-                    content="Every student brings a unique harmony to the classroom."
-                    icon={BookOpen}
-                    type="wisdom"
-                />
+            <ActionList />
 
-                <div className="bg-[#16213e]/60 backdrop-blur-md rounded-2xl p-6 border border-gray-700/50 shadow-xl space-y-4">
-                    <div className="flex justify-between items-center">
-                        <h3 className="text-white font-bold text-lg">Today's Pulse</h3>
-                        <Calendar className="w-5 h-5 text-orange-400" />
+            {/* Enter Full Sanctuary Button */}
+            <button
+                onClick={onEnterDetails}
+                className="w-full bg-gradient-to-r from-orange-400 to-orange-600 p-5 rounded-2xl flex items-center justify-between group active:scale-[0.98] transition-all shadow-xl shadow-orange-900/40"
+            >
+                <div className="flex items-center space-x-4">
+                    <div className="p-3 bg-white/20 rounded-xl">
+                        <Heart className="text-white w-6 h-6 animate-pulse" />
                     </div>
-
-                    <div className="space-y-3">
-                        <PulseActionItem
-                            title="Mark Morning Attendance"
-                            time="Before 9:00 AM"
-                            status="pending"
-                        />
-                        <PulseActionItem
-                            title="Grade Science Assignment"
-                            time="By End of Day"
-                            status="upcoming"
-                        />
+                    <div className="text-left">
+                        <span className="block text-white font-black text-lg">Enter Sanctuary</span>
+                        <span className="text-orange-100/80 text-xs font-bold uppercase tracking-wider">Your Inner Workbench</span>
                     </div>
                 </div>
-            </div>
-
-            <div className="flex justify-center pt-4">
-                <button
-                    onClick={onEnterDetails}
-                    className="text-orange-400 font-bold hover:underline"
-                >
-                    Enter Full Sanctuary →
-                </button>
-            </div>
+                <ArrowRight className="text-white w-6 h-6 group-hover:translate-x-1 transition-transform" />
+            </button>
         </div>
     );
 };
