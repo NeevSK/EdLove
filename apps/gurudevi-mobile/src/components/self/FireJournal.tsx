@@ -298,7 +298,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                         }}
                     >
                         <Text
-                            color={Theme.colors.voidIndigo}
+                            color={Theme.colors.obsidian}
                             size="md"
                             sx={{ fontWeight: Theme.typography.fontWeight.semibold }}
                         >
@@ -364,7 +364,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                 <Animated.View style={containerStyle}>
                     <Box
                         sx={{
-                            backgroundColor: Theme.colors.deepIndigo,
+                            backgroundColor: Theme.colors.ink,
                             borderRadius: Theme.corners.comfortable,
                             padding: Theme.spacing.md,
                             minHeight: 200,
@@ -411,7 +411,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                         borderRadius: Theme.corners.full,
                         width: 48,
                         height: 48,
-                        backgroundColor: Theme.colors.deepIndigo,
+                        backgroundColor: Theme.colors.ink,
                     }}
                 >
                     <Mic color={Theme.colors.sanctuarySaffron} size={20} />
@@ -433,11 +433,11 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                     }}
                 >
                     <Flame
-                        color={Theme.colors.white}
+                        color={Theme.colors.sacredWhite}
                         size={20}
                         style={{ marginRight: Theme.spacing.sm }}
                     />
-                    <ButtonText color={Theme.colors.white}>
+                    <ButtonText color={Theme.colors.sacredWhite}>
                         {isBurning ? 'Burning...' : 'Burn'}
                     </ButtonText>
                 </Button>
@@ -447,7 +447,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
             <VStack space="sm">
                 <Box
                     sx={{
-                        backgroundColor: Theme.colors.deepIndigo,
+                        backgroundColor: Theme.colors.ink,
                         padding: Theme.spacing.md,
                         borderRadius: Theme.corners.comfortable,
                     }}

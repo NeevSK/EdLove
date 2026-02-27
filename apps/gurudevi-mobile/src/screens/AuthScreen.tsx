@@ -223,7 +223,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                             >
                                 <Text
                                     fontWeight="$bold"
-                                    color={!isSignUp ? Theme.colors.white : colors.textSecondary}
+                                    color={!isSignUp ? Theme.colors.sacredWhite : colors.textSecondary}
                                 >
                                     {t('auth.login')}
                                 </Text>
@@ -240,7 +240,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                             >
                                 <Text
                                     fontWeight="$bold"
-                                    color={isSignUp ? Theme.colors.white : colors.textSecondary}
+                                    color={isSignUp ? Theme.colors.sacredWhite : colors.textSecondary}
                                 >
                                     {t('auth.signup')}
                                 </Text>
@@ -262,10 +262,10 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                                 }}
                             >
                                 <HStack space="md" alignItems="center">
-                                    <Box sx={{ p: '$2', backgroundColor: Theme.colors.white, borderRadius: Theme.corners.full }}>
+                                    <Box sx={{ p: '$2', backgroundColor: Theme.colors.sacredWhite, borderRadius: Theme.corners.full }}>
                                         <GoogleIcon size={24} />
                                     </Box>
-                                    <ButtonText color={Theme.colors.white} fontWeight="$bold" size="lg">
+                                    <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold" size="lg">
                                         {isSignUp ? "Sign up with Google" : t('auth.signInWithGoogle')}
                                     </ButtonText>
                                 </HStack>
@@ -303,7 +303,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                                     height: 64,
                                 }}
                             >
-                                <ButtonText color={Theme.colors.white} fontWeight="$bold" size="lg">
+                                <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold" size="lg">
                                     Finish Setup
                                 </ButtonText>
                             </Button>
@@ -343,7 +343,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                                 isDisabled={loading}
                                 sx={{ backgroundColor: colors.action, borderRadius: Theme.corners.comfortable, mt: '$2' }}
                             >
-                                <ButtonText color={Theme.colors.white} fontWeight="$bold">
+                                <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold">
                                     {loading ? t('auth.processing') : (isSignUp ? t('auth.signup') : t('auth.login'))}
                                 </ButtonText>
                             </Button>

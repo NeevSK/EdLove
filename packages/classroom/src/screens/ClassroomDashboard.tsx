@@ -302,8 +302,8 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
                                     }}
                                 >
                                     <HStack alignItems="center" sx={{ gap: 4 }}>
-                                        <Plus size={16} color={Theme.colors.white} />
-                                        <ButtonText color={Theme.colors.white}>Module</ButtonText>
+                                        <Plus size={16} color={Theme.colors.sacredWhite} />
+                                        <ButtonText color={Theme.colors.sacredWhite}>Module</ButtonText>
                                     </HStack>
                                 </Button>
                             )}
@@ -349,13 +349,13 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
                                         >
                                             <Icon
                                                 size={20}
-                                                color={isActive ? 'white' : colors.textSecondary}
+                                                color={isActive ? Theme.colors.sacredWhite : colors.textSecondary}
                                             />
                                             <Text
                                                 sx={{
                                                     fontSize: Theme.typography.fontSize.xs,
                                                     fontWeight: (isActive ? '700' : '400') as any,
-                                                    color: isActive ? 'white' : colors.textSecondary
+                                                    color: isActive ? Theme.colors.sacredWhite : colors.textSecondary
                                                 }}
                                             >
                                                 {f.label}
@@ -381,7 +381,7 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
                     <ModalHeader>
                         <Heading color={colors.text} sx={{ fontSize: 18 }}>Add Monthly Module</Heading>
                     </ModalHeader>
-                    <ModalBody>
+                    <ModalBody sx={{ paddingBottom: Theme.spacing.lg }}>
                         <VStack sx={{ gap: 16 }}>
                             <Text color={colors.textSecondary} sx={{ fontSize: 14 }}>Give this month a title (e.g., "September 2026")</Text>
                             <Input sx={{ backgroundColor: colors.tertiary, borderColor: 'transparent' }}>
@@ -400,7 +400,7 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
                                 <ButtonText color={colors.textTertiary}>Cancel</ButtonText>
                             </Button>
                             <Button action="primary" onPress={handleAddMonth} isDisabled={!newMonthTitle.trim() || isSubmitting}>
-                                {isSubmitting ? <Spinner color={Theme.colors.white} /> : <ButtonText color={Theme.colors.white}>Create</ButtonText>}
+                                {isSubmitting ? <Spinner color={Theme.colors.sacredWhite} /> : <ButtonText color={Theme.colors.sacredWhite}>Create</ButtonText>}
                             </Button>
                         </HStack>
                     </ModalFooter>
@@ -419,7 +419,7 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
                             {contentType === 'material' ? 'Add Academic Material' : 'Create Assignment'}
                         </Heading>
                     </ModalHeader>
-                    <ModalBody>
+                    <ModalBody sx={{ paddingBottom: Theme.spacing.lg }}>
                         <VStack sx={{ gap: 16 }}>
                             {contentType === 'material' && (
                                 <VStack sx={{ gap: 4 }}>
@@ -433,7 +433,7 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
                                                     backgroundColor: formType === type ? Theme.colors.sanctuarySaffron : colors.tertiary,
                                                     alignItems: 'center'
                                                 }}>
-                                                    <Text color={formType === type ? Theme.colors.white : colors.textSecondary} sx={{ fontSize: 12, fontWeight: 'bold' }}>{type.toUpperCase()}</Text>
+                                                    <Text color={formType === type ? Theme.colors.sacredWhite : colors.textSecondary} sx={{ fontSize: 12, fontWeight: 'bold' }}>{type.toUpperCase()}</Text>
                                                 </Box>
                                             </Pressable>
                                         ))}
@@ -507,7 +507,7 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
                                 <ButtonText color={colors.textTertiary}>Cancel</ButtonText>
                             </Button>
                             <Button action="primary" onPress={handleAddContent} isDisabled={!formTitle.trim() || isSubmitting}>
-                                {isSubmitting ? <Spinner color={Theme.colors.white} /> : <ButtonText color={Theme.colors.white}>Add</ButtonText>}
+                                {isSubmitting ? <Spinner color={Theme.colors.sacredWhite} /> : <ButtonText color={Theme.colors.sacredWhite}>Add</ButtonText>}
                             </Button>
                         </HStack>
                     </ModalFooter>

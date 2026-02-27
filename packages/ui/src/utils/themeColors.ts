@@ -57,14 +57,14 @@ function getBaseThemeColors(isDark: boolean): ThemeColors {
     if (isDark) {
         return {
             // Dark mode backgrounds
-            primary: baseColors.voidIndigo,
-            secondary: baseColors.deepIndigo,
-            tertiary: baseColors.midnightBlue,
+            primary: baseColors.obsidian,
+            secondary: baseColors.ink,
+            tertiary: baseColors.shroud,
 
             // Dark mode text
             text: baseColors.sacredWhite,
             textPrimary: baseColors.sacredWhite,
-            textSecondary: baseColors.pearlGray,
+            textSecondary: baseColors.starlightGray,
             textTertiary: baseColors.mistGray,
 
             // Actions (same in both modes)
@@ -74,23 +74,23 @@ function getBaseThemeColors(isDark: boolean): ThemeColors {
             warning: baseColors.amberGlow,
 
             // Functional
-            border: 'rgba(255,255,255,0.1)',
-            overlay: baseColors.overlayDark,
-            shadow: baseColors.shadowDark,
+            border: 'rgba(252,249,242,0.1)',
+            overlay: baseColors.shadowAmbient,
+            shadow: baseColors.shadowDeep,
             glow: baseColors.shadowAmbient, // Default glow for dark mode
         };
     } else {
         return {
             // Light mode backgrounds
-            primary: baseColors.creamSilence,
-            secondary: baseColors.lotusWhite,
-            tertiary: baseColors.sandStone,
+            primary: baseColors.vellum,
+            secondary: baseColors.silk,
+            tertiary: baseColors.linen,
 
             // Light mode text
-            text: baseColors.charcoalTruth,
-            textPrimary: baseColors.charcoalTruth,
-            textSecondary: baseColors.slateGray,
-            textTertiary: baseColors.stoneGray,
+            text: baseColors.inkTruth,
+            textPrimary: baseColors.inkTruth,
+            textSecondary: baseColors.bark,
+            textTertiary: baseColors.willow,
 
             // Actions (same in both modes)
             action: baseColors.sanctuarySaffron,
@@ -99,9 +99,9 @@ function getBaseThemeColors(isDark: boolean): ThemeColors {
             warning: baseColors.amberGlow,
 
             // Functional
-            border: 'rgba(0,0,0,0.1)',
-            overlay: baseColors.overlayLight,
-            shadow: baseColors.shadowLight,
+            border: 'rgba(42,35,24,0.1)',
+            overlay: baseColors.shadowAmbient,
+            shadow: baseColors.shadowAmbient,
             glow: baseColors.shadowFocus, // Default glow for light mode
         };
     }
@@ -136,64 +136,57 @@ function modulateForTemporalPhase(
 ): ThemeColors {
     switch (phase) {
         case 'dawn':
-            // Dawn: Soft sky blue skymorphism
+            // Dawn: Threshold. Warm emerging. First saffron warmth.
             return {
                 ...baseTheme,
-                primary: isDark ? '#0F172A' : '#E0F7FF', // Deeper Sky Blue
-                secondary: isDark ? '#1E293B' : '#F0F9FF', // Lighter Sky Blue
-                tertiary: isDark ? '#0F172A' : '#E0F7FF', // Consistent Blue
-                action: '#F59E0B', // Sunrise Amber/Saffron preserved for action
-                glow: '#FDBA74', // Luminous Peach/Amber for Dawn
+                primary: isDark ? '#1F1A12' : '#FDF3E7', // Saffron Ground hints
+                action: baseColors.sanctuarySaffron,
+                glow: baseColors.amberGlow,
             };
 
         case 'predawn':
-            // Predawn: Deep dark, transitioning from night
+            // Predawn: Still. Hushed. Cool violet.
             return {
                 ...baseTheme,
-                primary: isDark ? '#080C14' : '#C7D8E8',
-                secondary: isDark ? '#0F1624' : '#DDE9F2',
-                action: baseColors.twilightPurple,
-                glow: '#7C9CC0', // Cool steel blue for predawn
+                primary: isDark ? '#14110B' : '#F5EDD6',
+                action: baseColors.twilightBlue,
+                glow: '#6B6480', // Shadow Violet glow
             };
 
         case 'morning':
-            // Morning: Bright, energetic, high contrast
-            return {
-                ...baseTheme,
-                action: baseColors.sanctuarySaffron, // Warm energy for clarity
-                shadow: isDark ? baseColors.shadowDark : 'rgba(0, 0, 0, 0.1)',
-                glow: '#FF9800', // Vivid Saffron Glow for Morning
-            };
-
-        case 'afternoon':
-            // Afternoon: Full brightness, sustained energy
+            // Morning: Most alive. Dalu luminous. Post-rain quality.
             return {
                 ...baseTheme,
                 action: baseColors.sanctuarySaffron,
-                shadow: isDark ? baseColors.shadowDark : 'rgba(0, 0, 0, 0.12)',
-                glow: '#FFA726', // Slightly warmer amber for afternoon
+                success: baseColors.sageGreen,
+                glow: '#8BBF7A', // Dalu Green glow
+            };
+
+        case 'afternoon':
+            // Afternoon: Warming. Saffron building.
+            return {
+                ...baseTheme,
+                action: baseColors.sanctuarySaffron,
+                glow: '#E67E22', // Saffron glow
             };
 
         case 'dusk':
-            // Dusk: Warm transition to rest
+            // Dusk: Violet returning.
             return {
                 ...baseTheme,
-                action: baseColors.sanctuarySaffron, // Warmer saffron
-                tertiary: isDark
-                    ? baseColors.midnightBlue
-                    : '#F5E6D3', // Warmer cream for light mode
-                glow: '#FF7043', // Deep Luminous Saffron for Dusk
+                action: baseColors.twilightBlue,
+                glow: '#6B6480',
             };
 
         case 'night':
-            // Night: Muted, restful, low stimulation
+            // Night: Deepest. Jewel.
             return {
                 ...baseTheme,
-                action: baseColors.twilightPurple, // Softer purple for night
+                action: baseColors.gurudeviViolet,
                 textSecondary: isDark
-                    ? baseColors.dimGray // More muted text
-                    : baseColors.slateGray,
-                glow: isDark ? '#60A5FA' : '#818CF8', // Bright Bioluminescent Blue for Night
+                    ? baseColors.mistGray
+                    : baseColors.willow,
+                glow: baseColors.gurudeviBlue,
             };
 
         default:
@@ -205,5 +198,5 @@ function modulateForTemporalPhase(
 export const themeColors = {
     primary: baseColors.sanctuarySaffron,
     secondary: baseColors.sageGreen,
-    tertiary: baseColors.midnightBlue,
+    tertiary: baseColors.shroud,
 };

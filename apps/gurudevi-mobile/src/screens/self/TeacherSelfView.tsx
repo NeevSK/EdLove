@@ -150,11 +150,11 @@ export default function TeacherSelfView() {
                         <Box
                             sx={{
                                 flex: 1,
-                                backgroundColor: Theme.colors.glassBg,
+                                backgroundColor: Theme.colors.glass.dark.highlight,
                                 borderRadius: Theme.corners.comfortable,
                                 padding: Theme.spacing.md,
                                 borderWidth: 1,
-                                borderColor: Theme.colors.glassBorder,
+                                borderColor: Theme.colors.glass.dark.border,
                                 minHeight: 150
                             }}
                         >
@@ -180,9 +180,9 @@ export default function TeacherSelfView() {
                                     borderRadius: Theme.corners.full,
                                     width: 44,
                                     height: 44,
-                                    backgroundColor: Theme.colors.glassHighlight,
+                                    backgroundColor: Theme.colors.glass.dark.highlight,
                                     borderWidth: 1,
-                                    borderColor: Theme.colors.glassBorder
+                                    borderColor: Theme.colors.glass.dark.border
                                 }}
                             >
                                 <Mic color={colors.action} size={20} />
@@ -197,8 +197,8 @@ export default function TeacherSelfView() {
                                     paddingHorizontal: Theme.spacing.md
                                 }}
                             >
-                                <ButtonText color={Theme.colors.white} mr="$2">{t('self.unburden')}</ButtonText>
-                                <Send color={Theme.colors.white} size={16} />
+                                <ButtonText color={Theme.colors.sacredWhite} mr="$2">{t('self.unburden')}</ButtonText>
+                                <Send color={Theme.colors.sacredWhite} size={16} />
                             </Button>
                         </HStack>
                     </VStack>
@@ -264,21 +264,21 @@ export default function TeacherSelfView() {
                                             borderRadius: Theme.corners.generous,
                                             backgroundColor: activeFeature === feature.id
                                                 ? Theme.colors.sanctuarySaffron
-                                                : Theme.colors.glassHighlight,
+                                                : Theme.colors.glass.dark.highlight,
                                             borderWidth: 1,
                                             borderColor: activeFeature === feature.id
                                                 ? Theme.colors.sanctuarySaffron
-                                                : Theme.colors.glassBorder,
+                                                : Theme.colors.glass.dark.border,
                                         }}
                                     >
                                         <feature.icon
-                                            color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary}
+                                            color={activeFeature === feature.id ? Theme.colors.sacredWhite : colors.textSecondary}
                                             size={24}
                                         />
                                         <Text
                                             size="xs"
                                             bold={activeFeature === feature.id}
-                                            color={activeFeature === feature.id ? Theme.colors.white : colors.text}
+                                            color={activeFeature === feature.id ? Theme.colors.sacredWhite : colors.text}
                                             textAlign="center"
                                         >
                                             {t(`self.${feature.id}`)}
@@ -315,13 +315,13 @@ export default function TeacherSelfView() {
                                         borderStyle: 'dashed'
                                     }}
                                 >
-                                    <Text fontSize="$2xl" color={showMoreTools ? Theme.colors.white : colors.text}>
+                                    <Text fontSize="$2xl" color={showMoreTools ? Theme.colors.sacredWhite : colors.text}>
                                         {showMoreTools ? '−' : '+'}
                                     </Text>
                                     <Text
                                         size="xs"
                                         bold={showMoreTools}
-                                        color={showMoreTools ? Theme.colors.white : colors.textSecondary}
+                                        color={showMoreTools ? Theme.colors.sacredWhite : colors.textSecondary}
                                         textAlign="center"
                                     >
                                         {showMoreTools ? t('self.lessTools') : t('self.moreTools')}

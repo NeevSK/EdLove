@@ -166,7 +166,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                             justifyContent: 'center'
                         }}
                     >
-                        <Text color={filterType === ft ? Theme.colors.white : colors.textSecondary} sx={{ fontSize: 13, textTransform: 'capitalize' }}>
+                        <Text color={filterType === ft ? Theme.colors.sacredWhite : colors.textSecondary} sx={{ fontSize: 13, textTransform: 'capitalize' }}>
                             {ft}
                         </Text>
                     </Pressable>
@@ -278,10 +278,10 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                         paddingHorizontal: 16,
                     }}
                 >
-                    <ButtonText sx={{ color: Theme.colors.white, marginRight: Theme.spacing.sm }}>
+                    <ButtonText sx={{ color: Theme.colors.sacredWhite, marginRight: Theme.spacing.sm }}>
                         {t('classroom.resources.addResource') || 'Add Resource'}
                     </ButtonText>
-                    <Plus color={Theme.colors.white} size={20} />
+                    <Plus color={Theme.colors.sacredWhite} size={20} />
                 </Button>
             )}
 
@@ -385,7 +385,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                             }}
                             disabled={!title || !content || addResourceMutation.isLoading}
                         >
-                            <ButtonText sx={{ color: Theme.colors.white }}>
+                            <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
                                 {addResourceMutation.isLoading ? (t('common.adding') || 'Adding...') : (t('classroom.resources.addResource') || 'Add Resource')}
                             </ButtonText>
                         </Button>

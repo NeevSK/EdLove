@@ -138,8 +138,8 @@ export function getSanctuaryTimeTheme(): {
     const themes = {
         dawn: {
             timeOfDay: 'dawn' as TimeOfDay,
-            primaryColor: Theme.colors.dawnGold,
-            backgroundColor: Theme.colors.voidIndigo,
+            primaryColor: Theme.colors.templeGold,
+            backgroundColor: Theme.colors.obsidian,
             textColor: Theme.colors.sacredWhite,
             description: 'First light, gentle awakening',
             warmth: 0.3
@@ -147,7 +147,7 @@ export function getSanctuaryTimeTheme(): {
         day: {
             timeOfDay: 'day' as TimeOfDay,
             primaryColor: Theme.colors.sanctuarySaffron,
-            backgroundColor: Theme.colors.voidIndigo,
+            backgroundColor: Theme.colors.obsidian,
             textColor: Theme.colors.sacredWhite,
             description: 'Full energy, active teaching',
             warmth: 0
@@ -155,15 +155,15 @@ export function getSanctuaryTimeTheme(): {
         evening: {
             timeOfDay: 'evening' as TimeOfDay,
             primaryColor: Theme.colors.lotusDeepPink,
-            backgroundColor: Theme.colors.deepIndigo,
+            backgroundColor: Theme.colors.ink,
             textColor: Theme.colors.sacredWhite,
             description: 'Winding down, reflection',
             warmth: 0.5
         },
         night: {
             timeOfDay: 'night' as TimeOfDay,
-            primaryColor: Theme.colors.twilightPurple,
-            backgroundColor: Theme.colors.midnightBlue,
+            primaryColor: Theme.colors.shadowViolet,
+            backgroundColor: Theme.colors.shroud,
             textColor: Theme.colors.sacredWhite,
             description: 'Rest, preparation for tomorrow',
             warmth: 0.8

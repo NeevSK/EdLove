@@ -9,8 +9,17 @@ on:
         default: 'preview'
         type: choice
         options:
+          - development
           - preview
           - production
+      build_method:
+        description: 'Build Method'
+        required: true
+        default: 'local'
+        type: choice
+        options:
+          - local
+          - remote
       build_type:
         description: 'Build Type'
         required: true
@@ -87,10 +96,16 @@ jobs:
       - name: 🚀 Build App
         run: |
           cd apps/gurudevi-mobile
-          # Build locally on the runner
-          eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive --local --output=app.${{ matrix.type }}
+          if [ "${{ github.event.inputs.build_method }}" == "local" ]; then
+            # Build locally on the runner
+            eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive --local --output=app.${{ matrix.type }}
+          else
+            # Trigger remote EAS build
+            eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive --no-wait
+          fi
 
       - name: 📤 Upload Artifact
+        if: github.event.inputs.build_method == 'local'
         uses: actions/upload-artifact@v4
         with:
           name: android-build-${{ matrix.type }}

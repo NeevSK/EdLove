@@ -86,7 +86,7 @@ export default function ErrorMessageDemo() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Theme.colors.voidIndigo,
+        backgroundColor: Theme.colors.obsidian,
     },
     section: {
         padding: Theme.spacing.lg,
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: Theme.typography.h3.fontSize,
         fontWeight: Theme.typography.h3.fontWeight as TextStyle['fontWeight'],
-        color: Theme.colors.pearlGray,
+        color: Theme.colors.starlightGray,
         marginTop: Theme.spacing.lg,
         marginBottom: Theme.spacing.sm,
     },

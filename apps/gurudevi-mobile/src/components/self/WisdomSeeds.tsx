@@ -117,7 +117,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
               borderRadius: Theme.corners.comfortable
             }}
           >
-            <Plus color={Theme.colors.white} size={20} />
+            <Plus color={Theme.colors.sacredWhite} size={20} />
             <ButtonText ml="$2">{t('self.addWisdom')}</ButtonText>
           </Button>
 
@@ -128,7 +128,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
                   key={note.id}
                   p={Theme.spacing.md}
                   sx={{
-                    backgroundColor: Theme.colors.deepIndigo,
+                    backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                     borderLeftWidth: 3,
                     borderLeftColor: Theme.colors.sanctuarySaffron
@@ -170,7 +170,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
               variant="outline"
               size="md"
               sx={{
-                backgroundColor: Theme.colors.deepIndigo,
+                backgroundColor: Theme.colors.ink,
                 borderWidth: 1,
                 borderColor: Theme.colors.transparent,
                 minHeight: 120
@@ -218,7 +218,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
                 setInsight('');
               }}
               sx={{
-                borderColor: Theme.colors.deepIndigo,
+                borderColor: Theme.colors.ink,
                 borderRadius: Theme.corners.comfortable
               }}
             >

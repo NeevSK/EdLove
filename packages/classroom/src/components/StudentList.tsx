@@ -192,7 +192,7 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                     ...Theme.shadows.lg,
                 }}
             >
-                <Plus color={Theme.colors.white} size={32} />
+                <Plus color={Theme.colors.sacredWhite} size={32} />
             </Pressable>
 
             <AddStudentModal

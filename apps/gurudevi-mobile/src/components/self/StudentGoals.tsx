@@ -129,10 +129,10 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
             <Box
                 sx={{
                     padding: Theme.spacing.lg,
-                    backgroundColor: Theme.colors.deepIndigo,
+                    backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                     borderLeftWidth: 4,
-                    borderLeftColor: Theme.colors.dawnGold,
+                    borderLeftColor: Theme.colors.templeGold,
                 }}
             >
                 <VStack space="md">
@@ -159,7 +159,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                         }}
                     >
                         <Text
-                            color={Theme.colors.dawnGold}
+                            color={Theme.colors.templeGold}
                             sx={{
                                 fontSize: 32,
                                 fontWeight: '700',
@@ -170,7 +170,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                     </HStack>
 
                     <Text
-                        color={Theme.colors.pearlGray}
+                        color={Theme.colors.starlightGray}
                         size="sm"
                         textAlign="center"
                     >
@@ -210,14 +210,14 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                     <Box
                         sx={{
                             padding: Theme.spacing.md,
-                            backgroundColor: Theme.colors.deepIndigo,
+                            backgroundColor: Theme.colors.ink,
                             borderRadius: Theme.corners.comfortable,
                         }}
                     >
                         <VStack space="md">
                             <Input
                                 sx={{
-                                    backgroundColor: Theme.colors.voidIndigo,
+                                    backgroundColor: Theme.colors.obsidian,
                                 }}
                             >
                                 <InputField
@@ -254,7 +254,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                         key={goal.id}
                         sx={{
                             padding: Theme.spacing.md,
-                            backgroundColor: Theme.colors.deepIndigo,
+                            backgroundColor: Theme.colors.ink,
                             borderRadius: Theme.corners.comfortable,
                         }}
                     >
@@ -292,7 +292,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                                     value={goal.progress}
                                     sx={{
                                         height: 8,
-                                        backgroundColor: Theme.colors.voidIndigo,
+                                        backgroundColor: Theme.colors.obsidian,
                                     }}
                                 >
                                     <ProgressFilledTrack
@@ -317,7 +317,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                                         <Box
                                             sx={{
                                                 padding: Theme.spacing.sm,
-                                                backgroundColor: Theme.colors.voidIndigo,
+                                                backgroundColor: Theme.colors.obsidian,
                                                 borderRadius: Theme.corners.tight,
                                             }}
                                         >
@@ -368,7 +368,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                         }}
                     >
                         <Text
-                            color={Theme.colors.pearlGray}
+                            color={Theme.colors.starlightGray}
                             textAlign="center"
                         >
                             {t('studentGoals.noGoals') ||

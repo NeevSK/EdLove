@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         fontWeight: '600',
-        color: Theme.colors.charcoalTruth,
+        color: Theme.colors.inkTruth,
         marginLeft: 8,
         marginRight: 8,
         fontFamily: 'System',
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     },
     date: {
         fontSize: 12,
-        color: Theme.colors.pearlGray,
+        color: Theme.colors.starlightGray,
         textAlign: 'right',
         fontFamily: 'System',
     },

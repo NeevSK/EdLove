@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -79,9 +79,13 @@ export default function LotusLoader({
                     strokeWidth={1.5}
                 />
             </Animated.View>
+            <ActivityIndicator
+                size="large"
+                color={Theme.colors.starlightGray}
+            />
             {text && (
                 <Text
-                    color={Theme.colors.pearlGray}
+                    color={Theme.colors.starlightGray}
                     fontFamily={Theme.typography.fontFamily.english}
                     size="sm"
                     sx={{ letterSpacing: 1 }}
@@ -96,13 +100,14 @@ export default function LotusLoader({
         return (
             <Center sx={{
                 flex: 1,
-                backgroundColor: Theme.colors.voidIndigo,
+                zIndex: Theme.zIndex.tooltip,
+                backgroundColor: Theme.colors.obsidian,
+                borderRadius: Theme.corners.comfortable,
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 right: 0,
                 bottom: 0,
-                zIndex: Theme.zIndex.modal
             }}>
                 {content}
             </Center>

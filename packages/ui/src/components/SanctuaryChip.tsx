@@ -35,7 +35,7 @@ export const SanctuaryChip: React.FC<SanctuaryChipProps> = ({
                 styles.chip,
                 {
                     borderColor: selected ? accent.action : colors.border,
-                    backgroundColor: selected ? accent.action : Theme.colors.glassHighlight,
+                    backgroundColor: selected ? accent.action : Theme.colors.glass.dark.highlight,
                 },
                 isSmall && styles.small,
             ]}

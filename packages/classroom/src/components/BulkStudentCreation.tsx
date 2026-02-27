@@ -245,7 +245,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                 borderRadius: Theme.corners.comfortable,
                             }}
                         >
-                            <ButtonText sx={{ color: Theme.colors.white }}>
+                            <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
                                 {t('bulk_creation.startEntry') || 'Start Entry'}
                             </ButtonText>
                         </Button>
@@ -397,7 +397,7 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                 borderRadius: Theme.corners.comfortable,
                             }}
                         >
-                            <ButtonText sx={{ color: Theme.colors.white }}>
+                            <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
                                 {currentIndex === students.length - 1
                                     ? (t('bulk_creation.finishReview') || 'Finish & Review')
                                     : (t('bulk_creation.saveNext') || 'Save & Next →')}
@@ -518,8 +518,8 @@ export default function BulkStudentCreation({ onStudentsCreated, onCancel }: Bul
                                     borderRadius: Theme.corners.comfortable,
                                 }}
                             >
-                                <Save size={20} color={Theme.colors.white} style={{ marginRight: 8 }} />
-                                <ButtonText sx={{ color: Theme.colors.white }}>
+                                <Save size={20} color={Theme.colors.sacredWhite} style={{ marginRight: 8 }} />
+                                <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
                                     {t('bulk_creation.addStudentsAction', { count: validStudentsCount }) || `Add ${validStudentsCount} Student(s)`}
                                 </ButtonText>
                             </Button>

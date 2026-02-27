@@ -129,7 +129,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
             case 'fair': return Theme.colors.templeGold;
             case 'poor': return Theme.colors.sanctuarySaffron;
             case 'broken': return Theme.colors.emberRed;
-            default: return Theme.colors.slateGray;
+            default: return Theme.colors.starlightGray;
         }
     };
 
@@ -157,7 +157,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                         borderColor: selectedCategory === 'all' ? Theme.colors.sanctuarySaffron : colors.border,
                     }}
                 >
-                    <Text color={selectedCategory === 'all' ? Theme.colors.white : colors.textSecondary} sx={{ fontSize: 13 }}>
+                    <Text color={selectedCategory === 'all' ? Theme.colors.sacredWhite : colors.textSecondary} sx={{ fontSize: 13 }}>
                         {t('classroom.inventory.all')}
                     </Text>
                 </Pressable>
@@ -177,8 +177,8 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                             gap: 4
                         }}
                     >
-                        <cat.icon size={14} color={selectedCategory === cat.id ? Theme.colors.white : colors.textSecondary} />
-                        <Text color={selectedCategory === cat.id ? Theme.colors.white : colors.textSecondary} sx={{ fontSize: 13 }}>
+                        <cat.icon size={14} color={selectedCategory === cat.id ? Theme.colors.sacredWhite : colors.textSecondary} />
+                        <Text color={selectedCategory === cat.id ? Theme.colors.sacredWhite : colors.textSecondary} sx={{ fontSize: 13 }}>
                             {t(cat.labelKey)}
                         </Text>
                     </Pressable>
@@ -235,7 +235,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                                     borderRadius: Theme.corners.tight,
                                 }}
                             >
-                                <Text color={Theme.colors.white} sx={{ fontSize: 12, textTransform: 'capitalize', fontWeight: 'bold' }}>
+                                <Text color={Theme.colors.sacredWhite} sx={{ fontSize: 12, textTransform: 'capitalize', fontWeight: 'bold' }}>
                                     {item.condition}
                                 </Text>
                             </Box>
@@ -263,8 +263,8 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                     elevation: 8,
                 }}
             >
-                <ButtonText color={Theme.colors.white} sx={{ marginRight: Theme.spacing.sm }}>{t('classroom.inventory.requestSupplies')}</ButtonText>
-                <Plus color={Theme.colors.white} size={20} />
+                <ButtonText color={Theme.colors.sacredWhite} sx={{ marginRight: Theme.spacing.sm }}>{t('classroom.inventory.requestSupplies')}</ButtonText>
+                <Plus color={Theme.colors.sacredWhite} size={20} />
             </Button>
 
             {/* Report Issue Modal */}

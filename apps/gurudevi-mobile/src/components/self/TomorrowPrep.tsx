@@ -134,7 +134,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
             borderRadius: Theme.corners.comfortable
           }}
         >
-          <Plus color={Theme.colors.white} size={20} />
+          <Plus color={Theme.colors.sacredWhite} size={20} />
           <ButtonText ml="$2">{t('self.addPrepItem')}</ButtonText>
         </Button>
       )}
@@ -143,7 +143,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
         <Box
           p="$3"
           sx={{
-            backgroundColor: Theme.colors.deepIndigo,
+            backgroundColor: Theme.colors.ink,
             borderRadius: Theme.corners.comfortable
           }}
         >
@@ -160,7 +160,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
               variant="outline"
               size="md"
               sx={{
-                backgroundColor: Theme.colors.deepIndigo,
+                backgroundColor: Theme.colors.ink,
                 borderWidth: 1,
                 borderColor: Theme.colors.transparent
               }}
@@ -185,7 +185,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                 setItemText('');
               }}
               sx={{
-                borderColor: Theme.colors.deepIndigo,
+                borderColor: Theme.colors.ink,
                 borderRadius: Theme.corners.comfortable
               }}
             >
@@ -216,7 +216,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
               alignItems="center"
               p="$3"
               sx={{
-                backgroundColor: Theme.colors.deepIndigo,
+                backgroundColor: Theme.colors.ink,
                 borderRadius: Theme.corners.comfortable,
                 opacity: item.is_completed ? 0.6 : 1
               }}
@@ -235,7 +235,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                       : 'transparent'
                   }}
                 >
-                  <CheckboxIcon as={Check} color={Theme.colors.white} />
+                  <CheckboxIcon as={Check} color={Theme.colors.sacredWhite} />
                 </CheckboxIndicator>
               </Checkbox>
 

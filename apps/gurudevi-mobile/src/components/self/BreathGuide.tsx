@@ -258,11 +258,11 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
                         }}
                     >
                         <Wind
-                            color={Theme.colors.white}
+                            color={Theme.colors.sacredWhite}
                             size={20}
                             style={{ marginRight: Theme.spacing.sm }}
                         />
-                        <ButtonText color={Theme.colors.white}>
+                        <ButtonText color={Theme.colors.sacredWhite}>
                             {t('self.startBreathing')}
                         </ButtonText>
                     </Button>

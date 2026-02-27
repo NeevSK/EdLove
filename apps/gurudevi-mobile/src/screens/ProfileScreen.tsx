@@ -92,9 +92,9 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
                     justifyContent: 'center',
                     borderWidth: 1,
                     borderColor: colors.border,
-                    shadowColor: colors.shadow,
+                    shadowColor: Theme.colors.shadowViolet,
                     shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.1,
+                    shadowOpacity: 0.12,
                     shadowRadius: 10,
                     elevation: 3,
                 }}
@@ -459,15 +459,15 @@ export default function ProfileScreen() {
                                         p: Theme.spacing.md,
                                         bg: colors.action,
                                         borderRadius: Theme.corners.comfortable,
-                                        shadowColor: colors.action,
+                                        shadowColor: Theme.colors.shadowViolet, // Shadow Law
                                         shadowOffset: { width: 0, height: 4 },
-                                        shadowOpacity: 0.3,
+                                        shadowOpacity: 0.24,
                                         shadowRadius: 8,
                                         elevation: 4
                                     }}>
                                         <VStack space="sm">
-                                            <Heading size="md" color="white">{t('profile.guestTitle', 'Guest Explorer')}</Heading>
-                                            <Text color="white" sx={{ fontSize: '$sm' }}>
+                                            <Heading size="md" color={Theme.colors.sacredWhite}>{t('profile.guestTitle', 'Guest Explorer')}</Heading>
+                                            <Text color={Theme.colors.sacredWhite} sx={{ fontSize: '$sm' }}>
                                                 {t('profile.guestDesc', 'You are exploring as a guest. Create an account to save your sanctuary permanently.')}
                                             </Text>
                                             <Button
@@ -476,7 +476,7 @@ export default function ProfileScreen() {
                                                     hapticSuccess();
                                                     navigation.navigate('Auth');
                                                 }}
-                                                sx={{ bg: 'white', alignSelf: 'flex-start', mt: '$2' }}
+                                                sx={{ bg: Theme.colors.sacredWhite, alignSelf: 'flex-start', mt: '$2' }}
                                             >
                                                 <ButtonText color={colors.action}>{t('auth.createAccount', 'Create Account')}</ButtonText>
                                             </Button>

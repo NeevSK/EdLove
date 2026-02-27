@@ -35,7 +35,7 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
             onClose={onClose}
         >
             <ModalBackdrop />
-            <ModalContent sx={{ backgroundColor: Theme.colors.deepIndigo, borderColor: Theme.colors.sanctuarySaffron, borderWidth: 1 }}>
+            <ModalContent sx={{ backgroundColor: Theme.colors.ink, borderColor: Theme.colors.sanctuarySaffron, borderWidth: 1 }}>
                 <ModalHeader>
                     <Heading size="xl" color={Theme.colors.sanctuarySaffron}>
                         {t('welcome.title') || 'Welcome Home'}
@@ -59,7 +59,7 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
                         onPress={handleStart}
                         sx={{ backgroundColor: Theme.colors.sanctuarySaffron }}
                     >
-                        <ButtonText color={Theme.colors.white}>
+                        <ButtonText color={Theme.colors.sacredWhite}>
                             {t('welcome.start') || 'Begin Journey'}
                         </ButtonText>
                     </Button>

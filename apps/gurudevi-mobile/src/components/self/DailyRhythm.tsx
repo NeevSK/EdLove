@@ -156,14 +156,14 @@ function DailyRhythmContent() {
                                 width: 40,
                                 height: 40,
                                 borderRadius: '$full',
-                                backgroundColor: activeDay === day.id ? Theme.colors.sanctuarySaffron : Theme.colors.midnightBlue,
+                                backgroundColor: activeDay === day.id ? Theme.colors.sanctuarySaffron : Theme.colors.obsidian,
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 borderWidth: 1,
                                 borderColor: activeDay === day.id ? Theme.colors.sanctuarySaffron : 'transparent',
                             }}
                         >
-                            <Text bold={activeDay === day.id} color={activeDay === day.id ? Theme.colors.white : Theme.colors.mistGray}>
+                            <Text bold={activeDay === day.id} color={activeDay === day.id ? Theme.colors.sacredWhite : Theme.colors.mistGray}>
                                 {day.label}
                             </Text>
                         </Pressable>
@@ -210,10 +210,10 @@ function DailyRhythmContent() {
                             const active = isPeriodActive(period.start_time, period.end_time);
                             const passed = !active && new Date().getHours() > parseInt(period.end_time.split(':')[0]);
 
-                            let bgColor: string = Theme.colors.midnightBlue;
+                            let bgColor: string = Theme.colors.obsidian;
                             let borderColor: string = 'transparent';
                             if (active) {
-                                bgColor = Theme.colors.deepIndigo as string;
+                                bgColor = Theme.colors.ink as string;
                                 borderColor = Theme.colors.sanctuarySaffron as string;
                             } else if (period.type === 'interval') {
                                 bgColor = 'rgba(76, 175, 80, 0.1)';
@@ -252,7 +252,7 @@ function DailyRhythmContent() {
                                                     </Heading>
                                                     {active && (
                                                         <Box px="$2" py="$0.5" sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: '$full' }}>
-                                                            <Text size="2xs" color={Theme.colors.white} bold>{t('common.now') || 'NOW'}</Text>
+                                                            <Text size="2xs" color={Theme.colors.sacredWhite} bold>{t('common.now') || 'NOW'}</Text>
                                                         </Box>
                                                     )}
                                                 </HStack>
@@ -275,7 +275,7 @@ function DailyRhythmContent() {
             {/* Editor Modal */}
             <Modal isOpen={showEditor} onClose={() => setShowEditor(false)}>
                 <ModalBackdrop />
-                <ModalContent sx={{ backgroundColor: Theme.colors.midnightBlue }}>
+                <ModalContent sx={{ backgroundColor: Theme.colors.obsidian }}>
                     <ModalHeader>
                         <Heading size="lg" color={Theme.colors.sanctuarySaffron}>
                             {editingPeriod?.id ? t('self.editPeriod') : t('self.newPeriod')}
@@ -357,7 +357,7 @@ function DailyRhythmContent() {
                                     sx={{ flex: 2, backgroundColor: Theme.colors.sanctuarySaffron }}
                                     onPress={handleSave}
                                 >
-                                    <ButtonText color={Theme.colors.white}>{t('common.save')}</ButtonText>
+                                    <ButtonText color={Theme.colors.sacredWhite}>{t('common.save')}</ButtonText>
                                 </Button>
                             </HStack>
                         </VStack>

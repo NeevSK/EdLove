@@ -165,7 +165,7 @@ export default function SchoolCreationScreen() {
                             shadowOpacity: 0.3,
                             shadowRadius: 10
                         }}>
-                            <Check size={60} color={Theme.colors.voidIndigo} strokeWidth={3} />
+                            <Check size={60} color={Theme.colors.obsidian} strokeWidth={3} />
                         </Box>
 
                         <VStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>

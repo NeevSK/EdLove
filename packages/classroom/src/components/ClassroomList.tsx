@@ -86,7 +86,7 @@ export default function ClassroomList({
         retryButtonText: {
             fontSize: Theme.typography.fontSize.md,
             fontWeight: '600',
-            color: Theme.colors.white,
+            color: Theme.colors.sacredWhite,
         },
     }), [colors]);
     const [error, setError] = useState<string | null>(null);

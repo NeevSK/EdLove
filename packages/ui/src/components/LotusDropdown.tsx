@@ -82,10 +82,10 @@ const LotusDropdown: FC<LotusDropdownProps> = ({
             fontWeight: '600',
         },
         trigger: {
-            backgroundColor: Theme.colors.midnightBlue,
+            backgroundColor: Theme.colors.shroud,
             borderRadius: Theme.corners.comfortable,
             borderWidth: 1,
-            borderColor: Theme.colors.midnightBlue, // Default border
+            borderColor: Theme.colors.shroud, // Default border
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -102,13 +102,15 @@ const LotusDropdown: FC<LotusDropdownProps> = ({
             marginRight: 8,
         },
         content: {
-            backgroundColor: Theme.colors.midnightBlue,
+            backgroundColor: Theme.colors.shroud,
             borderColor: Theme.colors.dimGray,
             borderWidth: 1,
             borderRadius: Theme.corners.comfortable,
         },
         item: {
-            // backgroundColor: Theme.colors.midnightBlue, // Can't easily style items in Gluestack sometimes, check args
+            fontSize: 16,
+            backgroundColor: Theme.colors.shroud,
+            padding: 12,
         },
         errorText: {
             fontSize: Theme.typography.fontSize.sm,

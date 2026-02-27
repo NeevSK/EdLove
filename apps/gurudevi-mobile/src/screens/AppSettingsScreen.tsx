@@ -211,12 +211,12 @@ export default function AppSettingsScreen({ navigation }: any) {
   const getTemporalDescription = () => {
     const time = new Date().toLocaleTimeString(i18n.language, { hour: 'numeric', minute: '2-digit' });
     const phases = {
-      predawn:   t('settings.temporal.predawn',   'Deep quiet (4-6 AM)'),
-      dawn:      t('settings.temporal.dawn',      'Gentle awakening (6-9 AM)'),
-      morning:   t('settings.temporal.morning',   'Active start (9 AM-12 PM)'),
+      predawn: t('settings.temporal.predawn', 'Deep quiet (4-6 AM)'),
+      dawn: t('settings.temporal.dawn', 'Gentle awakening (6-9 AM)'),
+      morning: t('settings.temporal.morning', 'Active start (9 AM-12 PM)'),
       afternoon: t('settings.temporal.afternoon', 'Full energy (12-5 PM)'),
-      dusk:      t('settings.temporal.dusk',      'Winding down (5-8 PM)'),
-      night:     t('settings.temporal.night',     'Restful (8 PM-4 AM)'),
+      dusk: t('settings.temporal.dusk', 'Winding down (5-8 PM)'),
+      night: t('settings.temporal.night', 'Restful (8 PM-4 AM)'),
     };
     return `${phases[temporalPhase]} • ${time}`;
   };
@@ -259,7 +259,7 @@ export default function AppSettingsScreen({ navigation }: any) {
 
         <SettingsOption
           colors={colors}
-          icon={themeMode === 'dark' ? <Moon size={24} color={Theme.colors.white} /> : <Sun size={24} color={Theme.colors.white} />}
+          icon={themeMode === 'dark' ? <Moon size={24} color={Theme.colors.sacredWhite} /> : <Sun size={24} color={Theme.colors.sacredWhite} />}
           title={t('settings.theme.title', 'Theme')}
           description={getTemporalDescription()}
           value={getThemeLabel()}
@@ -270,7 +270,7 @@ export default function AppSettingsScreen({ navigation }: any) {
 
         <SettingsOption
           colors={colors}
-          icon={<Sparkles size={24} color={Theme.colors.white} />}
+          icon={<Sparkles size={24} color={Theme.colors.sacredWhite} />}
           title={t('settings.fidelity.title', 'Visual Quality')}
           description={
             fidelityLevel === 'auto'
@@ -302,8 +302,8 @@ export default function AppSettingsScreen({ navigation }: any) {
                 backgroundColor: enableLivingTheme ? colors.action : colors.tertiary,
                 alignItems: 'center', justifyContent: 'center',
               }}>
-                <Sparkles size={24} color={enableLivingTheme ? Theme.colors.white : colors.textTertiary}
-                  fill={enableLivingTheme ? Theme.colors.white : 'transparent'} />
+                <Sparkles size={24} color={enableLivingTheme ? Theme.colors.sacredWhite : colors.textTertiary}
+                  fill={enableLivingTheme ? Theme.colors.sacredWhite : 'transparent'} />
               </Box>
               <VStack flex={1} space="xs">
                 <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: Theme.typography.fontWeight.semibold, color: colors.text }}>
@@ -323,7 +323,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                 hapticLight();
               }}
               trackColor={{ false: colors.tertiary, true: colors.action }}
-              thumbColor={Theme.colors.white}
+              thumbColor={Theme.colors.sacredWhite}
               accessible={true}
               accessibilityRole="switch"
               accessibilityLabel={t('settings.living_theme.title', 'Living Theme')}
@@ -344,7 +344,7 @@ export default function AppSettingsScreen({ navigation }: any) {
 
         <SettingsOption
           colors={colors}
-          icon={<Globe size={24} color={Theme.colors.white} />}
+          icon={<Globe size={24} color={Theme.colors.sacredWhite} />}
           title={t('settings.language.current', 'App Language')}
           description={t('settings.language.change_desc', 'Switch between English, Sinhala, and Tamil')}
           value={getLanguageLabel()}
@@ -386,9 +386,9 @@ export default function AppSettingsScreen({ navigation }: any) {
                 }}
               >
                 {isVeilActive ? (
-                  <EyeOff size={24} color={Theme.colors.white} />
+                  <EyeOff size={24} color={Theme.colors.sacredWhite} />
                 ) : (
-                  <Eye size={24} color={Theme.colors.white} />
+                  <Eye size={24} color={Theme.colors.sacredWhite} />
                 )}
               </Box>
 
@@ -429,7 +429,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                 false: colors.tertiary,
                 true: colors.action,
               }}
-              thumbColor={Theme.colors.white}
+              thumbColor={Theme.colors.sacredWhite}
               accessible={true}
               accessibilityRole="switch"
               accessibilityLabel={t('settings.veil.title', 'Privacy Veil')}
@@ -473,7 +473,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                   justifyContent: 'center',
                 }}
               >
-                <Zap size={24} color={isDemoMode ? Theme.colors.white : colors.textTertiary} fill={isDemoMode ? Theme.colors.white : 'transparent'} />
+                <Zap size={24} color={isDemoMode ? Theme.colors.sacredWhite : colors.textTertiary} fill={isDemoMode ? Theme.colors.sacredWhite : 'transparent'} />
               </Box>
 
               <VStack flex={1} space="xs">
@@ -513,7 +513,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                 false: colors.tertiary,
                 true: Theme.colors.sanctuarySaffron,
               }}
-              thumbColor={Theme.colors.white}
+              thumbColor={Theme.colors.sacredWhite}
               accessible={true}
               accessibilityRole="switch"
               accessibilityLabel={t('settings.explorer.title', 'Explorer Mode')}
@@ -676,14 +676,14 @@ export default function AppSettingsScreen({ navigation }: any) {
               id: 'light',
               label: t('settings.theme.light', 'Light'),
               description: t('settings.theme.light_full', 'Bright and clear for daytime use'),
-              icon: <Sun size={24} color={Theme.colors.dawnGold} />,
+              icon: <Sun size={24} color={Theme.colors.templeGold} />,
               isSelected: themeMode === 'light',
             },
             {
               id: 'dark',
               label: t('settings.theme.dark', 'Dark'),
               description: t('settings.theme.dark_full', 'Easy on the eyes in low light'),
-              icon: <Moon size={24} color={Theme.colors.twilightPurple} />,
+              icon: <Moon size={24} color={Theme.colors.shadowViolet} />,
               isSelected: themeMode === 'dark',
             },
           ]}

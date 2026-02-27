@@ -310,14 +310,14 @@ export default function SubmissionModal({
                     >
                         {isSubmitting ? (
                             <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-                                <Spinner color={Theme.colors.white} size="small" />
-                                <ButtonText sx={{ color: Theme.colors.white }}>
+                                <Spinner color={Theme.colors.sacredWhite} size="small" />
+                                <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
                                     {t('submission.submitting') || 'Turning in...'}
                                 </ButtonText>
                             </HStack>
                         ) : (
                             <ButtonText
-                                sx={{ color: Theme.colors.white, fontWeight: '700', fontSize: 18 }}
+                                sx={{ color: Theme.colors.sacredWhite, fontWeight: '700', fontSize: 18 }}
                             >
                                 ✍️ {t('submission.turnIn') || 'Turn In'}
                             </ButtonText>

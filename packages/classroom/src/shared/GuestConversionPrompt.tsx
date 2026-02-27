@@ -88,7 +88,7 @@ export default function GuestConversionPrompt({
                     </ModalCloseButton>
                 </ModalHeader>
 
-                <ModalBody pb="$6">
+                <ModalBody sx={{ paddingBottom: Theme.spacing.lg }}>
                     <VStack space="lg" alignItems="center">
                         {/* Icon */}
                         <Box
@@ -96,9 +96,14 @@ export default function GuestConversionPrompt({
                                 width: 80,
                                 height: 80,
                                 borderRadius: '$full',
-                                backgroundColor: Theme.colors.deepIndigo,
+                                backgroundColor: Theme.colors.ink, // Updated to Ink
                                 alignItems: 'center',
-                                justifyContent: 'center'
+                                justifyContent: 'center',
+                                shadowColor: Theme.colors.shadowViolet,
+                                shadowOffset: { width: 0, height: 4 },
+                                shadowOpacity: 0.24,
+                                shadowRadius: 8,
+                                elevation: 4
                             }}
                         >
                             <IconComponent size={40} color={Theme.colors.sanctuarySaffron} />
@@ -125,8 +130,8 @@ export default function GuestConversionPrompt({
                         {/* Local Data Count */}
                         {itemCount !== undefined && itemCount > 0 && (
                             <Box
-                                p="$3"
                                 sx={{
+                                    p: "$3",
                                     backgroundColor: colors.secondary,
                                     borderRadius: Theme.corners.comfortable,
                                     borderLeftWidth: 4,
@@ -141,17 +146,17 @@ export default function GuestConversionPrompt({
 
                         {/* Benefit */}
                         <Box
-                            p="$4"
                             sx={{
-                                backgroundColor: 'rgba(255, 165, 0, 0.1)',
+                                p: "$4",
+                                backgroundColor: `${Theme.colors.amberGlow}1A`, // 10% Opacity
                                 borderRadius: Theme.corners.comfortable,
                                 borderWidth: 1,
-                                borderColor: Theme.colors.sanctuarySaffron
+                                borderColor: Theme.colors.amberGlow
                             }}
                         >
                             <Text
                                 size="sm"
-                                color={Theme.colors.sanctuarySaffron}
+                                color={Theme.colors.amberGlow}
                                 textAlign="center"
                                 fontWeight="$semibold"
                             >
@@ -169,7 +174,7 @@ export default function GuestConversionPrompt({
                                     borderRadius: Theme.corners.comfortable
                                 }}
                             >
-                                <ButtonText color={Theme.colors.white}>
+                                <ButtonText color={Theme.colors.sacredWhite}>
                                     {t('guest.createAccount')}
                                 </ButtonText>
                             </Button>

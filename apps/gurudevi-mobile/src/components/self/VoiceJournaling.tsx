@@ -228,7 +228,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                     alignItems: 'center',
                     justifyContent: 'center',
                     padding: Theme.spacing.xl,
-                    backgroundColor: Theme.colors.deepIndigo,
+                    backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                     minHeight: 200,
                 }}
@@ -253,7 +253,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                                     justifyContent: 'center',
                                 }}
                             >
-                                <Mic color={Theme.colors.white} size={32} />
+                                <Mic color={Theme.colors.sacredWhite} size={32} />
                             </Box>
                         </Animated.View>
 
@@ -312,7 +312,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                         }}
                     >
                         <Mic
-                            color={Theme.colors.white}
+                            color={Theme.colors.sacredWhite}
                             size={20}
                             style={{ marginRight: Theme.spacing.sm }}
                         />
@@ -331,7 +331,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                         }}
                     >
                         <Square
-                            color={Theme.colors.white}
+                            color={Theme.colors.sacredWhite}
                             size={20}
                             style={{ marginRight: Theme.spacing.sm }}
                         />
@@ -389,7 +389,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                             }}
                         >
                             <Check
-                                color={Theme.colors.white}
+                                color={Theme.colors.sacredWhite}
                                 size={16}
                                 style={{ marginRight: Theme.spacing.xs }}
                             />
@@ -403,7 +403,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
             <Box
                 sx={{
                     padding: Theme.spacing.md,
-                    backgroundColor: Theme.colors.midnightBlue,
+                    backgroundColor: Theme.colors.obsidian,
                     borderRadius: Theme.corners.comfortable,
                 }}
             >

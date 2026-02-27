@@ -130,7 +130,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
               borderRadius: Theme.corners.comfortable
             }}
           >
-            <Plus color={Theme.colors.white} size={20} />
+            <Plus color={Theme.colors.sacredWhite} size={20} />
             <ButtonText ml="$2">{t('self.captureJoy')}</ButtonText>
           </Button>
 
@@ -141,7 +141,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
                   key={moment.id}
                   p={Theme.spacing.md}
                   sx={{
-                    backgroundColor: Theme.colors.deepIndigo,
+                    backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                     borderLeftWidth: 3,
                     borderLeftColor: Theme.colors.sanctuarySaffron
@@ -192,7 +192,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
               variant="outline"
               size="md"
               sx={{
-                backgroundColor: Theme.colors.deepIndigo,
+                backgroundColor: Theme.colors.ink,
                 borderWidth: 1,
                 borderColor: Theme.colors.transparent
               }}
@@ -230,7 +230,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
                       backgroundColor:
                         category === cat.id
                           ? Theme.colors.sanctuarySaffron
-                          : Theme.colors.deepIndigo,
+                          : Theme.colors.ink,
                       borderRadius: Theme.corners.comfortable
                     }}
                   >
@@ -238,7 +238,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
                     <Text
                       color={
                         category === cat.id
-                          ? Theme.colors.white
+                          ? Theme.colors.sacredWhite
                           : Theme.colors.mistGray
                       }
                       size="sm"
@@ -260,7 +260,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
               variant="outline"
               size="md"
               sx={{
-                backgroundColor: Theme.colors.deepIndigo,
+                backgroundColor: Theme.colors.ink,
                 borderWidth: 1,
                 borderColor: Theme.colors.transparent,
                 minHeight: 100
@@ -290,7 +290,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
                 setMomentDescription('');
               }}
               sx={{
-                borderColor: Theme.colors.deepIndigo,
+                borderColor: Theme.colors.ink,
                 borderRadius: Theme.corners.comfortable
               }}
             >

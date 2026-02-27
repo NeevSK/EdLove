@@ -64,28 +64,28 @@ export default function ReportCard({
                     }}
                 >
                     <VStack space="sm">
-                        <Text size="sm" sx={{ color: Theme.colors.white, opacity: 0.9 }}>
+                        <Text size="sm" sx={{ color: Theme.colors.sacredWhite, opacity: 0.9 }}>
                             {t('grades.reportCard') || 'Report Card'}
                         </Text>
-                        <Heading size="xl" sx={{ color: Theme.colors.white }}>
+                        <Heading size="xl" sx={{ color: Theme.colors.sacredWhite }}>
                             {studentName}
                         </Heading>
                         {grades.length > 0 && (
                             <HStack space="lg" sx={{ marginTop: Theme.spacing.sm }}>
                                 <VStack space="xs">
-                                    <Text size="xs" sx={{ color: Theme.colors.white, opacity: 0.9 }}>
+                                    <Text size="xs" sx={{ color: Theme.colors.sacredWhite, opacity: 0.9 }}>
                                         {t('grades.averageMarks') || 'Avg Marks'}
                                     </Text>
-                                    <Text size="xl" sx={{ fontWeight: '700', color: Theme.colors.white }}>
+                                    <Text size="xl" sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>
                                         {averageMarks.toFixed(1)}
                                     </Text>
                                 </VStack>
                                 {showGPA && (
                                     <VStack space="xs">
-                                        <Text size="xs" sx={{ color: Theme.colors.white, opacity: 0.9 }}>
+                                        <Text size="xs" sx={{ color: Theme.colors.sacredWhite, opacity: 0.9 }}>
                                             {t('grades.overallGPA') || 'Overall GPA'}
                                         </Text>
-                                        <Text size="xl" sx={{ fontWeight: '700', color: Theme.colors.white }}>
+                                        <Text size="xl" sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>
                                             {overallGPA.toFixed(2)}
                                         </Text>
                                     </VStack>
@@ -97,7 +97,7 @@ export default function ReportCard({
 
                 {/* Assignments List */}
                 <VStack space="md">
-                    <Heading size="md" color={Theme.colors.charcoalTruth}>
+                    <Heading size="md" color={Theme.colors.inkTruth}>
                         {t('grades.assignments') || 'Assignments'}
                     </Heading>
 
@@ -105,12 +105,12 @@ export default function ReportCard({
                         <Box
                             sx={{
                                 padding: Theme.spacing.xl,
-                                backgroundColor: Theme.colors.lotusWhite,
+                                backgroundColor: Theme.colors.sacredWhite,
                                 borderRadius: Theme.corners.comfortable,
                                 alignItems: 'center',
                             }}
                         >
-                            <Text color={Theme.colors.slateGray} textAlign="center">
+                            <Text color={Theme.colors.starlightGray} textAlign="center">
                                 {t('grades.noAssignments') || 'No assignments recorded.'}
                             </Text>
                         </Box>
@@ -126,7 +126,7 @@ export default function ReportCard({
                                     key={grade.id}
                                     sx={{
                                         padding: Theme.spacing.md,
-                                        backgroundColor: Theme.colors.lotusWhite,
+                                        backgroundColor: Theme.colors.sacredWhite,
                                         borderRadius: Theme.corners.comfortable,
                                         ...Theme.shadows.sm,
                                         borderLeftWidth: 4,
@@ -137,10 +137,10 @@ export default function ReportCard({
                                         {/* Assignment Header */}
                                         <HStack space="md" sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                             <VStack space="xs" sx={{ flex: 1 }}>
-                                                <Text size="md" sx={{ fontWeight: '700', color: Theme.colors.charcoalTruth }}>
+                                                <Text size="md" sx={{ fontWeight: '700', color: Theme.colors.inkTruth }}>
                                                     {assignmentName}
                                                 </Text>
-                                                <Text size="xs" color={Theme.colors.slateGray}>
+                                                <Text size="xs" color={Theme.colors.starlightGray}>
                                                     {new Date(grade.graded_at).toLocaleDateString()}
                                                 </Text>
                                             </VStack>
@@ -148,10 +148,10 @@ export default function ReportCard({
                                             {/* Grade Display */}
                                             <VStack space="xs" sx={{ alignItems: 'flex-end' }}>
                                                 <HStack space="xs" sx={{ alignItems: 'center' }}>
-                                                    <Text size="2xl" sx={{ fontWeight: '700', color: Theme.colors.charcoalTruth }}>
+                                                    <Text size="2xl" sx={{ fontWeight: '700', color: Theme.colors.inkTruth }}>
                                                         {grade.marks}
                                                     </Text>
-                                                    <Text size="sm" color={Theme.colors.slateGray}>
+                                                    <Text size="sm" color={Theme.colors.starlightGray}>
                                                         /100
                                                     </Text>
                                                 </HStack>
@@ -165,11 +165,11 @@ export default function ReportCard({
                                                                 borderRadius: Theme.corners.tight,
                                                             }}
                                                         >
-                                                            <Text size="sm" sx={{ fontWeight: '700', color: Theme.colors.white }}>
+                                                            <Text size="sm" sx={{ fontWeight: '700', color: Theme.colors.sacredWhite }}>
                                                                 {letterGrade}
                                                             </Text>
                                                         </Box>
-                                                        <Text size="sm" color={Theme.colors.slateGray}>
+                                                        <Text size="sm" color={Theme.colors.starlightGray}>
                                                             {gpa.toFixed(1)} {t('grades.gpa') || 'GPA'}
                                                         </Text>
                                                     </HStack>
@@ -183,7 +183,7 @@ export default function ReportCard({
                                                 sx={{
                                                     paddingHorizontal: Theme.spacing.md,
                                                     paddingVertical: Theme.spacing.sm,
-                                                    backgroundColor: Theme.colors.creamSilence,
+                                                    backgroundColor: Theme.colors.ink,
                                                     borderRadius: Theme.corners.tight,
                                                     alignSelf: 'flex-start',
                                                 }}
@@ -197,10 +197,10 @@ export default function ReportCard({
                                         {/* Feedback */}
                                         {grade.feedback && (
                                             <VStack space="xs">
-                                                <Text size="xs" sx={{ fontWeight: '700', color: Theme.colors.slateGray }}>
+                                                <Text size="xs" sx={{ fontWeight: '700', color: Theme.colors.starlightGray }}>
                                                     {t('grades.feedback') || 'Feedback'}:
                                                 </Text>
-                                                <Text size="sm" color={Theme.colors.charcoalTruth}>
+                                                <Text size="sm" color={Theme.colors.inkTruth}>
                                                     {grade.feedback}
                                                 </Text>
                                             </VStack>

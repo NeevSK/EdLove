@@ -112,7 +112,7 @@ export default function ThuthimalClaimScreen() {
         <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}>
             <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
-            <Text sx={{ color: Theme.colors.pearlGray, textAlign: 'center' }}>
+            <Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}>
               Receiving the flower of gratitude...
             </Text>
           </VStack>
@@ -130,7 +130,7 @@ export default function ThuthimalClaimScreen() {
               <Text sx={{ fontSize: 56, textAlign: 'center' }}>🌸</Text>
               <Heading
                 sx={{ textAlign: 'center', fontSize: Theme.typography.fontSize['2xl'] }}
-                color={Theme.colors.pearlGray as any}
+                color={Theme.colors.starlightGray as any}
               >
                 This flower has already bloomed
               </Heading>
@@ -140,7 +140,7 @@ export default function ThuthimalClaimScreen() {
               </Text>
               <TouchableOpacity
                 onPress={() => navigation.goBack()}
-                style={[styles.button, { backgroundColor: Theme.colors.deepIndigo }]}
+                style={[styles.button, { backgroundColor: Theme.colors.ink }]}
               >
                 <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>Go Back</Text>
               </TouchableOpacity>
@@ -163,12 +163,12 @@ export default function ThuthimalClaimScreen() {
             >
               Something went wrong
             </Heading>
-            <Text sx={{ color: Theme.colors.pearlGray, textAlign: 'center' }}>
+            <Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}>
               We couldn't process this gift. Please try again or contact support.
             </Text>
             <TouchableOpacity
               onPress={() => navigation.goBack()}
-              style={[styles.button, { backgroundColor: Theme.colors.deepIndigo }]}
+              style={[styles.button, { backgroundColor: Theme.colors.ink }]}
             >
               <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>Go Back</Text>
             </TouchableOpacity>
@@ -187,7 +187,7 @@ export default function ThuthimalClaimScreen() {
           alignItems: 'center',
           justifyContent: 'center',
           padding: Theme.spacing.xl,
-          backgroundColor: Theme.colors.voidIndigo,
+          backgroundColor: Theme.colors.obsidian,
         }}
       >
         {/* Flower */}
@@ -226,7 +226,7 @@ export default function ThuthimalClaimScreen() {
             >
               <Text
                 sx={{
-                  color: Theme.colors.pearlGray,
+                  color: Theme.colors.starlightGray,
                   textAlign: 'center',
                   lineHeight: 24,
                   fontSize: 16,
@@ -288,7 +288,7 @@ export default function ThuthimalClaimScreen() {
                 },
               ]}
             >
-              <Text sx={{ color: Theme.colors.voidIndigo, fontWeight: '700', fontSize: 16, textAlign: 'center' }}>
+              <Text sx={{ color: Theme.colors.obsidian, fontWeight: '700', fontSize: 16, textAlign: 'center' }}>
                 Enter the Sanctuary ✦
               </Text>
             </TouchableOpacity>

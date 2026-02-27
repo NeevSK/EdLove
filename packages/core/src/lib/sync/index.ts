@@ -4,4 +4,4 @@ export * from './registry';
 export * from './idempotency';
 export * from './errorClassifier';
 export * from './MutationAuditLog';
-export { useMutationQueue } from './useMutationQueue';
+export * from './sync/SyncManager';

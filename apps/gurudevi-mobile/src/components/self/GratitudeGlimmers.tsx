@@ -69,7 +69,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
   };
 
   const categories = [
-    { id: 'student-said', label: t('self.studentSaid'), emoji: '💬', color: Theme.colors.dawnGold },
+    { id: 'student-said', label: t('self.studentSaid'), emoji: '💬', color: Theme.colors.templeGold },
     { id: 'colleague-kindness', label: t('self.colleagueKindness'), emoji: '🤝', color: Theme.colors.skyBlue },
     { id: 'personal-win', label: t('self.personalWin'), emoji: '🌟', color: Theme.colors.sageGreen }
   ];
@@ -121,7 +121,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
               borderRadius: Theme.corners.comfortable
             }}
           >
-            <Plus color={Theme.colors.white} size={20} />
+            <Plus color={Theme.colors.sacredWhite} size={20} />
             <ButtonText ml="$2">{t('self.addGratitude')}</ButtonText>
           </Button>
 
@@ -134,7 +134,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
                     key={entry.id}
                     p={Theme.spacing.md}
                     sx={{
-                      backgroundColor: Theme.colors.deepIndigo,
+                      backgroundColor: Theme.colors.ink,
                       borderRadius: Theme.corners.comfortable,
                       borderLeftWidth: 3,
                       borderLeftColor: cat?.color || Theme.colors.sanctuarySaffron
@@ -193,7 +193,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
                       backgroundColor:
                         category === cat.id
                           ? Theme.colors.sanctuarySaffron
-                          : Theme.colors.deepIndigo,
+                          : Theme.colors.ink,
                       borderRadius: Theme.corners.comfortable,
                       borderWidth: 2,
                       borderColor:
@@ -206,7 +206,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
                     <Text
                       color={
                         category === cat.id
-                          ? Theme.colors.white
+                          ? Theme.colors.sacredWhite
                           : Theme.colors.mistGray
                       }
                       size="md"
@@ -229,7 +229,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
               variant="outline"
               size="md"
               sx={{
-                backgroundColor: Theme.colors.deepIndigo,
+                backgroundColor: Theme.colors.ink,
                 borderWidth: 1,
                 borderColor: Theme.colors.transparent,
                 minHeight: 100
@@ -258,7 +258,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
                 setContent('');
               }}
               sx={{
-                borderColor: Theme.colors.deepIndigo,
+                borderColor: Theme.colors.ink,
                 borderRadius: Theme.corners.comfortable
               }}
             >

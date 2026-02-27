@@ -28,12 +28,11 @@ import TabNavigator from './src/navigation/TabNavigator';
 import { AIAssistantScreen, AuthScreen } from './src/screens';
 import QRHandlerScreen from './src/screens/QRHandlerScreen';
 import ThuthimalClaimScreen from './src/screens/ThuthimalClaimScreen';
-import { useQRDeepLink, redeemPendingQRAction } from './src/hooks/useQRDeepLink';
+import { useQRDeepLink, redeemPendingQRAction } from '@repo/ui';
 import { SanctuaryToast, ToastProvider } from '@repo/ui';
 import type { ActionItem } from '@repo/ui';
-import ErrorBoundary from './src/components/shared/ErrorBoundary';
-import NetworkStatusBanner from './src/components/shared/NetworkStatusBanner';
-import SyncManager from './src/lib/sync/SyncManager';
+import { ErrorBoundary, NetworkStatusBanner } from '@repo/ui';
+import { SyncManager } from '@repo/core';
 import { LanguageUtils } from './src/utils/LanguageUtils';
 
 // Create a client
@@ -234,7 +233,7 @@ function App() {
     return (
       <SafeAreaProvider>
         <GluestackUIProvider config={config}>
-          <Center sx={{ flex: 1, backgroundColor: Theme.colors.midnightBlue }}>
+          <Center sx={{ flex: 1, backgroundColor: Theme.colors.obsidian }}>
             <VStack space="md" alignItems="center">
               <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
               <Text sx={{ color: Theme.colors.sacredWhite, fontSize: '$sm' as any }}>

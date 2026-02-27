@@ -87,8 +87,9 @@ const styles = StyleSheet.create({
         marginBottom: 2,
     },
     description: {
-        color: Theme.colors.pearlGray,
-        fontSize: 12,
+        fontSize: Theme.typography.fontSize.sm,
+        color: Theme.colors.starlightGray,
+        lineHeight: 20,
         opacity: 0.9,
     },
 });

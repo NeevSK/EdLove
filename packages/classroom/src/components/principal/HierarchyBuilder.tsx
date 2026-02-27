@@ -161,7 +161,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                         }}
                         onPress={() => setShowAddSection(true)}
                     >
-                        <ButtonText color={Theme.colors.white}>
+                        <ButtonText color={Theme.colors.sacredWhite}>
                             {t('principal.hierarchy.addSection')}
                         </ButtonText>
                     </Button>
@@ -341,7 +341,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                                 }}
                                 onPress={handleAddSection}
                             >
-                                <ButtonText color={Theme.colors.white}>
+                                <ButtonText color={Theme.colors.sacredWhite}>
                                     {t('common.add') || 'Add'}
                                 </ButtonText>
                             </Button>
@@ -414,7 +414,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                                 }}
                                 onPress={handleAddGrade}
                             >
-                                <ButtonText color={Theme.colors.white}>
+                                <ButtonText color={Theme.colors.sacredWhite}>
                                     {t('common.add') || 'Add'}
                                 </ButtonText>
                             </Button>

@@ -133,7 +133,7 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
                         >
                             <Text
                                 size="xs"
-                                color={i18n.language?.startsWith(lang.code) ? Theme.colors.white : colors.textSecondary}
+                                color={i18n.language?.startsWith(lang.code) ? Theme.colors.sacredWhite : colors.textSecondary}
                                 bold={i18n.language?.startsWith(lang.code)}
                             >
                                 {lang.code.toUpperCase()}

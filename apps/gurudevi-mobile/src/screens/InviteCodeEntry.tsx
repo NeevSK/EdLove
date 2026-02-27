@@ -86,14 +86,14 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
     }
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo, padding: Theme.spacing.xl }}>
+        <Box sx={{ flex: 1, backgroundColor: Theme.colors.obsidian, padding: Theme.spacing.xl }}>
             <VStack space="xl" sx={{ flex: 1, justifyContent: 'center', maxWidth: 400, width: '100%', alignSelf: 'center' }}>
                 {/* Header */}
                 <VStack space="sm" mb={Theme.spacing.lg}>
                     <Heading size="3xl" color={Theme.colors.sanctuarySaffron} textAlign="center">
                         {t('invite.enterCode') || 'Enter Invite Code'}
                     </Heading>
-                    <Text color={Theme.colors.pearlGray} size="md" textAlign="center">
+                    <Text color={Theme.colors.starlightGray} size="md" textAlign="center">
                         {t('invite.codeDesc') || 'Join your school with an invite code'}
                     </Text>
                 </VStack>
@@ -109,7 +109,7 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
                         sx={{
                             borderColor: Theme.colors.mistGray,
                             borderRadius: Theme.corners.comfortable,
-                            backgroundColor: Theme.colors.deepIndigo,
+                            backgroundColor: Theme.colors.ink,
                         }}
                     >
                         <InputField
@@ -139,13 +139,13 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
                     }}
                 >
                     {loading ? (
-                        <Spinner color={Theme.colors.white} />
+                        <Spinner color={Theme.colors.sacredWhite} />
                     ) : (
                         <>
-                            <ButtonText color={Theme.colors.white} fontWeight="$semibold">
+                            <ButtonText color={Theme.colors.sacredWhite} fontWeight="$semibold">
                                 {t('invite.validate') || 'Validate Code'}
                             </ButtonText>
-                            <ButtonIcon as={ArrowRight} color={Theme.colors.white} ml={Theme.spacing.sm} />
+                            <ButtonIcon as={ArrowRight} color={Theme.colors.sacredWhite} ml={Theme.spacing.sm} />
                         </>
                     )}
                 </Button>
@@ -154,7 +154,7 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
                 <Box
                     p={Theme.spacing.lg}
                     sx={{
-                        backgroundColor: Theme.colors.midnightBlue,
+                        backgroundColor: Theme.colors.shroud,
                         borderRadius: Theme.corners.comfortable,
                         borderWidth: 1,
                         borderColor: Theme.colors.mistGray,

@@ -107,7 +107,7 @@ export default function ContentLibrary() {
         },
         doc: {
             icon: FileText,
-            color: Theme.colors.deepIndigo,
+            color: Theme.colors.ink,
             label: 'Document',
         },
     };
@@ -300,7 +300,7 @@ export default function ContentLibrary() {
                                     padding: 4,
                                 }}
                             >
-                                <Pin color={Theme.colors.white} size={14} fill={Theme.colors.white} />
+                                <Pin color={Theme.colors.sacredWhite} size={14} fill={Theme.colors.sacredWhite} />
                             </Box>
                         )}
                     </HStack>
@@ -504,7 +504,7 @@ export default function ContentLibrary() {
                         ...Theme.shadows.lg,
                     }}
                 >
-                    <Plus color={Theme.colors.white} size={24} />
+                    <Plus color={Theme.colors.sacredWhite} size={24} />
                 </Box>
             </Pressable>
 
@@ -556,7 +556,7 @@ export default function ContentLibrary() {
                                                 <Text
                                                     sx={{
                                                         color: newResourceType === type
-                                                            ? Theme.colors.white
+                                                            ? Theme.colors.sacredWhite
                                                             : colors.textSecondary,
                                                         fontSize: Theme.typography.fontSize.sm,
                                                         fontWeight: newResourceType === type ? '700' : '400'
@@ -688,7 +688,7 @@ export default function ContentLibrary() {
                                 }}
                                 isDisabled={!newResourceTitle.trim()}
                             >
-                                <ButtonText color={Theme.colors.white}>{t('common.add')}</ButtonText>
+                                <ButtonText color={Theme.colors.sacredWhite}>{t('common.add')}</ButtonText>
                             </Button>
                         </HStack>
                     </ModalFooter>

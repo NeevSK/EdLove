@@ -84,11 +84,14 @@ export default function SanctuaryToast({
     return (
         <Animated.View style={[styles.container, animatedStyle]}>
             <Box sx={{
-                backgroundColor: Theme.colors.midnightBlue,
-                borderRadius: Theme.corners.comfortable,
+                borderRadius: Theme.corners.medium,
+                backgroundColor: Theme.colors.shroud,
                 padding: Theme.spacing.md,
-                borderLeftWidth: 4,
-                borderLeftColor: color,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: Theme.spacing.md,
+                borderWidth: 1,
+                borderColor: Theme.colors.glass.dark.border,
                 shadowColor: "#000",
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.3,

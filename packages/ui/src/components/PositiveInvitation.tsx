@@ -121,7 +121,7 @@ const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
                             paddingHorizontal: Theme.spacing.lg
                         }}
                     >
-                        <ButtonText color={Theme.colors.white}>{actionLabel || messages.action}</ButtonText>
+                        <ButtonText color={Theme.colors.sacredWhite}>{actionLabel || messages.action}</ButtonText>
                     </Button>
                 )}
             </VStack>

@@ -40,9 +40,10 @@ export default function LogoutModal({ isOpen, onClose, onLogout, isLoading = fal
         >
             <ModalBackdrop />
             <ModalContent sx={{
-                backgroundColor: Theme.colors.deepIndigo,
-                borderColor: Theme.colors.glassBorder,
-                borderWidth: 1,
+                width: '90%',
+                backgroundColor: Theme.colors.ink,
+                borderColor: Theme.colors.glass.dark.border,
+                borderRadius: Theme.corners.generous,
             }}>
                 <ModalHeader>
                     <HStack {...({ space: "sm", alignItems: "center" } as any)}>
@@ -56,8 +57,8 @@ export default function LogoutModal({ isOpen, onClose, onLogout, isLoading = fal
 
                 <ModalBody>
                     <VStack {...({ space: "md", py: "$2" } as any)}>
-                        <Text {...({ color: Theme.colors.pearlGray, size: "md" } as any)}>
-                            Your sanctuary progress and data are safe. You can return any time by signing back in.
+                        <Text {...({ color: Theme.colors.starlightGray, size: "md" } as any)}>
+                            Are you sure you want to sign out? You'll need to log in again to access your garden.
                         </Text>
                         <Box sx={{
                             backgroundColor: `${Theme.colors.sanctuarySaffron}15`,

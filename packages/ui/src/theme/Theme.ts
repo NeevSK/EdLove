@@ -20,99 +20,88 @@ export const colors = {
     gurudeviBlue: '#3B82F6',        // Electric Cyber Blue (Focus)
     gurudeviViolet: '#8B5CF6',      // Deep Insight (Wisdom)
 
-    sanctuarySaffron: '#E67E22',  // Primary actions, warmth
-    templeGold: '#fdd925ff',        // Elevated moments, achievements
+    sanctuarySaffron: '#E67E22',    // Primary actions, warmth
+    templeGold: '#FDD925',          // Elevated moments, achievements
+    amberGlow: '#FFB84D',           // Gentle warnings
 
     // Success & Growth
     sageGreen: '#8FBC8F',           // Success states, gentle growth
     mossGreen: '#556B2F',           // Subtle success backgrounds
 
     // Warnings & Attention
-    amberGlow: '#FFB84D',           // Gentle warnings
     emberOrange: '#D35400',         // Strong warnings/secondary actions
     emberRed: '#FF6347',            // Errors (gentle, not harsh)
     skyBlue: '#87CEEB',             // Sky blue for video resources
 
-    // Backgrounds - Light Mode (Porcelain & Ice)
-    creamSilence: '#F8FAFC',        // Porcelain
-    lotusWhite: '#F1F5F9',          // Ice White (secondary)
-    sandStone: '#E2E8F0',           // Cool Stone (tertiary)
+    // Backgrounds - The Light World (Vellum & Silk)
+    vellum: '#F5EDD6',              // The Ground (Base)
+    silk: '#FAF7ED',                // The Surface (Secondary)
+    linen: '#E8E2CF',               // The Depth (Tertiary)
 
-    // Backgrounds - Dark Mode (Bioluminescence)
-    voidIndigo: '#020617',          // Midnight (Deep Void)
-    deepIndigo: '#0F172A',          // Deep Navy (Layer 2)
-    midnightBlue: '#1E293B',        // Card/elevated surfaces (Lighter Navy)
+    // Backgrounds - The Dark World (Bioluminescence)
+    ink: '#2A2318',                 // Midnight Ink (Deep Base)
+    obsidian: '#1A1610',            // The Void (Deeper Shadow)
+    shroud: '#3D3528',              // Elevated Surfaces (Darker Navy equivalent)
 
     // Text Colors - Light Mode
-    charcoalTruth: '#0F172A',       // Deep Navy Ink
-    slateGray: '#475569',           // Darker Slate (Secondary) - Passed AA
-    stoneGray: '#64748B',           // Medium Slate (Tertiary) - Passed AA
+    inkTruth: '#2A2318',            // Deep Ink (Primary Text)
+    bark: '#544A3D',                // Secondary Text
+    willow: '#8C8273',              // Tertiary Text
 
     // Text Colors - Dark Mode
-    sacredWhite: '#F8FAFC',         // Porcelain White
-    starlightGray: '#94A3B8',       // Starlight Grey (Alias for pearlGray)
-    pearlGray: '#94A3B8',           // Starlight Grey
-    mistGray: '#64748B',            // Dimmed Text
-    dimGray: '#475569',             // Disabled Text
+    sacredWhite: '#FCF9F2',         // Bone/Sacred White
+    starlightGray: '#A1978A',       // Starlight (Secondary)
+    mistGray: '#736A5C',            // Dimmed Text
+    dimGray: '#524A3F',             // Disabled Text
 
-    // Specialty Colors (Legacy/Accents)
-    lotusDeepPink: '#DB7093',       // Lotus flower accent
-    twilightPurple: '#9966CC',      // Evening/night mode accent
+    // Specialty Colors
+    shadowViolet: '#6B6480',        // The ONLY Shadow Base
+    lotusDeepPink: '#DA70D6',       // Lotus flower accent
     twilightBlue: '#6A5ACD',        // Relational ecology accent
-    lavenderMist: '#E6E6FA',        // Knowledge ecology accent
-    dawnGold: '#FFD700',            // Morning/dawn accent
 
     // Functional Colors
     transparent: 'transparent',
-    white: '#FFFFFF',
-    black: '#000000',
+    white: '#FCF9F2',               // REDEFINED: Pure White is forbidden, use Sacred White
+    black: '#1A1610',               // REDEFINED: Pure Black is forbidden, use Obsidian
 
-    // Glass System
+    // Glass System - Glass Protocol (Frosted/Thin/Dense)
     glass: {
         dark: {
-            surface: 'rgba(15, 23, 42, 0.6)',
-            border: 'rgba(255, 255, 255, 0.1)',
-            highlight: 'rgba(255, 255, 255, 0.05)',
+            surface: 'rgba(42, 35, 24, 0.72)', // Ink based
+            border: 'rgba(252, 249, 242, 0.12)', // Sacred White based
+            highlight: 'rgba(252, 249, 242, 0.08)',
         },
         light: {
-            surface: 'rgba(255, 255, 255, 0.7)',
-            border: 'rgba(255, 255, 255, 0.6)',
-            highlight: 'rgba(255, 255, 255, 0.4)',
+            surface: 'rgba(245, 237, 214, 0.72)', // Vellum based
+            border: 'rgba(42, 35, 24, 0.12)',      // Ink based
+            highlight: 'rgba(42, 35, 24, 0.08)',
         }
     },
 
-    // Flattened Glass Tokens (Reactive to theme/temporal phase if needed, currently static for depth)
-    glassBg: 'rgba(15, 23, 42, 0.6)',      // Dark mode default
-    glassBorder: 'rgba(255, 255, 255, 0.1)',
-    glassHighlight: 'rgba(255, 255, 255, 0.05)',
+    // Overlays & Shadows - Shadow Law
+    shadowAmbient: 'rgba(107, 100, 128, 0.12)', // Shadow Violet @ 12%
+    shadowDeep: 'rgba(107, 100, 128, 0.24)',    // Shadow Violet @ 24%
+    shadowFocus: 'rgba(230, 126, 34, 0.15)',    // Saffron glow
 
-    // Overlays & Shadows
-    shadowDark: 'rgba(0, 0, 0, 0.3)',
-    shadowLight: 'rgba(148, 163, 184, 0.3)', // Cool Grey for light mode
-    shadowFocus: 'rgba(59, 130, 246, 0.25)', // Blue Lift
-    shadowAmbient: 'rgba(59, 130, 246, 0.15)', // Blue Ambience
-    // Functional Semantic Aliases (Backwards Compatibility & Clarity)
-    text: '#0F172A',                // charcoalTruth (Default Text)
-    textPrimary: '#0F172A',         // charcoalTruth
-    textSecondary: '#475569',       // slateGray
-    textTertiary: '#64748B',        // stoneGray
+    // Functional Semantic Aliases
+    text: '#2A2318',                // inkTruth
+    textPrimary: '#2A2318',
+    textSecondary: '#544A3D',       // bark
+    textTertiary: '#8C8273',        // willow
 
-    background: '#F8FAFC',          // creamSilence
-    backgroundLight: '#F8FAFC',     // creamSilence
-    backgroundDark: '#020617',      // voidIndigo
+    background: '#F5EDD6',          // vellum
+    backgroundLight: '#F5EDD6',
+    backgroundDark: '#2A2318',      // ink
 
-    border: '#E2E8F0',              // sandStone
-    borderDark: '#1E293B',          // midnightBlue
+    border: '#E8E2CF',              // linen
+    borderDark: '#3D3528',          // shroud
 
     error: '#FF6347',               // emberRed
-    errorText: '#FF6347',           // emberRed
-    errorBackground: '#FFF5F5',     // Very light red (custom)
+    errorText: '#FF6347',
+    errorBackground: '#FFF0EE',
 
     success: '#8FBC8F',             // sageGreen
     warning: '#FFB84D',             // amberGlow
-
-    overlayDark: 'rgba(2, 6, 23, 0.8)',
-    overlayLight: 'rgba(255, 255, 255, 0.9)',
 } as const;
 
 // ============================================================================
@@ -233,7 +222,7 @@ export const shadows = {
     sm: {
         shadowColor: colors.shadowAmbient,
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.5,
+        shadowOpacity: 1,
         shadowRadius: 4,
         elevation: 2,
     },
@@ -241,23 +230,23 @@ export const shadows = {
     md: {
         shadowColor: colors.shadowAmbient,
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.6,
+        shadowOpacity: 1,
         shadowRadius: 8,
         elevation: 4,
     },
 
     lg: {
-        shadowColor: colors.shadowAmbient, // Blue ambience
+        shadowColor: colors.shadowDeep,
         shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.8,
+        shadowOpacity: 1,
         shadowRadius: 16,
         elevation: 8,
     },
 
     xl: {
-        shadowColor: colors.shadowFocus, // Stronger glow
+        shadowColor: colors.shadowDeep,
         shadowOffset: { width: 0, height: 12 },
-        shadowOpacity: 0.8, // Higher opacity because the color is subtle blue
+        shadowOpacity: 1,
         shadowRadius: 24,
         elevation: 12,
     },
@@ -385,30 +374,30 @@ export default Theme;
 // Consume via useTheme() hook, never reference phases directly in components.
 
 export interface GlassTokens {
-    surface:  { bg: string; opacity: number; blurAmount: number; border: string };
-    modal:    { bg: string; opacity: number; blurAmount: number; border: string };
+    surface: { bg: string; opacity: number; blurAmount: number; border: string };
+    modal: { bg: string; opacity: number; blurAmount: number; border: string };
     interact: { bg: string; opacity: number; blurAmount: number; border: string };
 }
 
 export interface GlowTokens {
-    soft:    { color: string; radius: number; opacity: number };
+    soft: { color: string; radius: number; opacity: number };
     primary: { color: string; radius: number; opacity: number };
-    action:  { color: string; radius: number; opacity: number };
-    reward:  { color: string; radius: number; opacity: number };
+    action: { color: string; radius: number; opacity: number };
+    reward: { color: string; radius: number; opacity: number };
 }
 
 export interface AccentTokens {
-    action:  string;   // Primary interactive — buttons, links, active chips
-    reward:  string;   // Achievements, celebrations, milestones
-    danger:  string;   // Destructive actions
-    muted:   string;   // Disabled / secondary states
+    action: string;   // Primary interactive — buttons, links, active chips
+    reward: string;   // Achievements, celebrations, milestones
+    danger: string;   // Destructive actions
+    muted: string;   // Disabled / secondary states
 }
 
 export interface TextTokens {
-    primary:   string;
+    primary: string;
     secondary: string;
-    inverse:   string;  // Text on accent backgrounds
-    muted:     string;
+    inverse: string;  // Text on accent backgrounds
+    muted: string;
 }
 
 export interface PhaseTokens {
@@ -424,211 +413,211 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
 
     predawn: {
         dark: {
-            gradientNodes: ['#020617', '#0A0F1E', '#1E1B4B'],
+            gradientNodes: ['#1A1610', '#2A2318', '#3D3528'], // Obsidian → Ink → Shroud
             glass: {
-                surface:  { bg: 'rgba(10,15,30,0.72)',  opacity: 0.72, blurAmount: 16, border: 'rgba(255,255,255,0.08)' },
-                modal:    { bg: 'rgba(2,6,23,0.85)',    opacity: 0.85, blurAmount: 24, border: 'rgba(255,255,255,0.06)' },
-                interact: { bg: 'rgba(30,27,75,0.40)',  opacity: 0.40, blurAmount: 8,  border: 'rgba(255,255,255,0.10)' },
+                surface: { bg: 'rgba(42, 35, 24, 0.72)', opacity: 0.72, blurAmount: 36, border: 'rgba(252,249,242,0.12)' },
+                modal: { bg: 'rgba(26, 22, 16, 0.85)', opacity: 0.85, blurAmount: 24, border: 'rgba(252,249,242,0.08)' },
+                interact: { bg: 'rgba(61, 53, 40, 0.40)', opacity: 0.40, blurAmount: 8, border: 'rgba(252,249,242,0.15)' },
             },
             glow: {
-                soft:    { color: '#6D28D9', radius: 12, opacity: 0.15 },
-                primary: { color: '#6D28D9', radius: 20, opacity: 0.35 },
-                action:  { color: '#6D28D9', radius: 16, opacity: 0.50 },
-                reward:  { color: '#B45309', radius: 24, opacity: 0.60 },
+                soft: { color: '#6B6480', radius: 12, opacity: 0.15 },
+                primary: { color: '#E67E22', radius: 20, opacity: 0.35 },
+                action: { color: '#E67E22', radius: 16, opacity: 0.50 },
+                reward: { color: '#FDD925', radius: 24, opacity: 0.60 },
             },
-            accent: { action: '#7C3AED', reward: '#B45309', danger: '#EF4444', muted: '#374151' },
-            text:   { primary: '#F8FAFC', secondary: '#94A3B8', inverse: '#0F172A', muted: '#475569' },
+            accent: { action: '#E67E22', reward: '#FDD925', danger: '#FF6347', muted: '#3D3528' },
+            text: { primary: '#FCF9F2', secondary: '#A1978A', inverse: '#2A2318', muted: '#736A5C' },
         },
         light: {
-            gradientNodes: ['#E8EAF6', '#F3F4F6', '#DDD6FE'],
+            gradientNodes: ['#F5EDD6', '#FAF7ED', '#E8E2CF'], // Vellum → Silk → Linen
             glass: {
-                surface:  { bg: 'rgba(255,255,255,0.55)', opacity: 0.55, blurAmount: 16, border: 'rgba(0,0,0,0.08)' },
-                modal:    { bg: 'rgba(255,255,255,0.70)', opacity: 0.70, blurAmount: 24, border: 'rgba(0,0,0,0.06)' },
-                interact: { bg: 'rgba(255,255,255,0.35)', opacity: 0.35, blurAmount: 8,  border: 'rgba(0,0,0,0.10)' },
+                surface: { bg: 'rgba(250, 247, 237, 0.72)', opacity: 0.72, blurAmount: 36, border: 'rgba(42,35,24,0.08)' },
+                modal: { bg: 'rgba(245, 237, 214, 0.80)', opacity: 0.80, blurAmount: 24, border: 'rgba(42,35,24,0.06)' },
+                interact: { bg: 'rgba(232, 226, 207, 0.35)', opacity: 0.35, blurAmount: 8, border: 'rgba(42,35,24,0.10)' },
             },
             glow: {
-                soft:    { color: '#7C3AED', radius: 10, opacity: 0.10 },
-                primary: { color: '#7C3AED', radius: 18, opacity: 0.25 },
-                action:  { color: '#7C3AED', radius: 14, opacity: 0.35 },
-                reward:  { color: '#D97706', radius: 20, opacity: 0.45 },
+                soft: { color: '#6B6480', radius: 10, opacity: 0.10 },
+                primary: { color: '#E67E22', radius: 18, opacity: 0.25 },
+                action: { color: '#E67E22', radius: 14, opacity: 0.35 },
+                reward: { color: '#FDD925', radius: 20, opacity: 0.45 },
             },
-            accent: { action: '#7C3AED', reward: '#D97706', danger: '#DC2626', muted: '#9CA3AF' },
-            text:   { primary: '#0F172A', secondary: '#475569', inverse: '#FFFFFF', muted: '#94A3B8' },
+            accent: { action: '#E67E22', reward: '#FDD925', danger: '#FF6347', muted: '#A1978A' },
+            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#FCF9F2', muted: '#8C8273' },
         },
     },
 
     dawn: {
         dark: {
-            gradientNodes: ['#0F172A', '#1E293B', '#312E81'],
+            gradientNodes: ['#2A2318', '#3D3528', '#544A3D'],
             glass: {
-                surface:  { bg: 'rgba(30,41,59,0.70)',  opacity: 0.70, blurAmount: 16, border: 'rgba(255,255,255,0.10)' },
-                modal:    { bg: 'rgba(15,23,42,0.82)',   opacity: 0.82, blurAmount: 24, border: 'rgba(255,255,255,0.08)' },
-                interact: { bg: 'rgba(49,46,129,0.35)',  opacity: 0.35, blurAmount: 8,  border: 'rgba(255,255,255,0.12)' },
+                surface: { bg: 'rgba(42, 35, 24, 0.75)', opacity: 0.75, blurAmount: 36, border: 'rgba(252,249,242,0.12)' },
+                modal: { bg: 'rgba(26, 22, 16, 0.82)', opacity: 0.82, blurAmount: 24, border: 'rgba(252,249,242,0.08)' },
+                interact: { bg: 'rgba(61, 53, 40, 0.35)', opacity: 0.35, blurAmount: 8, border: 'rgba(252,249,242,0.15)' },
             },
             glow: {
-                soft:    { color: '#E67E22', radius: 12, opacity: 0.18 },
+                soft: { color: '#E67E22', radius: 12, opacity: 0.18 },
                 primary: { color: '#E67E22', radius: 20, opacity: 0.40 },
-                action:  { color: '#E67E22', radius: 16, opacity: 0.55 },
-                reward:  { color: '#DB7093', radius: 24, opacity: 0.60 },
+                action: { color: '#E67E22', radius: 16, opacity: 0.55 },
+                reward: { color: '#DA70D6', radius: 24, opacity: 0.60 },
             },
-            accent: { action: '#E67E22', reward: '#DB7093', danger: '#EF4444', muted: '#334155' },
-            text:   { primary: '#F8FAFC', secondary: '#CBD5E1', inverse: '#0F172A', muted: '#64748B' },
+            accent: { action: '#E67E22', reward: '#DA70D6', danger: '#FF6347', muted: '#3D3528' },
+            text: { primary: '#FCF9F2', secondary: '#A1978A', inverse: '#2A2318', muted: '#736A5C' },
         },
         light: {
-            gradientNodes: ['#FFF7ED', '#FFFBF5', '#FDE68A'],
+            gradientNodes: ['#F5EDD6', '#FFFBF5', '#FDD925'],
             glass: {
-                surface:  { bg: 'rgba(255,247,237,0.65)', opacity: 0.65, blurAmount: 16, border: 'rgba(234,88,12,0.15)' },
-                modal:    { bg: 'rgba(255,251,245,0.78)', opacity: 0.78, blurAmount: 24, border: 'rgba(234,88,12,0.10)' },
-                interact: { bg: 'rgba(253,230,138,0.30)', opacity: 0.30, blurAmount: 8,  border: 'rgba(234,88,12,0.20)' },
+                surface: { bg: 'rgba(245, 237, 214, 0.75)', opacity: 0.75, blurAmount: 36, border: 'rgba(230,126,34,0.15)' },
+                modal: { bg: 'rgba(250, 247, 237, 0.82)', opacity: 0.82, blurAmount: 24, border: 'rgba(230,126,34,0.10)' },
+                interact: { bg: 'rgba(242, 217, 37, 0.30)', opacity: 0.30, blurAmount: 8, border: 'rgba(230,126,34,0.20)' },
             },
             glow: {
-                soft:    { color: '#EA580C', radius: 10, opacity: 0.12 },
-                primary: { color: '#EA580C', radius: 20, opacity: 0.30 },
-                action:  { color: '#EA580C', radius: 16, opacity: 0.40 },
-                reward:  { color: '#E11D48', radius: 22, opacity: 0.45 },
+                soft: { color: '#E67E22', radius: 10, opacity: 0.12 },
+                primary: { color: '#E67E22', radius: 20, opacity: 0.30 },
+                action: { color: '#E67E22', radius: 16, opacity: 0.40 },
+                reward: { color: '#DA70D6', radius: 22, opacity: 0.45 },
             },
-            accent: { action: '#EA580C', reward: '#E11D48', danger: '#DC2626', muted: '#9CA3AF' },
-            text:   { primary: '#1C0A00', secondary: '#78350F', inverse: '#FFFFFF', muted: '#A16207' },
+            accent: { action: '#E67E22', reward: '#DA70D6', danger: '#FF6347', muted: '#A1978A' },
+            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#FCF9F2', muted: '#8C8273' },
         },
     },
 
     morning: {
-        dark: {  // Fallback only — morning is a light phase
-            gradientNodes: ['#0F172A', '#134E4A', '#064E3B'],
+        dark: {
+            gradientNodes: ['#2A2318', '#3D3528', '#2A2318'],
             glass: {
-                surface:  { bg: 'rgba(6,78,59,0.50)',  opacity: 0.50, blurAmount: 16, border: 'rgba(255,255,255,0.12)' },
-                modal:    { bg: 'rgba(15,23,42,0.80)',  opacity: 0.80, blurAmount: 24, border: 'rgba(255,255,255,0.10)' },
-                interact: { bg: 'rgba(20,83,45,0.35)',  opacity: 0.35, blurAmount: 8,  border: 'rgba(255,255,255,0.15)' },
+                surface: { bg: 'rgba(42, 35, 24, 0.72)', opacity: 0.72, blurAmount: 36, border: 'rgba(252,249,242,0.15)' },
+                modal: { bg: 'rgba(26, 22, 16, 0.85)', opacity: 0.85, blurAmount: 24, border: 'rgba(252,249,242,0.10)' },
+                interact: { bg: 'rgba(61, 53, 40, 0.40)', opacity: 0.40, blurAmount: 8, border: 'rgba(252,249,242,0.18)' },
             },
             glow: {
-                soft:    { color: '#16A34A', radius: 12, opacity: 0.20 },
-                primary: { color: '#16A34A', radius: 20, opacity: 0.45 },
-                action:  { color: '#16A34A', radius: 16, opacity: 0.55 },
-                reward:  { color: '#EA580C', radius: 24, opacity: 0.65 },
+                soft: { color: '#8FBC8F', radius: 12, opacity: 0.20 },
+                primary: { color: '#8FBC8F', radius: 20, opacity: 0.45 },
+                action: { color: '#8FBC8F', radius: 16, opacity: 0.55 },
+                reward: { color: '#E67E22', radius: 24, opacity: 0.65 },
             },
-            accent: { action: '#16A34A', reward: '#EA580C', danger: '#EF4444', muted: '#374151' },
-            text:   { primary: '#F8FAFC', secondary: '#86EFAC', inverse: '#0F172A', muted: '#6EE7B7' },
+            accent: { action: '#8FBC8F', reward: '#E67E22', danger: '#FF6347', muted: '#3D3528' },
+            text: { primary: '#FCF9F2', secondary: '#A1978A', inverse: '#2A2318', muted: '#736A5C' },
         },
         light: {
-            gradientNodes: ['#F0F9FF', '#E0F2FE', '#DCFCE7'],
+            gradientNodes: ['#F5EDD6', '#DCFCE7', '#FAF7ED'],
             glass: {
-                surface:  { bg: 'rgba(240,249,255,0.68)', opacity: 0.68, blurAmount: 16, border: 'rgba(22,163,74,0.15)' },
-                modal:    { bg: 'rgba(255,255,255,0.80)',  opacity: 0.80, blurAmount: 24, border: 'rgba(22,163,74,0.10)' },
-                interact: { bg: 'rgba(220,252,231,0.45)',  opacity: 0.45, blurAmount: 8,  border: 'rgba(22,163,74,0.20)' },
+                surface: { bg: 'rgba(245, 237, 214, 0.72)', opacity: 0.72, blurAmount: 36, border: 'rgba(143,188,143,0.15)' },
+                modal: { bg: 'rgba(250, 247, 237, 0.85)', opacity: 0.85, blurAmount: 24, border: 'rgba(143,188,143,0.10)' },
+                interact: { bg: 'rgba(220,252,231,0.45)', opacity: 0.45, blurAmount: 8, border: 'rgba(143,188,143,0.20)' },
             },
             glow: {
-                soft:    { color: '#16A34A', radius: 10, opacity: 0.12 },
-                primary: { color: '#16A34A', radius: 20, opacity: 0.28 },
-                action:  { color: '#16A34A', radius: 16, opacity: 0.38 },
-                reward:  { color: '#EA580C', radius: 22, opacity: 0.50 },
+                soft: { color: '#8FBC8F', radius: 10, opacity: 0.12 },
+                primary: { color: '#8FBC8F', radius: 20, opacity: 0.28 },
+                action: { color: '#8FBC8F', radius: 16, opacity: 0.38 },
+                reward: { color: '#E67E22', radius: 22, opacity: 0.50 },
             },
-            accent: { action: '#16A34A', reward: '#EA580C', danger: '#DC2626', muted: '#9CA3AF' },
-            text:   { primary: '#0F172A', secondary: '#166534', inverse: '#FFFFFF', muted: '#6B7280' },
+            accent: { action: '#8FBC8F', reward: '#E67E22', danger: '#FF6347', muted: '#A1978A' },
+            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#FCF9F2', muted: '#8C8273' },
         },
     },
 
     afternoon: {
-        dark: {  // Fallback only
-            gradientNodes: ['#0F172A', '#1E3A5F', '#0C4A6E'],
+        dark: {
+            gradientNodes: ['#2A2318', '#3D3528', '#2A2318'],
             glass: {
-                surface:  { bg: 'rgba(14,36,95,0.55)',  opacity: 0.55, blurAmount: 16, border: 'rgba(255,255,255,0.12)' },
-                modal:    { bg: 'rgba(15,23,42,0.82)',   opacity: 0.82, blurAmount: 24, border: 'rgba(255,255,255,0.10)' },
-                interact: { bg: 'rgba(2,132,199,0.30)',  opacity: 0.30, blurAmount: 8,  border: 'rgba(255,255,255,0.15)' },
+                surface: { bg: 'rgba(42, 35, 24, 0.72)', opacity: 0.72, blurAmount: 36, border: 'rgba(252,249,242,0.12)' },
+                modal: { bg: 'rgba(26, 22, 16, 0.82)', opacity: 0.82, blurAmount: 24, border: 'rgba(252,249,242,0.10)' },
+                interact: { bg: 'rgba(61, 53, 40, 0.30)', opacity: 0.30, blurAmount: 8, border: 'rgba(252,249,242,0.15)' },
             },
             glow: {
-                soft:    { color: '#0284C7', radius: 12, opacity: 0.20 },
-                primary: { color: '#0284C7', radius: 20, opacity: 0.45 },
-                action:  { color: '#0284C7', radius: 16, opacity: 0.55 },
-                reward:  { color: '#D97706', radius: 24, opacity: 0.65 },
+                soft: { color: '#3B82F6', radius: 12, opacity: 0.20 },
+                primary: { color: '#3B82F6', radius: 20, opacity: 0.45 },
+                action: { color: '#3B82F6', radius: 16, opacity: 0.55 },
+                reward: { color: '#FDD925', radius: 24, opacity: 0.65 },
             },
-            accent: { action: '#0284C7', reward: '#D97706', danger: '#EF4444', muted: '#374151' },
-            text:   { primary: '#F8FAFC', secondary: '#BAE6FD', inverse: '#0F172A', muted: '#7DD3FC' },
+            accent: { action: '#3B82F6', reward: '#FDD925', danger: '#FF6347', muted: '#3D3528' },
+            text: { primary: '#FCF9F2', secondary: '#A1978A', inverse: '#2A2318', muted: '#736A5C' },
         },
         light: {
-            gradientNodes: ['#FAFAFA', '#F1F5F9', '#E0F2FE'],
+            gradientNodes: ['#F5EDD6', '#E0F2FE', '#F5EDD6'],
             glass: {
-                surface:  { bg: 'rgba(255,255,255,0.72)', opacity: 0.72, blurAmount: 16, border: 'rgba(2,132,199,0.12)' },
-                modal:    { bg: 'rgba(255,255,255,0.85)', opacity: 0.85, blurAmount: 24, border: 'rgba(2,132,199,0.08)' },
-                interact: { bg: 'rgba(224,242,254,0.50)', opacity: 0.50, blurAmount: 8,  border: 'rgba(2,132,199,0.18)' },
+                surface: { bg: 'rgba(245, 237, 214, 0.72)', opacity: 0.72, blurAmount: 36, border: 'rgba(59,130,246,0.12)' },
+                modal: { bg: 'rgba(250, 247, 237, 0.85)', opacity: 0.85, blurAmount: 24, border: 'rgba(59,130,246,0.08)' },
+                interact: { bg: 'rgba(224,242,254,0.50)', opacity: 0.50, blurAmount: 8, border: 'rgba(59,130,246,0.18)' },
             },
             glow: {
-                soft:    { color: '#0284C7', radius: 10, opacity: 0.10 },
-                primary: { color: '#0284C7', radius: 18, opacity: 0.25 },
-                action:  { color: '#0284C7', radius: 14, opacity: 0.35 },
-                reward:  { color: '#D97706', radius: 20, opacity: 0.48 },
+                soft: { color: '#3B82F6', radius: 10, opacity: 0.10 },
+                primary: { color: '#3B82F6', radius: 18, opacity: 0.25 },
+                action: { color: '#3B82F6', radius: 14, opacity: 0.35 },
+                reward: { color: '#FDD925', radius: 20, opacity: 0.48 },
             },
-            accent: { action: '#0284C7', reward: '#D97706', danger: '#DC2626', muted: '#9CA3AF' },
-            text:   { primary: '#0F172A', secondary: '#475569', inverse: '#FFFFFF', muted: '#94A3B8' },
+            accent: { action: '#3B82F6', reward: '#FDD925', danger: '#FF6347', muted: '#A1978A' },
+            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#FCF9F2', muted: '#8C8273' },
         },
     },
 
     dusk: {
         dark: {
-            gradientNodes: ['#0C1A2E', '#0E2A4A', '#134E7A'],
+            gradientNodes: ['#2A2318', '#3D3528', '#2A2318'],
             glass: {
-                surface:  { bg: 'rgba(14,42,74,0.70)',  opacity: 0.70, blurAmount: 16, border: 'rgba(14,165,233,0.15)' },
-                modal:    { bg: 'rgba(12,26,46,0.85)',  opacity: 0.85, blurAmount: 24, border: 'rgba(14,165,233,0.10)' },
-                interact: { bg: 'rgba(20,78,122,0.40)', opacity: 0.40, blurAmount: 8,  border: 'rgba(14,165,233,0.20)' },
+                surface: { bg: 'rgba(42, 35, 24, 0.72)', opacity: 0.72, blurAmount: 36, border: 'rgba(252,249,242,0.12)' },
+                modal: { bg: 'rgba(26, 22, 16, 0.85)', opacity: 0.85, blurAmount: 24, border: 'rgba(252,249,242,0.08)' },
+                interact: { bg: 'rgba(61, 53, 40, 0.40)', opacity: 0.40, blurAmount: 8, border: 'rgba(252,249,242,0.15)' },
             },
             glow: {
-                soft:    { color: '#0EA5E9', radius: 14, opacity: 0.20 },
-                primary: { color: '#0EA5E9', radius: 22, opacity: 0.45 },
-                action:  { color: '#0EA5E9', radius: 18, opacity: 0.60 },
-                reward:  { color: '#F97316', radius: 26, opacity: 0.70 },
+                soft: { color: '#E67E22', radius: 14, opacity: 0.20 },
+                primary: { color: '#E67E22', radius: 22, opacity: 0.45 },
+                action: { color: '#E67E22', radius: 18, opacity: 0.60 },
+                reward: { color: '#DA70D6', radius: 26, opacity: 0.70 },
             },
-            accent: { action: '#0EA5E9', reward: '#F97316', danger: '#EF4444', muted: '#334155' },
-            text:   { primary: '#F0F9FF', secondary: '#BAE6FD', inverse: '#0C1A2E', muted: '#7DD3FC' },
+            accent: { action: '#E67E22', reward: '#DA70D6', danger: '#FF6347', muted: '#3D3528' },
+            text: { primary: '#FCF9F2', secondary: '#A1978A', inverse: '#2A2318', muted: '#736A5C' },
         },
-        light: {  // Fallback only — dusk is a dark phase
-            gradientNodes: ['#FFF7ED', '#FEE2E2', '#FECACA'],
+        light: {
+            gradientNodes: ['#F5EDD6', '#FFF7ED', '#FAF7ED'],
             glass: {
-                surface:  { bg: 'rgba(255,247,237,0.65)', opacity: 0.65, blurAmount: 16, border: 'rgba(249,115,22,0.15)' },
-                modal:    { bg: 'rgba(255,255,255,0.78)',  opacity: 0.78, blurAmount: 24, border: 'rgba(249,115,22,0.10)' },
-                interact: { bg: 'rgba(254,226,226,0.40)',  opacity: 0.40, blurAmount: 8,  border: 'rgba(249,115,22,0.20)' },
+                surface: { bg: 'rgba(245, 237, 214, 0.72)', opacity: 0.72, blurAmount: 36, border: 'rgba(230,126,34,0.15)' },
+                modal: { bg: 'rgba(250, 247, 237, 0.82)', opacity: 0.82, blurAmount: 24, border: 'rgba(230,126,34,0.10)' },
+                interact: { bg: 'rgba(255, 247, 237, 0.40)', opacity: 0.40, blurAmount: 8, border: 'rgba(230,126,34,0.20)' },
             },
             glow: {
-                soft:    { color: '#F97316', radius: 10, opacity: 0.12 },
-                primary: { color: '#F97316', radius: 20, opacity: 0.30 },
-                action:  { color: '#F97316', radius: 16, opacity: 0.40 },
-                reward:  { color: '#0EA5E9', radius: 22, opacity: 0.45 },
+                soft: { color: '#E67E22', radius: 10, opacity: 0.12 },
+                primary: { color: '#E67E22', radius: 20, opacity: 0.30 },
+                action: { color: '#E67E22', radius: 16, opacity: 0.40 },
+                reward: { color: '#DA70D6', radius: 22, opacity: 0.45 },
             },
-            accent: { action: '#F97316', reward: '#0EA5E9', danger: '#DC2626', muted: '#9CA3AF' },
-            text:   { primary: '#0F172A', secondary: '#9A3412', inverse: '#FFFFFF', muted: '#6B7280' },
+            accent: { action: '#E67E22', reward: '#DA70D6', danger: '#FF6347', muted: '#A1978A' },
+            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#FCF9F2', muted: '#8C8273' },
         },
     },
 
     night: {
         dark: {
-            gradientNodes: ['#020617', '#0F172A', '#1E1B4B'],
+            gradientNodes: ['#1A1610', '#2A2318', '#3D3528'],
             glass: {
-                surface:  { bg: 'rgba(15,23,42,0.72)',  opacity: 0.72, blurAmount: 16, border: 'rgba(253,217,37,0.08)' },
-                modal:    { bg: 'rgba(2,6,23,0.88)',    opacity: 0.88, blurAmount: 24, border: 'rgba(253,217,37,0.06)' },
-                interact: { bg: 'rgba(30,27,75,0.42)',  opacity: 0.42, blurAmount: 8,  border: 'rgba(253,217,37,0.12)' },
+                surface: { bg: 'rgba(42, 35, 24, 0.72)', opacity: 0.72, blurAmount: 36, border: 'rgba(253,217,37,0.08)' },
+                modal: { bg: 'rgba(26, 22, 16, 0.88)', opacity: 0.88, blurAmount: 24, border: 'rgba(253,217,37,0.06)' },
+                interact: { bg: 'rgba(61, 53, 40, 0.42)', opacity: 0.42, blurAmount: 8, border: 'rgba(253,217,37,0.12)' },
             },
             glow: {
-                soft:    { color: '#FDD925', radius: 14, opacity: 0.18 },
+                soft: { color: '#FDD925', radius: 14, opacity: 0.18 },
                 primary: { color: '#FDD925', radius: 24, opacity: 0.42 },
-                action:  { color: '#FDD925', radius: 18, opacity: 0.58 },
-                reward:  { color: '#8B5CF6', radius: 28, opacity: 0.70 },
+                action: { color: '#FDD925', radius: 18, opacity: 0.58 },
+                reward: { color: '#8B5CF6', radius: 28, opacity: 0.70 },
             },
-            accent: { action: '#FDD925', reward: '#8B5CF6', danger: '#EF4444', muted: '#374151' },
-            text:   { primary: '#F8FAFC', secondary: '#E2E8F0', inverse: '#020617', muted: '#64748B' },
+            accent: { action: '#FDD925', reward: '#8B5CF6', danger: '#FF6347', muted: '#3D3528' },
+            text: { primary: '#FCF9F2', secondary: '#A1978A', inverse: '#2A2318', muted: '#736A5C' },
         },
-        light: {  // Fallback only — night is a dark phase
-            gradientNodes: ['#1E1B4B', '#312E81', '#4338CA'],
+        light: {
+            gradientNodes: ['#2A2318', '#F5EDD6', '#2A2318'],
             glass: {
-                surface:  { bg: 'rgba(49,46,129,0.30)', opacity: 0.30, blurAmount: 16, border: 'rgba(253,217,37,0.20)' },
-                modal:    { bg: 'rgba(30,27,75,0.45)',  opacity: 0.45, blurAmount: 24, border: 'rgba(253,217,37,0.15)' },
-                interact: { bg: 'rgba(67,56,202,0.25)', opacity: 0.25, blurAmount: 8,  border: 'rgba(253,217,37,0.25)' },
+                surface: { bg: 'rgba(42, 35, 24, 0.30)', opacity: 0.30, blurAmount: 36, border: 'rgba(253,217,37,0.20)' },
+                modal: { bg: 'rgba(42, 35, 24, 0.45)', opacity: 0.45, blurAmount: 24, border: 'rgba(253,217,37,0.15)' },
+                interact: { bg: 'rgba(42, 35, 24, 0.25)', opacity: 0.25, blurAmount: 8, border: 'rgba(253,217,37,0.25)' },
             },
             glow: {
-                soft:    { color: '#FDD925', radius: 12, opacity: 0.15 },
+                soft: { color: '#FDD925', radius: 12, opacity: 0.15 },
                 primary: { color: '#FDD925', radius: 22, opacity: 0.35 },
-                action:  { color: '#FDD925', radius: 16, opacity: 0.45 },
-                reward:  { color: '#8B5CF6', radius: 24, opacity: 0.55 },
+                action: { color: '#FDD925', radius: 16, opacity: 0.45 },
+                reward: { color: '#8B5CF6', radius: 24, opacity: 0.55 },
             },
-            accent: { action: '#FDD925', reward: '#8B5CF6', danger: '#EF4444', muted: '#6B7280' },
-            text:   { primary: '#F8FAFC', secondary: '#C7D2FE', inverse: '#1E1B4B', muted: '#818CF8' },
+            accent: { action: '#FDD925', reward: '#8B5CF6', danger: '#FF6347', muted: '#524A3F' },
+            text: { primary: '#FCF9F2', secondary: '#A1978A', inverse: '#2A2318', muted: '#736A5C' },
         },
     },
 };
@@ -648,22 +637,20 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
  *   text.muted     → mistGray       (#64748B)
  */
 export const CLASSIC_TOKENS = {
-    gradientNodes: ['#0F172A', '#1E293B', '#312E81'],  // deepIndigo → midnightBlue → deep indigo
+    gradientNodes: ['#2A2318', '#3D3528', '#2A2318'],
     glass: {
-        surface:  { bg: 'rgba(30,41,59,0.72)',  opacity: 0.72, blurAmount: 16, border: 'rgba(255,255,255,0.10)' },
-        modal:    { bg: 'rgba(15,23,42,0.85)',  opacity: 0.85, blurAmount: 24, border: 'rgba(255,255,255,0.08)' },
-        interact: { bg: 'rgba(49,46,129,0.35)', opacity: 0.35, blurAmount: 8,  border: 'rgba(255,255,255,0.12)' },
+        surface: { bg: 'rgba(42, 35, 24, 0.72)', opacity: 0.72, blurAmount: 36, border: 'rgba(252,249,242,0.12)' },
+        modal: { bg: 'rgba(26, 22, 16, 0.85)', opacity: 0.85, blurAmount: 24, border: 'rgba(252,249,242,0.08)' },
+        interact: { bg: 'rgba(61, 53, 40, 0.35)', opacity: 0.35, blurAmount: 8, border: 'rgba(252,249,242,0.12)' },
     },
     glow: {
-        soft:    { color: '#3B82F6', radius: 10, opacity: 0.15 },  // gurudeviBlue
-        primary: { color: '#3B82F6', radius: 20, opacity: 0.35 },
-        action:  { color: '#3B82F6', radius: 16, opacity: 0.50 },
-        reward:  { color: '#E67E22', radius: 22, opacity: 0.55 },  // sanctuarySaffron
+        soft: { color: '#6B6480', radius: 10, opacity: 0.15 },
+        primary: { color: '#E67E22', radius: 20, opacity: 0.35 },
+        action: { color: '#3B82F6', radius: 16, opacity: 0.50 },
+        reward: { color: '#FDD925', radius: 22, opacity: 0.55 },
     },
-    accent: { action: '#3B82F6', reward: '#E67E22', danger: '#EF4444', muted: '#374151' },
-    //                gurudeviBlue     sanctuarySaffron  emberRed-equiv    dimmer
-    text: { primary: '#F8FAFC', secondary: '#94A3B8', inverse: '#0F172A', muted: '#64748B' },
-    //                sacredWhite       pearlGray          deepIndigo        mistGray
+    accent: { action: '#3B82F6', reward: '#FDD925', danger: '#FF6347', muted: '#3D3528' },
+    text: { primary: '#FCF9F2', secondary: '#A1978A', inverse: '#2A2318', muted: '#736A5C' },
 } as const satisfies PhaseTokens;
 
 /** The single resolver — this is what all components call via useTheme() */

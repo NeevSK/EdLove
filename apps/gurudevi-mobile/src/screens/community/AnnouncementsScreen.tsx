@@ -130,7 +130,7 @@ export default function AnnouncementsScreen({
         <Box
             sx={{
                 flex: 1,
-                backgroundColor: Theme.colors.voidIndigo,
+                backgroundColor: Theme.colors.obsidian,
             }}
         >
             <ScrollView>
@@ -188,7 +188,7 @@ export default function AnnouncementsScreen({
                     {!isLoading && pinnedAnnouncements.length > 0 && (
                         <VStack space="md">
                             <Text
-                                color={Theme.colors.pearlGray}
+                                color={Theme.colors.starlightGray}
                                 size="sm"
                                 sx={{ fontWeight: '600' }}
                             >
@@ -200,10 +200,10 @@ export default function AnnouncementsScreen({
                                     key={announcement.id}
                                     sx={{
                                         padding: Theme.spacing.md,
-                                        backgroundColor: Theme.colors.twilightPurple,
+                                        backgroundColor: Theme.colors.shadowViolet,
                                         borderRadius: Theme.corners.comfortable,
                                         borderLeftWidth: 4,
-                                        borderLeftColor: Theme.colors.dawnGold,
+                                        borderLeftColor: Theme.colors.templeGold,
                                     }}
                                 >
                                     <VStack space="sm">
@@ -240,7 +240,7 @@ export default function AnnouncementsScreen({
                         <VStack space="md">
                             {pinnedAnnouncements.length > 0 && (
                                 <Text
-                                    color={Theme.colors.pearlGray}
+                                    color={Theme.colors.starlightGray}
                                     size="sm"
                                     sx={{ fontWeight: '600', marginTop: Theme.spacing.md }}
                                 >
@@ -253,7 +253,7 @@ export default function AnnouncementsScreen({
                                     key={announcement.id}
                                     sx={{
                                         padding: Theme.spacing.md,
-                                        backgroundColor: Theme.colors.deepIndigo,
+                                        backgroundColor: Theme.colors.ink,
                                         borderRadius: Theme.corners.comfortable,
                                     }}
                                 >
@@ -277,7 +277,7 @@ export default function AnnouncementsScreen({
                                         </HStack>
 
                                         {/* Content */}
-                                        <Text color={Theme.colors.pearlGray} size="md">
+                                        <Text color={Theme.colors.starlightGray} size="md">
                                             {announcement.content}
                                         </Text>
                                     </VStack>
@@ -296,7 +296,7 @@ export default function AnnouncementsScreen({
                         >
                             <Text
                                 size="lg"
-                                color={Theme.colors.pearlGray}
+                                color={Theme.colors.starlightGray}
                                 textAlign="center"
                             >
                                 {t('announcements.noAnnouncements') ||
@@ -319,7 +319,7 @@ export default function AnnouncementsScreen({
                 <ModalBackdrop />
                 <ModalContent
                     sx={{
-                        backgroundColor: Theme.colors.deepIndigo,
+                        backgroundColor: Theme.colors.ink,
                     }}
                 >
                     <ModalHeader>
@@ -331,7 +331,7 @@ export default function AnnouncementsScreen({
                         <VStack space="md">
                             <Textarea
                                 sx={{
-                                    backgroundColor: Theme.colors.voidIndigo,
+                                    backgroundColor: Theme.colors.obsidian,
                                     minHeight: 150,
                                 }}
                             >
@@ -355,7 +355,7 @@ export default function AnnouncementsScreen({
                                     alignItems: 'center',
                                 }}
                             >
-                                <Text color={Theme.colors.pearlGray}>
+                                <Text color={Theme.colors.starlightGray}>
                                     {t('announcements.pinAnnouncement') || 'Pin to top'}
                                 </Text>
                                 <Switch value={isPinned} onValueChange={setIsPinned} />

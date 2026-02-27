@@ -72,19 +72,17 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
                 borderRadius: Theme.corners.generous,
                 overflow: 'hidden' as const, // For BlurView
                 borderWidth: 1,
-                borderColor: useGlass ? glass.surface.border : 'rgba(255,255,255,0.05)',
+                borderColor: useGlass ? glass.surface.border : Theme.colors.border,
                 backgroundColor: useGlass
                     ? glass.surface.bg
-                    : (isDark ? Theme.colors.midnightBlue : Theme.colors.creamSilence), // Solid Fallback
+                    : (isDark ? Theme.colors.shroud : Theme.colors.silk), // Level 2 Surface
             },
             elevated: {
-                shadowColor: glow.soft.color,
-                shadowOpacity: glow.soft.opacity,
-                shadowRadius: glow.soft.radius,
-                shadowOffset: { width: 0, height: 4 },
-                elevation: 4,
-                // On Android, elevation needs a solid background to cast shadow properly if not careful
-                // We rely on the container background
+                shadowColor: Theme.colors.shadowViolet,
+                shadowOpacity: 0.24,
+                shadowRadius: 16,
+                shadowOffset: { width: 0, height: 8 },
+                elevation: 8,
             },
             contentPadding: {
                 padding: Theme.spacing.lg,
@@ -94,7 +92,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
                 fontWeight: typography.h3.fontWeight as TextStyle['fontWeight'],
                 letterSpacing: typography.h3.letterSpacing,
                 lineHeight: typography.h3.lineHeight,
-                color: isDark ? Theme.colors.sacredWhite : Theme.colors.charcoalTruth,
+                color: isDark ? Theme.colors.sacredWhite : Theme.colors.inkTruth,
                 marginBottom: Theme.spacing.md,
             },
             footerContainer: {
@@ -102,9 +100,9 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
             },
             footerBorder: {
                 height: 1,
-                backgroundColor: isDark ? Theme.colors.mistGray : Theme.colors.stoneGray,
+                backgroundColor: Theme.colors.border,
                 marginBottom: Theme.spacing.md,
-                opacity: 0.2,
+                opacity: 0.3,
             },
         };
     }, [isDark, useGlass, elevated, glass, glow]);
@@ -178,7 +176,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
         >
             {useGlass ? (
                 <BlurView
-                    intensity={20}
+                    intensity={36} // Retina Protocol: 36 is the magic number
                     tint={isDark ? 'dark' : 'light'}
                     style={StyleSheet.absoluteFill}
                 >

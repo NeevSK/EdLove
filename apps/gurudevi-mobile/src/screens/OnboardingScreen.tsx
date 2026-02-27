@@ -191,7 +191,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                 />
             </Input>
             <Button size="lg" onPress={handleNext} isDisabled={!canProceed} sx={{ backgroundColor: colors.action, mt: '$6' }}>
-                <ButtonText color={Theme.colors.white}>{t('onboarding.continue')}</ButtonText>
+                <ButtonText color={Theme.colors.sacredWhite}>{t('onboarding.continue')}</ButtonText>
             </Button>
         </VStack>
     );
@@ -223,7 +223,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                     <ButtonText color={colors.text}>{t('onboarding.back')}</ButtonText>
                 </Button>
                 <Button onPress={handleNext} sx={{ backgroundColor: colors.action, flex: 2 }}>
-                    <ButtonText color={Theme.colors.white}>{t('onboarding.continue')}</ButtonText>
+                    <ButtonText color={Theme.colors.sacredWhite}>{t('onboarding.continue')}</ButtonText>
                 </Button>
             </HStack>
         </VStack>
@@ -268,7 +268,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                             <ButtonText color={colors.text}>{t('onboarding.back')}</ButtonText>
                         </Button>
                         <Button onPress={handleNext} sx={{ backgroundColor: colors.action, flex: 2 }}>
-                            <ButtonText color={Theme.colors.white}>{t('onboarding.next')}</ButtonText>
+                            <ButtonText color={Theme.colors.sacredWhite}>{t('onboarding.next')}</ButtonText>
                         </Button>
                     </HStack>
                     <Button variant="link" onPress={handleSkipTour}>

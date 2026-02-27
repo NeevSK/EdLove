@@ -138,7 +138,7 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
                                         }}
                                     >
                                         <Text
-                                            color={sortBy === option ? Theme.colors.white : colors.textSecondary}
+                                            color={sortBy === option ? Theme.colors.sacredWhite : colors.textSecondary}
                                             sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: sortBy === option ? '700' : '400' }}
                                         >
                                             {t(`grading.gradebook.sort${option.charAt(0).toUpperCase() + option.slice(1)}`) || option.charAt(0).toUpperCase() + option.slice(1)}

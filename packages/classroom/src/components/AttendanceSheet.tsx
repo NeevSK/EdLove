@@ -118,7 +118,7 @@ export default function AttendanceSheet({
                             marginVertical: Theme.spacing.xs,
                         }}
                     >
-                        <Check color={Theme.colors.white} size={24} />
+                        <Check color={Theme.colors.sacredWhite} size={24} />
                     </Box>
                 )}
                 renderLeftActions={() => (
@@ -132,7 +132,7 @@ export default function AttendanceSheet({
                             marginVertical: Theme.spacing.xs,
                         }}
                     >
-                        <X color={Theme.colors.white} size={24} />
+                        <X color={Theme.colors.sacredWhite} size={24} />
                     </Box>
                 )}
                 onSwipeableRightOpen={() => handleUpdateStatus(item.id, 'present')}
@@ -192,7 +192,7 @@ export default function AttendanceSheet({
                                     alignItems: 'center',
                                 }}
                             >
-                                <StatusIcon color={Theme.colors.white} size={20} />
+                                <StatusIcon color={Theme.colors.sacredWhite} size={20} />
                             </Box>
                         </HStack>
                     </Box>

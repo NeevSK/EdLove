@@ -52,11 +52,11 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onNavigat
                     }}
                 >
                     <HStack space="xs" alignItems="center">
-                        <Shield size={14} color={activeSubTab === 'sanctuary' ? Theme.colors.white : colors.textSecondary} />
+                        <Shield size={14} color={activeSubTab === 'sanctuary' ? Theme.colors.sacredWhite : colors.textSecondary} />
                         <Text
                             size="sm"
                             bold
-                            color={activeSubTab === 'sanctuary' ? Theme.colors.white : colors.text}
+                            color={activeSubTab === 'sanctuary' ? Theme.colors.sacredWhite : colors.text}
                         >
                             {t('community.groups.sanctuary', 'My Sanctuary')}
                         </Text>
@@ -75,11 +75,11 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onNavigat
                     }}
                 >
                     <HStack space="xs" alignItems="center">
-                        <Compass size={14} color={activeSubTab === 'galaxy' ? Theme.colors.white : colors.textSecondary} />
+                        <Compass size={14} color={activeSubTab === 'galaxy' ? Theme.colors.sacredWhite : colors.textSecondary} />
                         <Text
                             size="sm"
                             bold
-                            color={activeSubTab === 'galaxy' ? Theme.colors.white : colors.text}
+                            color={activeSubTab === 'galaxy' ? Theme.colors.sacredWhite : colors.text}
                         >
                             {t('community.groups.galaxy', 'Infinite Galaxy')}
                         </Text>

@@ -71,7 +71,7 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
     };
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo, justifyContent: 'center', padding: Theme.spacing.xl }}>
+        <Box sx={{ flex: 1, backgroundColor: Theme.colors.obsidian, justifyContent: 'center', padding: Theme.spacing.xl }}>
             <VStack space="xl" alignItems="center">
                 <Text color={Theme.colors.sanctuarySaffron} size="xl" bold>
                     You have been invited
@@ -79,7 +79,7 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
                 <Heading size="2xl" color={Theme.colors.sacredWhite} textAlign="center">
                     Welcome to {schoolName}
                 </Heading>
-                <Box sx={{ backgroundColor: Theme.colors.deepIndigo, padding: Theme.spacing.md, borderRadius: Theme.corners.comfortable }}>
+                <Box sx={{ backgroundColor: Theme.colors.ink, padding: Theme.spacing.md, borderRadius: Theme.corners.comfortable }}>
                     <Text color={Theme.colors.mistGray}>
                         Role: <Text color={Theme.colors.sacredWhite} bold>{role.charAt(0).toUpperCase() + role.slice(1)}</Text>
                     </Text>
@@ -91,7 +91,7 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
                     sx={{ backgroundColor: Theme.colors.sanctuarySaffron, width: '100%' }}
                     onPress={handleJoin}
                 >
-                    <ButtonText color={Theme.colors.voidIndigo} bold>
+                    <ButtonText color={Theme.colors.obsidian} bold>
                         Join the Sanctuary
                     </ButtonText>
                 </Button>

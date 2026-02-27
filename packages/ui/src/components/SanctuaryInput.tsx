@@ -106,7 +106,7 @@ export default function SanctuaryInput({
             >
                 {leftIcon && (
                     <InputSlot sx={{ paddingLeft: '$0' as any, paddingRight: '$3' as any }}>
-                        <InputIcon as={leftIcon} color={Theme.colors.slateGray} />
+                        <InputIcon as={leftIcon} color={Theme.colors.dimGray} />
                     </InputSlot>
                 )}
 

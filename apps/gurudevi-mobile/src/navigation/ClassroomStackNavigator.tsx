@@ -18,7 +18,7 @@ export default function ClassroomStackNavigator() {
             id="ClassroomStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: Theme.colors.voidIndigo },
+                contentStyle: { backgroundColor: Theme.colors.obsidian },
             }}
         >
             <Stack.Screen name="ClassroomList" component={ClassroomScreen} />

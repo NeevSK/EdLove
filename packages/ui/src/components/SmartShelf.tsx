@@ -61,7 +61,7 @@ export function SmartShelf({
         title: {
             fontSize: Theme.typography.fontSize.md,
             fontWeight: '700',
-            color: isDark ? Theme.colors.sacredWhite : Theme.colors.charcoalTruth,
+            color: isDark ? Theme.colors.sacredWhite : Theme.colors.inkTruth,
             letterSpacing: 0.2,
         },
         seeAllRow: {

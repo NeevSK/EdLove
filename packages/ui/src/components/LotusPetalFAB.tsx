@@ -193,7 +193,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                 >
                     <Box
                         sx={{
-                            backgroundColor: Theme.colors.midnightBlue,
+                            backgroundColor: Theme.colors.shroud,
                             borderTopLeftRadius: Theme.corners.generous,
                             borderTopRightRadius: Theme.corners.generous,
                             padding: Theme.spacing.xl,
@@ -205,7 +205,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                         <Box sx={{
                             width: 40,
                             height: 4,
-                            backgroundColor: Theme.colors.pearlGray,
+                            backgroundColor: Theme.colors.starlightGray,
                             borderRadius: 2,
                             alignSelf: 'center',
                             marginBottom: Theme.spacing.lg,
