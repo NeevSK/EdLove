@@ -43,10 +43,10 @@ import {
     SelectPortal,
     SelectBackdrop,
     SelectContent,
-    SelectItem,
-} from '@repo/ui';
+    SelectItem
+} from '../gluestack';
 import { ChevronDown } from 'lucide-react-native';
-import { Theme, typography } from '@repo/ui';
+import { Theme, typography } from '../theme/Theme';;
 
 // ============================================================================
 // TYPES

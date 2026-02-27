@@ -69,14 +69,6 @@ function App() {
     LanguageUtils.init();
   }, []);
 
-  // Sync showWelcome with session status
-  useEffect(() => {
-    if (session && showWelcome) {
-      console.log('🔄 App: Session detected, automatically hiding WelcomeScreen');
-      setShowWelcome(false);
-    }
-  }, [session]);
-
   // Extract user profile fetching logic
   const fetchAndSetUserProfile = async (userId: string) => {
     console.log(`🚀 Profile: Fetching for user ${userId}...`);
@@ -145,6 +137,10 @@ function App() {
         if (error) throw error;
 
         setSession(session);
+        if (session) {
+          console.log('🔄 App: Session detected during init, hiding WelcomeScreen');
+          setShowWelcome(false);
+        }
         if (session?.user) {
           fetchAndSetUserProfile(session.user.id); // Fire and forget background sync
         }
@@ -381,12 +377,13 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
               />
             )}
 
-            {/* Skia Grain Overlay */}
+            {/* Skia Grain Overlay (Temporarily disabled due to Android black screen issue)
             <NoiseOverlay
               opacity={0.03}
               warm={isWarmPhase}
               frequency={phase === 'night' ? 0.45 : 0.65}
             />
+            */}
           </ErrorBoundary>
         </ToastProvider>
       </SafeAreaProvider>

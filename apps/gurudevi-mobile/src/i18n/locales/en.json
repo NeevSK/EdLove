@@ -1,5 +1,6 @@
 {
     "common": {
+        "skip": "Skip",
         "save": "Save",
         "cancel": "Cancel",
         "delete": "Delete",
@@ -53,6 +54,8 @@
         "founder": "Founding Guardian"
     },
     "auth": {
+        "tagline": "Education born from love, built with love.",
+        "signInEmail": "Sign in with Email",
         "login": "Login",
         "signup": "Sign Up",
         "logout": "Logout",
@@ -773,6 +776,11 @@
     "settings": {
         "title": "App Settings",
         "hint": "Open app settings",
+        "sync": {
+            "title": "Sync Data",
+            "description": "Synchronize your offline data with the server.",
+            "syncButton": "Sync Now"
+        },
         "appearance": {
             "title": "Appearance",
             "description": "Personalize how Gurudevi looks and feels"

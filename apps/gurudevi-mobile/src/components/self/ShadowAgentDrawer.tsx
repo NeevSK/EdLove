@@ -11,14 +11,10 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
-import {
-    Box,
-    VStack,
-    Text,
-    Pressable,
-} from '@repo/ui';
+import { Box, VStack, Text, Pressable, hapticLight, Theme, typography } from '@repo/ui';
 import { Modal, StyleSheet, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { X } from 'lucide-react-native';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -28,9 +24,6 @@ import Animated, {
     Easing,
     FadeIn,
 } from 'react-native-reanimated';
-import { X } from 'lucide-react-native';
-import { Theme, typography } from '@repo/ui';
-import { hapticLight } from '@repo/ui';
 
 const THOUGHT_SEEDS = [
     "What is heavy today?",
@@ -98,7 +91,7 @@ export default function ShadowAgentDrawer() {
         drawerContainer: {
             width: '100%',
         },
-    }), []);
+    }), [bottomInset]);
 
     // Orb breathing animation
     const orbScale = useSharedValue(1);
@@ -218,7 +211,7 @@ export default function ShadowAgentDrawer() {
                                     backgroundColor: Theme.colors.starlightGray,
                                     borderRadius: 2,
                                     alignSelf: 'center',
-                                    marginBottom: Theme.spacing.md, // Reduced from lg
+                                    marginBottom: Theme.spacing.md,
                                     opacity: 0.3,
                                 }}
                             />
@@ -395,5 +388,3 @@ export default function ShadowAgentDrawer() {
         </>
     );
 }
-
-

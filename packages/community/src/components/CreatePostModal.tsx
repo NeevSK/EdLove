@@ -19,7 +19,7 @@ import {
     Theme,
 } from '@repo/ui';
 import { Mic, Image as ImageIcon, X, Trash2 } from 'lucide-react-native';
-import { useCommunity } from '@repo/community';
+import { useCommunity } from '../hooks/useCommunity';
 import { uploadToCloudinary } from '@repo/core';
 import { TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';

@@ -15,7 +15,7 @@ import {
     useLotusToast
 } from '@repo/ui';
 import { X, AlertTriangle, ShieldOff, UserX } from 'lucide-react-native';
-import { communityAPI } from '@repo/community';
+import { communityAPI } from '../api/community';
 
 interface ReportPostModalProps {
     isOpen: boolean;

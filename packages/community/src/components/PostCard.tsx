@@ -8,7 +8,7 @@ import { MediaAsset } from '@repo/core';
 
 export type PostType = 'post' | 'text' | 'announcement' | 'poll';
 
-import { CommunityPost } from '@repo/community';
+import { CommunityPost } from '../index';;
 
 interface PostCardProps {
     post: CommunityPost;

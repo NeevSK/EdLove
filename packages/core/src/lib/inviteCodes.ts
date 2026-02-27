@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core';
+import { supabase } from './supabase';
 
 /**
  * Invite Code Validation and Management

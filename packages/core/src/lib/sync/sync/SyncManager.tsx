@@ -1,6 +1,11 @@
 ﻿
 import React, { useEffect } from 'react';
-import { useStore, useMutationQueue, useMutationAuditLog, MUTATION_REGISTRY, classifyError } from '@repo/core';
+import { useStore } from '../../../store/useStore';
+import { useMutationQueue } from '../useMutationQueue';
+import { useMutationAuditLog } from '../MutationAuditLog';
+import { MUTATION_REGISTRY } from '../registry';
+import { classifyError } from '../errorClassifier';
+
 
 /**
  * SyncManager

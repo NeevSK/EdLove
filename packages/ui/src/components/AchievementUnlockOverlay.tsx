@@ -9,7 +9,8 @@ import Animated, {
     runOnJS
 } from 'react-native-reanimated';
 import { StyleSheet, Dimensions } from 'react-native';
-import { Box, VStack, Text, Theme } from '@repo/ui';
+import { Box, VStack, Text } from '../gluestack';
+import { Theme } from '../theme/Theme';;
 import { Trophy } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');

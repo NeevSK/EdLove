@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { Box, Text, VStack, Theme, useThemedColors } from '@repo/ui';
+import { Box, Text, VStack } from '../gluestack';
+import { Theme } from '../theme/Theme';
+import { useThemedColors } from '../hooks/useThemedColors';;
 import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
 
 type ToastType = 'success' | 'error' | 'info' | 'sanctuary';

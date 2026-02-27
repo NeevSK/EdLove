@@ -20,8 +20,8 @@ import Animated, {
     withTiming,
     Easing,
 } from 'react-native-reanimated';
-import { Theme } from '@repo/ui';
-import { useAccessibility } from '@repo/ui';
+import { Theme } from '../theme/Theme';;
+import { useAccessibility } from '../hooks/useAccessibility';;
 import { useTranslation } from 'react-i18next';
 
 interface BreathingLoaderProps {
