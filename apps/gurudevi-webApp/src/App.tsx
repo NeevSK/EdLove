@@ -1,5 +1,9 @@
+import React, { useState } from 'react';
+import { GraduationCap } from 'lucide-react';
 import GlobalHeader from './components/layout/GlobalHeader';
 import BottomTabs from './components/layout/BottomTabs';
+import PulseDashboard from './screens/self/PulseDashboard';
+import TeacherSelfView from './screens/self/TeacherSelfView';
 
 function App() {
   const [activeTab, setActiveTab] = useState('self');
