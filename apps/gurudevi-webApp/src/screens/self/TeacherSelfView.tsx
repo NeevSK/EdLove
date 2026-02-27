@@ -10,6 +10,7 @@ import TomorrowPrep from '../../components/self/TomorrowPrep';
 import EnergyForecast from '../../components/self/EnergyForecast';
 import WindDown from '../../components/self/WindDown';
 import VentingSpace from '../../components/self/VentingSpace';
+import SanctuaryIntroduction from '../../components/self/SanctuaryIntroduction';
 import { Flower, Flame, Repeat, Sparkles, Heart, Lightbulb, Calendar, Battery, Moon, MessageCircle } from 'lucide-react';
 
 const CORE_FEATURES = [
@@ -67,6 +68,7 @@ const TeacherSelfView: React.FC = () => {
 
     return (
         <div className="flex-1 flex flex-col space-y-6 px-4 pt-6 pb-24 max-w-2xl mx-auto w-full">
+            <SanctuaryIntroduction />
             <div className="flex flex-col space-y-4">
                 {/* Feature selection */}
                 <FeatureCarousel
