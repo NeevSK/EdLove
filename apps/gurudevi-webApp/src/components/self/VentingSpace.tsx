@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MessageCircle, Send, Ghost } from 'lucide-react';
+import SectionHeader from '../common/SectionHeader';
 
 const VentingSpace: React.FC = () => {
     const [message, setMessage] = useState('');
@@ -16,13 +17,12 @@ const VentingSpace: React.FC = () => {
 
     return (
         <div className="flex flex-col space-y-6 animate-in fade-in duration-700">
-            <div className="text-center space-y-2">
-                <h3 className="text-xl font-bold text-white flex items-center justify-center space-x-2">
-                    <MessageCircle className="w-6 h-6 text-blue-400" />
-                    <span>Venting Space</span>
-                </h3>
-                <p className="text-gray-400 text-sm">Speak your truth. This space is anonymous and ephemeral.</p>
-            </div>
+            <SectionHeader
+                title="Venting Space"
+                subtitle="Speak your truth. This space is anonymous and ephemeral."
+                icon={MessageCircle}
+                iconColor="text-blue-400"
+            />
 
             <div className="relative group">
                 <textarea
