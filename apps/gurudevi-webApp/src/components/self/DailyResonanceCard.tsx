@@ -17,7 +17,10 @@ const DailyResonanceCard: React.FC<DailyResonanceCardProps> = ({
     type
 }) => {
     return (
-        <div className="bg-[#16213e]/60 backdrop-blur-md rounded-2xl p-6 border border-gray-700/50 shadow-xl animate-in fade-in slide-in-from-bottom-6 duration-1000">
+        <div
+            data-type={type}
+            className="bg-[#16213e]/60 backdrop-blur-md rounded-2xl p-6 border border-gray-700/50 shadow-xl animate-in fade-in slide-in-from-bottom-6 duration-1000"
+        >
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-orange-400 font-bold uppercase tracking-wider text-xs">
                     {title}
