@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Flame, Send, Trash2 } from 'lucide-react';
+import { Flame, Trash2 } from 'lucide-react';
 
 const FireJournal: React.FC = () => {
     const [note, setNote] = useState('');
