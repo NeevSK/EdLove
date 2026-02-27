@@ -1,78 +1,65 @@
 import React, { useState } from 'react';
-import { Flower } from 'lucide-react';
+import { Flower, Sun, Shield, Wind, Flame, Cloud } from 'lucide-react';
+import SectionHeader from '../common/SectionHeader';
 
-const MOODS = [
-    { id: 'joy', color: 'bg-yellow-400', label: 'Joyful' },
-    { id: 'peace', color: 'bg-green-400', label: 'Peaceful' },
-    { id: 'energy', color: 'bg-orange-400', label: 'Energetic' },
-    { id: 'calm', color: 'bg-blue-400', label: 'Calm' },
-    { id: 'tired', color: 'bg-purple-400', label: 'Tired' },
-    { id: 'stressed', color: 'bg-red-400', label: 'Stressed' },
+const PETALS = [
+    { id: 'joy', color: 'bg-yellow-400', label: 'Joy', icon: Sun },
+    { id: 'peace', color: 'bg-green-400', label: 'Peace', icon: Shield },
+    { id: 'anxiety', color: 'bg-blue-400', label: 'Anxiety', icon: Wind },
+    { id: 'anger', color: 'bg-red-400', label: 'Anger', icon: Flame },
+    { id: 'sadness', color: 'bg-purple-400', label: 'Sadness', icon: Cloud },
 ];
 
-interface MoodLotusProps {
-    userId?: string;
-}
-
-const MoodLotus: React.FC<MoodLotusProps> = ({ userId }) => {
-    const [selectedMood, setSelectedMood] = useState<string | null>(null);
-
-    const handleMoodSelect = (moodId: string) => {
-        setSelectedMood(moodId);
-        // In a real app, we would save this to Supabase here
-        console.log(`Mood selected for user ${userId}: ${moodId}`);
-    };
+const MoodLotus: React.FC = () => {
+    const [selected, setSelected] = useState<string | null>(null);
 
     return (
-        <div className="flex flex-col items-center space-y-8 animate-in fade-in zoom-in duration-700">
-            <div className="text-center space-y-2">
-                <h3 className="text-xl font-bold text-white">How is your spirit today?</h3>
-                <p className="text-gray-400 text-sm">Select the petal that resonates with you.</p>
-            </div>
+        <div className="flex flex-col items-center space-y-8 animate-in fade-in duration-700">
+            <SectionHeader
+                title="Mood Lotus"
+                subtitle="Check in with your inner weather. How are you feeling?"
+                icon={Flower}
+            />
 
-            <div className="relative w-64 h-64 flex items-center justify-center">
-                {/* Central Core */}
-                <div className="absolute z-10 w-16 h-16 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 flex items-center justify-center shadow-2xl">
-                    <Flower className={`w-8 h-8 ${selectedMood ? 'text-orange-400' : 'text-gray-500'} transition-colors duration-500`} />
+            <div className="relative w-64 h-64 mt-4">
+                {/* Mood Lotus Visualization */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <div className={`w-24 h-24 rounded-full transition-all duration-1000 blur-xl ${selected ? PETALS.find(p => p.id === selected)?.color : 'bg-orange-400/20'}`} />
                 </div>
 
-                {/* Petals */}
-                {MOODS.map((mood, index) => {
-                    const angle = (index * 360) / MOODS.length;
-                    const isSelected = selectedMood === mood.id;
+                {PETALS.map((petal, index) => {
+                    const angle = (index * 360) / PETALS.length;
+                    const isActive = selected === petal.id;
 
                     return (
                         <button
-                            key={mood.id}
-                            onClick={() => handleMoodSelect(mood.id)}
-                            className="absolute group"
+                            key={petal.id}
+                            onClick={() => setSelected(petal.id)}
+                            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-24 rounded-[40%_40%_50%_50%] transition-all duration-500 hover:scale-110 shadow-lg ${isActive ? `${petal.color} scale-110 -translate-y-6 z-10` : 'bg-gray-800/40 border border-gray-700/50'
+                                }`}
                             style={{
-                                transform: `rotate(${angle}deg) translateY(-80px)`,
-                                transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+                                transform: `translate(-50%, -50%) rotate(${angle}deg) translate(0, ${isActive ? '-40px' : '-50px'}) rotate(${-angle}deg)`,
                             }}
                         >
-                            <div
-                                className={`w-12 h-20 rounded-full transition-all duration-500 border-2 ${isSelected
-                                        ? `${mood.color} border-white scale-125 shadow-[0_0_20px_rgba(255,255,255,0.4)]`
-                                        : `bg-white/5 border-white/10 group-hover:bg-white/10 group-hover:scale-110`
-                                    }`}
-                                style={{ transform: `rotate(${-angle}deg)` }}
-                            >
-                                <div className={`w-full h-full flex items-center justify-center ${isSelected ? 'text-white' : 'text-transparent group-hover:text-gray-400'} text-[8px] font-bold uppercase`}>
-                                    {mood.label.substring(0, 3)}
-                                </div>
-                            </div>
+                            <petal.icon className={`w-6 h-6 mx-auto ${isActive ? 'text-white' : 'text-gray-500'}`} />
                         </button>
                     );
                 })}
+
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="w-12 h-12 bg-[#1a1a2e] rounded-full border border-gray-700/50 flex items-center justify-center shadow-inner">
+                        <Flower className={`w-6 h-6 ${selected ? PETALS.find(p => p.id === selected)?.color.replace('bg-', 'text-') : 'text-gray-600'}`} />
+                    </div>
+                </div>
             </div>
 
-            {selectedMood && (
-                <div className="text-center animate-in fade-in slide-in-from-top-4">
-                    <p className="text-orange-400 font-bold text-lg capitalize">{selectedMood}</p>
-                    <p className="text-gray-500 text-xs">Selection recorded in your sanctuary.</p>
-                </div>
-            )}
+            <div className="text-center min-h-[40px]">
+                {selected && (
+                    <p className="text-white font-black uppercase tracking-widest animate-in slide-in-from-bottom duration-500">
+                        {selected} Resonance
+                    </p>
+                )}
+            </div>
         </div>
     );
 };
