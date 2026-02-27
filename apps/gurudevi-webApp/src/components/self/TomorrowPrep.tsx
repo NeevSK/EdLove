@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Calendar, Plus, CheckCircle, Circle } from 'lucide-react';
+import SectionHeader from '../common/SectionHeader';
 
 interface PrepItem {
     id: string;
@@ -23,13 +24,12 @@ const TomorrowPrep: React.FC = () => {
 
     return (
         <div className="flex flex-col space-y-6 animate-in fade-in duration-700">
-            <div className="text-center space-y-2">
-                <h3 className="text-xl font-bold text-white flex items-center justify-center space-x-2">
-                    <Calendar className="w-6 h-6 text-blue-400" />
-                    <span>Tomorrow's Prep</span>
-                </h3>
-                <p className="text-gray-400 text-sm">Organize your thoughts for a smoother tomorrow.</p>
-            </div>
+            <SectionHeader
+                title="Tomorrow's Prep"
+                subtitle="Organize your thoughts for a smoother tomorrow."
+                icon={Calendar}
+                iconColor="text-blue-400"
+            />
 
             <div className="flex space-x-2">
                 <input
