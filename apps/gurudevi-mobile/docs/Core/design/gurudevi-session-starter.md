@@ -50,7 +50,7 @@ react-native-reanimated 4 + react-native-worklets — for animations.
 Monorepo structure:
   apps/gurudevi-mobile — thin shell, navigation, screen composition
   apps/gurudevi-web, apps/neevsk-web, apps/foundation-web — separate web apps
-  packages/ui — shared UI components (NO Skia here — mobile only)
+  packages/ui — shared UI components (pure RN + dedicated mobile-only native boundary)
   packages/self, classroom, community, library, profile — feature modules
   packages/core — shared utilities (native deps as peerDependencies)
   packages/scanner-kit — OCR/QR/ML (native, mobile only)
@@ -144,7 +144,7 @@ Current known issue: static glass tokens (glassBg, glassBorder, glassHighlight) 
 ### For Component Sessions
 ```
 Additional context: Component library lives in packages/ui/src/components/
-Skia-enhanced components live in apps/gurudevi-mobile/src/components/skia/
+Skia-enhanced components live in packages/ui/src/components-native/
 When wrapping existing components with Skia: use wrapper pattern (LivingCard, TemporalGlass) — never rewrite working components.
 Reanimated animation logic in SanctuaryCard is intentional — do not remove or replace.
 ```
