@@ -46,7 +46,7 @@ interface SleepTrackerProps {
 const SLEEP_QUALITY = [
     { value: 1, label: 'Restless', emoji: '😰', color: Theme.colors.emberRed, description: 'Barely slept' },
     { value: 2, label: 'Poor', emoji: '😔', color: Theme.colors.amberGlow, description: 'Tossed and turned' },
-    { value: 3, label: 'Okay', emoji: '😐', color: Theme.colors.stoneGray, description: 'Got some rest' },
+    { value: 3, label: 'Okay', emoji: '😐', color: Theme.colors.mistGray, description: 'Got some rest' },
     { value: 4, label: 'Good', emoji: '😊', color: Theme.colors.sageGreen, description: 'Slept well' },
     { value: 5, label: 'Excellent', emoji: '😌', color: Theme.colors.sanctuarySaffron, description: 'Deeply rested' },
 ];
@@ -188,7 +188,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
                     alignItems: 'center',
                     justifyContent: 'center',
                     padding: Theme.spacing.xl,
-                    backgroundColor: Theme.colors.deepIndigo,
+                    backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                     minHeight: 200,
                     position: 'relative',
@@ -205,7 +205,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
                         },
                     ]}
                 >
-                    <Stars color={Theme.colors.twilightPurple} size={24} />
+                    <Stars color={Theme.colors.twilightBlue} size={24} />
                 </Animated.View>
 
                 {/* Moon/Sun based on quality */}
@@ -250,7 +250,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
                             size="lg"
                             orientation="horizontal"
                         >
-                            <SliderTrack sx={{ height: 12, borderRadius: 6, backgroundColor: Theme.colors.midnightBlue }}>
+                            <SliderTrack sx={{ height: 12, borderRadius: 6, backgroundColor: Theme.colors.ink }}>
                                 <SliderFilledTrack
                                     sx={{
                                         backgroundColor: currentQuality.color,
@@ -303,7 +303,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
                 <Box
                     sx={{
                         padding: Theme.spacing.md,
-                        backgroundColor: Theme.colors.midnightBlue,
+                        backgroundColor: Theme.colors.ink,
                         borderRadius: Theme.corners.comfortable,
                         alignItems: 'center',
                     }}
@@ -321,7 +321,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
             <Box
                 sx={{
                     padding: Theme.spacing.md,
-                    backgroundColor: Theme.colors.deepIndigo,
+                    backgroundColor: Theme.colors.ink,
                     borderRadius: Theme.corners.comfortable,
                 }}
             >

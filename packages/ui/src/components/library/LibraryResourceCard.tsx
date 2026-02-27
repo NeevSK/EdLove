@@ -25,7 +25,7 @@ const TYPE_CONFIG: Record<ResourceType, { icon: any, color: keyof typeof Theme.c
     video: { icon: Video, color: 'skyBlue', label: 'Video' },
     link: { icon: Link, color: 'sanctuarySaffron', label: 'Link' },
     text: { icon: FileText, color: 'sageGreen', label: 'Article' },
-    doc: { icon: FileText, color: 'deepIndigo', label: 'Document' },
+    doc: { icon: FileText, color: 'sanctuarySaffron', label: 'Document' },
     note: { icon: FileText, color: 'sageGreen', label: 'Note' },
 };
 

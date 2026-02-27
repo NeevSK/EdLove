@@ -11,7 +11,7 @@ import {
     SanctuaryCard,
 } from '@repo/ui';
 import { Heart, Target, Star, ShieldCheck } from 'lucide-react-native';
-import { SanctuaryManifesto } from '@repo/community';
+import { SanctuaryManifesto } from '../index';;
 import Animated, { LinearTransition } from 'react-native-reanimated';
 
 interface ManifestoCardProps extends SanctuaryManifesto {

@@ -51,7 +51,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                 <Box
                     sx={{
                         padding: Theme.spacing.md,
-                        backgroundColor: isActive ? 'rgba(230, 126, 34, 0.1)' : Theme.colors.deepIndigo,
+                        backgroundColor: isActive ? 'rgba(230, 126, 34, 0.1)' : Theme.colors.ink,
                         borderRadius: Theme.corners.comfortable,
                         borderWidth: 1,
                         borderColor: isActive ? Theme.colors.sanctuarySaffron : 'transparent',
@@ -143,7 +143,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                         </VStack>
                     </HStack>
 
-                    <Divider bg={Theme.colors.deepIndigo} />
+                    <Divider bg={Theme.colors.ink} />
 
                     <VStack p={Theme.spacing.xs}>
                         {renderLanguageItem('si', 'සිංහල')}
@@ -179,7 +179,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                         </HStack>
                     </Pressable>
 
-                    <Divider bg={Theme.colors.deepIndigo} ml={56} />
+                    <Divider bg={Theme.colors.ink} ml={56} />
 
                     {/* Data Saver (Placeholder) */}
                     <Pressable onPress={hapticLight}>
@@ -194,7 +194,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                                 </VStack>
                             </HStack>
                             <Box style={styles.comingSoonBadge}>
-                                <Text color={Theme.colors.midnightBlue} size="2xs" bold>SOON</Text>
+                                <Text color={Theme.colors.ink} size="2xs" bold>SOON</Text>
                             </Box>
                         </HStack>
                     </Pressable>
@@ -211,7 +211,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                 <Box sx={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' }}>
                     <Box
                         sx={{
-                            backgroundColor: Theme.colors.voidIndigo,
+                            backgroundColor: Theme.colors.ink,
                             borderTopLeftRadius: Theme.corners.generous,
                             borderTopRightRadius: Theme.corners.generous,
                             padding: Theme.spacing.xl,
@@ -246,7 +246,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
 
 const styles = StyleSheet.create({
     sectionContainer: {
-        backgroundColor: Theme.colors.midnightBlue,
+        backgroundColor: Theme.colors.ink,
         borderRadius: Theme.corners.generous,
         overflow: 'hidden',
         borderWidth: 1,
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     comingSoonBadge: {
-        backgroundColor: Theme.colors.stoneGray,
+        backgroundColor: Theme.colors.mistGray,
         paddingHorizontal: 8,
         paddingVertical: 2,
         borderRadius: 6,

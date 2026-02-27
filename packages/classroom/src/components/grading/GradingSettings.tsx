@@ -55,7 +55,7 @@ export default function GradingSettings({
         <Box
             sx={{
                 flex: 1,
-                backgroundColor: Theme.colors.voidIndigo,
+                backgroundColor: Theme.colors.ink,
                 padding: Theme.spacing.lg,
                 borderTopLeftRadius: Theme.corners.generous,
                 borderTopRightRadius: Theme.corners.generous,
@@ -91,7 +91,7 @@ export default function GradingSettings({
                                 space="md"
                                 sx={{
                                     padding: Theme.spacing.md,
-                                    backgroundColor: Theme.colors.deepIndigo,
+                                    backgroundColor: Theme.colors.ink,
                                     borderRadius: Theme.corners.comfortable,
                                 }}
                             >
@@ -123,7 +123,7 @@ export default function GradingSettings({
                                 space="md"
                                 sx={{
                                     padding: Theme.spacing.md,
-                                    backgroundColor: Theme.colors.deepIndigo,
+                                    backgroundColor: Theme.colors.ink,
                                     borderRadius: Theme.corners.comfortable,
                                 }}
                             >
@@ -155,7 +155,7 @@ export default function GradingSettings({
                                 space="md"
                                 sx={{
                                     padding: Theme.spacing.md,
-                                    backgroundColor: Theme.colors.deepIndigo,
+                                    backgroundColor: Theme.colors.ink,
                                     borderRadius: Theme.corners.comfortable,
                                 }}
                             >
@@ -190,7 +190,7 @@ export default function GradingSettings({
                     space="md"
                     sx={{
                         padding: Theme.spacing.md,
-                        backgroundColor: Theme.colors.deepIndigo,
+                        backgroundColor: Theme.colors.ink,
                         borderRadius: Theme.corners.comfortable,
                         justifyContent: 'space-between',
                         alignItems: 'center',

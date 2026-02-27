@@ -11,7 +11,10 @@
 import { supabase, useUserRole, hasRole, ADMIN_ROLES, MANAGEMENT_ROLES, useRoleFeatures } from '@repo/core';
 import React, { useEffect, useState } from 'react';
 import { Box, VStack, Theme, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, hapticLight } from '@repo/ui';
-import { PrincipalSchoolView, SectionHeadView, GradeHeadView, FounderSchoolView/*, AdminSchoolView*/ } from './';
+import PrincipalSchoolView from './PrincipalSchoolView';
+import SectionHeadView from './SectionHeadView';
+import GradeHeadView from './GradeHeadView';
+import FounderSchoolView from './FounderSchoolView';
 import { ClassroomList, TeacherDashboard, StudentDashboard, NoSchoolOnboarding } from '../components';
 import { useClassroomRoleData } from '../hooks';
 import { useTranslation } from 'react-i18next';

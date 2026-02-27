@@ -1,5 +1,8 @@
 import React from 'react';
-import { Theme, VStack, Text, Center, Box, SanctuaryButton, useThemedColors } from '@repo/ui';
+import { VStack, Text, Center, Box } from '../gluestack';
+import { Theme } from '../theme/Theme';
+import { useThemedColors } from '../hooks/useThemedColors';
+import { SanctuaryButton } from './SanctuaryButton';;
 import { LucideIcon } from 'lucide-react-native';
 
 interface EmptyStateProps {

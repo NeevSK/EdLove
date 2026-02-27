@@ -24,7 +24,7 @@ export default function DeleteAccountModal({ isOpen, onClose, onDelete, isLoadin
         >
             <ModalBackdrop />
             <ModalContent sx={{
-                backgroundColor: Theme.colors.deepIndigo,
+                backgroundColor: Theme.colors.ink,
                 borderColor: Theme.colors.emberRed,
                 borderWidth: 1
             }}>
@@ -39,7 +39,7 @@ export default function DeleteAccountModal({ isOpen, onClose, onDelete, isLoadin
                 </ModalHeader>
                 <ModalBody>
                     <VStack {...({ space: "md", py: "$2" } as any)}>
-                        <Text {...({ color: Theme.colors.pearlGray, size: "md" } as any)}>
+                        <Text {...({ color: Theme.colors.starlightGray, size: "md" } as any)}>
                             This action is <Text {...({ bold: true, color: Theme.colors.sacredWhite } as any)}>irreversible</Text>. Your personal profile, settings, and private data will be permanently removed from the Gurudevi sanctuary.
                         </Text>
                         {/* Data scope clarification — task 2.6.1 */}

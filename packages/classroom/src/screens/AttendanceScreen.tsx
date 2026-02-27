@@ -87,29 +87,29 @@ export default function AttendanceScreen() {
 
     if (isLoading) {
         return (
-            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.voidIndigo }}>
+            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.ink }}>
                 <Spinner color={Theme.colors.sanctuarySaffron} />
-                <Text color={Theme.colors.pearlGray} sx={{ marginTop: 16 }}>Loading class list...</Text>
+                <Text color={Theme.colors.starlightGray} sx={{ marginTop: 16 }}>Loading class list...</Text>
             </Box>
         );
     }
 
     if (error) {
         return (
-            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.voidIndigo }}>
+            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.ink }}>
                 <Text color={Theme.colors.emberRed}>{error}</Text>
             </Box>
         );
     }
 
     return (
-        <VStack sx={{ flex: 1, backgroundColor: Theme.colors.voidIndigo }}>
+        <VStack sx={{ flex: 1, backgroundColor: Theme.colors.ink }}>
             <AttendanceSheet
                 classroomId={classroomId}
                 initialStudents={students}
                 onAttendanceChange={handleAttendanceChange}
             />
-            <Box sx={{ padding: 16, backgroundColor: Theme.colors.voidIndigo }}>
+            <Box sx={{ padding: 16, backgroundColor: Theme.colors.ink }}>
                 <Button
                     onPress={handleSave}
                     disabled={saveMutation.isLoading}

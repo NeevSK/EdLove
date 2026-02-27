@@ -70,22 +70,22 @@ export default function GradeEntryForm({
         <VStack space="lg" sx={{ padding: Theme.spacing.md }}>
             {/* Student Name Header */}
             <VStack space="xs">
-                <Text size="sm" color={Theme.colors.slateGray}>
+                <Text size="sm" color={Theme.colors.starlightGray}>
                     {t('grades.student')}
                 </Text>
-                <Heading size="lg" color={Theme.colors.charcoalTruth}>
+                <Heading size="lg" color={Theme.colors.inkTruth}>
                     {studentName}
                 </Heading>
             </VStack>
 
             {/* Marks Input */}
             <VStack space="xs">
-                <Text size="sm" color={Theme.colors.slateGray}>
+                <Text size="sm" color={Theme.colors.starlightGray}>
                     {t('grades.marks')} *
                 </Text>
                 <Input
                     sx={{
-                        borderColor: error ? Theme.colors.emberRed : Theme.colors.sandStone,
+                        borderColor: error ? Theme.colors.emberRed : Theme.colors.linen,
                         borderRadius: Theme.corners.comfortable,
                     }}
                 >
@@ -97,7 +97,7 @@ export default function GradeEntryForm({
                             setMarks(val);
                             setError('');
                         }}
-                        sx={{ color: Theme.colors.charcoalTruth }}
+                        sx={{ color: Theme.colors.inkTruth }}
                     />
                 </Input>
                 {error && (
@@ -112,15 +112,15 @@ export default function GradeEntryForm({
                 <Box
                     sx={{
                         padding: Theme.spacing.md,
-                        backgroundColor: Theme.colors.creamSilence,
+                        backgroundColor: Theme.colors.silk,
                         borderRadius: Theme.corners.comfortable,
                         borderWidth: 1,
-                        borderColor: Theme.colors.sandStone,
+                        borderColor: Theme.colors.linen,
                     }}
                 >
                     <HStack space="md" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
                         <VStack>
-                            <Text size="xs" color={Theme.colors.slateGray}>
+                            <Text size="xs" color={Theme.colors.starlightGray}>
                                 {t('grades.grade')}
                             </Text>
                             <Text size="2xl" sx={{ fontWeight: '700', color: Theme.colors.sanctuarySaffron }}>
@@ -128,7 +128,7 @@ export default function GradeEntryForm({
                             </Text>
                         </VStack>
                         <VStack sx={{ alignItems: 'flex-end' }}>
-                            <Text size="xs" color={Theme.colors.slateGray}>
+                            <Text size="xs" color={Theme.colors.starlightGray}>
                                 {t('grades.gpa')}
                             </Text>
                             <Text size="2xl" sx={{ fontWeight: '700', color: Theme.colors.sanctuarySaffron }}>
@@ -141,12 +141,12 @@ export default function GradeEntryForm({
 
             {/* Feedback Textarea */}
             <VStack space="xs">
-                <Text size="sm" color={Theme.colors.slateGray}>
+                <Text size="sm" color={Theme.colors.starlightGray}>
                     {t('grades.feedback')} ({t('grades.optional')})
                 </Text>
                 <Textarea
                     sx={{
-                        borderColor: Theme.colors.sandStone,
+                        borderColor: Theme.colors.linen,
                         borderRadius: Theme.corners.comfortable,
                         minHeight: 100,
                     }}
@@ -155,7 +155,7 @@ export default function GradeEntryForm({
                         placeholder={t('grades.feedbackPlaceholder')}
                         value={feedback}
                         onChangeText={setFeedback}
-                        sx={{ color: Theme.colors.charcoalTruth }}
+                        sx={{ color: Theme.colors.inkTruth }}
                     />
                 </Textarea>
             </VStack>
@@ -167,12 +167,12 @@ export default function GradeEntryForm({
                         variant="outline"
                         sx={{
                             flex: 1,
-                            borderColor: Theme.colors.sandStone,
+                            borderColor: Theme.colors.linen,
                             borderRadius: Theme.corners.comfortable,
                         }}
                         onPress={onCancel}
                     >
-                        <ButtonText sx={{ color: Theme.colors.slateGray }}>
+                        <ButtonText sx={{ color: Theme.colors.starlightGray }}>
                             {t('common.cancel')}
                         </ButtonText>
                     </Button>

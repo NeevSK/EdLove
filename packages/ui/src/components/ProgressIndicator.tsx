@@ -1,7 +1,7 @@
 import React from 'react';
-import { Text, HStack, VStack, Box } from '@repo/ui';
-import { Theme } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
+import { Text, HStack, VStack, Box } from '../gluestack';;
+import { Theme } from '../theme/Theme';;
+import { useThemedColors } from '../hooks/useThemedColors';;
 
 interface ProgressIndicatorProps {
     currentStep: number;

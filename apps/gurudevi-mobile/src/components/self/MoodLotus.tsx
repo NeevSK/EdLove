@@ -57,9 +57,9 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
     const colors = useThemedColors();
 
     const MOOD_STATES = useMemo(() => [
-        { value: 1, label: t('self.moodHeavy'), color: Theme.colors.dimGray, glow: 0, image: LOTUS_BUD, scale: 0.8 },
-        { value: 2, label: t('self.moodChallenging'), color: Theme.colors.slateGray, glow: 0.1, image: LOTUS_BUD, scale: 0.9 },
-        { value: 3, label: t('self.moodOkay'), color: Theme.colors.stoneGray, glow: 0.2, image: LOTUS_BLOOM, scale: 0.8 },
+        { value: 1, label: t('self.moodHeavy'), color: Theme.colors.shroud, glow: 0, image: LOTUS_BUD, scale: 0.8 },
+        { value: 2, label: t('self.moodChallenging'), color: Theme.colors.starlightGray, glow: 0.1, image: LOTUS_BUD, scale: 0.9 },
+        { value: 3, label: t('self.moodOkay'), color: Theme.colors.mistGray, glow: 0.2, image: LOTUS_BLOOM, scale: 0.8 },
         { value: 4, label: t('self.moodGood'), color: colors.success, glow: 0.4, image: LOTUS_BLOOM, scale: 0.9 },
         { value: 5, label: t('self.moodFlourishing'), color: colors.warning, glow: 0.6, image: LOTUS_BLOOM, scale: 1.0 },
     ], [t, colors]);

@@ -20,6 +20,8 @@ import { fontAssets } from './src/constants/Fonts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { EnvironmentProvider } from '@repo/ui';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useTheme } from '@repo/ui';
+import { NoiseOverlay } from '@repo/ui/native';
 
 // Import screens and navigation
 import WelcomeScreen from './src/screens/WelcomeScreen';
@@ -66,14 +68,6 @@ function App() {
   useEffect(() => {
     LanguageUtils.init();
   }, []);
-
-  // Sync showWelcome with session status
-  useEffect(() => {
-    if (session && showWelcome) {
-      console.log('🔄 App: Session detected, automatically hiding WelcomeScreen');
-      setShowWelcome(false);
-    }
-  }, [session]);
 
   // Extract user profile fetching logic
   const fetchAndSetUserProfile = async (userId: string) => {
@@ -143,6 +137,10 @@ function App() {
         if (error) throw error;
 
         setSession(session);
+        if (session) {
+          console.log('🔄 App: Session detected during init, hiding WelcomeScreen');
+          setShowWelcome(false);
+        }
         if (session?.user) {
           fetchAndSetUserProfile(session.user.id); // Fire and forget background sync
         }
@@ -252,114 +250,142 @@ function App() {
   console.log('App: Loading finished, rendering main tree');
 
   return (
+    <QueryClientProvider client={queryClient}>
+      <EnvironmentProvider>
+        <GluestackUIProvider config={config}>
+          <AppContent
+            currentTab={currentTab}
+            setCurrentTab={setCurrentTab}
+            session={session}
+            needsWelcome={needsWelcome}
+            onboardingCompleted={onboardingCompleted}
+            showWelcome={showWelcome}
+            setShowWelcome={setShowWelcome}
+            toast={toast}
+            hideToast={hideToast}
+          />
+        </GluestackUIProvider>
+      </EnvironmentProvider>
+    </QueryClientProvider>
+  );
+}
+
+// Main Content Component to access Theme/Context
+function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardingCompleted, showWelcome, setShowWelcome, toast, hideToast }: any) {
+  const { phase } = useTheme();
+  const isWarmPhase = ['morning', 'afternoon', 'evening'].includes(phase);
+
+  return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <QueryClientProvider client={queryClient}>
-          <EnvironmentProvider>
-            <GluestackUIProvider config={config}>
-              <ToastProvider>
-                <ErrorBoundary name="App Root">
-                  <NavigationContainer ref={navigationRef}>
-                    <PostHogProvider
-                      apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
-                      options={{
-                        host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
-                      }}
-                      autocapture={false}
-                    >
-                      <RootStack.Navigator screenOptions={{ headerShown: false }}>
-                        {(!session || needsWelcome) ? (
-                          <RootStack.Screen name="Welcome">
-                            {() => (
-                              <ErrorBoundary name="Welcome Screen">
-                                <WelcomeScreen
-                                  initialShowAuth={onboardingCompleted}
-                                  onNext={() => {
-                                    console.log('➡️ App: onNext called from WelcomeScreen');
-                                    setShowWelcome(false);
-                                  }}
-                                />
-                              </ErrorBoundary>
-                            )}
-                          </RootStack.Screen>
-                        ) : !onboardingCompleted ? (
-                          <RootStack.Screen name="Onboarding">
-                            {() => (
-                              <ErrorBoundary name="Onboarding Screen">
-                                <OnboardingScreen
-                                  isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
-                                  onComplete={(name: string, role: any, wantsAccount?: boolean) => {
-                                    console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
-                                    const store = useStore.getState();
-                                    if (name) store.setTeacherName(name);
-                                    if (role) store.setUserRole(role);
-                                    store.setOnboardingCompleted(true);
-                                    store.setJustFinishedOnboarding(true);
-                                  }}
-                                />
-                              </ErrorBoundary>
-                            )}
-                          </RootStack.Screen>
-                        ) : (
-                          <>
-                            <RootStack.Screen name="Main">
-                              {() => (
-                                <ErrorBoundary name="Main Tabs">
-                                  <TabNavigator onTabChange={(tab: any) => setCurrentTab(tab)} />
-                                </ErrorBoundary>
-                              )}
-                            </RootStack.Screen>
-                            <RootStack.Screen
-                              name="AIAssistant"
-                              component={AIAssistantScreen}
-                              options={{
-                                presentation: 'modal',
-                                animation: 'slide_from_bottom'
-                              }}
-                            />
-                            <RootStack.Screen
-                              name="Auth"
-                              component={AuthScreen}
-                              options={{ presentation: 'modal' }}
-                            />
-                            <RootStack.Screen
-                              name="QRHandler"
-                              component={QRHandlerScreen}
-                              options={{
-                                presentation: 'modal',
-                                animation: 'fade_from_bottom',
-                              }}
-                            />
-                            <RootStack.Screen
-                              name="ThuthimalClaim"
-                              component={ThuthimalClaimScreen}
-                              options={{
-                                presentation: 'modal',
-                                animation: 'fade_from_bottom',
-                              }}
-                            />
-                          </>
+        <ToastProvider>
+          <ErrorBoundary name="App Root">
+            <NavigationContainer ref={navigationRef}>
+              <PostHogProvider
+                apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
+                options={{
+                  host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
+                }}
+                autocapture={false}
+              >
+                <RootStack.Navigator screenOptions={{ headerShown: false }}>
+                  {(!session || needsWelcome) ? (
+                    <RootStack.Screen name="Welcome">
+                      {() => (
+                        <ErrorBoundary name="Welcome Screen">
+                          <WelcomeScreen
+                            initialShowAuth={onboardingCompleted}
+                            onNext={() => {
+                              console.log('➡️ App: onNext called from WelcomeScreen');
+                              setShowWelcome(false);
+                            }}
+                          />
+                        </ErrorBoundary>
+                      )}
+                    </RootStack.Screen>
+                  ) : !onboardingCompleted ? (
+                    <RootStack.Screen name="Onboarding">
+                      {() => (
+                        <ErrorBoundary name="Onboarding Screen">
+                          <OnboardingScreen
+                            isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
+                            onComplete={(name: string, role: any, wantsAccount?: boolean) => {
+                              console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
+                              const store = useStore.getState();
+                              if (name) store.setTeacherName(name);
+                              if (role) store.setUserRole(role);
+                              store.setOnboardingCompleted(true);
+                              store.setJustFinishedOnboarding(true);
+                            }}
+                          />
+                        </ErrorBoundary>
+                      )}
+                    </RootStack.Screen>
+                  ) : (
+                    <>
+                      <RootStack.Screen name="Main">
+                        {() => (
+                          <ErrorBoundary name="Main Tabs">
+                            <TabNavigator onTabChange={(tab: any) => setCurrentTab(tab)} />
+                          </ErrorBoundary>
                         )}
-                      </RootStack.Navigator>
-                    </PostHogProvider>
-                  </NavigationContainer>
-
-                  <SyncManager />
-                  <NetworkStatusBanner />
-
-                  {toast.visible && (
-                    <SanctuaryToast
-                      message={toast.message}
-                      type={toast.type}
-                      visible={toast.visible}
-                      onHide={hideToast}
-                    />
+                      </RootStack.Screen>
+                      <RootStack.Screen
+                        name="AIAssistant"
+                        component={AIAssistantScreen}
+                        options={{
+                          presentation: 'modal',
+                          animation: 'slide_from_bottom'
+                        }}
+                      />
+                      <RootStack.Screen
+                        name="Auth"
+                        component={AuthScreen}
+                        options={{ presentation: 'modal' }}
+                      />
+                      <RootStack.Screen
+                        name="QRHandler"
+                        component={QRHandlerScreen}
+                        options={{
+                          presentation: 'modal',
+                          animation: 'fade_from_bottom',
+                        }}
+                      />
+                      <RootStack.Screen
+                        name="ThuthimalClaim"
+                        component={ThuthimalClaimScreen}
+                        options={{
+                          presentation: 'modal',
+                          animation: 'fade_from_bottom',
+                        }}
+                      />
+                    </>
                   )}
-                </ErrorBoundary>
-              </ToastProvider>
-            </GluestackUIProvider>
-          </EnvironmentProvider>
-        </QueryClientProvider>
+                </RootStack.Navigator>
+              </PostHogProvider>
+            </NavigationContainer>
+
+            <SyncManager />
+            <NetworkStatusBanner />
+
+            {toast.visible && (
+              <SanctuaryToast
+                message={toast.message}
+                type={toast.type}
+                visible={toast.visible}
+                onHide={hideToast}
+              />
+            )}
+
+            {/* Skia Grain Overlay (Temporarily disabled due to Android black screen issue)
+            <NoiseOverlay
+              opacity={0.03}
+              warm={isWarmPhase}
+              frequency={phase === 'night' ? 0.45 : 0.65}
+            />
+            */}
+          </ErrorBoundary>
+        </ToastProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView >
   );

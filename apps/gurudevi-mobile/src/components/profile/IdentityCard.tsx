@@ -110,7 +110,7 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile, style
         },
         glassLayer: {
             ...StyleSheet.absoluteFillObject,
-            backgroundColor: Theme.colors.glassHighlight,
+            backgroundColor: Theme.colors.glass.dark.highlight,
         },
         editButton: {
             backgroundColor: `${colors.action}10`,

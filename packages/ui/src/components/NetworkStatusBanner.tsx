@@ -1,6 +1,6 @@
-﻿
-import React from 'react';
-import { Box, Text, HStack, Spinner, Theme } from '@repo/ui';
+﻿import React from 'react';
+import { Box, Text, HStack, Spinner } from '../gluestack';;
+import { Theme } from '../theme/Theme';
 import { WifiOff, RefreshCw } from 'lucide-react-native';
 import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

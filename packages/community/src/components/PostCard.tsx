@@ -8,7 +8,7 @@ import { MediaAsset } from '@repo/core';
 
 export type PostType = 'post' | 'text' | 'announcement' | 'poll';
 
-import { CommunityPost } from '@repo/community';
+import { CommunityPost } from '../index';;
 
 interface PostCardProps {
     post: CommunityPost;
@@ -72,7 +72,7 @@ const PostCard = React.memo(function PostCard({
                             style={StyleSheet.absoluteFill}
                             resizeMode="cover"
                         />
-                        <Box sx={{ ...StyleSheet.absoluteFillObject, backgroundColor: Theme.colors.glassHighlight }} />
+                        <Box sx={{ ...StyleSheet.absoluteFillObject, backgroundColor: Theme.colors.glass.dark.highlight }} />
                     </Box>
                 </Box>
             );

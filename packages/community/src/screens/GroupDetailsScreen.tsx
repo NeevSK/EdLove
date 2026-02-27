@@ -23,7 +23,10 @@ import {
     MessageSquare
 } from 'lucide-react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useCommunity, Group, GroupMemberManagement, PinnedResourcesShelf, Post } from '@repo/community';
+import { useCommunity } from '../hooks/useCommunity';
+import { Group, Post } from '../types';
+import GroupMemberManagement from '../components/GroupMemberManagement';
+import { PinnedResourcesShelf } from '../components/PinnedResourcesShelf';
 import { useUserRole, useStore, supabase, CommunityStackParamList } from '@repo/core';
 // @ts-ignore
 import { isDemo } from '@repo/core';

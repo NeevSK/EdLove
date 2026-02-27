@@ -1,22 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import {
-    Box,
-    VStack,
-    HStack,
-    Text,
-    Heading,
-    Button,
-    ButtonText,
-    Modal,
-    ModalBackdrop,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    Spinner
-} from '@repo/ui';
-import { Theme } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
+import { Box, VStack, HStack, Text, Heading, Button, ButtonText, Spinner } from '../gluestack';
+import { Modal, ModalBackdrop, ModalContent, ModalHeader, ModalBody, ModalFooter } from '../gluestack';
+import { Theme } from '../theme/Theme';;
+import { useThemedColors } from '../hooks/useThemedColors';;
 import { GuestDataSync } from '@repo/core';
 import { Check, AlertCircle, Cloud, Database } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';

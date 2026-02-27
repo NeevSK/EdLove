@@ -15,7 +15,7 @@ import {
     useLotusToast
 } from '@repo/ui';
 import { X, AlertTriangle, ShieldOff, UserX } from 'lucide-react-native';
-import { communityAPI } from '@repo/community';
+import { communityAPI } from '../api/community';
 
 interface ReportPostModalProps {
     isOpen: boolean;
@@ -86,7 +86,7 @@ export default function ReportPostModal({
             <Box sx={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.6)' }}>
                 <Box
                     sx={{
-                        backgroundColor: Theme.colors.midnightBlue,
+                        backgroundColor: Theme.colors.shroud,
                         borderTopLeftRadius: Theme.corners.generous,
                         borderTopRightRadius: Theme.corners.generous,
                         padding: Theme.spacing.lg,
@@ -124,7 +124,7 @@ export default function ReportPostModal({
                                             <Box sx={{ p: '$2', borderRadius: '$full', backgroundColor: 'rgba(255,255,255,0.05)' }}>
                                                 <Icon size={20} color={isSelected ? Theme.colors.sanctuarySaffron : Theme.colors.mistGray} />
                                             </Box>
-                                            <Text color={isSelected ? Theme.colors.sacredWhite : Theme.colors.pearlGray} bold={isSelected}>
+                                            <Text color={isSelected ? Theme.colors.sacredWhite : Theme.colors.starlightGray} bold={isSelected}>
                                                 {item.label}
                                             </Text>
                                         </HStack>

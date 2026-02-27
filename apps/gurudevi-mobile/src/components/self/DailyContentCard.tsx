@@ -27,11 +27,7 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
             padding: 16,
             borderRadius: Theme.corners.comfortable,
             marginBottom: 12,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-            elevation: 3,
+            ...Theme.shadows.sm,
         },
         motivationCard: {
             backgroundColor: colors.secondary,

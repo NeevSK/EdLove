@@ -5,6 +5,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Theme, LotusPetalFAB, SanctuaryBackground } from '@repo/ui';
 import { ErrorBoundary, AchievementUnlockOverlay } from '@repo/ui';
+import { BlurView } from 'expo-blur';
+import { useWindowDimensions, StyleSheet } from 'react-native';
+import { useTheme } from '@repo/ui';
+import { TemporalGlass } from '@repo/ui/native';
 
 // Icons
 import {
@@ -43,6 +47,8 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   const { t } = useTranslation();
   const { role } = useUserRole();
   const colors = useThemedColors();
+  const { phase, isDark } = useTheme();
+  const { width } = useWindowDimensions();
   const [currentTab, setCurrentTab] = React.useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
   const insets = useSafeAreaInsets(); // Get safe area insets
   const { newAchievements } = useRewards();
@@ -112,8 +118,19 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             marginBottom: insets.bottom > 0 ? 0 : 4,
           },
           tabBarBackground: () => (
-            // Semi-transparent glass bar — SanctuaryBackground shows through
-            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.25)' }} />
+            <TemporalGlass
+              width={width}
+              height={60 + insets.bottom}
+              phase={phase}
+              cornerRadius={0}
+              style={{ flex: 1 }}
+            >
+              <BlurView
+                intensity={phase === 'night' || phase === 'predawn' || phase === 'dusk' ? 44 : 12}
+                tint={isDark ? 'dark' : 'light'}
+                style={StyleSheet.absoluteFill}
+              />
+            </TemporalGlass>
           ),
         }}
       >

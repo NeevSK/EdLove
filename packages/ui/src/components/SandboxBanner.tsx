@@ -1,5 +1,8 @@
 import React from 'react';
-import { Box, HStack, Text, Theme, useThemedColors, Pressable, hapticLight } from '@repo/ui';
+import { Box, HStack, Text, Pressable } from '../gluestack';
+import { Theme } from '../theme/Theme';
+import { useThemedColors } from '../hooks/useThemedColors';
+import { hapticLight } from '../utils/haptics';;
 import { useStore } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import { Zap, X } from 'lucide-react-native';

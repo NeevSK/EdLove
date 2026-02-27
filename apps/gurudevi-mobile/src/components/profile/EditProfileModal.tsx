@@ -189,7 +189,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                                 position: 'absolute',
                                                 bottom: 0,
                                                 right: 0,
-                                                backgroundColor: Theme.colors.midnightBlue,
+                                                backgroundColor: Theme.colors.ink,
                                                 padding: 8,
                                                 borderRadius: 20,
                                                 borderWidth: 1,
@@ -219,7 +219,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                             value={fullName}
                                             onChangeText={setFullName}
                                             placeholder={t('auth.fullName')}
-                                            placeholderTextColor={Theme.colors.stoneGray}
+                                            placeholderTextColor={Theme.colors.mistGray}
                                         />
                                     </Input>
                                 </VStack>
@@ -239,7 +239,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                             value={phone}
                                             onChangeText={setPhone}
                                             placeholder="+94 XX XXX XXXX"
-                                            placeholderTextColor={Theme.colors.stoneGray}
+                                            placeholderTextColor={Theme.colors.mistGray}
                                             keyboardType="phone-pad"
                                         />
                                     </Input>
@@ -260,7 +260,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                             value={bio}
                                             onChangeText={setBio}
                                             placeholder="Tell us about yourself..."
-                                            placeholderTextColor={Theme.colors.stoneGray}
+                                            placeholderTextColor={Theme.colors.mistGray}
                                             multiline
                                             numberOfLines={4}
                                         />
@@ -282,7 +282,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                                 value={nicNumber}
                                                 onChangeText={setNicNumber}
                                                 placeholder="e.g. 19XXXXXXXXXX"
-                                                placeholderTextColor={Theme.colors.stoneGray}
+                                                placeholderTextColor={Theme.colors.mistGray}
                                             />
                                         </Input>
                                     </VStack>
@@ -303,7 +303,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                                 value={indexNumber}
                                                 onChangeText={setIndexNumber}
                                                 placeholder="e.g. STU-XXXXX"
-                                                placeholderTextColor={Theme.colors.stoneGray}
+                                                placeholderTextColor={Theme.colors.mistGray}
                                             />
                                         </Input>
                                     </VStack>
@@ -373,11 +373,11 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
 const styles = StyleSheet.create({
     overlay: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.6)',
+        backgroundColor: 'rgba(42, 35, 24, 0.6)', // Ink based dimming
         justifyContent: 'flex-end',
     },
     modalContent: {
-        backgroundColor: Theme.colors.voidIndigo,
+        backgroundColor: Theme.colors.ink,
         borderTopLeftRadius: Theme.corners.generous,
         borderTopRightRadius: Theme.corners.generous,
         padding: Theme.spacing.xl,
@@ -385,8 +385,8 @@ const styles = StyleSheet.create({
         ...Theme.shadows.lg,
     },
     input: {
-        borderColor: Theme.colors.deepIndigo,
-        backgroundColor: Theme.colors.midnightBlue,
+        borderColor: Theme.colors.ink,
+        backgroundColor: Theme.colors.ink,
         borderRadius: Theme.corners.comfortable,
         height: 56,
     },

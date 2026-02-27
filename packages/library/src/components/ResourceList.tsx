@@ -49,9 +49,9 @@ const TYPE_CONFIG: Record<
     pdf: { icon: File, color: Theme.colors.emberRed, label: 'PDF' },
     video: { icon: Video, color: Theme.colors.skyBlue, label: 'Video' },
     link: { icon: Link, color: Theme.colors.sanctuarySaffron, label: 'Link' },
-    doc: { icon: FileText, color: Theme.colors.deepIndigo, label: 'Doc' },
+    doc: { icon: FileText, color: Theme.colors.ink, label: 'Doc' },
     note: { icon: StickyNote, color: Theme.colors.sageGreen, label: 'Note' },
-    other: { icon: BookOpen, color: Theme.colors.pearlGray, label: 'File' },
+    other: { icon: BookOpen, color: Theme.colors.starlightGray, label: 'File' },
 };
 
 function resolveDisplayType(type: string): DisplayResourceType {
@@ -254,7 +254,7 @@ function FlashPlaySheet({ resource, onClose, onOpenFull }: FlashPlaySheetProps) 
     return (
         <Actionsheet isOpen={!!resource} onClose={onClose}>
             <ActionsheetBackdrop />
-            <ActionsheetContent sx={{ backgroundColor: Theme.colors.voidIndigo }}>
+            <ActionsheetContent sx={{ backgroundColor: Theme.colors.ink }}>
                 <ActionsheetDragIndicatorWrapper>
                     <ActionsheetDragIndicator />
                 </ActionsheetDragIndicatorWrapper>
@@ -279,13 +279,13 @@ function FlashPlaySheet({ resource, onClose, onOpenFull }: FlashPlaySheetProps) 
                         <VStack sx={{ flex: 1 }}>
                             <Text color={Theme.colors.sacredWhite} size="md" bold numberOfLines={2}>{resource.title}</Text>
                             <Text color={Theme.colors.mistGray} size="sm">{resource.creator_name}</Text>
-                            {metaParts ? <Text color={Theme.colors.dimGray} size="xs">{metaParts}</Text> : null}
+                            {metaParts ? <Text color={Theme.colors.shroud} size="xs">{metaParts}</Text> : null}
                         </VStack>
                     </HStack>
 
                     {resource.description ? (
-                        <Box sx={{ backgroundColor: Theme.colors.glassHighlight, padding: 12, borderRadius: Theme.corners.comfortable }}>
-                            <Text color={Theme.colors.pearlGray} size="sm" sx={{ lineHeight: 20 }} numberOfLines={3}>
+                        <Box sx={{ backgroundColor: Theme.colors.glass.dark.highlight, padding: 12, borderRadius: Theme.corners.comfortable }}>
+                            <Text color={Theme.colors.starlightGray} size="sm" sx={{ lineHeight: 20 }} numberOfLines={3}>
                                 {resource.description}
                             </Text>
                         </Box>

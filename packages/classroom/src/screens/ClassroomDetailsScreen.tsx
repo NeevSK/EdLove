@@ -32,7 +32,8 @@ import { Theme, useThemedColors, hapticLight, GlobalHeader, ScreenWrapper, Posit
 import { useTranslation } from 'react-i18next';
 import { api, Classroom, ClassroomStudent, ClassroomStackParamList } from '@repo/core';
 import { StudentList } from '../components';
-import { LessonFeed, ContentLibrary } from './';
+import LessonFeed from './LessonFeed';
+import ContentLibrary from './ContentLibrary';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type Props = NativeStackScreenProps<ClassroomStackParamList, 'ClassroomDetails'>;

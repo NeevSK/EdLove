@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { APIError } from './types';
-import type { Announcement } from '@repo/core';
+import type { Announcement } from '../types';
 
 export interface AnnouncementWithAuthor extends Announcement {
     author_name?: string;

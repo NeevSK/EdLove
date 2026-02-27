@@ -18,7 +18,7 @@ export default function GradeHeadView({ schoolId, userId }: { schoolId?: string;
     const userRole = useStore((state: any) => state.userRole);
 
     return (
-        <ScreenWrapper backgroundColor={Theme.colors.voidIndigo}>
+        <ScreenWrapper backgroundColor={Theme.colors.ink}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <VStack gap="$4">
                     {/* Header */}
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: Theme.spacing.md,
         borderRadius: Theme.corners.comfortable,
-        backgroundColor: Theme.colors.midnightBlue,
+        backgroundColor: Theme.colors.shroud,
         borderWidth: 1,
         borderColor: Theme.colors.border,
     }

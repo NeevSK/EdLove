@@ -11,14 +11,10 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
-import {
-    Box,
-    VStack,
-    Text,
-    Pressable,
-} from '@repo/ui';
+import { Box, VStack, Text, Pressable, hapticLight, Theme, typography } from '@repo/ui';
 import { Modal, StyleSheet, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { X } from 'lucide-react-native';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -28,9 +24,6 @@ import Animated, {
     Easing,
     FadeIn,
 } from 'react-native-reanimated';
-import { X } from 'lucide-react-native';
-import { Theme, typography } from '@repo/ui';
-import { hapticLight } from '@repo/ui';
 
 const THOUGHT_SEEDS = [
     "What is heavy today?",
@@ -98,7 +91,7 @@ export default function ShadowAgentDrawer() {
         drawerContainer: {
             width: '100%',
         },
-    }), []);
+    }), [bottomInset]);
 
     // Orb breathing animation
     const orbScale = useSharedValue(1);
@@ -203,7 +196,7 @@ export default function ShadowAgentDrawer() {
                     >
                         <Box
                             sx={{
-                                backgroundColor: Theme.colors.voidIndigo,
+                                backgroundColor: Theme.colors.ink,
                                 borderTopLeftRadius: Theme.corners.generous,
                                 borderTopRightRadius: Theme.corners.generous,
                                 padding: Theme.spacing.xl,
@@ -215,10 +208,10 @@ export default function ShadowAgentDrawer() {
                                 sx={{
                                     width: 40,
                                     height: 4,
-                                    backgroundColor: Theme.colors.pearlGray,
+                                    backgroundColor: Theme.colors.starlightGray,
                                     borderRadius: 2,
                                     alignSelf: 'center',
-                                    marginBottom: Theme.spacing.md, // Reduced from lg
+                                    marginBottom: Theme.spacing.md,
                                     opacity: 0.3,
                                 }}
                             />
@@ -269,15 +262,15 @@ export default function ShadowAgentDrawer() {
                                     >
                                         <Box
                                             sx={{
-                                                backgroundColor: Theme.colors.midnightBlue,
+                                                backgroundColor: Theme.colors.ink,
                                                 padding: Theme.spacing.lg,
                                                 borderRadius: Theme.corners.comfortable,
                                                 borderWidth: 1,
-                                                borderColor: Theme.colors.twilightPurple,
+                                                borderColor: Theme.colors.twilightBlue,
                                             }}
                                         >
                                             <Text
-                                                color={Theme.colors.dimGray}
+                                                color={Theme.colors.shroud}
                                                 size="xs"
                                                 sx={{
                                                     textTransform: 'uppercase',
@@ -288,7 +281,7 @@ export default function ShadowAgentDrawer() {
                                                 Gentle Reminder
                                             </Text>
                                             <Text
-                                                color={Theme.colors.pearlGray}
+                                                color={Theme.colors.starlightGray}
                                                 size="lg"
                                                 sx={{
                                                     fontWeight: typography.fontWeight.medium,
@@ -307,7 +300,7 @@ export default function ShadowAgentDrawer() {
                                 >
                                     <Box
                                         sx={{
-                                            backgroundColor: Theme.colors.deepIndigo,
+                                            backgroundColor: Theme.colors.ink,
                                             padding: Theme.spacing.lg,
                                             borderRadius: Theme.corners.comfortable,
                                             borderLeftWidth: 3,
@@ -315,7 +308,7 @@ export default function ShadowAgentDrawer() {
                                         }}
                                     >
                                         <Text
-                                            color={Theme.colors.dimGray}
+                                            color={Theme.colors.shroud}
                                             size="xs"
                                             sx={{
                                                 textTransform: 'uppercase',
@@ -374,12 +367,12 @@ export default function ShadowAgentDrawer() {
                                             marginTop: Theme.spacing.xl,
                                             padding: Theme.spacing.md,
                                             borderRadius: Theme.corners.comfortable,
-                                            backgroundColor: Theme.colors.deepIndigo,
+                                            backgroundColor: Theme.colors.ink,
                                             opacity: 0.5,
                                         }}
                                     >
                                         <Text
-                                            color={Theme.colors.dimGray}
+                                            color={Theme.colors.shroud}
                                             size="xs"
                                             textAlign="center"
                                         >
@@ -395,5 +388,3 @@ export default function ShadowAgentDrawer() {
         </>
     );
 }
-
-

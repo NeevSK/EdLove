@@ -1,10 +1,10 @@
 import React from 'react';
-import { Box, VStack, Heading, Text, Button, ButtonText, Center } from '@repo/ui';
+import { Box, VStack, Heading, Text, Button, ButtonText, Center } from '../gluestack';;
 import { Plus, Sparkles, LogIn } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
-import { hapticLight } from '@repo/ui';
+import { Theme } from '../theme/Theme';;
+import { useThemedColors } from '../hooks/useThemedColors';;
+import { hapticLight } from '../utils/haptics';;
 
 interface PositiveInvitationProps {
     title?: string;

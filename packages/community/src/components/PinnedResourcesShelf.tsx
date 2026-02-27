@@ -48,7 +48,7 @@ export const PinnedResourcesShelf: React.FC<PinnedResourcesShelfProps> = ({
                             <Box
                                 sx={{
                                     width: 140,
-                                    backgroundColor: Theme.colors.midnightBlue,
+                                    backgroundColor: Theme.colors.shroud,
                                     borderRadius: Theme.corners.comfortable,
                                     padding: Theme.spacing.sm,
                                     borderWidth: 1,
