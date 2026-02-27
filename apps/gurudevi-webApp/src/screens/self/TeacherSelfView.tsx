@@ -9,6 +9,7 @@ import WisdomSeeds from '../../components/self/WisdomSeeds';
 import TomorrowPrep from '../../components/self/TomorrowPrep';
 import EnergyForecast from '../../components/self/EnergyForecast';
 import WindDown from '../../components/self/WindDown';
+import VentingSpace from '../../components/self/VentingSpace';
 import { Flower, Flame, Repeat, Sparkles, Heart, Lightbulb, Calendar, Battery, Moon, MessageCircle } from 'lucide-react';
 
 const CORE_FEATURES = [
@@ -53,6 +54,8 @@ const TeacherSelfView: React.FC = () => {
                 return <EnergyForecast />;
             case 'windDown':
                 return <WindDown />;
+            case 'venting':
+                return <VentingSpace />;
             default:
                 return (
                     <div className="flex flex-col items-center justify-center min-h-[300px] text-gray-400 italic">
