@@ -4,6 +4,7 @@ import MoodLotus from '../../components/self/MoodLotus';
 import FireJournal from '../../components/self/FireJournal';
 import DailyRhythm from '../../components/self/DailyRhythm';
 import JoyJar from '../../components/self/JoyJar';
+import GratitudeGlimmers from '../../components/self/GratitudeGlimmers';
 import { Flower, Flame, Repeat, Sparkles, Heart, Lightbulb, Calendar, Battery, Moon, MessageCircle } from 'lucide-react';
 
 const CORE_FEATURES = [
@@ -38,6 +39,8 @@ const TeacherSelfView: React.FC = () => {
                 return <DailyRhythm />;
             case 'joyJar':
                 return <JoyJar />;
+            case 'gratitude':
+                return <GratitudeGlimmers />;
             default:
                 return (
                     <div className="flex flex-col items-center justify-center min-h-[300px] text-gray-400 italic">
