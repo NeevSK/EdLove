@@ -16,6 +16,7 @@
         "error": "දෝෂයකි",
         "success": "සාර්ථකයි",
         "greeting": "ආයුබෝවන්, {{name}}!",
+        "goodAfternoon": "සුභ දහවල්!",
         "create": "සාදන්න",
         "sampleDismissed": "නියැදිය ඉවත් කරන ලදී",
         "sampleDismissedDesc": "මෙම නිදර්ශනය ඔබේ දසුනෙන් ඉවත් කළා.",

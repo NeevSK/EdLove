@@ -14,10 +14,12 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "org.edlove.gurudevi"
+      "bundleIdentifier": "org.edlove.gurudevi",
+      "newArchEnabled": true
     },
     "android": {
       "package": "org.edlove.gurudevi",
+      "newArchEnabled": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"

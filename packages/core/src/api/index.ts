@@ -18,6 +18,7 @@ import { dailyContentAPI } from './dailyContent';
 import { thuthimalAPI } from './thuthimal';
 import { classroomNotesAPI } from './classroomNotes';
 import { principalNotesAPI } from './principalNotes';
+import { communityAPI } from './community';
 import { ReliefCoordinator, TimetableScheduler } from './agents';
 import { sacredMissionsAPI } from './sacredMissions';
 import { isDemo, demoAPI } from './demo';
@@ -30,6 +31,7 @@ export * from './agents'; // Export agent types
 export * from './resonantProxy';
 export * from './classroomNotes';
 export * from './principalNotes';
+export * from './community'; // Export community types/API
 
 // Simplified named exports for direct access
 export {
@@ -55,6 +57,7 @@ export {
     thuthimalAPI,
     classroomNotesAPI,
     principalNotesAPI,
+    communityAPI,
     ReliefCoordinator,
     TimetableScheduler,
     sacredMissionsAPI,
@@ -90,6 +93,7 @@ export const api = {
     thuthimal: thuthimalAPI,
     classroomNotes: classroomNotesAPI,
     principalNotes: principalNotesAPI,
+    community: communityAPI,
     relief: ReliefCoordinator,
     scheduler: TimetableScheduler,
     missions: sacredMissionsAPI,
@@ -97,3 +101,4 @@ export const api = {
 };
 
 export default api;
+

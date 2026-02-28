@@ -136,7 +136,7 @@ function createStorage(): StorageInterface {
         mmkv.set(PROBE_KEY, '1');
         const probeResult = mmkv.getString(PROBE_KEY);
         mmkv.delete(PROBE_KEY);
-        
+
         if (probeResult !== '1') throw new Error('MMKV probe read/write mismatch');
 
         if (__DEV__) console.log('📦 Storage: MMKV v4 (NitroModules) initialized ✓');
@@ -183,7 +183,7 @@ function getStorage(): StorageInterface {
  */
 export const storage: StorageInterface = new Proxy({} as StorageInterface, {
     get(_target, prop: string) {
-        return (getStorage() as Record<string, unknown>)[prop];
+        return (getStorage() as any)[prop];
     },
 });
 

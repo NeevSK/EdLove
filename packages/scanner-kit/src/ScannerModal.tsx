@@ -25,10 +25,11 @@ interface MLKitBarcode {
     value?: string;
     rawValue?: string;
 }
-let BarcodeScanning: typeof import('@react-native-ml-kit/barcode-scanning').default | null = null;
+let BarcodeScanning: any = null;
 try {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    BarcodeScanning = require('@react-native-ml-kit/barcode-scanning').default;
+    // @ts-ignore - Module may not be available in all environments/configurations
+    BarcodeScanning = require('@react-native-ml-kit/barcode-scanning').default as any;
 } catch {
     // Not installed or not linked — will fall back gracefully
     BarcodeScanning = null;

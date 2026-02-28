@@ -93,6 +93,11 @@ jobs:
       - name: 📦 Install dependencies
         run: pnpm install --fetch-timeout 100000
 
+      - name: 🏗️ Prebuild
+        run: |
+          cd apps/gurudevi-mobile
+          npx expo prebuild --platform android --no-install
+
       - name: 🚀 Build App
         run: |
           cd apps/gurudevi-mobile

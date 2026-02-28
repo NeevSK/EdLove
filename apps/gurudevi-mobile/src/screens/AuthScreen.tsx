@@ -26,7 +26,6 @@ import {
 import { Mail } from 'lucide-react-native';
 import { Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Platform } from 'react-native';
 import { supabase, UserRole, handleAPIError, GuestDataSync } from '@repo/core';
 import { Theme } from '@repo/ui';
 import { validators, validateForm } from '../utils/validators';
