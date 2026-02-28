@@ -11,6 +11,21 @@
 
 ---
 
+## 📚 Source Documents (Read These First)
+
+This task list synthesizes from three sources, listed by authority:
+
+1. **`docs/Tasks/mobile_feature_audit.md`** — Complete feature scope: 404 features across all roles. The product bible for what Gurudevi does. Read this to understand the full scope.
+2. **`docs/Tasks/mobile_feature_strategy.md`** — Technical audit: each feature mapped to UI/API/DB with 🟢/🟡/🔴 status (256 complete, 27 partial, 117 missing). Strategy doc's "Immediate Focus" = Library voids, Principal Analytics, Engineering Excellence, Mission UI, DM Infrastructure.
+3. **`docs/current_progress/*/tasks.md`** — Sprint-level UI/UX task lists (Feb + March). Mostly TIER 3 work.
+
+**Where strategy doc says 🟢 Complete but code evidence is uncertain:**
+- `QR-003` (Group Join QR) — strategy says complete; code analysis found consumer path missing → see T1.5
+- `PRN-CLS-025` (InviteManager QR modal) — strategy says complete; code shows QR state stored but modal not rendered → see T0.5
+- Many Teacher/Student Self features (TCH-SLF-005–020) — plausible from component code but not E2E verified → verify in T0.2
+
+---
+
 ## 🔴 TIER 0: Product Viability Gates
 ### *Do FIRST — Nothing else matters until these work*
 
@@ -33,7 +48,7 @@ These are the tasks that, if broken, mean zero real users can use the app. They 
 2. Student joins via QR code → sees classroom → submits an assignment
 3. Principal creates account → joins school → views classrooms
 
-**Why**: This is the core loop. If any step breaks, the app has no users. This has NEVER been formally validated end-to-end from code evidence. The QR join bug (T0.5) alone could break step 1.
+**Why**: This is the core loop. If any step breaks, the app has no users. This has NEVER been formally validated end-to-end from code evidence. The QR join bug (T0.4) alone could break step 1.
 **Effort**: M (2 days including fixes)
 **Code to touch**: `WelcomeScreen`, `AuthScreen`, `OnboardingScreen`, `ClassroomScreen`, `ScannerModal`, QR flow
 **Action**: Document every broken step. Fix blocking bugs. Re-validate.
@@ -49,16 +64,11 @@ These are the tasks that, if broken, mean zero real users can use the app. They 
 
 ---
 
-### T0.4 — Wire FAB Actions (getFabActions)
-**What**: `getFabActions()` in `App.tsx` has all actions as `console.log` placeholders. Every FAB tap does nothing.
-**Why**: The FAB is visible on every screen. Dead buttons destroy trust immediately. This is a T0 bug masquerading as a "feature to implement."
-**Effort**: S (1 day)
-**Code to touch**: `apps/gurudevi-mobile/App.tsx` — `getFabActions()` function
-**Action**: Wire each action to its correct navigation target (create classroom, mark attendance, add post, add resource). Use `navigationRef.navigate()` for each.
+> *T0.4 moved to T3.11 — FAB is deprioritized. Core loop reliability matters more.*
 
 ---
 
-### T0.5 — Fix Teacher QR Join Bug (ownership overwrite)
+### T0.4 — Fix Teacher QR Join Bug (ownership overwrite)
 **What**: When a teacher joins a classroom via QR, the code does `api.classrooms.update(classId, { teacher_id: user.id })`. This overwrites the original teacher's ownership.
 **Why**: This is a data corruption bug. Any teacher joining a classroom via QR immediately steals ownership from the original teacher. If this fires in a real school, it's catastrophic.
 **Effort**: S (half day)
@@ -67,12 +77,26 @@ These are the tasks that, if broken, mean zero real users can use the app. They 
 
 ---
 
-### T0.6 — Fix Principal InviteManager QR Modal Not Rendering
+### T0.5 — Fix Principal InviteManager QR Modal Not Rendering
 **What**: Principal generates a QR code → state is stored in `qrCodeData` but no modal renders it. The button silently does nothing.
 **Why**: Principals cannot invite teachers without this. School creation is broken for the primary administrative role.
 **Effort**: S (half day)
 **Code to touch**: `packages/classroom/InviteManager.tsx` (or wherever `qrCodeData` state lives)
 **Action**: Find the stored `qrCodeData` state and add the QR display modal that was never rendered.
+
+---
+
+### T0.6 — School + Classroom Creation: Unified Onboarding Flow
+**What**: Currently `SchoolCreationScreen` success state shows a QR code + one CTA: "Enter Your Sanctuary" → `ClassroomList`. There is no prompt to create the first classroom. The teacher must discover classroom creation independently after landing in ClassroomList.
+
+Fix: Add **"Set Up Your First Classroom →"** as the primary CTA on the school creation success screen, with "Skip for now" as secondary. This navigates directly to `CreateClassroomModal` (which already exists in `@repo/classroom`).
+
+**Why**: School without a classroom is an empty shell. A new principal/teacher completing school setup needs to create their first classroom immediately — it completes the setup loop. This is the difference between "I set up the app" and "I'm ready to use the app." Every SaaS onboarding principle says: get users to their first value moment as fast as possible. First value moment = first classroom created.
+**Effort**: S (half day — SchoolCreationScreen change + routing)
+**Code to touch**: `apps/gurudevi-mobile/src/screens/SchoolCreationScreen.tsx` (success state), `packages/classroom/src/components/CreateClassroomModal.tsx`
+**Action**: 
+1. In SchoolCreationScreen success state, replace the single "Enter Your Sanctuary" button with two CTAs: primary = "Set Up First Classroom →" (navigates to Classroom tab with CreateClassroomModal pre-opened), secondary = "Explore Sanctuary" (navigate to ClassroomList as before)
+2. Pass `schoolId` from `successData` to `CreateClassroomModal` as a prop so classroom is auto-linked to the newly created school
 
 ---
 
@@ -199,6 +223,46 @@ These features don't block launch, but without them the app is a utility, not a 
 
 ---
 
+### T2.7 — Direct Messaging (DM) Infrastructure
+**Source**: `docs/Tasks/mobile_feature_strategy.md` — Immediate Focus #5. `ALL-COM-061` (`direct_messages` table), `ALL-COM-063` (Block Pillar), `ALL-COM-064` (Mute), `ALL-COM-065` (Social Shield reporting), `ALL-COM-066` (Privacy Cloak) — all `🔴 Pending`.
+**What**: Build the 1:1 messaging layer. Currently ZERO code: no `direct_messages` table, no DM screen, no block/mute infrastructure.
+**Why**: Direct messaging enables teacher-to-teacher, teacher-to-parent collaboration without going through group feeds. The Social Shield (block/mute/report) is a safety requirement — a school app without user blocking is a liability. This is distinct from group chat (T2.1) — DMs are for private professional collaboration.
+**Effort**: XL (1–2 weeks — schema, Realtime, UI, safety infrastructure)
+**Code to touch**:
+- DB: Migration for `direct_messages`, `blocked_users`, `muted_threads` tables
+- Backend: Supabase Realtime subscription on `direct_messages`
+- UI: `DMListScreen.tsx`, `DMChatScreen.tsx` in `packages/community/`
+- Safety: `useDMGuard` hook for role-based DM initiation controls
+**Note**: Get user approval on role-based DM permissions (can students DM teachers? parents?) before implementing.
+
+---
+
+### T2.8 — Library: Native PDF Viewer + Video Player
+**Source**: `docs/Tasks/mobile_feature_strategy.md` — Immediate Focus #1. `LIB-011` (PDF) and `LIB-012` (Video) are both `🔴 Pending`. Currently both `PDFViewerScreen.tsx` and `VideoPlayerScreen.tsx` exist as stub screens that link externally.
+**What**: Replace external link fallback with in-app native viewers.
+- PDF: `react-native-pdf` or `expo-file-viewer` for in-app PDF rendering
+- Video: `expo-av` (already a dependency) for video streaming/playback with Sanctuary UI chrome
+**Why**: Teachers upload PDFs and videos as lesson materials. If tapping a lesson material opens a browser instead of staying in-app, the experience is broken. Students lose context. Teachers lose confidence in the app. This directly blocks the classroom content workflow.
+**Effort**: L (3–4 days — one viewer per type + Sanctuary-themed player UI)
+**Code to touch**: `packages/library/src/screens/PDFViewerScreen.tsx`, `packages/library/src/screens/VideoPlayerScreen.tsx`, `packages/classroom/src/screens/LessonFeed.tsx`
+
+---
+
+### T2.9 — Principal Analytics: Staff Attendance + Wellbeing Pulse
+**Source**: `docs/Tasks/mobile_feature_strategy.md` — Immediate Focus #2. `PRN-CLS-041` (Staff Attendance), `PRN-SLF-004` (Staff Wellbeing Pulse), `PRN-CLS-043` (Staff Attendance Pulse) — all `🔴 Pending`. `PRN-CLS-042/044` (Leave Management + Approval) also `🔴 Pending`.
+**What**: Build the principal oversight layer for staff:
+1. Daily staff check-in/check-out logging (`staff_attendance` table)
+2. Leave submission flow for staff (`staff_leaves` table) + leave approval portal for principal
+3. Anonymized staff wellbeing aggregation (aggregate mood_logs for staff roles, show as trend to principal without individual attribution)
+**Why**: This is what makes Gurudevi valuable to school *principals* vs just to *teachers*. A principal using the app needs to see: who's in school today, who's on leave, how the staff is doing overall. Without this, principals have no reason to use the app daily. Principal adoption drives whole-school adoption.
+**Effort**: L (3–5 days — schema migration + API + UI)
+**Code to touch**: 
+- DB: Migrations for `staff_attendance`, `staff_leaves` tables
+- API: New modules in `packages/core/src/api/`
+- UI: `StaffAttendanceList.tsx`, `LeaveRequestScreen.tsx`, `LeaveApprovalScreen.tsx` in `packages/classroom/`
+
+---
+
 ## 🟡 TIER 3: Polish & UX Refinement
 ### *Important But Not First — These tasks were the entire focus of March tasks.md*
 
@@ -284,6 +348,30 @@ These features don't block launch, but without them the app is a utility, not a 
 
 ---
 
+### T3.11 — Wire FAB Actions (Deprioritized from T0)
+**Source**: Original T0.4 — moved here per product feedback. FAB is real but not a viability blocker.
+**What**: `getFabActions()` in `App.tsx` has all actions as `console.log` placeholders. Wire each to the correct navigation target.
+**Effort**: S | **Code**: `apps/gurudevi-mobile/App.tsx` — `getFabActions()`
+**Action**: Wire: Self tab → mark attendance, Community tab → create post, Library tab → add resource, Classroom tab → create lesson/assignment.
+
+---
+
+### T3.12 — Mission/Manifesto UI for Students and Teachers  
+**Source**: `docs/Tasks/mobile_feature_strategy.md` — Immediate Focus #4. `sacredMissions.ts` and `sanctuary_manifestos` table exist but there is no student or teacher UI to view/reflect on the school manifesto.
+**What**: Surface the school manifesto in the Self and Community tabs for all roles. Students and teachers should be able to view, reflect on, and engage with the school's mission.
+**Effort**: S–M | **Code**: `packages/community/src/components/ManifestoCard.tsx`, Self views
+**Action**: Add `ManifestoCard` to StudentSelfView and TeacherSelfView. Add "Reflect" action with a journal-entry-style response.
+
+---
+
+### T3.13 — Staff Leave Management Flow (Principal)
+**Source**: `docs/Tasks/mobile_feature_strategy.md` `PRN-CLS-042/044` — `🔴 Pending`
+**What**: Staff submit leave requests (Sick/Casual/Duty leave). Principal views and approves/rejects.
+**Effort**: M | **Code**: New `LeaveRequestScreen`, `LeaveApprovalScreen` in `packages/classroom/`, DB migration for `staff_leaves`
+**Note**: Pair with T2.9 (staff attendance infrastructure) — natural sibling feature.
+
+---
+
 ## 🔵 TIER 4: Scale & Infrastructure
 ### *Important for production. Not blocking alpha.*
 
@@ -330,15 +418,40 @@ These features don't block launch, but without them the app is a utility, not a 
 
 ---
 
+### T4.6 — App Attest Security (Device Integrity)
+**Source**: `docs/Tasks/mobile_feature_strategy.md` `ENG-INF-004` — `🔴 Pending`
+**What**: Implement device integrity verification using `expo-device-integrity` / App Attest (iOS) + Play Integrity (Android). Prevents bot sign-ups and fake accounts.
+**Effort**: M | **Code**: `packages/core/src/lib/` — new `appAttest.ts` module
+
+---
+
+### T4.7 — OTA Hotfix Channel (EAS Updates)
+**Source**: `docs/Tasks/mobile_feature_strategy.md` `ENG-INF-007` — `🟡 Partial` (`eas.json` exists, OTA logic missing)
+**What**: Configure EAS Updates for over-the-air JS bundle updates. Enables deploying critical bug fixes without App Store review cycles.
+**Effort**: S | **Code**: `eas.json`, `app.json` updates configuration
+
+---
+
+### T4.8 — Rate Limiting + Privacy Ledger
+**Source**: `docs/Tasks/mobile_feature_strategy.md` `ENG-INF-011` (Rate Limiting) + `ENG-INF-013` (Privacy Ledger) — both `🔴 Pending`
+**What**: Edge-level rate limiting via Supabase Edge Functions (UPSTASH Redis or Supabase's built-in). Privacy Ledger: user-facing consent history screen showing what data is tracked.
+**Effort**: M (rate limiting) + M (privacy ledger) | **Code**: Supabase Edge Functions, `packages/core/src/lib/ConsentManager.ts`
+
+---
+
 ## Dependency Chain
 
 ```
 T0.1 (DB migrations) → ALL other features (silent failures otherwise)
 T0.2 (journey validation) → Trust that core loop works
 T0.3 (real pulse data) → T1.6 (pulse UX polish)
-T0.5 (QR join fix) → T0.2 (journey works end-to-end)
+T0.4 (QR join fix) → T0.2 (journey works end-to-end)
+T0.6 (school+classroom creation) → T0.2 (journey validation complete)
 T1.5 (join-group QR) → T2.1 (group chat — groups must be joinable first)
 T2.1 (group chat backend) → T3.4 (community UI polish)
+T2.7 (DM infrastructure) → T3.4 (community UI polish)
+T2.8 (Library PDF/Video) → T1.4 (assignment/grading workflow complete with materials)
+T2.9 (Staff Attendance) → T3.13 (Leave Management natural sibling)
 T4.3 (deduplication) → safer to make changes in community + library
 ```
 
@@ -355,19 +468,24 @@ T4.3 (deduplication) → safer to make changes in community + library
 - [ ] Define product rules for classroom role-specific demos (T3.6)
 - [ ] Approve Community group chat UX direction before T2.1 (WhatsApp-style vs other)
 - [ ] Review and approve translation improvements in `TRANSLATION_IMPROVEMENTS.md`
+- [ ] Approve DM role permissions (can students DM teachers? parents DM teachers?) (T2.7)
+- [ ] Validate SchoolCreationScreen → ClassroomModal flow on device (T0.6)
 
 ### For the Agent (Architecture, Boilerplate, Pattern Implementation)
 - [ ] T0.3: Wire PulseDashboard to real attendance + assignment queries
-- [ ] T0.4: Wire getFabActions() to real navigation targets
-- [ ] T0.5: Fix teacher QR join (membership link, not teacher_id overwrite)
-- [ ] T0.6: Render QR modal for Principal InviteManager
+- [ ] T0.4: Fix teacher QR join (membership link, not teacher_id overwrite)
+- [ ] T0.5: Render QR modal for Principal InviteManager
+- [ ] T0.6: Add "Set Up First Classroom" CTA to SchoolCreationScreen success state
 - [ ] T1.1: Wire SleepTracker / RemindersManager / VoiceJournaling into TeacherSelfView
 - [ ] T1.2: Audit NotificationDrawer data; wire to real Supabase if hardcoded
 - [ ] T1.5: Add join-group QR consumer path in QRResolver + QRHandlerScreen
 - [ ] T2.4: Implement MLKitProvider (real, not stub); wire OCRScanner to UI
 - [ ] T2.5: Add education tag selection to CreatePostModal
+- [ ] T2.8: Replace PDF/Video stub screens with native expo-av + react-native-pdf viewers
+- [ ] T2.9: Build staff attendance + leave management schema + UI
 - [ ] T3.8: Replace all raw Alert.alert with SanctuaryToast
 - [ ] T3.9: Build SkeletonCard / SkeletonAvatar / SkeletonTextLine
+- [ ] T3.11: Wire getFabActions() (deprioritized; do after core loop tasks)
 - [ ] T4.3: Migrate API duplication; community screen deduplication
 
 ### Joint Tasks (Agent starts, Human approves/validates)
