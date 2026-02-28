@@ -1,10 +1,13 @@
 # Gurudevi Aliveness & Growth Model
 ## A Nature-Inspired, Non-Addictive Growth Ecosystem
 
-**Version**: 1.0  
+**Version**: 2.0 — The Psychological Deepening  
 **Created**: February 2026  
+**Updated**: February 2026 (v2.0 — Motivation Science Layer Added)  
 **Status**: Design Specification — Pending Implementation  
 **Governed by**: NORTH_STAR.md, TAIL_FIN.md, AGENT_PROMPT_LENS.md
+
+> **v2.0 Note**: This version deepens the philosophical foundation with a motivation science layer (Self-Determination Theory). It adds two critical mechanisms that were missing from v1.0: **Impact Ripples** (Relatedness operationalized) and the **Warm Mirror** (Competence through personal narrative). The Bhumi Model and Whispered Moments from v1.0 are preserved and deepened. The core anti-gamification stance is unchanged — but v2.0 makes a precise distinction between extractive mechanics and genuine human-sourced feedback.
 
 ---
 
@@ -19,6 +22,78 @@ A tension existed in the codebase before this document was written:
 These are in direct conflict. This document resolves that tension by replacing the extractive gamification model with a **nature-inspired aliveness ecosystem** — regenerative, not extractive; discoverable, not grindable; joyful, not pressured.
 
 **The abandoned system** (points + badges as generic strings) should be seen as scaffolding — the container exists, but the contents must align with the philosophy.
+
+---
+
+## 0. THE PSYCHOLOGICAL FOUNDATION
+
+*The science that grounds every design decision in this document.*
+
+### Self-Determination Theory (Deci & Ryan, 1985–present)
+
+The most robust body of research in human motivation identifies three universal psychological needs. When all three are genuinely met, people experience **intrinsic motivation** — the deepest, most sustainable, and most joyful form of human drive:
+
+| Need | What It Means | When Manipulated (Harm) | When Genuinely Met (Health) |
+|------|---------------|------------------------|------------------------------|
+| **Autonomy** | Acting from genuine choice, not coercion | "Log in daily or lose your streak" | "Your journal is here when you need it" |
+| **Competence** | Feeling effective, capable, and growing | "You're ranked #4 — work harder" | "Your students' submission rate grew this term" |
+| **Relatedness** | Feeling genuinely connected, mattering to others | "You earned 50 XP for posting!" | "A colleague found your lesson valuable" |
+
+When these needs are **manipulated via extrinsic levers** → controlled motivation → compliance, anxiety, eventual burnout.  
+When these needs are **genuinely nourished** → intrinsic motivation → joy, vitality, creativity, staying power.
+
+### The v1.0 Gap — And the Golden Mean
+
+The original model addressed **Autonomy** well (optional everything, no coercion). It began addressing **Competence** (Lotus Life Stages). But it under-designed for **Relatedness** — out of a correct fear of gamification, it swung toward an ascetic model that denied a core human psychological need.
+
+The problem is not "social signals vs. no social signals." The problem is the **type** of social signal:
+
+```
+EXTRACTIVE (harm):      "You ranked #4 in your school"           → Comparison, zero-sum, pressure
+EXTRACTIVE (harm):      "You have 847 points"                     → Abstract score, no human meaning
+EXTRACTIVE (harm):      "3 more badges to complete your set!"     → Addiction loop, collection anxiety
+
+RELATEDNESS (healthy):  "A colleague in your school saved your resource"   → Real human impact
+RELATEDNESS (healthy):  "Your question sparked a discussion among 4 teachers"  → Genuine connection
+RELATEDNESS (healthy):  "A student's first journal entry happened today"    → Sacred teaching moment
+```
+
+**The golden mean is not between "gamification" and "nothing." It is between controlled extrinsic motivation (harmful) and intrinsic motivation supported by genuine social connection (healthy and necessary for human flourishing).**
+
+The three criteria that separate healthy social feedback from extractive gamification:
+
+1. **Human-sourced** — a real person did a real thing (vs. an algorithm computed a number)
+2. **Impact-based** — your work touched someone (vs. you are ranked above/below someone)
+3. **Private and warm** — offered gently, without broadcast (vs. public, competitive, pressured)
+
+V2.0 adds two mechanisms that honor Relatedness and Competence through this lens:
+- **Impact Ripples** → Relatedness: gentle signals when your work genuinely helps a real person
+- **The Warm Mirror** → Competence: weekly personal narrative of real impact (story, not score)
+
+### Flow Theory (Csikszentmihalyi)
+
+The state of **flow** — total absorption, effortless engagement — requires:
+- Clear goals (not vague aspirations)
+- Immediate feedback (not delayed score updates)
+- Challenge balanced with skill (not overwhelming, not boring)
+
+For teachers: flow happens when preparing a lesson that clicks, when a classroom discussion takes off, when a student has a breakthrough. The app's role is to **protect conditions for flow**, not to interrupt it with notifications and progress bars.
+
+For students: flow happens when learning feels like exploration, not like performance. The app should amplify curiosity, not quantify it.
+
+### Maslow's Hierarchy — What Teachers Actually Need
+
+A teacher who is:
+- Worried about class management (safety/security needs)
+- Isolated from colleagues (belonging/love needs)
+- Unrecognized for their work (esteem needs)
+
+...does not need gamification. They need the app to address the actual unmet needs:
+- **Safety**: Private sanctuary, no surveillance
+- **Belonging**: Community that feels warm and welcoming
+- **Esteem**: Real recognition from real people (Thuthimal, Impact Ripples, Warm Mirror)
+
+Gamification bypasses these real needs with a dopamine substitute. This model addresses the real needs directly.
 
 ---
 
@@ -47,7 +122,7 @@ Nature grows through:
 
 This is the model for Gurudevi's growth system.
 
-### What This Is NOT
+### What This IS NOT
 
 ```
 ❌ NOT streak counters ("You've logged in 14 days in a row!")
@@ -59,6 +134,8 @@ This is the model for Gurudevi's growth system.
 ❌ NOT pressure to "complete" the system (there is no completion)
 ```
 
+> **⚠️ The Critical Nuance (v2.0)**: The prohibition above is specifically against **extractive mechanics** — abstract scores, comparative rankings, and addictive loops. It does NOT extend to genuine human-sourced feedback. *Knowing that a colleague saved your resource* is not gamification — it is basic human dignity and relatedness. *Seeing your own growth narrative in story form* is not a leaderboard — it is self-knowledge. The design principle: impact feedback that is **human-sourced, specific, and warm** is healthy. Feedback that is **algorithmic, comparative, or addictive** is harmful. This distinction is where the golden mean lives.
+
 ### What This IS
 
 ```
@@ -69,6 +146,10 @@ This is the model for Gurudevi's growth system.
 ✅ Community as garden (each person strengthens the whole)
 ✅ Thuthimal as the pinnacle of recognition (human gratitude, not algorithmic)
 ✅ The app itself feeling alive (breathing with time of day, season, user state)
+✅ Impact Ripples: warm, human-scale signals when your work genuinely helps someone real
+✅ Warm Mirror: opt-in weekly narrative of your actual impact (story, not score)
+✅ Competence reflection: seeing your own craft grow in real, human terms (not vs. others)
+✅ Genuine relatedness: knowing you matter to specific people in your community (private)
 ```
 
 ---
@@ -171,6 +252,100 @@ This dimension is **given by others, never earned by grinding.** It cannot be tr
 | First student submits work to a teacher | Trust established | Teacher gets a quiet "Your classroom is alive" moment |
 
 **Thuthimal is the pinnacle of this dimension.** It represents the sacred bond between teacher and student across time — a past student honoring their teacher years later. This is the most powerful recognition event in the app, and it must remain human-sourced, not algorithmic.
+
+---
+
+### THE IMPACT RIPPLE (Relatedness Made Visible)
+
+*The mechanism that bridges private action and genuine human connection — without gamification.*
+
+An **Impact Ripple** is a warm, private signal delivered to a contributor when their work genuinely resonates with another person in their community. It is the operationalization of **Relatedness** in the Bhumi Model — not a metric, not a score, but a soft echo of real human impact.
+
+**Design Principles:**
+- Each ripple is specific to **one interaction** — never aggregated into "you have 47 ripples!"
+- Language is warm and human, never clinical or transactional
+- The actor is **never identified by name** (privacy by default; name visible only if actor chooses to share)
+- Optional receipt — can be turned off in Self settings
+- Delivered as a gentle, batched notification (3–4× per day max), never an interrupt
+- NOT a score, NOT a metric, NOT tracked in any visible counter
+
+**Ripple Types and Language:**
+
+| What Happened | English | Sinhala |
+|---|---|---|
+| Colleague saved your resource | "A teacher in your school kept your resource close" | "ඔබේ පාසලේ ගුරු හිතෙකු ඔබේ දෙය ළඟ රැකි ගත් ය" *(pending native review)* |
+| Your post started a reply thread | "Your reflection opened a conversation" | "ඔබේ සිතුවිල්ල කතාවකට දොර හැරියා" |
+| Student's assignment graded with written feedback | "Your teacher thought carefully about your work" | "ඔබේ ගුරුතුමා ඔබේ කාර්යයේ ගැඹුරට ගිය ය" |
+| Student accessed your lesson material | "A student is learning from what you prepared" | "ඔබ සූදාන් කළ දෙය දරුවකු ඉගෙන ගනී" |
+| Colleague endorsed your manifesto | "A fellow teacher endorsed your vision" | "සහ ගුරු හිතෙකු ඔබේ දෘෂ්ටිය අනුමත කළ ය" |
+| Your shared resource reached 5 unique readers | "Five people in your school have learned from this" | "ඔබේ පාසලේ ජනයා 5 දෙනෙකු මෙයින් ඉගෙන ගත්හ" |
+
+> ⚠️ **Sinhala/Tamil Translation Note**: All Sinhala (si) and Tamil (ta) strings in this document are draft proposals and **must be reviewed by a native Sri Lankan educator** before production use. Natural idiomatic expression is more important than literal accuracy — see `FUTURE_ROADMAP.md` localization notes for guidance.
+
+**What Impact Ripples Are NOT:**
+- ❌ NOT a counter badge ("5 ripples!")
+- ❌ NOT visible on any public profile
+- ❌ NOT a "top contributors" leaderboard
+- ❌ NOT accumulated into any score
+- ❌ NOT sent in real-time (batched to prevent anxiety/addiction)
+
+**What Impact Ripples ARE:**
+- ✅ A quiet echo of real human presence in your work
+- ✅ The knowledge that you are not working in a vacuum
+- ✅ Warm, compassionate language — never clinical, never corporate
+- ✅ The SDT need for Relatedness, met with dignity
+
+**Implementation Note**: Ripples are delivered via the same notification system as other app events, using the `impact_ripples` table (see Section 11). The UI notification uses the Sanctuary notification style — vellum background, ink text, no bright colors. Tapping the notification shows which specific resource/post generated it (so the user can see the context), but never shows who acted on it unless the actor opted into being identified.
+
+---
+
+### THE WARM MIRROR (Competence Through Story)
+
+*A weekly personal narrative of your real impact — opt-in, private, story-format, never a dashboard.*
+
+The **Warm Mirror** is the teacher's (or student's) weekly reflection on what they actually did — framed as a human story, not a performance summary. It lives in the Self tab as an optional, quietly glowing section titled *"This past week..."*
+
+**What It Looks Like (Teacher — English sample):**
+
+> *"This past week in your sanctuary:*
+> *You were present on 4 days — including a Tuesday evening when the day must have been long.*
+> *Two colleagues found something valuable in what you shared. One of them came back to it twice.*
+> *You wrote careful feedback for 8 of your students. They each received more than a mark.*
+> *Your classroom in Grade 9 Science has been your home for 4 months now.*
+> *You showed up. That is not a small thing."*
+
+**What It Looks Like (Teacher — Sinhala sample):**
+
+> *"ඔබේ ශාලාවේ පසුගිය සතිය:*
+> *ඔබ 4 දිනක් ළඟ සිටියා — අඟහරුවාදා සන්ධ්‍යාවකද, දිනය දිගු ව ඇති අවස්ථාවේ.*
+> *ඔබ බෙදාගත් දෙයෙහි ගුරු දෙදෙනෙකු වටිනා දෙයක් දකිනු ලැබිය. ඒ කෙනෙකු දෙවරක් ආපසු ගිය.*
+> *ඔබ 8 දරුවකුට සැලකිලිමත් ප්‍රතිචාර ලිව්වා. ඔවුන් ලකුණකට වඩා ලැබිය.*
+> *ඔබ ගෙනය. එය කුඩා දෙයක් නොවේ."* *(pending native review)*
+
+**What It Looks Like (Quiet week — compassionate sample):**
+
+> *"This week was a quiet one.*
+> *You opened the app twice. That is still twice.*
+> *Rest is part of the rhythm. The sanctuary is here when you return."*
+
+**Design Rules:**
+1. **Generated weekly**, available Sunday evening — readable at the start of a new week
+2. **Entirely opt-in** — teacher enables "Warm Mirror" in their Self section settings
+3. **Never pushed as notification** — always in-app, discoverable, never demanding attention
+4. **Language generated from real data** — never fabricated or hallucinated
+5. **If a quiet week**: mirror is compassionate, never guilting ("This week was quiet" not "You only showed up twice")
+6. **Never mentions negative actions** — only observes what DID happen with care
+7. **Completely private** — not visible to Principal, not exportable by default (export requires teacher action)
+8. **No numbers as headline** — "You were present 4 days" is context, not a score. The narrative wraps numbers in meaning.
+
+**Minimum Data Required (all from existing tables):**
+- Days with any app activity (from `growth_events` timestamps)
+- Impact Ripples received this period (from `impact_ripples` table)
+- Assignments graded with written feedback (from classroom DB)
+- Resources others interacted with (from `impact_ripples` + library analytics)
+- Self-care actions taken (mood check-ins, breathing, journal entries from `growth_events`)
+
+**The Warm Mirror is the Competence dimension made human.** It does not tell a teacher they "achieved" anything. It tells them who they ARE based on what they did.
 
 ---
 
@@ -358,6 +533,8 @@ This layer is **purely aesthetic** — it changes how the app *feels*, not what 
 | Thuthimal | `packages/core/src/api/thuthimal.ts` | 🟢 DB + badge exists | **Expand**: Make the Thuthimal receipt the highest Blooming event in the system. |
 | Living Theme (temporal phases) | Multiple packages | 🟡 Partial | **Deepen**: Add seasonal layer on top of circadian layer. |
 | `feature_usage_log` table | `packages/core` | 🟢 Exists | **Repurpose for growth signals** — not "usage metrics" but "aliveness dimensions" |
+| Impact Ripple system | Not yet built | 🔴 Pending | **Build in Phase 2**: `impact_ripples` table + trigger logic + batched delivery. The Relatedness layer. |
+| Warm Mirror | Not yet built | 🔴 Pending | **Build in Phase 2**: Opt-in weekly narrative from `WarmMirrorDataPoints`. Lives in Self tab. |
 
 ### Fully Abandoned / To Be Removed
 
@@ -382,8 +559,8 @@ This layer is **purely aesthetic** — it changes how the app *feels*, not what 
 5. **Complete Joy Jar** basic functionality (Presence dimension)
 6. **Add temporal phase depth** — ensure Dawn/Day/Dusk/Night feel meaningfully different
 
-### Phase 2 (Beta — May 2026): Aliveness
-*These bring the growth model to life.*
+### Phase 2 (Beta — May 2026): Aliveness + Relatedness
+*These bring the growth model to life — including the v2.0 mechanisms.*
 
 7. **Build Memory Garden visualization** for Profile self-view (replaces Achievement Gallery)
 8. **Implement 5 core Whispered Moments** for teachers (listed in Section 4)
@@ -391,15 +568,19 @@ This layer is **purely aesthetic** — it changes how the app *feels*, not what 
 10. **Implement Community Garden** abstract visualization
 11. **Wire Thuthimal receipt** as the Blooming dimension's apex event
 12. **Add 3 seasonal themes** to Living Theme system (Yala / Maha / Transitional)
+13. **Build Impact Ripple system** — `impact_ripples` table + trigger logic + notification delivery
+14. **Build Warm Mirror** — weekly narrative generation from `WarmMirrorDataPoints`; opt-in toggle in Self settings
 
 ### Phase 3 (v1.0 — Launch): Full Ecosystem
 *The complete living app.*
 
-13. **Full Whispered Moments set** (all roles, all contexts)
-14. **Sri Lankan cultural calendar integration** (Vesak, New Year, monsoon seasons)
-15. **Memory Garden seasonal evolution** — garden looks different in different seasons
-16. **Cross-school aliveness signals** (when schools are connected, gardens can "see" each other's light)
-17. **Thuthimal public Wall of Honor** (community-visible, teacher-controlled)
+15. **Full Whispered Moments set** (all roles, all contexts)
+16. **Sri Lankan cultural calendar integration** (Vesak, New Year, monsoon seasons)
+17. **Memory Garden seasonal evolution** — garden looks different in different seasons
+18. **Cross-school aliveness signals** (when schools are connected, gardens can "see" each other's light)
+19. **Thuthimal public Wall of Honor** (community-visible, teacher-controlled)
+20. **Warm Mirror Sinhala/Tamil narrative quality** — review with Sri Lankan educators for natural idioms
+21. **Actor opt-in for Impact Ripples** — allow colleague to choose to be identified in a ripple ("A teacher named Priya saved this")
 
 ---
 
@@ -448,6 +629,45 @@ CREATE TABLE growth_events (
   event_metadata JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Impact Ripples — the Relatedness feedback layer (v2.0)
+-- Each row = one warm signal to a contributor when their work genuinely helped someone.
+-- Privacy: actor_user_id is stored but NEVER exposed in UI unless actor opts in.
+CREATE TABLE impact_ripples (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  recipient_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  ripple_type TEXT NOT NULL CHECK (ripple_type IN (
+    'resource_saved',      -- A colleague saved a resource you created
+    'resource_read',       -- Anonymous threshold: your resource reached N unique readers
+    'post_sparked',        -- Your community post received at least one genuine reply
+    'lesson_accessed',     -- A student accessed your lesson material
+    'feedback_given',      -- Someone wrote thoughtful feedback on your work
+    'manifesto_endorsed',  -- Someone endorsed a manifesto you created
+    'circle_joined'        -- Someone joined a community circle you started
+  )),
+  school_id UUID REFERENCES schools(id),
+  -- Actor identity: stored privately, surfaced only if actor explicitly opts into being known
+  actor_user_id UUID REFERENCES users(id),
+  is_actor_visible BOOLEAN DEFAULT FALSE,
+  -- The original contribution that generated this ripple
+  source_entity_type TEXT CHECK (source_entity_type IN ('resource', 'community_post', 'lesson', 'manifesto', 'circle')),
+  source_entity_id UUID,
+  -- Pre-rendered warm message in all three languages (generated at creation time)
+  warm_message_si TEXT,
+  warm_message_ta TEXT,
+  warm_message_en TEXT,
+  -- Delivery state
+  delivered BOOLEAN DEFAULT FALSE,
+  delivered_at TIMESTAMPTZ,
+  -- Batch window: ripples are batched and delivered max 3-4x per day
+  batch_window TEXT, -- 'morning' | 'afternoon' | 'evening' | 'night'
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+-- Partial index on undelivered ripples for the common query pattern (fetching pending delivery)
+CREATE INDEX idx_impact_ripples_pending ON impact_ripples(recipient_user_id, created_at DESC)
+  WHERE delivered = FALSE;
+-- Full index for historical queries (analytics, Warm Mirror aggregation)
+CREATE INDEX idx_impact_ripples_recipient ON impact_ripples(recipient_user_id, created_at DESC);
 ```
 
 ### Existing Tables to Modify
@@ -475,6 +695,8 @@ The growth system introduces new visual states, all using existing token vocabul
 | Late night / protective mode | Dimmer vellum, slower breathing | `ink` at 0.7 opacity, pulse rate ÷2 |
 | Seasonal transition | Gradient shift over 24-hour fade | Interpolated `vellum` → seasonal tint |
 | Mood Lotus state | Color shifts with check-in | `mood_calm`, `mood_storm`, `mood_radiant` (new tokens needed) |
+| **Impact Ripple received** | Soft vellum notification, warm text, single haptic | `vellum`, `ink`, `ember` for ripple icon |
+| **Warm Mirror opened** | Gentle fade-in of narrative text, breath-timing on lines | `FadeInDown 300ms` staggered per sentence, `dalu` |
 
 ### New Semantic Tokens Needed
 
@@ -503,9 +725,23 @@ growth_bloom: 'rgba(212,132,58,0.8)',   // Purna Kamala — radiant
 >
 > A student who finishes his first assignment does not need a leaderboard rank. He needs a quiet moment where the app says: *you did something real today.*
 >
-> The lotus does not know how tall it is compared to the other lotuses. It only knows the direction of the light.
+> But here is what v1.0 missed:
 >
-> We build toward the light.
+> *The lotus does not race other lotuses. But it does exist in an ecosystem. It is nourished by the water that flows from the roots of every other plant nearby. It does not compete with them. But it is not alone.*
+>
+> Teachers are not ascetics. They are human beings embedded in communities of other human beings. They want to know that their work reaches real people. They want to feel the warmth of genuine appreciation — not an algorithm's substitute for it.
+>
+> When a past student sends a Thuthimal gift, that teacher weeps — not because of points, but because a human being, years later, remembers that they were cared for.
+>
+> **Our job is to design for the full human being:**
+> - Their private inner life (Presence, Witnessing, the Lotus growing silently)
+> - Their craft and competence (Nourishing, the Warm Mirror reflecting who they are)
+> - Their deep need to belong and to matter (Relatedness, the Impact Ripple, the Community Garden)
+>
+> The golden mean is not between "gamification" and "silence."
+> The golden mean is between **extractive mechanics** and **genuine human connection**.
+>
+> We build for the second kind. Always.
 >
 > **ජයවේවා** 🪷
 
@@ -579,6 +815,53 @@ export const GROWTH_SIGNAL_MAP: Record<string, GrowthDimension> = {
   'principal_recognition': 'blooming',
   'community_milestone_reached': 'blooming',
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// IMPACT RIPPLE trigger map (v2.0)
+// Each entry defines: what user action creates a ripple for the ORIGINATOR
+// ─────────────────────────────────────────────────────────────────────────────
+export type RippleType =
+  | 'resource_saved'
+  | 'resource_read'
+  | 'post_sparked'
+  | 'lesson_accessed'
+  | 'feedback_given'
+  | 'manifesto_endorsed'
+  | 'circle_joined';
+
+// Maps a user action to: (1) who gets a ripple, (2) what type
+export const IMPACT_RIPPLE_TRIGGER_MAP: Record<string, {
+  recipientEntity: 'resource_creator' | 'post_author' | 'manifesto_creator' | 'circle_creator';
+  rippleType: RippleType;
+  minThreshold?: number; // only fire ripple after N occurrences (prevents noise)
+}> = {
+  'resource_pull_to_desk':    { recipientEntity: 'resource_creator', rippleType: 'resource_saved' },
+  'resource_opened':          { recipientEntity: 'resource_creator', rippleType: 'resource_read', minThreshold: 5 },
+  'community_reply_created':  { recipientEntity: 'post_author',      rippleType: 'post_sparked' },
+  'lesson_material_opened':   { recipientEntity: 'resource_creator', rippleType: 'lesson_accessed' },
+  'assignment_feedback_given':{ recipientEntity: 'resource_creator', rippleType: 'feedback_given' },
+  'manifesto_endorsed':       { recipientEntity: 'manifesto_creator',rippleType: 'manifesto_endorsed' },
+  'circle_joined':            { recipientEntity: 'circle_creator',   rippleType: 'circle_joined' },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WARM MIRROR data sources (v2.0)
+// Each field maps to a query that gathers data for the weekly narrative
+// ─────────────────────────────────────────────────────────────────────────────
+export interface WarmMirrorDataPoints {
+  // Presence
+  days_present: number;           // distinct calendar days where at least one growth_event of any type was recorded
+  quiet_moments: number;          // count of: mood_checkin + breathing_exercise_complete + fire_journal_entry
+  // Nourishing / Impact
+  ripples_received: number;       // impact_ripples delivered this period
+  assignments_with_feedback: number; // assignments where feedback text length > 20 chars
+  resources_that_reached_others: number; // ripple_type = resource_saved | resource_read
+  // Weaving
+  posts_that_sparked: number;     // ripple_type = post_sparked received
+  // Long-running context
+  days_since_joined: number;      // for "your classroom has been your home for X months"
+  primary_classroom_name?: string;
+}
 ```
 
 ---
