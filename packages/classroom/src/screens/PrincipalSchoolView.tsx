@@ -12,7 +12,6 @@
 
 import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
-
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useStore, ClassroomStackParamList, useAIAgent } from '@repo/core';

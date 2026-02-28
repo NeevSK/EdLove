@@ -251,7 +251,6 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
     const renderNoteCard = ({ item: note }: { item: ClassroomNote }) => {
         const meta = NOTE_TYPE_META[note.note_type];
         const NoteIcon = meta.icon;
-        const isOwn = !note.author || note.author_id === undefined /* always true — only own notes returned by RLS */;
         const isClassVisible = note.visibility === 'class';
         const time = new Date(note.created_at).toLocaleTimeString([], {
             hour: '2-digit',

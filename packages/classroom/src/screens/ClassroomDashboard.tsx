@@ -197,6 +197,9 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
             return true;
         });
     }, [isClassTeacher]);
+
+    useEffect(() => {
+        if (activeFeature === 'students' && students.length === 0 && classroomId) {
             api.classroomStudents.getAll(classroomId).then(setStudents).catch(console.error);
         }
     }, [activeFeature, classroomId]);

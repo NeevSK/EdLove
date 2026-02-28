@@ -86,17 +86,20 @@ These are the tasks that, if broken, mean zero real users can use the app. They 
 
 ---
 
-### T0.6 — School + Classroom Creation: Unified Onboarding Flow
-**What**: Currently `SchoolCreationScreen` success state shows a QR code + one CTA: "Enter Your Sanctuary" → `ClassroomList`. There is no prompt to create the first classroom. The teacher must discover classroom creation independently after landing in ClassroomList.
+### T0.6 — School Creation: Guide Principal to Hierarchy Setup (Not Classroom Creation)
+**Ownership model (now correct in code):**
+- **Principal** creates: school → school structure (grades, sections, grade heads) → shares school QR so teachers can join
+- **Teacher** creates: classrooms (after joining a school) → lessons, students, resources inside those classrooms
+- **Student**: joins classrooms via QR or code — never creates
 
-Fix: Add **"Set Up Your First Classroom →"** as the primary CTA on the school creation success screen, with "Skip for now" as secondary. This navigates directly to `CreateClassroomModal` (which already exists in `@repo/classroom`).
+**What was wrong**: The SchoolCreationScreen success CTA said "Enter Your Sanctuary" with no guidance on what to do next. T0.6 previously planned to add "Set Up First Classroom" — but classrooms are a teacher concern, not a principal concern. Fixed: CTA now says "Set Up School Structure →" with a subtitle explaining the flow. The `ClassroomList` FAB is now role-guarded: only `teacher` and `grade_head` can trigger `CreateClassroomModal` — principals, students, and section_heads are excluded.
 
-**Why**: School without a classroom is an empty shell. A new principal/teacher completing school setup needs to create their first classroom immediately — it completes the setup loop. This is the difference between "I set up the app" and "I'm ready to use the app." Every SaaS onboarding principle says: get users to their first value moment as fast as possible. First value moment = first classroom created.
-**Effort**: S (half day — SchoolCreationScreen change + routing)
-**Code to touch**: `apps/gurudevi-mobile/src/screens/SchoolCreationScreen.tsx` (success state), `packages/classroom/src/components/CreateClassroomModal.tsx`
-**Action**: 
-1. In SchoolCreationScreen success state, replace the single "Enter Your Sanctuary" button with two CTAs: primary = "Set Up First Classroom →" (navigates to Classroom tab with CreateClassroomModal pre-opened), secondary = "Explore Sanctuary" (navigate to ClassroomList as before)
-2. Pass `schoolId` from `successData` to `CreateClassroomModal` as a prop so classroom is auto-linked to the newly created school
+**Status**: ✅ Done — code changes committed.
+- `SchoolCreationScreen.tsx`: success CTA → "Set Up School Structure →" + explanatory subtitle
+- `ClassroomList.tsx`: `canCreateClassroom = !isGuest && (role === 'teacher' || role === 'grade_head')` — replaces `role !== 'student'` and `!isGuest` checks throughout
+- `ACTIVE_TASKS.md`: this task corrected
+
+**Why this matters**: Before this fix, a principal landing on ClassroomList (via deep link or unexpected routing) would see a + FAB inviting them to create a classroom. The ownership boundary was blurry in both the UI and the docs. Now it is structural: the code itself enforces who creates what.
 
 ---
 
@@ -581,7 +584,7 @@ T0.1 (DB migrations) → ALL other features (silent failures otherwise)
 T0.2 (journey validation) → Trust that core loop works
 T0.3 (real pulse data) → T1.6 (pulse UX polish)
 T0.4 (QR join fix) → T0.2 (journey works end-to-end)
-T0.6 (school+classroom creation) → T0.2 (journey validation complete)
+T0.6 (school creation → hierarchy guidance, role guards) → T0.2 (journey validation complete)
 T1.5 (join-group QR) → T2.1 (group chat — groups must be joinable first)
 T2.1 (group chat backend) → T3.4 (community UI polish)
 T2.7 (DM infrastructure) → T3.4 (community UI polish)
@@ -604,13 +607,13 @@ T4.3 (deduplication) → safer to make changes in community + library
 - [ ] Approve Community group chat UX direction before T2.1 (WhatsApp-style vs other)
 - [ ] Review and approve translation improvements in `TRANSLATION_IMPROVEMENTS.md`
 - [ ] Approve DM role permissions (can students DM teachers? parents DM teachers?) (T2.7)
-- [ ] Validate SchoolCreationScreen → ClassroomModal flow on device (T0.6)
+- [x] T0.6: ✅ Done — "Set Up School Structure" CTA on SchoolCreationScreen; ClassroomList role-guarded (teacher/grade_head only)
 
 ### For the Agent (Architecture, Boilerplate, Pattern Implementation)
 - [ ] T0.3: Wire PulseDashboard to real attendance + assignment queries
 - [ ] T0.4: Fix teacher QR join (membership link, not teacher_id overwrite)
 - [ ] T0.5: Render QR modal for Principal InviteManager
-- [ ] T0.6: Add "Set Up First Classroom" CTA to SchoolCreationScreen success state
+- [x] T0.6: ✅ Done — see above
 - [ ] T1.1: Wire SleepTracker / RemindersManager / VoiceJournaling into TeacherSelfView
 - [ ] T1.2: Audit NotificationDrawer data; wire to real Supabase if hardcoded
 - [ ] T1.5: Add join-group QR consumer path in QRResolver + QRHandlerScreen

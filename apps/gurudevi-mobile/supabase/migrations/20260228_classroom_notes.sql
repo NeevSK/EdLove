@@ -69,7 +69,7 @@ CREATE POLICY "classroom_notes_update"
     ON public.classroom_notes FOR UPDATE
     USING (author_id = auth.uid());
 
--- Authors can delete their own notes (soft-delete via updated_at is preferred; hard-delete allowed here)
+-- Only the author can delete (hard-delete; old notes are removed when explicitly requested)
 CREATE POLICY "classroom_notes_delete"
     ON public.classroom_notes FOR DELETE
     USING (author_id = auth.uid());
