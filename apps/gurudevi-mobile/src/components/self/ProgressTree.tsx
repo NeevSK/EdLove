@@ -29,6 +29,7 @@ import { Theme, typography } from '@repo/ui';
 import { supabase } from '@repo/core';
 import { SkeletonCard } from '@repo/ui';
 import { PositiveInvitation } from '@repo/ui';
+import { useTranslation } from 'react-i18next';
 
 interface ProgressTreeProps {
     userId?: string;
@@ -49,6 +50,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
     const [currentStage, setCurrentStage] = useState(GROWTH_STAGES[0]);
     const [showBloom, setShowBloom] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const { t } = useTranslation();
 
     // Animation values
     const treeScale = useSharedValue(0.8);
@@ -178,10 +180,10 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
             {/* Header */}
             <VStack space="xs">
                 <Heading color={Theme.colors.sacredWhite} size="lg">
-                    Your Growth
+                    {t('progressTree.title')}
                 </Heading>
                 <Text color={Theme.colors.mistGray} size="sm">
-                    No pressure, just organic progress
+                    {t('progressTree.subtitle')}
                 </Text>
             </VStack>
 

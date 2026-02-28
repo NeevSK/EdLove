@@ -34,6 +34,7 @@ import { Plus, Trash2, Edit, Bell, Droplet, Clock } from 'lucide-react-native';
 import { Theme, typography } from '@repo/ui';
 import { supabase } from '@repo/core';
 import { hapticLight, hapticMedium } from '@repo/ui';
+import { useTranslation } from 'react-i18next';
 
 interface Reminder {
     id: string;
@@ -68,6 +69,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
+    const { t } = useTranslation();
 
     // Form state
     const [title, setTitle] = useState('');
@@ -251,7 +253,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
             <HStack justifyContent="space-between" alignItems="center">
                 <VStack space="xs" sx={{ flex: 1 }}>
                     <Heading color={Theme.colors.sacredWhite} size="lg">
-                        Reminders
+                        {t('reminders.title')}
                     </Heading>
                     <Text color={Theme.colors.mistGray} size="sm">
                         Gentle nudges for self-care
@@ -267,7 +269,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                     }}
                 >
                     <Plus color={Theme.colors.sacredWhite} size={16} style={{ marginRight: 4 }} />
-                    <ButtonText>Add</ButtonText>
+                    <ButtonText>{t('reminders.addReminder')}</ButtonText>
                 </Button>
             </HStack>
 
@@ -283,7 +285,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                         }}
                     >
                         <Text color={Theme.colors.mistGray} size="md" textAlign="center">
-                            No reminders yet. Add one to get started!
+                            {t('reminders.noReminders')}
                         </Text>
                     </Box>
                 ) : (

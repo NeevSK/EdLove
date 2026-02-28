@@ -36,6 +36,7 @@ import { useAudioRecorder, useAudioPlayer, AudioModule, RecordingPresets, useAud
 import { Theme, typography } from '@repo/ui';
 import { supabase } from '@repo/core';
 import { hapticLight, hapticMedium } from '@repo/ui';
+import { useTranslation } from 'react-i18next';
 
 interface VoiceJournalingProps {
     userId?: string;
@@ -48,6 +49,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
     const [recordingState, setRecordingState] = useState<RecordingState>('idle');
     const [recordingDuration, setRecordingDuration] = useState(0);
     const [recordingUri, setRecordingUri] = useState<string | null>(null);
+    const { t } = useTranslation();
 
     // Expo Audio Hooks
     const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
@@ -215,10 +217,10 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
             {/* Header */}
             <VStack space="xs">
                 <Heading color={Theme.colors.sacredWhite} size="lg">
-                    Voice Journaling
+                    {t('voiceJournaling.title')}
                 </Heading>
                 <Text color={Theme.colors.mistGray} size="sm">
-                    Speak your truth, release your burden
+                    {t('voiceJournaling.subtitle')}
                 </Text>
             </VStack>
 
@@ -316,7 +318,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                             size={20}
                             style={{ marginRight: Theme.spacing.sm }}
                         />
-                        <ButtonText>Start Recording</ButtonText>
+                        <ButtonText>{t('voiceJournaling.startRecording')}</ButtonText>
                     </Button>
                 )}
 
@@ -335,7 +337,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                             size={20}
                             style={{ marginRight: Theme.spacing.sm }}
                         />
-                        <ButtonText>Stop</ButtonText>
+                        <ButtonText>{t('voiceJournaling.stopRecording')}</ButtonText>
                     </Button>
                 )}
 
@@ -356,7 +358,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                                 size={16}
                                 style={{ marginRight: Theme.spacing.xs }}
                             />
-                            <ButtonText color={Theme.colors.dimGray}>Discard</ButtonText>
+                            <ButtonText color={Theme.colors.dimGray}>{t('voiceJournaling.delete')}</ButtonText>
                         </Button>
 
                         <Button
@@ -375,7 +377,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                                 style={{ marginRight: Theme.spacing.xs }}
                             />
                             <ButtonText color={Theme.colors.sanctuarySaffron}>
-                                {recordingState === 'playing' ? 'Playing...' : 'Play'}
+                                {recordingState === 'playing' ? t('voiceJournaling.playing') : t('voiceJournaling.play')}
                             </ButtonText>
                         </Button>
 
@@ -393,7 +395,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                                 size={16}
                                 style={{ marginRight: Theme.spacing.xs }}
                             />
-                            <ButtonText>Save</ButtonText>
+                            <ButtonText>{t('common.save')}</ButtonText>
                         </Button>
                     </HStack>
                 )}

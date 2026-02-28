@@ -41,6 +41,7 @@ import {
 } from 'lucide-react-native';
 import { useSocialLinks } from '@repo/profile';
 import { SocialPlatform, PrivacyLevel } from '@repo/core';
+import { useTranslation } from 'react-i18next';
 
 interface AddSocialLinkModalProps {
     visible: boolean;
@@ -56,15 +57,16 @@ const PLATFORMS: { label: string; value: SocialPlatform; icon: any; color: strin
     { label: 'Email', value: 'website', icon: Mail, color: Theme.colors.emberOrange }, // Mapping to website type for now or core needs update
 ];
 
-const PRIVACY_LEVELS: { label: string; value: PrivacyLevel; icon: any; desc: string }[] = [
-    { label: 'Public', value: 'public', icon: ShieldCheck, desc: 'Everyone can see this' },
-    { label: 'Particulars', value: 'particulars', icon: Shield, desc: 'Only your direct contacts' },
-    { label: 'Private', value: 'private', icon: ShieldAlert, desc: 'Only visible to you' },
+const PRIVACY_LEVELS: { label: string; value: PrivacyLevel; icon: any; desc: string; labelKey: string; descKey: string }[] = [
+    { label: 'Public', value: 'public', icon: ShieldCheck, desc: 'Everyone can see this', labelKey: 'addSocialLink.publicLabel', descKey: 'addSocialLink.publicDesc' },
+    { label: 'Particulars', value: 'particulars', icon: Shield, desc: 'Only your direct contacts', labelKey: 'addSocialLink.particularsLabel', descKey: 'addSocialLink.particularsDesc' },
+    { label: 'Private', value: 'private', icon: ShieldAlert, desc: 'Only visible to you', labelKey: 'addSocialLink.privateLabel', descKey: 'addSocialLink.privateDesc' },
 ];
 
 export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible, onClose, userId }) => {
     const { links, addLink, deleteLink } = useSocialLinks(userId);
     const colors = useThemedColors();
+    const { t } = useTranslation();
     const [platform, setPlatform] = useState<SocialPlatform>('whatsapp');
     const [url, setUrl] = useState('');
     const [privacy, setPrivacy] = useState<PrivacyLevel>('public');
@@ -109,8 +111,8 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                     }}>
                         <HStack justifyContent="space-between" alignItems="center" mb="$6">
                             <VStack>
-                                <Heading color={colors.textPrimary}>Social Hub</Heading>
-                                <Text size="xs" color={colors.textTertiary}>Manage your elective connections</Text>
+                                <Heading color={colors.textPrimary}>{t('addSocialLink.title')}</Heading>
+                                <Text size="xs" color={colors.textTertiary}>{t('addSocialLink.subtitle')}</Text>
                             </VStack>
                             <TouchableOpacity
                                 onPress={onClose}
@@ -128,7 +130,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                             <VStack space="xl">
                                 {/* Platform Picker */}
                                 <VStack space="xs">
-                                    <Text size="xs" bold color={colors.textSecondary}>Select Platform</Text>
+                                    <Text size="xs" bold color={colors.textSecondary}>{t('addSocialLink.selectPlatform')}</Text>
                                     <HStack space="sm" sx={{ flexWrap: 'wrap' }}>
                                         {PLATFORMS.map((p) => (
                                             <TouchableOpacity
@@ -160,7 +162,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
 
                                 {/* URL Input */}
                                 <VStack space="xs">
-                                    <Text size="xs" bold color={colors.textSecondary}>Handle or Link</Text>
+                                    <Text size="xs" bold color={colors.textSecondary}>{t('addSocialLink.handleOrLink')}</Text>
                                     <Input variant="outline" sx={{
                                         height: 54,
                                         borderRadius: Theme.corners.comfortable,
@@ -171,7 +173,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                             color={colors.textPrimary}
                                             value={url}
                                             onChangeText={setUrl}
-                                            placeholder={platform === 'whatsapp' ? '+94...' : 'Username or link'}
+                                            placeholder={platform === 'whatsapp' ? t('addSocialLink.phoneOrLink') : t('addSocialLink.usernameOrLink')}
                                             placeholderTextColor={colors.textTertiary}
                                         />
                                     </Input>
@@ -179,7 +181,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
 
                                 {/* Privacy Picker */}
                                 <VStack space="xs">
-                                    <Text size="xs" bold color={colors.textSecondary}>Privacy Level</Text>
+                                    <Text size="xs" bold color={colors.textSecondary}>{t('addSocialLink.privacyLevel')}</Text>
                                     <VStack space="sm">
                                         {PRIVACY_LEVELS.map((pl) => (
                                             <TouchableOpacity
@@ -197,10 +199,10 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                                         <pl.icon size={20} color={privacy === pl.value ? colors.action : colors.textTertiary} />
                                                         <VStack flex={1}>
                                                             <Text bold color={privacy === pl.value ? colors.textPrimary : colors.textSecondary}>
-                                                                {pl.label}
+                                                                {t(pl.labelKey)}
                                                             </Text>
                                                             <Text size="xs" color={colors.textTertiary}>
-                                                                {pl.desc}
+                                                                {t(pl.descKey)}
                                                             </Text>
                                                         </VStack>
                                                         {privacy === pl.value && <ShieldCheck size={18} color={colors.action} />}
@@ -224,7 +226,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                 >
                                     <HStack space="xs" alignItems="center">
                                         <Plus size={20} color="white" />
-                                        <ButtonText color="white" bold>Add Social Presence</ButtonText>
+                                        <ButtonText color="white" bold>{t('addSocialLink.addButton')}</ButtonText>
                                     </HStack>
                                 </Button>
                             </VStack>

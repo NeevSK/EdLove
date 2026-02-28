@@ -10,6 +10,7 @@ import {
     Heading
 } from '@repo/ui';
 import { Plus, Trash2 } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 
 interface StepHierarchyProps {
     data: {
@@ -23,6 +24,7 @@ const COMMON_LEVELS = ['Primary (1-5)', 'Junior Secondary (6-9)', 'Secondary (10
 
 export default function StepHierarchy({ data, onUpdate }: StepHierarchyProps) {
     const colors = useThemedColors();
+    const { t } = useTranslation();
 
     const toggleLevel = (level: string) => {
         const newLevels = data.levels.includes(level)
@@ -34,9 +36,9 @@ export default function StepHierarchy({ data, onUpdate }: StepHierarchyProps) {
     return (
         <VStack sx={{ gap: '$lg' as any }}>
             <Box>
-                <Heading size="sm" sx={{ marginBottom: '$2' as any }}>Academic Levels</Heading>
+                <Heading size="sm" sx={{ marginBottom: '$2' as any }}>{t('schoolSetup.academicLevels')}</Heading>
                 <Text size="xs" color={colors.textSecondary} sx={{ marginBottom: '$4' as any }}>
-                    Select the grades/levels your school covers.
+                    {t('schoolSetup.academicLevelsDesc')}
                 </Text>
                 <VStack sx={{ gap: '$2' as any }}>
                     {COMMON_LEVELS.map(level => (
@@ -61,9 +63,9 @@ export default function StepHierarchy({ data, onUpdate }: StepHierarchyProps) {
             </Box>
 
             <Box sx={{ marginTop: '$4' as any }}>
-                <Heading size="sm" sx={{ marginBottom: '$2' as any }}>Organizational Sections</Heading>
+                <Heading size="sm" sx={{ marginBottom: '$2' as any }}>{t('schoolSetup.orgSections')}</Heading>
                 <Text size="xs" color={colors.textSecondary} sx={{ marginBottom: '$4' as any }}>
-                    Defining sections helps in building the administrative hierarchy later.
+                    {t('schoolSetup.orgSectionsDesc')}
                 </Text>
 
                 {/* Placeholder for section adding - will enhance in future phases if needed */}
@@ -79,7 +81,7 @@ export default function StepHierarchy({ data, onUpdate }: StepHierarchyProps) {
                     }}
                 >
                     <Plus size={24} color={colors.textTertiary} />
-                    <Text size="sm" color={colors.textTertiary} sx={{ marginTop: '$2' as any }}>Add custom section (Coming Soon)</Text>
+                    <Text size="sm" color={colors.textTertiary} sx={{ marginTop: '$2' as any }}>{t('schoolSetup.addCustomSection')}</Text>
                 </Box>
             </Box>
         </VStack>

@@ -23,10 +23,12 @@ import { useAIAgent, Message } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import Animated, { FadeInUp, Layout } from 'react-native-reanimated';
 import { useStore } from '@repo/core';
+import { useTranslation } from 'react-i18next';
 
 export default function AIAssistantScreen() {
     const navigation = useNavigation();
     const colors = useThemedColors();
+    const { t } = useTranslation();
     const { messages, isThinking, sendMessage } = useAIAgent();
     const userRole = useStore(state => state.userRole);
     const [inputText, setInputText] = useState('');
@@ -87,11 +89,11 @@ export default function AIAssistantScreen() {
                                 fontSize: '$lg' as any,
                                 color: Theme.colors.sacredWhite
                             }}>
-                                Mr. AI Agent
+                                {t('aiAssistant.title')}
                             </Text>
                         </HStack>
                         <Text color={colors.textSecondary} size="xs">
-                            Reflection & Guidance
+                            {t('aiAssistant.subtitle')}
                         </Text>
                     </VStack>
                 </HStack>
@@ -107,7 +109,7 @@ export default function AIAssistantScreen() {
                         isThinking ? (
                             <Box sx={{ padding: '$md' as any, opacity: 0.6 }}>
                                 <Text color={colors.textSecondary} italic size="sm">
-                                    Mr. Agent is reflecting...
+                                    {t('aiAssistant.thinking')}
                                 </Text>
                             </Box>
                         ) : null
@@ -119,17 +121,17 @@ export default function AIAssistantScreen() {
                     {!userRole ? (
                         <VStack space="xs" alignItems="center" p="$4">
                             <Text color={colors.textSecondary} size="sm" textAlign="center">
-                                Log in to save your reflections and receive personalized guidance.
+                                {t('aiAssistant.loginPrompt')}
                             </Text>
                             <TouchableOpacity onPress={() => (navigation as any).navigate('Welcome')}>
-                                <Text color={colors.action} bold size="sm">Continue to Login</Text>
+                                <Text color={colors.action} bold size="sm">{t('aiAssistant.continueLogin')}</Text>
                             </TouchableOpacity>
                         </VStack>
                     ) : (
                         <HStack style={styles.inputWrapper} space="sm">
                             <TextInput
                                 style={[styles.input, { color: colors.text }]}
-                                placeholder="Share your thoughts..."
+                                placeholder={t('aiAssistant.placeholder')}
                                 placeholderTextColor={colors.textSecondary}
                                 value={inputText}
                                 onChangeText={setInputText}

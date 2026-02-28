@@ -20,7 +20,8 @@
         "sampleDismissed": "නියැදිය ඉවත් කරන ලදී",
         "sampleDismissedDesc": "මෙම නියැදි අභයභූමිය ඔබගේ දසුනෙන් ඉවත් කර ඇත.",
         "initialize": "ආරම්භ කරන්න",
-        "guidesAndSamples": "මාර්ගෝපදේශ සහ නියැදි"
+        "guidesAndSamples": "මාර්ගෝපදේශ සහ නියැදි",
+        "skip": "මඟ හරින්න"
     },
     "demoMode": {
         "realityCheckTitle": "වැලිපෙට්ටි අනුකරණය",
@@ -683,5 +684,243 @@
         "currentLanguage": "වත්මන් භාෂාව: {{lang}}",
         "voiceInput": "හඬ සටහනක් පටිගත කරන්න",
         "loading": "පූරණය වෙමින්, කරුණාකර රැඳෙන්න"
+    },
+    "invitation": {
+        "guestTitle": "ඔබේ අභයාරාමය මෙතැනින් ආරම්භ වේ",
+        "guestDesc": "ඔබේ ගමන සියලු උපාංගවල සමමුහුර්ත කිරීමට ලොග් ඉන් වන්න.",
+        "guestAction": "ලොග් ඉන් / ලියාපදිංචි වන්න",
+        "communityEmptyTitle": "ප්‍රඥාවේ කවයට එකතු වන්න",
+        "communityEmptyDesc": "සාමාජිකයන් සමඟ අදහස් ගවේෂණය කරන්න.",
+        "communityEmptyAction": "සාකච්ඡාවට සහභාගි වන්න",
+        "libraryEmptyTitle": "ඔබේ පෞද්ගලික පොතේ හල ඔබ බලා සිටී",
+        "libraryEmptyDesc": "සම්පත්, පොත් සහ ඥාන හෙළිදරව් සුරකින්න.",
+        "libraryEmptyAction": "පොතේ හල ගවේෂණය කරන්න"
+    },
+    "teacher": {
+        "actions": {
+            "principalEcho": "විදුහල්පති ප්‍රතිධ්වනිය"
+        },
+        "feedback": {
+            "title": "විදුහල්පති ප්‍රතිධ්වනිය",
+            "subtitle": "පරිපාලනයට සිතුවිල්ලක් හෝ ඉල්ලීමක් යවන්න",
+            "category": "වර්ගය",
+            "priority": "හදිසිය",
+            "content": "ඔබේ සිතුවිල්ල",
+            "placeholder": "ඔබේ සිතුවිලි, සම්පත් අවශ්‍යතා හෝ ගැටළු බෙදාගන්න...",
+            "note": "මෙම සිතුවිල්ල විදුහල්පතිගේ Dashboard හි 'ප්‍රතිධ්වනිය' කොටසේ දෘශ්‍යමාන කෙරෙනු ඇත."
+        }
+    },
+    "welcome": {
+        "title": "ගුරුදේවී",
+        "subtitle": "ආදරයෙන් ලෙනා, ආදරයෙන් ගොඩනඟා ඇත.",
+        "intro": "ගුරුවරුන් සඳහා ඩිජිටල් අභයාරාමය.",
+        "acceptTerms": "මම එකඟ වෙමි ",
+        "privacyPactLink": "රහස්‍යතා ගිවිසුමට",
+        "startExploring": "ආරම්භ කරන්න",
+        "exploreAsGuest": "අමුත්තෙකු ලෙස ගවේෂණය කරන්න",
+        "guestSubtext": "ගිණුමක් අවශ්‍ය නොවේ • සම්පූර්ණ ප්‍රවේශය",
+        "openingSanctuary": "අභයාරාමය ආරම්භ කෙරෙමින්...",
+        "login": "ගිණුමක් ඇත. ලොග් ඉන් වන්න",
+        "footer": "ආදරයෙන් ලෙනා, ආදරයෙන් ගොඩනඟා ඇත.",
+        "privacyPactStatement": "සහභාගිය කිරීමෙන්, ඔබ අපේ ශාස්ත්‍රීය රහස්‍යතා ගිවිසුමට එකඟ වේ.",
+        "message": "ගුරුදේවී වෙත සාදරයෙන් පිළිගනිමු",
+        "description": "ඔබේ AI-ශක්තිමත් අධ්‍යාපන සහකාරයා.",
+        "start": "ආරම්භ කරන්න"
+    },
+    "thuthimalClaim": {
+        "loading": "කෘතඥතාවේ මල ලැබෙමින් ඇත...",
+        "alreadyBloomedTitle": "මෙම මල දැනටමත් පිපී ඇත",
+        "alreadyBloomedDesc": "මෙම තුතිමල් තෑග්ග දැනටමත් වෙනත් කෙනෙකු ලබාගෙන ඇත.\nකෘතඥතාවේ සෑම මලක්ම එක් වරක් පමණි පිපෙන්නේ.",
+        "errorTitle": "යම් දෝෂයක් ඇතිවිය",
+        "errorDesc": "මෙම තෑග්ග ලබා ගැනීමට නොහැකි විය. නැවත උත්සාහ කරන්න.",
+        "flowerTitle": "තුතිමල්",
+        "giftHeading": "කෘතඥතාවේ මලක්",
+        "giftFrom": "ඔබේ Pro ග්‍රාහකත්වය කෘතඥතාවේ තෑග්ගක්",
+        "giftRecognition": "ගුරුවරයෙකු ලෙස ඔබේ ශාස්ත්‍රීය සේවාවට ගෞරව පිරිනැමීමකි.",
+        "proActive": "Pro ඔබේ ගිණුමේ දැන් ක්‍රියාත්මකයි",
+        "enterSanctuary": "අභයාරාමයට ඇතුළු වන්න ✦",
+        "goBack": "ආපසු යන්න"
+    },
+    "qrHandler": {
+        "processing": "QR සකසමින්...",
+        "done": "අවසන්!",
+        "error": "දෝෂයකි",
+        "processingMessage": "QR ක්‍රියාව සකසමින් පවතී...",
+        "somethingWrong": "යම් දෝෂයක් ඇතිවිය. නැවත උත්සාහ කරන්න."
+    },
+    "invitationWelcome": {
+        "invited": "ඔබව ආරාධනා කර ඇත",
+        "welcomeTo": "{{schoolName}} වෙත සාදරයෙන් පිළිගනිමු",
+        "role": "භූමිකාව",
+        "joinButton": "අභයාරාමයට එකතු වන්න",
+        "joinFailed": "එකතු වීම අසාර්ථකයි",
+        "joinFailedDesc": "ඔබේ පැතිකඩ යාවත්කාලීන කිරීමට නොහැකි විය. නැවත උත්සාහ කරන්න.",
+        "errorTitle": "දෝෂයකි",
+        "errorDesc": "අනපේක්ෂිත දෝෂයක් ඇතිවිය. නැවත උත්සාහ කරන්න."
+    },
+    "aiAssistant": {
+        "title": "AI සහකාරයා",
+        "subtitle": "සිතුවිලි සහ මගපෙන්වීම",
+        "thinking": "AI සහකාරයා සිතමින් ඇත...",
+        "placeholder": "ඔබේ සිතුවිලි බෙදාගන්න...",
+        "loginPrompt": "ඔබේ සිතුවිලි සුරැකීමට සහ පුද්ගලාරෝපිත මගපෙන්වීම ලබා ගැනීමට ලොග් වන්න.",
+        "continueLogin": "ලොග් ඉන් වීමට ඉදිරියට යන්න"
+    },
+    "fireJournal": {
+        "title": "ගිනි දිනපොත",
+        "subtitle": "ඔබව බරට දැනෙන දේ ලියා, ඉන්පසු නිදහස් කරන්න",
+        "placeholder": "නිදහස් කිරීමට ඇති දේ ලියන්න...",
+        "burn": "දවන්න",
+        "burning": "දවමින්...",
+        "released": "✨ ගිනිට නිදහස් කරන ලදි",
+        "privacy": "🔥 ඔබ දවන දෙය පරිවර්තනය වේ, සුරක්ෂිත නොවේ",
+        "guidance": "සමහරවිට නම් දීමම ප්‍රමාණවත් වේ"
+    },
+    "sleepTracker": {
+        "title": "ඔබේ නින්ද කෙසේ වීද?",
+        "subtitle": "උදෑසන මෘදු ස්වයං-පරීක්ෂාව",
+        "restless": "සන්සුන් නොවූ",
+        "poor": "දුර්වල",
+        "okay": "සාමාන්‍ය",
+        "good": "හොඳ",
+        "excellent": "අතිශය හොඳ",
+        "restlessDesc": "නිදා ගත නොහැකි විය",
+        "poorDesc": "නැඟිට වැටෙමින් ගත විය",
+        "okayDesc": "සාමාන්‍ය විශ්‍රාමයක් ලැබිණ",
+        "goodDesc": "හොඳින් නිදා ගත්තා",
+        "excellentDesc": "ගැඹුරින් විශ්‍රාම ගත්තා",
+        "logButton": "නින්ද ලිපිගොනුව සුරකින්න",
+        "alreadyLogged": "අද නින්ද සටහන් කළා",
+        "qualityLabel": "නින්දේ ගුණාත්මකභාවය"
+    },
+    "reminders": {
+        "title": "සිහිපත් කිරීම්",
+        "addReminder": "සිහිපත් කිරීමක් එකතු කරන්න",
+        "noReminders": "සිහිපත් කිරීම් නොමැත",
+        "drinkWater": "ඉගැන්වීමේදී නිතරම ජලය පානය කරන්න",
+        "reminderAdded": "සිහිපත් කිරීම එකතු කළා",
+        "reminderRemoved": "සිහිපත් කිරීම ඉවත් කළා"
+    },
+    "shadowAgent": {
+        "title": "සෙවනැලි සහකාරයා",
+        "subtitle": "ඔබේ පෞද්ගලික සිතීමේ අවකාශය",
+        "placeholder": "ඔබේ සිතේ ඇති දේ...",
+        "prompts": {
+            "heavy": "අද බරට දැනෙන්නේ කුමක්ද?",
+            "peace": "මේ උදෑසන ඔබට සාමය ගෙනාවේ කුමක්ද?",
+            "holding": "ඔබ රදවාගෙන සිටින්නේ කුමක්ද?",
+            "release": "ඔබ නිදහස් කිරීමට කැමති දේ කුමක්ද?",
+            "joy": "අද ඔබට හමු වූ කුඩා සතුට කුමක්ද?",
+            "yourself": "ඔබ ස්වාභාවිකව දැනෙන්නේ කොතනක්ද?",
+            "attention": "ඔබේ මෘදු අවධානය අවශ්‍ය දේ කුමක්ද?",
+            "truth": "ඔබ වළකින සත්‍යය කුමක්ද?",
+            "forgiveness": "ඔබේ සමාව ගැනීමට සුදුසු දේ කුමක්ද?",
+            "grateful": "දැන් මේ මොහොතේ ඔබ කෘතඥ වන දේ කුමක්ද?"
+        },
+        "nudges": {
+            "longWork": "ඔබ දිගු වේලාවක් වැඩ කරමින් සිටී. විශ්‍රාමයේ වේලාවකි?",
+            "lateNight": "රාත්‍රිය ගෙවෙමින් ඇත. ඔබේ නින්දද වැදගත්.",
+            "earlyStart": "අද ඉතා අල්ලෑ ශුරුවෙනවා. හුස්ම ගන්නා බව මතක් කරගන්න.",
+            "lowEnergy": "ඔබේ ශක්තිය කෙසේද? ටිකක් නවතිනවිට ප්‍රයෝජනකරයි."
+        }
+    },
+    "voiceJournaling": {
+        "title": "හඬ දිනපොත",
+        "subtitle": "ඔබේ සිතුවිලි නිදහසේ කියා ගන්න",
+        "startRecording": "පටිගත කිරීම ආරම්භ කරන්න",
+        "stopRecording": "පටිගත කිරීම නවත්වන්න",
+        "recording": "පටිගත කෙරෙමින්...",
+        "play": "ප්ලේ කරන්න",
+        "delete": "මකන්න",
+        "noEntries": "හඬ සටහන් නොමැත",
+        "playing": "ප්ලේ කෙරෙමින්..."
+    },
+    "progressTree": {
+        "title": "ප්‍රගති ගස",
+        "subtitle": "ඔබේ වර්ධනය දෙස බලන්න",
+        "level": "මට්ටම {{level}}",
+        "xpToNext": "ඊළඟ මට්ටමට {{xp}} XP",
+        "achievements": "සාධනයන්",
+        "keepGoing": "දිගටම වර්ධනය වන්න!"
+    },
+    "thuthimalBadge": {
+        "title": "තුතිමල්",
+        "sinhala": "තුතිමල්",
+        "giftedBy": "ඔබේ Pro ග්‍රාහකත්වය කෘතඥතාවේ තෑග්ගකි:",
+        "meaning": "තුතිමල් (Thuthimal) යනු \"කෘතඥතාවේ මල\" — ඉගැන්වීමේ ශාස්ත්‍රීය කාර්යය ගෞරව කිරීමයි",
+        "giftedOn": "{{date}} දින ලබා දුනි"
+    },
+    "socialSanctuary": {
+        "title": "සමාජ අභයාරාමය",
+        "empty": "තවමත් සමාජ සබැඳි නොමැත. WhatsApp, Instagram හෝ LinkedIn ඇතුළත් කරන්න."
+    },
+    "staffPresence": {
+        "title": "වෘත්තීය ස්පන්දනය",
+        "attendanceStatus": "පැමිණීමේ තත්ත්වය",
+        "checkedIn": "ඇතුළත් විය",
+        "checkedOut": "පිටත් විය",
+        "checkedInAt": "ඇතුළත් වූ වේලාව",
+        "checkedOutAt": "පිටත් වූ වේලාව",
+        "checkOutButton": "අද සඳහා පිටත් වන්න",
+        "checkInButton": "ඔබේ අභයාරාම දිනය ආරම්භ කරන්න",
+        "requestLeave": "නිවාඩු ඉල්ලීමක් කරන්න",
+        "viewHistory": "ඉතිහාසය බලන්න"
+    },
+    "addSocialLink": {
+        "title": "සමාජ මධ්‍යස්ථානය",
+        "subtitle": "ඔබේ ස්වේච්ඡා සම්බන්ධතා කළමනාකරණය කරන්න",
+        "selectPlatform": "වේදිකාව තෝරන්න",
+        "handleOrLink": "හෑන්ඩල් හෝ සබැඳිය",
+        "phoneOrLink": "+94...",
+        "usernameOrLink": "පරිශීලක නාමය හෝ සබැඳිය",
+        "privacyLevel": "රහස්‍යතා මට්ටම",
+        "publicLabel": "සාර්වජනික",
+        "publicDesc": "සෑම දෙනාටම දැකිය හැකිය",
+        "particularsLabel": "විශේෂිත",
+        "particularsDesc": "ඔබේ සෘජු සම්බන්ධතා පමණි",
+        "privateLabel": "පෞද්ගලික",
+        "privateDesc": "ඔබට පමණි දෙස්ය",
+        "addButton": "සමාජ පැවැත්ම එකතු කරන්න"
+    },
+    "support": {
+        "title": "සහාය",
+        "contactSupport": "සහාය ලබාගන්න",
+        "contactSupportDesc": "ඔබේ ගිණුම සඳහා සහාය ලබා ගන්න",
+        "faqs": "නිතර අසන ප්‍රශ්න",
+        "faqsDesc": "සාමාන්‍ය ප්‍රශ්න සහ පිළිතුරු",
+        "reportIssue": "ගැටළුවක් වාර්තා කරන්න",
+        "reportIssueDesc": "දෝෂයක් සොයාගත්තාද? දන්වන්න",
+        "about": "ගැන",
+        "aboutDesc": "මෙහෙවර, අනුවාදය සහ නීතිමය",
+        "rateUs": "අපට ශ්‍රේණිගත කරන්න",
+        "rateUsDesc": "සමාලෝචනයකින් අපේ මෙහෙවරට සහාය වන්න"
+    },
+    "schoolSetup": {
+        "schoolName": "පාසල් නම",
+        "schoolNamePlaceholder": "උදා: රාජකීය විද්‍යාලය, කොළඹ",
+        "contactEmail": "සම්බන්ධතා විද්‍යුත් තැපෑල",
+        "contactEmailPlaceholder": "school@email.com",
+        "contactPhone": "සම්බන්ධතා දුරකථනය",
+        "contactPhonePlaceholder": "+94 7x xxx xxxx",
+        "website": "වෙබ් අඩවිය (අභිමතය)",
+        "websitePlaceholder": "www.school.lk",
+        "studentBodyType": "සිසු සමූහ වර්ගය",
+        "studentCount": "ආසන්න සිසු සංඛ්‍යාව",
+        "studentCountPlaceholder": "උදා: 1500",
+        "religiousContext": "ප්‍රධාන ආගමික සන්දර්භය",
+        "academicLevels": "අධ්‍යයන මට්ටම්",
+        "academicLevelsDesc": "ඔබේ පාසලේ ශ්‍රේණි/මට්ටම් තෝරන්න.",
+        "orgSections": "සංවිධානාත්මක අංශ",
+        "orgSectionsDesc": "අංශ නිර්වචනය කිරීම පසුව පරිපාලන ධූරාවලිය ගොඩනැගීමට ප්‍රයෝජනකරයි.",
+        "addCustomSection": "අභිරුචි අංශයක් එකතු කරන්න (ළඟදීම)",
+        "province": "පළාත",
+        "selectProvince": "පළාත තෝරන්න",
+        "district": "දිස්ත්‍රික්කය",
+        "selectDistrict": "දිස්ත්‍රික්කය තෝරන්න",
+        "selectProvincFirst": "පළමු පළාත තෝරන්න",
+        "city": "නගරය",
+        "cityPlaceholder": "උදා: මහනුවර",
+        "postalAddress": "තැපැල් ලිපිනය",
+        "postalAddressPlaceholder": "අංක 123, පාසල් වීදිය..."
     }
 }
