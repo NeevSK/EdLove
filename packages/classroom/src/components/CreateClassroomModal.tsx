@@ -377,7 +377,7 @@ export default function CreateClassroomModal({
                                     >
                                         <HStack sx={{ gap: Theme.spacing.sm }} alignItems="center">
                                             <ScanLine color={accent.action} size={20} />
-                                            <ButtonText color={accent.action}>
+                                            <ButtonText {...({ color: accent.action } as any)}>
                                                 {t('classroom.scanQrToJoin') || 'Scan QR to Join'}
                                             </ButtonText>
                                         </HStack>

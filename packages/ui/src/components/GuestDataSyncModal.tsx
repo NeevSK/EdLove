@@ -172,7 +172,10 @@ export default function GuestDataSyncModal({
                         >
                             <Box
                                 sx={{
-                                    width: `${progress.total > 0 ? (progress.current / progress.total) * 100 : 0}%`,
+                                    // Guard against division by zero when total is 0
+                                    width: progress.total > 0
+                                        ? `${Math.round((progress.current / progress.total) * 100)}%`
+                                        : '0%',
                                     height: '100%',
                                     backgroundColor: accent.action
                                 }}

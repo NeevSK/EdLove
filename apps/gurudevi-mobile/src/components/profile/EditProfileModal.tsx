@@ -375,8 +375,8 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
 const styles = StyleSheet.create({
     overlay: {
         flex: 1,
-        // Ink-based dimming — not black rgba(0,0,0,x)
-        backgroundColor: 'rgba(42, 35, 24, 0.6)',
+        // Ink-based dimming derived from Theme.colors.ink — not black rgba(0,0,0,x)
+        backgroundColor: Theme.colors.ink + '99',
         justifyContent: 'flex-end',
     },
     modalContent: {

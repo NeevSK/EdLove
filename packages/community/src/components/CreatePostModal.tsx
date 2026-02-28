@@ -144,7 +144,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                     minHeight: 180
                 }}>
                     <TextareaInput
-                        placeholder="What's alive in you to share?"
+                        placeholder="What's on your mind?"
                         placeholderTextColor={text.muted}
                         {...({ color: text.primary } as any)}
                         value={content}

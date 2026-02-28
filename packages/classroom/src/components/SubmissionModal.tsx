@@ -161,6 +161,7 @@ export default function SubmissionModal({
                     backgroundColor: glass.modal.bg,
                     borderColor: glass.modal.border,
                     borderWidth: 1,
+                    // Full-screen modal: no border radius — content fills the entire viewport
                     borderRadius: 0,
                     height: '100%',
                     width: '100%',
