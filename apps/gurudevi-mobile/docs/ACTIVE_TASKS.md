@@ -64,7 +64,7 @@ These are the tasks that, if broken, mean zero real users can use the app. They 
 
 ---
 
-> *T0.4 moved to T3.11 — FAB is deprioritized. Core loop reliability matters more.*
+> *Original T0.4 (Wire FAB Actions) moved to T3.11 — FAB is deprioritized. Core loop reliability matters more.*
 
 ---
 
@@ -349,7 +349,7 @@ These features don't block launch, but without them the app is a utility, not a 
 ---
 
 ### T3.11 — Wire FAB Actions (Deprioritized from T0)
-**Source**: Original T0.4 — moved here per product feedback. FAB is real but not a viability blocker.
+**Source**: Original T0.4 (Wire FAB Actions) — moved here per product feedback. FAB is real but not a viability blocker.
 **What**: `getFabActions()` in `App.tsx` has all actions as `console.log` placeholders. Wire each to the correct navigation target.
 **Effort**: S | **Code**: `apps/gurudevi-mobile/App.tsx` — `getFabActions()`
 **Action**: Wire: Self tab → mark attendance, Community tab → create post, Library tab → add resource, Classroom tab → create lesson/assignment.
