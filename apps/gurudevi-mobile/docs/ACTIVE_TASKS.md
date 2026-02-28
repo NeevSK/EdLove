@@ -63,7 +63,7 @@ These are the tasks that, if broken, mean zero real users can use the app. They 
 **Why**: This is a data corruption bug. Any teacher joining a classroom via QR immediately steals ownership from the original teacher. If this fires in a real school, it's catastrophic.
 **Effort**: S (half day)
 **Code to touch**: `packages/classroom/` — QR join handler; `packages/core/src/api/classroom.ts`
-**Action**: Change to create a `classroom_teachers` membership record instead of updating `teacher_id`. First verify (as part of T0.1 DB migration audit) whether a `classroom_teachers` join table already exists in schema; if not, create migration to add it. Implementation owner: Agent; DB verification: can be confirmed during T0.1.
+**Action**: Change to create a `classroom_teachers` membership record instead of updating `teacher_id`. Check directly in Supabase Dashboard (SQL Editor: `SELECT to_regclass('public.classroom_teachers');`) — if null, create a migration to add the join table. This fix can be done independently of T0.1; the schema check takes < 2 minutes.
 
 ---
 

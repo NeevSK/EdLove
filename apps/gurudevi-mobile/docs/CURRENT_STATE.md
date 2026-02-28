@@ -39,7 +39,7 @@
 ## Monorepo Structure (Verified from Code)
 
 ```
-gurudevi/   (workspace name per pnpm-workspace.yaml; directory may show as Gurudevi or polymath-platform depending on clone path)
+gurudevi/   (pnpm workspace root)
 ├── apps/
 │   └── gurudevi-mobile/           # The mobile app (Expo 54)
 │       ├── App.tsx                # Provider stack: QueryClient → EnvironmentProvider →
