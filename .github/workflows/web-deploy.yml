@@ -1,0 +1,91 @@
+name: Web Build & Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/gurudevi-mobile/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/gurudevi-mobile/**'
+      - 'packages/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy environment'
+        required: true
+        default: 'preview'
+        type: choice
+        options:
+          - preview
+          - production
+
+concurrency:
+  group: web-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-web:
+    name: Build Web
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🏗 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🌐 Build web bundle
+        working-directory: apps/gurudevi-mobile
+        run: pnpm build:web
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+          EXPO_PUBLIC_POSTHOG_API_KEY: ${{ secrets.EXPO_PUBLIC_POSTHOG_API_KEY }}
+          EXPO_PUBLIC_POSTHOG_HOST: ${{ secrets.EXPO_PUBLIC_POSTHOG_HOST }}
+          EXPO_PUBLIC_SENTRY_DSN: ${{ secrets.EXPO_PUBLIC_SENTRY_DSN }}
+
+      - name: 📤 Upload web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: apps/gurudevi-mobile/dist/
+          retention-days: 7
+
+      # ──────────────────────────────────────────────────────────────
+      # Vercel deployment (uncomment once VERCEL_TOKEN secret is set)
+      # See: https://vercel.com/docs/deployments/deploy-button
+      # ──────────────────────────────────────────────────────────────
+      # - name: 🚀 Deploy to Vercel (preview)
+      #   if: github.event_name == 'pull_request'
+      #   uses: amondnet/vercel-action@v25
+      #   with:
+      #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
+      #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+      #     vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
+      #     working-directory: apps/gurudevi-mobile/dist
+      #
+      # - name: 🚀 Deploy to Vercel (production)
+      #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      #   uses: amondnet/vercel-action@v25
+      #   with:
+      #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
+      #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+      #     vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
+      #     vercel-args: '--prod'
+      #     working-directory: apps/gurudevi-mobile/dist

@@ -25,6 +25,7 @@ import {
 } from '@repo/ui';
 import { Mail } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
 import { supabase, UserRole, handleAPIError, GuestDataSync } from '@repo/core';
 import { Theme } from '@repo/ui';
 import { validators, validateForm } from '../utils/validators';
@@ -87,7 +88,12 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
         const { error } = await supabase.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: 'gurudevi://auth/callback',
+                // On web use the current page origin so Supabase redirects back to
+                // the running web app. On native use the deep-link scheme so the OS
+                // can hand the token back to the app.
+                redirectTo: Platform.OS === 'web'
+                    ? window.location.origin
+                    : 'gurudevi://auth/callback',
                 queryParams: onboardingData ? {
                     full_name: onboardingData.name,
                     role: onboardingData.role,

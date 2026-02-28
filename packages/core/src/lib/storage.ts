@@ -94,10 +94,10 @@ import { Platform } from 'react-native';
 let storageInstance: StorageInterface;
 
 const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+// MMKV is a JSI native module — unavailable in Expo Go (JS-only runtime) and on web.
+const shouldUseAsyncStorage = isExpoGo || Platform.OS === 'web';
 
-if (isExpoGo || Platform.OS === 'web') {
-    // MMKV is a native JSI module — not available in Expo Go or on web.
-    // Fall back to the AsyncStorage-backed implementation in both cases.
+if (shouldUseAsyncStorage) {
     storageInstance = new RobustAsyncStorage();
 } else {
     try {

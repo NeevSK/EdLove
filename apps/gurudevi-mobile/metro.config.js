@@ -60,10 +60,11 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     if (platform === 'web' && moduleName in WEB_SHIMS) {
         return { filePath: WEB_SHIMS[moduleName], type: 'sourceFile' };
     }
-    // Fall through to the previously registered resolver (if any), then to
-    // Metro's built-in default via context.resolveRequest.
-    // NOTE: context.resolveRequest is Metro's own internal resolver and does NOT
-    // point back to this function — calling it is safe and will not recurse.
+    // If a previous resolver was registered (e.g. by another Expo plugin), delegate
+    // to it first so its logic is preserved.
+    // Otherwise fall through to context.resolveRequest — Metro's own built-in resolver.
+    // NOTE: context.resolveRequest is NOT this function; it is Metro's internal default
+    // resolver so calling it here is safe and will NOT recurse.
     if (defaultResolveRequest) {
         return defaultResolveRequest(context, moduleName, platform);
     }
