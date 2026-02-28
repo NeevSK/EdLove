@@ -38,7 +38,7 @@ export default function ShadowAgentDrawer() {
         emoji: string;
     } | null>(null);
 
-    const THOUGHT_SEEDS = [
+    const THOUGHT_SEEDS = useMemo(() => [
         t('shadowAgent.prompts.heavy'),
         t('shadowAgent.prompts.peace'),
         t('shadowAgent.prompts.holding'),
@@ -49,9 +49,9 @@ export default function ShadowAgentDrawer() {
         t('shadowAgent.prompts.truth'),
         t('shadowAgent.prompts.forgiveness'),
         t('shadowAgent.prompts.grateful'),
-    ];
+    ], [t]);
 
-    const CONTEXTUAL_SUGGESTIONS = [
+    const CONTEXTUAL_SUGGESTIONS = useMemo(() => [
         {
             condition: 'working_long',
             message: t('shadowAgent.nudges.longWork'),
@@ -72,7 +72,7 @@ export default function ShadowAgentDrawer() {
             message: t('shadowAgent.nudges.lowEnergy'),
             emoji: '☕'
         },
-    ];
+    ], [t]);
 
     const styles = useMemo(() => StyleSheet.create({
         orbContainer: {

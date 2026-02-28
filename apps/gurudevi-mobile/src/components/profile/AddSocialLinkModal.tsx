@@ -57,10 +57,10 @@ const PLATFORMS: { label: string; value: SocialPlatform; icon: any; color: strin
     { label: 'Email', value: 'website', icon: Mail, color: Theme.colors.emberOrange }, // Mapping to website type for now or core needs update
 ];
 
-const PRIVACY_LEVELS: { label: string; value: PrivacyLevel; icon: any; desc: string; labelKey: string; descKey: string }[] = [
-    { label: 'Public', value: 'public', icon: ShieldCheck, desc: 'Everyone can see this', labelKey: 'addSocialLink.publicLabel', descKey: 'addSocialLink.publicDesc' },
-    { label: 'Particulars', value: 'particulars', icon: Shield, desc: 'Only your direct contacts', labelKey: 'addSocialLink.particularsLabel', descKey: 'addSocialLink.particularsDesc' },
-    { label: 'Private', value: 'private', icon: ShieldAlert, desc: 'Only visible to you', labelKey: 'addSocialLink.privateLabel', descKey: 'addSocialLink.privateDesc' },
+const PRIVACY_LEVELS: { value: PrivacyLevel; icon: any; labelKey: string; descKey: string }[] = [
+    { value: 'public', icon: ShieldCheck, labelKey: 'addSocialLink.publicLabel', descKey: 'addSocialLink.publicDesc' },
+    { value: 'particulars', icon: Shield, labelKey: 'addSocialLink.particularsLabel', descKey: 'addSocialLink.particularsDesc' },
+    { value: 'private', icon: ShieldAlert, labelKey: 'addSocialLink.privateLabel', descKey: 'addSocialLink.privateDesc' },
 ];
 
 export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible, onClose, userId }) => {

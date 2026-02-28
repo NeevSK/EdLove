@@ -10,7 +10,7 @@
  * - Helps teachers understand rest patterns
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     Box,
     VStack,
@@ -56,13 +56,13 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
     const moonScale = useSharedValue(1);
     const starsOpacity = useSharedValue(0.6);
 
-    const SLEEP_QUALITY = [
+    const SLEEP_QUALITY = useMemo(() => [
         { value: 1, label: t('sleepTracker.restless'), emoji: '😰', color: Theme.colors.emberRed, description: t('sleepTracker.restlessDesc') },
         { value: 2, label: t('sleepTracker.poor'), emoji: '😔', color: Theme.colors.amberGlow, description: t('sleepTracker.poorDesc') },
         { value: 3, label: t('sleepTracker.okay'), emoji: '😐', color: Theme.colors.mistGray, description: t('sleepTracker.okayDesc') },
         { value: 4, label: t('sleepTracker.good'), emoji: '😊', color: Theme.colors.sageGreen, description: t('sleepTracker.goodDesc') },
         { value: 5, label: t('sleepTracker.excellent'), emoji: '😌', color: Theme.colors.sanctuarySaffron, description: t('sleepTracker.excellentDesc') },
-    ];
+    ], [t]);
 
     const currentQuality = SLEEP_QUALITY[sleepQuality - 1];
 

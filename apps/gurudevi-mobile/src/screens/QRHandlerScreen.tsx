@@ -42,7 +42,7 @@ export default function QRHandlerScreen() {
   const colors = useThemedColors();
   const { t } = useTranslation();
   const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
-  const [message, setMessage] = useState(t('qrHandler.processingMessage'));
+  const [message, setMessage] = useState('');
 
   const payload = route.params?.payload;
 
@@ -132,7 +132,7 @@ export default function QRHandlerScreen() {
           <Text
             sx={{ textAlign: 'center', color: colors.textSecondary }}
           >
-            {message}
+            {status === 'processing' ? t('qrHandler.processingMessage') : message}
           </Text>
         </VStack>
       </Box>
