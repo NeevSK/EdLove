@@ -94,9 +94,22 @@ ALTER TABLE public.institutional_calendar ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "calendar_school_read" ON public.institutional_calendar FOR SELECT USING (
   is_public OR EXISTS(SELECT 1 FROM public.users u WHERE u.id = auth.uid() AND u.school_id = institutional_calendar.school_id)
 );
-CREATE POLICY "calendar_principal_write" ON public.institutional_calendar FOR ALL USING (
+-- Principals can delete any calendar entry within their school (institutional resource).
+CREATE POLICY "calendar_principal_delete" ON public.institutional_calendar FOR DELETE USING (
   EXISTS(SELECT 1 FROM public.users u WHERE u.id = auth.uid() AND u.school_id = institutional_calendar.school_id AND u.role IN ('principal','founder'))
-) WITH CHECK (
-  EXISTS(SELECT 1 FROM public.users u WHERE u.id = auth.uid() AND u.school_id = institutional_calendar.school_id AND u.role IN ('principal','founder'))
-  AND created_by = auth.uid()
 );
+-- New events must be created by the calling principal within their school (prevents cross-school injection).
+CREATE POLICY "calendar_principal_insert" ON public.institutional_calendar FOR INSERT
+  WITH CHECK (
+    created_by = auth.uid()
+    AND EXISTS(SELECT 1 FROM public.users u WHERE u.id = auth.uid() AND u.school_id = institutional_calendar.school_id AND u.role IN ('principal','founder'))
+  );
+-- Updates must stay within the same school and preserve created_by.
+CREATE POLICY "calendar_principal_update" ON public.institutional_calendar FOR UPDATE
+  USING (
+    EXISTS(SELECT 1 FROM public.users u WHERE u.id = auth.uid() AND u.school_id = institutional_calendar.school_id AND u.role IN ('principal','founder'))
+  )
+  WITH CHECK (
+    created_by = auth.uid()
+    AND EXISTS(SELECT 1 FROM public.users u WHERE u.id = auth.uid() AND u.school_id = institutional_calendar.school_id AND u.role IN ('principal','founder'))
+  );

@@ -59,16 +59,16 @@ export default function StudentPulseSection({
         .gte('created_at', weekStart);
 
       const assignmentIds = (assignResult.data ?? []).map((a) => a.id);
-      const assignmentCount = assignResult.count ?? 0;
+      const assignmentCount = assignmentIds.length;
 
       const [pulseData, subsResult, enrollResult] = await Promise.all([
         staffManagementAPI.getStudentAttendancePulse(schoolId),
         assignmentIds.length > 0
           ? supabase
               .from('submissions')
-              .select('assignment_id', { count: 'exact' })
+              .select('assignment_id')
               .in('assignment_id', assignmentIds)
-          : Promise.resolve({ count: 0, data: [] }),
+          : Promise.resolve({ data: [] as { assignment_id: string }[], error: null }),
         supabase
           .from('enrollment_requests')
           .select('id', { count: 'exact' })
@@ -80,10 +80,12 @@ export default function StudentPulseSection({
 
       setPulse(pulseData);
 
-      // Submission rate: submitted assignments / total assignments (not per-student)
-      const submittedCount = subsResult.count ?? 0;
+      // Submission rate: count distinct assignments that have at least one submission,
+      // then divide by total assignments. This avoids exceeding 100% when multiple
+      // students submit the same assignment.
+      const submittedAssignmentIds = new Set((subsResult.data ?? []).map((s) => s.assignment_id));
       if (assignmentCount > 0) {
-        setSubmissionRate(Math.min(100, Math.round((submittedCount / assignmentCount) * 100)));
+        setSubmissionRate(Math.round((submittedAssignmentIds.size / assignmentCount) * 100));
       } else {
         setSubmissionRate(null);
       }

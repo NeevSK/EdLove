@@ -121,6 +121,9 @@ END $$;
 --    • open groups  → status must be 'active'
 --    • restricted/invite-only groups → status must be 'pending' (awaiting admin approval)
 --    Prevents self-granting admin role or bypassing join policies.
+--    Note: in PostgreSQL RLS, column references in WITH CHECK on INSERT evaluate the
+--    incoming (NEW) row values. So `role = 'member'` and `status = 'active'` constrain
+--    what the user is allowed to INSERT — they cannot override these with arbitrary values.
 DO $$
 BEGIN
   IF NOT EXISTS (
