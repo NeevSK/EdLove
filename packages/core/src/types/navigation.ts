@@ -9,5 +9,6 @@ export type ClassroomStackParamList = {
 export type CommunityStackParamList = {
     CommunityMain: undefined;
     GroupDetails: { groupId: string; groupName?: string };
+    GroupChat: { groupId: string; groupName: string };
     Announcements: undefined;
 };

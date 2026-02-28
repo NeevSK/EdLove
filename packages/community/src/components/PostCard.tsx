@@ -80,7 +80,18 @@ const PostCard = React.memo(function PostCard({
         return null;
     };
 
-    const isLiked = false; // TODO: Implement reaction check logic
+    // Optimistic local like state
+    const [liked, setLiked] = React.useState(false);
+    const [localLikeCount, setLocalLikeCount] = React.useState(reactions['❤️'] || 0);
+
+    const handleLike = () => {
+        const nowLiked = !liked;
+        setLiked(nowLiked);
+        setLocalLikeCount(prev => Math.max(0, prev + (nowLiked ? 1 : -1)));
+        onLike?.();
+    };
+
+    const isLiked = liked;
     const hasResonated = false;
 
     return (
@@ -123,13 +134,18 @@ const PostCard = React.memo(function PostCard({
                 {/* Footer: Actions */}
                 <HStack justifyContent="space-between" alignItems="center" mt="$1">
                     <HStack space="lg">
-                        {/* Care Reaction */}
-                        <TouchableOpacity onPress={onLike} style={styles.actionButton}>
+                        {/* Like / Heart Reaction */}
+                        <TouchableOpacity onPress={handleLike} style={styles.actionButton}>
                             <Heart
                                 size={20}
                                 color={isLiked ? colors.error : colors.textTertiary}
                                 fill={isLiked ? colors.error : 'none'}
                             />
+                            {localLikeCount > 0 && (
+                                <Text color={isLiked ? colors.error : colors.textTertiary} size="xs" sx={{ marginLeft: 4 }}>
+                                    {localLikeCount}
+                                </Text>
+                            )}
                         </TouchableOpacity>
 
                         {/* Resonance Reaction */}
