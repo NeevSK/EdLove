@@ -51,3 +51,7 @@ assets/*
 !assets/splash-icon.png
 !assets/adaptive-icon.png
 !assets/favicon.png
+
+.env.local
+
+.env.local

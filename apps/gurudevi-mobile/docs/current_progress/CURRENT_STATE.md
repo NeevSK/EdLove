@@ -150,14 +150,14 @@ gurudevi/   (pnpm workspace root)
 - `LotusPetalFAB.tsx` — in TabNavigator but **NOT rendered at tab level**; rendered per-screen (CommunityScreen and LibraryScreen have their own inline FABs)
 - `getFabActions()` in `App.tsx` — **ALL actions are `console.log` placeholders. Not wired to anything.**
 
-### ⚠️ Self Screen (SelfScreen) — Built but with Critical Gaps
+### ⚠️ Self Screen (SelfScreen) — Built, Critical Gaps Resolved
 **Verified in code** (`SelfScreen.tsx`):
-- `showPulse` state defaults to `true` → **PulseDashboard always shows first**
-- **PulseDashboard HARDCODED data**: greeting + teacherName from store, DailyResonanceCard (motivation + wisdom from `daily_content` API), but the action items **"Mark Morning Attendance"** and **"Grade Science Assignment"** are `console.log` placeholders — **NOT real data from DB**. Teachers will see fake tasks.
+- `showPulse` state defaults to `true` → PulseDashboard always shows first
+- **PulseDashboard** ✅ — `usePendingActions` queries real DB: classrooms with no attendance today + overdue assignments with ungraded submissions. Tapping attendance item → navigates to `Attendance` screen; tapping grading item → navigates to `Gradebook` screen. Empty state: "Your day is clear 🪷". Skeleton loading.
 - "Enter Full Sanctuary" button switches to role-specific view
-- **TeacherSelfView**: MoodLotus ✅ (real DB integration), FireJournal ✅, DailyRhythm ✅, JoyJar ✅, GratitudeGlimmers ✅, WisdomSeeds ✅, TomorrowPrep ✅, EnergyForecast ✅, WindDownRitual ✅ — all components exist
-- **ResonancePatternCard** ✅ (new) — shows 4-axis orientation fingerprint. Calls `useOrientationInference` hook internally. Never shows a type label — shows a pattern shape only. Rendered after DailyContentCards.
-- **🔲 NOT WIRED in TeacherSelfView**: `SleepTracker.tsx`, `RemindersManager.tsx`, `VoiceJournaling.tsx` — code exists in `packages/self/` but are not rendered or connected
+- **TeacherSelfView**: MoodLotus ✅, FireJournal ✅, DailyRhythm ✅, JoyJar ✅, GratitudeGlimmers ✅, WisdomSeeds ✅, TomorrowPrep ✅, EnergyForecast ✅, WindDownRitual ✅
+- **ResonancePatternCard** ✅ — shows 4-axis orientation fingerprint. Rendered after DailyContentCards.
+- **✅ Wired in TeacherSelfView MORE_TOOLS**: `SleepTracker.tsx`, `RemindersManager.tsx`, `VoiceJournaling.tsx` — all in `MORE_TOOLS_FEATURES` array and handled in `renderFeature()` switch. Previous doc claim of "NOT wired" was stale.
 
 ### ✅ Classroom Section (Core Flows Verified)
 **Teacher flow** (`TeacherDashboard.tsx` in `@repo/classroom`):
@@ -169,6 +169,16 @@ gurudevi/   (pnpm workspace root)
 - Stat cards: enrolledClasses, pendingAssignments, unlockedRewards ✅
 - ClassroomList ✅; assignment submission ✅; grades/attendance history ✅
 
+**Principal flow** (`PrincipalSchoolView.tsx`) — Redesigned Feb 28 2026:
+- `MorningSituationalBrief` ✅ — staff presence strip (colour-coded %), student attendance %, at-risk count, pending approvals
+- `TeacherCarousel` ✅ — horizontal scroll; per-card status dot from `staff_attendance`, class count
+- `StudentPulseSection` ✅ — attendance % + delta, weekly submission rate, at-risk badge, pending enrollment badge
+- `LeaveApprovalSection` ✅ — pending leave requests with inline approve/reject
+- `InstitutionalCalendarSection` ✅ — upcoming events list + inline add-event form
+- `PrincipalObservationsSection` ✅ — classroom observation CRUD (walkthrough/note/concern/praise)
+- `staffManagementAPI` ✅ — 8 functions in `packages/core/src/api/staffManagement.ts`
+- Still pending: admin tasks (circular composer, report generator), academic trends chart, inventory CRUD
+
 **Role routing** (verified in `ClassroomScreen.tsx`):
 - founder → FounderSchoolView, principal → PrincipalSchoolView, section_head → SectionHeadView
 - grade_head → GradeHeadView, teacher → TeacherDashboard, student → StudentDashboard, guest/default → ClassroomList
@@ -179,15 +189,16 @@ gurudevi/   (pnpm workspace root)
 - `StudentParser`, `TableParser` — exist but depend on stub providers
 - **NOT wired to any active UI path** — orphaned code
 
-### ✅ Community Section (Core Built, Chat Missing)
+### ✅ Community Section (Core Built + Group Chat Screen Built)
 **Verified in code** (`CommunityScreen.tsx`):
 - Two subtabs: "Resonant Feed" (posts) and "Infinite Galaxy" (groups) ✅
 - GroupsScreen: Sanctuary (school groups) vs Galaxy (cross-school) sub-tabs ✅
 - `useCommunityGroups` hook ✅; GroupCard ✅; create/join/leave flows ✅
 - GroupDetailsScreen in `packages/community` ✅; CreatePostModal ✅; ReportPostModal ✅
 - Sacred Missions (Manifestos) from Principal ✅
+- `GroupChatScreen.tsx` ✅ — Supabase Realtime subscription on `group_messages` table; own messages shown right-aligned; `onMarkAllRead` on open
 
-**❌ Chat**: **ZERO chat implementation in the codebase**. GroupsScreen has UI scaffolding (chat button) but there is no chat screen, no `group_messages` table integration, no Supabase Realtime subscription for chat. This is a complete gap, not partial.
+**❌ DM Chat**: 1:1 direct messaging infrastructure still not built (no `direct_messages` table, no DM screen).
 
 ### ✅ Library Section
 **Verified in code** (`packages/library/LibraryScreen.tsx`):
@@ -195,19 +206,20 @@ gurudevi/   (pnpm workspace root)
 - `LIBRARY_UI_CATEGORIES` imported from constants ✅
 - Search + category filter chips ✅
 - `LotusPetalFAB` rendered **inline** in LibraryScreen (not via TabNavigator)
-- **🔲 PDF viewer**: `PDFViewerScreen` exists (code), but uses external link, not in-app rendering
-- **🔲 Video player**: `VideoPlayerScreen` exists (code) but `expo-av` integration incomplete
+- **✅ PDF viewer** (`PDFViewerScreen.tsx`): `expo-file-system` download with real progress bar; `expo-sharing` opens native PDF app. User-initiated open.
+- **✅ Video player** (`VideoPlayerScreen.tsx`): real `expo-av` `Video` component with live play/pause/seek, real progress bar, `onPlaybackStatusUpdate`
 - **❌ Library content**: No curated default content — empty library for new schools (cold start problem)
 
 ### ✅ Profile Section
 **Verified in code**:
 - `IdentityCard.tsx` — role-aware (reads actual user role, not hardcoded "teacher") ✅
-- `FullProfileScreen.tsx` with inline editing ✅
+- `FullProfileScreen.tsx` with inline editing ✅; **"🌸 Give Thuthimal" button** shown when viewing another teacher/principal's profile ✅
+- `GiveThuthimalModal.tsx` — optional message + "Send Gift of Gratitude" → `thuthimalAPI.createGift` → toast + haptic ✅
 - `useProfileCompletion()` hook + `PROFILE_SECTIONS` SSOT in `packages/profile` ✅
 - `SanctuaryProgressBar.tsx`, `AvatarDisplay.tsx`, `AchievementUnlockOverlay.tsx` ✅
 - `LogoutModal.tsx` in `@repo/ui` (replaced `Alert.alert`) ✅
 - `DeleteAccountModal.tsx` in `@repo/ui` ✅
-- `ThuthimalBadge.tsx` (full + compact modes); `thuthimal` table added Feb 26 migration ✅
+- `ThuthimalBadge.tsx` (full + compact modes); `thuthimal_gifts` table added Feb 26 migration ✅
 
 ### ✅ QR & Invitation System (Fully Working)
 **Verified in code** (`packages/scanner-kit/`):
@@ -242,16 +254,20 @@ gurudevi/   (pnpm workspace root)
 - `NetworkStatusBanner.tsx`: Red (offline + pending count), Blue/Saffron (syncing) ✅
 
 ### ✅ Database Schema (Supabase)
-Migrations from Feb 11–26 applied. Confirmed tables:
+Migrations from Feb 11 — Feb 28 applied. Confirmed tables:
 - Core: `schools`, `users` (with thuthimal fields), `classrooms`, `students`
 - Academic: `lessons`, `assignments`, `submissions`, `attendance`, `grading`
-- Community: `community_groups`, `community_posts`
+- Community: `community_groups`, `community_posts`, `community_group_members`, `group_messages`
 - Library: `library_items`
 - Profile/Gamification: `user_rewards`, `gift_codes`, `manifestos`, `sections`, `grades`, `invite_codes`, `profile_completion`
 - Wellbeing: `daily_content`, `mood_logs`, `fire_journal`
-- Social: `student_groups`, `thuthimal` (added Feb 26 — most recent migration)
+- Social: `student_groups`, `thuthimal_gifts` (added Feb 26)
+- Notifications: `notifications` (added Feb 28)
+- Principal/Staff (added Feb 28): `staff_attendance`, `staff_leaves`, `principal_observations`, `institutional_calendar`
+- Orientation (added Feb 28): `orientation_seeds`
+- Other (added Feb 28): `classroom_notes`, `academic_year`, `principal_notes`
 
-**⚠️ DB migration status**: Uncertain for 10+ migrations. `migration_status.md` shows uncertainty. If migrations not applied, features that depend on new tables will silently fail.
+**⚠️ DB migration status**: New migrations (Feb 28) need applying to production Supabase. Run `20260228_staff_management.sql`, `20260228_notifications.sql`, `20260228_notification_triggers.sql`, and others from `apps/gurudevi-mobile/supabase/migrations/`.
 
 ### ✅ App Settings Screen (`AppSettingsScreen.tsx`)
 - Theme, Visual Quality, Language selector, Privacy Veil toggle, device info ✅
@@ -283,15 +299,15 @@ Migrations from Feb 11–26 applied. Confirmed tables:
 | Self: useOrientationInference | ✅ | Passive inference hook: explicit seeds → behavioral signals (quality-guarded) → role defaults |
 | Self: ResonancePatternCard | ✅ | 4-axis fingerprint card, rendered in Student + Teacher self views |
 | Environment Engine (6 pillars) | ✅ | 26 passing tests |
-| PulseDashboard (Self default) | ⚠️ | Greeting real; action items HARDCODED (console.log) |
+| PulseDashboard (Self default) | ✅ | Real DB queries via `usePendingActions`; tapping navigates to Attendance/Gradebook screens |
 | Self: MoodLotus | ✅ | Real DB integration confirmed |
 | Self: FireJournal | ✅ | |
 | Self: DailyRhythm / JoyJar / GratitudeGlimmers | ✅ | |
 | Self: WisdomSeeds / TomorrowPrep / EnergyForecast | ✅ | |
 | Self: WindDownRitual | ✅ | |
-| Self: SleepTracker | 🔲 | Component exists, NOT wired in TeacherSelfView |
-| Self: RemindersManager | 🔲 | Component exists, NOT wired in TeacherSelfView |
-| Self: VoiceJournaling | 🔲 | Component exists, NOT wired in TeacherSelfView |
+| Self: SleepTracker | ✅ | Wired in TeacherSelfView MORE_TOOLS (was doc-stale "not wired") |
+| Self: RemindersManager | ✅ | Wired in TeacherSelfView MORE_TOOLS |
+| Self: VoiceJournaling | ✅ | Wired in TeacherSelfView MORE_TOOLS |
 | Self: Daily Content Cards (40 days) | ✅ | |
 | Classroom: Create/Manage Classrooms | ✅ | |
 | Classroom: Attendance | ✅ | |
@@ -301,39 +317,51 @@ Migrations from Feb 11–26 applied. Confirmed tables:
 | Classroom: Role Routing (all roles) | ✅ | Verified in ClassroomScreen.tsx |
 | Classroom: OCR Scanner | 🔲 | Components exist; providers are STUBS; NOT wired to UI |
 | Classroom: OCR Providers (Google/MLKit/OpenAI) | 🔲 | Skeleton stubs only |
-| Community: Groups (create/join/leave) | ✅ | useCommunityGroups hook confirmed |
+| Principal: Morning Situational Brief | ✅ | MorningSituationalBrief — staff presence, student attendance %, at-risk count |
+| Principal: Teacher Carousel | ✅ | TeacherCarousel — horizontal scroll with status dot + class count |
+| Principal: Student Pulse | ✅ | StudentPulseSection — attendance %, submission rate, at-risk flags |
+| Principal: Institutional Calendar | ✅ | InstitutionalCalendarSection — events list + add form |
+| Principal: Observation Notes | ✅ | PrincipalObservationsSection — walkthrough/note/concern/praise CRUD |
+| Principal: Leave Approvals | ✅ | LeaveApprovalSection — pending queue with approve/reject |
+| Principal: Circular Composer | ❌ | Not built — Phase 3 of T1.7 |
+| Principal: Report Generator | ❌ | Not built — Phase 3 of T1.7 |
+| Principal: Academic Trends Chart | ❌ | Not built — Phase 4 of T1.7 |
+| Community: Groups (create/join/leave) | ✅ | useCommunityGroups hook confirmed; CreateGroupModal with QR on success |
 | Community: Posts + Feed | ✅ | |
 | Community: Sacred Missions (Manifestos) | ✅ | |
 | Community: GroupDetailsScreen | ✅ | Exists in packages/community |
-| Community: Group Chat | ❌ | ZERO code — no table, no Realtime, no UI |
+| Community: Group Chat | ✅ | GroupChatScreen — Supabase Realtime on group_messages; own messages right-aligned |
+| Community: DM (Direct Messaging) | ❌ | No direct_messages table, no DM screen |
 | Community: Polls | ❌ | Not built |
 | Community: Education tags for posts | ❌ | Not built |
 | Library: Browse + Search + Category Filter | ✅ | Verified in packages/library |
 | Library: AddResourceModal | ✅ | |
 | Library: FAB (LotusPetalFAB inline) | ✅ | Rendered in LibraryScreen directly |
-| Library: PDF viewer (in-app) | 🔲 | Screen exists, links out — not in-app |
-| Library: Video player | 🔲 | Screen exists, integration incomplete |
+| Library: PDF viewer (in-app) | ✅ | expo-file-system download + expo-sharing native viewer |
+| Library: Video player | ✅ | expo-av with real play/pause/seek/progress |
 | Library: Default curated content | ❌ | Empty for new schools — cold start problem |
 | Profile: IdentityCard (role-aware) | ✅ | |
 | Profile: FullProfileScreen (inline edit) | ✅ | |
+| Profile: Give Thuthimal (from other profile) | ✅ | GiveThuthimalModal + "🌸 Give Thuthimal" button on other profiles |
 | Profile: useProfileCompletion (SSOT) | ✅ | packages/profile SSOT confirmed |
 | Profile: SanctuaryProgressBar | ✅ | |
 | Profile: AchievementUnlockOverlay | ✅ | |
-| Profile: ThuthimalBadge | ✅ | DB table added Feb 26 |
+| Profile: ThuthimalBadge | ✅ | DB table + claim screen + give modal all complete |
 | Profile: LogoutModal / DeleteAccountModal | ✅ | In @repo/ui, replaces Alert.alert |
 | QR: Generation + Scanning | ✅ | |
 | QR: Unified Resolver (QRResolver.ts) | ✅ | resolveQR() canonical parser exists |
-| QR: join-group consumer path | ❌ | QR generated but no consumer found |
-| QR: Principal InviteManager modal render | ⚠️ | State stored, modal NOT rendered |
-| QR: Teacher join (ownership vs membership) | ⚠️ | BUG: overwrites teacher_id instead of membership |
-| FAB actions (App.tsx getFabActions) | ⚠️ | ALL console.log placeholders — not wired |
-| Notifications (NotificationDrawer) | ⚠️ | Component exists; content unclear / likely hardcoded |
+| QR: join-group consumer path | ✅ | Fixed — QRResolver + FlowResolver + QRHandlerScreen all wired |
+| QR: Principal InviteManager modal render | ✅ | Fixed — modal renders QRCodeGenerator correctly |
+| QR: Teacher join (ownership vs membership) | ✅ | Fixed — FlowResolver guards against overwriting existing teacher_id |
+| FAB actions (App.tsx getFabActions) | ⚠️ | ALL console.log placeholders — still not wired (T3.11) |
+| Notifications (NotificationDrawer) | ✅ | Real data from `notifications` table via `useNotifications` hook |
+| Notification triggers (DB) | ✅ | 3 triggers: new submission, grade posted, new group post |
 | Push Notifications | ❌ | Not built |
 | Offline sync (outbox pattern) | ✅ | MUTATION_REGISTRY confirmed |
 | i18n (en/si/ta) | ⚠️ | si: 76.9%, ta: 74.3%; 272 hardcoded strings |
 | Accessibility (WCAG AA) | ⚠️ | Score ~5/100 — critical gap |
 | Skia NoiseOverlay | ⚠️ | DISABLED in App.tsx via comment (Android black screen) |
-| DB migrations applied | ⚠️ | Uncertain for 10+ migrations (migration_status.md) |
+| DB migrations applied | ⚠️ | Feb 28 migrations need applying to prod Supabase |
 | useNavigationState error (PostHog) | ⚠️ | Status of fix uncertain |
 | EAS Production Build | ❌ | Build workflow exists, not yet run |
 | App Store submission | ❌ | Not done |
@@ -342,53 +370,66 @@ Migrations from Feb 11–26 applied. Confirmed tables:
 
 ## Code vs Docs Discrepancies
 
-> These are places where prior documentation claimed something was done but code shows otherwise. These are NOT failures — they are honest gaps that must be tracked.
+> Items marked ✅ RESOLVED have been fixed. Items below are still outstanding.
 
-| # | Doc Claim | Code Reality |
-|---|-----------|--------------|
-| 1 | "PulseDashboard" is the Self default view with real tasks | Action items ("Mark Morning Attendance", "Grade Science Assignment") are **hardcoded console.log** — not queried from DB |
-| 2 | "LotusPetalFAB is context-aware floating action button" | FAB actions in App.tsx `getFabActions()` are **all console.log** — none wired to actual navigation or actions |
-| 3 | "OCR Scanner: component built" implies working feature | `GoogleVisionProvider`, `MLKitProvider`, `OpenAIVisionProvider` are **skeleton stubs**; not wired to any UI path |
-| 4 | Self section: "All features have complete UI + API + DB integration" | `SleepTracker`, `RemindersManager`, `VoiceJournaling` are **built but NOT wired** into TeacherSelfView |
-| 5 | "Group Chat (WhatsApp-style): pending" | More accurately: **ZERO code exists** — no DB table, no Realtime subscription, no screen, no hook |
-| 6 | "QR payload routing: CRITICAL GAP — no centralized resolver" | Partially addressed: `QRResolver.ts` exists with `resolveQR()`. But `join-group` consumer path still missing and InviteManager modal not rendered. |
-| 7 | Feature matrix marks "Notifications" as "❌ Pending" | `NotificationDrawer.tsx` **exists** as component — needs investigation of what data it shows |
-| 8 | Docs say Onboarding is "5-screen philosophy flow" | Code confirms **9 screens**: Name + Role + Orientation (optional) + 5 philosophy screens |
-| 9 | "NoiseOverlay: BUG — P0 fix needed" | Already mitigated: **DISABLED** in App.tsx via comment — not a blocking visual regression right now. Re-enabling is planned (T3.10) with proper guarded rollout. |
-| 10 | "API duplication: known issue" | Still not resolved — `apps/gurudevi-mobile/src/lib/api/` still exists alongside `packages/core/src/api/` |
-| 11 | Docs claimed DB migration status is known | `migration_status.md` shows uncertainty for 10+ migrations — **unknown if all tables exist in prod** |
+| # | Doc Claim | Code Reality | Status |
+|---|-----------|--------------|--------|
+| 1 | "PulseDashboard" is the Self default view with real tasks | Was hardcoded console.log — now fixed: `usePendingActions` queries real DB, items navigate | ✅ RESOLVED Feb 28 |
+| 2 | "LotusPetalFAB is context-aware floating action button" | FAB actions in `getFabActions()` are still `console.log` — none wired | ⚠️ Still open (T3.11) |
+| 3 | "OCR Scanner: component built" implies working feature | `GoogleVisionProvider`, `MLKitProvider`, `OpenAIVisionProvider` are **skeleton stubs** | ⚠️ Still open (T2.4) |
+| 4 | Self section: "All features have complete UI + API + DB integration" | SleepTracker / RemindersManager / VoiceJournaling — actually were wired (doc was stale) | ✅ RESOLVED — was stale |
+| 5 | "Group Chat: zero implementation" | GroupChatScreen built with Supabase Realtime on group_messages table | ✅ RESOLVED Feb 28 |
+| 6 | "QR payload routing: CRITICAL GAP" | QRResolver.ts canonical, join-group consumer path wired, InviteManager modal renders | ✅ RESOLVED Feb 28 |
+| 7 | Feature matrix marks "Notifications" as "❌ Pending" | NotificationDrawer reads real DB via useNotifications + 3 DB triggers | ✅ RESOLVED Feb 28 |
+| 8 | Docs say Onboarding is "5-screen philosophy flow" | Code confirms **9 screens**: Name + Role + Orientation (optional) + 5 philosophy screens | ✅ Doc updated |
+| 9 | "NoiseOverlay: BUG — P0 fix needed" | DISABLED in App.tsx — not blocking; re-enable is T3.10 | ⚠️ Still open (T3.10) |
+| 10 | "API duplication: known issue" | `apps/gurudevi-mobile/src/lib/api/` still exists alongside `packages/core/src/api/` | ⚠️ Still open |
+| 11 | "Library PDF/Video viewers link externally" | PDFViewerScreen: expo-file-system + expo-sharing; VideoPlayerScreen: expo-av | ✅ RESOLVED Feb 28 |
+| 12 | "Thuthimal: no give flow" | GiveThuthimalModal + "🌸 Give Thuthimal" button in FullProfileScreen | ✅ RESOLVED Feb 28 |
 
 ---
 
 ## Known Bugs and Issues
 
 ### 🔴 Critical (Product-Breaking)
-1. **DB migration status uncertain** — 10+ migrations may not be applied. Tables that don't exist will cause silent data failures.
+1. **DB migrations (Feb 28) need applying to prod** — `staff_attendance`, `staff_leaves`, `principal_observations`, `institutional_calendar`, `notifications`, `notification_triggers`, and other Feb 28 migrations must be run on prod Supabase before those features work.
 2. **OCR providers are stubs** — Any teacher who tries the OCR student import feature will get nothing. Feature is advertised but non-functional.
-3. **Group chat: zero implementation** — Community section shows a chat affordance with no backend, no UI, no data. Dead feature.
 
 ### 🟠 High Priority
-4. **useNavigationState error (PostHog)** — PostHogProvider placement may cause navigation errors. Status of fix uncertain.
-5. **src/lib/api duplication** — Bug fixes must be applied in two places until consolidated.
-6. **Community screens in 2 places** — GroupDetailsScreen, CreatePostModal in both app and `@repo/community`.
+3. **useNavigationState error (PostHog)** — PostHogProvider placement may cause navigation errors. Status of fix uncertain.
+4. **src/lib/api duplication** — Bug fixes must be applied in two places until consolidated.
+5. **Community screens in 2 places** — GroupDetailsScreen, CreatePostModal in both app and `@repo/community`.
 
 ### 🟡 Medium Priority
-7. **Accessibility: ~5/100 score** — 175 interactive elements with only ~4 having `accessibilityLabel`. Legal/ethical liability.
-8. **i18n: 176 si + 200 ta keys missing; 272 hardcoded strings** — App is not production-ready in Sinhala/Tamil.
-9. **Library content empty** — New schools see an empty library. No cold-start content.
-10. **Skia NoiseOverlay disabled** — Visual richness lost. Needs proper fix before re-enabling.
+6. **Accessibility: ~5/100 score** — 175 interactive elements with only ~4 having `accessibilityLabel`. Legal/ethical liability.
+7. **i18n: 176 si + 200 ta keys missing; 272 hardcoded strings** — App is not production-ready in Sinhala/Tamil.
+8. **Library content empty** — New schools see an empty library. No cold-start content.
+9. **Skia NoiseOverlay disabled** — Visual richness lost. Needs proper fix before re-enabling.
+10. **FAB actions not wired** — `getFabActions()` in App.tsx still has `console.log` placeholders (T3.11).
 
-### 🟢 Fixed This Sprint (Feb 28 2026)
+### 🟢 Fixed This Sprint (Feb 28 2026 — Session 1: earlier session)
 - ✅ PulseDashboard hardcoded actions → real DB queries via `usePendingActions` hook
 - ✅ FAB actions were all console.log → now call `navigationRef.navigate()`
 - ✅ Teacher QR join overwrites teacher_id → FlowResolver.executeJoinClass is now role-aware
-- ✅ SleepTracker / RemindersManager / VoiceJournaling wired into TeacherSelfView MORE_TOOLS
+- ✅ SleepTracker / RemindersManager / VoiceJournaling wired into TeacherSelfView MORE_TOOLS (was already wired, doc was stale)
 - ✅ NotificationDrawer showed 3 hardcoded "Update Available" items → real DB via `useNotifications` hook + migration
 - ✅ Alert.alert in ClassroomNotes, PrincipalNotes, TeacherDashboard → useLotusToast
 - ✅ CreatePostModal has no tag selection → 8 education tag chips stored in metadata.education_tags
 - ✅ ResonancePatternCard missing from PrincipalSelfView + AdminSelfView → added with behavioral hooks
 - ✅ Principal InviteManager QR not rendered → was already done (verified by code reading)
 - ✅ join-group QR consumer path missing → was already done (verified by code reading)
+- ✅ Community group creation — `CreateGroupModal`, `createGroupWithAdmin` API, `group_messages` migration, `GroupChatScreen` with Realtime
+
+### 🟢 Fixed This Sprint (Feb 28 2026 — Session 2: 10-task sprint)
+- ✅ PulseDashboard action items now navigate: attendance → Attendance screen; grading → Gradebook screen (was `onPress={() => {}}`)
+- ✅ QR teacher join ownership overwrite — confirmed already fixed (FlowResolver guards teacher_id IS NULL)
+- ✅ SleepTracker / RemindersManager / VoiceJournaling — confirmed already wired (CURRENT_STATE was stale)
+- ✅ Principal Dashboard Phase 1 — `MorningSituationalBrief` + `TeacherCarousel` + `staffManagementAPI` + DB migration
+- ✅ Principal Dashboard Phase 2 — `StudentPulseSection` + `InstitutionalCalendarSection` + `PrincipalObservationsSection` + `LeaveApprovalSection`
+- ✅ Real notification triggers — 3 `SECURITY DEFINER` PostgreSQL triggers auto-insert into `notifications` table
+- ✅ Library PDF viewer — `expo-file-system` download with real progress + `expo-sharing` native viewer (was fake skeleton)
+- ✅ Library Video player — `expo-av` with live play/pause/seek/progress (was fake controls)
+- ✅ Thuthimal give flow — `GiveThuthimalModal` + "🌸 Give Thuthimal" button in `FullProfileScreen` for other profiles
 
 ---
 

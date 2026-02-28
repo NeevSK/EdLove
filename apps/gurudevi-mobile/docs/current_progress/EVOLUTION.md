@@ -288,7 +288,7 @@ Complete system built:
 
 ---
 
-## Phase 6: Late February / March 1st Week (February 27, 2026 — Current)
+## Phase 6: Late February / March 1st Week (February 27, 2026)
 
 ### Skia Dark Overlay Bug (P0 Blocker)
 The `2026-02-27-priority-matrix-and-skia-runbook.md` documents a critical rendering bug:
@@ -311,12 +311,69 @@ The `2026-02-27-priority-matrix-and-skia-runbook.md` documents a critical render
 - `useTheme / useAccessibility`, `useInventory`: Duplicated hooks
 - **Proposed sanitization**: Extract → Harmonize → Sanitize → Verify
 
-### Priority Matrix Execution Plan (Current Week)
-Immediate 7-day plan from priority matrix:
-- Day 1-2: Skia stabilization + feature flag + Header/navbar token audit
-- Day 3-4: Self screen redesign + Community posting constraints
-- Day 5: Classroom role-specific demos + Library visual cleanup
-- Day 6-7: Real notifications wiring + QA smoke suite
+### Phase 6 Feature Delivery (Feb 28 2026 — Session 1)
+Executed against priority matrix. Completed:
+- **QR system**: All consumer paths verified/fixed — `join-group`, InviteManager modal, teacher ownership guard
+- **Group Creation**: `CreateGroupModal` + `createGroupWithAdmin` API canonical; table name bug fixed (`community_group_members`)
+- **Group Chat**: `GroupChatScreen` with Supabase Realtime subscription on `group_messages`; DB migration; own-message right-aligned
+- **PulseDashboard**: `usePendingActions` hook with real DB queries (attendance + ungraded submissions); skeleton loading; empty state
+- **NotificationDrawer**: `notifications` table migration; `useNotifications` hook wired into `GlobalHeader`; real data replaces hardcoded items
+- **Orientation Individual Difference Layer**: `useOrientationInference` hook; onboarding capture step; `ResonancePatternCard`; `OrientationSeeds` on User type; library shelf silent re-ordering
+
+---
+
+## Phase 7: Feb 28 2026 — 10-Task Product Sprint (Session 2)
+
+### Philosophy: First Principles Feature Selection
+Rather than continue UI polish, this session selected features by asking: *"What actually matters to build right now for real school users?"* The result was a product-viability-first ordering that deprioritized cosmetics in favour of missing infrastructure.
+
+### Audit Discoveries
+Code audit revealed several CURRENT_STATE.md claims were stale:
+- `SleepTracker`, `RemindersManager`, `VoiceJournaling` were claimed "NOT wired" but were fully wired in TeacherSelfView MORE_TOOLS
+- `PulseDashboard` action items were real `usePendingActions` DB queries but `onPress` handlers were `() => {}` (data real, navigation missing)
+- QR ownership overwrite in FlowResolver was already fixed with `.is('teacher_id', null)` guard
+
+### PulseDashboard Navigation Wired
+`PulseDashboard.tsx`: attendance items → `navigation.navigate('Attendance', { classroomId })`, grading items → `navigation.navigate('Gradebook', { classroomId })`. Bug fixed: was passing `assignmentId` as `classroomId` for gradebook route.
+
+### Principal Dashboard: Complete Overhaul (T1.7 Phases 1+2)
+The most significant structural addition of Phase 7 — turning `PrincipalSchoolView` from a static number-viewer into a living command center:
+
+**New DB tables** (migration `20260228_staff_management.sql`):
+- `staff_attendance` — daily check-in/check-out per staff member, school-scoped
+- `staff_leaves` — leave requests with approve/reject workflow
+- `principal_observations` — classroom walkthrough notes (walkthrough/note/concern/praise)
+- `institutional_calendar` — school events (term dates, exams, holidays, etc.)
+
+**New API**: `staffManagementAPI` in `packages/core/src/api/staffManagement.ts` — 8 functions with graceful error handling
+
+**New Components** (all in `packages/classroom/src/components/principal/`):
+- `MorningSituationalBrief` — staff presence strip (colour-coded ≥90%/≥70%/<70%), student attendance % + delta, at-risk badge, pending approvals
+- `TeacherCarousel` — horizontal scroll, status dot from `staff_attendance`, class count
+- `StudentPulseSection` — attendance %, delta, weekly submission rate, at-risk flags
+- `InstitutionalCalendarSection` — upcoming events list + inline add form
+- `PrincipalObservationsSection` — observation CRUD with type chips
+- `LeaveApprovalSection` — pending leave queue with approve/reject
+
+### Real Notification Infrastructure (T2.3 + T2.9)
+Three `SECURITY DEFINER` PostgreSQL triggers (migration `20260228_notification_triggers.sql`):
+- `trg_notify_submission` — new submission → teacher notification
+- `trg_notify_grade` — `graded_at` NULL→non-NULL → student notification
+- `trg_notify_group_post` — new group post → fan-out to all active members
+
+The `useNotifications` hook was already reading from the `notifications` table. The triggers complete the end-to-end loop: real events now generate real notifications automatically.
+
+### Library Native Viewers (T2.8)
+- **PDF** (`PDFViewerScreen.tsx`): Replaced fake skeleton with `expo-file-system` download (real progress callback → animated fill bar) + `expo-sharing` for native PDF app. User-initiated open (no auto-open).
+- **Video** (`VideoPlayerScreen.tsx`): Replaced fake controls with real `expo-av` `Video` component — live `onPlaybackStatusUpdate`, `videoRef` play/pause/±10s seek, tap-to-seek progress bar.
+
+### Thuthimal Give Flow (T2.6)
+Completing Gurudevi's core differentiator — the gratitude economy:
+- `GiveThuthimalModal.tsx` (new) — optional message input, "Send Gift of Gratitude" CTA → `thuthimalAPI.createGift` → toast + haptic
+- `FullProfileScreen.tsx` — detects `isOtherProfile`, shows "🌸 Give Thuthimal" button when viewing another teacher or principal's profile
+
+### Phase 7 Lesson: Documentation Debt is a Product Risk
+The audit work in this phase revealed that stale documentation (CURRENT_STATE.md claiming features "not wired" that were actually wired) wasted sprint planning time and nearly caused double-work. Going forward: update docs in the same PR as code changes.
 
 ---
 
@@ -343,7 +400,8 @@ Immediate 7-day plan from priority matrix:
 - **Phase 3**: Environment Engine, offline architecture, i18n hardening
 - **Phase 4**: Guest mode, gamification, expanded QR utility, community/library redesign
 - **Phase 5**: Profile completion system, Living Theme, groups infrastructure, horizontal chips
-- **Phase 6**: Skia atmosphere, premium UI redesign of header/navbar/self/community
+- **Phase 6**: Skia atmosphere, premium UI redesign of header/navbar/self/community; QR system complete; Group Chat; PulseDashboard real data; NotificationDrawer real data; Orientation Individual Difference Layer
+- **Phase 7**: Principal Dashboard overhaul (6 new components + 4 DB tables); notification triggers; native PDF + video viewers; Thuthimal give flow
 
 ### AI Collaboration Evolution
 - **Phase 1**: Sequential prompts, no formal methodology

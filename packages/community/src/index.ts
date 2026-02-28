@@ -11,6 +11,7 @@ export * from './components/PinnedResourcesShelf';
 export { default as GroupMemberManagement } from './components/GroupMemberManagement';
 export { default as CommunityHearth } from './components/CommunityHearth';
 export { default as CreatePostModal } from './components/CreatePostModal';
+export { default as CreateGroupModal } from './components/CreateGroupModal';
 export { default as GroupCard } from './components/GroupCard';
 export { default as PostCard } from './components/PostCard';
 export { default as ManifestoCard } from './components/ManifestoCard';

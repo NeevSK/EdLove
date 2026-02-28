@@ -4,6 +4,7 @@ import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, Gl
 import Animated from 'react-native-reanimated';
 import PostCard from '../components/PostCard';
 import CreatePostModal from '../components/CreatePostModal';
+import CreateGroupModal from '../components/CreateGroupModal';
 import ReportPostModal from '../components/ReportPostModal';
 import GroupsScreen from './GroupsScreen';
 import { useTranslation } from 'react-i18next';
@@ -45,6 +46,7 @@ export default function CommunityScreen() {
     const [searchQuery, setSearchQuery] = useState('');
     const [refreshing, setRefreshing] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
     const [createPostGroupId, setCreatePostGroupId] = useState<string | undefined>(undefined);
     const [reportPostId, setReportPostId] = useState<string | undefined>(undefined);
     const [showReportModal, setShowReportModal] = useState(false);
@@ -247,6 +249,7 @@ export default function CommunityScreen() {
                         userId={userId ?? undefined}
                         schoolId={schoolId}
                         onCreatePost={handleOpenCreatePost}
+                        onCreateGroup={() => setShowCreateGroupModal(true)}
                         onNavigateToGroup={(groupId: string) => {
                             navigation.navigate('GroupDetails', { groupId });
                         }}
@@ -273,6 +276,15 @@ export default function CommunityScreen() {
                     isOpen={showCreateModal}
                     onClose={() => { setShowCreateModal(false); setCreatePostGroupId(undefined); }}
                     groupId={createPostGroupId}
+                />
+
+                <CreateGroupModal
+                    isOpen={showCreateGroupModal}
+                    onClose={() => setShowCreateGroupModal(false)}
+                    onCreated={(groupId) => {
+                        // Refresh groups list after creation
+                        fetchGroups();
+                    }}
                 />
 
                 <ReportPostModal

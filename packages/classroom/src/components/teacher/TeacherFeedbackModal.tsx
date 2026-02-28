@@ -10,17 +10,11 @@ import {
     VStack,
     HStack,
     Text,
-    Heading,
     Theme,
-    useThemedColors,
+    useTheme,
     Button,
     ButtonText,
-    Modal,
-    ModalBackdrop,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
+    SanctuaryModal,
     Textarea,
     TextareaInput,
     Select,
@@ -31,7 +25,6 @@ import {
     SelectBackdrop,
     SelectContent,
     SelectItem,
-    Icon,
     Spinner,
 } from '@repo/ui';
 import { ChevronDown, MessageSquare, Heart, AlertTriangle, CheckCircle2 } from 'lucide-react-native';
@@ -54,7 +47,7 @@ const CATEGORIES = [
 
 export default function TeacherFeedbackModal({ isOpen, onClose, schoolId, teacherId }: TeacherFeedbackModalProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
+    const { text, accent, glass } = useTheme();
     const [category, setCategory] = useState<string>('support');
     const [content, setContent] = useState('');
     const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
@@ -88,111 +81,145 @@ export default function TeacherFeedbackModal({ isOpen, onClose, schoolId, teache
         }
     };
 
+    const footer = (
+        <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
+            <Button
+                variant="outline"
+                onPress={onClose}
+                sx={{ flex: 1, borderColor: glass.interact.border }}
+            >
+                <ButtonText {...({ color: text.secondary } as any)}>
+                    {t('common.cancel', 'Cancel')}
+                </ButtonText>
+            </Button>
+            <Button
+                onPress={handleSubmit}
+                isDisabled={isSubmitting || !content.trim()}
+                sx={{ flex: 2, backgroundColor: accent.action, borderRadius: Theme.corners.comfortable }}
+            >
+                {isSubmitting ? (
+                    <Spinner {...({ color: text.inverse } as any)} />
+                ) : (
+                    <ButtonText {...({ color: text.inverse } as any)}>
+                        {t('common.send', 'Send to Principal')}
+                    </ButtonText>
+                )}
+            </Button>
+        </HStack>
+    );
+
     return (
-        <Modal isOpen={isOpen} onClose={onClose}>
-            <ModalBackdrop />
-            <ModalContent>
-                <ModalHeader>
-                    <VStack>
-                        <Heading sx={{ fontSize: Theme.typography.fontSize.lg }} color={colors.text}>
-                            {t('teacher.feedback.title', 'Principal Echo')}
-                        </Heading>
-                        <Text sx={{ fontSize: Theme.typography.fontSize.xs }} color={colors.textSecondary}>
-                            {t('teacher.feedback.subtitle', 'Send a reflection or request to administration')}
-                        </Text>
-                    </VStack>
-                </ModalHeader>
-                <ModalBody>
-                    <VStack sx={{ gap: Theme.spacing.md }}>
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                            <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }} color={colors.text}>{t('teacher.feedback.category', 'Category')}</Text>
-                            <Select onValueChange={setCategory} defaultValue={category}>
-                                <SelectTrigger variant="outline">
-                                    <SelectInput placeholder="Select category" />
-                                    <SelectIcon sx={{ marginRight: Theme.spacing.md }} as={ChevronDown} />
-                                </SelectTrigger>
-                                <SelectPortal>
-                                    <SelectBackdrop />
-                                    <SelectContent>
-                                        {CATEGORIES.map((cat) => (
-                                            <SelectItem key={cat.value} label={cat.label} value={cat.value} />
-                                        ))}
-                                    </SelectContent>
-                                </SelectPortal>
-                            </Select>
-                        </VStack>
-
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                            <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }} color={colors.text}>{t('teacher.feedback.priority', 'Urgency')}</Text>
-                            <HStack sx={{ gap: Theme.spacing.sm }}>
-                                {(['low', 'medium', 'high'] as const).map((p) => (
-                                    <Button
-                                        key={p}
-                                        size="xs"
-                                        variant={priority === p ? 'solid' : 'outline'}
-                                        sx={{
-                                            flex: 1,
-                                            backgroundColor: priority === p ? (p === 'high' ? Theme.colors.emberRed : colors.action) : 'transparent',
-                                            borderColor: p === 'high' ? Theme.colors.emberRed : colors.action
-                                        }}
-                                        onPress={() => setPriority(p)}
-                                    >
-                                        <ButtonText color={priority === p ? 'white' : colors.text}>{p.toUpperCase()}</ButtonText>
-                                    </Button>
-                                ))}
-                            </HStack>
-                        </VStack>
-
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                            <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }} color={colors.text}>{t('teacher.feedback.content', 'Your Reflection')}</Text>
-                            <Textarea
-                                isReadOnly={false}
-                                isInvalid={false}
-                                isDisabled={false}
-                                sx={{ backgroundColor: colors.secondary, minHeight: 100 }}
-                            >
-                                <TextareaInput
-                                    placeholder={t('teacher.feedback.placeholder', 'Share your thoughts, resource needs, or concerns...')}
-                                    value={content}
-                                    onChangeText={setContent}
-                                />
-                            </Textarea>
-                        </VStack>
-
-                        <Box
-                            sx={{
-                                padding: Theme.spacing.sm,
-                                backgroundColor: colors.tertiary,
-                                borderRadius: Theme.corners.comfortable,
-                                borderLeftWidth: 4,
-                                borderLeftColor: Theme.colors.amberGlow
-                            }}
-                        >
-                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textSecondary, fontStyle: 'italic' }}>
-                                {t('teacher.feedback.note', 'This reflection will be surfaced on the Principal\'s Dashboard "Echo" vistas.')}
-                            </Text>
-                        </Box>
-                    </VStack>
-                </ModalBody>
-                <ModalFooter>
-                    <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
-                        <Button
+        <SanctuaryModal
+            isOpen={isOpen}
+            onClose={onClose}
+            title={t('teacher.feedback.title', 'Principal Echo')}
+            subtitle={t('teacher.feedback.subtitle', 'Send a reflection or request to administration')}
+            footer={footer}
+        >
+            <VStack sx={{ gap: Theme.spacing.md }}>
+                <VStack sx={{ gap: Theme.spacing.xs }}>
+                    <Text
+                        sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}
+                        {...({ color: text.primary } as any)}
+                    >
+                        {t('teacher.feedback.category', 'Category')}
+                    </Text>
+                    <Select onValueChange={setCategory} defaultValue={category}>
+                        <SelectTrigger
                             variant="outline"
-                            onPress={onClose}
-                            sx={{ flex: 1 }}
+                            sx={{ borderColor: glass.interact.border, backgroundColor: glass.interact.bg }}
                         >
-                            <ButtonText color={colors.text}>{t('common.cancel', 'Cancel')}</ButtonText>
-                        </Button>
-                        <Button
-                            onPress={handleSubmit}
-                            isDisabled={isSubmitting || !content.trim()}
-                            sx={{ flex: 2, backgroundColor: colors.action }}
-                        >
-                            {isSubmitting ? <Spinner color="white" /> : <ButtonText color="white">{t('common.send', 'Send to Principal')}</ButtonText>}
-                        </Button>
+                            <SelectInput
+                                placeholder="Select category"
+                                {...({ color: text.primary } as any)}
+                            />
+                            <SelectIcon sx={{ marginRight: Theme.spacing.md }} as={ChevronDown} />
+                        </SelectTrigger>
+                        <SelectPortal>
+                            <SelectBackdrop />
+                            <SelectContent>
+                                {CATEGORIES.map((cat) => (
+                                    <SelectItem key={cat.value} label={cat.label} value={cat.value} />
+                                ))}
+                            </SelectContent>
+                        </SelectPortal>
+                    </Select>
+                </VStack>
+
+                <VStack sx={{ gap: Theme.spacing.xs }}>
+                    <Text
+                        sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}
+                        {...({ color: text.primary } as any)}
+                    >
+                        {t('teacher.feedback.priority', 'Urgency')}
+                    </Text>
+                    <HStack sx={{ gap: Theme.spacing.sm }}>
+                        {(['low', 'medium', 'high'] as const).map((p) => (
+                            <Button
+                                key={p}
+                                size="xs"
+                                variant={priority === p ? 'solid' : 'outline'}
+                                sx={{
+                                    flex: 1,
+                                    backgroundColor: priority === p
+                                        ? (p === 'high' ? accent.danger : accent.action)
+                                        : 'transparent',
+                                    borderColor: p === 'high' ? accent.danger : glass.interact.border,
+                                    borderRadius: Theme.corners.comfortable,
+                                }}
+                                onPress={() => setPriority(p)}
+                            >
+                                <ButtonText
+                                    {...({ color: priority === p ? text.inverse : text.secondary } as any)}
+                                >
+                                    {p.toUpperCase()}
+                                </ButtonText>
+                            </Button>
+                        ))}
                     </HStack>
-                </ModalFooter>
-            </ModalContent>
-        </Modal>
+                </VStack>
+
+                <VStack sx={{ gap: Theme.spacing.xs }}>
+                    <Text
+                        sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}
+                        {...({ color: text.primary } as any)}
+                    >
+                        {t('teacher.feedback.content', 'Your Reflection')}
+                    </Text>
+                    <Textarea
+                        isReadOnly={false}
+                        isInvalid={false}
+                        isDisabled={false}
+                        sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border, minHeight: 100 }}
+                    >
+                        <TextareaInput
+                            placeholder={t('teacher.feedback.placeholder', 'Share your thoughts, resource needs, or concerns...')}
+                            value={content}
+                            onChangeText={setContent}
+                            {...({ color: text.primary } as any)}
+                        />
+                    </Textarea>
+                </VStack>
+
+                <Box
+                    sx={{
+                        padding: Theme.spacing.sm,
+                        backgroundColor: glass.interact.bg,
+                        borderRadius: Theme.corners.comfortable,
+                        borderLeftWidth: 4,
+                        borderLeftColor: accent.reward,
+                        borderColor: glass.interact.border,
+                        borderWidth: 1,
+                    }}
+                >
+                    <Text
+                        sx={{ fontSize: Theme.typography.fontSize.xs, fontStyle: 'italic' }}
+                        {...({ color: text.secondary } as any)}
+                    >
+                        {t('teacher.feedback.note', 'This reflection will be surfaced on the Principal\'s Dashboard "Echo" vistas.')}
+                    </Text>
+                </Box>
+            </VStack>
+        </SanctuaryModal>
     );
 }

@@ -88,20 +88,27 @@ function getRelativeDateLabel(dateStr: string): string {
 }
 
 function groupNotesByDate(notes: ClassroomNote[]): NoteGroup[] {
-    const pinned = notes.filter((n) => n.is_pinned);
-    const unpinned = notes.filter((n) => !n.is_pinned);
+    const safeNotes = notes || [];
+    const pinned = safeNotes.filter((n) => n && n.is_pinned);
+    const unpinned = safeNotes.filter((n) => n && !n.is_pinned);
 
     const groups: Record<string, ClassroomNote[]> = {};
     for (const note of unpinned) {
+        if (!note) continue;
         const label = getRelativeDateLabel(note.created_at);
         if (!groups[label]) groups[label] = [];
-        groups[label].push(note);
+        groups[label]?.push(note);
     }
 
     const result: NoteGroup[] = [];
     if (pinned.length > 0) result.push({ label: '📌 Pinned', data: pinned });
+
+    // Explicitly handle noUncheckedIndexedAccess: true from base.json
     for (const label of Object.keys(groups)) {
-        result.push({ label, data: groups[label] });
+        const data = groups[label];
+        if (data) {
+            result.push({ label, data });
+        }
     }
     return result;
 }
@@ -164,7 +171,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
     const fetchNotes = useCallback(async () => {
         try {
             const data = await api.classroomNotes.getAll(classroomId);
-            setNotes(data);
+            setNotes(data || []);
         } catch (err) {
             console.error('ClassroomNotes: fetch error', err);
         } finally {
@@ -244,9 +251,10 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
 
     const renderNoteCard = ({ item: note }: { item: ClassroomNote }) => {
         const meta = NOTE_TYPE_META[note.note_type];
+        if (!meta) return null; // Defensive check for unexpected note types
         const NoteIcon = meta.icon;
         const isClassVisible = note.visibility === 'class';
-        const time = new Date(note.created_at).toLocaleTimeString([], {
+        const time = new Date(note.created_at || new Date()).toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit',
         });
@@ -256,6 +264,8 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                 sx={{
                     backgroundColor: note.is_pinned ? colors.tertiary : colors.secondary,
                     borderRadius: Theme.corners.comfortable,
+                    borderWidth: 1,
+                    borderColor: Theme.colors.glassBorder,
                     borderLeftWidth: 3,
                     borderLeftColor: meta.color,
                     padding: Theme.spacing.md,
@@ -445,12 +455,12 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                                 draftType === 'announcement'
                                     ? "Write an announcement for the class…"
                                     : draftType === 'lesson_recap'
-                                    ? "What did you cover today?…"
-                                    : draftType === 'reminder'
-                                    ? "What do you need to remember?…"
-                                    : draftType === 'personal'
-                                    ? "Write your study note…"
-                                    : "Write your note…"
+                                        ? "What did you cover today?…"
+                                        : draftType === 'reminder'
+                                            ? "What do you need to remember?…"
+                                            : draftType === 'personal'
+                                                ? "Write your study note…"
+                                                : "Write your note…"
                             }
                             placeholderTextColor={colors.textTertiary}
                             multiline

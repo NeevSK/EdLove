@@ -1,12 +1,5 @@
 ﻿import React, { useState } from 'react';
 import {
-    Modal,
-    ModalBackdrop,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    Heading,
     VStack,
     HStack,
     Box,
@@ -20,6 +13,8 @@ import {
     FormControlLabelText,
     Spinner,
     Pressable,
+    SanctuaryModal,
+    useTheme,
 } from '@repo/ui';
 import { Theme } from '@repo/ui';
 import {
@@ -64,6 +59,7 @@ export default function CreateClassroomModal({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const colors = useThemedColors();
+    const { text, accent, glass } = useTheme();
 
     const [sections, setSections] = useState<any[]>([]);
     const [grades, setGrades] = useState<any[]>([]);
@@ -226,15 +222,16 @@ export default function CreateClassroomModal({
                     syllabus_version: syllabusId,
                 });
 
-                // Create linked sanctuary group
+                // Create linked sanctuary group — creator auto-added as admin
                 if (result && schoolId) {
-                    await communityAPI.createSanctuaryGroup({
+                    await communityAPI.createGroupWithAdmin({
                         name: `${name.trim()} Sanctuary`,
                         description: `A sacred space for the ${name.trim()} classroom ${subject ? `(${subject}) ` : ''}discussions and heart-sharing.`,
+                        group_type: 'class',
+                        join_policy: 'approval_required',
                         school_id: schoolId,
-                        creator_id: user.id,
                         classroom_id: result.id
-                    });
+                    }, user.id);
                 }
             }
 
@@ -272,38 +269,66 @@ export default function CreateClassroomModal({
                 }}
                 feature="classroom"
             />
-            <Modal isOpen={isOpen} onClose={handleClose}>
-                <ModalBackdrop />
-                <ModalContent
-                    sx={{
-                        backgroundColor: colors.secondary,
-                        maxWidth: 400,
-                        borderColor: colors.border,
-                        borderWidth: 1,
-                    }}
-                >
-                    <ModalHeader>
-                        <Heading color={colors.text} size="lg">
-                            {mode === 'join'
-                                ? (t('classroom.joinTitle') || 'Join Existing Class')
-                                : (t('classroom.createTitle') || 'Create New Class')
+            <SanctuaryModal
+                isOpen={isOpen}
+                onClose={handleClose}
+                title={mode === 'join'
+                    ? (t('classroom.joinTitle') || 'Join Existing Class')
+                    : (t('classroom.createTitle') || 'Create New Class')
+                }
+                footer={
+                    <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
+                        <Button
+                            variant="outline"
+                            action="secondary"
+                            onPress={handleClose}
+                            sx={{ flex: 1, borderColor: glass.interact.border }}
+                            isDisabled={isSubmitting}
+                        >
+                            <ButtonText {...({ color: text.secondary } as any)}>
+                                {t('common.cancel') || 'Cancel'}
+                            </ButtonText>
+                        </Button>
+                        <Button
+                            action="primary"
+                            onPress={handleSubmit}
+                            sx={{
+                                flex: 1,
+                                backgroundColor: accent.action,
+                                borderRadius: Theme.corners.comfortable,
+                            }}
+                            isDisabled={
+                                isSubmitting ||
+                                (mode === 'create' && (!name.trim() || (classType === 'subject' && !subject.trim()))) ||
+                                (mode === 'join' && !selectedClassroomId)
                             }
-                        </Heading>
-                    </ModalHeader>
-
-                    <ModalBody>
+                        >
+                            {isSubmitting ? (
+                                <Spinner {...({ color: text.inverse, size: "small" } as any)} />
+                            ) : (
+                                <ButtonText {...({ color: text.inverse } as any)}>
+                                    {mode === 'join'
+                                        ? (t('common.join') || 'Join')
+                                        : (t('common.create') || 'Create')
+                                    }
+                                </ButtonText>
+                            )}
+                        </Button>
+                    </HStack>
+                }
+            >
                         <VStack sx={{ gap: Theme.spacing.xl }}>
                             {error && (
                                 <Box
                                     sx={{
                                         padding: Theme.spacing.md,
-                                        backgroundColor: Theme.colors.emberRed + '30',
+                                        backgroundColor: `${accent.danger}30`,
                                         borderRadius: Theme.corners.comfortable,
                                         borderWidth: 1,
-                                        borderColor: Theme.colors.emberRed,
+                                        borderColor: accent.danger,
                                     }}
                                 >
-                                    <Text sx={{ color: Theme.colors.emberRed, fontSize: Theme.typography.fontSize.sm }}>
+                                    <Text sx={{ color: accent.danger, fontSize: Theme.typography.fontSize.sm }}>
                                         {error}
                                     </Text>
                                 </Box>
@@ -342,11 +367,11 @@ export default function CreateClassroomModal({
                                     <Button
                                         variant="outline"
                                         onPress={() => setIsScannerOpen(true)}
-                                        sx={{ borderColor: Theme.colors.sanctuarySaffron }}
+                                        sx={{ borderColor: accent.action }}
                                     >
                                         <HStack sx={{ gap: Theme.spacing.sm }} alignItems="center">
-                                            <ScanLine color={Theme.colors.sanctuarySaffron} size={20} />
-                                            <ButtonText color={Theme.colors.sanctuarySaffron}>
+                                            <ScanLine color={accent.action} size={20} />
+                                            <ButtonText {...({ color: accent.action } as any)}>
                                                 {t('classroom.scanQrToJoin') || 'Scan QR to Join'}
                                             </ButtonText>
                                         </HStack>
@@ -381,11 +406,11 @@ export default function CreateClassroomModal({
                                                     size="sm"
                                                     onPress={() => handleSectionChange(section.id)}
                                                     sx={{
-                                                        backgroundColor: selectedSectionId === section.id ? Theme.colors.sanctuarySaffron : 'transparent',
-                                                        borderColor: selectedSectionId === section.id ? Theme.colors.sanctuarySaffron : colors.border,
+                                                        backgroundColor: selectedSectionId === section.id ? accent.action : 'transparent',
+                                                        borderColor: selectedSectionId === section.id ? accent.action : colors.border,
                                                     }}
                                                 >
-                                                    <ButtonText color={selectedSectionId === section.id ? Theme.colors.sacredWhite : colors.textSecondary}>
+                                                    <ButtonText color={selectedSectionId === section.id ? text.inverse : colors.textSecondary}>
                                                         {section.name}
                                                     </ButtonText>
                                                 </Button>
@@ -409,11 +434,11 @@ export default function CreateClassroomModal({
                                                         onPress={() => handleGradeChange(grade.id)}
                                                         sx={{
                                                             paddingHorizontal: 8,
-                                                            backgroundColor: selectedGradeId === grade.id ? Theme.colors.sanctuarySaffron : 'transparent',
-                                                            borderColor: selectedGradeId === grade.id ? Theme.colors.sanctuarySaffron : colors.border,
+                                                            backgroundColor: selectedGradeId === grade.id ? accent.action : 'transparent',
+                                                            borderColor: selectedGradeId === grade.id ? accent.action : colors.border,
                                                         }}
                                                     >
-                                                        <ButtonText color={selectedGradeId === grade.id ? Theme.colors.sacredWhite : colors.textSecondary}>
+                                                        <ButtonText color={selectedGradeId === grade.id ? text.inverse : colors.textSecondary}>
                                                             {grade.number}
                                                         </ButtonText>
                                                     </Button>
@@ -441,7 +466,7 @@ export default function CreateClassroomModal({
                                                                 borderRadius: Theme.corners.comfortable,
                                                                 backgroundColor: selectedClassroomId === cls.id ? colors.tertiary : 'transparent',
                                                                 borderWidth: 1,
-                                                                borderColor: selectedClassroomId === cls.id ? Theme.colors.sanctuarySaffron : colors.border,
+                                                                borderColor: selectedClassroomId === cls.id ? accent.action : colors.border,
                                                             }}
                                                         >
                                                             <HStack justifyContent="space-between" alignItems="center">
@@ -450,8 +475,8 @@ export default function CreateClassroomModal({
                                                                     <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>{cls.subject || t('classroom.noSubject') || 'No subject'}</Text>
                                                                 </VStack>
                                                                 {selectedClassroomId === cls.id && (
-                                                                    <Box sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: 10, padding: 2 }}>
-                                                                        <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: 'white', fontWeight: 'bold', paddingHorizontal: 4 }}>{t('common.selected') || 'SELECTED'}</Text>
+                                                                    <Box sx={{ backgroundColor: accent.action, borderRadius: 10, padding: 2 }}>
+                                                                        <Text {...({ color: text.inverse } as any)} sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: 'bold', paddingHorizontal: 4 }}>{t('common.selected') || 'SELECTED'}</Text>
                                                                     </Box>
                                                                 )}
                                                             </HStack>
@@ -468,11 +493,11 @@ export default function CreateClassroomModal({
                                             borderRadius: Theme.corners.comfortable,
                                             backgroundColor: colors.tertiary,
                                             borderWidth: 1,
-                                            borderColor: Theme.colors.sanctuarySaffron,
+                                            borderColor: accent.action,
                                             marginTop: Theme.spacing.sm
                                         }}>
                                             <HStack sx={{ gap: Theme.spacing.sm }} alignItems="center">
-                                                <ScanLine color={Theme.colors.sanctuarySaffron} size={20} />
+                                                <ScanLine color={accent.action} size={20} />
                                                 <Text sx={{ color: colors.text, fontWeight: 'bold' }}>
                                                     Scanned Classroom Ready
                                                 </Text>
@@ -508,11 +533,11 @@ export default function CreateClassroomModal({
                                                     size="xs"
                                                     onPress={() => setSubject(sub.id)}
                                                     sx={{
-                                                        backgroundColor: subject === sub.id ? Theme.colors.sanctuarySaffron : 'transparent',
-                                                        borderColor: subject === sub.id ? Theme.colors.sanctuarySaffron : colors.border,
+                                                        backgroundColor: subject === sub.id ? accent.action : 'transparent',
+                                                        borderColor: subject === sub.id ? accent.action : colors.border,
                                                     }}
                                                 >
-                                                    <ButtonText color={subject === sub.id ? Theme.colors.sacredWhite : colors.textSecondary}>
+                                                    <ButtonText color={subject === sub.id ? text.inverse : colors.textSecondary}>
                                                         {sub.en}
                                                     </ButtonText>
                                                 </Button>
@@ -636,11 +661,12 @@ export default function CreateClassroomModal({
                                                 onPress={() => setClassType('own')}
                                                 sx={{
                                                     flex: 1,
-                                                    backgroundColor: classType === 'own' ? Theme.colors.sanctuarySaffron : 'transparent',
-                                                    borderColor: classType === 'own' ? Theme.colors.sanctuarySaffron : colors.border,
+                                                    backgroundColor: classType === 'own' ? accent.action : 'transparent',
+                                                    borderColor: classType === 'own' ? accent.action : glass.interact.border,
+                                                    borderRadius: Theme.corners.comfortable,
                                                 }}
                                             >
-                                                <ButtonText color={classType === 'own' ? Theme.colors.sacredWhite : colors.textSecondary}>
+                                                <ButtonText {...({ color: classType === 'own' ? text.inverse : text.secondary } as any)}>
                                                     {t('classroom.roleClassTeacher') || 'Class Teacher'}
                                                 </ButtonText>
                                             </Button>
@@ -650,11 +676,12 @@ export default function CreateClassroomModal({
                                                 onPress={() => setClassType('subject')}
                                                 sx={{
                                                     flex: 1,
-                                                    backgroundColor: classType === 'subject' ? Theme.colors.sanctuarySaffron : 'transparent',
-                                                    borderColor: classType === 'subject' ? Theme.colors.sanctuarySaffron : colors.border,
+                                                    backgroundColor: classType === 'subject' ? accent.action : 'transparent',
+                                                    borderColor: classType === 'subject' ? accent.action : glass.interact.border,
+                                                    borderRadius: Theme.corners.comfortable,
                                                 }}
                                             >
-                                                <ButtonText color={classType === 'subject' ? Theme.colors.sacredWhite : colors.textSecondary}>
+                                                <ButtonText {...({ color: classType === 'subject' ? text.inverse : text.secondary } as any)}>
                                                     {t('classroom.roleSubjectTeacher') || 'Subject Teacher'}
                                                 </ButtonText>
                                             </Button>
@@ -663,56 +690,14 @@ export default function CreateClassroomModal({
                                 </>
                             )}
                         </VStack>
-                    </ModalBody>
-
-                    <ModalFooter>
-                        <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
-                            <Button
-                                variant="outline"
-                                action="secondary"
-                                onPress={handleClose}
-                                sx={{ flex: 1, borderColor: colors.border }}
-                                isDisabled={isSubmitting}
-                            >
-                                <ButtonText color={colors.textSecondary}>
-                                    {t('common.cancel') || 'Cancel'}
-                                </ButtonText>
-                            </Button>
-                            <Button
-                                action="primary"
-                                onPress={handleSubmit}
-                                sx={{
-                                    flex: 1,
-                                    backgroundColor: Theme.colors.sanctuarySaffron,
-                                }}
-                                isDisabled={
-                                    isSubmitting ||
-                                    (mode === 'create' && (!name.trim() || (classType === 'subject' && !subject.trim()))) ||
-                                    (mode === 'join' && !selectedClassroomId)
-                                }
-                            >
-                                {isSubmitting ? (
-                                    <Spinner color={Theme.colors.sacredWhite} size="small" />
-                                ) : (
-                                    <ButtonText color={Theme.colors.sacredWhite}>
-                                        {mode === 'join'
-                                            ? (t('common.join') || 'Join')
-                                            : (t('common.create') || 'Create')
-                                        }
-                                    </ButtonText>
-                                )}
-                            </Button>
-                        </HStack>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
+            </SanctuaryModal>
 
             <ScannerModal
                 visible={isScannerOpen}
                 onClose={() => setIsScannerOpen(false)}
                 onScan={handleScan}
                 title="Scan Class QR"
-                accentColor={Theme.colors.sanctuarySaffron}
+                accentColor={accent.action}
             />
         </>
     );

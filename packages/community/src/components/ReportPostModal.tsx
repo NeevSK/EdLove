@@ -8,11 +8,11 @@ import {
     Heading,
     Button,
     ButtonText,
-    useThemedColors,
     Theme,
     hapticSuccess,
     hapticError,
-    useLotusToast
+    useLotusToast,
+    useTheme,
 } from '@repo/ui';
 import { X, AlertTriangle, ShieldOff, UserX } from 'lucide-react-native';
 import { communityAPI } from '../api/community';
@@ -41,7 +41,7 @@ export default function ReportPostModal({
     targetUserId,
     reporterId
 }: ReportPostModalProps) {
-    const colors = useThemedColors();
+    const { glass, text, accent, isDark } = useTheme();
     const { showToast } = useLotusToast();
     const [reason, setReason] = useState<string>('');
     const [submitting, setSubmitting] = useState(false);
@@ -83,30 +83,51 @@ export default function ReportPostModal({
             transparent={true}
             onRequestClose={onClose}
         >
-            <Box sx={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.6)' }}>
+            {/* Backdrop: Shadow Violet — NEVER black */}
+            <Box sx={{
+                flex: 1,
+                justifyContent: 'flex-end',
+                backgroundColor: isDark
+                    ? 'rgba(107,100,128,0.65)'
+                    : 'rgba(107,100,128,0.45)',
+            }}>
                 <Box
                     sx={{
-                        backgroundColor: Theme.colors.shroud,
+                        backgroundColor: glass.modal.bg,
                         borderTopLeftRadius: Theme.corners.generous,
                         borderTopRightRadius: Theme.corners.generous,
+                        borderTopWidth: 1,
+                        borderLeftWidth: 1,
+                        borderRightWidth: 1,
+                        borderColor: glass.modal.border,
                         padding: Theme.spacing.lg,
                         paddingBottom: 40,
+                        // Shadow Violet — never black
+                        shadowColor: Theme.colors.shadowViolet,
+                        shadowOffset: { width: 0, height: -4 },
+                        shadowOpacity: 0.12,
+                        shadowRadius: 16,
+                        elevation: 8,
                     }}
                 >
-                    <VStack space="xl">
+                    <VStack {...({ space: "xl" } as any)}>
                         <HStack justifyContent="space-between" alignItems="center">
-                            <VStack space="xs">
-                                <Heading color={Theme.colors.sacredWhite} size="lg">Report for High Care</Heading>
-                                <Text color={Theme.colors.mistGray} size="sm">Help keep the Sanctuary safe and nurturing.</Text>
+                            <VStack {...({ space: "xs" } as any)}>
+                                <Heading {...({ color: text.primary, size: "lg" } as any)}>
+                                    Report for High Care
+                                </Heading>
+                                <Text {...({ color: text.secondary, size: "sm" } as any)}>
+                                    Help keep the Sanctuary safe and nurturing.
+                                </Text>
                             </VStack>
                             <TouchableOpacity onPress={onClose}>
-                                <X color={Theme.colors.mistGray} size={24} />
+                                <X color={text.muted} size={24} />
                             </TouchableOpacity>
                         </HStack>
 
-                        <VStack space="md">
+                        <VStack {...({ space: "md" } as any)}>
                             {REPORT_REASONS.map((item) => {
-                                const Icon = item.icon;
+                                const ItemIcon = item.icon;
                                 const isSelected = reason === item.value;
                                 return (
                                     <TouchableOpacity
@@ -115,16 +136,32 @@ export default function ReportPostModal({
                                         style={[
                                             styles.reasonItem,
                                             {
-                                                borderColor: isSelected ? Theme.colors.sanctuarySaffron : 'rgba(255,255,255,0.05)',
-                                                backgroundColor: isSelected ? 'rgba(230, 126, 34, 0.1)' : 'rgba(255,255,255,0.02)'
+                                                borderColor: isSelected
+                                                    ? accent.action
+                                                    : glass.interact.border,
+                                                backgroundColor: isSelected
+                                                    ? `${accent.action}18`
+                                                    : glass.interact.bg,
                                             }
                                         ]}
                                     >
-                                        <HStack space="md" alignItems="center">
-                                            <Box sx={{ p: '$2', borderRadius: '$full', backgroundColor: 'rgba(255,255,255,0.05)' }}>
-                                                <Icon size={20} color={isSelected ? Theme.colors.sanctuarySaffron : Theme.colors.mistGray} />
+                                        <HStack {...({ space: "md", alignItems: "center" } as any)}>
+                                            <Box sx={{
+                                                p: '$2',
+                                                borderRadius: '$full',
+                                                backgroundColor: glass.surface.bg,
+                                            }}>
+                                                <ItemIcon
+                                                    size={20}
+                                                    color={isSelected ? accent.action : text.muted}
+                                                />
                                             </Box>
-                                            <Text color={isSelected ? Theme.colors.sacredWhite : Theme.colors.starlightGray} bold={isSelected}>
+                                            <Text
+                                                {...({
+                                                    color: isSelected ? text.primary : text.secondary,
+                                                    bold: isSelected,
+                                                } as any)}
+                                            >
                                                 {item.label}
                                             </Text>
                                         </HStack>
@@ -137,12 +174,20 @@ export default function ReportPostModal({
                             onPress={handleReport}
                             isDisabled={!reason || submitting}
                             sx={{
-                                backgroundColor: Theme.colors.sanctuarySaffron,
+                                backgroundColor: accent.action,
                                 borderRadius: Theme.corners.comfortable,
                                 height: 50,
+                                // Shadow Violet glow on primary action
+                                shadowColor: Theme.colors.shadowViolet,
+                                shadowOffset: { width: 0, height: 4 },
+                                shadowOpacity: 0.16,
+                                shadowRadius: 8,
+                                elevation: 4,
                             }}
                         >
-                            <ButtonText color="black" bold>
+                            <ButtonText
+                                {...({ color: text.inverse, bold: true } as any)}
+                            >
                                 {submitting ? 'Sending Report...' : 'Submit Report'}
                             </ButtonText>
                         </Button>
@@ -160,3 +205,4 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     }
 });
+

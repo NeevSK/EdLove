@@ -1,20 +1,15 @@
 import React from 'react';
 import {
-    Modal,
-    ModalBackdrop,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    Heading,
     Text,
+    VStack,
     Button,
     ButtonText,
-    VStack
+    SanctuaryModal,
+    Theme,
+    useTheme,
+    hapticSuccess,
 } from '@repo/ui';
-import { Theme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { hapticSuccess } from '@repo/ui';
 
 interface WelcomeModalProps {
     isOpen: boolean;
@@ -23,48 +18,42 @@ interface WelcomeModalProps {
 
 export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
     const { t } = useTranslation();
+    const { text, accent } = useTheme();
 
     const handleStart = () => {
         hapticSuccess();
         onClose();
     };
 
+    const footer = (
+        <Button
+            size="md"
+            onPress={handleStart}
+            sx={{ backgroundColor: accent.action, width: '100%', borderRadius: Theme.corners.comfortable }}
+        >
+            <ButtonText {...({ color: text.inverse } as any)}>
+                {t('welcome.start') || 'Begin Journey'}
+            </ButtonText>
+        </Button>
+    );
+
     return (
-        <Modal
+        <SanctuaryModal
             isOpen={isOpen}
             onClose={onClose}
+            title={t('welcome.title') || 'Welcome Home'}
+            showCloseButton={false}
+            footer={footer}
         >
-            <ModalBackdrop />
-            <ModalContent sx={{ backgroundColor: Theme.colors.ink, borderColor: Theme.colors.sanctuarySaffron, borderWidth: 1 }}>
-                <ModalHeader>
-                    <Heading size="xl" color={Theme.colors.sanctuarySaffron}>
-                        {t('welcome.title') || 'Welcome Home'}
-                    </Heading>
-                </ModalHeader>
-                <ModalBody>
-                    <VStack space="md">
-                        <Text color={Theme.colors.sacredWhite} size="lg" lineHeight="$xl">
-                            {t('welcome.message') || 'Your sanctuary awaits.'}
-                        </Text>
-                        <Text color={Theme.colors.mistGray} size="md" lineHeight="$lg">
-                            {t('welcome.description') || 'Here you can reflect, grow, and connect with your educational ecology.'}
-                        </Text>
-                    </VStack>
-                </ModalBody>
-                <ModalFooter>
-                    <Button
-                        size="md"
-                        variant="solid"
-                        action="primary"
-                        onPress={handleStart}
-                        sx={{ backgroundColor: Theme.colors.sanctuarySaffron }}
-                    >
-                        <ButtonText color={Theme.colors.sacredWhite}>
-                            {t('welcome.start') || 'Begin Journey'}
-                        </ButtonText>
-                    </Button>
-                </ModalFooter>
-            </ModalContent>
-        </Modal>
+            <VStack {...({ space: "md" } as any)}>
+                <Text {...({ size: "lg", lineHeight: "$xl", color: text.primary } as any)}>
+                    {t('welcome.message') || 'Your sanctuary awaits.'}
+                </Text>
+                <Text {...({ size: "md", lineHeight: "$lg", color: text.secondary } as any)}>
+                    {t('welcome.description') || 'Here you can reflect, grow, and connect with your educational ecology.'}
+                </Text>
+            </VStack>
+        </SanctuaryModal>
     );
 }
+

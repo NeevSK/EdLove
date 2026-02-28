@@ -16,7 +16,7 @@ This document is the **Technical Source of Truth** for Gurudevi Mobile. It maps 
 | `ALL-PRF-005` | Completion Milestones| ALL | **UI**: Hint text in `ProfileScreen` | 🟢 **Complete**. Logic driven by `useProfileCompletion`. |
 | `ALL-PRF-006` | Stats Dashboard | ALL | **UI**: `UserStatsCard.tsx`<br>**API**: Aggregation hooks | 🟢 **Complete**. Fetches dynamic stats per role. |
 | `ALL-PRF-007` | Achievement Gallery | ALL | **UI**: `AchievementGallery.tsx` | 🟢 **Complete**. Animated list of earned badges. |
-| `ALL-PRF-008` | Thuthimal Recognition| ALL | **UI**: `ThuthimalBadge.tsx`<br>**DB**: `thuthimal_gifts` table | 🟢 **Complete**. Verified in `ProfileScreen`. |
+| `ALL-PRF-008` | Thuthimal Recognition| ALL | **UI**: `ThuthimalBadge.tsx`, `GiveThuthimalModal.tsx`<br>**DB**: `thuthimal_gifts` table<br>**Screen**: `ThuthimalClaimScreen.tsx` | 🟢 **Complete**. Full two-sided flow: give (GiveThuthimalModal on other's profile) + claim (QR scan → ThuthimalClaimScreen → celebration). Feb 28 2026. |
 | `ALL-PRF-009` | Identity Info Edit | ALL | **UI**: `FullProfileScreen.tsx`<br>**API**: `onboardingAPI.completeProfile` | 🟢 **Complete**. Update logic functional. |
 | `ALL-PRF-010` | App Settings Modal | ALL | **UI**: `AppSettingsScreen.tsx` | 🟢 **Complete**. Full setting management UI integrated. |
 | `ALL-PRF-011` | FAQ & Help Center | ALL | **UI**: `SupportSection` in `ProfileScreen` | 🟡 **Partial**. Link exists; needs content hydration. |
@@ -29,7 +29,7 @@ This document is the **Technical Source of Truth** for Gurudevi Mobile. It maps 
 | `ALL-PRF-018` | Identity Switching | ALL | **UI**: `AccountActions` button | 🟢 **Complete**. Navigates to Auth for switch. |
 | `ALL-PRF-019` | Sync Refresh | ALL | **UI**: `RefreshControl` in `ScrollView` | 🟢 **Complete**. Pull-to-refresh triggers `profile.refresh`. |
 | `ALL-PRF-020` | Discovery Tracking | ALL | **API**: `trackingAPI.logFeatureUsage` | 🟢 **Complete**. Logs `section_profile` entry. |
-| `ALL-PRF-025` | Notification Ledger| ALL | **UI**: `NotificationsScreen.tsx`<br>**DB**: `notifications` table | � **Pending**. Historical view in development. |
+| `ALL-PRF-025` | Notification Ledger| ALL | **UI**: `NotificationDrawer.tsx`<br>**DB**: `notifications` table<br>**Hooks**: `useNotifications`<br>**Triggers**: `20260228_notification_triggers.sql` | 🟢 **Complete**. Real data from `notifications` table via `useNotifications` hook. 3 DB triggers auto-insert: submission→teacher, grade→student, group post→active members. Feb 28 2026. |
 | `ALL-PRF-026` | Subject Branding | ALL | **UI**: Profile item icons | � **Pending**. Role-specific icon mapping missing. |
 | `ALL-PRF-027` | Login Persistence | ALL | **Lib**: `supabase.auth` (persistSession) | 🟢 **Complete**. MMKV-backed auth state verified. |
 | `ALL-PRF-028` | Account Purge | ALL | **API**: `authAPI.deleteAccount` | 🟢 **Complete**. Verified in `DeleteAccountModal`. |
@@ -59,8 +59,8 @@ This document is the **Technical Source of Truth** for Gurudevi Mobile. It maps 
 | `ALL-LIB-008` | Resource Metadata | ALL | **UI**: Sub-labels in Card | 🟢 **Complete**. Displays type/author. |
 | `ALL-LIB-009` | External Linking | ALL | **Lib**: `expo-linking` | 🟢 **Complete**. Opens web links reliably. |
 | `ALL-LIB-010` | Pull to Desk | ALL | **UI**: `CollectionCard.onPullToDesk` | 🟡 **Partial**. Local store sync works; needs DB. |
-| `ALL-LIB-011` | In-App PDF Viewer | ALL | **Lib**: `react-native-pdf` | 🔴 **Pending**. Currently links out; need native viewer. |
-| `ALL-LIB-012` | Video Player | ALL | **Lib**: `expo-av` or `react-native-youtube` | 🔴 **Pending**. Needs streaming component integration. |
+| `ALL-LIB-011` | In-App PDF Viewer | ALL | **Lib**: `expo-file-system` + `expo-sharing` | 🟢 **Complete**. `PDFViewerScreen.tsx`: downloads with real progress bar, opens in device native PDF viewer. Feb 28 2026. |
+| `ALL-LIB-012` | Video Player | ALL | **Lib**: `expo-av` | 🟢 **Complete**. `VideoPlayerScreen.tsx`: real `Video` component with `onPlaybackStatusUpdate`, play/pause/seek, live progress bar. Feb 28 2026. |
 | `ALL-LIB-013` | Infinite Scroll | ALL | **UI**: `onEndReached` in `ResourceList` | 🟢 **Complete**. Paginated fetching functional. |
 | `ALL-LIB-014` | Subject Tagging | ALL | **UI**: `SanctuaryChip` in Grid | 🟢 **Complete**. Visual discipline categorization. |
 | `ALL-LIB-015` | Positive Invitation | ALL | **UI**: `PositiveInvitation.tsx` | 🟢 **Complete**. UX empty-state prompt functional. |
@@ -84,7 +84,7 @@ This document is the **Technical Source of Truth** for Gurudevi Mobile. It maps 
 | `PRN-SLF-001` | Energy Forecast | **UI**: `EnergyForecastCard` (in `PrincipalSelfView`) | 🟡 **Partial**. UI exists; logic is mock. |
 | `PRN-SLF-002` | School Pulse | **UI**: `PulseDashboard.tsx`<br>**DB**: Mood aggregation | 🟡 **Partial**. Graph exists; needs real data view. |
 | `PRN-SLF-003` | Decision Journal | **UI**: `JournalCard` | 🟢 **Complete**. Logic shared with `useJournal`. |
-| `PRN-SLF-004` | Staff Wellbeing | **UI**: Aggregated stats pulse | 🔴 **Pending**. Needs anonymized aggregation view. |
+| `PRN-SLF-004` | Staff Wellbeing | **UI**: `MorningSituationalBrief.tsx` (staff presence strip) | 🟡 **Partial**. Staff presence count + attendance % visible. Anonymized mood trend for staff deferred — awaiting dignity-design approval. Feb 28 2026. |
 | `PRN-SLF-005` | Leadership Wisdom | **UI**: Top banner in `PrincipalSelfView` | 🟢 **Complete**. Fetches `dailyContentAPI`. |
 | `PRN-SLF-006` | Retro Prompt | **Logic**: AI prompt generation | 🔴 **Pending**. Needs AI Assist integration. |
 | `PRN-SLF-007` | Shadow Agent Access| **UI**: `AIAssistantScreen.tsx` | 🟢 **Complete**. Direct entry from Self tab. |
@@ -126,19 +126,19 @@ This document is the **Technical Source of Truth** for Gurudevi Mobile. It maps 
 | `PRN-CLS-029` | Performance Med. | **UI**: School-wide grade distribution | 🟡 **Partial**. Needs aggregated grades view. |
 | `PRN-CLS-030` | Staff Assignment | **UI**: Classroom teacher selector | 🟢 **Complete**. Functional in `ClassroomDetails`. |
 | `PRN-CLS-031` | Enrollment Center | **UI**: `onboardingAPI.handleSchoolRequest`| 🟢 **Complete**. Approval/Reject workflow. |
-| `PRN-CLS-032` | Institutional Cal. | **UI**: `InstitutionalCalendar.tsx` | 🔴 **Pending**. Currently uses static feed. |
+| `PRN-CLS-032` | Institutional Cal. | **UI**: `InstitutionalCalendarSection.tsx`<br>**DB**: `institutional_calendar` | 🟢 **Complete**. Upcoming events list + inline add form (type chips, date inputs). Feb 28 2026. |
 | `PRN-CLS-033` | Bulk Data Upload | **Logic**: CSV Parser | 🔴 **Pending**. Requires backend ingestion logic. |
 | `PRN-CLS-034` | QR School Card | **UI**: `QRHandlerScreen.tsx` | 🟢 **Complete**. Displays School UUID QR code. |
 | `PRN-CLS-035` | Dept. Tree Map | **UI**: SVG Hierarchy View | 🔴 **Pending**. Placeholder UI. |
 | `PRN-CLS-036` | Admin FAB | **UI**: `LotusPetalFAB` (PRN Context) | 🟢 **Complete**. Actions: Invite, Create Room. |
 | `PRN-CLS-037` | Audit Logging | **DB**: `audit_logs` table | 🔴 **Pending**. Table and trigger missing. |
-| `PRN-CLS-038` | Observation Notes | **UI**: `TeacherFeedbackScreen` | 🔴 **Pending**. UI placeholder in Teacher Detail. |
+| `PRN-CLS-038` | Observation Notes | **UI**: `PrincipalObservationsSection.tsx`<br>**DB**: `principal_observations` | 🟢 **Complete**. CRUD for walkthrough/note/concern/praise notes. Feb 28 2026. |
 | `PRN-CLS-039` | Setup Flow | **UI**: `SchoolCreationScreen.tsx` | 🟢 **Complete**. Verified in establecimiento. |
 | `PRN-CLS-040` | API Sync | **UI**: "Sync Now" in Settings | 🟢 **Complete**. Manual trigger for Supabase sync. |
-| `PRN-CLS-041` | Teacher Attendance | **UI**: `StaffAttendanceList.tsx`<br>**DB**: `staff_attendance` | 🔴 **Pending**. Staff check-in/out tracking. |
-| `PRN-CLS-042` | Leave Management | **UI**: `LeaveRequestScreen.tsx`<br>**DB**: `staff_leaves` | 🔴 **Pending**. Submission flow for staff. |
-| `PRN-CLS-043` | Staff Pulse | **UI**: Aggregated staff presence | 🔴 **Pending**. Real-time dashboard for PRN. |
-| `PRN-CLS-044` | Leave Approval | **UI**: `LeaveApprovalScreen.tsx` | 🔴 **Pending**. Admin approval portal. |
+| `PRN-CLS-041` | Teacher Attendance | **UI**: `TeacherCarousel.tsx` + `MorningSituationalBrief.tsx`<br>**DB**: `staff_attendance` | 🟢 **Complete**. Staff presence strip + per-teacher status dot. Feb 28 2026. |
+| `PRN-CLS-042` | Leave Management | **UI**: `LeaveApprovalSection.tsx`<br>**DB**: `staff_leaves` | 🟢 **Complete**. Staff submit leave; principal sees pending queue with approve/reject. Feb 28 2026. |
+| `PRN-CLS-043` | Staff Pulse | **UI**: `MorningSituationalBrief.tsx` + `StudentPulseSection.tsx` | 🟢 **Complete**. Staff presence % + student attendance % with delta vs yesterday. Feb 28 2026. |
+| `PRN-CLS-044` | Leave Approval | **UI**: `LeaveApprovalSection.tsx` | 🟢 **Complete**. Inline approve/reject in principal dashboard. Feb 28 2026. |
 
 ### Community Tab Deep Dive
 | Code | Feature Name | Technical Implementation (UI/API/DB) | Status & Gap Details |

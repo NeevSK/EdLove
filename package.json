@@ -13,13 +13,13 @@
     "ios": "expo run:ios"
   },
   "devDependencies": {
+    "@repo/types-shim": "workspace:*",
     "@testing-library/react-native": "14.0.0-beta.0",
     "jest": "^30.2.0",
     "jest-expo": "55.0.9",
     "prettier": "^3.6.2",
     "turbo": "^2.6.0",
-    "typescript": "5.9.2",
-    "@repo/types-shim": "workspace:*"
+    "typescript": "5.9.2"
   },
   "pnpm": {
     "packageExtensions": {
@@ -30,12 +30,12 @@
       },
       "eslint-plugin-react-native-a11y": {
         "peerDependencies": {
-          "eslint": ">=9.0.0"
+          "eslint": ">=3.0.0"
         }
       },
       "jest-watch-typeahead": {
         "peerDependencies": {
-          "jest": ">=27.0.0"
+          "jest": ">=27.0.0 || ^30.0.0"
         }
       },
       "@expo/router-server": {
@@ -46,6 +46,9 @@
       "@gluestack-ui/themed": {
         "peerDependencies": {
           "@types/react-native": "*"
+        },
+        "dependencies": {
+          "@types/react-native": "workspace:*"
         }
       }
     },
@@ -84,10 +87,10 @@
   ],
   "version": "1.0.0",
   "dependencies": {
+    "@shopify/react-native-skia": "2.4.18",
     "expo": "~55.0.0",
     "react": "19.2.0",
     "react-native": "0.83.2",
-    "@shopify/react-native-skia": "2.4.18",
     "semver": "^7.6.3"
   }
 }
