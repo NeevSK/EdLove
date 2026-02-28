@@ -23,6 +23,7 @@ import {
     MessageSquare
 } from 'lucide-react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCommunity } from '../hooks/useCommunity';
 import { Group, Post } from '../types';
 import GroupMemberManagement from '../components/GroupMemberManagement';
@@ -45,7 +46,7 @@ type GroupDetailsRouteProp = {
 
 export default function GroupDetailsScreen() {
     const route = useRoute<GroupDetailsRouteProp>();
-    const navigation = useNavigation();
+    const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
     const { t } = useTranslation();
     const { groupId } = route.params;
     const { role } = useUserRole();
@@ -143,6 +144,9 @@ export default function GroupDetailsScreen() {
                     </HStack>
 
                     <HStack space="sm">
+                        <TouchableOpacity onPress={() => navigation.navigate('GroupChat', { groupId, groupName: group.name })}>
+                            <MessageSquare size={20} color={colors.textSecondary} />
+                        </TouchableOpacity>
                         {isAdmin && (
                             <TouchableOpacity onPress={() => setShowAdmin(true)}>
                                 <Settings size={20} color={colors.textSecondary} />

@@ -14,14 +14,29 @@ export interface User {
     created_at: string;          // ISO timestamp
     updated_at?: string;         // ISO timestamp (optional)
     avatar_url?: string;         // Profile picture URL (optional)
-    is_anonymous?: boolean;      // NEW: Flag for anonymous/guest users
-    profile_completed: boolean;  // NEW: Flag for "No Trust" barrier
+    is_anonymous?: boolean;      // Flag for anonymous/guest users
+    profile_completed: boolean;  // Flag for "No Trust" barrier
     bio?: string;                // User bio
     role_label?: string;         // Personalized role label (e.g. "Physics Teacher")
-    index_number?: string;       // NEW: Mandatory for students
-    nic_number?: string;         // NEW: Mandatory for teachers
+    index_number?: string;       // Mandatory for students
+    nic_number?: string;         // Mandatory for teachers
     onboarding_completed?: boolean; // Flag indicating if user has completed onboarding
     onboarding_completed_at?: string; // Timestamp when onboarding was completed
+    /**
+     * Private orientation fingerprint — 4-dimensional learning tendency vector.
+     * Set during onboarding orientation step and updated via behavioral inference.
+     * Never surfaced as a type label; used only for silent UX personalisation.
+     * Keys: depth_breadth | reflect_act | solo_social | steady_surge (all 0–100).
+     */
+    orientation_seeds?: {
+        depth_breadth: number;
+        reflect_act: number;
+        solo_social: number;
+        steady_surge: number;
+        source: 'seeded' | 'inferred' | 'mixed';
+        seeded_at?: string;
+        last_updated?: string;
+    } | null;
 }
 
 /**

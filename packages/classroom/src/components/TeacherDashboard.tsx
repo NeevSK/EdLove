@@ -14,10 +14,10 @@ import {
     GlobalHeader,
     PositiveInvitation,
     SandboxBanner,
-    hapticLight
+    hapticLight,
+    useLotusToast
 } from '@repo/ui';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { Alert } from 'react-native';
 import {
     Zap,
     MessageCircle,
@@ -32,7 +32,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { useFeatureAccess, useStore, ClassroomStackParamList, api, supabase, onboardingAPI } from '@repo/core';
+import { useFeatureAccess, useStore, ClassroomStackParamList, api, supabase, onboardingAPI, FlowResolver } from '@repo/core';
 import ClassroomList from './ClassroomList';
 import CreateClassroomModal from './CreateClassroomModal';
 import { ScannerModal, resolveQR } from '@repo/scanner-kit';
@@ -52,6 +52,7 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
     const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
     const { teacherName, isDemoMode } = useStore();
     const { isGuest } = useFeatureAccess();
+    const { showToast } = useLotusToast();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
     const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
@@ -92,7 +93,7 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
         const result = resolveQR(data);
 
         if (!result.ok) {
-            Alert.alert("Invalid QR", "This QR code is not recognised by Gurudevi.");
+            showToast({ message: 'This QR code is not recognised by Gurudevi.', type: 'error' });
             return;
         }
 
@@ -103,18 +104,22 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
             if (!user) return;
 
             if (payload.action === 'join_class') {
-                await api.classrooms.update(payload.classroom_id, { teacher_id: user.id });
-                setRefreshTrigger(prev => prev + 1);
-                Alert.alert("Joined!", "You have joined the classroom.");
+                // Use FlowResolver to safely join (role-aware, no ownership overwrite)
+                const flowResult = await FlowResolver.resolveQR(payload, user.id);
+                if (flowResult.outcome === 'success') {
+                    setRefreshTrigger(prev => prev + 1);
+                    showToast({ message: 'Joined classroom!', type: 'success' });
+                } else {
+                    showToast({ message: flowResult.message || 'Could not join classroom.', type: 'error' });
+                }
             } else if (payload.action === 'join_school') {
-                // School QR scanned from teacher dashboard — navigate to onboarding
-                Alert.alert("School QR", "Open the school join flow to continue.");
+                showToast({ message: 'Open the school join flow from the welcome screen.', type: 'info' });
             } else {
-                Alert.alert("QR Scanned", `Action: ${payload.action} — not handled here.`);
+                showToast({ message: `QR scanned. Action: ${payload.action}`, type: 'info' });
             }
         } catch (err) {
             console.error("Failed to handle QR", err);
-            Alert.alert("Error", "Could not process QR. Please try again.");
+            showToast({ message: 'Could not process QR. Please try again.', type: 'error' });
         }
     };
 

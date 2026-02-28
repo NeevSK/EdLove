@@ -20,3 +20,5 @@ export { default as ReportPostModal } from './components/ReportPostModal';
 export { default as CommunityScreen } from './screens/CommunityScreen';
 export { default as GroupsScreen } from './screens/GroupsScreen';
 export { default as GroupDetailsScreen } from './screens/GroupDetailsScreen';
+export { default as GroupChatScreen } from './screens/GroupChatScreen';
+export { default as UserPublicProfileScreen } from './screens/UserPublicProfileScreen';

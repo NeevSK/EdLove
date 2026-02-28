@@ -26,7 +26,9 @@ import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
 import { MoodLotus, ShadowAgentDrawer } from '../../components/self';
+import ResonancePatternCard from '../../components/self/ResonancePatternCard';
 import { supabase, useStore, useUserRole } from '@repo/core';
+import { useMoodLogs, useEnergyForecast } from '@repo/self';
 import { GlobalHeader } from '@repo/ui';
 import DailyContentCard from '../../components/self/DailyContentCard';
 import WelcomeModal from '../../components/self/WelcomeModal';
@@ -54,6 +56,10 @@ export default function StudentSelfView() {
     const [activeFeature, setActiveFeature] = useState('mood');
     const [showMoreTools, setShowMoreTools] = useState(false);
 
+    // Behavioral signal hooks — feed into ResonancePatternCard inference
+    const { logs: moodLogs } = useMoodLogs();
+    const { forecasts: energyForecasts } = useEnergyForecast(userId ?? undefined);
+
     // We rely mostly on the offline store now for fast render
     const userProfile = user ? {
         id: user.id,
@@ -61,7 +67,8 @@ export default function StudentSelfView() {
         email: user.email,
         role: user.role || 'student',
         avatar_url: user.avatar_url,
-        school_name: null // Simplified, will add actual lookup if needed
+        school_name: null, // Simplified, will add actual lookup if needed
+        orientation_seeds: user.orientation_seeds,
     } : null;
 
     // Remove the slow, manual loading effect
@@ -185,6 +192,17 @@ export default function StudentSelfView() {
                     <DailyContentCard type="motivation" />
                     <DailyContentCard type="did_you_know" />
                 </Box>
+
+                {/* Resonance Pattern — shows only when there's something to show */}
+                    {userProfile && (
+                        <Box sx={{ paddingHorizontal: Theme.spacing.md, marginBottom: Theme.spacing.md }}>
+                            <ResonancePatternCard
+                                orientationSeeds={userProfile.orientation_seeds}
+                                moodLogs={moodLogs}
+                                energyForecasts={energyForecasts}
+                            />
+                        </Box>
+                    )}
 
                 {/* Feature Carousel */}
                 <Box sx={{ height: 100 }}>
