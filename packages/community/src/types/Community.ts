@@ -3,7 +3,12 @@
 // Educational Ecology Support System
 // ============================================================================
 
-import { UserRole } from '@repo/core';
+import { UserRole, Announcement } from '@repo/core';
+
+export interface AnnouncementWithAuthor extends Announcement {
+    author_name?: string;
+    author_avatar?: string;
+}
 
 // ============================================================================
 // COMMUNITY POST TYPES

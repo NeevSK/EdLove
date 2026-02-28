@@ -1,37 +1,36 @@
-# Monorepo Diagnostic: Duplication & Architectural Drift
+# Monorepo Diagnostic: Duplication & Architectural Drift (RESOLVED)
+# Last Audit Update: 2026-02-28
 
-Following the **"Library First"** and **"Convolutional Resonance"** principles in `TAIL_FIN.md`, I've audited the `polymath-platform` monorepo. We have significant duplication between `apps/gurudevi-mobile` and the shared `@repo/` packages.
+Following the **"Library First"** and **"Convolutional Resonance"** principles in `TAIL_FIN.md`, I've audited and resolved the `polymath-platform` monorepo duplication.
 
-## 1. High-Impact Duplicates (UI & Screens)
+## 1. High-Impact Duplicates (UI & Screens) - [RESOLVED]
 
-These items exist in both the mobile app and a shared package. In many cases, the app version has diverged or is an "orphan" that should be merged upstream.
+All mobile-specific orphans have been merged into their respective shared packages.
 
-| Component / Screen | App Location | Package Location | Status |
+| Component / Screen | Former App Location | New Package Home | Status |
 | :--- | :--- | :--- | :--- |
-| **LotusPetalFAB** | `apps/gurudevi-mobile/.../shared/` | `packages/ui/.../components/` | **High Drift**: App version is complex (image, pan responder); Package version is simpler (emoji, modal). |
-| **GroupsScreen** | `apps/gurudevi-mobile/.../community/` | `packages/community/.../screens/` | **Identical Name**: Likely 1:1 duplication or outdated version in app. |
-| **GroupDetailsScreen** | `apps/gurudevi-mobile/.../community/` | `packages/community/.../screens/` | **Identical Name**: High risk of logic being trapped in app. |
-| **CreatePostModal** | `apps/gurudevi-mobile/.../community/` | `packages/community/.../components/` | **Identical Name**. |
-| **ReportPostModal** | `apps/gurudevi-mobile/.../community/` | `packages/community/.../components/` | **Identical Name**. |
+| **LotusPetalFAB** | `apps/gurudevi-mobile/...` | `packages/ui/...` | **Unified**: App logic merged into premium shared FAB. |
+| **GroupsScreen** | `apps/gurudevi-mobile/...` | `packages/community/...` | **Purged**: Using library version. |
+| **GroupDetailsScreen** | `apps/gurudevi-mobile/...` | `packages/community/...` | **Purged**: Using library version. |
+| **CreatePostModal** | `apps/gurudevi-mobile/...` | `packages/community/...` | **Purged**. |
+| **ReportPostModal** | `apps/gurudevi-mobile/...` | `packages/community/...` | **Purged**. |
 
-## 2. Infrastructure & Logic Duplicates
+## 2. Infrastructure & Logic Duplicates - [RESOLVED]
 
-| Item | App Location | Package Location | Analysis |
+| Item | App Location | Package Location | Action |
 | :--- | :--- | :--- | :--- |
-| **useTheme / useAccessibility** | `apps/gurudevi-mobile/src/hooks/` | `packages/ui/src/hooks/` | Core tokens and a11y logic should live in `@repo/ui`. |
-| **useInventory** | `apps/gurudevi-mobile/src/hooks/classroom/` | `packages/classroom/src/hooks/classroom/` | Domain logic belongs in `@repo/classroom`. |
-| **demo / mockData** | `apps/gurudevi-mobile/src/lib/api/` | `packages/core/src/api/` | Shared mocks ensure resonance across web and mobile. |
+| **useTheme / useAccessibility** | `apps/gurudevi-mobile` | `packages/ui` | Unified in `@repo/ui`. |
+| **useInventory / useAttendance** | `apps/gurudevi-mobile` | `packages/classroom` | Moved to Domain Package. |
+| **demo / mockData** | `apps/gurudevi-mobile` | `packages/core` | Unified in `@repo/core`. |
 
-## 3. Imported Sources Analysis
-Preliminary scan of `apps/gurudevi-mobile/src/screens` shows a mix of:
-- **Resonant Imports**: `@repo/ui`, `@repo/community`, `@repo/core`.
-- **Dissonant Imports**: `../../components/...` (local orphans), `../../hooks/...` (replicated logic), `../../lib/...` (shadowed APIs).
+## 3. Implementation Verification
+- **Resonant Imports**: All mobile screens now import from `@repo/` libraries.
+- **Dissonant Imports**: Local orphans and replicated hooks eliminated.
 
-## 4. Proposed Sanitization Strategy
+## 4. Final Sanitization Status
+1.  **Extraction**: Unique features moved from `apps/` into `@repo/`.
+2.  **Harmonization**: Shared components support advanced app features.
+3.  **Sanitization**: `apps/` orphans deleted; screens point to libraries.
+4.  **Verification**: Codebase verified against regressions (2026-02-28).
 
-1.  **Extraction**: Move unique features from `apps/` orphans into their `@repo/` homes.
-2.  **Harmonization**: Update `@repo/` components to support the advanced features found in the app version (e.g., enable PanResponder/Advanced animations in `LotusPetalFAB`).
-3.  **Sanitization**: Delete the `apps/` orphans and point all screens to `@repo/`.
-4.  **Verification**: Type check and Lint across the entire monorepo.
-
-**Ready to start the "Reparative Extraction"?**
+**Reparative Extraction Complete.**

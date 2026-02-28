@@ -32,6 +32,7 @@ interface SanctuaryCardProps {
     onPress?: () => void;
     elevated?: boolean;
     variant?: 'glass' | 'solid'; // New variant prop
+    style?: any;
 }
 
 // ============================================================================
@@ -52,6 +53,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
     onPress,
     elevated = false,
     variant = 'glass', // Default to glass
+    style
 }) => {
     const { isDark, glass, glow, blurEnabled } = useTheme();
 
@@ -171,7 +173,8 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
             style={[
                 cardStyles.container,
                 elevated && cardStyles.elevated,
-                onPress && animatedStyle
+                onPress && animatedStyle,
+                style
             ]}
         >
             {useGlass ? (

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Linking, Share } from 'react-native';
-import { Text, GlassCard, useTheme, Icon, SanctuaryCard } from '@repo/ui';
+import { Text, GlassCard, useThemedColors, Icon, SanctuaryCard, Theme } from '@repo/ui';
 import { useSocialLinks } from '@repo/profile';
 import { SocialLink, SocialPlatform } from '@repo/core';
 import {
@@ -42,7 +42,7 @@ const PRIVACY_ICONS = {
 };
 
 export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnProfile }) => {
-    const { theme } = useTheme();
+    const colors = useThemedColors();
     const { t } = useTranslation();
     const { links, loading, deleteLink, updateLink } = useSocialLinks(userId);
 
@@ -86,7 +86,7 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
                 <Text variant="h3" style={styles.title}>{t('socialSanctuary.title')}</Text>
                 {isOwnProfile && (
                     <TouchableOpacity onPress={shareProfile} style={styles.shareBtn}>
-                        <Share2 size={20} color={theme.colors.ink} />
+                        <Share2 size={20} color={Theme.colors.ink} />
                     </TouchableOpacity>
                 )}
             </View>
@@ -104,8 +104,8 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
                         >
                             <GlassCard style={styles.linkCard}>
                                 <View style={styles.linkContent}>
-                                    <View style={[styles.platformIcon, { backgroundColor: theme.colors.primary + '20' }]}>
-                                        <PlatformIcon size={24} color={theme.colors.primary} />
+                                    <View style={[styles.platformIcon, { backgroundColor: colors.primary + '20' }]}>
+                                        <PlatformIcon size={24} color={colors.primary} />
                                     </View>
                                     <View style={styles.linkTextContainer}>
                                         <Text variant="p2" weight="bold" style={styles.platformName}>
@@ -117,10 +117,10 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
                                     </View>
                                     {isOwnProfile && (
                                         <View style={styles.privacyIndicator}>
-                                            <PrivacyIcon size={16} color={theme.colors.starlightGray} />
+                                            <PrivacyIcon size={16} color={colors.textTertiary} />
                                         </View>
                                     )}
-                                    <ExternalLink size={18} color={theme.colors.starlightGray} style={styles.arrowIcon} />
+                                    <ExternalLink size={18} color={colors.textTertiary} style={styles.arrowIcon} />
                                 </View>
                             </GlassCard>
                         </TouchableOpacity>
@@ -128,7 +128,7 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
                 })}
 
                 {isOwnProfile && visibleLinks.length === 0 && (
-                    <SanctuaryCard variant="outlined" style={styles.emptyCard}>
+                    <SanctuaryCard variant="glass" style={{ padding: 20, alignItems: 'center' }}>
                         <Text variant="p3" style={styles.emptyText}>
                             {t('socialSanctuary.empty')}
                         </Text>

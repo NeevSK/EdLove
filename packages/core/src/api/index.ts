@@ -15,15 +15,18 @@ import { classroomsAPI } from './classrooms';
 import { onboardingAPI } from './onboarding';
 import { inventoryAPI } from './inventory';
 import { dailyContentAPI } from './dailyContent';
-import { communityAPI } from './community';
 import { thuthimalAPI } from './thuthimal';
 import { classroomNotesAPI } from './classroomNotes';
 import { principalNotesAPI } from './principalNotes';
-
+import { ReliefCoordinator, TimetableScheduler } from './agents';
+import { sacredMissionsAPI } from './sacredMissions';
+import { isDemo, demoAPI } from './demo';
 
 export * from './mockData';
 export * from './types';
-export * from './thuthimal';
+export * from './thuthimal'; // Restore types and thuthimalAPI
+export * from './sacredMissions'; // Export mission types
+export * from './agents'; // Export agent types
 export * from './resonantProxy';
 export * from './classroomNotes';
 export * from './principalNotes';
@@ -52,6 +55,10 @@ export {
     thuthimalAPI,
     classroomNotesAPI,
     principalNotesAPI,
+    ReliefCoordinator,
+    TimetableScheduler,
+    sacredMissionsAPI,
+    demoAPI,
 };
 
 /**
@@ -81,9 +88,12 @@ export const api = {
     onboarding: onboardingAPI,
     dailyContent: dailyContentAPI,
     thuthimal: thuthimalAPI,
-    community: communityAPI,
     classroomNotes: classroomNotesAPI,
     principalNotes: principalNotesAPI,
+    relief: ReliefCoordinator,
+    scheduler: TimetableScheduler,
+    missions: sacredMissionsAPI,
+    demo: demoAPI,
 };
 
 export default api;

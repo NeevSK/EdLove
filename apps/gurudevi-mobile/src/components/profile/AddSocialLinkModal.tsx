@@ -189,10 +189,10 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                                 onPress={() => setPrivacy(pl.value)}
                                             >
                                                 <SanctuaryCard
-                                                    variant={privacy === pl.value ? 'primary' : 'outline'}
-                                                    sx={{
+                                                    variant={privacy === pl.value ? 'glass' : 'solid'}
+                                                    style={{
                                                         padding: Theme.spacing.md,
-                                                        borderColor: privacy === pl.value ? colors.action : colors.border
+                                                        borderColor: privacy === pl.value ? Theme.colors.sanctuarySaffron : colors.border
                                                     }}
                                                 >
                                                     <HStack space="md" alignItems="center">

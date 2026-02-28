@@ -34,8 +34,7 @@ import {
     SkeletonCard,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { api } from '@repo/core';
-import { AnnouncementWithAuthor } from '@repo/community';
+import { communityAPI as community, AnnouncementWithAuthor } from '@repo/community';
 import { Theme } from '@repo/ui';
 import { UserRole, hasRole, STAFF_ROLES, ADMIN_ROLES } from '@repo/core';
 
@@ -67,7 +66,7 @@ export default function AnnouncementsScreen({
         setIsLoading(true);
         setError(null);
         try {
-            const data = await api.community.getAnnouncements(schoolId);
+            const data = await community.getAnnouncements(schoolId);
             setAnnouncements(data);
         } catch (err: any) {
             console.error('Failed to load announcements:', err);
@@ -86,7 +85,7 @@ export default function AnnouncementsScreen({
         setIsCreating(true);
         setError(null);
         try {
-            await api.community.createAnnouncement(
+            await community.createAnnouncement(
                 schoolId,
                 userId,
                 newAnnouncementContent,

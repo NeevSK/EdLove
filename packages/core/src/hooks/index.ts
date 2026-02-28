@@ -1,13 +1,12 @@
 export * from './useUserRole';
 export * from './useTracking';
 export * from './useAIAgent';
+export * from './useAccountDeletion';
 export * from './useFeatureAccess';
-export * from './useRoleFeatures';
 export * from './useRewards';
+export * from './useRoleFeatures';
 export * from './useSafeMutation';
 export * from './useSchoolCreation';
-export * from './useAccountDeletion';
-export { useMutationQueue } from '../lib/sync/useMutationQueue';
 export * from './useTaskActions';
 export * from './usePendingActions';
 export * from './useNotifications';
