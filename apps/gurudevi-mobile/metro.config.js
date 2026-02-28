@@ -4,7 +4,7 @@ const path = require('path');
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
 
-const config = getDefaultConfig(projectRoot);
+const config = getDefaultConfig(projectRoot, { isCSSEnabled: true });
 
 // 1. Watch all files in the monorepo
 config.watchFolders = [...(config.watchFolders || []), workspaceRoot];
@@ -40,6 +40,35 @@ config.resolver.extraNodeModules = {
     'react-native': path.resolve(projectRoot, 'node_modules/react-native'),
     'react-dom': path.resolve(projectRoot, 'node_modules/react-dom'),
     '@react-native-async-storage/async-storage': path.resolve(projectRoot, 'node_modules/@react-native-async-storage/async-storage'),
+};
+
+// 6. Web-only shims: redirect native-only packages to no-op web implementations
+//    when Metro is bundling for the 'web' platform.
+//    This allows App.tsx and packages to import these packages unconditionally
+//    while keeping the web bundle free of native bridge calls.
+//
+//    Shim files live in src/shims/ and mirror the subset of the API used in
+//    this codebase. If you add a new usage of a shimmed package, update the
+//    matching shim file in src/shims/.
+const WEB_SHIMS = {
+    '@sentry/react-native': path.resolve(projectRoot, 'src/shims/sentry-web.js'),
+    'posthog-react-native': path.resolve(projectRoot, 'src/shims/posthog-web.js'),
+};
+
+const defaultResolveRequest = config.resolver.resolveRequest;
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+    if (platform === 'web' && moduleName in WEB_SHIMS) {
+        return { filePath: WEB_SHIMS[moduleName], type: 'sourceFile' };
+    }
+    // If a previous resolver was registered (e.g. by another Expo plugin), delegate
+    // to it first so its logic is preserved.
+    // Otherwise fall through to context.resolveRequest — Metro's own built-in resolver.
+    // NOTE: context.resolveRequest is NOT this function; it is Metro's internal default
+    // resolver so calling it here is safe and will NOT recurse.
+    if (defaultResolveRequest) {
+        return defaultResolveRequest(context, moduleName, platform);
+    }
+    return context.resolveRequest(context, moduleName, platform);
 };
 
 module.exports = config;

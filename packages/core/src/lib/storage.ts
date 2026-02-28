@@ -88,6 +88,7 @@ class RobustAsyncStorage implements StorageInterface {
 }
 
 import Constants, { ExecutionEnvironment } from 'expo-constants';
+import { Platform } from 'react-native';
 
 /**
  * Storage singleton — lazily initialized on first access.
@@ -115,11 +116,14 @@ import Constants, { ExecutionEnvironment } from 'expo-constants';
 let _storageInstance: StorageInterface | null = null;
 
 function createStorage(): StorageInterface {
-    const isExpoGo =
-        Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+    const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+    // MMKV is a JSI native module - unavailable in Expo Go (JS-only runtime) and on web.
+    const shouldUseAsyncStorage = isExpoGo || Platform.OS === 'web';
 
-    if (isExpoGo) {
-        if (__DEV__) console.log('📦 Storage: Expo Go detected — using AsyncStorage fallback');
+    if (shouldUseAsyncStorage) {
+        if (__DEV__) {
+            console.log(`📦 Storage: ${isExpoGo ? 'Expo Go' : 'Web'} detected - using AsyncStorage fallback`);
+        }
         return new RobustAsyncStorage();
     }
 
@@ -128,33 +132,27 @@ function createStorage(): StorageInterface {
         const mmkv = new MMKV({ id: 'gurudevi-store' });
 
         // Probe: verify the native instance actually works before committing.
-        // NitroModules can return a seemingly valid object that throws on first use.
         const PROBE_KEY = '__mmkv_probe__';
         mmkv.set(PROBE_KEY, '1');
         const probeResult = mmkv.getString(PROBE_KEY);
         mmkv.delete(PROBE_KEY);
+        
         if (probeResult !== '1') throw new Error('MMKV probe read/write mismatch');
 
         if (__DEV__) console.log('📦 Storage: MMKV v4 (NitroModules) initialized ✓');
 
         // Wrap native MMKV instance to satisfy StorageInterface fully.
-        // MMKV v4 is synchronous — getStringAsync resolves immediately.
         return {
             set: (key, value) => mmkv.set(key, value),
             getString: (key) => mmkv.getString(key),
             getStringAsync: async (key) => mmkv.getString(key),
-            getBoolean: (key) => mmkv.getBoolean(key),
             getNumber: (key) => mmkv.getNumber(key),
+            getBoolean: (key) => mmkv.getBoolean(key),
             delete: (key) => mmkv.delete(key),
             clearAll: () => mmkv.clearAll(),
             contains: (key) => mmkv.contains(key),
         };
     } catch (e) {
-        // Log in dev so the developer knows MMKV failed and WHY.
-        // Common causes:
-        //   - Native module not compiled (old APK): run expo prebuild && expo run:android
-        //   - react-native-nitro-modules version mismatch
-        //   - New Architecture not enabled in gradle.properties
         if (__DEV__) {
             console.warn(
                 '📦 Storage: MMKV init failed — falling back to AsyncStorage.\n' +
