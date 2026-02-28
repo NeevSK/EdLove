@@ -10,9 +10,11 @@ import {
 import { Theme } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 import { LifeBuoy, MessageCircle, AlertTriangle, ChevronRight, Info, Star } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 
 export default function SupportSection() {
     const colors = useThemedColors();
+    const { t } = useTranslation();
     const handleSupport = () => {
         // TODO: Replace with actual support URL or email
         Linking.openURL('mailto:support@gurudevi.org');
@@ -45,37 +47,37 @@ export default function SupportSection() {
     return (
         <VStack space="md" mt={Theme.spacing.lg}>
             <Heading color={colors.textSecondary as any} size="sm" mb="$2">
-                Help & Support
+                {t('support.title')}
             </Heading>
 
             <SupportItem
                 icon={MessageCircle}
-                title="Contact Support"
-                subtitle="Get help with your account"
+                title={t('support.contactSupport')}
+                subtitle={t('support.contactSupportDesc')}
                 onPress={handleSupport}
             />
             <SupportItem
                 icon={LifeBuoy}
-                title="FAQs"
-                subtitle="Common questions & answers"
+                title={t('support.faqs')}
+                subtitle={t('support.faqsDesc')}
                 onPress={() => { }}
             />
             <SupportItem
                 icon={AlertTriangle}
-                title="Report Issue"
-                subtitle="Found a bug? Let us know"
+                title={t('support.reportIssue')}
+                subtitle={t('support.reportIssueDesc')}
                 onPress={handleSupport}
             />
             <SupportItem
                 icon={Info}
-                title="About"
-                subtitle="Mission, Version & Legal"
+                title={t('support.about')}
+                subtitle={t('support.aboutDesc')}
                 onPress={() => { }}
             />
             <SupportItem
                 icon={Star}
-                title="Rate Us"
-                subtitle="Support our mission with a review"
+                title={t('support.rateUs')}
+                subtitle={t('support.rateUsDesc')}
                 onPress={() => { }}
             />
         </VStack>

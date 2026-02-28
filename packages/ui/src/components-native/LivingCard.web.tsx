@@ -11,7 +11,7 @@
  * phase prop so the card still carries the Sanctuary's visual identity.
  */
 import React from 'react';
-import { View, ViewStyle, StyleSheet } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 
 interface LivingCardProps {
     children: React.ReactNode;

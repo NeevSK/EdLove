@@ -7,7 +7,7 @@
  * effect without any native canvas APIs.
  */
 import React from 'react';
-import { View, ViewStyle, StyleSheet } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 
 interface TemporalGlassProps {
     children: React.ReactNode;

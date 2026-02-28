@@ -20,6 +20,7 @@ import {
 } from '@repo/ui';
 import { MapPin, ChevronDown, Flag } from 'lucide-react-native';
 import { SRI_LANKAN_PROVINCES, SRI_LANKAN_DISTRICTS } from '@repo/core';
+import { useTranslation } from 'react-i18next';
 
 interface StepLocationProps {
     data: {
@@ -33,6 +34,8 @@ interface StepLocationProps {
 
 export default function StepLocation({ data, onUpdate }: StepLocationProps) {
     const colors = useThemedColors();
+    const { t, i18n } = useTranslation();
+    const lang = (i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
 
     const filteredDistricts = useMemo(() => {
         if (!data.provinceId) return [];
@@ -45,7 +48,7 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
             <FormControl>
                 <FormControlLabel sx={{ marginBottom: '$2' as any }}>
                     <FormControlLabelText color={colors.textSecondary} sx={{ fontSize: '$sm' as any }}>
-                        Province
+                        {t('schoolSetup.province')}
                     </FormControlLabelText>
                 </FormControlLabel>
                 <Select
@@ -53,7 +56,7 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
                     onValueChange={(value) => onUpdate({ provinceId: value, districtId: '' })}
                 >
                     <SelectTrigger variant="outline" sx={{ height: 48, borderRadius: Theme.corners.comfortable, backgroundColor: colors.secondary }}>
-                        <SelectInput placeholder="Select Province" color={colors.text} sx={{ flex: 1 }} />
+                        <SelectInput placeholder={t('schoolSetup.selectProvince')} color={colors.text} sx={{ flex: 1 }} />
                         <SelectIcon mr="$3" as={ChevronDown} color={Theme.colors.sanctuarySaffron} />
                     </SelectTrigger>
                     <SelectPortal>
@@ -63,7 +66,7 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
                                 <SelectDragIndicator />
                             </SelectDragIndicatorWrapper>
                             {SRI_LANKAN_PROVINCES.map(province => (
-                                <SelectItem key={province.id} label={province.en} value={province.id} />
+                                <SelectItem key={province.id} label={province[lang] ?? province.en} value={province.id} />
                             ))}
                         </SelectContent>
                     </SelectPortal>
@@ -74,7 +77,7 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
             <FormControl isDisabled={!data.provinceId}>
                 <FormControlLabel sx={{ marginBottom: '$2' as any }}>
                     <FormControlLabelText color={colors.textSecondary} sx={{ fontSize: '$sm' as any }}>
-                        District
+                        {t('schoolSetup.district')}
                     </FormControlLabelText>
                 </FormControlLabel>
                 <Select
@@ -82,7 +85,7 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
                     onValueChange={(value) => onUpdate({ districtId: value })}
                 >
                     <SelectTrigger variant="outline" sx={{ height: 48, borderRadius: Theme.corners.comfortable, backgroundColor: colors.secondary }}>
-                        <SelectInput placeholder={data.provinceId ? "Select District" : "Select Province first"} color={colors.text} sx={{ flex: 1 }} />
+                        <SelectInput placeholder={data.provinceId ? t('schoolSetup.selectDistrict') : t('schoolSetup.selectProvinceFirst')} color={colors.text} sx={{ flex: 1 }} />
                         <SelectIcon mr="$3" as={ChevronDown} color={Theme.colors.sanctuarySaffron} />
                     </SelectTrigger>
                     <SelectPortal>
@@ -92,7 +95,7 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
                                 <SelectDragIndicator />
                             </SelectDragIndicatorWrapper>
                             {filteredDistricts.map(district => (
-                                <SelectItem key={district.id} label={district.en} value={district.id} />
+                                <SelectItem key={district.id} label={district[lang] ?? district.en} value={district.id} />
                             ))}
                         </SelectContent>
                     </SelectPortal>
@@ -100,16 +103,16 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
             </FormControl>
 
             <SanctuaryInput
-                label="City"
-                placeholder="e.g. Kandy"
+                label={t('schoolSetup.city')}
+                placeholder={t('schoolSetup.cityPlaceholder')}
                 value={data.city}
                 onChangeText={(text) => onUpdate({ city: text })}
                 leftIcon={Flag}
             />
 
             <SanctuaryInput
-                label="Postal Address"
-                placeholder="No. 123, School Lane..."
+                label={t('schoolSetup.postalAddress')}
+                placeholder={t('schoolSetup.postalAddressPlaceholder')}
                 value={data.address}
                 onChangeText={(text) => onUpdate({ address: text })}
                 leftIcon={MapPin}

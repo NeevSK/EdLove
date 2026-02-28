@@ -10,7 +10,7 @@
  * - Helps teachers understand rest patterns
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     Box,
     VStack,
@@ -38,22 +38,16 @@ import { Theme, typography } from '@repo/ui';
 import { hapticLight, hapticSuccess } from '@repo/ui';
 import { useSafeMutation } from '@repo/core';
 import { useSleepTracker } from '@repo/self';
+import { useTranslation } from 'react-i18next';
 
 interface SleepTrackerProps {
     userId?: string;
 }
 
-const SLEEP_QUALITY = [
-    { value: 1, label: 'Restless', emoji: '😰', color: Theme.colors.emberRed, description: 'Barely slept' },
-    { value: 2, label: 'Poor', emoji: '😔', color: Theme.colors.amberGlow, description: 'Tossed and turned' },
-    { value: 3, label: 'Okay', emoji: '😐', color: Theme.colors.mistGray, description: 'Got some rest' },
-    { value: 4, label: 'Good', emoji: '😊', color: Theme.colors.sageGreen, description: 'Slept well' },
-    { value: 5, label: 'Excellent', emoji: '😌', color: Theme.colors.sanctuarySaffron, description: 'Deeply rested' },
-];
-
 export default function SleepTracker({ userId }: SleepTrackerProps) {
     // Resilient Data Hook
     const { sleepLogs, refreshData } = useSleepTracker(userId);
+    const { t, i18n } = useTranslation();
 
     const [sleepQuality, setSleepQuality] = useState(3);
     const [hasLoggedToday, setHasLoggedToday] = useState(false);
@@ -61,6 +55,14 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
     // Animation values
     const moonScale = useSharedValue(1);
     const starsOpacity = useSharedValue(0.6);
+
+    const SLEEP_QUALITY = useMemo(() => [
+        { value: 1, label: t('sleepTracker.restless'), emoji: '😰', color: Theme.colors.emberRed, description: t('sleepTracker.restlessDesc') },
+        { value: 2, label: t('sleepTracker.poor'), emoji: '😔', color: Theme.colors.amberGlow, description: t('sleepTracker.poorDesc') },
+        { value: 3, label: t('sleepTracker.okay'), emoji: '😐', color: Theme.colors.mistGray, description: t('sleepTracker.okayDesc') },
+        { value: 4, label: t('sleepTracker.good'), emoji: '😊', color: Theme.colors.sageGreen, description: t('sleepTracker.goodDesc') },
+        { value: 5, label: t('sleepTracker.excellent'), emoji: '😌', color: Theme.colors.sanctuarySaffron, description: t('sleepTracker.excellentDesc') },
+    ], [i18n.resolvedLanguage]);
 
     const currentQuality = SLEEP_QUALITY[sleepQuality - 1];
 
@@ -175,7 +177,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
             {/* Header */}
             <VStack space="xs">
                 <Heading color={Theme.colors.sacredWhite} size="lg">
-                    How was your sleep?
+                    {t('sleepTracker.title')}
                 </Heading>
                 <Text color={Theme.colors.mistGray} size="sm">
                     Understanding your rest helps you care for yourself
@@ -274,10 +276,10 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
                             sx={{ marginTop: Theme.spacing.md }}
                         >
                             <Text color={Theme.colors.dimGray} size="xs">
-                                Restless
+                                {t('sleepTracker.restless')}
                             </Text>
                             <Text color={Theme.colors.dimGray} size="xs">
-                                Excellent
+                                {t('sleepTracker.excellent')}
                             </Text>
                         </HStack>
                     </Box>
@@ -293,7 +295,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
                         }}
                     >
                         <ButtonText>
-                            {isSaving ? 'Saving...' : 'Log Sleep Quality'}
+                            {isSaving ? t('common.loading') : t('sleepTracker.logButton')}
                         </ButtonText>
                     </Button>
                 </>
@@ -309,7 +311,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
                     }}
                 >
                     <Text color={Theme.colors.sageGreen} size="md">
-                        ✓ Sleep logged for today
+                        ✓ {t('sleepTracker.alreadyLogged')}
                     </Text>
                     <Text color={Theme.colors.mistGray} size="xs" sx={{ marginTop: Theme.spacing.xs }}>
                         You can update tomorrow morning

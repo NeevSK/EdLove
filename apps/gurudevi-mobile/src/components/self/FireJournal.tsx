@@ -38,6 +38,7 @@ import { Theme, typography } from '@repo/ui';
 import { supabase, useSafeMutation } from '@repo/core';
 import { hapticLight, hapticMedium, SkeletonCard, SkeletonLoader, PositiveInvitation } from '@repo/ui';
 import { useJournal } from '@repo/self';
+import { useTranslation } from 'react-i18next';
 
 interface FireJournalProps {
     userId?: string;
@@ -50,6 +51,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
     // Use useJournal to keep cache in sync (even if not explicitly showing history)
     const { refreshData, isLoading } = useJournal(userId);
     const [showSuccess, setShowSuccess] = useState(false);
+    const { t } = useTranslation();
 
     // Refs for timeout cleanup
     const burnTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -279,10 +281,10 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
             {/* Header */}
             <VStack space="xs">
                 <Heading color={Theme.colors.sacredWhite} size="lg">
-                    Fire Journal
+                    {t('fireJournal.title')}
                 </Heading>
                 <Text color={Theme.colors.mistGray} size="sm">
-                    Write what weighs on you, then let it go
+                    {t('fireJournal.subtitle')}
                 </Text>
             </VStack>
 
@@ -302,7 +304,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                             size="md"
                             sx={{ fontWeight: Theme.typography.fontWeight.semibold }}
                         >
-                            ✨ Released into the fire
+                            {t('fireJournal.released')}
                         </Text>
                     </Box>
                 </Animated.View>
@@ -380,7 +382,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                             isDisabled={isBurning}
                         >
                             <InputField
-                                placeholder="Write what you need to release..."
+                                placeholder={t('fireJournal.placeholder')}
                                 multiline
                                 value={content}
                                 onChangeText={setContent}
@@ -438,7 +440,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                         style={{ marginRight: Theme.spacing.sm }}
                     />
                     <ButtonText color={Theme.colors.sacredWhite}>
-                        {isBurning ? 'Burning...' : 'Burn'}
+                        {isBurning ? t('fireJournal.burning') : t('fireJournal.burn')}
                     </ButtonText>
                 </Button>
             </HStack>
@@ -453,7 +455,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                     }}
                 >
                     <Text color={Theme.colors.mistGray} size="xs" textAlign="center">
-                        🔥 What you burn is transformed, not stored
+                        {t('fireJournal.privacy')}
                     </Text>
                 </Box>
 
@@ -468,7 +470,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                         textAlign="center"
                         sx={{ fontStyle: 'italic' }}
                     >
-                        Sometimes the act of naming is enough to release it
+                        {t('fireJournal.guidance')}
                     </Text>
                 </Box>
             </VStack>

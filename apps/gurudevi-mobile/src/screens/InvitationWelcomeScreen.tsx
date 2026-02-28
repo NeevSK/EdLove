@@ -2,6 +2,7 @@
 import { useThemedColors, Theme } from '@repo/ui';
 import { supabase } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 interface InvitationWelcomeScreenProps {
     route?: {
@@ -15,6 +16,7 @@ interface InvitationWelcomeScreenProps {
 export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScreenProps) {
     const navigation = useNavigation<any>();
     const toast = useToast();
+    const { t } = useTranslation();
     const role = route?.params?.role || 'User';
     const schoolName = route?.params?.schoolName || 'the Sanctuary';
 
@@ -40,9 +42,9 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
                         placement: 'top',
                         render: ({ id }) => (
                             <Toast nativeID={id} action="error" variant="solid">
-                                <ToastTitle>Failed to join</ToastTitle>
+                                <ToastTitle>{t('invitationWelcome.joinFailed')}</ToastTitle>
                                 <ToastDescription>
-                                    Unable to update your profile. Please try again.
+                                    {t('invitationWelcome.joinFailedDesc')}
                                 </ToastDescription>
                             </Toast>
                         ),
@@ -60,9 +62,9 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
                 placement: 'top',
                 render: ({ id }) => (
                     <Toast nativeID={id} action="error" variant="solid">
-                        <ToastTitle>Error</ToastTitle>
+                        <ToastTitle>{t('invitationWelcome.errorTitle')}</ToastTitle>
                         <ToastDescription>
-                            An unexpected error occurred. Please try again.
+                            {t('invitationWelcome.errorDesc')}
                         </ToastDescription>
                     </Toast>
                 ),
@@ -74,14 +76,14 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
         <Box sx={{ flex: 1, backgroundColor: Theme.colors.obsidian, justifyContent: 'center', padding: Theme.spacing.xl }}>
             <VStack space="xl" alignItems="center">
                 <Text color={Theme.colors.sanctuarySaffron} size="xl" bold>
-                    You have been invited
+                    {t('invitationWelcome.invited')}
                 </Text>
                 <Heading size="2xl" color={Theme.colors.sacredWhite} textAlign="center">
-                    Welcome to {schoolName}
+                    {t('invitationWelcome.welcomeTo', { schoolName })}
                 </Heading>
                 <Box sx={{ backgroundColor: Theme.colors.ink, padding: Theme.spacing.md, borderRadius: Theme.corners.comfortable }}>
                     <Text color={Theme.colors.mistGray}>
-                        Role: <Text color={Theme.colors.sacredWhite} bold>{role.charAt(0).toUpperCase() + role.slice(1)}</Text>
+                        {t('invitationWelcome.role')}: <Text color={Theme.colors.sacredWhite} bold>{role.charAt(0).toUpperCase() + role.slice(1)}</Text>
                     </Text>
                 </Box>
                 <Button
@@ -92,7 +94,7 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
                     onPress={handleJoin}
                 >
                     <ButtonText color={Theme.colors.obsidian} bold>
-                        Join the Sanctuary
+                        {t('invitationWelcome.joinButton')}
                     </ButtonText>
                 </Button>
             </VStack>

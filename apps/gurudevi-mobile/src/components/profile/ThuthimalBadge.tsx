@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Flower2 } from 'lucide-react-native';
 import { Theme, useThemedColors } from '@repo/ui';
+import { useTranslation } from 'react-i18next';
 
 interface ThuthimalBadgeProps {
     gifterName?: string;
@@ -19,6 +20,7 @@ interface ThuthimalBadgeProps {
  */
 export default function ThuthimalBadge({ gifterName = 'Anonymous', giftedAt, compact = false }: ThuthimalBadgeProps) {
     const colors = useThemedColors();
+    const { t, i18n } = useTranslation();
 
     const displayName = gifterName || 'Anonymous';
 
@@ -28,7 +30,7 @@ export default function ThuthimalBadge({ gifterName = 'Anonymous', giftedAt, com
             <View style={styles.compactContainer}>
                 <Flower2 size={16} color={Theme.colors.sanctuarySaffron} />
                 <Text style={styles.compactText}>
-                    තුතිමල්
+                    {t('thuthimalBadge.sinhala')}
                 </Text>
             </View>
         );
@@ -49,29 +51,29 @@ export default function ThuthimalBadge({ gifterName = 'Anonymous', giftedAt, com
             {/* Icon and Title Row */}
             <View style={styles.header}>
                 <Flower2 size={24} color={Theme.colors.sanctuarySaffron} />
-                <Text style={styles.title}>Thuthimal</Text>
-                <Text style={styles.sinhala}>තුතිමල්</Text>
+                <Text style={styles.title}>{t('thuthimalBadge.title')}</Text>
+                <Text style={styles.sinhala}>{t('thuthimalBadge.sinhala')}</Text>
             </View>
 
             {/* Message */}
             <View style={styles.messageContainer}>
-                <Text style={styles.messageLabel}>Your Pro subscription is a gift of gratitude from:</Text>
+                <Text style={styles.messageLabel}>{t('thuthimalBadge.giftedBy')}</Text>
                 <Text style={styles.gifterName}>{displayName}</Text>
             </View>
 
             {/* Meaning */}
             <Text style={styles.meaning}>
-                තුතිමල් (Thuthimal) means "Flower of Gratitude" — honoring the sacred work of teaching
+                {t('thuthimalBadge.meaning')}
             </Text>
 
             {/* Date if provided */}
             {giftedAt && (
                 <Text style={styles.date}>
-                    Gifted on {new Date(giftedAt).toLocaleDateString('en-US', {
+                    {t('thuthimalBadge.giftedOn', { date: new Date(giftedAt).toLocaleDateString(i18n.language, {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
-                    })}
+                    }) })}
                 </Text>
             )}
         </View>

@@ -24,54 +24,55 @@ import Animated, {
     Easing,
     FadeIn,
 } from 'react-native-reanimated';
-
-const THOUGHT_SEEDS = [
-    "What is heavy today?",
-    "What brought you peace this morning?",
-    "What are you holding onto?",
-    "What would you like to release?",
-    "What small joy found you today?",
-    "Where did you feel most yourself?",
-    "What needs your gentle attention?",
-    "What truth are you avoiding?",
-    "What deserves your forgiveness?",
-    "What are you grateful for in this moment?",
-];
-
-// Contextual suggestions based on time and patterns
-const CONTEXTUAL_SUGGESTIONS = [
-    {
-        condition: 'working_long',
-        message: "You've been working for a while. Time to rest?",
-        emoji: '🌙'
-    },
-    {
-        condition: 'late_night',
-        message: "It's getting late. Your rest matters too.",
-        emoji: '🌜'
-    },
-    {
-        condition: 'early_morning',
-        message: "Early start today. Remember to breathe.",
-        emoji: '🌅'
-    },
-    {
-        condition: 'midday',
-        message: "How's your energy? A pause can help.",
-        emoji: '☕'
-    },
-];
+import { useTranslation } from 'react-i18next';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function ShadowAgentDrawer() {
     const { bottom: bottomInset } = useSafeAreaInsets();
+    const { t, i18n } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [currentSeed, setCurrentSeed] = useState('');
     const [contextualSuggestion, setContextualSuggestion] = useState<{
         message: string;
         emoji: string;
     } | null>(null);
+
+    const THOUGHT_SEEDS = useMemo(() => [
+        t('shadowAgent.prompts.heavy'),
+        t('shadowAgent.prompts.peace'),
+        t('shadowAgent.prompts.holding'),
+        t('shadowAgent.prompts.release'),
+        t('shadowAgent.prompts.joy'),
+        t('shadowAgent.prompts.yourself'),
+        t('shadowAgent.prompts.attention'),
+        t('shadowAgent.prompts.truth'),
+        t('shadowAgent.prompts.forgiveness'),
+        t('shadowAgent.prompts.grateful'),
+    ], [i18n.resolvedLanguage]);
+
+    const CONTEXTUAL_SUGGESTIONS = useMemo(() => [
+        {
+            condition: 'working_long',
+            message: t('shadowAgent.nudges.longWork'),
+            emoji: '🌙'
+        },
+        {
+            condition: 'late_night',
+            message: t('shadowAgent.nudges.lateNight'),
+            emoji: '🌜'
+        },
+        {
+            condition: 'early_morning',
+            message: t('shadowAgent.nudges.earlyStart'),
+            emoji: '🌅'
+        },
+        {
+            condition: 'midday',
+            message: t('shadowAgent.nudges.lowEnergy'),
+            emoji: '☕'
+        },
+    ], [i18n.resolvedLanguage]);
 
     const styles = useMemo(() => StyleSheet.create({
         orbContainer: {
@@ -244,14 +245,14 @@ export default function ShadowAgentDrawer() {
                                         size="2xl"
                                         sx={{ fontWeight: Theme.typography.fontWeight.semibold }}
                                     >
-                                        Shadow Agent
+                                        {t('shadowAgent.title')}
                                     </Text>
                                     <Text
                                         color={Theme.colors.mistGray}
                                         size="sm"
                                         mt="$2"
                                     >
-                                        A quiet companion for reflection
+                                        {t('shadowAgent.subtitle')}
                                     </Text>
                                 </Animated.View>
 

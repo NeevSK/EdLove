@@ -18,6 +18,7 @@ import {
     ShieldAlert,
     Share2
 } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 
 interface SocialSanctuaryProps {
     userId: string;
@@ -42,6 +43,7 @@ const PRIVACY_ICONS = {
 
 export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnProfile }) => {
     const { theme } = useTheme();
+    const { t } = useTranslation();
     const { links, loading, deleteLink, updateLink } = useSocialLinks(userId);
 
     const handlePress = async (link: SocialLink) => {
@@ -81,7 +83,7 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text variant="h3" style={styles.title}>Social Sanctuary</Text>
+                <Text variant="h3" style={styles.title}>{t('socialSanctuary.title')}</Text>
                 {isOwnProfile && (
                     <TouchableOpacity onPress={shareProfile} style={styles.shareBtn}>
                         <Share2 size={20} color={theme.colors.ink} />
@@ -128,7 +130,7 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
                 {isOwnProfile && visibleLinks.length === 0 && (
                     <SanctuaryCard variant="outlined" style={styles.emptyCard}>
                         <Text variant="p3" style={styles.emptyText}>
-                            No social links added yet. Add your WhatsApp, Instagram or LinkedIn to help others connect with you.
+                            {t('socialSanctuary.empty')}
                         </Text>
                     </SanctuaryCard>
                 )}
