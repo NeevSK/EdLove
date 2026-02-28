@@ -7,11 +7,11 @@
  * not a score, not a rank, but a soft echo of real human impact.
  *
  * Philosophy (see GROWTH_MODEL.md v2.0 — Section 3: "The Impact Ripple"):
- *   - Each ripple is specific to ONE interaction (never aggregated into a count)
- *   - Actor identity is private by default (never shown without consent)
- *   - Delivered batched (3-4× per day max) — never as a real-time interrupt
- *   - Language is warm and human, never clinical or transactional
- *   - NOT a score, NOT a leaderboard, NOT a badge counter
+ *   - Each ripple is specific to ONE interaction — each one lives as its own complete moment
+ *   - Actor identity is held privately by default; visible only when the actor chooses to share
+ *   - Delivered in gentle batches (3-4× per day) — the teacher's day flows uninterrupted
+ *   - Language is warm and human always — specific to the real thing that happened
+ *   - A soft echo of real human impact — each one its own complete story
  *
  * ─────────────────────────────────────────────────────────────────────────────
  * USAGE (fire-and-forget, always after the primary operation):
@@ -51,7 +51,7 @@ export type RippleSourceEntityType =
 
 export interface CreateRippleInput {
     recipientUserId: string;
-    actorUserId?: string;          // Optional — stored privately, never shown by default
+    actorUserId?: string;          // Optional — held privately by default; surfaced only by actor's choice
     rippleType: RippleType;
     schoolId?: string;
     sourceEntityType?: RippleSourceEntityType;
@@ -145,9 +145,9 @@ export const impactRipplesAPI = {
      * Create a new Impact Ripple for a contributor.
      *
      * Called by existing API methods when one user's action impacts another user's
-     * contribution. Always fire-and-forget — never block the primary operation.
+     * contribution. Always fire-and-forget — the primary operation completes first.
      *
-     * The recipient is never shown who the actor is (unless is_actor_visible = true).
+     * Actor identity is held privately; visible to the recipient only when the actor has chosen to share.
      * Warm messages are pre-rendered at creation time in all three languages.
      */
     async createRipple(input: CreateRippleInput): Promise<void> {

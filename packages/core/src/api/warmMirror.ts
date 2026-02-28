@@ -26,7 +26,7 @@ import { supabase } from '../lib/supabase';
 
 /**
  * All data points needed to generate the Warm Mirror narrative.
- * Aggregated from multiple tables — never raw event counts as headlines.
+ * Aggregated from multiple tables — events are woven into narrative; meaning over metrics.
  */
 export interface WarmMirrorDataPoints {
     // Presence
@@ -102,16 +102,16 @@ export const warmMirrorAPI = {
             .gte('delivered_at', periodStart);
         const ripples_received = ripplesCount ?? 0;
 
-        // 4. Assignments graded with written feedback (feedback length > 20 chars)
-        const { count: feedbackCount } = await supabase
+        // 4. Assignments graded with substantive written feedback (> 20 characters).
+        // PostgREST has no direct string-length filter, so we fetch feedback text
+        // and measure length in application code.
+        const { data: gradingData } = await supabase
             .from('grades')
-            .select('id', { count: 'exact', head: true })
+            .select('feedback')
             .gte('created_at', periodStart)
-            .not('feedback', 'is', null)
-            .gt('feedback', '                    '); // > 20 chars (20 spaces as proxy)
-        // Note: Supabase doesn't support string length in PostgREST filters directly.
-        // The gt comparison is an approximation; for production, use a DB function.
-        const assignments_with_feedback = feedbackCount ?? 0;
+            .not('feedback', 'is', null);
+        const assignments_with_feedback = (gradingData ?? [])
+            .filter(g => (g.feedback?.length ?? 0) > 20).length;
 
         // 5. Resources/lessons that reached others (via resource_saved or resource_read ripples)
         const { data: reachRipples } = await supabase
@@ -162,9 +162,9 @@ export const warmMirrorAPI = {
      *
      * The narrative is:
      *   - Story-format, not a list of metrics
-     *   - Compassionate for quiet weeks (never guilting)
+     *   - Compassionate for quiet weeks — rest is as valid as activity, honored as such
      *   - Present-tense observations, not past-tense verdicts
-     *   - Ending with a grounding affirmation (never toxic positivity)
+     *   - Ending with a grounding affirmation — real acknowledgment, warm but not hollow
      */
     generateNarrativeEn(data: WarmMirrorDataPoints): string {
         const lines: string[] = ['This past week in your sanctuary:'];
@@ -231,7 +231,7 @@ export const warmMirrorAPI = {
             );
         }
 
-        // Closing affirmation (never toxic positivity — grounded and warm)
+        // Closing affirmation — grounded and warm; real acknowledgment over empty encouragement
         lines.push('You showed up. That is not a small thing.');
 
         return lines.join('\n');

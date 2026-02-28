@@ -53,8 +53,10 @@ export const gradingAPI = {
 
         // Growth signal: teacher nourished a student by reviewing their work
         // (Tier 1 Work Signal — grading IS an act of care and presence)
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            console.warn('[GrowthSignals] Auth unavailable for grading signal:', authError?.message);
+        } else {
             void growthSignalsAPI.emitSignal(user.id, 'assignment_graded', {
                 classroom_id: classroomId,
                 has_feedback: !!feedback && feedback.length > 0,

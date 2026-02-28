@@ -31,10 +31,10 @@
  *
  * Rules:
  *   ✅ Always call AFTER the primary operation succeeds.
- *   ✅ Always fire-and-forget — never await inside a try/catch that surfaces to the user.
- *   ✅ Growth signal failures are silent — they NEVER abort the main operation.
- *   ❌ Never show signal counts or event types to the user.
- *   ❌ Never gate the primary feature on whether a signal succeeds.
+ *   ✅ Always fire-and-forget — the primary action completes first; the signal follows silently.
+ *   ✅ Growth signal errors are silently absorbed — the primary feature always succeeds independently.
+ *   ✅ Signal counts and event types are internal to the growth system — expressed only through the lotus visual.
+ *   ✅ The primary feature succeeds on its own terms; growth observation rides alongside it.
  */
 
 import { supabase } from '../lib/supabase';
@@ -72,7 +72,7 @@ export type GrowthSignalType =
     | 'colleague_helped'
     | 'group_message_sent'
     | 'group_joined'
-    // BLOOMING — being seen and honored (given by others, never self-earned)
+    // BLOOMING — being seen and honored (given by others, received with gratitude)
     | 'thuthimal_received'
     | 'principal_recognition'
     | 'community_milestone_reached';
@@ -181,7 +181,7 @@ export const growthSignalsAPI = {
      *
      * This is the single call site for wiring growth signals into existing APIs.
      * Every call:
-     *   1. Writes a `growth_events` record (analytics — never shown to the user)
+     *   1. Writes a `growth_events` record (internal analytics — expressed through the lotus visual, not as raw data)
      *   2. Increments the user's dimension counter in `user_growth_state`
      *   3. Checks and awards any triggered Whispered Moments
      *   4. Checks and advances the user's Bhumi stage if criteria are met
@@ -198,7 +198,7 @@ export const growthSignalsAPI = {
     ): Promise<void> {
         const dimension = GROWTH_SIGNAL_MAP[signalType];
 
-        // 1. Record the growth event (analytics — never shown to user)
+        // 1. Record the growth event (internal analytics — feeds the lotus, stays out of the teacher's hands)
         const { error: eventError } = await supabase.from('growth_events').insert({
             user_id: userId,
             dimension,
@@ -207,7 +207,7 @@ export const growthSignalsAPI = {
         });
 
         if (eventError) {
-            // Non-fatal — log only, never throw from a growth signal
+            // Non-fatal — log only; growth observations absorb their own errors
             console.warn('[GrowthSignals] Failed to record event:', eventError.message);
             return;
         }

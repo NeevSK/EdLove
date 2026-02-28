@@ -63,8 +63,10 @@ export const lessonMaterialsAPI = {
 
         // Growth signal: teacher prepared materials for students (Nourishing dimension)
         // Also triggers the 'first_offering' Whispered Moment check
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            console.warn('[GrowthSignals] Auth unavailable for lesson material signal:', authError?.message);
+        } else {
             void growthSignalsAPI.emitSignal(user.id, 'lesson_material_created', {
                 classroom_id: material.classroom_id,
                 material_type: material.type,

@@ -107,7 +107,7 @@ Every aliveness feature must pass a single test before it belongs in this app:
 Does this return more energy to the teacher/student than it consumes?
 
 5 minutes using this feature → teacher feels lighter, connected, seen = ✅ HIGH EROI
-5 minutes using this feature → teacher feels pressure, guilt, comparison = ❌ NEGATIVE EROI
+5 minutes using this feature → teacher feels pressure, guilt, comparison = LOW EROI
 ```
 
 ### What Nature Teaches Us
@@ -115,42 +115,36 @@ Does this return more energy to the teacher/student than it consumes?
 A lotus does not race other lotus plants. A tree does not feel shame when it blooms later than its neighbor. A forest does not keep score.
 
 Nature grows through:
-- **Conditions**, not competition (right soil, sun, water → growth happens naturally)
-- **Seasons**, not streaks (rest is part of the cycle, not failure)
-- **Interdependence**, not ranking (each tree strengthens the whole forest)
-- **Discovery**, not achievement (hidden mushrooms, rare birds — joy in finding, not in counting)
+- **Conditions** (right soil, sun, water → growth happens naturally)
+- **Seasons** (rest is part of the cycle, as honored as growth)
+- **Interdependence** (each tree strengthens the whole forest)
+- **Discovery** (hidden mushrooms, rare birds — joy in finding, sustained by the finding itself)
 
 This is the model for Gurudevi's growth system.
 
-### What This IS NOT
+### What This IS — The Design Choices That Define This System
+
+These are the active choices made in building this ecosystem. The distinctions they carry are implicit in what they affirm:
 
 ```
-❌ NOT streak counters ("You've logged in 14 days in a row!")
-❌ NOT shame for absence ("You haven't used the app in 5 days")
-❌ NOT points for behaviors ("Great! You earned 50 XP for posting")
-❌ NOT leaderboards ("You are ranked #3 among teachers in your school")
-❌ NOT badges as primary motivation (dopamine loops, collection anxiety)
-❌ NOT comparison between users (ever, in any form)
-❌ NOT pressure to "complete" the system (there is no completion)
+✅ Each return is welcomed as an arrival — the app is here for you whether you came yesterday
+   or three weeks ago
+✅ Absence is met with the same warmth as presence; the lamp stays lit, waiting patiently
+✅ Actions carry their own meaning — a lesson prepared is its own complete reward
+✅ Growth is personal, visible only to the person growing; each journey is uniquely their own
+✅ Discovery arrives unexpectedly — moments are offered when conditions feel right,
+   delightful to find, fine to miss
+✅ The community grows through contribution; each person's presence strengthens the whole
+✅ The garden always has room for the next season — it is alive, ongoing, never "done"
+✅ Impact feedback is human-sourced, specific, and warm — a soft echo, not a rank
+✅ The Warm Mirror reflects who you are based on what you did — a story, not a score
+✅ Competence is seen in real, human terms: your craft touching real people in real ways
+✅ Relatedness is honored through human connection, not algorithmic substitutes
+✅ Thuthimal is the pinnacle — a past student honoring their teacher — sacred and human
+✅ The app breathes with time of day, season, and the human in front of it
 ```
 
-> **⚠️ The Critical Nuance (v2.0)**: The prohibition above is specifically against **extractive mechanics** — abstract scores, comparative rankings, and addictive loops. It does NOT extend to genuine human-sourced feedback. *Knowing that a colleague saved your resource* is not gamification — it is basic human dignity and relatedness. *Seeing your own growth narrative in story form* is not a leaderboard — it is self-knowledge. The design principle: impact feedback that is **human-sourced, specific, and warm** is healthy. Feedback that is **algorithmic, comparative, or addictive** is harmful. This distinction is where the golden mean lives.
-
-### What This IS
-
-```
-✅ Gentle acknowledgment of presence (you are here, that matters)
-✅ Discovery-based delight (hidden moments, not announced achievements)
-✅ Seasonal rhythms that mirror natural life cycles
-✅ Personal visualization of one's own journey (non-comparative)
-✅ Community as garden (each person strengthens the whole)
-✅ Thuthimal as the pinnacle of recognition (human gratitude, not algorithmic)
-✅ The app itself feeling alive (breathing with time of day, season, user state)
-✅ Impact Ripples: warm, human-scale signals when your work genuinely helps someone real
-✅ Warm Mirror: opt-in weekly narrative of your actual impact (story, not score)
-✅ Competence reflection: seeing your own craft grow in real, human terms (not vs. others)
-✅ Genuine relatedness: knowing you matter to specific people in your community (private)
-```
+> **The Precision of the Golden Mean (v2.0)**: This system distinguishes two kinds of social feedback. Feedback that is **extractive** — abstract scores, comparative rankings, dopamine loops designed for addiction — produces controlled motivation: compliance, anxiety, burnout. Feedback that is **human-sourced, specific, and warm** — *a colleague found your lesson valuable*, *your question sparked a conversation* — meets the genuine human need for Relatedness. The distinction lives in the origin (human vs. algorithm), the form (story vs. score), and the relationship to comparison (personal vs. ranked). This system builds only the second kind.
 
 ---
 
@@ -213,12 +207,12 @@ A teacher recording attendance was in class that day. A teacher grading fifteen 
 // In every API that represents meaningful action:
 // After the primary operation succeeds, add:
 void growthSignalsAPI.emitSignal(userId, 'attendance_recorded').catch(() => {});
-//                                  ↑ never blocks the main operation
-//                                  ↑ never surfaces errors to the user
-//                                  ↑ growth signal failures are silent
+//                                  ↑ primary action always completes first
+//                                  ↑ growth observation is a silent witness
+//                                  ↑ signal errors are silently absorbed
 ```
 
-The growth layer must NEVER fail the primary operation. A teacher marking attendance should not see an error because the growth signal failed. The primary action always succeeds first; the growth observation is a silent witness.
+The growth layer is a silent witness — it observes the natural residue of the teacher's work. The primary action always completes first; the growth observation follows quietly, never visible to the user, never affecting the result.
 
 **What This Means for the Teacher:**
 
@@ -227,7 +221,7 @@ The teacher opens the app to mark attendance (their job). As a natural byproduct
 - After 5 separate school days of activity → their lotus advances from Bijam to Mūla
 - After 10 graded assignments with written feedback → the *"Caring Teacher"* Whispered Moment may appear on the classroom header — a golden ember, private, warm
 
-The teacher never "earned" anything. They simply did their job. The app witnessed it.
+The teacher simply did their job. The app witnessed it, and grows with them.
 
 ---
 
@@ -242,8 +236,7 @@ The teacher never "earned" anything. They simply did their job. The app witnesse
 | Completing a lesson plan | Pedagogical care | Quiet checkmark with breath-like expand |
 | First manifesto endorsement | School community alignment | Community garden visualization grows one seed |
 
-**Never**: "You uploaded 10 resources! You earned 500 points!"  
-**Always**: The act itself is the reward. The app witnesses it softly.
+The act itself is the recognition. The app witnesses it softly — no score appended, no number attached.
 
 ---
 
@@ -258,8 +251,7 @@ The teacher never "earned" anything. They simply did their job. The app witnesse
 | Daily Mood Lotus check-in | Self-awareness | Weekly "mood garden" shows personal weather |
 | Reading the Wisdom Seed | Philosophical nourishment | The seed "sprouts" in the UI — soft animation |
 
-**Never**: Points for reading. Badges for journaling. (These are private acts.)  
-**Always**: The app treats private self-care with complete privacy. No tracking to others.
+Reading, journaling, and breathing are private acts of self-care. The app treats them as sanctuary — visible only to the teacher themselves, honored with stillness.
 
 ---
 
@@ -274,40 +266,38 @@ The teacher never "earned" anything. They simply did their job. The app witnesse
 | Participating in a Pedagogy Poll | School voice | Poll visualization includes your contribution visually |
 | Starting a Staff Circle discussion | Community building | Thread gets a "live" indicator — it's alive because you started it |
 
-**Never**: "Community Champion!" badge with points. Social comparison.  
-**Always**: The community feels warm because of the contributions, not competitive.
+The community feels warm through its contributions. Each person's presence is felt, each voice is welcomed. The warmth is earned by the whole, not ranked within it.
 
 ---
 
 ### Dimension 5: BLOOMING (Recognition)
 *Being seen and honored — the highest form of growth.*
 
-This dimension is **given by others, never earned by grinding.** It cannot be triggered by the user's own actions.
+This dimension is **given by others, received with gratitude.** It arrives through the genuine regard of real people — it cannot be triggered by the user's own actions.
 
 | Signal | What it means | How it's recognized |
 |--------|---------------|---------------------|
 | **Thuthimal gift received** | Alumni/student honoring a teacher | The app's highest recognition event. Lotus bloom animation. Profile glows. |
-| Principal sends a "Gratitude Gift" to a teacher | Institutional recognition | Private notification: warm, sacred, no public broadcast |
+| Principal sends a "Gratitude Gift" to a teacher | Institutional recognition | Private notification: warm, sacred, intimate |
 | 10+ teachers endorse the school manifesto | Community alignment | School garden visualization blooms collectively |
 | First student submits work to a teacher | Trust established | Teacher gets a quiet "Your classroom is alive" moment |
 
-**Thuthimal is the pinnacle of this dimension.** It represents the sacred bond between teacher and student across time — a past student honoring their teacher years later. This is the most powerful recognition event in the app, and it must remain human-sourced, not algorithmic.
+**Thuthimal is the pinnacle of this dimension.** It represents the sacred bond between teacher and student across time — a past student honoring their teacher years later. This is the most powerful recognition event in the app, and it remains human-sourced always.
 
 ---
 
 ### THE IMPACT RIPPLE (Relatedness Made Visible)
 
-*The mechanism that bridges private action and genuine human connection — without gamification.*
+*The mechanism that bridges private action and genuine human connection.*
 
-An **Impact Ripple** is a warm, private signal delivered to a contributor when their work genuinely resonates with another person in their community. It is the operationalization of **Relatedness** in the Bhumi Model — not a metric, not a score, but a soft echo of real human impact.
+An **Impact Ripple** is a warm, private signal delivered to a contributor when their work genuinely resonates with another person in their community. It is the operationalization of **Relatedness** in the Bhumi Model — a soft echo of real human impact, offered quietly.
 
 **Design Principles:**
-- Each ripple is specific to **one interaction** — never aggregated into "you have 47 ripples!"
-- Language is warm and human, never clinical or transactional
-- The actor is **never identified by name** (privacy by default; name visible only if actor chooses to share)
+- Each ripple is specific to **one interaction** — each one lives as its own complete moment
+- Language is warm and human always — specific to the real thing that happened
+- Actor identity is held privately by default; visible only when the actor chooses to share
 - Optional receipt — can be turned off in Self settings
-- Delivered as a gentle, batched notification (3–4× per day max), never an interrupt
-- NOT a score, NOT a metric, NOT tracked in any visible counter
+- Delivered in gentle batches (3–4× per day) — the teacher's day flows uninterrupted
 
 **Ripple Types and Language:**
 
@@ -322,28 +312,22 @@ An **Impact Ripple** is a warm, private signal delivered to a contributor when t
 
 > ⚠️ **Sinhala/Tamil Translation Note**: All Sinhala (si) and Tamil (ta) strings in this document are draft proposals and **must be reviewed by a native Sri Lankan educator** before production use. Natural idiomatic expression is more important than literal accuracy — see `FUTURE_ROADMAP.md` localization notes for guidance.
 
-**What Impact Ripples Are NOT:**
-- ❌ NOT a counter badge ("5 ripples!")
-- ❌ NOT visible on any public profile
-- ❌ NOT a "top contributors" leaderboard
-- ❌ NOT accumulated into any score
-- ❌ NOT sent in real-time (batched to prevent anxiety/addiction)
+**What Impact Ripples Are:**
+- ✅ A quiet echo of real human presence in your work — each one its own complete story
+- ✅ The knowledge that your work reaches real people
+- ✅ Warm, compassionate language — specific to the real thing that happened
+- ✅ The SDT need for Relatedness, met with dignity and care
+- ✅ Delivered privately and gently — the recipient's own quiet knowing
 
-**What Impact Ripples ARE:**
-- ✅ A quiet echo of real human presence in your work
-- ✅ The knowledge that you are not working in a vacuum
-- ✅ Warm, compassionate language — never clinical, never corporate
-- ✅ The SDT need for Relatedness, met with dignity
-
-**Implementation Note**: Ripples are delivered via the same notification system as other app events, using the `impact_ripples` table (see Section 11). The UI notification uses the Sanctuary notification style — vellum background, ink text, no bright colors. Tapping the notification shows which specific resource/post generated it (so the user can see the context), but never shows who acted on it unless the actor opted into being identified.
+**Implementation Note**: Ripples are delivered via the same notification system as other app events, using the `impact_ripples` table (see Section 11). The UI notification uses the Sanctuary notification style — vellum background, ink text, warm colors. Tapping the notification shows which specific resource/post generated it (so the user can see the context). Actor identity is surfaced only when the actor has chosen to be known.
 
 ---
 
 ### THE WARM MIRROR (Competence Through Story)
 
-*A weekly personal narrative of your real impact — opt-in, private, story-format, never a dashboard.*
+*A weekly personal narrative of your real impact — opt-in, discoverable, story-format.*
 
-The **Warm Mirror** is the teacher's (or student's) weekly reflection on what they actually did — framed as a human story, not a performance summary. It lives in the Self tab as an optional, quietly glowing section titled *"This past week..."*
+The **Warm Mirror** is the teacher's (or student's) weekly reflection on what they actually did — framed as a human story. It lives in the Self tab as an optional, quietly glowing section titled *"This past week..."*
 
 **What It Looks Like (Teacher — English sample):**
 
@@ -371,12 +355,12 @@ The **Warm Mirror** is the teacher's (or student's) weekly reflection on what th
 **Design Rules:**
 1. **Generated weekly**, available Sunday evening — readable at the start of a new week
 2. **Entirely opt-in** — teacher enables "Warm Mirror" in their Self section settings
-3. **Never pushed as notification** — always in-app, discoverable, never demanding attention
-4. **Language generated from real data** — never fabricated or hallucinated
-5. **If a quiet week**: mirror is compassionate, never guilting ("This week was quiet" not "You only showed up twice")
-6. **Never mentions negative actions** — only observes what DID happen with care
-7. **Completely private** — not visible to Principal, not exportable by default (export requires teacher action)
-8. **No numbers as headline** — "You were present 4 days" is context, not a score. The narrative wraps numbers in meaning.
+3. **In-app and discoverable** — always there when the teacher looks, at their own pace
+4. **Language generated from real data** — real events, rendered as human meaning
+5. **Quiet weeks are honored** — "This week was quiet" is offered with warmth; rest is as valid as activity
+6. **The mirror sees only what happened** — it reflects presence and contribution, not their absence
+7. **Completely private** — the teacher's own knowing; export requires their deliberate action
+8. **Events become meaning** — "You were present 4 days" is context woven into narrative, not a headline score
 
 **Minimum Data Required (all from existing tables):**
 - Days with any app activity (from `growth_events` timestamps)
@@ -385,7 +369,7 @@ The **Warm Mirror** is the teacher's (or student's) weekly reflection on what th
 - Resources others interacted with (from `impact_ripples` + library analytics)
 - Self-care actions taken (mood check-ins, breathing, journal entries from `growth_events`)
 
-**The Warm Mirror is the Competence dimension made human.** It does not tell a teacher they "achieved" anything. It tells them who they ARE based on what they did.
+**The Warm Mirror is the Competence dimension made human.** It tells a teacher who they ARE based on what they did.
 
 ---
 
@@ -395,10 +379,10 @@ Inspired by the app's "Punctum" philosophy — the piercing detail that stops yo
 
 **Whispered Moments** are small, surprise discoveries — not achievements you grind toward, but moments the app offers when conditions feel right. They are:
 
-- **Never announced in advance** (no "badge collection" to fill)
-- **Never comparative** (no one else sees what you've discovered)
-- **Always contextually appropriate** (offered in the right emotional moment)
-- **Delightful to find, fine to miss** (missing them causes no guilt)
+- **Discoverable, not announced** — each one arrives as a gift, unannounced
+- **Personal** — experienced quietly, belonging only to the person who found it
+- **Contextually appropriate** — offered in the right emotional moment
+- **Delightful to find, fine to miss** — the garden is always growing whether or not you notice every flower
 
 ### Sample Whispered Moments
 
@@ -449,11 +433,11 @@ State 5: Pūrṇa Kamala       → Full bloom. Active in all 5 aliveness dimensi
 ```
 
 **Rules for this visualization:**
-- State only advances forward **naturally over time** (not by grinding specific actions)
-- State NEVER regresses (a wilted lotus is not the Gurudevi aesthetic)
-- The visualization is in the **Self tab only** — private, never on a public profile
-- Animation is breath-like, organic — NOT a loading bar or progress percentage
-- There is NO text telling the user what stage they're at (they simply see the lotus)
+- State advances naturally over time, recognized when conditions feel right
+- The lotus is always growing — even a wilted petal is a temporary season, not a permanent state
+- The visualization lives in the **Self tab only** — a personal, private view of one's own journey
+- Animation is breath-like, organic — the lotus breathes; it does not have a progress bar
+- The user sees only the living lotus; the stage name is internal, the journey is personal
 
 ### Technical Note on Transition Triggers
 
@@ -488,8 +472,8 @@ Instead of a grid of badges, the Memory Garden is a **living illustration** — 
 1. **It looks different for every person** — no two gardens are the same
 2. **It reflects the WHOLE person**, not just their "productivity"
 3. **It has seasons** — it changes with the actual time of year (Sri Lankan seasonal aesthetics)
-4. **It cannot be "completed"** — the garden always has room to grow
-5. **It is never empty** — even on day 1, there is a seed, and seeds are beautiful
+4. **It always has room to grow** — the garden welcomes the next season
+5. **It starts with a seed** — even on day 1, there is a seed, and seeds are beautiful
 
 ### What It Replaces
 
@@ -563,27 +547,29 @@ This layer is **purely aesthetic** — it changes how the app *feels*, not what 
 
 | Feature | Location | Current State | Recommendation |
 |---------|----------|---------------|----------------|
-| `rewardsAPI` with `points` + `badges` | `packages/core/src/api/rewards.ts` | 🟡 Misaligned with philosophy | **Repurpose**: Transform `badges` into `whispered_moments` events. Remove visible `points` counter. Keep backend structure but rename semantically. |
+| `rewardsAPI` with `points` + `badges` | `packages/core/src/api/rewards.ts` | 🟡 Misaligned with philosophy | **Repurpose**: Transform `badges` into `whispered_moments` events. Keep backend structure, rename semantically toward the growth model. |
 | `AchievementGallery.tsx` | `src/components/profile/AchievementGallery.tsx` | 🟡 Exists but philosophically wrong | **Transform**: Replace gallery of badge strings with Memory Garden visualization. |
-| `UserStatsCard.tsx` with points display | `src/components/profile/UserStatsCard.tsx` | 🟡 Shows "points" counter | **Transform**: Replace points with Lotus Life Stage visual. Remove numerical score. |
+| `UserStatsCard.tsx` with points display | `src/components/profile/UserStatsCard.tsx` | 🟡 Shows "points" counter | **Transform**: Replace points with Lotus Life Stage visual — the lotus speaks for itself. |
 | `sacredMissions.ts` (Community manifestos) | `packages/core/src/api/sacredMissions.ts` | 🟢 Aligned — this IS the Gratitude Economy | **Keep and expand**: Manifesto endorsements are the collective growth mechanism. |
-| `AchievementLeaderboard` (Student PRD) | Not yet implemented | 🔴 Designed but NOT built | **Do Not Build**: Replace with personal Memory Garden. Leaderboard violates North Star. |
+| `AchievementLeaderboard` (Student PRD) | Not yet implemented | 🔴 Designed but not yet built | **Build as personal Memory Garden instead** — the personal journey, visible only to the person living it. |
 | Mood Lotus check-in | `packages/self/` | 🟡 Partial — logic mock | **Wire and complete**: Central to Witnessing dimension. |
 | Joy Jar | `packages/self/` | 🟡 Partial | **Complete**: Core Presence dimension feature. |
 | Thuthimal | `packages/core/src/api/thuthimal.ts` | 🟢 DB + badge exists | **Expand**: Make the Thuthimal receipt the highest Blooming event in the system. |
 | Living Theme (temporal phases) | Multiple packages | 🟡 Partial | **Deepen**: Add seasonal layer on top of circadian layer. |
-| `feature_usage_log` table | `packages/core` | 🟢 Exists | **Repurpose for growth signals** — not "usage metrics" but "aliveness dimensions" |
+| `feature_usage_log` table | `packages/core` | 🟢 Exists | **Repurpose for growth signals** — aliveness dimensions, not usage metrics |
 | Impact Ripple system | Not yet built | 🔴 Pending | **Build in Phase 2**: `impact_ripples` table + trigger logic + batched delivery. The Relatedness layer. |
 | Warm Mirror | Not yet built | 🔴 Pending | **Build in Phase 2**: Opt-in weekly narrative from `WarmMirrorDataPoints`. Lives in Self tab. |
 
-### Fully Abandoned / To Be Removed
+### Design Choices Made — What We Build Instead
 
-| Item | Why Abandoned | Recommendation |
-|------|---------------|----------------|
-| Points as visible number | Violates EROI — induces "score anxiety" | Remove from UI. Keep data for internal analytics only (never shown to user). |
-| Badge string array | Generic strings like "Sanctuary Seeker" mean nothing in Sri Lankan context | Replace with culturally resonant Whispered Moments with Sinhala/Tamil names |
-| Student "Achievement Leaderboard" | Directly contradicts North Star Section 5: "Never: Gamification-First" | Do not implement. Replace with personal Memory Garden. |
-| Streak counter (any form) | North Star says streak shaming is explicitly negative EROI | Never implement. Presence ≠ streak. |
+These are deliberate redirections: each one replaces an extractive mechanic with something that genuinely serves the teacher.
+
+| Original Design | Why We Redirected | What We Build Instead |
+|------|---------|----|
+| Points as visible number | A number induces score-watching; the anxiety of the score replaces the joy of the work | The internal `growth_score` stays in the database — it informs the lotus visual, stays out of the teacher's hands |
+| Badge string array | Generic strings like "Sanctuary Seeker" carry no meaning in Sri Lankan context | Culturally resonant Whispered Moments with Sinhala/Tamil names, offered in the right emotional moment |
+| Student "Achievement Leaderboard" | Ranking by definition produces both winners and everyone else | The personal Memory Garden — each person's journey uniquely their own, beautiful in itself |
+| Streak counter | A streak is only meaningful when broken; the absence becomes the message | Presence is acknowledged as arrival, always, on any day — the lamp stays lit |
 
 ---
 
@@ -655,11 +641,11 @@ CREATE TABLE whispered_moments (
   moment_name_ta TEXT, -- Tamil name of the moment
   moment_name_en TEXT, -- English name
   experienced_at TIMESTAMPTZ DEFAULT NOW(),
-  -- Never shown in bulk. Only surfaced in the moment of discovery.
+  -- Each moment is experienced in its own time; surfaced once, in the right moment
   UNIQUE(user_id, moment_key) -- Each moment experienced once (or reset intentionally)
 );
 
--- Growth events log (for internal analytics — never shown to user)
+-- Growth events log (internal analytics — the silent record of aliveness; teacher-facing only through the lotus visual)
 CREATE TABLE growth_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -672,7 +658,7 @@ CREATE TABLE growth_events (
 
 -- Impact Ripples — the Relatedness feedback layer (v2.0)
 -- Each row = one warm signal to a contributor when their work genuinely helped someone.
--- Privacy: actor_user_id is stored but NEVER exposed in UI unless actor opts in.
+-- Actor identity: stored privately; surfaced in the UI only when the actor has chosen to be known.
 CREATE TABLE impact_ripples (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   recipient_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -686,7 +672,7 @@ CREATE TABLE impact_ripples (
     'circle_joined'        -- Someone joined a community circle you started
   )),
   school_id UUID REFERENCES schools(id),
-  -- Actor identity: stored privately, surfaced only if actor explicitly opts into being known
+  -- Actor identity: held privately in the database; visible in the UI only by actor's own choice
   actor_user_id UUID REFERENCES users(id),
   is_actor_visible BOOLEAN DEFAULT FALSE,
   -- The original contribution that generated this ripple
@@ -699,7 +685,7 @@ CREATE TABLE impact_ripples (
   -- Delivery state
   delivered BOOLEAN DEFAULT FALSE,
   delivered_at TIMESTAMPTZ,
-  -- Batch window: ripples are batched and delivered max 3-4x per day
+  -- Batch window: ripples are delivered in gentle batches, 3-4x per day
   batch_window TEXT, -- 'morning' | 'afternoon' | 'evening' | 'night'
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -713,9 +699,9 @@ CREATE INDEX idx_impact_ripples_recipient ON impact_ripples(recipient_user_id, c
 ### Existing Tables to Modify
 
 ```sql
--- user_rewards: Keep structure, change semantic meaning of badges
--- badges[] becomes internal_signals[] — never shown directly to user
--- points becomes growth_score (internal analytics, never user-facing)
+-- user_rewards: Keep structure, deepen semantic meaning
+-- badges[] becomes internal_signals[] — internal to the growth model, expressed through the lotus visual
+-- points becomes growth_score (internal analytics, expressed only through the Bhumi stage, never as a raw number)
 -- Add migration to rename column comments
 ```
 
@@ -906,6 +892,6 @@ export interface WarmMirrorDataPoints {
 
 ---
 
-*This document is part of the Gurudevi Core constellation. Governed by NORTH_STAR.md. Never build growth mechanics that contradict the Three Sacred Laws.*
+*This document is part of the Gurudevi Core constellation. Governed by NORTH_STAR.md. Every growth mechanic built here should leave the teacher lighter, more connected, and more themselves — that is the measure.*
 
 *From mud, through water, to full bloom. 🪷*

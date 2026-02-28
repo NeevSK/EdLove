@@ -5,14 +5,14 @@
  * Bhumi Nature-Inspired Growth Model (see docs/Core/GROWTH_MODEL.md Section 5).
  *
  * The six Bhumi stages (Bijam → Mūla → Nāla → Patra → Kamala → Pūrṇa Kamala)
- * are NOT levels to grind. They advance naturally when the app notices that a user
- * has genuinely engaged with its core dimensions over time.
+ * are stages the app gently recognizes — like a gardener noticing a seedling has put out its first
+ * true leaf. They advance naturally when the app notices genuine engagement over time.
  *
  * USAGE:
  *   - Import from '@repo/core' in any downstream package.
  *   - growthSignalsAPI calls incrementDimension automatically after every signal.
  *   - UI reads getBhumiStage to render the Lotus Life Stage visualization (Self tab only).
- *   - NEVER display the stage name or a progress bar — only the living lotus visual.
+ *   - Show only the living lotus visual — the stage name lives in the database, the lotus speaks for itself.
  */
 
 import { supabase } from '../lib/supabase';
@@ -77,7 +77,10 @@ function meetsTransitionCriteria(
                 : null;
 
         case 'nala':
-            // Nāla → Patra: Contributed to community or library (nourishing or weaving)
+            // Nāla → Patra: Active contribution to community OR library.
+            // Intentional: advancing mula→nala requires (nourishing + witnessing + weaving) >= 1,
+            // which could be satisfied via witnessing alone (e.g., reading resources). This gate
+            // ensures the teacher has contributed outwardly (not just consumed) before reaching Patra.
             return (state.weaving_signals >= 1 || state.nourishing_signals >= 1) ? 'patra' : null;
 
         case 'patra': {
@@ -158,8 +161,7 @@ export const userGrowthStateAPI = {
      * Increment a dimension's signal counter and update last_seen_at.
      * Checks and applies a stage transition if conditions are met.
      *
-     * Non-fatal: errors are silently swallowed so growth signals never interrupt
-     * the primary operation.
+     * Non-fatal: errors are silently absorbed so growth signals yield to the primary action.
      */
     async incrementDimension(userId: string, dimension: GrowthDimension): Promise<void> {
         const state = await this.getOrCreate(userId).catch(() => null);

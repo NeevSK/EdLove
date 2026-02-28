@@ -65,8 +65,10 @@ export const attendanceAPI = {
 
         // Growth signal: teacher was in school, actively managing their classroom
         // (Tier 1 Work Signal — the act of taking attendance IS presence)
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            console.warn('[GrowthSignals] Auth unavailable for attendance signal:', authError?.message);
+        } else {
             void growthSignalsAPI.emitSignal(user.id, 'attendance_recorded', {
                 classroom_id: classroomId,
                 date,
@@ -118,8 +120,10 @@ export const attendanceAPI = {
 
         // Growth signal: teacher was in school, taking attendance for their full class
         // Batch record represents more deliberate presence than a single record
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            console.warn('[GrowthSignals] Auth unavailable for batch attendance signal:', authError?.message);
+        } else {
             void growthSignalsAPI.emitSignal(user.id, 'attendance_recorded', {
                 classroom_id: classroomId,
                 record_count: records.length,
