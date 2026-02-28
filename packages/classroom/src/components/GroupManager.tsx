@@ -61,7 +61,7 @@ interface GroupManagerProps {
 const GROUP_COLORS = [
     Theme.colors.sanctuarySaffron,
     Theme.colors.sageGreen,
-    Theme.colors.twilightPurple,
+    Theme.colors.twilightBlue,
     Theme.colors.amberGlow,
     Theme.colors.lotusDeepPink,
 ];

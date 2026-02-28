@@ -139,6 +139,8 @@ export const useCommunity = () => {
         isJoiningGroup: joinGroupMutation.isPending,
 
         loading: groupsInfiniteQuery.isLoading || postsInfiniteQuery.isLoading,
-        error: (groupsInfiniteQuery.error || postsInfiniteQuery.error) ? ((groupsInfiniteQuery.error || postsInfiniteQuery.error) as Error).message : null,
+        error: (groupsInfiniteQuery.error || postsInfiniteQuery.error)
+            ? ((groupsInfiniteQuery.error || postsInfiniteQuery.error) as any)?.message || 'An error occurred'
+            : null,
     };
 };

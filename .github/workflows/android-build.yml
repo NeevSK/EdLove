@@ -93,14 +93,19 @@ jobs:
       - name: 📦 Install dependencies
         run: pnpm install --fetch-timeout 100000
 
-      - name: 🏗️ Prebuild
+      - name: 🚀 Build App
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          EXPO_PUBLIC_POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+          EXPO_PUBLIC_POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
+          EXPO_PUBLIC_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: 'intuitui-labs'
+          SENTRY_PROJECT: 'gurudevi-mobile'
         run: |
           cd apps/gurudevi-mobile
           npx expo prebuild --platform android --no-install
-
-      - name: 🚀 Build App
-        run: |
-          cd apps/gurudevi-mobile
           if [ "${{ github.event.inputs.build_method }}" == "local" ]; then
             # Build locally on the runner
             eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive --local --output=app.${{ matrix.type }}

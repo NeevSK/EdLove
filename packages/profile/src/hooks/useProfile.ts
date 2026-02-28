@@ -28,7 +28,8 @@ export function useProfile() {
             }
         } catch (error) {
             // Only log if it's not the HMR client error
-            if (error?.message !== 'Expected HMRClient.setup() call at startup.') {
+            const errorMessage = (error as any)?.message;
+            if (errorMessage !== 'Expected HMRClient.setup() call at startup.') {
                 handleAPIError(error);
             }
         } finally {

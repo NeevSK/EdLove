@@ -30,7 +30,8 @@ import {
 } from 'lucide-react-native';
 
 import { ScreenWrapper } from '@repo/ui';
-import { useStore } from '@repo/core';
+import { useStore, captureException } from '@repo/core';
+import * as Sentry from '@sentry/react-native';
 
 interface SettingsOptionProps {
   icon: React.ReactNode;
@@ -611,6 +612,89 @@ export default function AppSettingsScreen({ navigation }: any) {
               </Box>
             )}
           </VStack>
+        </Box>
+
+        {/* Support & Debug Section */}
+        <SectionHeader
+          colors={colors}
+          title={t('settings.support.title', 'Support & Debug')}
+          description={t(
+            'settings.support.description',
+            'Help us improve Gurudevi'
+          )}
+        />
+
+        <Box
+          sx={{
+            backgroundColor: colors.secondary,
+            borderRadius: Theme.corners.comfortable,
+            padding: Theme.spacing.md,
+            marginBottom: Theme.spacing.sm,
+            borderWidth: 1,
+            borderColor: colors.border,
+          }}
+        >
+          <HStack space="md" alignItems="center" justifyContent="space-between">
+            <HStack space="md" alignItems="center" flex={1}>
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: Theme.corners.comfortable,
+                  backgroundColor: colors.tertiary,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Info size={24} color={Theme.colors.sanctuarySaffron} />
+              </Box>
+
+              <VStack flex={1} space="xs">
+                <Text
+                  sx={{
+                    fontSize: Theme.typography.fontSize.md,
+                    fontWeight: Theme.typography.fontWeight.semibold,
+                    color: colors.text,
+                  }}
+                >
+                  {t('settings.debug.sentry_test', 'Sentry Test Event')}
+                </Text>
+                <Text
+                  sx={{
+                    fontSize: Theme.typography.fontSize.sm,
+                    color: colors.textSecondary,
+                    lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.sm,
+                  }}
+                >
+                  {t(
+                    'settings.debug.sentry_desc',
+                    'Sends a test error to verify monitoring setup'
+                  )}
+                </Text>
+              </VStack>
+            </HStack>
+
+            <Button
+              size="sm"
+              onPress={() => {
+                hapticSuccess();
+                const testError = new Error('Sentry Test Event: Button Tapped');
+                captureException(testError, { source: 'AppSettingsScreen_TestButton' });
+                // Also call Sentry directly as per user request snippet
+                Sentry.captureException(new Error('First Sentry Test Error from Button'));
+
+                const { useStore } = require('@repo/core');
+                useStore.getState().showToast('Sentry test event sent!', 'success');
+              }}
+              sx={{
+                backgroundColor: colors.tertiary,
+                borderWidth: 1,
+                borderColor: colors.border,
+              }}
+            >
+              <ButtonText sx={{ color: colors.text, fontSize: '$xs' as any }}>{t('settings.debug.send', 'Send')}</ButtonText>
+            </Button>
+          </HStack>
         </Box>
 
         {/* Gentle guidance footer */}

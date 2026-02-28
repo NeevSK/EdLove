@@ -74,7 +74,15 @@
       "expo-asset",
       "expo-audio",
       "expo-secure-store",
-      "@sentry/react-native"
+      "@sentry/react-native",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "gurudevi-mobile",
+          "organization": "intuitui-labs"
+        }
+      ]
     ],
     "owner": "neevsk",
     "runtimeVersion": {
