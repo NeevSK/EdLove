@@ -78,11 +78,7 @@ These are the tasks that, if broken, mean zero real users can use the app. They 
 ---
 
 ### T0.5 — Fix Principal InviteManager QR Modal Not Rendering
-**What**: Principal generates a QR code → state is stored in `qrCodeData` but no modal renders it. The button silently does nothing.
-**Why**: Principals cannot invite teachers without this. School creation is broken for the primary administrative role.
-**Effort**: S (half day)
-**Code to touch**: `packages/classroom/InviteManager.tsx` (or wherever `qrCodeData` state lives)
-**Action**: Find the stored `qrCodeData` state and add the QR display modal that was never rendered.
+**Status**: ✅ Done (verified Feb 28 2026) — The `qrCodeData` state drives a `<Modal>` that IS rendered in `InviteManager.tsx`. Each invite code row has a QR icon that calls `setQrCodeData({ code, role })`. The modal renders `QRCodeGenerator` with a `QRBuilder.invite()` payload. This bug was already fixed prior to this sprint.
 
 ---
 
@@ -147,11 +143,12 @@ These are the features teachers will use daily. If they don't work reliably and 
 ---
 
 ### T1.5 — Fix join-group QR Consumer Path
-**What**: QR codes for groups are generated but there is no code that handles scanning one. The consumer path doesn't exist.
-**Why**: Community groups are central to teacher connection. If the join flow for groups is broken, groups are invitation-only by manual search — killing discovery and adoption.
-**Effort**: M (2 days)
-**Code to touch**: `packages/scanner-kit/QRResolver.ts` — add `join-group` case; `packages/community/` — add group join handler; `QRHandlerScreen`
-**Action**: Add `join-group` resolution to `QRResolver.ts`. Create the group join action in community package. Wire `QRHandlerScreen` to dispatch it.
+**Status**: ✅ Done (verified Feb 28 2026) — All three layers are already wired:
+1. `QRResolver.ts` handles both `join-group:<UUID>` (legacy) and `gurudevi://qr?action=join_group&group_id=...` (canonical)
+2. `FlowResolver.executeJoinGroup()` upserts into `group_members` table
+3. `QRHandlerScreen` maps `GOTO_COMMUNITY` intent → navigates to Community tab
+
+No further work needed. The consumer path is complete.
 
 ---
 
@@ -634,21 +631,21 @@ T4.3 (deduplication) → safer to make changes in community + library
 - [x] T0.6: ✅ Done — "Set Up School Structure" CTA on SchoolCreationScreen; ClassroomList role-guarded (teacher/grade_head only)
 
 ### For the Agent (Architecture, Boilerplate, Pattern Implementation)
-- [ ] T0.3: Wire PulseDashboard to real attendance + assignment queries
-- [ ] T0.4: Fix teacher QR join (membership link, not teacher_id overwrite)
-- [ ] T0.5: Render QR modal for Principal InviteManager
+- [x] T0.3: ✅ Done — `usePendingActions` hook added; PulseDashboard shows real attendance + grading items
+- [x] T0.4: ✅ Done — FlowResolver.executeJoinClass fixed: student→classroom_students, teacher→only sets teacher_id if null
+- [x] T0.5: ✅ Already done — QR modal was already rendered in InviteManager.tsx (verified Feb 28)
 - [x] T0.6: ✅ Done — see above
-- [ ] T1.1: Wire SleepTracker / RemindersManager / VoiceJournaling into TeacherSelfView
-- [ ] T1.2: Audit NotificationDrawer data; wire to real Supabase if hardcoded
-- [ ] T1.5: Add join-group QR consumer path in QRResolver + QRHandlerScreen
+- [x] T1.1: ✅ Done — SleepTracker, RemindersManager, VoiceJournaling wired into TeacherSelfView MORE_TOOLS
+- [x] T1.2: ✅ Done — useNotifications hook + migration added; NotificationDrawer shows real data + empty state
+- [x] T1.5: ✅ Already done — join-group QR is fully wired in QRResolver → FlowResolver → QRHandlerScreen (verified Feb 28)
 - [ ] T2.4: Implement MLKitProvider (real, not stub); wire OCRScanner to UI
-- [ ] T2.5: Add education tag selection to CreatePostModal
+- [x] T2.5: ✅ Done — Education tag chips added to CreatePostModal; stored in metadata.education_tags
 - [ ] T2.8: Replace PDF/Video stub screens with native expo-av + react-native-pdf viewers
 - [ ] T2.9: Build staff attendance + leave management schema + UI
-- [ ] T3.8: Replace all raw Alert.alert with SanctuaryToast
-- [ ] T3.9: Build SkeletonCard / SkeletonAvatar / SkeletonTextLine
-- [ ] T3.11: Wire getFabActions() (deprioritized; do after core loop tasks)
-- [ ] T3.14: Add ResonancePatternCard to PrincipalSelfView + AdminSelfView (XS)
+- [x] T3.8: ✅ Done — ClassroomNotes, PrincipalNotes, TeacherDashboard all use useLotusToast now
+- [x] T3.9: ✅ Already done — SkeletonCard, SkeletonAvatar, SkeletonTextLine all exported from @repo/ui
+- [x] T3.11: ✅ Done — getFabActions() now calls navigationRef.navigate() for each tab; no more console.log placeholders
+- [x] T3.14: ✅ Done — ResonancePatternCard added to PrincipalSelfView + AdminSelfView
 - [ ] T3.15: Resolve grade_id → gradeNumber for student orientation defaults (S)
 - [ ] T3.16: ResonancePatternCard radar polygon upgrade via Skia (S, after T3.10)
 - [ ] T4.3: Migrate API duplication; community screen deduplication

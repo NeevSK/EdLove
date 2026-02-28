@@ -22,7 +22,9 @@ import { hapticLight } from '@repo/ui';
 import { MoodLotus, ShadowAgentDrawer } from '../../components/self';
 import { GlobalHeader } from '@repo/ui';
 import DailyContentCard from '../../components/self/DailyContentCard';
+import ResonancePatternCard from '../../components/self/ResonancePatternCard';
 import WelcomeModal from '../../components/self/WelcomeModal';
+import { useMoodLogs, useEnergyForecast } from '@repo/self';
 import { SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useThemedColors, useBottomTabPadding, ScreenWrapper } from '@repo/ui';
 
@@ -50,6 +52,10 @@ export default function AdminSelfView() {
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
+
+    // Behavioral signal hooks — feed into ResonancePatternCard inference
+    const { logs: moodLogs } = useMoodLogs();
+    const { forecasts: energyForecasts } = useEnergyForecast(userId ?? undefined);
 
     React.useEffect(() => {
         const fetchUser = async () => {
@@ -140,6 +146,17 @@ export default function AdminSelfView() {
                     <DailyContentCard type="motivation" />
                     <DailyContentCard type="did_you_know" />
                 </Box>
+
+                {/* Resonance Pattern */}
+                {userProfile && (
+                    <Box sx={{ paddingHorizontal: Theme.spacing.md, marginBottom: Theme.spacing.md }}>
+                        <ResonancePatternCard
+                            orientationSeeds={userProfile?.orientation_seeds ?? null}
+                            moodLogs={moodLogs}
+                            energyForecasts={energyForecasts}
+                        />
+                    </Box>
+                )}
 
                 <Box sx={{ height: 100 }}>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, gap: 12 }}>

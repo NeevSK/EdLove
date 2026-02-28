@@ -38,6 +38,7 @@ import {
     PositiveInvitation,
     GlobalHeader,
     ScreenWrapper,
+    useLotusToast,
 } from '@repo/ui';
 import {
     NotebookPen,
@@ -141,6 +142,7 @@ const NOTE_TYPE_META: Record<
 
 export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps) {
     const colors = useThemedColors();
+    const { showToast } = useLotusToast();
     const [notes, setNotes] = useState<PrincipalNote[]>([]);
     const [loading, setLoading] = useState(true);
     const [composing, setComposing] = useState(false);
@@ -176,7 +178,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
             setDraft('');
             setComposing(false);
         } catch {
-            Alert.alert('Could not save note', 'Please try again.');
+            showToast({ message: 'Could not save note. Please try again.', type: 'error' });
         } finally {
             setSaving(false);
         }
@@ -189,7 +191,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
             const updated = await api.principalNotes.update(note.id, { is_done: !note.is_done });
             setNotes((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
         } catch {
-            Alert.alert('Could not update note.');
+            showToast({ message: 'Could not update note.', type: 'error' });
         }
     };
 
@@ -199,26 +201,18 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
             const updated = await api.principalNotes.update(note.id, { is_pinned: !note.is_pinned });
             setNotes((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
         } catch {
-            Alert.alert('Could not update note.');
+            showToast({ message: 'Could not update note.', type: 'error' });
         }
     };
 
-    const handleDelete = (id: string) => {
-        Alert.alert('Delete note?', 'This cannot be undone.', [
-            { text: 'Cancel', style: 'cancel' },
-            {
-                text: 'Delete',
-                style: 'destructive',
-                onPress: async () => {
-                    try {
-                        await api.principalNotes.delete(id);
-                        setNotes((prev) => prev.filter((n) => n.id !== id));
-                    } catch {
-                        Alert.alert('Could not delete note.');
-                    }
-                },
-            },
-        ]);
+    const handleDelete = async (id: string) => {
+        try {
+            await api.principalNotes.delete(id);
+            setNotes((prev) => prev.filter((n) => n.id !== id));
+            showToast({ message: 'Note deleted.', type: 'success' });
+        } catch {
+            showToast({ message: 'Could not delete note.', type: 'error' });
+        }
     };
 
     // ── Note card ─────────────────────────────────────────────

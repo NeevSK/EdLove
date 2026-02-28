@@ -21,8 +21,20 @@ import {
 import { Mic, Image as ImageIcon, X, Trash2 } from 'lucide-react-native';
 import { useCommunity } from '../hooks/useCommunity';
 import { uploadToCloudinary } from '@repo/core';
-import { TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { TouchableOpacity, Image, ActivityIndicator, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+
+// Education tag catalogue — stored in metadata.education_tags
+const EDUCATION_TAGS = [
+    { id: 'lesson', label: '📚 Lesson' },
+    { id: 'assignment', label: '📝 Assignment' },
+    { id: 'tip', label: '💡 Tip' },
+    { id: 'resource', label: '🔗 Resource' },
+    { id: 'celebration', label: '🎉 Celebration' },
+    { id: 'question', label: '❓ Question' },
+    { id: 'announcement', label: '📢 Announcement' },
+    { id: 'wellbeing', label: '🌱 Wellbeing' },
+];
 
 interface CreatePostModalProps {
     isOpen: boolean;
@@ -37,6 +49,13 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+    const toggleTag = (id: string) => {
+        setSelectedTags((prev) =>
+            prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]
+        );
+    };
 
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -49,6 +68,13 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
         if (!result.canceled && result.assets?.[0]?.uri) {
             setSelectedImage(result.assets[0].uri);
         }
+    };
+
+    const handleClose = () => {
+        setContent('');
+        setSelectedImage(null);
+        setSelectedTags([]);
+        onClose();
     };
 
     const handleSubmit = async () => {
@@ -73,9 +99,11 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                 visibility: 'school',
                 media_url: mediaUrl,
                 media_type: mediaType,
+                metadata: selectedTags.length > 0 ? { education_tags: selectedTags } : undefined,
             });
             setContent('');
             setSelectedImage(null);
+            setSelectedTags([]);
             onClose();
         } catch (error) {
             console.error('Failed to create post:', error);
@@ -86,13 +114,13 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose}>
+        <Modal isOpen={isOpen} onClose={handleClose}>
             <ModalBackdrop />
             <ModalContent sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.generous }}>
                 <ModalHeader>
                     <HStack justifyContent="space-between" alignItems="center" w="$full">
                         <Heading color={colors.action} size="lg">Share with the Circle</Heading>
-                        <TouchableOpacity onPress={onClose}>
+                        <TouchableOpacity onPress={handleClose}>
                             <X size={20} color={colors.textTertiary} />
                         </TouchableOpacity>
                     </HStack>
@@ -114,6 +142,44 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                                 sx={{ lineHeight: 22 }}
                             />
                         </Textarea>
+
+                        {/* Education Tags */}
+                        <VStack space="xs">
+                            <Text color={colors.textSecondary} sx={{ fontSize: '$xs', fontWeight: '600' }}>
+                                Tag this post (optional)
+                            </Text>
+                            <ScrollView
+                                horizontal
+                                showsHorizontalScrollIndicator={false}
+                                contentContainerStyle={{ gap: 8 }}
+                            >
+                                {EDUCATION_TAGS.map((tag) => {
+                                    const active = selectedTags.includes(tag.id);
+                                    return (
+                                        <TouchableOpacity
+                                            key={tag.id}
+                                            onPress={() => toggleTag(tag.id)}
+                                            style={{
+                                                paddingHorizontal: 12,
+                                                paddingVertical: 6,
+                                                borderRadius: Theme.corners.full,
+                                                backgroundColor: active ? colors.action : colors.overlay,
+                                                borderWidth: 1,
+                                                borderColor: active ? colors.action : colors.border,
+                                            }}
+                                        >
+                                            <Text sx={{
+                                                fontSize: 12,
+                                                color: active ? Theme.colors.sacredWhite : colors.text,
+                                                fontWeight: active ? '600' : '400',
+                                            }}>
+                                                {tag.label}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </ScrollView>
+                        </VStack>
 
                         {selectedImage && (
                             <Box sx={{ position: 'relative', borderRadius: Theme.corners.comfortable, overflow: 'hidden', height: 200 }}>

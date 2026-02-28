@@ -357,35 +357,32 @@ Migrations from Feb 11–26 applied. Confirmed tables:
 ## Known Bugs and Issues
 
 ### 🔴 Critical (Product-Breaking)
-1. **PulseDashboard hardcoded action items** — The Self screen default view shows fake tasks ("Mark Morning Attendance", "Grade Science Assignment") that are `console.log` placeholders. Teachers see made-up data on their home screen. Trust-destroying on day 1.
-2. **FAB actions are all console.log** — `getFabActions()` in `App.tsx` does nothing. Every FAB tap is a dead end.
-3. **DB migration status uncertain** — 10+ migrations may not be applied. Tables that don't exist will cause silent data failures.
-4. **OCR providers are stubs** — Any teacher who tries the OCR student import feature will get nothing. Feature is advertised but non-functional.
-5. **Group chat: zero implementation** — Community section shows a chat affordance with no backend, no UI, no data. Dead feature.
+1. **DB migration status uncertain** — 10+ migrations may not be applied. Tables that don't exist will cause silent data failures.
+2. **OCR providers are stubs** — Any teacher who tries the OCR student import feature will get nothing. Feature is advertised but non-functional.
+3. **Group chat: zero implementation** — Community section shows a chat affordance with no backend, no UI, no data. Dead feature.
 
 ### 🟠 High Priority
-6. **QR join-group has no consumer** — QR codes generated for groups cannot be scanned and acted upon.
-7. **Teacher QR join overwrites teacher_id** — Security/data bug: joining via QR does `classrooms.update({ teacher_id: user.id })` which overwrites the classroom owner. Should create a membership link.
-8. **Principal InviteManager QR not rendered** — `qrCodeData` state stored but no modal renders it. Button appears to do nothing.
-9. **SleepTracker / RemindersManager / VoiceJournaling not wired** — Built features invisible to users.
-10. **useNavigationState error (PostHog)** — PostHogProvider placement may cause navigation errors. Status of fix uncertain.
-11. **src/lib/api duplication** — Bug fixes must be applied in two places until consolidated.
-12. **Community screens in 2 places** — GroupDetailsScreen, CreatePostModal in both app and `@repo/community`.
+4. **useNavigationState error (PostHog)** — PostHogProvider placement may cause navigation errors. Status of fix uncertain.
+5. **src/lib/api duplication** — Bug fixes must be applied in two places until consolidated.
+6. **Community screens in 2 places** — GroupDetailsScreen, CreatePostModal in both app and `@repo/community`.
 
 ### 🟡 Medium Priority
-13. **Accessibility: ~5/100 score** — 175 interactive elements with only ~4 having `accessibilityLabel`. Legal/ethical liability.
-14. **i18n: 176 si + 200 ta keys missing; 272 hardcoded strings** — App is not production-ready in Sinhala/Tamil.
-15. **Notifications content unclear** — `NotificationDrawer.tsx` exists but populated with what? May be hardcoded.
-16. **Library content empty** — New schools see an empty library. No cold-start content.
-17. **Self screen default view (PulseDashboard)** — Needs real data + UX polish.
-18. **Skia NoiseOverlay disabled** — Visual richness lost. Needs proper fix before re-enabling.
+7. **Accessibility: ~5/100 score** — 175 interactive elements with only ~4 having `accessibilityLabel`. Legal/ethical liability.
+8. **i18n: 176 si + 200 ta keys missing; 272 hardcoded strings** — App is not production-ready in Sinhala/Tamil.
+9. **Library content empty** — New schools see an empty library. No cold-start content.
+10. **Skia NoiseOverlay disabled** — Visual richness lost. Needs proper fix before re-enabling.
 
-### 🟢 Minor
-19. **LotusPetalFAB not harmonized** — App version vs `@repo/ui` version; PanResponder features not merged.
-20. **OCR no preprocessing** — Even if providers were real, no deskew/binarization pipeline exists.
-21. **Font strategy** — Sinhala/Tamil 1.8x line height; verify on device.
-22. **Bio-Resonance Layer** — Adaptive haptics, UnfoldingView deferred.
-23. **ResonancePatternCard radar polygon** — currently rendered as dot markers + axis lines (pure RN). A true filled polygon would need react-native-svg or Skia. Acceptable for now; upgrade path is clear (see T3.16).
+### 🟢 Fixed This Sprint (Feb 28 2026)
+- ✅ PulseDashboard hardcoded actions → real DB queries via `usePendingActions` hook
+- ✅ FAB actions were all console.log → now call `navigationRef.navigate()`
+- ✅ Teacher QR join overwrites teacher_id → FlowResolver.executeJoinClass is now role-aware
+- ✅ SleepTracker / RemindersManager / VoiceJournaling wired into TeacherSelfView MORE_TOOLS
+- ✅ NotificationDrawer showed 3 hardcoded "Update Available" items → real DB via `useNotifications` hook + migration
+- ✅ Alert.alert in ClassroomNotes, PrincipalNotes, TeacherDashboard → useLotusToast
+- ✅ CreatePostModal has no tag selection → 8 education tag chips stored in metadata.education_tags
+- ✅ ResonancePatternCard missing from PrincipalSelfView + AdminSelfView → added with behavioral hooks
+- ✅ Principal InviteManager QR not rendered → was already done (verified by code reading)
+- ✅ join-group QR consumer path missing → was already done (verified by code reading)
 
 ---
 

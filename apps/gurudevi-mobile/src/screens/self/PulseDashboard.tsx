@@ -10,11 +10,12 @@ import {
     GlassCard,
     DailyResonanceCard,
     useThemedColors,
-    BreathAnimation
+    BreathAnimation,
+    SkeletonCard
 } from '@repo/ui';
-import { useUserRole, useStore, dailyContentAPI } from '@repo/core';
+import { useUserRole, useStore, dailyContentAPI, usePendingActions } from '@repo/core';
 import { useTranslation } from 'react-i18next';
-import { Sparkles, Calendar, BookOpen, Clock } from 'lucide-react-native';
+import { Sparkles, Calendar, BookOpen, Clock, CheckCircle } from 'lucide-react-native';
 
 /**
  * PulseDashboard - The "Entrance" to the Daily Sanctuary
@@ -23,10 +24,14 @@ import { Sparkles, Calendar, BookOpen, Clock } from 'lucide-react-native';
 export default function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void }) {
     const { t } = useTranslation();
     const { role } = useUserRole();
+    const user = useStore((state) => state.user);
     const teacherName = useStore((state) => state.teacherName);
     const colors = useThemedColors();
     const [refreshing, setRefreshing] = React.useState(false);
     const [dailyContent, setDailyContent] = React.useState<{ motivation: any; didYouKnow: any } | null>(null);
+
+    const { attendancePending, gradingPending, isLoading: actionsLoading, refresh: refreshActions } =
+        usePendingActions(user?.id);
 
     const loadContent = async () => {
         const content = await dailyContentAPI.getTodaysContent();
@@ -39,9 +44,9 @@ export default function PulseDashboard({ onEnterDetails }: { onEnterDetails: () 
 
     const onRefresh = React.useCallback(async () => {
         setRefreshing(true);
-        await loadContent();
+        await Promise.all([loadContent(), refreshActions()]);
         setRefreshing(false);
-    }, []);
+    }, [refreshActions]);
 
     const getGreeting = () => {
         const hour = new Date().getHours();
@@ -49,6 +54,8 @@ export default function PulseDashboard({ onEnterDetails }: { onEnterDetails: () 
         if (hour < 17) return t('greeting.afternoon') || 'Good Afternoon';
         return t('greeting.evening') || 'Good Evening';
     };
+
+    const hasActions = attendancePending.length > 0 || gradingPending.length > 0;
 
     return (
         <ScrollView
@@ -102,20 +109,40 @@ export default function PulseDashboard({ onEnterDetails }: { onEnterDetails: () 
                                 <Calendar color={colors.action} size={20} />
                             </HStack>
 
-                            <VStack space="sm">
-                                <PulseActionItem
-                                    title="Mark Morning Attendance"
-                                    time="Before 9:00 AM"
-                                    status="pending"
-                                    onPress={() => { }}
-                                />
-                                <PulseActionItem
-                                    title="Grade Science Assignment"
-                                    time="By End of Day"
-                                    status="upcoming"
-                                    onPress={() => { }}
-                                />
-                            </VStack>
+                            {actionsLoading ? (
+                                <VStack space="sm">
+                                    <SkeletonCard height={56} />
+                                    <SkeletonCard height={56} />
+                                </VStack>
+                            ) : !hasActions ? (
+                                <HStack space="sm" alignItems="center" py="$2">
+                                    <CheckCircle size={16} color={Theme.colors.sageGreen} />
+                                    <Text sx={{ color: colors.textSecondary, fontSize: '$sm' }}>
+                                        {t('pulse.allClear') || 'Your day is clear 🪷'}
+                                    </Text>
+                                </HStack>
+                            ) : (
+                                <VStack space="sm">
+                                    {attendancePending.map((item) => (
+                                        <PulseActionItem
+                                            key={item.classroomId}
+                                            title={`${t('pulse.markAttendance') || 'Mark Attendance'}: ${item.classroomName}`}
+                                            time={t('pulse.beforeNine') || 'Before 9:00 AM'}
+                                            status="pending"
+                                            onPress={() => { }}
+                                        />
+                                    ))}
+                                    {gradingPending.map((item) => (
+                                        <PulseActionItem
+                                            key={item.assignmentId}
+                                            title={`${t('pulse.grade') || 'Grade'}: ${item.assignmentTitle}`}
+                                            time={`${item.ungradedCount} ${t('pulse.submissions') || 'submission(s)'} · ${item.classroomName}`}
+                                            status="upcoming"
+                                            onPress={() => { }}
+                                        />
+                                    ))}
+                                </VStack>
+                            )}
                         </VStack>
                     </GlassCard>
                 </BreathAnimation>
@@ -154,8 +181,8 @@ function PulseActionItem({ title, time, status, onPress }: any) {
             justifyContent="space-between"
             alignItems="center"
         >
-            <VStack space="xs">
-                <Text sx={{ color: colors.text, fontSize: '$sm', fontWeight: '$600' }}>{title}</Text>
+            <VStack space="xs" sx={{ flex: 1, marginRight: Theme.spacing.sm }}>
+                <Text sx={{ color: colors.text, fontSize: '$sm', fontWeight: '$600' }} numberOfLines={2}>{title}</Text>
                 <HStack space="xs" alignItems="center">
                     <Clock size={12} color={colors.textTertiary} />
                     <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs }}>{time}</Text>

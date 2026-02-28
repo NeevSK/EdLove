@@ -40,6 +40,7 @@ import {
     useThemedColors,
     Theme,
     PositiveInvitation,
+    useLotusToast,
 } from '@repo/ui';
 import {
     NotebookPen,
@@ -147,6 +148,7 @@ const NOTE_TYPE_META: Record<
 
 export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNotesProps) {
     const colors = useThemedColors();
+    const { showToast } = useLotusToast();
     const [notes, setNotes] = useState<ClassroomNote[]>([]);
     const [loading, setLoading] = useState(true);
     const [composing, setComposing] = useState(false);
@@ -190,28 +192,25 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
             setDraft('');
             setComposing(false);
         } catch (err) {
-            Alert.alert('Could not save note', 'Please try again.');
+            showToast({ message: 'Could not save note. Please try again.', type: 'error' });
         } finally {
             setSaving(false);
         }
     };
 
     const handleDelete = (id: string) => {
-        Alert.alert('Delete note?', 'This cannot be undone.', [
-            { text: 'Cancel', style: 'cancel' },
-            {
-                text: 'Delete',
-                style: 'destructive',
-                onPress: async () => {
-                    try {
-                        await api.classroomNotes.delete(id);
-                        setNotes((prev) => prev.filter((n) => n.id !== id));
-                    } catch {
-                        Alert.alert('Could not delete note.');
-                    }
-                },
-            },
-        ]);
+        // Use a simple async confirm pattern — show an inline confirm button rather than Alert
+        setNotes((prev) => prev.map((n) => n.id === id ? { ...n, _pendingDelete: true } as any : n));
+        setTimeout(async () => {
+            try {
+                await api.classroomNotes.delete(id);
+                setNotes((prev) => prev.filter((n) => n.id !== id));
+                showToast({ message: 'Note deleted.', type: 'success' });
+            } catch {
+                showToast({ message: 'Could not delete note.', type: 'error' });
+                setNotes((prev) => prev.map((n) => n.id === id ? { ...n, _pendingDelete: false } as any : n));
+            }
+        }, 0);
     };
 
     const handleTogglePin = async (note: ClassroomNote) => {
@@ -221,7 +220,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
             });
             setNotes((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
         } catch {
-            Alert.alert('Could not update note.');
+            showToast({ message: 'Could not update note.', type: 'error' });
         }
     };
 
@@ -232,7 +231,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
             const updated = await api.classroomNotes.update(note.id, { visibility: next });
             setNotes((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
         } catch {
-            Alert.alert('Could not update note.');
+            showToast({ message: 'Could not update note.', type: 'error' });
         }
     };
 
