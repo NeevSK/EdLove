@@ -25,7 +25,7 @@ const ClassroomCard: React.FC<ClassroomCardProps> = ({
     return (
         <button
             onClick={onClick}
-            className="w-full bg-[#16213e]/60 backdrop-blur-md border border-gray-700/50 rounded-3xl p-5 flex flex-col space-y-4 hover:border-orange-400/30 transition-all group active:scale-[0.98]"
+            className="w-full bg-[#16213e]/60 backdrop-blur-md border border-gray-700/50 rounded-3xl p-5 flex flex-col space-y-4 hover:border-orange-400/30 hover:scale-[1.02] transition-all duration-500 group active:scale-[0.98]"
         >
             <div className="flex justify-between items-start w-full">
                 <div className="flex items-center space-x-3">
