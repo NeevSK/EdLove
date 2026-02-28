@@ -1,14 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, Image, TouchableOpacity,
-  StyleSheet, ActivityIndicator,
+  StyleSheet, ActivityIndicator, Platform,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
-import * as FileSystem from 'expo-file-system/legacy';
 import { supabase } from '@repo/core';
 import { useTheme } from '@repo/ui';
 import { Camera } from 'lucide-react-native';
+
+// expo-file-system/legacy has no web implementation.
+// On native we use it for local caching; on web we skip that layer entirely.
+let FileSystem: typeof import('expo-file-system/legacy') | null = null;
+if (Platform.OS !== 'web') {
+  FileSystem = require('expo-file-system/legacy');
+}
 
 interface AvatarDisplayProps {
   userId: string;
@@ -30,7 +36,8 @@ function getInitials(name?: string | null): string {
   return (first.charAt(0) + last.charAt(0)).toUpperCase();
 }
 
-function getCachePath(userId: string): string {
+function getCachePath(userId: string): string | null {
+  if (!FileSystem) return null;
   return `${FileSystem.cacheDirectory ?? ''}avatar_${userId}.jpg`;
 }
 
@@ -60,10 +67,11 @@ export function AvatarDisplay({
   const [localCachePath, setLocalCachePath] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  // Load local cache on mount
+  // Load local cache on mount (native only — FileSystem is not available on web)
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || !FileSystem) return;
     const cachePath = getCachePath(userId);
+    if (!cachePath) return;
     FileSystem.getInfoAsync(cachePath).then(info => {
       if (info.exists) setLocalCachePath(cachePath);
     });
@@ -92,16 +100,29 @@ export function AvatarDisplay({
         { compress: 0.85, format: ImageManipulator.SaveFormat.JPEG }
       );
 
-      // 4. Cache locally immediately (optimistic display — no waiting for upload)
-      const cachePath = getCachePath(userId);
-      await FileSystem.copyAsync({ from: manipulated.uri, to: cachePath });
-      setLocalCachePath(cachePath);
+      // 4. Cache locally (native only — FileSystem not available on web)
+      const cachePath = FileSystem ? getCachePath(userId) : null;
+      if (FileSystem && cachePath) {
+        await FileSystem.copyAsync({ from: manipulated.uri, to: cachePath });
+        setLocalCachePath(cachePath);
+      }
 
       // 5. Read as base64 for Supabase upload
-      const base64 = await FileSystem.readAsStringAsync(manipulated.uri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      const bytes = base64ToUint8Array(base64);
+      let bytes: Uint8Array;
+      if (FileSystem) {
+        const base64 = await FileSystem.readAsStringAsync(manipulated.uri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+        bytes = base64ToUint8Array(base64);
+      } else {
+        // On web, fetch the blob URL produced by expo-image-manipulator and convert.
+        // expo-image-manipulator returns a local object URL on web that is always fetchable.
+        const response = await fetch(manipulated.uri);
+        if (!response.ok) throw new Error(`[AvatarDisplay] Failed to read image for upload (web): ${response.status}`);
+        const blob = await response.blob();
+        const arrayBuffer = await blob.arrayBuffer();
+        bytes = new Uint8Array(arrayBuffer);
+      }
 
       // 6. Upload to Supabase Storage bucket 'avatars'
       const fileName = `${userId}.jpg`;

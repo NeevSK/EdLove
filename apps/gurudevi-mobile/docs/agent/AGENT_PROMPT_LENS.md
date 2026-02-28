@@ -73,7 +73,62 @@ This app uses **`registerRootComponent(App)`** (classic Expo entry via `index.ts
 ### Metro `isCSSEnabled`
 `getDefaultConfig(projectRoot, { isCSSEnabled: true })` must be used in `metro.config.js` to unlock CSS and stylesheet support on web.
 
-### Native-Only Modules
-When adding new packages, verify web compatibility via `react-native-web` or `Platform.OS === 'web'` guards. Packages without web support (`react-native-mmkv`, `@react-native-ml-kit/text-recognition`) must be guarded with platform checks or platform-specific files (`.web.ts`).
+### Strategy: Two Complementary Patterns for Native-Only Modules
+
+Metro selects the most-specific file for the target platform. Use this to isolate native-only code without touching shared source.
+
+**Pattern A — Platform-specific file pair** (`*.web.tsx` alongside `*.tsx`)
+Best for: component files you own that import native-only packages.
+```
+SanctuaryFlashList.tsx       ← imported on native (uses @shopify/flash-list)
+SanctuaryFlashList.web.tsx   ← imported on web   (uses React Native FlatList)
+
+LivingCard.tsx       ← native Skia canvas
+LivingCard.web.tsx   ← plain View with background colour
+
+TemporalGlass.tsx    ← native Skia border
+TemporalGlass.web.tsx ← CSS border via borderColor
+
+NoiseOverlay.tsx     ← native Skia grain
+NoiseOverlay.web.tsx ← returns null (decorative, not needed on web)
+```
+
+**Pattern B — Metro `resolveRequest` shim** (in `metro.config.js`)
+Best for: third-party packages imported by files you DON'T want to modify
+(e.g. `App.tsx`, `packages/core/src/lib/monitoring/*.ts`).
+```js
+// metro.config.js — WEB_SHIMS map
+'@sentry/react-native'  → src/shims/sentry-web.js   (no-op init/wrap/captureException)
+'posthog-react-native'  → src/shims/posthog-web.js  (no-op PostHog class + pass-through PostHogProvider)
+```
+**Rule:** every entry in `WEB_SHIMS` must mirror the exported API used in this codebase.
+If you add a new call-site for a shimmed package, update the shim file.
+
+**Pattern C — `Platform.OS` guard** (in-source, inline)
+Best for: third-party APIs called conditionally inside a shared source file.
+```ts
+// storage.ts — skip MMKV on web; fall through to AsyncStorage
+if (isExpoGo || Platform.OS === 'web') { ... }
+
+// AvatarDisplay.tsx — skip expo-file-system/legacy (no web impl) via lazy require
+let FileSystem = Platform.OS !== 'web' ? require('expo-file-system/legacy') : null;
+```
+
+### Quick Reference: Web Compatibility Map
+| Package | Status on web | Fix applied |
+|---|---|---|
+| `@sentry/react-native` | ❌ No web | Shim (Pattern B) |
+| `posthog-react-native` | ❌ No web | Shim (Pattern B) |
+| `react-native-mmkv` | ❌ No web | Platform guard (Pattern C) → falls back to AsyncStorage |
+| `@shopify/flash-list` | ⚠ Unreliable | `.web.tsx` fallback using FlatList (Pattern A) |
+| `@shopify/react-native-skia` | ⚠ Needs WASM setup | `.web.tsx` fallbacks for LivingCard, TemporalGlass, NoiseOverlay (Pattern A) |
+| `expo-file-system/legacy` | ❌ No web | Platform guard in AvatarDisplay (Pattern C) |
+| `expo-haptics` | ✅ No-op on web | No change needed |
+| `expo-blur` | ✅ Works on web | No change needed |
+| `expo-image-picker` | ✅ Works on web | No change needed |
+| `expo-image-manipulator` | ✅ Works on web | No change needed |
+| `@react-native-community/netinfo` | ✅ Works on web | No change needed |
+| `expo-audio` | ⚠ Playback OK; recording limited | Guard heavy recording APIs with `Platform.OS !== 'web'` |
+| `@react-native-ml-kit/text-recognition` | ❌ No web | Scanner feature unavailable on web (camera-based OCR) |
 
 **Awaiting your Architectural Plan for the requested task.**

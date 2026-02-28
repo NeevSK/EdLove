@@ -89,12 +89,15 @@ class RobustAsyncStorage implements StorageInterface {
 }
 
 import Constants, { ExecutionEnvironment } from 'expo-constants';
+import { Platform } from 'react-native';
 
 let storageInstance: StorageInterface;
 
 const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
-if (isExpoGo) {
+if (isExpoGo || Platform.OS === 'web') {
+    // MMKV is a native JSI module — not available in Expo Go or on web.
+    // Fall back to the AsyncStorage-backed implementation in both cases.
     storageInstance = new RobustAsyncStorage();
 } else {
     try {

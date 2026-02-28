@@ -42,4 +42,32 @@ config.resolver.extraNodeModules = {
     '@react-native-async-storage/async-storage': path.resolve(projectRoot, 'node_modules/@react-native-async-storage/async-storage'),
 };
 
+// 6. Web-only shims: redirect native-only packages to no-op web implementations
+//    when Metro is bundling for the 'web' platform.
+//    This allows App.tsx and packages to import these packages unconditionally
+//    while keeping the web bundle free of native bridge calls.
+//
+//    Shim files live in src/shims/ and mirror the subset of the API used in
+//    this codebase. If you add a new usage of a shimmed package, update the
+//    matching shim file in src/shims/.
+const WEB_SHIMS = {
+    '@sentry/react-native': path.resolve(projectRoot, 'src/shims/sentry-web.js'),
+    'posthog-react-native': path.resolve(projectRoot, 'src/shims/posthog-web.js'),
+};
+
+const defaultResolveRequest = config.resolver.resolveRequest;
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+    if (platform === 'web' && moduleName in WEB_SHIMS) {
+        return { filePath: WEB_SHIMS[moduleName], type: 'sourceFile' };
+    }
+    // Fall through to the previously registered resolver (if any), then to
+    // Metro's built-in default via context.resolveRequest.
+    // NOTE: context.resolveRequest is Metro's own internal resolver and does NOT
+    // point back to this function — calling it is safe and will not recurse.
+    if (defaultResolveRequest) {
+        return defaultResolveRequest(context, moduleName, platform);
+    }
+    return context.resolveRequest(context, moduleName, platform);
+};
+
 module.exports = config;
