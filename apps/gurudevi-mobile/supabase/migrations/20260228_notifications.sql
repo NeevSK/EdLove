@@ -3,7 +3,7 @@
 -- One row per notification; polymorphic reference_id covers posts, submissions, etc.
 
 CREATE TABLE IF NOT EXISTS public.notifications (
-  id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id       UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
   type          TEXT NOT NULL CHECK (type IN (
                   'new_submission',    -- student submitted an assignment

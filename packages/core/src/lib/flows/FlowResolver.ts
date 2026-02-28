@@ -134,11 +134,12 @@ export class FlowResolver {
             if (fetchError) throw fetchError;
 
             if (!classroom?.teacher_id) {
-                // Unclaimed classroom — safe to assign
+                // Unclaimed classroom — claim atomically, only if still null
                 const { error: updateError } = await supabase
                     .from('classrooms')
                     .update({ teacher_id: userId })
-                    .eq('id', classroomId);
+                    .eq('id', classroomId)
+                    .is('teacher_id', null);
                 if (updateError) throw updateError;
             }
             // If classroom already has a teacher, just navigate — no ownership change.

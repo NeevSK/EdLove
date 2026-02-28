@@ -183,7 +183,12 @@ function getStorage(): StorageInterface {
  */
 export const storage: StorageInterface = new Proxy({} as StorageInterface, {
     get(_target, prop: string) {
-        return (getStorage() as any)[prop];
+        const instance = getStorage() as any;
+        const value = instance[prop as keyof typeof instance];
+        if (typeof value === 'function') {
+            return value.bind(instance);
+        }
+        return value;
     },
 });
 

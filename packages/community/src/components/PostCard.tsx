@@ -83,15 +83,28 @@ const PostCard = React.memo(function PostCard({
         return null;
     };
 
-    // Optimistic local like state
+    // Optimistic local like state — re-sync when post data changes (e.g. feed refresh)
     const [liked, setLiked] = React.useState(false);
     const [localLikeCount, setLocalLikeCount] = React.useState(reactions['❤️'] || 0);
 
-    const handleLike = () => {
+    React.useEffect(() => {
+        setLocalLikeCount(reactions['❤️'] || 0);
+        setLiked(false);
+    }, [id, reactions['❤️']]);
+
+    const handleLike = async () => {
+        const prevLiked = liked;
+        const prevCount = localLikeCount;
         const nowLiked = !liked;
         setLiked(nowLiked);
-        setLocalLikeCount(prev => Math.max(0, prev + (nowLiked ? 1 : -1)));
-        onLike?.();
+        setLocalLikeCount(Math.max(0, localLikeCount + (nowLiked ? 1 : -1)));
+        try {
+            await onLike?.();
+        } catch {
+            // Revert optimistic update on failure
+            setLiked(prevLiked);
+            setLocalLikeCount(prevCount);
+        }
     };
 
     const isLiked = liked;
