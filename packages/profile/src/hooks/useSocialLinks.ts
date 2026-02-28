@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase, handleAPIError, SocialLink } from '@repo/core';
+import { handleAPIError, SocialLink } from '@repo/core';
 import { socialAPI } from '../api/social';
 
 export function useSocialLinks(userId?: string) {
