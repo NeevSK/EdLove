@@ -1,12 +1,15 @@
 /**
- * User Growth State API — Bhumi life stage management.
+ * User Growth State API — All nature path stage management.
  *
- * Manages the `user_growth_state` table which tracks each user's position in the
- * Bhumi Nature-Inspired Growth Model (see docs/Core/GROWTH_MODEL.md Section 5).
+ * Manages the `user_growth_state` table which tracks each user's position across
+ * all four nature paths of the Gurudevi Growth Model (see docs/Core/GROWTH_MODEL.md Section 2B).
  *
- * The six Bhumi stages (Bijam → Mūla → Nāla → Patra → Kamala → Pūrṇa Kamala)
- * are stages the app gently recognizes — like a gardener noticing a seedling has put out its first
- * true leaf. They advance naturally when the app notices genuine engagement over time.
+ *   🌸 Bhumi (Lotus) — Bijam → Mūla → Nāla → Patra → Kamala → Pūrṇa Kamala  (all users)
+ *   🌳 Banyan (Vata)  — Sapling → Roots → Canopy → Shade Giver → Forest Maker (teachers/principals)
+ *   🌊 River (Ganga)  — Trickle → Stream → River → Delta                       (students/teachers)
+ *   💎 Crystal        — Spark → Cluster → Cave → Fractal                        (students)
+ *
+ * Stages advance naturally when the app notices genuine engagement over time.
  *
  * USAGE:
  *   - Import from '@repo/core' in any downstream package.
@@ -16,6 +19,7 @@
  */
 
 import { supabase } from '../lib/supabase';
+import type { BanyanStage, RiverStage, CrystalTier } from './naturePaths';
 
 export type BhumiStage =
     | 'bijam'
@@ -35,12 +39,25 @@ export type GrowthDimension =
 export interface UserGrowthState {
     id: string;
     user_id: string;
+    // Bhumi (Lotus) path
     bhumi_stage: BhumiStage;
     presence_signals: number;
     nourishing_signals: number;
     witnessing_signals: number;
     weaving_signals: number;
     blooming_signals: number;
+    // Banyan (Vata) path — teachers & principals
+    banyan_stage: BanyanStage;
+    peer_mentored_count: number;
+    circles_facilitated_count: number;
+    // River (Ganga) path — students & teachers' curricular contribution
+    river_stage: RiverStage;
+    lessons_completed_count: number;
+    reflections_submitted_count: number;
+    // Crystal (Spatika) path — students
+    crystal_tier: CrystalTier;
+    crystals_found_count: number;
+    fractal_moments_count: number;
     last_seen_at: string | null;
     created_at: string;
     updated_at: string;
@@ -77,10 +94,10 @@ function meetsTransitionCriteria(
                 : null;
 
         case 'nala':
-            // Nāla → Patra: Active contribution to community OR library.
-            // Intentional: advancing mula→nala requires (nourishing + witnessing + weaving) >= 1,
-            // which could be satisfied via witnessing alone (e.g., reading resources). This gate
-            // ensures the teacher has contributed outwardly (not just consumed) before reaching Patra.
+            // Nāla → Patra: Outward contribution required — either weaving (community) OR nourishing (sharing).
+            // Intentional: mula→nala only requires any ONE of (nourishing + witnessing + weaving) >= 1,
+            // so a teacher could advance via witnessing alone (e.g., reading resources). This gate
+            // ensures at least one act of outward contribution before reaching Patra.
             return (state.weaving_signals >= 1 || state.nourishing_signals >= 1) ? 'patra' : null;
 
         case 'patra': {

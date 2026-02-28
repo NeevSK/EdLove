@@ -166,6 +166,119 @@ These are **not levels to "grind through."** They are natural growth stages that
 
 ---
 
+## 2B. THE FOUR NATURE PATHS — Multiple Living Metaphors
+
+The Bhumi (Lotus) model is the foundation for every user's personal inner journey. But nature offers four distinct metaphors, each illuminating a different quality of growth. A teacher is not *only* a lotus in the making — they are also a banyan tree growing roots into their community, a river whose water shapes the ground it flows through, and a moon cycling through seasons of fullness and rest.
+
+```
+╔══════════════════════════════════════════════════════════════════╗
+║                    THE FOUR LIVING PATHS                         ║
+╠══════════════════╦══════════════════════════════════════════════╣
+║  🌸  BHUMI       ║  The Lotus — Personal Inner Growth           ║
+║  (Lotus Path)    ║  All users. Private. The journey inward.     ║
+╠══════════════════╬══════════════════════════════════════════════╣
+║  🌳  VATA        ║  The Banyan — Mentorship & Ecosystem         ║
+║  (Banyan Path)   ║  Teachers & Principals. Given to community.  ║
+╠══════════════════╬══════════════════════════════════════════════╣
+║  🌊  GANGA       ║  The River — Learning Flow                   ║
+║  (River Path)    ║  Students & Teachers' curricular work.       ║
+╠══════════════════╬══════════════════════════════════════════════╣
+║  🌙  CHANDRA     ║  The Moon — Cyclical Wisdom                  ║
+║  (Moon Path)     ║  All users. Cyclical, not progressive.       ║
+╚══════════════════╩══════════════════════════════════════════════╝
+```
+
+Plus two collective/environmental layers:
+- **🌲 Vana (School Forest)** — the school community as a living forest (principal's view)
+- **💎 Spatika (Crystal Collection)** — student knowledge as discovered crystals and fractals
+
+---
+
+### THE BANYAN PATH — Vata Vriksha (वट वृक्ष)
+
+*The banyan tree is unique: it grows new roots from its branches, becoming a forest itself over time. A single banyan can cover an entire field. This is the metaphor for mentorship — not upward growth, but outward, shade-giving, ecosystem-creating growth.*
+
+**Who it is for**: Teachers who begin mentoring colleagues. Principals as their primary path.  
+**What triggers it**: The natural act of helping a colleague, facilitating a circle, sharing wisdom.
+
+| Stage | Sri Lankan Name | What It Represents | How It's Recognized |
+|-------|----------------|---------------------|---------------------|
+| **Sapling** | *Ñāna-ankura* (ज्ञान अंकुर) | First act of giving to a colleague | A small banyan sprout appears in the Community Garden |
+| **Roots Spreading** | *Mūla-prasāra* (मूल प्रसार) | 3+ meaningful colleague interactions | The sapling's aerial roots touch ground |
+| **Canopy** | *Chāyā* (छाया) | Others find warmth in what you share | The canopy expands; others rest in your shade |
+| **Shade Giver** | *Āśraya* (आश्रय) | Active community facilitator; your circle is alive | Other trees begin growing near yours |
+| **Forest Maker** | *Vana-janaka* (वन जनक) | Multiple teachers have grown with your support | A small forest radiates from your root system |
+
+**Design Principle**: The banyan path is additive, not separate from the lotus. A teacher at Kamala (lotus) and Chāyā (banyan) has a visualization that shows both — the bloom of personal growth and the spreading canopy of community contribution.
+
+---
+
+### THE RIVER PATH — Ganga Pravaham (गंग प्रवाह)
+
+*A river doesn't "achieve" the ocean — it flows toward it naturally, shaping everything it touches. Water finds its way around obstacles. A wide river doesn't rush; it has earned its breadth through patient, consistent flow.*
+
+**Who it is for**: Students (primary path). Teachers whose curricular contribution is the focus.  
+**What triggers it**: Lessons engaged, assignments completed with depth, knowledge visibly connecting.
+
+| Stage | Visual | What It Represents | Signal Sources |
+|-------|--------|---------------------|----------------|
+| **Trickle** | A small mountain spring | Curiosity awakening; first learning flow | First lesson accessed, first reflection submitted |
+| **Stream** | A stream finding its way | Consistent engagement; direction emerging | Regular study sessions, growing subject breadth |
+| **River** | A confident, wide river | Deep engagement; contributing back | Helping classmates, writing substantive reflections |
+| **Delta** | River meeting the ocean | Knowledge branching and nourishing many | Student-to-student teaching, research-style inquiry |
+
+**For Teachers' Curricular Path**: A teacher's lesson materials and assignments flowing into students' engagement generates `river_flow` signals — the teacher's preparation creates the river's current. This is visualized in the Classroom Ecosystem (see Section 7B).
+
+---
+
+### THE MOON PATH — Chandra Kala (चन्द्र कला)
+
+*The moon has no final stage. The full moon becomes new again — not as failure, but as the completion of one cycle and the beginning of the next. Every "new moon" is a new breath.*
+
+**Who it is for**: All users. The moon phase is synchronized with the **real lunar calendar**.  
+**What it is NOT**: A stage to "advance through." It is a SEASONAL CONTEXT — it changes the app's aesthetic and the kind of support it offers.
+
+| Moon Phase | App Feeling | What the App Offers |
+|-----------|-------------|---------------------|
+| **New Moon** 🌑 | Deep potential; the quiet before | Reflection prompts; "What is beginning in you?" |
+| **Waxing Crescent** 🌒 | First steps; early momentum | Energy for new projects; lesson planning support |
+| **First Quarter** 🌓 | Effort and decision | Focus features foregrounded; timetable clarity |
+| **Waxing Gibbous** 🌔 | Building intensity | Grading support; student check-in prompts |
+| **Full Moon** 🌕 | Complete expression; peak visibility | Celebration moments; community sharing encouraged |
+| **Waning Gibbous** 🌖 | Reflection; harvesting wisdom | Warm Mirror available; Fire Journal gently surfaced |
+| **Last Quarter** 🌗 | Release; letting go | Wind-down rituals; Joy Jar end-of-term prompts |
+| **Waning Crescent** 🌘 | Rest; gestation | App quiets; "rest is part of the rhythm" energy |
+
+**Sri Lankan Calendar Alignment**:
+
+| Event | Moon Phase | App Response |
+|-------|-----------|--------------|
+| **Vesak Poya** | Always Full Moon, May | Community-wide lotus bloom animation; quiet gratitude mode |
+| **Sinhala/Tamil New Year** | April 13–14 | "New Dawn" warm sunrise gradient; 24-hour special aesthetic |
+| **Poson Poya** | Full Moon, June | Community reflection; wisdom sharing foregrounded |
+| **School Term Start** | Context-dependent | River Path energy; new cycle acknowledgment |
+| **School Term End** | Context-dependent | Moon waning aesthetic; rest and harvest |
+
+---
+
+### THE CRYSTAL/FRACTAL PATH — Spatika Sangrahaya (ස්ඵටික සංග්‍රහය)
+
+*Crystals form through patient repetition of simple molecular rules — yet the result is infinite variety and geometric beauty. A fractal repeats its pattern at every scale, from the snowflake to the fern to the coastline. Student knowledge is like this: each concept learned creates the conditions for the next connection to form.*
+
+**Who it is for**: Students (alongside the River Path). Each learning milestone = a new crystal found.  
+**Discovery principle**: Crystals are **found**, not earned. The student explores; the crystal is already there, waiting.
+
+| Crystal Tier | What It Represents | Visual |
+|-------------|---------------------|--------|
+| **Spark Crystal** (first) | First genuine discovery — curiosity activated | Single glowing crystal, small |
+| **Crystal Cluster** | Multiple discoveries in a domain (subject depth) | A cluster of connected crystals |
+| **Crystal Cave** | Rich exploration across multiple domains | A cave of varied crystals, each subject a different color |
+| **Fractal Network** | Concepts connecting across domains — the student sees patterns | A living fractal visualization where crystals are nodes |
+
+**The Fractal Moment**: The highest recognition event for a student — when they spontaneously connect two concepts from different subjects. The fractal pattern briefly becomes visible in the UI. This is the student equivalent of Thuthimal: a genuine insight that the app witnesses.
+
+---
+
 ## 3. THE FIVE ALIVENESS DIMENSIONS
 
 Instead of points accumulated across all actions, growth is recognized across **five natural dimensions** — each aligned with what teachers and students actually do in the app:
@@ -177,11 +290,10 @@ Instead of points accumulated across all actions, growth is recognized across **
 |--------|---------------|---------------------|
 | Opening the app during difficult periods | Teacher is prioritizing wellbeing | App warms slightly, no notification, just gentle welcome |
 | Morning vs evening usage patterns | Teacher/student rhythm | Circadian-aware greeting changes naturally |
-| Returning after an absence | Not failure to return — courage to return | "Welcome back" with no shame, just warmth |
-| Simply opening the Self section | Private act of self-care | No tracking visible to others. Personal sanctuary. |
+| Returning after an absence | Courage to return | "Welcome back" — warmth without comment |
+| Simply opening the Self section | Private act of self-care | Personal sanctuary. No tracking to others. |
 
-**Never**: "You're on a 7-day streak!" or "You broke your streak."  
-**Always**: The app is simply present, like a lamp that's always on.
+The app is simply present, like a lamp that's always on — welcoming each return as an arrival, not counting it as a score.
 
 #### THE PRESENCE INFERENCE MODEL: Work as Witness
 
@@ -505,7 +617,147 @@ The Community tab's "hearth" visualization shows an abstract garden where:
 - The garden looks "healthy" when the community is active (lush, green)
 - The garden looks "resting" during quieter periods (autumn aesthetic — still beautiful)
 - Teachers who received Thuthimal have a permanent lotus flower in the garden
-- No competitive ranking, ever
+- Contribution recognized through the garden's collective health — shared and beautiful
+
+---
+
+## 7B. ROLE-SPECIFIC FEATURE CONSTELLATIONS
+
+Each role has a designed constellation of features — the specific set that forms their experience. Roles have different primary needs, so they receive different primary metaphors and tools.
+
+---
+
+### 🍃 THE TEACHER'S CONSTELLATION
+
+*The teacher is the heartwood — the steady center from which everything else grows.*
+
+**Primary Nature Path**: Bhumi (Lotus) — personal inner journey  
+**Secondary Nature Path**: Banyan (Vata) — mentorship unlocks naturally when they help colleagues
+
+| Feature | What It Does | Nature Metaphor |
+|---------|-------------|-----------------|
+| **Joy Jar** | Capture small wins, student breakthroughs, beautiful moments | A jar that slowly fills with amber light |
+| **Fire Journal** | Process difficult emotions privately; burned and released | Entry becomes an ember — private, warm |
+| **Mood Lotus** | Daily emotional weather check-in | The lotus changes color with each check-in |
+| **Warm Mirror** | Weekly personal narrative of real impact | A mirror that reflects story, not score |
+| **Lotus Life Stage** | Personal inner growth visualization | Bhumi path: seed → full bloom |
+| **Banyan Stage** | Mentorship growth — visible when they help colleagues | Banyan canopy growing in Community Garden |
+| **Classroom Ecosystem** | A living visualization of the teacher's classroom | Each student is a small plant in a garden |
+| **Seasonal Altar** | Home screen changes with Sri Lankan calendar | Vesak lotus bloom, New Year sunrise, monsoon green |
+| **Whispered Moments** | Private surprise discoveries | Appear unexpectedly in the right emotional context |
+| **Impact Ripples** | Warm signals when their work reaches someone | Delivered gently, 3–4× per day |
+| **Thuthimal Receipt** | The apex recognition — past student honoring teacher | Full-screen lotus bloom, permanent in Community Garden |
+
+**The Teacher's Self Tab** — a private sanctuary:
+```
+┌────────────────────────────────────────┐
+│  🌸 Your Lotus              [Season]   │
+│                                        │
+│  ✦ Joy Jar         ✦ Fire Journal      │
+│  ✦ Mood Lotus      ✦ Breathing         │
+│  ✦ Warm Mirror     ✦ Wisdom Seed       │
+│                                        │
+│  [ Your Banyan ] — visible when active │
+└────────────────────────────────────────┘
+```
+
+---
+
+### 🌳 THE PRINCIPAL'S CONSTELLATION
+
+*The principal is the banyan — the one whose roots create the conditions for an entire forest.*
+
+**Primary Nature Path**: Banyan (Vata) — ecosystem-building is their core role  
+**Secondary Nature Path**: Bhumi (Lotus) — they have personal inner growth too (the Principal's Lantern)
+
+| Feature | What It Does | Nature Metaphor |
+|---------|-------------|-----------------|
+| **School Forest** | See the whole school as a living forest; each teacher is a tree | Forest visualization: healthy trees = healthy teachers |
+| **Banyan Stage** | Principal's own growth as ecosystem-builder | Their banyan becomes the oldest tree in the forest |
+| **Principal's Lantern** | Private wellbeing sanctuary (parallel to Teacher's Self tab) | A lantern that stays lit through long hours |
+| **Gratitude Circle** | Ritual space to send recognition to teachers | Sending a "gift of light" to a specific tree in the forest |
+| **School Pulse** | Gentle aggregate wellbeing signal from the teaching community | The forest's weather — is it raining on the right trees? |
+| **Moon Calendar** | School-wide seasonal awareness with Sri Lankan calendar | Moon phases visible on the school planning calendar |
+| **Staff Circle** | Private, principal-facilitated discussion spaces | A grove within the forest — sheltered, warm |
+| **Manifesto Builder** | Create school-wide values manifestos for community endorsement | A seed planted in the forest floor |
+
+**The School Forest View** — the principal's distinctive screen:
+```
+                    🌳 School Forest
+    
+    🌲       🌿      🌳      🌱      🌲
+   (Nilu)  (Priya) (Aruna) (Dilini) (Saman)
+    
+    🌺              🌸           🌸
+   (Chandra)      (Manel)    (Thushara)
+   [Thuthimal]   [Active]   [Received ripple]
+    
+    School Health: 🌤️  Mostly clear, with one tree needing rain
+    
+    [ Send Gratitude ] [ View Pulse ] [ Start Circle ]
+```
+
+**The School Pulse** shows:
+- Aggregate presence signals this week (shown as "weather" — not individual data)
+- Which dimensions are active across the school (as forest health — lush/resting/growing)
+- Any teacher who has been very quiet (shown as a tree that "needs rain" — private signal to principal only)
+- The school's collective Banyan strength
+
+**Privacy principle**: The principal sees aggregate forest health, not individual surveillance. "One tree needs rain" is a compassionate signal, not a report card.
+
+---
+
+### 🌊 THE STUDENT'S CONSTELLATION
+
+*The student is the river — curious, finding their way, shaping everything they touch, flowing toward the vast.*
+
+**Primary Nature Path**: River (Ganga) — learning flow  
+**Secondary Path**: Crystal Collection (Spatika) — each discovery = a crystal found
+
+| Feature | What It Does | Nature Metaphor |
+|---------|-------------|-----------------|
+| **River Path** | Learning growth visualization | River stages: trickle → stream → river → delta |
+| **Crystal Collection** | Private collection of learning discoveries | Crystals found in the river bed |
+| **Mood Garden** | Simplified emotional weather check-in | A small garden that reflects current feeling |
+| **Study Companion** | A gentle nature creature that appears during study | A firefly that glows during focus sessions |
+| **Student Warm Mirror** | Weekly "this is what you discovered" narrative | A mirror that reflects growth, not grades |
+| **Classroom Garden** | Collective visualization of the class | A shared garden tended by the whole class |
+| **Assignment River** | See assignments as stones in their river | Each submitted assignment = a stone finding its place |
+| **Fractal Moment** | When concepts connect across subjects | A brief fractal animation — witnessed, not graded |
+| **Wisdom Scroll** | Teacher's shared wisdom accessible to students | A scroll that unfurls — knowledge offered, not required |
+
+**The Student's Home** — a different experience from the teacher's:
+```
+┌──────────────────────────────────────────┐
+│  🌊 Your River              🌙 [Moon]    │
+│                                          │
+│  [ Today's Flow ]                        │
+│  Maths 🪨  Science 🪨  Sinhala 🌸       │
+│                                          │
+│  💎 Your Crystals (3 new this week)      │
+│  🌱 Class Garden                         │
+│  📜 Wisdom Scroll                        │
+│                                          │
+│  ✨ Your Companion: Firefly is with you  │
+└──────────────────────────────────────────┘
+```
+
+**The Fractal Moment** — the student's equivalent of Thuthimal:
+> A student studying biology connects respiration to the fire they learned about in chemistry. The app — without the student noticing the connection was tracked — gently shows a fractal pattern: *"Two rivers joined today."* A crystal appears at the meeting point of two subject-channels in their collection. The teacher gets a quiet ripple: *"Something you prepared helped a student see a pattern."*
+
+---
+
+### CROSS-ROLE SHARED EXPERIENCES
+
+These features span all three roles simultaneously:
+
+| Feature | Teachers | Principals | Students |
+|---------|----------|------------|---------|
+| **Moon Calendar** | Personal rhythm, seasonal altar | School planning calendar | Study rhythm, exam season awareness |
+| **Community Garden** | Contribute to school ecosystem | See forest health | See class garden |
+| **Impact Ripples** | Receive (resource saved, lesson accessed) | Receive (gratitude from teachers) | Receive (feedback given, teacher thought about your work) |
+| **Seasonal Aesthetics** | Vesak, New Year, monsoon changes | Same + school-wide celebration markers | Same + exam season support themes |
+| **Whispered Moments** | Teaching-specific | Leadership-specific | Learning-specific |
 
 ---
 
@@ -606,7 +858,19 @@ These are deliberate redirections: each one replaces an extractive mechanic with
 18. **Cross-school aliveness signals** (when schools are connected, gardens can "see" each other's light)
 19. **Thuthimal public Wall of Honor** (community-visible, teacher-controlled)
 20. **Warm Mirror Sinhala/Tamil narrative quality** — review with Sri Lankan educators for natural idioms
-21. **Actor opt-in for Impact Ripples** — allow colleague to choose to be identified in a ripple ("A teacher named Priya saved this")
+21. **Actor opt-in for Impact Ripples** — allow colleague to choose to be identified in a ripple
+
+### Phase 4 (v1.5 — The Extended Nature Paths): Full Multi-Metaphor Ecosystem
+
+22. **Banyan Path** — `banyan_stage` wiring + Community Garden banyan visualization for teachers
+23. **River Path** — `river_stage` for students + Classroom Ecosystem river visualization
+24. **Moon Phase integration** — real lunar calendar + Sri Lankan poya calendar sync
+25. **Crystal Collection** — student discovery collection with fractal visualization
+26. **School Forest** — principal's school-wide forest view + Gratitude Circle
+27. **Study Companion** — student firefly companion that responds to study sessions
+28. **Classroom Ecosystem** — teacher sees their classroom as a living garden
+29. **Principal's Lantern** — private wellbeing sanctuary for principals
+30. **Fractal Moment** — cross-subject connection recognition for students
 
 ---
 
@@ -615,17 +879,37 @@ These are deliberate redirections: each one replaces an extractive mechanic with
 ### New Tables Required
 
 ```sql
--- Replaces the spiritual poverty of badge strings
+-- Personal growth state — the living record of each user's nature paths
 CREATE TABLE user_growth_state (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  -- Bhumi (Lotus) path — personal inner growth
   bhumi_stage TEXT NOT NULL DEFAULT 'bijam' 
     CHECK (bhumi_stage IN ('bijam', 'mula', 'nala', 'patra', 'kamala', 'purna_kamala')),
+  -- Banyan (Vata) path — mentorship and ecosystem-building (teachers/principals)
+  banyan_stage TEXT DEFAULT 'sapling'
+    CHECK (banyan_stage IN ('sapling', 'roots_spreading', 'canopy', 'shade_giver', 'forest_maker')),
+  -- River (Ganga) path — learning flow (students / teachers' curricular contribution)
+  river_stage TEXT DEFAULT 'trickle'
+    CHECK (river_stage IN ('trickle', 'stream', 'river', 'delta')),
+  -- Crystal (Spatika) path — student knowledge discoveries (students)
+  crystal_tier TEXT DEFAULT 'spark'
+    CHECK (crystal_tier IN ('spark', 'cluster', 'cave', 'fractal')),
+  -- Five aliveness dimension counters (feed Bhumi stage transitions)
   presence_signals INT DEFAULT 0,
   nourishing_signals INT DEFAULT 0,
   witnessing_signals INT DEFAULT 0,
   weaving_signals INT DEFAULT 0,
   blooming_signals INT DEFAULT 0,
+  -- Banyan-specific counters (feed Banyan stage transitions)
+  peer_mentored_count INT DEFAULT 0,
+  circles_facilitated_count INT DEFAULT 0,
+  -- River-specific counters (feed River stage transitions)
+  lessons_completed_count INT DEFAULT 0,
+  reflections_submitted_count INT DEFAULT 0,
+  -- Crystal-specific counters (feed Crystal tier transitions)
+  crystals_found_count INT DEFAULT 0,
+  fractal_moments_count INT DEFAULT 0,
   last_seen_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -694,6 +978,57 @@ CREATE INDEX idx_impact_ripples_pending ON impact_ripples(recipient_user_id, cre
   WHERE delivered = FALSE;
 -- Full index for historical queries (analytics, Warm Mirror aggregation)
 CREATE INDEX idx_impact_ripples_recipient ON impact_ripples(recipient_user_id, created_at DESC);
+
+-- Crystal Collection — student knowledge discoveries (student-facing)
+-- Each row = one crystal found; private to the student; visualized in their Crystal Collection view
+CREATE TABLE crystal_discoveries (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  crystal_type TEXT NOT NULL CHECK (crystal_type IN (
+    'subject_crystal',       -- Milestone within a single subject
+    'connection_crystal',    -- Two subjects connected (cross-domain insight)
+    'deep_crystal',          -- Extended deep engagement with one topic
+    'fractal_crystal'        -- Multiple connections forming a pattern
+  )),
+  subject_tags TEXT[],                -- Which subjects contributed
+  source_entity_id UUID,              -- Assignment, lesson, or reflection that triggered it
+  crystal_name_en TEXT,               -- e.g., "The Living Cell"
+  crystal_description_en TEXT,        -- e.g., "You connected biology and chemistry"
+  is_fractal_moment BOOLEAN DEFAULT FALSE,  -- Special: cross-domain connection
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- School Forest State — aggregate view for principals (computed, not directly written by users)
+-- Refreshed periodically from growth_events; provides the principal's forest visualization data
+CREATE TABLE school_forest_state (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+  teacher_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  -- Tree health: computed from presence/nourishing/weaving signals over trailing 14 days
+  tree_health TEXT NOT NULL DEFAULT 'seedling'
+    CHECK (tree_health IN ('seedling', 'growing', 'flourishing', 'flowering', 'ancient')),
+  has_thuthimal BOOLEAN DEFAULT FALSE,   -- Permanent lotus marker in the forest
+  last_signal_at TIMESTAMPTZ,            -- When this teacher last had any growth event
+  computed_at TIMESTAMPTZ DEFAULT NOW(), -- When this row was last computed
+  UNIQUE(school_id, teacher_user_id)
+);
+
+-- Gratitude Gifts — principal recognition ritual (principal's equivalent of Thuthimal)
+CREATE TABLE gratitude_gifts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  sender_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  recipient_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  school_id UUID REFERENCES schools(id),
+  message TEXT,                          -- Optional personal message
+  gift_type TEXT NOT NULL DEFAULT 'lantern'
+    CHECK (gift_type IN ('lantern', 'rain', 'sunlight', 'seed')),
+  warm_message_en TEXT NOT NULL,
+  warm_message_si TEXT,                  -- Pending native review
+  warm_message_ta TEXT,                  -- Pending native review
+  delivered BOOLEAN DEFAULT FALSE,
+  delivered_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
 ```
 
 ### Existing Tables to Modify
@@ -701,8 +1036,23 @@ CREATE INDEX idx_impact_ripples_recipient ON impact_ripples(recipient_user_id, c
 ```sql
 -- user_rewards: Keep structure, deepen semantic meaning
 -- badges[] becomes internal_signals[] — internal to the growth model, expressed through the lotus visual
--- points becomes growth_score (internal analytics, expressed only through the Bhumi stage, never as a raw number)
+-- points becomes growth_score (internal analytics, expressed only through the Bhumi stage, not as a raw number)
 -- Add migration to rename column comments
+
+-- user_growth_state: Add new nature path columns (migration)
+ALTER TABLE user_growth_state
+  ADD COLUMN IF NOT EXISTS banyan_stage TEXT DEFAULT 'sapling'
+    CHECK (banyan_stage IN ('sapling', 'roots_spreading', 'canopy', 'shade_giver', 'forest_maker')),
+  ADD COLUMN IF NOT EXISTS river_stage TEXT DEFAULT 'trickle'
+    CHECK (river_stage IN ('trickle', 'stream', 'river', 'delta')),
+  ADD COLUMN IF NOT EXISTS crystal_tier TEXT DEFAULT 'spark'
+    CHECK (crystal_tier IN ('spark', 'cluster', 'cave', 'fractal')),
+  ADD COLUMN IF NOT EXISTS peer_mentored_count INT DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS circles_facilitated_count INT DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS lessons_completed_count INT DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS reflections_submitted_count INT DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS crystals_found_count INT DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS fractal_moments_count INT DEFAULT 0;
 ```
 
 ---
@@ -714,13 +1064,21 @@ The growth system introduces new visual states, all using existing token vocabul
 | Growth Event | Visual Treatment | Token(s) |
 |---|---|---|
 | Lotus Life Stage advance | Breath-expand → bloom animation | `glow`, `saffron`, `FadeInDown 500ms` |
+| Banyan Stage advance | Roots spreading out animation | `dalu`, organic expand, 800ms |
+| River Stage advance | Flow animation, water rippling | `river_blue`, `river_delta` tint |
+| Crystal found | Crystal materializes, light refracts | `crystal_spark`, `crystal_glow`, haptic |
+| Fractal Moment | Brief fractal pattern overlay, then dissolves | `fractal_gold`, `BlurView 20`, 1200ms |
+| Moon Phase change | Background tint shifts over 30 minutes | Interpolated lunar tints |
 | Whispered Moment discovery | Single pulse of warmth, fade | `glassBg`, `dalu`, stagger 150ms |
 | Joy Jar entry | Jar fills, warm amber glow | `ember`, haptic pulse |
 | Thuthimal receipt | Full-screen lotus bloom (rare, sacred) | `saffron`, `glow`, `BlurView ≥36` |
+| Gratitude Gift received (principal) | Lantern lights in School Forest | `lantern_gold`, gentle expand |
+| School Forest health change | Slow lush/resting transition | `forest_green`, `forest_autumn` |
+| Study Companion appears | Firefly drifts in from edge | `firefly_warm`, fade in 600ms |
 | Community Garden active | Lush, pulse of sage green | `dalu`, slow pulse animation |
 | Late night / protective mode | Dimmer vellum, slower breathing | `ink` at 0.7 opacity, pulse rate ÷2 |
 | Seasonal transition | Gradient shift over 24-hour fade | Interpolated `vellum` → seasonal tint |
-| Mood Lotus state | Color shifts with check-in | `mood_calm`, `mood_storm`, `mood_radiant` (new tokens needed) |
+| Mood Lotus state | Color shifts with check-in | `mood_calm`, `mood_storm`, `mood_radiant` |
 | **Impact Ripple received** | Soft vellum notification, warm text, single haptic | `vellum`, `ink`, `ember` for ripple icon |
 | **Warm Mirror opened** | Gentle fade-in of narrative text, breath-timing on lines | `FadeInDown 300ms` staggered per sentence, `dalu` |
 
@@ -728,15 +1086,52 @@ The growth system introduces new visual states, all using existing token vocabul
 
 ```typescript
 // In packages/design-tokens/src/
+
+// Mood / Emotional Weather
 mood_calm: '#8BBF7A',       // Dalu green — peaceful presence
 mood_storm: '#D4843A',      // Saffron — processing difficulty  
 mood_radiant: '#F0C060',    // Golden — flourishing
 mood_winter: '#7A9BBF',     // Quiet blue — contemplative rest
-season_yala: '#5A8A4A',     // Deep monsoon green
-season_maha: '#6A88AA',     // Cool monsoon blue
-season_new_year: '#E8A040', // Sinhala New Year gold
+
+// Sri Lankan Seasons
+season_yala: '#5A8A4A',     // Deep monsoon green (SW Monsoon)
+season_maha: '#6A88AA',     // Cool monsoon blue (NE Monsoon)
+season_new_year: '#E8A040', // Sinhala/Tamil New Year gold
+season_vesak: '#F8E8C0',    // Vesak — warm moonlit ivory
+
+// Bhumi / Lotus Path
 growth_seed: 'rgba(139,191,122,0.3)',    // Bijam — barely there
 growth_bloom: 'rgba(212,132,58,0.8)',   // Purna Kamala — radiant
+
+// Banyan / Tree Path
+banyan_sapling: '#7AB87A',   // Young green
+banyan_canopy: '#3A6A3A',    // Deep shade green
+banyan_ancient: '#2A4A2A',   // Oldest tree — profound depth
+
+// River / Water Path
+river_trickle: '#A8C8E8',    // Mountain spring blue
+river_stream: '#5898C8',     // Clear stream
+river_river: '#2868A8',      // Deep river blue
+river_delta: '#1848A8',      // Ocean-meeting deep
+
+// Moon Phases
+moon_new: '#1A1A2A',         // Dark sky
+moon_crescent: '#8888A8',    // Pale violet
+moon_full: '#F8F0D8',        // Warm moonlight ivory
+moon_waning: '#A8A0B8',      // Soft receding
+
+// Crystal / Fractal
+crystal_spark: '#E8D8F8',    // First crystal glow — pale lavender
+crystal_glow: '#C8A8F8',     // Crystal cluster — warm purple
+crystal_deep: '#8868E8',     // Crystal cave — deep purple
+fractal_gold: '#F0D068',     // Fractal moment — golden flash
+
+// School Forest
+forest_green: '#4A7A4A',     // Healthy forest
+forest_autumn: '#A87040',    // Resting forest
+forest_rain: '#7898B8',      // After the rain
+lantern_gold: '#F0C040',     // Gratitude gift / principal recognition
+firefly_warm: '#E8F068',     // Study companion
 ```
 
 ---

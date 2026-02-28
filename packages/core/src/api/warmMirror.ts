@@ -103,11 +103,13 @@ export const warmMirrorAPI = {
         const ripples_received = ripplesCount ?? 0;
 
         // 4. Assignments graded with substantive written feedback (> 20 characters).
-        // PostgREST has no direct string-length filter, so we fetch feedback text
-        // and measure length in application code.
+        // PostgREST has no direct string-length filter, so we fetch this teacher's feedback
+        // text and measure length in application code. The user_id filter keeps the
+        // result set small (only this teacher's grades in this period).
         const { data: gradingData } = await supabase
             .from('grades')
             .select('feedback')
+            .eq('graded_by', userId)
             .gte('created_at', periodStart)
             .not('feedback', 'is', null);
         const assignments_with_feedback = (gradingData ?? [])

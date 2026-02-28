@@ -34,20 +34,22 @@ import { supabase } from '../lib/supabase';
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type RippleType =
-    | 'resource_saved'       // A colleague saved/bookmarked a resource you created
-    | 'resource_read'        // Your resource reached a threshold of unique readers
-    | 'post_sparked'         // Your community post received at least one genuine reply
-    | 'lesson_accessed'      // A student opened your lesson material
-    | 'feedback_given'       // Someone wrote thoughtful written feedback on your work
-    | 'manifesto_endorsed'   // Someone endorsed a manifesto you created
-    | 'circle_joined';       // Someone joined a community circle you started
+    | 'resource_saved'           // A colleague saved/bookmarked a resource you created
+    | 'resource_read'            // Your resource reached a threshold of unique readers
+    | 'post_sparked'             // Your community post received at least one genuine reply
+    | 'lesson_accessed'          // A student opened your lesson material
+    | 'feedback_given'           // Someone wrote thoughtful written feedback on your work
+    | 'manifesto_endorsed'       // Someone endorsed a manifesto you created
+    | 'circle_joined'            // Someone joined a community circle you started
+    | 'principal_recognition';   // Principal sent a Gratitude Gift (lantern / rain / sunlight / seed)
 
 export type RippleSourceEntityType =
     | 'resource'
     | 'community_post'
     | 'lesson'
     | 'manifesto'
-    | 'circle';
+    | 'circle'
+    | 'gratitude_gift';  // Used when a principal sends a Gratitude Gift
 
 export interface CreateRippleInput {
     recipientUserId: string;
@@ -120,6 +122,11 @@ const WARM_MESSAGES: Record<RippleType, { en: string; si: string; ta: string }> 
         en: 'A colleague joined the circle you started.',
         si: 'ඔබ ආරම්භ කළ කවියට සහයෝගීකයෙකු එක් විය.', // pending native review
         ta: 'நீங்கள் தொடங்கிய வட்டத்தில் ஒரு சக ஊழியர் சேர்ந்தார்.', // pending native review
+    },
+    principal_recognition: {
+        en: 'Your principal sent you a gift of light today.',
+        si: 'ඔබේ විදුහල්පති ඔබට ආලෝකයේ තෑග්ගක් යැව්වා.',   // pending native review
+        ta: 'இன்று உங்கள் அதிபர் உங்களுக்கு ஒளியின் பரிசை அனுப்பினார்.', // pending native review
     },
 };
 

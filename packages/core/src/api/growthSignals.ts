@@ -75,7 +75,21 @@ export type GrowthSignalType =
     // BLOOMING — being seen and honored (given by others, received with gratitude)
     | 'thuthimal_received'
     | 'principal_recognition'
-    | 'community_milestone_reached';
+    | 'community_milestone_reached'
+    // ── BANYAN PATH (Vata) — mentorship and ecosystem-building ──
+    // These also contribute to the weaving dimension for Bhumi path purposes.
+    | 'peer_mentored'                  // Teacher directly helped a colleague with a challenge
+    | 'circle_facilitated'            // Teacher led a staff circle or community discussion
+    | 'resource_gifted'               // Teacher gifted a resource directly to a specific colleague
+    // ── RIVER PATH (Ganga) — learning flow ──
+    // These contribute to witnessing (learning) or nourishing (contributing back) dimensions.
+    | 'lesson_completed'              // Student completed a lesson or module
+    | 'deep_study_session'            // Extended focus session (time in study mode)
+    | 'reflection_submitted'          // Student submitted reflective writing
+    | 'knowledge_connected'           // Student linked concepts across subjects (Fractal Moment)
+    // ── CRYSTAL PATH (Spatika) — student knowledge discoveries ──
+    | 'crystal_found'                 // Student discovered a crystal (any type)
+    | 'fractal_moment';               // Cross-domain connection recognized (the rarest and most beautiful)
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SIGNAL → DIMENSION MAP
@@ -117,6 +131,18 @@ export const GROWTH_SIGNAL_MAP: Record<GrowthSignalType, GrowthDimension> = {
     thuthimal_received: 'blooming',
     principal_recognition: 'blooming',
     community_milestone_reached: 'blooming',
+    // Banyan Path signals → weaving dimension for Bhumi tracking
+    peer_mentored: 'weaving',
+    circle_facilitated: 'weaving',
+    resource_gifted: 'weaving',
+    // River Path signals → witnessing (learning) or nourishing (contributing back)
+    lesson_completed: 'witnessing',
+    deep_study_session: 'witnessing',
+    reflection_submitted: 'witnessing',
+    knowledge_connected: 'witnessing',
+    // Crystal Path signals → witnessing (each discovery is an act of seeing)
+    crystal_found: 'witnessing',
+    fractal_moment: 'witnessing',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -125,11 +151,15 @@ export const GROWTH_SIGNAL_MAP: Record<GrowthSignalType, GrowthDimension> = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 type WhisperedMomentKey =
-    | 'still_water'     // 5 mood check-ins (any mood, no pressure)
-    | 'storm_holder'    // Fire journal 3+ times in one week
-    | 'first_offering'  // First lesson material or resource shared
-    | 'caring_teacher'  // 10+ assignments graded (proxy for consistent feedback)
-    | 'the_seeker';     // All main app sections explored in first week
+    | 'still_water'       // 5 mood check-ins (any mood, no pressure)
+    | 'storm_holder'      // Fire journal 3+ times in one week
+    | 'first_offering'    // First lesson material or resource shared
+    | 'caring_teacher'    // 10+ assignments graded (proxy for consistent feedback)
+    | 'the_seeker'        // All main app sections explored in first week
+    | 'first_branch'      // First time a teacher helps a colleague (Banyan awakens)
+    | 'the_companion'     // Teacher mentored 3+ colleagues (the Banyan is real now)
+    | 'river_meets_sea'   // Student reaches delta stage (learning flowing outward)
+    | 'fractal_vision';   // Student's first cross-domain connection (the Fractal Moment)
 
 interface WhisperedMomentSpec {
     key: WhisperedMomentKey;
@@ -168,6 +198,32 @@ const WHISPERED_MOMENT_SPECS: WhisperedMomentSpec[] = [
         name_si: 'සොයන්නා',
         name_en: 'The Seeker',
         triggerSignals: ['app_opened'],
+    },
+    // Banyan Path moments
+    {
+        key: 'first_branch',
+        name_si: 'පළමු අතු',           // pending native review
+        name_en: 'First Branch',
+        triggerSignals: ['peer_mentored', 'circle_facilitated', 'resource_gifted'],
+    },
+    {
+        key: 'the_companion',
+        name_si: 'සහකරු ගුරුවරයා',     // pending native review
+        name_en: 'The Companion',
+        triggerSignals: ['peer_mentored', 'circle_facilitated'],
+    },
+    // River/Crystal Path moments (student-specific)
+    {
+        key: 'river_meets_sea',
+        name_si: 'ගංගාව මුහුදට හමු වේ', // pending native review
+        name_en: 'River Meets Sea',
+        triggerSignals: ['reflection_submitted', 'knowledge_connected'],
+    },
+    {
+        key: 'fractal_vision',
+        name_si: 'භාගික දෘෂ්ටිය',       // pending native review
+        name_en: 'Fractal Vision',
+        triggerSignals: ['fractal_moment', 'knowledge_connected'],
     },
 ];
 
@@ -217,6 +273,25 @@ export const growthSignalsAPI = {
 
         // 3. Check for Whispered Moments triggered by this signal type
         await checkWhisperedMoments(userId, signalType).catch(() => {});
+    },
+
+    /**
+     * Fire-and-forget convenience wrapper around `emitSignal`.
+     *
+     * Use this in existing API methods instead of the verbose pattern:
+     *   void growthSignalsAPI.emitSignal(userId, signalType, metadata).catch(() => {});
+     *
+     * Equivalent shorter form:
+     *   growthSignalsAPI.emitSilent(userId, signalType, metadata);
+     *
+     * The primary operation always completes first; this call follows silently.
+     */
+    emitSilent(
+        userId: string,
+        signalType: GrowthSignalType,
+        metadata: Record<string, unknown> = {}
+    ): void {
+        void this.emitSignal(userId, signalType, metadata).catch(() => {});
     },
 };
 
@@ -328,6 +403,46 @@ async function evaluateMomentCondition(
                 visitedSections.has('self') &&
                 visitedSections.has('classroom')
             );
+        }
+
+        case 'first_branch': {
+            // First time helping a colleague — the banyan's first branch reaches out
+            const { count } = await supabase
+                .from('growth_events')
+                .select('id', { count: 'exact', head: true })
+                .eq('user_id', userId)
+                .in('event_type', ['peer_mentored', 'circle_facilitated', 'resource_gifted']);
+            return (count ?? 0) >= 1;
+        }
+
+        case 'the_companion': {
+            // 3+ peer mentoring interactions — the banyan is real
+            const { count } = await supabase
+                .from('growth_events')
+                .select('id', { count: 'exact', head: true })
+                .eq('user_id', userId)
+                .in('event_type', ['peer_mentored', 'circle_facilitated']);
+            return (count ?? 0) >= 3;
+        }
+
+        case 'river_meets_sea': {
+            // 5+ reflections submitted — the river is flowing with depth and direction
+            const { count } = await supabase
+                .from('growth_events')
+                .select('id', { count: 'exact', head: true })
+                .eq('user_id', userId)
+                .in('event_type', ['reflection_submitted', 'knowledge_connected']);
+            return (count ?? 0) >= 5;
+        }
+
+        case 'fractal_vision': {
+            // First fractal moment — a cross-domain connection recognized
+            const { count } = await supabase
+                .from('growth_events')
+                .select('id', { count: 'exact', head: true })
+                .eq('user_id', userId)
+                .in('event_type', ['fractal_moment', 'knowledge_connected']);
+            return (count ?? 0) >= 1;
         }
     }
 }

@@ -26,6 +26,9 @@ import { growthSignalsAPI } from './growthSignals';
 import { userGrowthStateAPI } from './userGrowthState';
 import { impactRipplesAPI } from './impactRipples';
 import { warmMirrorAPI } from './warmMirror';
+import { naturePathsAPI } from './naturePaths';
+import { moonPhaseAPI } from './moonPhase';
+import { schoolForestAPI } from './schoolForest';
 
 export * from './mockData';
 export * from './types';
@@ -36,11 +39,14 @@ export * from './resonantProxy';
 export * from './classroomNotes';
 export * from './principalNotes';
 export * from './community'; // Export community types/API
-// Growth Model v2.0 — Bhumi Nature-Inspired Growth System
+// Growth Model v3.0 — Full Nature-Inspired Growth Ecosystem
 export * from './growthSignals';
 export * from './userGrowthState';
 export * from './impactRipples';
 export * from './warmMirror';
+export * from './naturePaths';
+export * from './moonPhase';
+export * from './schoolForest';
 
 // Simplified named exports for direct access
 export {
@@ -75,6 +81,9 @@ export {
     userGrowthStateAPI,
     impactRipplesAPI,
     warmMirrorAPI,
+    naturePathsAPI,
+    moonPhaseAPI,
+    schoolForestAPI,
 };
 
 /**
@@ -111,11 +120,14 @@ export const api = {
     scheduler: TimetableScheduler,
     missions: sacredMissionsAPI,
     demo: demoAPI,
-    // Growth Model v2.0
+    // Growth Model v3.0 — Full Nature-Inspired Growth Ecosystem
     growth: growthSignalsAPI,
     growthState: userGrowthStateAPI,
     ripples: impactRipplesAPI,
     warmMirror: warmMirrorAPI,
+    naturePaths: naturePathsAPI,
+    moonPhase: moonPhaseAPI,
+    schoolForest: schoolForestAPI,
 };
 
 export default api;
