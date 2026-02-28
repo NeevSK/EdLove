@@ -149,14 +149,11 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                     {/* Morning Brief — first thing principal sees */}
                     <MorningSituationalBrief
                         schoolId={schoolId}
-                        onViewStaff={() => {/* navigate to staff list */}}
-                        onViewApprovals={() => {/* navigate to approvals */}}
                     />
 
                     {/* Teacher Faculty Carousel */}
                     <TeacherCarousel
                         schoolId={schoolId}
-                        onTapTeacher={(teacherId) => {/* navigate to teacher detail */}}
                     />
 
                     {/* Student Pulse */}

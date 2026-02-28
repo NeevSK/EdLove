@@ -1,6 +1,8 @@
 -- Trigger function: notify on new submission
 CREATE OR REPLACE FUNCTION public.notify_on_submission()
-RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER AS $$
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
 DECLARE
   v_teacher_id UUID;
   v_assignment_title TEXT;
@@ -36,7 +38,9 @@ CREATE TRIGGER trg_notify_submission
 
 -- Trigger function: notify student when submission is graded
 CREATE OR REPLACE FUNCTION public.notify_on_grade()
-RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER AS $$
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
 DECLARE
   v_assignment_title TEXT;
 BEGIN
@@ -62,7 +66,9 @@ CREATE TRIGGER trg_notify_grade
 
 -- Trigger function: notify group members on new community post
 CREATE OR REPLACE FUNCTION public.notify_on_group_post()
-RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER AS $$
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
 DECLARE
   v_author_name TEXT;
   v_group_name  TEXT;

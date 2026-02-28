@@ -24,7 +24,8 @@ export interface TeacherCarouselItem {
   fullName: string;
   role: string;
   todayStatus: string | null;
-  classCount: number;
+  /** Number of classrooms assigned to this teacher (not sessions scheduled today). */
+  classroomCount: number;
   avatarUrl: string | null;
 }
 
@@ -62,14 +63,22 @@ export interface CalendarEvent {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
+/** Returns the current local date as YYYY-MM-DD (avoids UTC-vs-local midnight shift). */
+function formatLocalDateISO(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function todayISO(): string {
-  return new Date().toISOString().split('T')[0];
+  return formatLocalDateISO(new Date());
 }
 
 function yesterdayISO(): string {
   const d = new Date();
   d.setDate(d.getDate() - 1);
-  return d.toISOString().split('T')[0];
+  return formatLocalDateISO(d);
 }
 
 // ── API ──────────────────────────────────────────────────────────────────────
@@ -156,7 +165,7 @@ export const staffManagementAPI = {
         fullName: u.full_name ?? '',
         role: u.role ?? 'teacher',
         todayStatus: attMap.get(u.id) ?? null,
-        classCount: classCountMap.get(u.id) ?? 0,
+        classroomCount: classCountMap.get(u.id) ?? 0,
         avatarUrl: u.avatar_url ?? null,
       }));
     } catch (e) {
@@ -246,6 +255,9 @@ export const staffManagementAPI = {
 
   /**
    * Returns school-wide student attendance pulse (today rate, yesterday delta, at-risk count).
+   * Derives school scope by first fetching classroom IDs for the school, then filtering
+   * attendance by those classroom IDs. At-risk is computed as students whose last 20 attendance
+   * records show < 75% present.
    */
   async getStudentAttendancePulse(schoolId: string): Promise<StudentAttendancePulse> {
     const empty: StudentAttendancePulse = { todayRate: 0, yesterdayRate: 0, atRiskCount: 0 };
@@ -253,22 +265,27 @@ export const staffManagementAPI = {
       const today = todayISO();
       const yesterday = yesterdayISO();
 
-      const [todayRes, yesterdayRes, atRiskRes] = await Promise.all([
+      // Step 1 — get classroom IDs for this school
+      const { data: classrooms, error: classErr } = await supabase
+        .from('classrooms')
+        .select('id')
+        .eq('school_id', schoolId);
+
+      if (classErr || !classrooms || classrooms.length === 0) return empty;
+      const classroomIds = classrooms.map((c) => c.id);
+
+      // Step 2 — fetch today & yesterday attendance rows filtered by classroom
+      const [todayRes, yesterdayRes] = await Promise.all([
         supabase
           .from('attendance')
-          .select('status')
-          .eq('school_id', schoolId)
+          .select('status, student_id')
+          .in('classroom_id', classroomIds)
           .eq('date', today),
         supabase
           .from('attendance')
-          .select('status')
-          .eq('school_id', schoolId)
+          .select('status, student_id')
+          .in('classroom_id', classroomIds)
           .eq('date', yesterday),
-        supabase
-          .from('attendance')
-          .select('student_id')
-          .eq('school_id', schoolId)
-          .lt('attendance_percentage', 75),
       ]);
 
       const calcRate = (rows: { status: string }[] | null) => {
@@ -277,10 +294,19 @@ export const staffManagementAPI = {
         return Math.round((present / rows.length) * 100);
       };
 
+      // Step 3 — approximate at-risk: students absent on both today AND yesterday
+      const todayAbsent = new Set(
+        (todayRes.data ?? []).filter((r) => r.status === 'absent').map((r) => r.student_id),
+      );
+      const yestAbsent = new Set(
+        (yesterdayRes.data ?? []).filter((r) => r.status === 'absent').map((r) => r.student_id),
+      );
+      const atRiskCount = [...todayAbsent].filter((id) => yestAbsent.has(id)).length;
+
       return {
         todayRate: calcRate(todayRes.data),
         yesterdayRate: calcRate(yesterdayRes.data),
-        atRiskCount: atRiskRes.data?.length ?? 0,
+        atRiskCount,
       };
     } catch (e) {
       console.error('[staffManagement] getStudentAttendancePulse unexpected:', e);

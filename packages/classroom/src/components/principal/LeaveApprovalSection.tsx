@@ -20,10 +20,10 @@ interface LeaveApprovalSectionProps {
 const LEAVE_TYPE_COLORS: Record<string, string> = {
   sick: Theme.colors.roseQuartz ?? '#f44336',
   casual: Theme.colors.gurudeviBlue ?? '#2196f3',
-  earned: Theme.colors.sage ?? '#4caf50',
+  annual: Theme.colors.sage ?? '#4caf50',
   maternity: Theme.colors.sanctuarySaffron ?? '#ff9800',
   paternity: Theme.colors.sanctuarySaffron ?? '#ff9800',
-  unpaid: Theme.colors.textMuted ?? '#9e9e9e',
+  other: Theme.colors.textMuted ?? '#9e9e9e',
 };
 
 function leaveTypeColor(type: string): string {

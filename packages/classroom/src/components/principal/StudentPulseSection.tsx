@@ -51,17 +51,24 @@ export default function StudentPulseSection({
       setLoading(true);
       const weekStart = weekStartISO();
 
-      const [pulseData, subsResult, assignResult, enrollResult] = await Promise.all([
+      // Fetch assignment IDs for this school this week — used to scope submissions correctly.
+      const assignResult = await supabase
+        .from('assignments')
+        .select('id', { count: 'exact' })
+        .eq('school_id', schoolId)
+        .gte('created_at', weekStart);
+
+      const assignmentIds = (assignResult.data ?? []).map((a) => a.id);
+      const assignmentCount = assignResult.count ?? 0;
+
+      const [pulseData, subsResult, enrollResult] = await Promise.all([
         staffManagementAPI.getStudentAttendancePulse(schoolId),
-        supabase
-          .from('submissions')
-          .select('id', { count: 'exact' })
-          .gte('created_at', weekStart),
-        supabase
-          .from('assignments')
-          .select('id', { count: 'exact' })
-          .eq('school_id', schoolId)
-          .gte('created_at', weekStart),
+        assignmentIds.length > 0
+          ? supabase
+              .from('submissions')
+              .select('assignment_id', { count: 'exact' })
+              .in('assignment_id', assignmentIds)
+          : Promise.resolve({ count: 0, data: [] }),
         supabase
           .from('enrollment_requests')
           .select('id', { count: 'exact' })
@@ -73,10 +80,10 @@ export default function StudentPulseSection({
 
       setPulse(pulseData);
 
+      // Submission rate: submitted assignments / total assignments (not per-student)
       const submittedCount = subsResult.count ?? 0;
-      const assignmentCount = assignResult.count ?? 0;
       if (assignmentCount > 0) {
-        setSubmissionRate(Math.round((submittedCount / assignmentCount) * 100));
+        setSubmissionRate(Math.min(100, Math.round((submittedCount / assignmentCount) * 100)));
       } else {
         setSubmissionRate(null);
       }

@@ -405,8 +405,9 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                 <GiveThuthimalModal
                     isOpen={showThuthimalModal}
                     onClose={() => setShowThuthimalModal(false)}
-                    teacherId={profile.id}
-                    teacherName={profile.full_name ?? 'this teacher'}
+                    recipientId={profile.id}
+                    recipientName={profile.full_name ?? 'this person'}
+                    recipientRole={profile.role ?? 'teacher'}
                     giverId={currentUserId}
                     giverName={currentUserName}
                 />

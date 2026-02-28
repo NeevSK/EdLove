@@ -110,7 +110,7 @@ export default function GroupDetailsScreen() {
 
     if (!group) return null;
 
-    // Admin: creator OR principal OR explicitly marked as admin in community_group_members
+    // Admin: circle creator OR users with the 'principal' role
     const isAdmin = group.created_by === user?.id || role === 'principal';
 
     if (showAdmin && isAdmin) {

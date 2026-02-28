@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Modal, StyleSheet } from 'react-native';
+import { Modal, StyleSheet, TextInput } from 'react-native';
 import {
     Box,
     VStack,
@@ -18,23 +18,37 @@ import { thuthimalAPI } from '@repo/core';
 interface GiveThuthimalModalProps {
     isOpen: boolean;
     onClose: () => void;
-    teacherId: string;
-    teacherName: string;
+    recipientId: string;
+    recipientName: string;
+    /** Role of the recipient — used to attribute the gift correctly. Defaults to 'teacher'. */
+    recipientRole?: string;
     giverId: string;
     giverName: string;
+    /** @deprecated Use recipientId. Kept for backwards-compatibility. */
+    teacherId?: string;
+    /** @deprecated Use recipientName. Kept for backwards-compatibility. */
+    teacherName?: string;
 }
 
 export function GiveThuthimalModal({
     isOpen,
     onClose,
-    teacherId,
-    teacherName,
+    recipientId,
+    recipientName,
+    recipientRole = 'teacher',
     giverId,
     giverName,
+    // Legacy props — resolve to canonical names for callers that haven't migrated yet
+    teacherId,
+    teacherName,
 }: GiveThuthimalModalProps) {
+    const resolvedRecipientId = recipientId ?? teacherId ?? '';
+    const resolvedRecipientName = recipientName ?? teacherName ?? 'this person';
+
     const colors = useThemedColors();
     const { showToast } = useLotusToast();
     const [isSending, setIsSending] = useState(false);
+    const [message, setMessage] = useState('');
 
     const handleSend = useCallback(async () => {
         if (isSending) return;
@@ -42,11 +56,13 @@ export function GiveThuthimalModal({
         try {
             await thuthimalAPI.createGift(giverId, {
                 gifterName: giverName,
-                recipientRole: 'teacher',
-                recipientId: teacherId,
+                recipientRole,
+                recipientId: resolvedRecipientId,
+                message: message.trim() || undefined,
             });
             hapticSuccess();
             showToast({ message: 'Your gift of gratitude has been sent 🌸', type: 'sanctuary' });
+            setMessage('');
             onClose();
         } catch (e: any) {
             hapticError();
@@ -54,7 +70,7 @@ export function GiveThuthimalModal({
         } finally {
             setIsSending(false);
         }
-    }, [isSending, giverId, giverName, teacherId, showToast, onClose]);
+    }, [isSending, giverId, giverName, recipientRole, resolvedRecipientId, message, showToast, onClose]);
 
     return (
         <Modal
@@ -92,8 +108,28 @@ export function GiveThuthimalModal({
                         </HStack>
 
                         <Text size="sm" color={colors.textSecondary}>
-                            Send a Thuthimal gift to {teacherName}. They will receive a notification when the gift is claimed.
+                            Send a Thuthimal gift to {resolvedRecipientName}. They will receive a notification when the gift is claimed.
                         </Text>
+
+                        {/* Optional personal message */}
+                        <TextInput
+                            value={message}
+                            onChangeText={setMessage}
+                            placeholder="Add a personal message (optional)"
+                            placeholderTextColor={colors.textMuted}
+                            multiline
+                            numberOfLines={3}
+                            maxLength={300}
+                            style={[
+                                styles.messageInput,
+                                {
+                                    backgroundColor: colors.background,
+                                    color: colors.text,
+                                    borderColor: colors.border,
+                                },
+                            ]}
+                            accessibilityLabel="Personal message"
+                        />
 
                         <SanctuaryButton
                             onPress={handleSend}
@@ -109,4 +145,13 @@ export function GiveThuthimalModal({
     );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    messageInput: {
+        borderWidth: 1,
+        borderRadius: 8,
+        padding: 12,
+        fontSize: 14,
+        minHeight: 80,
+        textAlignVertical: 'top',
+    },
+});

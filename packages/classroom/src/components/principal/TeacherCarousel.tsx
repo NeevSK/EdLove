@@ -52,6 +52,8 @@ function formatRole(role: string): string {
 
 /** 20% opacity suffix for avatar background */
 const AVATAR_BG_OPACITY = '33';
+
+function TeacherCard({
   item,
   onTap,
   colors,
@@ -131,9 +133,9 @@ const AVATAR_BG_OPACITY = '33';
           <Text sx={{ fontSize: 11, color: colors.textMuted }}>{statusLabel}</Text>
         </HStack>
 
-        {/* Class count */}
+        {/* Classroom count */}
         <Text sx={{ fontSize: 11, color: colors.textMuted }}>
-          {item.classCount === 1 ? '1 class today' : `${item.classCount} classes today`}
+          {item.classroomCount === 1 ? '1 assigned class' : `${item.classroomCount} assigned classes`}
         </Text>
       </Box>
     </TouchableOpacity>

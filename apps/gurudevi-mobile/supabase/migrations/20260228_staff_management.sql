@@ -15,7 +15,12 @@ ALTER TABLE public.staff_attendance ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "staff_attendance_school_read" ON public.staff_attendance FOR SELECT USING (
   EXISTS(SELECT 1 FROM public.users u WHERE u.id = auth.uid() AND u.school_id = staff_attendance.school_id)
 );
-CREATE POLICY "staff_attendance_self_write" ON public.staff_attendance FOR ALL USING (auth.uid() = user_id);
+-- Self-write: split into INSERT + UPDATE so WITH CHECK enforces user_id on new/modified rows.
+CREATE POLICY "staff_attendance_self_insert" ON public.staff_attendance FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "staff_attendance_self_update" ON public.staff_attendance FOR UPDATE
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 -- staff_leaves: leave requests
 CREATE TABLE IF NOT EXISTS public.staff_leaves (
@@ -32,8 +37,14 @@ CREATE TABLE IF NOT EXISTS public.staff_leaves (
   created_at    TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 ALTER TABLE public.staff_leaves ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "staff_leaves_school_read" ON public.staff_leaves FOR SELECT USING (
-  EXISTS(SELECT 1 FROM public.users u WHERE u.id = auth.uid() AND u.school_id = staff_leaves.school_id)
+-- Only the staff member themselves OR a principal/founder in the same school can read leave rows.
+CREATE POLICY "staff_leaves_read" ON public.staff_leaves FOR SELECT USING (
+  EXISTS(
+    SELECT 1 FROM public.users u
+    WHERE u.id = auth.uid()
+      AND u.school_id = staff_leaves.school_id
+      AND (u.id = staff_leaves.user_id OR u.role IN ('principal','founder'))
+  )
 );
 CREATE POLICY "staff_leaves_self_insert" ON public.staff_leaves FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "staff_leaves_principal_update" ON public.staff_leaves FOR UPDATE USING (
@@ -52,7 +63,20 @@ CREATE TABLE IF NOT EXISTS public.principal_observations (
   created_at    TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 ALTER TABLE public.principal_observations ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "observations_principal_own" ON public.principal_observations FOR ALL USING (auth.uid() = principal_id);
+-- Only the authoring principal can access their own observations.
+-- WITH CHECK ensures no user can forge rows attributed to a different principal.
+CREATE POLICY "observations_principal_own" ON public.principal_observations
+  FOR ALL
+  USING (auth.uid() = principal_id)
+  WITH CHECK (
+    auth.uid() = principal_id
+    AND EXISTS (
+      SELECT 1 FROM public.users u
+      WHERE u.id = auth.uid()
+        AND u.school_id = principal_observations.school_id
+        AND u.role IN ('principal','founder')
+    )
+  );
 
 -- institutional_calendar
 CREATE TABLE IF NOT EXISTS public.institutional_calendar (
@@ -72,4 +96,7 @@ CREATE POLICY "calendar_school_read" ON public.institutional_calendar FOR SELECT
 );
 CREATE POLICY "calendar_principal_write" ON public.institutional_calendar FOR ALL USING (
   EXISTS(SELECT 1 FROM public.users u WHERE u.id = auth.uid() AND u.school_id = institutional_calendar.school_id AND u.role IN ('principal','founder'))
+) WITH CHECK (
+  EXISTS(SELECT 1 FROM public.users u WHERE u.id = auth.uid() AND u.school_id = institutional_calendar.school_id AND u.role IN ('principal','founder'))
+  AND created_by = auth.uid()
 );
