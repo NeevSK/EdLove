@@ -26,6 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
 import { MoodLotus, ShadowAgentDrawer } from '../../components/self';
+import ResonancePatternCard from '../../components/self/ResonancePatternCard';
 import { supabase, useStore, useUserRole } from '@repo/core';
 import { GlobalHeader } from '@repo/ui';
 import DailyContentCard from '../../components/self/DailyContentCard';
@@ -61,7 +62,8 @@ export default function StudentSelfView() {
         email: user.email,
         role: user.role || 'student',
         avatar_url: user.avatar_url,
-        school_name: null // Simplified, will add actual lookup if needed
+        school_name: null, // Simplified, will add actual lookup if needed
+        orientation_seeds: user.orientation_seeds,
     } : null;
 
     // Remove the slow, manual loading effect
@@ -185,6 +187,15 @@ export default function StudentSelfView() {
                     <DailyContentCard type="motivation" />
                     <DailyContentCard type="did_you_know" />
                 </Box>
+
+                {/* Resonance Pattern — shows only when there's something to show */}
+                    {userProfile && (
+                        <Box sx={{ paddingHorizontal: Theme.spacing.md, marginBottom: Theme.spacing.md }}>
+                            <ResonancePatternCard
+                                orientationSeeds={userProfile.orientation_seeds}
+                            />
+                        </Box>
+                    )}
 
                 {/* Feature Carousel */}
                 <Box sx={{ height: 100 }}>

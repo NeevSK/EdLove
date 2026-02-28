@@ -165,7 +165,42 @@ export default function LibraryScreen() {
     // Hero = first trending item (most endorsed)
     const heroResource = trending[0] ?? newArrivals[0] ?? null;
 
-    const { deskItems, removeFromDeskLocal } = useStore();
+    const { deskItems, removeFromDeskLocal, user } = useStore();
+
+    /**
+     * Orientation-aware shelf ordering.
+     * If the user has orientation_seeds, we re-order shelves to match their
+     * tendencies WITHOUT ever telling them why the order changed.
+     *
+     * depth_breadth < 50  → deep content (guides, docs) rises
+     * depth_breadth > 50  → visual/exploratory content (maps, stories) rises
+     * solo_social   < 50  → individual reflection content (stories, guides) rises
+     * solo_social   > 50  → community-adjacent content (films, links) rises
+     * reflect_act   < 50  → reading/reflection content rises
+     * reflect_act   > 50  → how-to/tech content rises
+     */
+    const orientationSeeds = user?.orientation_seeds ?? null;
+    const orderedShelfDefs = useMemo(() => {
+        if (!orientationSeeds) return [...SHELF_DEFS];
+
+        const depthBreadth = orientationSeeds.depth_breadth;
+        const soloSocial   = orientationSeeds.solo_social;
+        const reflectAct   = orientationSeeds.reflect_act;
+
+        const priority: Record<string, number> = {
+            movie_trailer: soloSocial > 55 ? 10 : 0,
+            map:           depthBreadth > 55 ? 15 : depthBreadth < 45 ? 5 : 10,
+            story:         reflectAct < 45 ? 14 : 8,
+            circular:      0,
+            guide:         (depthBreadth < 45 || reflectAct < 45) ? 20 : 10,
+            tech_guide:    reflectAct > 55 ? 18 : 8,
+            video:         soloSocial > 55 ? 12 : 6,
+            doc:           depthBreadth < 45 ? 16 : 8,
+            link:          depthBreadth > 55 ? 10 : 4,
+        };
+
+        return [...SHELF_DEFS].sort((a, b) => (priority[b.id] ?? 0) - (priority[a.id] ?? 0));
+    }, [orientationSeeds]);
 
     const handleOpenResource = useCallback((resource: LibraryResource) => {
         if (!resource.url) return;
@@ -338,7 +373,7 @@ export default function LibraryScreen() {
                         )}
 
                         {/* Typed shelves */}
-                        {SHELF_DEFS.map(shelf => {
+                        {orderedShelfDefs.map(shelf => {
                             const items = resources.filter(r => (shelf.types as readonly string[]).includes(r.type));
                             return renderShelf(shelf.label, items);
                         })}

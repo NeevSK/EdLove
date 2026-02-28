@@ -41,6 +41,7 @@ import {
 import { supabase, useStore } from '@repo/core';
 import { GlobalHeader } from '@repo/ui';
 import DailyContentCard from '../../components/self/DailyContentCard';
+import ResonancePatternCard from '../../components/self/ResonancePatternCard';
 import ThuthimalBadge from '../../components/profile/ThuthimalBadge';
 import { SkeletonCard } from '@repo/ui';
 import WelcomeModal from '../../components/self/WelcomeModal';
@@ -235,6 +236,15 @@ export default function TeacherSelfView() {
                         <DailyContentCard type="motivation" />
                         <DailyContentCard type="did_you_know" />
                     </Box>
+
+                    {/* Resonance Pattern */}
+                    {userProfile && (
+                        <Box sx={{ paddingHorizontal: Theme.spacing.md, marginBottom: Theme.spacing.md }}>
+                            <ResonancePatternCard
+                                orientationSeeds={userProfile?.orientation_seeds}
+                            />
+                        </Box>
+                    )}
 
                     {/* Sub-Feature Carousel */}
                     <Box sx={{ height: 100 }}>
