@@ -48,3 +48,5 @@ export type { SanctuaryCarouselProps } from './SanctuaryCarousel';
 export { UserAvatar } from './UserAvatar';
 export type { UserAvatarProps } from './UserAvatar';
 export { SanctuaryNudge } from './SanctuaryNudge';
+export { default as SanctuaryModal } from './SanctuaryModal';
+export type { SanctuaryModalProps } from './SanctuaryModal';

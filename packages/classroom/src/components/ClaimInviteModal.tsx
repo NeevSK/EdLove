@@ -22,6 +22,7 @@ import {
     FormControlLabel,
     FormControlLabelText,
     Spinner,
+    useTheme,
 } from '@repo/ui';
 import { QrCode, CheckCircle2 } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
@@ -40,6 +41,7 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
     const [loading, setLoading] = useState(false);
     const [successData, setSuccessData] = useState<any>(null);
     const colors = useThemedColors();
+    const { text } = useTheme();
 
     const handleClaim = async () => {
         if (!inviteCode.trim()) return;
@@ -123,7 +125,7 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
                                 disabled={loading || inviteCode.length < 6}
                                 sx={{ backgroundColor: Theme.colors.sanctuarySaffron, height: 50 }}
                             >
-                                {loading ? <Spinner color="white" /> : <ButtonText>Claim Record</ButtonText>}
+                                {loading ? <Spinner {...({ color: text.inverse } as any)} /> : <ButtonText>Claim Record</ButtonText>}
                             </Button>
                         </VStack>
                     )}
