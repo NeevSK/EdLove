@@ -4,6 +4,7 @@ import GlobalHeader from './components/layout/GlobalHeader';
 import BottomTabs from './components/layout/BottomTabs';
 import PulseDashboard from './screens/self/PulseDashboard';
 import TeacherSelfView from './screens/self/TeacherSelfView';
+import ClassroomDashboard from './screens/classroom/ClassroomDashboard';
 
 function App() {
   const [activeTab, setActiveTab] = useState('self');
@@ -32,6 +33,8 @@ function App() {
             <TeacherSelfView />
           </div>
         );
+      case 'classroom':
+        return <ClassroomDashboard />;
       default:
         return (
           <div className="flex flex-col items-center justify-center h-64 text-gray-500 pt-12">
