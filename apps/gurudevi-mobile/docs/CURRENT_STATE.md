@@ -128,9 +128,10 @@ gurudevi/   (pnpm workspace root)
 - Zero-flash language initialization (`LanguageUtils.ts` + `SafeZustandStorage`)
 
 ### ✅ Onboarding Flow
-- 7 screens: Name (required) → Role (required) → 5 philosophy tour screens (skippable)
+- 9 screens: Name (required) → Role (required) → **Orientation capture (optional, skippable)** → 5 philosophy tour screens (skippable)
 - `onboarding_completed` flag in user profile triggers routing in `App.tsx`
-- **Verified in code**: `OnboardingScreen.tsx` — 7 screens, screens 3–7 skippable
+- Orientation step: 3 situational picture-card questions → silently encodes `OrientationSeeds` (4 dimensions, 0–100 each). If skipped, seeds are null.
+- **Verified in code**: `OnboardingScreen.tsx` + `OrientationCaptureStep.tsx`
 
 ### ✅ Environment Engine (`src/context/EnvironmentContext.tsx`)
 **The Living Organism** — unified reactive state for all environmental parameters:
@@ -155,6 +156,7 @@ gurudevi/   (pnpm workspace root)
 - **PulseDashboard HARDCODED data**: greeting + teacherName from store, DailyResonanceCard (motivation + wisdom from `daily_content` API), but the action items **"Mark Morning Attendance"** and **"Grade Science Assignment"** are `console.log` placeholders — **NOT real data from DB**. Teachers will see fake tasks.
 - "Enter Full Sanctuary" button switches to role-specific view
 - **TeacherSelfView**: MoodLotus ✅ (real DB integration), FireJournal ✅, DailyRhythm ✅, JoyJar ✅, GratitudeGlimmers ✅, WisdomSeeds ✅, TomorrowPrep ✅, EnergyForecast ✅, WindDownRitual ✅ — all components exist
+- **ResonancePatternCard** ✅ (new) — shows 4-axis orientation fingerprint. Calls `useOrientationInference` hook internally. Never shows a type label — shows a pattern shape only. Rendered after DailyContentCards.
 - **🔲 NOT WIRED in TeacherSelfView**: `SleepTracker.tsx`, `RemindersManager.tsx`, `VoiceJournaling.tsx` — code exists in `packages/self/` but are not rendered or connected
 
 ### ✅ Classroom Section (Core Flows Verified)
@@ -270,7 +272,10 @@ Migrations from Feb 11–26 applied. Confirmed tables:
 |---------|--------|---------------------|
 | Auth (email/password/OAuth) | ✅ | Verified in WelcomeScreen, AuthScreen |
 | Auth (anonymous guest) | ✅ | signInAnonymously() in WelcomeScreen |
-| Onboarding (7 screens) | ✅ | Name + Role required; screens 3-7 skippable |
+| Onboarding (9 screens) | ✅ | Name + Role required; Orientation optional; screens 4-8 skippable |
+| Self: OrientationSeeds capture | ✅ | Onboarding step 2 — 3 picture-card questions, skippable, saves to DB |
+| Self: useOrientationInference | ✅ | Passive inference hook: explicit seeds → behavioral signals (quality-guarded) → role defaults |
+| Self: ResonancePatternCard | ✅ | 4-axis fingerprint card, rendered in Student + Teacher self views |
 | Environment Engine (6 pillars) | ✅ | 26 passing tests |
 | PulseDashboard (Self default) | ⚠️ | Greeting real; action items HARDCODED (console.log) |
 | Self: MoodLotus | ✅ | Real DB integration confirmed |
@@ -342,7 +347,7 @@ Migrations from Feb 11–26 applied. Confirmed tables:
 | 5 | "Group Chat (WhatsApp-style): pending" | More accurately: **ZERO code exists** — no DB table, no Realtime subscription, no screen, no hook |
 | 6 | "QR payload routing: CRITICAL GAP — no centralized resolver" | Partially addressed: `QRResolver.ts` exists with `resolveQR()`. But `join-group` consumer path still missing and InviteManager modal not rendered. |
 | 7 | Feature matrix marks "Notifications" as "❌ Pending" | `NotificationDrawer.tsx` **exists** as component — needs investigation of what data it shows |
-| 8 | Docs say Onboarding is "5-screen philosophy flow" | Code confirms **7 screens**: Name + Role + 5 philosophy screens |
+| 8 | Docs say Onboarding is "5-screen philosophy flow" | Code confirms **9 screens**: Name + Role + Orientation (optional) + 5 philosophy screens |
 | 9 | "NoiseOverlay: BUG — P0 fix needed" | Already mitigated: **DISABLED** in App.tsx via comment — not a blocking visual regression right now. Re-enabling is planned (T3.10) with proper guarded rollout. |
 | 10 | "API duplication: known issue" | Still not resolved — `apps/gurudevi-mobile/src/lib/api/` still exists alongside `packages/core/src/api/` |
 | 11 | Docs claimed DB migration status is known | `migration_status.md` shows uncertainty for 10+ migrations — **unknown if all tables exist in prod** |
@@ -380,6 +385,65 @@ Migrations from Feb 11–26 applied. Confirmed tables:
 20. **OCR no preprocessing** — Even if providers were real, no deskew/binarization pipeline exists.
 21. **Font strategy** — Sinhala/Tamil 1.8x line height; verify on device.
 22. **Bio-Resonance Layer** — Adaptive haptics, UnfoldingView deferred.
+23. **ResonancePatternCard radar polygon** — currently rendered as dot markers + axis lines (pure RN). A true filled polygon would need react-native-svg or Skia. Acceptable for now; upgrade path is clear (see T3.16).
+
+---
+
+## Individual Difference Layer (Orientation Seeds) — Added Feb 28 2026
+
+A silent, private system for personalising the app to each individual's learning tendencies. **No type labels ever shown to the user.**
+
+### What it does
+
+- Maintains a 4-dimensional fingerprint per user: `depth_breadth` · `reflect_act` · `solo_social` · `steady_surge` (all 0–100, stored as `orientation_seeds JSONB` on `users`)
+- Personalises library shelf ordering silently (deep users see guides first; exploratory users see maps/films first)
+- Shows a `ResonancePatternCard` in the Self section — a 4-axis shape, never a type name
+
+### Data sources (priority order)
+
+| Priority | Source | Condition to activate |
+|----------|---------|----------------------|
+| 1 | Explicit seeds (onboarding step 2) | User completed the orientation card questions |
+| 2 | Behavioral inference | ≥7 mood logs across ≥3 unique days AND/OR ≥5 energy logs across ≥3 unique days |
+| 3 | Role-based defaults | Always available — teacher=deep+reflective, student=social+active, etc. |
+| 4 | Neutral fallback (all 50) | Role unknown (guest with no role set) |
+
+### Signal quality guardrails (`useOrientationInference`)
+
+| Failure mode | Guard |
+|---|---|
+| All-same tapping (always 5) | `signalConsistency()` scores near 0 for flat CV; signal ignored |
+| Sparse data (2-3 clicks) | Hard minimums: mood ≥7 samples, energy ≥5 samples |
+| Single-session burst | `uniqueDays() ≥ 3` required regardless of total count |
+| Stale data (6 weeks ago) | Exponential decay, 14-day half-life; old entries fade to near-zero |
+| Contradicting signals | mood ↑ + energy ↓ on same dim → both weights halved |
+| Low-quality behavioral data | `overallBehavioralQuality` cap: poor data nudges but never dominates |
+
+### Key files
+
+```
+packages/self/src/hooks/useOrientationInference.ts   — pure computation hook, no API calls
+apps/gurudevi-mobile/src/components/self/
+  OrientationCaptureStep.tsx                          — onboarding step 2 (skippable)
+  ResonancePatternCard.tsx                            — 4-axis card shown in Self section
+packages/profile/src/types/index.ts                  — OrientationSeeds interface
+packages/core/src/types/User.ts                      — orientation_seeds field on User
+packages/library/src/screens/LibraryScreen.tsx       — orderedShelfDefs (silent re-ordering)
+apps/gurudevi-mobile/supabase/migrations/
+  20260228_orientation_seeds.sql                      — ALTER TABLE users ADD COLUMN
+```
+
+### What it does NOT do
+- Never shows a MBTI / Enneagram / astrology label
+- Never stores behavioral fingerprints without intent (inference is ephemeral, computed on-device)
+- Does not require onboarding — role defaults activate from day 1
+- Does not affect any feature except library shelf ordering and the ResonancePatternCard
+
+### What's next for this layer
+- [ ] Pass `gradeNumber` to `ResonancePatternCard` for student grade-based defaults
+- [ ] Update library shelf ordering when orientation_seeds change at runtime (currently computed once on mount)
+- [ ] Explore wiring orientation to content difficulty suggestions in library
+- [ ] Consider adding `useOrientationInference` to `AdminSelfView` and `PrincipalSelfView`
 
 ---
 

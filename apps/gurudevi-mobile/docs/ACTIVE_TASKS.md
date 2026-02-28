@@ -510,6 +510,30 @@ These features don't block launch, but without them the app is a utility, not a 
 
 ---
 
+### T3.14 — Orientation Layer: Extend to Principal + Admin Self Views ✦ NEW
+**Source**: `Individual Difference Layer` — Feb 28 2026
+**What**: `ResonancePatternCard` is currently only in `StudentSelfView` + `TeacherSelfView`. Principal and Admin self views have none.
+**Effort**: XS | **Code**: `apps/gurudevi-mobile/src/screens/self/PrincipalSelfView.tsx`, `AdminSelfView.tsx` — same 4-line addition as the other views
+**Action**: Import `ResonancePatternCard`, `useMoodLogs`, `useEnergyForecast`; add card after DailyContentCards.
+
+---
+
+### T3.15 — Orientation Layer: Pass `gradeNumber` for Student Grade Defaults ✦ NEW
+**Source**: `Individual Difference Layer` — Feb 28 2026
+**What**: `useOrientationInference` accepts `gradeNumber` (1–13) to fine-tune student defaults (junior=social+active, senior=reflective+depth). Currently `StudentSelfView` does not pass it because `grade_id` is not yet resolved to a number.
+**Effort**: S | **Code**: `StudentSelfView.tsx` — resolve `user.grade_id` → grade number via Supabase query or store; pass to `ResonancePatternCard`
+**Note**: Low priority — role default is already reasonable without grade refinement.
+
+---
+
+### T3.16 — Orientation Layer: ResonancePatternCard Radar Polygon (Skia) ✦ NEW
+**Source**: `Individual Difference Layer` — Feb 28 2026
+**What**: The current radar chart uses dot markers + axis lines (pure RN, no deps). A true filled polygon would be more visually compelling. This is a cosmetic upgrade only — the data layer is complete.
+**Effort**: S | **Code**: `ResonancePatternCard.tsx` — replace `RadarChart` pure-RN implementation with a Skia `Path` version, behind the existing `useShouldAnimate()` fidelity guard
+**Note**: Skip until Skia NoiseOverlay (T3.10) is resolved first — proves the Skia pipeline is stable.
+
+---
+
 ## 🔵 TIER 4: Scale & Infrastructure
 ### *Important for production. Not blocking alpha.*
 
@@ -624,6 +648,9 @@ T4.3 (deduplication) → safer to make changes in community + library
 - [ ] T3.8: Replace all raw Alert.alert with SanctuaryToast
 - [ ] T3.9: Build SkeletonCard / SkeletonAvatar / SkeletonTextLine
 - [ ] T3.11: Wire getFabActions() (deprioritized; do after core loop tasks)
+- [ ] T3.14: Add ResonancePatternCard to PrincipalSelfView + AdminSelfView (XS)
+- [ ] T3.15: Resolve grade_id → gradeNumber for student orientation defaults (S)
+- [ ] T3.16: ResonancePatternCard radar polygon upgrade via Skia (S, after T3.10)
 - [ ] T4.3: Migrate API duplication; community screen deduplication
 
 ### Joint Tasks (Agent starts, Human approves/validates)
