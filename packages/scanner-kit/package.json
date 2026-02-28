@@ -21,6 +21,7 @@
         "expo-image-picker": "~55.0.9",
         "jpeg-js": "*",
         "jsqr": "*",
+        "@react-native-ml-kit/barcode-scanning": "*",
         "qrcode": "*",
         "react": "*",
         "react-native": "*",

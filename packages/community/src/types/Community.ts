@@ -373,6 +373,19 @@ export interface CreateGroupInput {
 }
 
 // ============================================================================
+// GROUP CHAT TYPES
+// ============================================================================
+
+export interface GroupMessage {
+    id: string;
+    group_id: string;
+    author_id: string;
+    content: string;
+    created_at: string;
+    author?: { full_name: string; avatar_url?: string };
+}
+
+// ============================================================================
 // REPORTING & SAFETY TYPES
 // ============================================================================
 

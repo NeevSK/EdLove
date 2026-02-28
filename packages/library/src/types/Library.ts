@@ -7,7 +7,7 @@ import { UserRole } from '@repo/core';
 export type ResourceType =
     | 'lesson'
     | 'worksheet'
-    | 'guide'
+    | 'guide'           // teacher guides
     | 'reading'
     | 'pedagogy'
     | 'video'
@@ -15,7 +15,14 @@ export type ResourceType =
     | 'other'
     | 'pdf'
     | 'doc'
-    | 'note';
+    | 'note'
+    // Holistic library expansion
+    | 'map'             // real maps, visual maps, infographics, mind maps, brochures
+    | 'infographic'     // standalone infographics / visual explainers
+    | 'story'           // stories for students and teachers
+    | 'circular'        // official circulars from the Education Ministry (SL)
+    | 'movie_trailer'   // inspiring YouTube trailers — local, Indian, international
+    | 'tech_guide';     // technology guides for teachers
 
 export type ResourceFormat = 'text' | 'video' | 'interactive' | 'audio' | 'document';
 export type ResourceDifficulty = 'beginner' | 'intermediate' | 'advanced';
@@ -50,6 +57,13 @@ export interface LibraryResource {
     verified_by_name?: string;
     curriculum_aligned: boolean;
     license?: string;
+    /**
+     * Human-readable copyright/usage notice displayed prominently to users.
+     * Required for externally-sourced content (movie trailers, maps, circulars).
+     * Examples: "© Ministry of Education, Sri Lanka", "YouTube — fair use for education",
+     *           "Creative Commons CC-BY-SA 4.0"
+     */
+    copyright_notice?: string;
 
     // Engagement metrics
     views: number;
@@ -109,7 +123,7 @@ export interface ResourceFilters {
     creator_role?: UserRole;
     tags?: string[];
     search?: string;
-    sort_by?: 'recent' | 'popular' | 'most_used' | 'most_endorsed';
+    sort_by?: 'recent' | 'popular' | 'most_used' | 'most_endorsed' | 'most_bookmarked';
     limit?: number;
     offset?: number;
 }
@@ -139,6 +153,12 @@ export interface CreateResourceInput {
     visibility: ResourceVisibility;
     tags?: string[];
     curriculum_aligned?: boolean;
+    license?: string;
+    /**
+     * Copyright / usage notice. Mandatory when type is movie_trailer, map, circular,
+     * infographic, or any externally-hosted content.
+     */
+    copyright_notice?: string;
 }
 
 export interface CreateCollectionInput {

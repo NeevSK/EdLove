@@ -7,7 +7,7 @@ import {
   Heading,
   Pressable
 } from '@repo/ui';
-import { Battery, BatteryLow, BatteryMedium, BatteryFull } from 'lucide-react-native';
+import { Battery } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
@@ -28,6 +28,8 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
   const { forecasts, refreshData, isLoading: dataLoading } = useEnergyForecast(userId);
 
   const [todayForecast, setTodayForecast] = useState<EnergyForecastType | null>(null);
+  // Optimistic local selection — mirrors todayForecast.energy_level but updates instantly on tap
+  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -36,6 +38,7 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
       const today = new Date().toISOString().split('T')[0];
       const found = forecasts.find(f => f.forecast_date === today);
       setTodayForecast(found || null);
+      if (found) setSelectedLevel(found.energy_level);
     }
   }, [forecasts]);
 
@@ -63,53 +66,17 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
   const handleSelectEnergy = async (level: 1 | 2 | 3 | 4 | 5) => {
     if (!userId) return;
     hapticLight();
+    setSelectedLevel(level); // optimistic update
     await saveEnergy(level);
   };
 
   const energyLevels = [
-    {
-      level: 1,
-      label: t('self.energyDepleted'),
-      icon: BatteryLow,
-      color: Theme.colors.emberRed,
-      emoji: '😰'
-    },
-    {
-      level: 2,
-      label: t('self.energyLow'),
-      icon: BatteryLow,
-      color: Theme.colors.emberOrange,
-      emoji: '😔'
-    },
-    {
-      level: 3,
-      label: t('self.energyOkay'),
-      icon: BatteryMedium,
-      color: Theme.colors.templeGold,
-      emoji: '😐'
-    },
-    {
-      level: 4,
-      label: t('self.energyGood'),
-      icon: BatteryFull,
-      color: Theme.colors.sageGreen,
-      emoji: '😊'
-    },
-    {
-      level: 5,
-      label: t('self.energyEnergized'),
-      icon: BatteryFull,
-      color: Theme.colors.gurudeviBlue,
-      emoji: '🌟'
-    }
+    { level: 1, label: t('self.energyDepleted'), color: Theme.colors.emberRed, emoji: '😰' },
+    { level: 2, label: t('self.energyLow'), color: Theme.colors.emberOrange, emoji: '😔' },
+    { level: 3, label: t('self.energyOkay'), color: Theme.colors.templeGold, emoji: '😐' },
+    { level: 4, label: t('self.energyGood'), color: Theme.colors.sageGreen, emoji: '😊' },
+    { level: 5, label: t('self.energyEnergized'), color: Theme.colors.gurudeviBlue, emoji: '🌟' },
   ];
-
-  const getBatteryIcon = () => {
-    if (!todayForecast) return Battery;
-    if (todayForecast.energy_level <= 2) return BatteryLow;
-    if (todayForecast.energy_level <= 3) return BatteryMedium;
-    return BatteryFull;
-  };
 
   if (dataLoading && userId) {
     return (
@@ -130,18 +97,12 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
     );
   }
 
-  const BatteryIcon = getBatteryIcon();
-
   return (
     <VStack space="lg" sx={{ flex: 1 }}>
       <VStack space="xs">
         <HStack space="sm" alignItems="center">
-          <BatteryIcon
-            color={
-              todayForecast
-                ? energyLevels[todayForecast.energy_level - 1].color
-                : colors.action
-            }
+          <Battery
+            color={selectedLevel ? energyLevels[selectedLevel - 1].color : colors.action}
             size={24}
           />
           <Heading color={colors.text} size="lg">
@@ -153,120 +114,53 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
         </Text>
       </VStack>
 
-      {todayForecast ? (
-        <Box
-          p={Theme.spacing.lg}
-          sx={{
-            backgroundColor: colors.secondary,
-            borderRadius: Theme.corners.comfortable,
-            borderWidth: 2,
-            borderColor: energyLevels[todayForecast.energy_level - 1].color
-          }}
-        >
-          <VStack space="md" alignItems="center">
-            <Text fontSize="$4xl">
-              {energyLevels[todayForecast.energy_level - 1].emoji}
-            </Text>
-            <Text
-              color={energyLevels[todayForecast.energy_level - 1].color}
-              size="xl"
-              bold
-            >
-              {energyLevels[todayForecast.energy_level - 1].label}
-            </Text>
-            <Text color={colors.textSecondary} size="sm">
-              {t('self.checkedToday')} {new Date(todayForecast.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </Text>
-            <Pressable
-              onPress={() => setTodayForecast(null)}
-              mt="$2"
-            >
-              <Text color={colors.textTertiary} size="sm" underline>
-                {t('self.updateForecast')}
-              </Text>
-            </Pressable>
-          </VStack>
-        </Box>
-      ) : (
-        <VStack space="md">
-          <Text color={colors.textSecondary} size="md" textAlign="center">
-            {t('self.capacityToday')}
-          </Text>
-
-          {energyLevels.map((energy) => (
-            <Pressable
-              key={energy.level}
-              onPress={() => handleSelectEnergy(energy.level as any)}
-              disabled={isLoading}
-            >
-              <HStack
-                space="md"
-                alignItems="center"
-                p="$4"
-                sx={{
-                  backgroundColor: colors.secondary,
-                  borderRadius: Theme.corners.comfortable,
-                  borderWidth: 2,
-                  borderColor: 'transparent',
-                  ':hover': {
-                    borderColor: energy.color
-                  }
-                }}
+      {/* Emoji Energy Picker — always visible, current selection highlighted */}
+      <Box sx={{ paddingHorizontal: Theme.spacing.sm }}>
+        <Text color={colors.textSecondary} size="sm" textAlign="center" mb="$3">
+          {t('self.capacityToday')}
+        </Text>
+        <HStack justifyContent="space-between" alignItems="center">
+          {energyLevels.map((energy) => {
+            const isActive = selectedLevel === energy.level;
+            return (
+              <Pressable
+                key={energy.level}
+                onPress={() => handleSelectEnergy(energy.level as any)}
+                disabled={isLoading}
+                sx={{ alignItems: 'center' }}
               >
-                <Box
-                  sx={{
-                    width: 50,
-                    height: 50,
-                    borderRadius: Theme.corners.full,
-                    backgroundColor: energy.color + '20',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <Text fontSize="$2xl">{energy.emoji}</Text>
-                </Box>
-
-                <VStack space="xs" sx={{ flex: 1 }}>
+                <VStack alignItems="center" space="xs">
+                  <Box
+                    sx={{
+                      width: 54,
+                      height: 54,
+                      borderRadius: 27,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: isActive ? energy.color + '33' : colors.secondary,
+                      borderWidth: 2,
+                      borderColor: isActive ? energy.color : colors.border,
+                    }}
+                  >
+                    <Text sx={{ fontSize: 26 }}>{energy.emoji}</Text>
+                  </Box>
                   <Text
-                    color={colors.text}
-                    size="md"
-                    bold
+                    sx={{
+                      fontSize: Theme.typography.fontSize.xs,
+                      color: isActive ? energy.color : colors.textTertiary,
+                      fontWeight: isActive ? '700' : '400',
+                    }}
                   >
                     {energy.label}
                   </Text>
-                  <HStack space="xs">
-                    {[...Array(energy.level)].map((_, i) => (
-                      <Box
-                        key={i}
-                        sx={{
-                          width: 30,
-                          height: 6,
-                          borderRadius: 3,
-                          backgroundColor: energy.color
-                        }}
-                      />
-                    ))}
-                    {[...Array(5 - energy.level)].map((_, i) => (
-                      <Box
-                        key={i}
-                        sx={{
-                          width: 30,
-                          height: 6,
-                          borderRadius: 3,
-                          backgroundColor: colors.border
-                        }}
-                      />
-                    ))}
-                  </HStack>
                 </VStack>
+              </Pressable>
+            );
+          })}
+        </HStack>
+      </Box>
 
-                <energy.icon color={energy.color} size={24} />
-              </HStack>
-            </Pressable>
-          ))}
-        </VStack>
-      )}
-
+      {/* Last updated timestamp */}
       {todayForecast && (
         <Box
           p="$3"
@@ -276,7 +170,7 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
           }}
         >
           <Text color={colors.textSecondary} size="sm" textAlign="center">
-            💭 {t('self.energyReminder')}
+            {t('self.checkedToday')} {new Date(todayForecast.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </Text>
         </Box>
       )}

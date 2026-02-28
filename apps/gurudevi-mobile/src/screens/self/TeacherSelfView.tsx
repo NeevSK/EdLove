@@ -22,7 +22,7 @@ import {
     Button,
     ButtonText
 } from '@repo/ui';
-import { Mic, Send, MessageCircle, Repeat, Flower, Flame, Sparkles, Heart, Lightbulb, Calendar, Battery, Moon } from 'lucide-react-native';
+import { Mic, Send, MessageCircle, Repeat, Flower, Flame, Sparkles, Heart, Lightbulb, Calendar, Battery, Moon, Bell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
@@ -38,9 +38,14 @@ import {
     EnergyForecast,
     WindDownRitual
 } from '../../components/self';
+import SleepTracker from '../../components/self/SleepTracker';
+import RemindersManager from '../../components/self/RemindersManager';
+import VoiceJournaling from '../../components/self/VoiceJournaling';
 import { supabase, useStore } from '@repo/core';
 import { GlobalHeader } from '@repo/ui';
 import DailyContentCard from '../../components/self/DailyContentCard';
+import ResonancePatternCard from '../../components/self/ResonancePatternCard';
+import { useMoodLogs, useEnergyForecast } from '@repo/self';
 import ThuthimalBadge from '../../components/profile/ThuthimalBadge';
 import { SkeletonCard } from '@repo/ui';
 import WelcomeModal from '../../components/self/WelcomeModal';
@@ -62,6 +67,9 @@ const MORE_TOOLS_FEATURES = [
     { id: 'energyForecast', icon: Battery, category: 'contextual', eroi: 6 },
     { id: 'windDown', icon: Moon, category: 'contextual', eroi: 8 },
     { id: 'venting', icon: MessageCircle, category: 'discover', eroi: 10 },
+    { id: 'sleep', icon: Moon, category: 'contextual', eroi: 9 },
+    { id: 'reminders', icon: Bell, category: 'contextual', eroi: 8 },
+    { id: 'voiceJournal', icon: Mic, category: 'discover', eroi: 10 },
 ];
 
 export default function TeacherSelfView() {
@@ -76,6 +84,10 @@ export default function TeacherSelfView() {
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
+
+    // Behavioral signal hooks — feed into ResonancePatternCard inference
+    const { logs: moodLogs } = useMoodLogs();
+    const { forecasts: energyForecasts } = useEnergyForecast(userId ?? undefined);
 
     // Get current user and profile on mount
     React.useEffect(() => {
@@ -139,6 +151,12 @@ export default function TeacherSelfView() {
                 return <EnergyForecast userId={userId ?? undefined} />;
             case 'windDown':
                 return <WindDownRitual userId={userId ?? undefined} />;
+            case 'sleep':
+                return <SleepTracker userId={userId ?? undefined} />;
+            case 'reminders':
+                return <RemindersManager userId={userId ?? undefined} />;
+            case 'voiceJournal':
+                return <VoiceJournaling userId={userId ?? undefined} />;
             case 'venting':
                 return (
                     <VStack space="lg" sx={{ flex: 1 }}>
@@ -235,6 +253,17 @@ export default function TeacherSelfView() {
                         <DailyContentCard type="motivation" />
                         <DailyContentCard type="did_you_know" />
                     </Box>
+
+                    {/* Resonance Pattern */}
+                    {userProfile && (
+                        <Box sx={{ paddingHorizontal: Theme.spacing.md, marginBottom: Theme.spacing.md }}>
+                            <ResonancePatternCard
+                                orientationSeeds={userProfile?.orientation_seeds}
+                                moodLogs={moodLogs}
+                                energyForecasts={energyForecasts}
+                            />
+                        </Box>
+                    )}
 
                     {/* Sub-Feature Carousel */}
                     <Box sx={{ height: 100 }}>

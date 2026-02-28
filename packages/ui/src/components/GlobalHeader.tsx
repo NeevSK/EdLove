@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { HStack, VStack, Text, Box, Input, InputField, InputIcon, Pressable } from '../gluestack';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../theme/Theme';
-import { useUserRole, useStore } from '@repo/core';
+import { useUserRole, useStore, useNotifications } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { Bell, Menu, GraduationCap, School, Crown, Search, X, ChevronLeft } from 'lucide-react-native';
 import { useThemedColors } from '../hooks/useThemedColors';
@@ -51,13 +51,16 @@ export default function GlobalHeader({
     const colors = useThemedColors();
     const { glass, text, accent, isDark, blurEnabled } = useTheme();
 
+    const [showNotifications, setShowNotifications] = useState(false);
+    const { notifications, unreadCount, isLoading: notifLoading, markAsRead, markAllRead } =
+        useNotifications(user?.id);
+
     const [isSearchActive, setIsSearchActive] = useState(false);
     // Use internal state if searchProps is not provided
     const [internalSearchQuery, setInternalSearchQuery] = useState('');
 
     const searchQuery = searchProps?.value ?? internalSearchQuery;
     const setSearchQuery = searchProps?.onChangeText ?? setInternalSearchQuery;
-    const [showNotifications, setShowNotifications] = useState(false);
 
     // Get display name
     const displayName = userName || (user?.user_metadata?.full_name?.split(' ')[0]) || '';
@@ -220,6 +223,11 @@ export default function GlobalHeader({
             <NotificationDrawer
                 isVisible={showNotifications}
                 onClose={() => setShowNotifications(false)}
+                notifications={notifications}
+                unreadCount={unreadCount}
+                isLoading={notifLoading}
+                onMarkRead={markAsRead}
+                onMarkAllRead={markAllRead}
             />
         </VStack>
     );

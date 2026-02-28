@@ -201,12 +201,19 @@ export default function SchoolCreationScreen() {
                             </Text>
                         </Box>
 
-                        <Box sx={{ width: '100%', marginTop: Theme.spacing.lg }}>
+                        <Box sx={{ width: '100%', marginTop: Theme.spacing.lg, gap: Theme.spacing.md }}>
+                            {/* Primary: hierarchy setup is the principal's real next step */}
                             <SanctuaryButton
                                 onPress={() => navigation.navigate('ClassroomList')}
+                                action="primary"
+                                size="lg"
+                                fullWidth
                             >
-                                Enter Your Sanctuary
+                                Set Up School Structure →
                             </SanctuaryButton>
+                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textTertiary, textAlign: 'center' }}>
+                                Add grades, sections and grade heads. Teachers join via the QR above, then create their own classrooms.
+                            </Text>
                         </Box>
                     </VStack>
                 </ScrollView>
