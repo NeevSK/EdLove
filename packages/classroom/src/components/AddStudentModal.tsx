@@ -10,21 +10,13 @@ import {
     VStack,
     HStack,
     Text,
-    Heading,
     Button,
     ButtonText,
     Input,
     InputField,
-    Modal,
-    ModalBackdrop,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    ModalFooter,
-    Icon,
-    CloseIcon,
+    SanctuaryModal,
     Theme,
+    useTheme,
     Toast,
     ToastTitle,
     ToastDescription,
@@ -54,6 +46,7 @@ export const AddStudentModal = ({
 }: AddStudentModalProps) => {
     const { t } = useTranslation();
     const toast = useToast();
+    const { text, accent, glass } = useTheme();
     const [activeTab, setActiveTab] = useState<AddStudentTab>('manual');
     const [fullName, setFullName] = useState('');
     const [rollNumber, setRollNumber] = useState('');
@@ -145,165 +138,163 @@ export const AddStudentModal = ({
         }
     };
 
+    const footer = (
+        <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
+            <Button
+                onPress={onClose}
+                sx={{
+                    flex: 1,
+                    backgroundColor: 'transparent',
+                    borderColor: glass.interact.border,
+                    borderWidth: 1,
+                    borderRadius: Theme.corners.comfortable
+                }}
+            >
+                <ButtonText {...({ color: text.secondary } as any)}>
+                    {t('common.cancel') || 'Cancel'}
+                </ButtonText>
+            </Button>
+            <Button
+                onPress={handleSave}
+                disabled={isLoading}
+                sx={{
+                    flex: 1,
+                    backgroundColor: accent.action,
+                    borderRadius: Theme.corners.comfortable,
+                    opacity: isLoading ? 0.6 : 1
+                }}
+            >
+                <ButtonText {...({ color: text.inverse } as any)}>
+                    {isLoading ? (t('common.saving') || 'Saving...') : (t('common.save') || 'Save')}
+                </ButtonText>
+            </Button>
+        </HStack>
+    );
+
     return (
-        <Modal isOpen={isOpen} onClose={onClose}>
-            <ModalBackdrop />
-            <ModalContent sx={{ backgroundColor: Theme.colors.ink, borderColor: Theme.colors.mistGray, borderWidth: 1 }}>
-                <ModalHeader>
-                    <Heading sx={{ color: Theme.colors.sanctuarySaffron, fontSize: Theme.typography.fontSize.lg }}>
-                        {studentToEdit ? (t('students.editStudent') || 'Edit Student') : (t('students.addStudent') || 'Add Student')}
-                    </Heading>
-                    <ModalCloseButton>
-                        <Icon as={CloseIcon} sx={{ color: Theme.colors.sacredWhite }} />
-                    </ModalCloseButton>
-                </ModalHeader>
-                <ModalBody>
-                    {/* Tab switcher — only shown when adding (not editing) */}
-                    {!studentToEdit && (
-                        <HStack sx={{ gap: 0, marginBottom: Theme.spacing.md, borderRadius: Theme.corners.comfortable, overflow: 'hidden', borderWidth: 1, borderColor: Theme.colors.mistGray }}>
-                            {(['manual', 'scan'] as AddStudentTab[]).map(tab => (
-                                <TouchableOpacity
-                                    key={tab}
-                                    onPress={() => setActiveTab(tab)}
-                                    style={{
-                                        flex: 1,
-                                        paddingVertical: 10,
-                                        alignItems: 'center',
-                                        backgroundColor: activeTab === tab ? Theme.colors.sanctuarySaffron : 'transparent',
-                                    }}
-                                >
-                                    <Text style={{
-                                        color: activeTab === tab ? Theme.colors.ink : Theme.colors.starlightGray,
-                                        fontWeight: activeTab === tab ? '700' : '400',
-                                        fontSize: 14,
-                                    }}>
-                                        {tab === 'manual' ? '✏️ Manual' : '📷 Scan Register'}
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
-                        </HStack>
-                    )}
-
-                    {/* Scan Register tab */}
-                    {activeTab === 'scan' && !studentToEdit && (
-                        <OCRStudentImport
-                            classroomId={classroomId}
-                            onImported={(count) => {
-                                toast.show({
-                                    placement: 'top',
-                                    render: ({ id }: { id: string }) => (
-                                        <SanctuaryToast
-                                            message={`${count} student${count !== 1 ? 's' : ''} imported successfully`}
-                                            type="success"
-                                            visible
-                                            onHide={() => toast.close(id)}
-                                        />
-                                    ),
-                                });
-                                onSuccess();
+        <SanctuaryModal
+            isOpen={isOpen}
+            onClose={onClose}
+            title={studentToEdit ? (t('students.editStudent') || 'Edit Student') : (t('students.addStudent') || 'Add Student')}
+            footer={footer}
+        >
+            {/* Tab switcher — only shown when adding (not editing) */}
+            {!studentToEdit && (
+                <HStack sx={{ gap: 0, marginBottom: Theme.spacing.md, borderRadius: Theme.corners.comfortable, overflow: 'hidden', borderWidth: 1, borderColor: glass.interact.border }}>
+                    {(['manual', 'scan'] as AddStudentTab[]).map(tab => (
+                        <TouchableOpacity
+                            key={tab}
+                            onPress={() => setActiveTab(tab)}
+                            style={{
+                                flex: 1,
+                                paddingVertical: 10,
+                                alignItems: 'center',
+                                backgroundColor: activeTab === tab ? accent.action : 'transparent',
                             }}
-                            onCancel={onClose}
-                        />
-                    )}
+                        >
+                            <Text style={{
+                                color: activeTab === tab ? text.inverse : text.secondary,
+                                fontWeight: activeTab === tab ? '700' : '400',
+                                fontSize: 14,
+                            }}>
+                                {tab === 'manual' ? '✏️ Manual' : '📷 Scan Register'}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+                </HStack>
+            )}
 
-                    {/* Manual entry tab */}
-                    {(activeTab === 'manual' || studentToEdit) && (
-                        <VStack sx={{ gap: Theme.spacing.md, paddingVertical: Theme.spacing.md }}>
-                            <VStack sx={{ gap: Theme.spacing.xs }}>
-                                <Text sx={{ color: Theme.colors.sacredWhite, fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}>
-                                    {t('students.fullName') || 'Full Name'} *
-                                </Text>
-                                <Input
-                                    sx={{
-                                        backgroundColor: Theme.colors.ink,
-                                        borderColor: Theme.colors.mistGray,
-                                        borderRadius: Theme.corners.comfortable
-                                    }}
-                                >
-                                    <InputField
-                                        placeholder={t('students.fullNamePlaceholder') || "E.g. John Doe"}
-                                        value={fullName}
-                                        onChangeText={setFullName}
-                                        sx={{ color: Theme.colors.sacredWhite }}
-                                    />
-                                </Input>
-                            </VStack>
+            {/* Scan Register tab */}
+            {activeTab === 'scan' && !studentToEdit && (
+                <OCRStudentImport
+                    classroomId={classroomId}
+                    onImported={(count) => {
+                        toast.show({
+                            placement: 'top',
+                            render: ({ id }: { id: string }) => (
+                                <SanctuaryToast
+                                    message={`${count} student${count !== 1 ? 's' : ''} imported successfully`}
+                                    type="success"
+                                    visible
+                                    onHide={() => toast.close(id)}
+                                />
+                            ),
+                        });
+                        onSuccess();
+                    }}
+                    onCancel={onClose}
+                />
+            )}
 
-                            <VStack sx={{ gap: Theme.spacing.xs }}>
-                                <Text sx={{ color: Theme.colors.sacredWhite, fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}>
-                                    {t('students.rollNumber') || 'Roll Number / ID'}
-                                </Text>
-                                <Input
-                                    sx={{
-                                        backgroundColor: Theme.colors.ink,
-                                        borderColor: Theme.colors.mistGray,
-                                        borderRadius: Theme.corners.comfortable
-                                    }}
-                                >
-                                    <InputField
-                                        placeholder={t('students.rollNumberPlaceholder') || "E.g. 01"}
-                                        value={rollNumber}
-                                        onChangeText={setRollNumber}
-                                        sx={{ color: Theme.colors.sacredWhite }}
-                                    />
-                                </Input>
-                            </VStack>
+            {/* Manual entry tab */}
+            {(activeTab === 'manual' || studentToEdit) && (
+                <VStack sx={{ gap: Theme.spacing.md, paddingVertical: Theme.spacing.md }}>
+                    <VStack sx={{ gap: Theme.spacing.xs }}>
+                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}
+                            {...({ color: text.primary } as any)}>
+                            {t('students.fullName') || 'Full Name'} *
+                        </Text>
+                        <Input
+                            sx={{
+                                backgroundColor: glass.interact.bg,
+                                borderColor: glass.interact.border,
+                                borderRadius: Theme.corners.comfortable
+                            }}
+                        >
+                            <InputField
+                                placeholder={t('students.fullNamePlaceholder') || "E.g. John Doe"}
+                                value={fullName}
+                                onChangeText={setFullName}
+                                {...({ color: text.primary } as any)}
+                            />
+                        </Input>
+                    </VStack>
 
-                            <VStack sx={{ gap: Theme.spacing.xs }}>
-                                <Text sx={{ color: Theme.colors.sacredWhite, fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}>
-                                    {t('students.notes') || 'Notes'}
-                                </Text>
-                                <Input
-                                    sx={{
-                                        backgroundColor: Theme.colors.ink,
-                                        borderColor: Theme.colors.mistGray,
-                                        borderRadius: Theme.corners.comfortable,
-                                        minHeight: 80
-                                    }}
-                                >
-                                    <InputField
-                                        placeholder={t('students.notesPlaceholder') || "Add any relevant notes..."}
-                                        value={notes}
-                                        onChangeText={setNotes}
-                                        multiline
-                                        sx={{ color: Theme.colors.sacredWhite, textAlignVertical: 'top' as any }}
-                                    />
-                                </Input>
-                            </VStack>
-                        </VStack>
-                    )}
-                </ModalBody>
-                <ModalFooter sx={{ gap: Theme.spacing.md }}>
-                    <Button
-                        onPress={onClose}
-                        sx={{
-                            flex: 1,
-                            backgroundColor: 'transparent',
-                            borderColor: Theme.colors.mistGray,
-                            borderWidth: 1,
-                            borderRadius: Theme.corners.comfortable
-                        }}
-                    >
-                        <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
-                            {t('common.cancel') || 'Cancel'}
-                        </ButtonText>
-                    </Button>
-                    <Button
-                        onPress={handleSave}
-                        disabled={isLoading}
-                        sx={{
-                            flex: 1,
-                            backgroundColor: Theme.colors.sanctuarySaffron,
-                            borderRadius: Theme.corners.comfortable,
-                            opacity: isLoading ? 0.6 : 1
-                        }}
-                    >
-                        <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
-                            {isLoading ? (t('common.saving') || 'Saving...') : (t('common.save') || 'Save')}
-                        </ButtonText>
-                    </Button>
-                </ModalFooter>
-            </ModalContent>
-        </Modal>
+                    <VStack sx={{ gap: Theme.spacing.xs }}>
+                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}
+                            {...({ color: text.primary } as any)}>
+                            {t('students.rollNumber') || 'Roll Number / ID'}
+                        </Text>
+                        <Input
+                            sx={{
+                                backgroundColor: glass.interact.bg,
+                                borderColor: glass.interact.border,
+                                borderRadius: Theme.corners.comfortable
+                            }}
+                        >
+                            <InputField
+                                placeholder={t('students.rollNumberPlaceholder') || "E.g. 01"}
+                                value={rollNumber}
+                                onChangeText={setRollNumber}
+                                {...({ color: text.primary } as any)}
+                            />
+                        </Input>
+                    </VStack>
+
+                    <VStack sx={{ gap: Theme.spacing.xs }}>
+                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}
+                            {...({ color: text.primary } as any)}>
+                            {t('students.notes') || 'Notes'}
+                        </Text>
+                        <Input
+                            sx={{
+                                backgroundColor: glass.interact.bg,
+                                borderColor: glass.interact.border,
+                                borderRadius: Theme.corners.comfortable,
+                                minHeight: 80
+                            }}
+                        >
+                            <InputField
+                                placeholder={t('students.notesPlaceholder') || "Add any relevant notes..."}
+                                value={notes}
+                                onChangeText={setNotes}
+                                multiline
+                                {...({ color: text.primary, textAlignVertical: 'top' } as any)}
+                            />
+                        </Input>
+                    </VStack>
+                </VStack>
+            )}
+        </SanctuaryModal>
     );
 };

@@ -23,10 +23,11 @@ import {
     ModalBackdrop,
     ModalContent,
     Spinner,
+    useTheme,
 } from '@repo/ui';
 import { Alert, Image } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Theme, useThemedColors } from '@repo/ui';
+import { Theme } from '@repo/ui';
 import { handleAPIError } from '@repo/core';
 
 interface SubmissionModalProps {
@@ -47,7 +48,7 @@ export default function SubmissionModal({
     const [photoUri, setPhotoUri] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
-    const colors = useThemedColors();
+    const { text, accent, glass } = useTheme();
 
     const handlePickImage = async (useCamera: boolean = false) => {
         try {
@@ -119,21 +120,26 @@ export default function SubmissionModal({
     if (showSuccess) {
         return (
             <Modal isOpen={isOpen} onClose={() => { }}>
-                <ModalBackdrop />
+                <ModalBackdrop
+                    sx={{ backgroundColor: 'rgba(107,100,128,0.65)' }}
+                />
                 <ModalContent
                     sx={{
-                        backgroundColor: colors.tertiary,
+                        backgroundColor: glass.modal.bg,
+                        borderColor: glass.modal.border,
+                        borderWidth: 1,
                         padding: Theme.spacing.xl,
                         alignItems: 'center',
+                        borderRadius: Theme.corners.generous,
                     }}
                 >
                     <VStack sx={{ gap: Theme.spacing.lg, alignItems: 'center' }}>
                         <Text sx={{ fontSize: 64 }}>✅</Text>
-                        <Heading sx={{ color: Theme.colors.sageGreen, fontSize: 32 }}>
+                        <Heading sx={{ color: accent.reward, fontSize: 32 }}>
                             {t('submission.success') || 'Success!'}
                         </Heading>
                         <Text
-                            color={colors.textSecondary}
+                            {...({ color: text.secondary } as any)}
                             sx={{ textAlign: 'center' }}
                         >
                             {t('submission.successMessage') ||
@@ -147,10 +153,15 @@ export default function SubmissionModal({
 
     return (
         <Modal isOpen={isOpen} onClose={handleCancel}>
-            <ModalBackdrop />
+            <ModalBackdrop
+                sx={{ backgroundColor: 'rgba(107,100,128,0.65)' }}
+            />
             <ModalContent
                 sx={{
-                    backgroundColor: colors.primary,
+                    backgroundColor: glass.modal.bg,
+                    borderColor: glass.modal.border,
+                    borderWidth: 1,
+                    borderRadius: 0,
                     height: '100%',
                     width: '100%',
                 }}
@@ -169,7 +180,7 @@ export default function SubmissionModal({
                             alignItems: 'center',
                         }}
                     >
-                        <Heading sx={{ fontSize: 24, color: Theme.colors.sanctuarySaffron }}>
+                        <Heading sx={{ fontSize: 24, color: accent.action }}>
                             {t('submission.title') || 'Submit Work'}
                         </Heading>
 
@@ -177,12 +188,13 @@ export default function SubmissionModal({
                             variant="outline"
                             size="sm"
                             sx={{
-                                borderColor: colors.border,
+                                borderColor: glass.interact.border,
+                                borderRadius: Theme.corners.comfortable,
                             }}
                             onPress={handleCancel}
                             disabled={isSubmitting}
                         >
-                            <ButtonText sx={{ color: colors.text }}>
+                            <ButtonText {...({ color: text.secondary } as any)}>
                                 {t('common.cancel') || 'Cancel'}
                             </ButtonText>
                         </Button>
@@ -192,15 +204,18 @@ export default function SubmissionModal({
                     <Box
                         sx={{
                             padding: Theme.spacing.md,
-                            backgroundColor: colors.secondary,
+                            backgroundColor: glass.interact.bg,
                             borderRadius: Theme.corners.comfortable,
+                            borderWidth: 1,
+                            borderColor: glass.interact.border,
                         }}
                     >
-                        <Text sx={{ color: colors.textSecondary, fontSize: 14 }}>
+                        <Text {...({ color: text.secondary } as any)} sx={{ fontSize: 14 }}>
                             {t('submission.assignmentLabel') || 'Assignment'}
                         </Text>
                         <Text
-                            sx={{ color: colors.text, fontSize: 18, fontWeight: '600' }}
+                            {...({ color: text.primary } as any)}
+                            sx={{ fontSize: 18, fontWeight: '600' }}
                         >
                             {assignmentTitle}
                         </Text>
@@ -208,14 +223,14 @@ export default function SubmissionModal({
 
                     {/* Text Input */}
                     <VStack sx={{ gap: Theme.spacing.sm, flex: 1 }}>
-                        <Text sx={{ color: colors.textSecondary, fontWeight: '600' }}>
+                        <Text {...({ color: text.secondary } as any)} sx={{ fontWeight: '600' }}>
                             {t('submission.answerLabel') || 'Your Answer'}
                         </Text>
                         <Textarea
                             sx={{
                                 flex: 1,
-                                backgroundColor: colors.secondary,
-                                borderColor: colors.border,
+                                backgroundColor: glass.interact.bg,
+                                borderColor: glass.interact.border,
                                 borderRadius: Theme.corners.comfortable,
                                 minHeight: 200,
                             }}
@@ -227,9 +242,7 @@ export default function SubmissionModal({
                                 }
                                 value={content}
                                 onChangeText={setContent}
-                                sx={{
-                                    color: colors.text,
-                                }}
+                                {...({ color: text.primary } as any)}
                                 multiline
                             />
                         </Textarea>
@@ -237,7 +250,7 @@ export default function SubmissionModal({
 
                     {/* Photo Attachment */}
                     <VStack sx={{ gap: Theme.spacing.sm }}>
-                        <Text sx={{ color: colors.textSecondary, fontWeight: '600' }}>
+                        <Text {...({ color: text.secondary } as any)} sx={{ fontWeight: '600' }}>
                             {t('submission.photoLabel') || 'Attach Photo (Optional)'}
                         </Text>
 
@@ -258,7 +271,7 @@ export default function SubmissionModal({
                                     sx={{ marginTop: Theme.spacing.sm }}
                                     onPress={() => setPhotoUri(null)}
                                 >
-                                    <ButtonText sx={{ color: Theme.colors.emberRed }}>
+                                    <ButtonText {...({ color: accent.danger } as any)}>
                                         {t('submission.removePhoto') || 'Remove Photo'}
                                     </ButtonText>
                                 </Button>
@@ -269,13 +282,13 @@ export default function SubmissionModal({
                                     variant="outline"
                                     sx={{
                                         flex: 1,
-                                        borderColor: Theme.colors.sanctuarySaffron,
+                                        borderColor: accent.action,
                                         borderRadius: Theme.corners.comfortable,
                                     }}
                                     onPress={() => handlePickImage(true)}
                                     disabled={isSubmitting}
                                 >
-                                    <ButtonText sx={{ color: Theme.colors.sanctuarySaffron }}>
+                                    <ButtonText {...({ color: accent.action } as any)}>
                                         📷 {t('submission.takePhoto') || 'Take Photo'}
                                     </ButtonText>
                                 </Button>
@@ -284,13 +297,13 @@ export default function SubmissionModal({
                                     variant="outline"
                                     sx={{
                                         flex: 1,
-                                        borderColor: Theme.colors.sanctuarySaffron,
+                                        borderColor: accent.action,
                                         borderRadius: Theme.corners.comfortable,
                                     }}
                                     onPress={() => handlePickImage(false)}
                                     disabled={isSubmitting}
                                 >
-                                    <ButtonText sx={{ color: Theme.colors.sanctuarySaffron }}>
+                                    <ButtonText {...({ color: accent.action } as any)}>
                                         🖼️ {t('submission.choosePhoto') || 'Choose Photo'}
                                     </ButtonText>
                                 </Button>
@@ -301,7 +314,7 @@ export default function SubmissionModal({
                     {/* Submit Button */}
                     <Button
                         sx={{
-                            backgroundColor: Theme.colors.sageGreen,
+                            backgroundColor: accent.reward,
                             padding: Theme.spacing.lg,
                             borderRadius: Theme.corners.comfortable,
                         }}
@@ -310,14 +323,14 @@ export default function SubmissionModal({
                     >
                         {isSubmitting ? (
                             <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-                                <Spinner color={Theme.colors.sacredWhite} size="small" />
-                                <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
+                                <Spinner {...({ color: text.inverse, size: "small" } as any)} />
+                                <ButtonText {...({ color: text.inverse } as any)}>
                                     {t('submission.submitting') || 'Turning in...'}
                                 </ButtonText>
                             </HStack>
                         ) : (
                             <ButtonText
-                                sx={{ color: Theme.colors.sacredWhite, fontWeight: '700', fontSize: 18 }}
+                                {...({ color: text.inverse, fontWeight: '700', fontSize: 18 } as any)}
                             >
                                 ✍️ {t('submission.turnIn') || 'Turn In'}
                             </ButtonText>
