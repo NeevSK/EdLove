@@ -31,15 +31,16 @@ import {
     hapticLight,
     hapticSuccess,
 } from '@repo/ui';
-import { TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
+import { TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet, Image } from 'react-native';
 import { TextInput } from 'react-native';
-import { X, Users, Globe, Lock, CheckCircle, QrCode } from 'lucide-react-native';
+import { X, Users, Globe, Lock, CheckCircle, QrCode, Camera } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CommunityStackParamList } from '@repo/core';
 import { communityAPI } from '../api/community';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
-import { useUserRole, useStore } from '@repo/core';
+import { useUserRole, useStore, uploadToCloudinary } from '@repo/core';
+import * as ImagePicker from 'expo-image-picker';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -110,6 +111,8 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
     const [description, setDescription] = useState('');
     const [groupType, setGroupType] = useState<GroupType>('general');
     const [joinPolicy, setJoinPolicy] = useState<JoinPolicy>('open');
+    const [avatarUri, setAvatarUri] = useState<string | null>(null);
+    const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
     // Async state
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -118,9 +121,10 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
     // Success state
     const [createdGroupId, setCreatedGroupId] = useState<string | null>(null);
     const [createdGroupName, setCreatedGroupName] = useState('');
+    const [createdGroupAvatar, setCreatedGroupAvatar] = useState<string | null>(null);
 
     // ── Derived ────────────────────────────────────────────────────────────────
-    const canSubmit = name.trim().length >= 2 && !isSubmitting;
+    const canSubmit = name.trim().length >= 2 && !isSubmitting && !isUploadingAvatar;
     const groupQRValue = createdGroupId ? QRBuilder.group(createdGroupId) : '';
 
     // ── Handlers ───────────────────────────────────────────────────────────────
@@ -136,9 +140,23 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
         setDescription('');
         setGroupType('general');
         setJoinPolicy('open');
+        setAvatarUri(null);
         setError(null);
         setCreatedGroupId(null);
         setCreatedGroupName('');
+        setCreatedGroupAvatar(null);
+    };
+
+    const handlePickAvatar = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0.8,
+        });
+        if (!result.canceled && result.assets?.[0]?.uri) {
+            setAvatarUri(result.assets[0].uri);
+        }
     };
 
     const handleSubmit = async () => {
@@ -148,6 +166,14 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
         setError(null);
 
         try {
+            // Upload avatar if selected
+            let imageUrl: string | undefined;
+            if (avatarUri) {
+                setIsUploadingAvatar(true);
+                imageUrl = await uploadToCloudinary(avatarUri, 'image');
+                setIsUploadingAvatar(false);
+            }
+
             const group = await communityAPI.createGroupWithAdmin(
                 {
                     name: name.trim(),
@@ -155,12 +181,14 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
                     group_type: groupType,
                     join_policy: joinPolicy,
                     school_id: schoolId ?? null,
+                    image_url: imageUrl ?? null,
                 },
                 userId,
             );
             hapticSuccess();
             setCreatedGroupId(group.id);
             setCreatedGroupName(group.name ?? name.trim());
+            setCreatedGroupAvatar(imageUrl ?? null);
             onCreated?.(group.id);
         } catch (err: any) {
             setError(err?.message ?? 'Failed to create group. Please try again.');
@@ -196,6 +224,16 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
 
                     <ModalBody>
                         <VStack space="md" alignItems="center" py="$2">
+                            {/* Group avatar preview */}
+                            <Box sx={styles.avatarLg as any}>
+                                {createdGroupAvatar ? (
+                                    <Image source={{ uri: createdGroupAvatar }} style={styles.avatarLg as any} />
+                                ) : (
+                                    <Text sx={{ fontSize: 36, fontWeight: '700', color: Theme.colors.sacredWhite }}>
+                                        {createdGroupName.charAt(0).toUpperCase()}
+                                    </Text>
+                                )}
+                            </Box>
                             <Text color={colors.text} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.lg, textAlign: 'center' }}>
                                 {createdGroupName}
                             </Text>
@@ -279,6 +317,25 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
                 <ModalBody>
                     <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
                         <VStack space="lg" py="$1">
+
+                            {/* Avatar picker */}
+                            <TouchableOpacity onPress={handlePickAvatar} style={styles.avatarPickerRow}>
+                                <Box sx={[styles.avatarSm, { backgroundColor: avatarUri ? 'transparent' : colors.tertiary, borderColor: colors.border }] as any}>
+                                    {avatarUri ? (
+                                        <Image source={{ uri: avatarUri }} style={styles.avatarSm as any} />
+                                    ) : (
+                                        <Camera size={24} color={colors.textSecondary} />
+                                    )}
+                                </Box>
+                                <VStack sx={{ marginLeft: 12, flex: 1 }}>
+                                    <Text sx={{ fontWeight: '600', fontSize: Theme.typography.fontSize.sm, color: colors.text }}>
+                                        Group Profile Photo
+                                    </Text>
+                                    <Text sx={{ fontSize: 12, color: colors.textSecondary }}>
+                                        {avatarUri ? 'Tap to change' : 'Add a photo (optional)'}
+                                    </Text>
+                                </VStack>
+                            </TouchableOpacity>
 
                             {/* Name */}
                             <VStack space="xs">
@@ -481,5 +538,27 @@ const styles = StyleSheet.create({
         height: 36,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    avatarSm: {
+        width: 64,
+        height: 64,
+        borderRadius: 32,
+        borderWidth: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+    },
+    avatarLg: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: Theme.colors.sanctuarySaffron,
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+    },
+    avatarPickerRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
 });

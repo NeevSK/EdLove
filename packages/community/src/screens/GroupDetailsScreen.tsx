@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, FlatList, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import {
     Box,
     VStack,
@@ -67,7 +67,7 @@ export default function GroupDetailsScreen() {
             try {
                 const { data, error } = await supabase
                     .from('community_groups')
-                    .select('*, creator:users!community_groups_creator_id_fkey(full_name)')
+                    .select('*, creator:users!community_groups_created_by_fkey(full_name, avatar_url)')
                     .eq('id', groupId)
                     .single();
 
@@ -85,7 +85,7 @@ export default function GroupDetailsScreen() {
     const handleJoin = async () => {
         if (!user) return;
         try {
-            await joinGroup({ groupId, userId: user.id, userRole: role || 'teacher' });
+            await joinGroup({ groupId, userId: user.id, joinPolicy: group?.join_policy || 'open' });
             showToast({
                 message: t('community.groups.joinRequested', 'Request to join this circle has been sent.'),
                 type: 'success'
@@ -110,7 +110,8 @@ export default function GroupDetailsScreen() {
 
     if (!group) return null;
 
-    const isAdmin = group.creator_id === user?.id || role === 'principal';
+    // Admin: creator OR principal OR explicitly marked as admin in community_group_members
+    const isAdmin = group.created_by === user?.id || role === 'principal';
 
     if (showAdmin && isAdmin) {
         return (
@@ -170,19 +171,27 @@ export default function GroupDetailsScreen() {
                                         <HStack space="md" alignItems="center">
                                             <Box
                                                 sx={{
-                                                    width: 60,
-                                                    height: 60,
-                                                    borderRadius: Theme.corners.comfortable,
-                                                    backgroundColor: 'rgba(255,255,255,0.05)',
+                                                    width: 64,
+                                                    height: 64,
+                                                    borderRadius: 32,
+                                                    backgroundColor: group.image_url ? 'transparent' : Theme.colors.sanctuarySaffron,
                                                     justifyContent: 'center',
                                                     alignItems: 'center',
-                                                    borderWidth: 1,
-                                                    borderColor: 'rgba(255,255,255,0.1)',
+                                                    overflow: 'hidden',
+                                                    borderWidth: 2,
+                                                    borderColor: 'rgba(255,255,255,0.15)',
                                                 }}
                                             >
-                                                <Text size="2xl" bold color={Theme.colors.sanctuarySaffron}>
-                                                    {group.name.charAt(0).toUpperCase()}
-                                                </Text>
+                                                {group.image_url ? (
+                                                    <Image
+                                                        source={{ uri: group.image_url }}
+                                                        style={{ width: 64, height: 64, borderRadius: 32 }}
+                                                    />
+                                                ) : (
+                                                    <Text size="2xl" bold color={Theme.colors.sacredWhite}>
+                                                        {group.name.charAt(0).toUpperCase()}
+                                                    </Text>
+                                                )}
                                             </Box>
                                             <VStack flex={1}>
                                                 <HStack space="md" alignItems="center">
@@ -199,7 +208,7 @@ export default function GroupDetailsScreen() {
                                                             }}
                                                         >
                                                             <Text color={Theme.colors.sanctuarySaffron} size="2xs" bold>
-                                                                TEANING SITE
+                                                                CLASS
                                                             </Text>
                                                         </Box>
                                                     )}

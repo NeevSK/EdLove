@@ -26,7 +26,11 @@ ALTER TABLE public.community_groups
   ADD COLUMN IF NOT EXISTS group_type TEXT DEFAULT 'general'
     CHECK (group_type IN ('class', 'interest', 'staff', 'public', 'general', 'club', 'subject'));
 
--- 4. Add member_count column (maintained by triggers below) if not present
+-- 4. Add image_url (group profile picture / avatar)
+ALTER TABLE public.community_groups
+  ADD COLUMN IF NOT EXISTS image_url TEXT;
+
+-- 5. Add member_count column (maintained by triggers below) if not present
 ALTER TABLE public.community_groups
   ADD COLUMN IF NOT EXISTS member_count INTEGER DEFAULT 0;
 

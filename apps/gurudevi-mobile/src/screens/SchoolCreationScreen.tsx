@@ -83,18 +83,14 @@ export default function SchoolCreationScreen() {
                 created_by: user.id,
             });
 
-            // 2. Create Community Group
-            const group = await communityAPI.createGroup({
+            // 2. Create Community Group — creator is auto-added as admin
+            const group = await communityAPI.createGroupWithAdmin({
                 name: `${school.name} HQ`,
                 description: `Official community portal for ${school.name}`,
-                type: 'general',
+                group_type: 'general',
                 join_policy: 'open',
-                visibility: 'school',
-                allow_posts: true,
-                allow_announcements: true,
-                require_post_approval: false,
                 school_id: school.id,
-            }, user.id, user.role);
+            }, user.id);
 
             // 3. Update Global Store & Disable Demo Mode
             setUser({

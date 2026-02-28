@@ -141,6 +141,7 @@ export const communityAPI = {
                 group_type: group.group_type ?? 'general',
                 join_policy: group.join_policy ?? 'open',
                 school_id: group.school_id ?? null,
+                image_url: group.image_url ?? null,
                 created_by: userId,
                 created_at: new Date().toISOString(),
             }])

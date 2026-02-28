@@ -86,11 +86,11 @@ export const useCommunity = () => {
         },
     });
 
-    // Create Group Mutation
+    // Create Group Mutation — always uses createGroupWithAdmin so creator gets admin rights
     const createGroupMutation = useMutation({
         mutationFn: async (input: any) => {
             const user = await requireAuth();
-            return communityAPI.createGroup(input, user.id, 'teacher'); // TODO: Get actual role
+            return communityAPI.createGroupWithAdmin(input, user.id);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.groups() });
@@ -99,8 +99,8 @@ export const useCommunity = () => {
 
     // Join Group Mutation
     const joinGroupMutation = useMutation({
-        mutationFn: async ({ groupId, userId, userRole }: { groupId: string, userId: string, userRole: string }) => {
-            return communityAPI.joinGroup(groupId, userId, userRole);
+        mutationFn: async ({ groupId, userId, joinPolicy }: { groupId: string, userId: string, joinPolicy?: string }) => {
+            return communityAPI.joinGroup(groupId, userId, joinPolicy);
         },
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.groups() });
