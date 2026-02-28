@@ -27,6 +27,9 @@ concurrency:
   group: web-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
   build-web:
     name: Build Web
