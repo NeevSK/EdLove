@@ -30,7 +30,7 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function ShadowAgentDrawer() {
     const { bottom: bottomInset } = useSafeAreaInsets();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [currentSeed, setCurrentSeed] = useState('');
     const [contextualSuggestion, setContextualSuggestion] = useState<{
@@ -49,7 +49,7 @@ export default function ShadowAgentDrawer() {
         t('shadowAgent.prompts.truth'),
         t('shadowAgent.prompts.forgiveness'),
         t('shadowAgent.prompts.grateful'),
-    ], [t]);
+    ], [i18n.resolvedLanguage]);
 
     const CONTEXTUAL_SUGGESTIONS = useMemo(() => [
         {
@@ -72,7 +72,7 @@ export default function ShadowAgentDrawer() {
             message: t('shadowAgent.nudges.lowEnergy'),
             emoji: '☕'
         },
-    ], [t]);
+    ], [i18n.resolvedLanguage]);
 
     const styles = useMemo(() => StyleSheet.create({
         orbContainer: {

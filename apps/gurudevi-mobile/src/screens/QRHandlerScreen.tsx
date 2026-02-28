@@ -69,7 +69,7 @@ export default function QRHandlerScreen() {
       if (result.outcome === 'success') {
         hapticSuccess();
         setStatus('success');
-        setMessage(result.message);
+        setMessage(t('qrHandler.actionSuccess'));
 
         if (result.intent) {
           // Map Abstract Core Intent -> Mobile Specific Navigation
@@ -87,7 +87,7 @@ export default function QRHandlerScreen() {
         }
       } else if (result.outcome === 'redirect') {
         setStatus('success');
-        setMessage(result.message);
+        setMessage(t('qrHandler.actionSuccess'));
         if (result.intent === 'GOTO_THUTHIMAL_CLAIM') {
           navigation.replace('ThuthimalClaim', result.params);
         }

@@ -746,6 +746,7 @@
         "done": "අවසන්!",
         "error": "දෝෂයකි",
         "processingMessage": "QR ක්‍රියාව සකසමින් පවතී...",
+        "actionSuccess": "ක්‍රියාව සාර්ථකව සම්පූර්ණ විය.",
         "somethingWrong": "යම් දෝෂයක් ඇතිවිය. නැවත උත්සාහ කරන්න."
     },
     "invitationWelcome": {
@@ -870,6 +871,13 @@
         "title": "සමාජ මධ්‍යස්ථානය",
         "subtitle": "ඔබේ සම්බන්ධතා සකස් කරන්න",
         "selectPlatform": "වේදිකාව තෝරන්න",
+        "platforms": {
+            "whatsapp": "WhatsApp",
+            "linkedin": "LinkedIn",
+            "instagram": "Instagram",
+            "portfolio": "Portfolio",
+            "email": "ඊමේල්"
+        },
         "handleOrLink": "ලිංකය හෝ හෑන්ඩල්ය",
         "phoneOrLink": "+94...",
         "usernameOrLink": "පරිශීලක නාමය හෝ සබැඳිය",
@@ -910,6 +918,12 @@
         "religiousContext": "ප්‍රධාන ආගමික සන්දර්භය",
         "academicLevels": "අධ්‍යයන මට්ටම්",
         "academicLevelsDesc": "ඔබේ පාසලේ ශ්‍රේණි/මට්ටම් තෝරන්න.",
+        "levels": {
+            "primary": "ප්‍රාථමික (1-5)",
+            "juniorSecondary": "කනිෂ්ඨ ද්විතීයික (6-9)",
+            "secondary": "ද්විතීයික (10-11)",
+            "advancedLevel": "උසස් පෙළ (12-13)"
+        },
         "orgSections": "සංවිධානාත්මක අංශ",
         "orgSectionsDesc": "අංශ නිර්වචනය කිරීම පසුව පරිපාලන ධූරාවලිය ගොඩනැගීමට ප්‍රයෝජනකරයි.",
         "addCustomSection": "අභිරුචි අංශයක් එකතු කරන්න (ළඟදීම)",
@@ -917,7 +931,7 @@
         "selectProvince": "පළාත තෝරන්න",
         "district": "දිස්ත්‍රික්කය",
         "selectDistrict": "දිස්ත්‍රික්කය තෝරන්න",
-        "selectProvincFirst": "පළමු පළාත තෝරන්න",
+        "selectProvinceFirst": "පළමු පළාත තෝරන්න",
         "city": "නගරය",
         "cityPlaceholder": "උදා: මහනුවර",
         "postalAddress": "තැපැල් ලිපිනය",

@@ -26,7 +26,8 @@ interface StepDemographicsProps {
 
 export default function StepDemographics({ data, onUpdate }: StepDemographicsProps) {
     const colors = useThemedColors();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const lang = (i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
 
     return (
         <VStack sx={{ gap: '$lg' as any }}>
@@ -57,7 +58,7 @@ export default function StepDemographics({ data, onUpdate }: StepDemographicsPro
                                 bold={data.studentType === type.id}
                                 sx={{ fontSize: '$sm' as any }}
                             >
-                                {type.en.split(' ')[0]}
+                                {(type[lang] ?? type.en).split(' ')[0]}
                             </Text>
                         </Pressable>
                     ))}
@@ -99,7 +100,7 @@ export default function StepDemographics({ data, onUpdate }: StepDemographicsPro
                                     color={data.religiousAffiliation === rel.id ? Theme.colors.sacredWhite : colors.textSecondary}
                                     sx={{ fontSize: '$xs' as any }}
                                 >
-                                    {rel.en}
+                                    {rel[lang] ?? rel.en}
                                 </Text>
                             </Pressable>
                         ))}

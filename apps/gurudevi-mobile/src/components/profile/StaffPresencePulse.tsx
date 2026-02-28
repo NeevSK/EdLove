@@ -23,7 +23,7 @@ interface StaffPresencePulseProps {
 
 export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, schoolId }) => {
     const colors = useThemedColors();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { attendance, isCheckedIn, checkIn, checkOut, loading } = useStaffPresence(userId, schoolId);
     const [actionLoading, setActionLoading] = useState(false);
 
@@ -53,7 +53,7 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
                         <VStack>
                             <Text variant="p2" weight="bold">{t('staffPresence.attendanceStatus')}</Text>
                             <Text variant="p3" color={colors.textSecondary}>
-                                {format(new Date(), 'EEEE, MMMM do')}
+                                {new Intl.DateTimeFormat(i18n.language, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(new Date())}
                             </Text>
                         </VStack>
                         <View style={[
@@ -75,14 +75,14 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
                             <Clock size={18} color={colors.primary} />
                             <Text variant="p4" mt="$1">{t('staffPresence.checkedInAt')}</Text>
                             <Text variant="p3" weight="bold">
-                                {todayAttendance ? format(new Date(todayAttendance.check_in), 'hh:mm a') : '--:--'}
+                                {todayAttendance ? new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit' }).format(new Date(todayAttendance.check_in)) : '--:--'}
                             </Text>
                         </VStack>
                         <VStack style={styles.statBox}>
                             <LogOut size={18} color={colors.secondary} />
                             <Text variant="p4" mt="$1">{t('staffPresence.checkedOutAt')}</Text>
                             <Text variant="p3" weight="bold">
-                                {todayAttendance?.check_out ? format(new Date(todayAttendance.check_out), 'hh:mm a') : '--:--'}
+                                {todayAttendance?.check_out ? new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit' }).format(new Date(todayAttendance.check_out)) : '--:--'}
                             </Text>
                         </VStack>
                     </HStack>

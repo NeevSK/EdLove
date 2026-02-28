@@ -47,7 +47,7 @@ interface SleepTrackerProps {
 export default function SleepTracker({ userId }: SleepTrackerProps) {
     // Resilient Data Hook
     const { sleepLogs, refreshData } = useSleepTracker(userId);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const [sleepQuality, setSleepQuality] = useState(3);
     const [hasLoggedToday, setHasLoggedToday] = useState(false);
@@ -62,7 +62,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
         { value: 3, label: t('sleepTracker.okay'), emoji: '😐', color: Theme.colors.mistGray, description: t('sleepTracker.okayDesc') },
         { value: 4, label: t('sleepTracker.good'), emoji: '😊', color: Theme.colors.sageGreen, description: t('sleepTracker.goodDesc') },
         { value: 5, label: t('sleepTracker.excellent'), emoji: '😌', color: Theme.colors.sanctuarySaffron, description: t('sleepTracker.excellentDesc') },
-    ], [t]);
+    ], [i18n.resolvedLanguage]);
 
     const currentQuality = SLEEP_QUALITY[sleepQuality - 1];
 

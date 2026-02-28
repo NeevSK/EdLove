@@ -20,7 +20,7 @@ interface ThuthimalBadgeProps {
  */
 export default function ThuthimalBadge({ gifterName = 'Anonymous', giftedAt, compact = false }: ThuthimalBadgeProps) {
     const colors = useThemedColors();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const displayName = gifterName || 'Anonymous';
 
@@ -69,7 +69,7 @@ export default function ThuthimalBadge({ gifterName = 'Anonymous', giftedAt, com
             {/* Date if provided */}
             {giftedAt && (
                 <Text style={styles.date}>
-                    {t('thuthimalBadge.giftedOn', { date: new Date(giftedAt).toLocaleDateString('en-US', {
+                    {t('thuthimalBadge.giftedOn', { date: new Date(giftedAt).toLocaleDateString(i18n.language, {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'

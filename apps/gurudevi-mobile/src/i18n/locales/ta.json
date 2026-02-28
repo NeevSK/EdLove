@@ -717,6 +717,7 @@
         "done": "முடிந்தது!",
         "error": "பிழை",
         "processingMessage": "QR செயலை செயல்படுத்துகிறது...",
+        "actionSuccess": "செயல் வெற்றிகரமாக முடிந்தது.",
         "somethingWrong": "ஏதோ தவறு நடந்தது. மீண்டும் முயற்சிக்கவும்."
     },
     "invitationWelcome": {
@@ -841,6 +842,13 @@
         "title": "சமூக மையம்",
         "subtitle": "உங்கள் விருப்பமான இணைப்புகளை நிர்வகிக்கவும்",
         "selectPlatform": "தளத்தை தேர்வு செய்யவும்",
+        "platforms": {
+            "whatsapp": "WhatsApp",
+            "linkedin": "LinkedIn",
+            "instagram": "Instagram",
+            "portfolio": "Portfolio",
+            "email": "மின்னஞ்சல்"
+        },
         "handleOrLink": "ஹேண்டில் அல்லது இணைப்பு",
         "phoneOrLink": "+94...",
         "usernameOrLink": "பயனர்பெயர் அல்லது இணைப்பு",
@@ -881,6 +889,12 @@
         "religiousContext": "முதன்மை மதச் சூழல்",
         "academicLevels": "கல்வி நிலைகள்",
         "academicLevelsDesc": "உங்கள் பள்ளி உள்ளடக்கும் வகுப்புகள்/நிலைகளை தேர்ந்தெடுக்கவும்.",
+        "levels": {
+            "primary": "ஆரம்பம் (1-5)",
+            "juniorSecondary": "கீழ் இடைநிலை (6-9)",
+            "secondary": "இடைநிலை (10-11)",
+            "advancedLevel": "உயர் தர (12-13)"
+        },
         "orgSections": "நிறுவன பிரிவுகள்",
         "orgSectionsDesc": "பிரிவுகளை வரையறுப்பது பின்னர் நிர்வாக படிநிலையை உருவாக்க உதவும்.",
         "addCustomSection": "தனிப்பயன் பிரிவு சேர்க்கவும் (விரைவில்)",
@@ -888,7 +902,7 @@
         "selectProvince": "மாகாணத்தை தேர்வு செய்யவும்",
         "district": "மாவட்டம்",
         "selectDistrict": "மாவட்டத்தை தேர்வு செய்யவும்",
-        "selectProvincFirst": "முதலில் மாகாணத்தை தேர்வு செய்யவும்",
+        "selectProvinceFirst": "முதலில் மாகாணத்தை தேர்வு செய்யவும்",
         "city": "நகரம்",
         "cityPlaceholder": "எ.கா. கண்டி",
         "postalAddress": "அஞ்சல் முகவரி",

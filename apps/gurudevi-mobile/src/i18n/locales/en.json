@@ -897,6 +897,7 @@
         "done": "Done!",
         "error": "Error",
         "processingMessage": "Processing QR action...",
+        "actionSuccess": "Action completed successfully.",
         "somethingWrong": "Something went wrong. Please try again."
     },
     "invitationWelcome": {
@@ -1021,6 +1022,13 @@
         "title": "Social Hub",
         "subtitle": "Manage your elective connections",
         "selectPlatform": "Select Platform",
+        "platforms": {
+            "whatsapp": "WhatsApp",
+            "linkedin": "LinkedIn",
+            "instagram": "Instagram",
+            "portfolio": "Portfolio",
+            "email": "Email"
+        },
         "handleOrLink": "Handle or Link",
         "phoneOrLink": "+94...",
         "usernameOrLink": "Username or link",
@@ -1061,6 +1069,12 @@
         "religiousContext": "Primary Religious Context",
         "academicLevels": "Academic Levels",
         "academicLevelsDesc": "Select the grades/levels your school covers.",
+        "levels": {
+            "primary": "Primary (1-5)",
+            "juniorSecondary": "Junior Secondary (6-9)",
+            "secondary": "Secondary (10-11)",
+            "advancedLevel": "Advanced Level (12-13)"
+        },
         "orgSections": "Organizational Sections",
         "orgSectionsDesc": "Defining sections helps in building the administrative hierarchy later.",
         "addCustomSection": "Add custom section (Coming Soon)",
@@ -1068,7 +1082,7 @@
         "selectProvince": "Select Province",
         "district": "District",
         "selectDistrict": "Select District",
-        "selectProvincFirst": "Select Province first",
+        "selectProvinceFirst": "Select Province first",
         "city": "City",
         "cityPlaceholder": "e.g. Kandy",
         "postalAddress": "Postal Address",

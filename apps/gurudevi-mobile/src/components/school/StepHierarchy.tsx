@@ -20,7 +20,12 @@ interface StepHierarchyProps {
     onUpdate: (hier: Partial<StepHierarchyProps['data']>) => void;
 }
 
-const COMMON_LEVELS = ['Primary (1-5)', 'Junior Secondary (6-9)', 'Secondary (10-11)', 'Advanced Level (12-13)'];
+const COMMON_LEVELS: { id: string; labelKey: string }[] = [
+    { id: 'Primary (1-5)', labelKey: 'schoolSetup.levels.primary' },
+    { id: 'Junior Secondary (6-9)', labelKey: 'schoolSetup.levels.juniorSecondary' },
+    { id: 'Secondary (10-11)', labelKey: 'schoolSetup.levels.secondary' },
+    { id: 'Advanced Level (12-13)', labelKey: 'schoolSetup.levels.advancedLevel' },
+];
 
 export default function StepHierarchy({ data, onUpdate }: StepHierarchyProps) {
     const colors = useThemedColors();
@@ -43,19 +48,19 @@ export default function StepHierarchy({ data, onUpdate }: StepHierarchyProps) {
                 <VStack sx={{ gap: '$2' as any }}>
                     {COMMON_LEVELS.map(level => (
                         <Pressable
-                            key={level}
-                            onPress={() => toggleLevel(level)}
+                            key={level.id}
+                            onPress={() => toggleLevel(level.id)}
                             sx={{
                                 padding: '$3' as any,
                                 borderRadius: Theme.corners.comfortable,
                                 borderWidth: 1,
-                                borderColor: data.levels.includes(level) ? Theme.colors.sanctuarySaffron : colors.border,
-                                backgroundColor: data.levels.includes(level) ? `${Theme.colors.sanctuarySaffron}10` : colors.secondary,
+                                borderColor: data.levels.includes(level.id) ? Theme.colors.sanctuarySaffron : colors.border,
+                                backgroundColor: data.levels.includes(level.id) ? `${Theme.colors.sanctuarySaffron}10` : colors.secondary,
                             }}
                         >
                             <HStack justifyContent="space-between" alignItems="center">
-                                <Text color={data.levels.includes(level) ? Theme.colors.sanctuarySaffron : colors.text}>{level}</Text>
-                                {data.levels.includes(level) && <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} />}
+                                <Text color={data.levels.includes(level.id) ? Theme.colors.sanctuarySaffron : colors.text}>{t(level.labelKey)}</Text>
+                                {data.levels.includes(level.id) && <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} />}
                             </HStack>
                         </Pressable>
                     ))}

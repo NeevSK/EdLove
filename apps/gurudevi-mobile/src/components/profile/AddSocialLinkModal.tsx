@@ -49,12 +49,12 @@ interface AddSocialLinkModalProps {
     userId: string;
 }
 
-const PLATFORMS: { label: string; value: SocialPlatform; icon: any; color: string }[] = [
-    { label: 'WhatsApp', value: 'whatsapp', icon: MessagesSquare, color: Theme.colors.whatsapp },
-    { label: 'LinkedIn', value: 'linkedin', icon: Linkedin, color: Theme.colors.linkedin },
-    { label: 'Instagram', value: 'instagram', icon: Instagram, color: Theme.colors.instagram },
-    { label: 'Portfolio', value: 'website', icon: Globe, color: Theme.colors.portfolio },
-    { label: 'Email', value: 'website', icon: Mail, color: Theme.colors.emberOrange }, // Mapping to website type for now or core needs update
+const PLATFORMS: { labelKey: string; value: SocialPlatform; icon: any; color: string }[] = [
+    { labelKey: 'addSocialLink.platforms.whatsapp', value: 'whatsapp', icon: MessagesSquare, color: Theme.colors.whatsapp },
+    { labelKey: 'addSocialLink.platforms.linkedin', value: 'linkedin', icon: Linkedin, color: Theme.colors.linkedin },
+    { labelKey: 'addSocialLink.platforms.instagram', value: 'instagram', icon: Instagram, color: Theme.colors.instagram },
+    { labelKey: 'addSocialLink.platforms.portfolio', value: 'website', icon: Globe, color: Theme.colors.portfolio },
+    { labelKey: 'addSocialLink.platforms.email', value: 'website', icon: Mail, color: Theme.colors.emberOrange }, // Mapping to website type for now or core needs update
 ];
 
 const PRIVACY_LEVELS: { value: PrivacyLevel; icon: any; labelKey: string; descKey: string }[] = [
@@ -153,7 +153,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                                         marginLeft: 6
                                                     }}
                                                 >
-                                                    {p.label}
+                                                    {t(p.labelKey)}
                                                 </Text>
                                             </TouchableOpacity>
                                         ))}

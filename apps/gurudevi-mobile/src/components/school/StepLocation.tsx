@@ -34,7 +34,8 @@ interface StepLocationProps {
 
 export default function StepLocation({ data, onUpdate }: StepLocationProps) {
     const colors = useThemedColors();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const lang = (i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
 
     const filteredDistricts = useMemo(() => {
         if (!data.provinceId) return [];
@@ -65,7 +66,7 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
                                 <SelectDragIndicator />
                             </SelectDragIndicatorWrapper>
                             {SRI_LANKAN_PROVINCES.map(province => (
-                                <SelectItem key={province.id} label={province.en} value={province.id} />
+                                <SelectItem key={province.id} label={province[lang] ?? province.en} value={province.id} />
                             ))}
                         </SelectContent>
                     </SelectPortal>
@@ -84,7 +85,7 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
                     onValueChange={(value) => onUpdate({ districtId: value })}
                 >
                     <SelectTrigger variant="outline" sx={{ height: 48, borderRadius: Theme.corners.comfortable, backgroundColor: colors.secondary }}>
-                        <SelectInput placeholder={data.provinceId ? t('schoolSetup.selectDistrict') : t('schoolSetup.selectProvincFirst')} color={colors.text} sx={{ flex: 1 }} />
+                        <SelectInput placeholder={data.provinceId ? t('schoolSetup.selectDistrict') : t('schoolSetup.selectProvinceFirst')} color={colors.text} sx={{ flex: 1 }} />
                         <SelectIcon mr="$3" as={ChevronDown} color={Theme.colors.sanctuarySaffron} />
                     </SelectTrigger>
                     <SelectPortal>
@@ -94,7 +95,7 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
                                 <SelectDragIndicator />
                             </SelectDragIndicatorWrapper>
                             {filteredDistricts.map(district => (
-                                <SelectItem key={district.id} label={district.en} value={district.id} />
+                                <SelectItem key={district.id} label={district[lang] ?? district.en} value={district.id} />
                             ))}
                         </SelectContent>
                     </SelectPortal>
