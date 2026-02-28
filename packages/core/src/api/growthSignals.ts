@@ -39,6 +39,8 @@
 
 import { supabase } from '../lib/supabase';
 import { userGrowthStateAPI, GrowthDimension } from './userGrowthState';
+import { naturePathsAPI } from './naturePaths';
+import { contextualChallengesAPI, ChallengeMetric } from './contextualChallenges';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TYPES
@@ -146,6 +148,53 @@ export const GROWTH_SIGNAL_MAP: Record<GrowthSignalType, GrowthDimension> = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// SIGNAL → CHALLENGE METRIC MAP
+// Maps growth signal types to the ChallengeMetric that they contribute to.
+// Used by emitSignal to wire challenge progress automatically.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const SIGNAL_TO_CHALLENGE_METRIC: Partial<Record<GrowthSignalType, ChallengeMetric>> = {
+    resource_read: 'library_resources_opened',
+    wisdom_seed_read: 'library_resources_opened',
+    joy_jar_entry: 'joy_jar_entries',
+    reflection_submitted: 'reflections_written',
+    reflection_written: 'reflections_written',
+    lesson_completed: 'lessons_completed',
+    attendance_recorded: 'attendance_recorded',
+    assignment_graded: 'feedback_given',
+    community_post_created: 'community_posts',
+    group_message_sent: 'community_posts',
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SIGNALS THAT ADVANCE NATURE PATHS (in addition to Bhumi)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Signals that also advance the Banyan path (teacher mentorship/ecosystem dimension). */
+const BANYAN_SIGNALS = new Set<GrowthSignalType>([
+    'peer_mentored',
+    'circle_facilitated',
+    'resource_gifted',
+    'colleague_helped',
+]);
+
+/** Signals that also advance the River path (student learning flow). */
+const RIVER_SIGNALS = new Set<GrowthSignalType>([
+    'lesson_completed',
+    'deep_study_session',
+    'reflection_submitted',
+    'knowledge_connected',
+    'resource_read',
+]);
+
+/** Signals that also advance the Crystal path (student discoveries). */
+const CRYSTAL_SIGNALS = new Set<GrowthSignalType>([
+    'crystal_found',
+    'fractal_moment',
+    'knowledge_connected',
+]);
+
+// ─────────────────────────────────────────────────────────────────────────────
 // WHISPERED MOMENT DEFINITIONS
 // (See GROWTH_MODEL.md Section 4 for full catalog and design specification.)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -241,6 +290,8 @@ export const growthSignalsAPI = {
      *   2. Increments the user's dimension counter in `user_growth_state`
      *   3. Checks and awards any triggered Whispered Moments
      *   4. Checks and advances the user's Bhumi stage if criteria are met
+     *   5. Advances any relevant nature path (Banyan / River / Crystal) based on signal type
+     *   6. Records contribution toward any active Contextual Challenges (class / school / personal compass)
      *
      * @param userId     The user performing the action.
      * @param signalType Semantic type of the signal (see GrowthSignalType).
@@ -273,6 +324,57 @@ export const growthSignalsAPI = {
 
         // 3. Check for Whispered Moments triggered by this signal type
         await checkWhisperedMoments(userId, signalType).catch(() => {});
+
+        // 4. Advance nature path if this signal is relevant to Banyan / River / Crystal
+        if (BANYAN_SIGNALS.has(signalType)) {
+            const state = await userGrowthStateAPI.getFullState(userId).catch(() => null);
+            if (state) {
+                void naturePathsAPI.advanceBanyan(userId, {
+                    banyan_stage: (state.banyan_stage as any) ?? 'sapling',
+                    peer_mentored_count: state.peer_mentored_count ?? 0,
+                    circles_facilitated_count: state.circles_facilitated_count ?? 0,
+                    blooming_signals: state.blooming_signals ?? 0,
+                }).catch(() => {});
+            }
+        } else if (RIVER_SIGNALS.has(signalType)) {
+            const state = await userGrowthStateAPI.getFullState(userId).catch(() => null);
+            if (state) {
+                void naturePathsAPI.advanceRiver(userId, {
+                    river_stage: (state.river_stage as any) ?? 'trickle',
+                    lessons_completed_count: state.lessons_completed_count ?? 0,
+                    reflections_submitted_count: state.reflections_submitted_count ?? 0,
+                    weaving_signals: state.weaving_signals ?? 0,
+                }).catch(() => {});
+            }
+        }
+        if (CRYSTAL_SIGNALS.has(signalType)) {
+            const isFractal = signalType === 'fractal_moment';
+            const subjectArea = (metadata.subject_area as string | undefined)
+                ?? (metadata.section as string | undefined)
+                ?? 'general';
+            void naturePathsAPI.recordCrystalDiscovery(
+                userId,
+                isFractal ? 'fractal' : 'discovery',
+                [subjectArea],
+                isFractal ? 'A Fractal Moment' : 'A New Discovery',
+                isFractal
+                    ? 'You connected ideas across domains — the crystal found its fractal.'
+                    : 'Something clicked — a new crystal formed in your collection.',
+                isFractal,
+                metadata.entity_id as string | undefined,
+            ).catch(() => {});
+        }
+
+        // 5. Record contribution toward any active Contextual Challenges
+        const challengeMetric = SIGNAL_TO_CHALLENGE_METRIC[signalType];
+        if (challengeMetric) {
+            void contextualChallengesAPI.recordContribution(
+                userId,
+                challengeMetric,
+                metadata.classroom_id as string | undefined,
+                metadata.school_id as string | undefined,
+            ).catch(() => {});
+        }
     },
 
     /**

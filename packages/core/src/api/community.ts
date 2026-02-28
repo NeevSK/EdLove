@@ -135,8 +135,8 @@ export const communityAPI = {
 
         if (error) throw error;
 
-        // Growth signal: teacher started a community circle (Weaving dimension)
-        void growthSignalsAPI.emitSignal(userId, 'community_post_created', {
+        // Growth signal: teacher started a community circle (Weaving — Banyan path)
+        void growthSignalsAPI.emitSignal(userId, 'circle_facilitated', {
             group_id: data?.id,
         }).catch(() => {});
 

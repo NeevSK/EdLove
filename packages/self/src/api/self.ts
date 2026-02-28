@@ -38,7 +38,7 @@ export const selfAPI = {
         }
 
         // Growth signal: teacher chose to check in with themselves (Presence — Tier 2 Care Signal)
-        // Also triggers the 'still_water' Whispered Moment check after 5 consecutive check-ins
+        // Also contributes to the 'still_water' Whispered Moment check after 5 mood check-ins
         void growthSignalsAPI.emitSignal(userId, 'mood_checkin', {
             mood_score: score,
         }).catch(() => {});

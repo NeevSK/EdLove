@@ -23,6 +23,7 @@
  */
 
 import { supabase } from '../lib/supabase';
+import { requireAuth } from '../lib/authorization';
 import { impactRipplesAPI } from './impactRipples';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -205,6 +206,14 @@ export const schoolForestAPI = {
      * falls back to live `growth_events` computation if the table is empty.
      */
     async getForestOverview(schoolId: string): Promise<SchoolForestState> {
+        // Only principals, grade heads, and developers may view the school forest
+        const user = await requireAuth();
+        const allowedRoles = ['principal', 'grade_head', 'section_head', 'developer', 'founder', 'admin'];
+        const userRole = (user as any).user_metadata?.role ?? (user as any).app_metadata?.role;
+        if (!allowedRoles.includes(userRole)) {
+            throw new Error('Forbidden: School Forest is accessible to principals only');
+        }
+
         const now = new Date();
 
         // Fetch pre-computed forest state
@@ -268,33 +277,51 @@ export const schoolForestAPI = {
             };
         }
 
-        // Get growth signals for each teacher over the past 14 days
+        const teacherIds = teachers.map(t => t.id);
+
+        // Batch query: growth events for ALL teachers in one request (avoids N+1)
+        const { data: allSignals } = await supabase
+            .from('growth_events')
+            .select('user_id, dimension, created_at')
+            .in('user_id', teacherIds)
+            .gte('created_at', fourteenDaysAgo);
+
+        // Batch query: growth state for ALL teachers in one request (avoids N+1)
+        const { data: allGrowthStates } = await supabase
+            .from('user_growth_state')
+            .select('user_id, created_at, blooming_signals')
+            .in('user_id', teacherIds);
+
+        // Build lookup maps for O(1) access per teacher
+        const signalsByTeacher = new Map<string, Array<{ dimension: string; created_at: string }>>();
+        for (const signal of allSignals ?? []) {
+            const list = signalsByTeacher.get(signal.user_id) ?? [];
+            list.push(signal);
+            signalsByTeacher.set(signal.user_id, list);
+        }
+
+        const growthStateByTeacher = new Map<string, { created_at: string | null; blooming_signals: number | null }>();
+        for (const state of allGrowthStates ?? []) {
+            growthStateByTeacher.set(state.user_id, state);
+        }
+
+        // Compute tree health for each teacher without further DB queries
         const trees: TeacherTree[] = [];
 
         for (const teacher of teachers) {
-            const { data: signals } = await supabase
-                .from('growth_events')
-                .select('dimension, created_at')
-                .eq('user_id', teacher.id)
-                .gte('created_at', fourteenDaysAgo);
+            const signals = signalsByTeacher.get(teacher.id) ?? [];
+            const growthState = growthStateByTeacher.get(teacher.id);
 
-            const presenceSignals = (signals ?? []).filter(s => s.dimension === 'presence').length;
-            const nourishingSignals = (signals ?? []).filter(s => s.dimension === 'nourishing').length;
-            const weavingSignals = (signals ?? []).filter(s => s.dimension === 'weaving').length;
-
-            // Get how long they've been in the system
-            const { data: growthState } = await supabase
-                .from('user_growth_state')
-                .select('created_at, blooming_signals')
-                .eq('user_id', teacher.id)
-                .maybeSingle();
+            const presenceSignals = signals.filter(s => s.dimension === 'presence').length;
+            const nourishingSignals = signals.filter(s => s.dimension === 'nourishing').length;
+            const weavingSignals = signals.filter(s => s.dimension === 'weaving').length;
 
             const durationDays = growthState?.created_at
                 ? Math.floor((now.getTime() - new Date(growthState.created_at).getTime()) / 86400000)
                 : 0;
 
-            const lastSignal = signals && signals.length > 0
-                ? signals.sort((a, b) =>
+            const lastSignal = signals.length > 0
+                ? signals.slice().sort((a, b) =>
                     new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
                 )[0].created_at
                 : null;

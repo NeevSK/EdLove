@@ -115,12 +115,18 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
     );
 };
 
-const StatsSection = ({ profile, rewards, role }: any) => (
-    <LivingJourneyPanel
-        userId={profile?.id}
-        role={role ?? 'student'}
-    />
-);
+const StatsSection = ({ profile, role }: any) => {
+    if (!profile?.id) {
+        return null;
+    }
+
+    return (
+        <LivingJourneyPanel
+            userId={profile.id}
+            role={role ?? 'student'}
+        />
+    );
+};
 
 const SupportSection = ({ t, colors }: any) => (
     <Center>

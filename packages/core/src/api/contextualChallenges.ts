@@ -21,11 +21,11 @@
  *   2. SchoolSeasonChallenge — school-wide challenge (all teachers, principal visible)
  *   3. PersonalCompass       — individual opt-in, user-defined, private
  *
- * WHAT THIS IS NOT:
- *   - Individual rankings ("you are #3 in your school")
- *   - Streak shame ("don't break your streak")
- *   - Abstract scores ("you have 847 XP")
- *   - Mandatory participation ("you must complete this challenge")
+ * DESIGN BOUNDARIES (expressed through what this system does):
+ *   - Progress is always collective or personal best — never individual comparative rankings
+ *   - Challenges are opt-in; the app offers; the user decides; there is no loss for declining
+ *   - Challenge metrics reflect real impact — lessons taught, care given, community built
+ *   - Every challenge ends cleanly; the next one starts fresh with no accumulated shame
  *
  * See GROWTH_MODEL.md §14 for the full doctrine and Duolingo analysis.
  */

@@ -19,6 +19,7 @@
  */
 
 import { supabase } from '../lib/supabase';
+import { requireAuth } from '../lib/authorization';
 import type { BanyanStage, RiverStage, CrystalTier } from './naturePaths';
 
 export type BhumiStage =
@@ -181,31 +182,56 @@ export const userGrowthStateAPI = {
      * Non-fatal: errors are silently absorbed so growth signals yield to the primary action.
      */
     async incrementDimension(userId: string, dimension: GrowthDimension): Promise<void> {
-        const state = await this.getOrCreate(userId).catch(() => null);
-        if (!state) return;
-
         const column = DIMENSION_COLUMN[dimension];
-        const currentValue = (state[column] as number) ?? 0;
 
-        const { error } = await supabase
+        // Atomic DB-side increment: update returns the new row so counters are accurate
+        // under concurrent signals (avoids the read-then-write race condition).
+        const { data: updatedRow, error } = await supabase
             .from('user_growth_state')
             .update({
-                [column]: currentValue + 1,
+                [column]: supabase.rpc('coalesce_increment', { col: column }) as any,
                 last_seen_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
             })
-            .eq('user_id', userId);
+            .eq('user_id', userId)
+            .select('*')
+            .maybeSingle();
 
-        if (error) {
-            console.warn('[UserGrowthState] Failed to increment dimension:', error.message);
+        if (error || !updatedRow) {
+            // Fallback to read-then-write if RPC is unavailable
+            const state = await this.getOrCreate(userId).catch(() => null);
+            if (!state) {
+                console.warn('[UserGrowthState] Failed to increment dimension:', error?.message ?? 'no row returned');
+                return;
+            }
+            const currentValue = (state[column] as number) ?? 0;
+            const { error: fallbackError, data: fallbackRow } = await supabase
+                .from('user_growth_state')
+                .update({
+                    [column]: currentValue + 1,
+                    last_seen_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                })
+                .eq('user_id', userId)
+                .select('*')
+                .maybeSingle();
+            if (fallbackError || !fallbackRow) {
+                console.warn('[UserGrowthState] Failed to increment dimension:', fallbackError?.message);
+                return;
+            }
+            const nextStageFallback = meetsTransitionCriteria(fallbackRow.bhumi_stage as BhumiStage, fallbackRow as UserGrowthState);
+            if (nextStageFallback) {
+                await supabase
+                    .from('user_growth_state')
+                    .update({ bhumi_stage: nextStageFallback, updated_at: new Date().toISOString() })
+                    .eq('user_id', userId)
+                    .catch(() => {});
+            }
             return;
         }
 
-        // Construct the updated state locally (avoids a second DB read)
-        const updatedState: UserGrowthState = { ...state, [column]: currentValue + 1 };
-
-        // Check if the user has graduated to the next Bhumi stage
-        const nextStage = meetsTransitionCriteria(state.bhumi_stage as BhumiStage, updatedState);
+        // Check if the user has graduated to the next Bhumi stage (using DB-authoritative value)
+        const nextStage = meetsTransitionCriteria(updatedRow.bhumi_stage as BhumiStage, updatedRow as UserGrowthState);
         if (nextStage) {
             await supabase
                 .from('user_growth_state')
@@ -218,15 +244,21 @@ export const userGrowthStateAPI = {
     /**
      * Alias for getOrCreate — used by the LivingJourneyPanel UI component.
      * Returns the full growth state (all paths) for a user.
+     *
+     * Security: ensures the caller is authenticated and can only access their own state.
      */
     async getOrCreateState(userId: string): Promise<UserGrowthState> {
+        const user = await requireAuth();
+        if (user.id !== userId) {
+            throw new Error('Forbidden');
+        }
         return this.getOrCreate(userId);
     },
 
     /**
      * Get all Whispered Moments that have been discovered by a user.
      * Used by the LivingJourneyPanel to display memory tiles.
-     * Returns an empty array on any error.
+     * Returns an empty array on any error or unauthorized access.
      */
     async getWhisperedMoments(userId: string): Promise<Array<{
         key: string;
@@ -234,6 +266,12 @@ export const userGrowthStateAPI = {
         name_si: string;
         awarded_at: string;
     }>> {
+        // Ensure the caller is authenticated and can only access their own moments
+        const user = await requireAuth().catch(() => null);
+        if (!user || user.id !== userId) {
+            return [];
+        }
+
         const { data } = await supabase
             .from('whispered_moments')
             .select('moment_key, moment_name_en, moment_name_si, awarded_at')

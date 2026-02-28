@@ -28,6 +28,7 @@ import { impactRipplesAPI } from './impactRipples';
 import { warmMirrorAPI } from './warmMirror';
 import { naturePathsAPI } from './naturePaths';
 import { moonPhaseAPI } from './moonPhase';
+import { schoolForestAPI } from './schoolForest';
 import { contextualChallengesAPI } from './contextualChallenges';
 
 export * from './mockData';

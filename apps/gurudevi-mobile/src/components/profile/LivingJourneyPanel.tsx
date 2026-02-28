@@ -18,7 +18,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import {
     Box,
     VStack,
@@ -171,7 +171,7 @@ function MoonRow({ moon, colors }: { moon: MoonPhase; colors: ReturnType<typeof 
                             color={colors.textTertiary}
                             style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
                         >
-                            Moon Tonight
+                            {t('journey.moonTonight', 'Moon Tonight')}
                         </Text>
                         <Text size="sm" bold color={colors.text}>
                             {moon.name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
@@ -182,7 +182,7 @@ function MoonRow({ moon, colors }: { moon: MoonPhase; colors: ReturnType<typeof 
                     </Text>
                     {moon.is_poya && (
                         <Text size="xs" color={`${colors.action}`} style={{ marginTop: 2 }}>
-                            ✦ Poya day
+                            {t('journey.poyaDay', '✦ Poya day')}
                         </Text>
                     )}
                 </VStack>

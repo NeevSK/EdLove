@@ -19,6 +19,7 @@
  */
 
 import { supabase } from '../lib/supabase';
+import { requireAuth } from '../lib/authorization';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TYPES
@@ -66,6 +67,12 @@ export const warmMirrorAPI = {
      * @param since     ISO timestamp — start of the period to aggregate (default: 7 days ago).
      */
     async getDataPoints(userId: string, since?: string): Promise<WarmMirrorDataPoints> {
+        // Ensure the caller is authenticated and can only access their own Warm Mirror data
+        const user = await requireAuth();
+        if (user.id !== userId) {
+            throw new Error('Forbidden');
+        }
+
         const periodStart = since ?? new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
         // 1. Days present — distinct calendar days with any growth_event
@@ -109,8 +116,8 @@ export const warmMirrorAPI = {
         const { data: gradingData } = await supabase
             .from('grades')
             .select('feedback')
-            .eq('graded_by', userId)
-            .gte('created_at', periodStart)
+            .eq('user_id', userId)
+            .gte('graded_at', periodStart)
             .not('feedback', 'is', null);
         const assignments_with_feedback = (gradingData ?? [])
             .filter(g => (g.feedback?.length ?? 0) > 20).length;
@@ -120,8 +127,9 @@ export const warmMirrorAPI = {
             .from('impact_ripples')
             .select('source_entity_id')
             .eq('recipient_user_id', userId)
+            .eq('delivered', true)
             .in('ripple_type', ['resource_saved', 'resource_read', 'lesson_accessed'])
-            .gte('created_at', periodStart);
+            .gte('delivered_at', periodStart);
         const resources_that_reached_others = new Set(
             (reachRipples ?? []).map(r => r.source_entity_id).filter(Boolean)
         ).size;
@@ -132,7 +140,8 @@ export const warmMirrorAPI = {
             .select('id', { count: 'exact', head: true })
             .eq('recipient_user_id', userId)
             .eq('ripple_type', 'post_sparked')
-            .gte('created_at', periodStart);
+            .eq('delivered', true)
+            .gte('delivered_at', periodStart);
         const posts_that_sparked = postsCount ?? 0;
 
         // 7. Days since joined (from the user's growth state)
