@@ -23,6 +23,14 @@ import { staffManagementAPI } from './staffManagement';
 import { ReliefCoordinator, TimetableScheduler } from './agents';
 import { sacredMissionsAPI } from './sacredMissions';
 import { isDemo, demoAPI } from './demo';
+import { growthSignalsAPI } from './growthSignals';
+import { userGrowthStateAPI } from './userGrowthState';
+import { impactRipplesAPI } from './impactRipples';
+import { warmMirrorAPI } from './warmMirror';
+import { naturePathsAPI } from './naturePaths';
+import { moonPhaseAPI } from './moonPhase';
+import { schoolForestAPI } from './schoolForest';
+import { contextualChallengesAPI } from './contextualChallenges';
 
 export * from './mockData';
 export * from './types';
@@ -33,6 +41,15 @@ export * from './resonantProxy';
 export * from './classroomNotes';
 export * from './principalNotes';
 export * from './community'; // Export community types/API
+// Growth Model v3.0 — Full Nature-Inspired Growth Ecosystem
+export * from './growthSignals';
+export * from './userGrowthState';
+export * from './impactRipples';
+export * from './warmMirror';
+export * from './naturePaths';
+export * from './moonPhase';
+export * from './schoolForest';
+export * from './contextualChallenges';
 export * from './staffManagement'; // Export staff management types/API
 
 // Simplified named exports for direct access
@@ -65,6 +82,14 @@ export {
     TimetableScheduler,
     sacredMissionsAPI,
     demoAPI,
+    growthSignalsAPI,
+    userGrowthStateAPI,
+    impactRipplesAPI,
+    warmMirrorAPI,
+    naturePathsAPI,
+    moonPhaseAPI,
+    schoolForestAPI,
+    contextualChallengesAPI,
 };
 
 /**
@@ -102,6 +127,15 @@ export const api = {
     scheduler: TimetableScheduler,
     missions: sacredMissionsAPI,
     demo: demoAPI,
+    // Growth Model v3.0 — Full Nature-Inspired Growth Ecosystem
+    growth: growthSignalsAPI,
+    growthState: userGrowthStateAPI,
+    ripples: impactRipplesAPI,
+    warmMirror: warmMirrorAPI,
+    naturePaths: naturePathsAPI,
+    moonPhase: moonPhaseAPI,
+    schoolForest: schoolForestAPI,
+    challenges: contextualChallengesAPI,
 };
 
 export default api;

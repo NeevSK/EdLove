@@ -1,7 +1,23 @@
 import { supabase } from '../lib/supabase';
 
 /**
- * API for managing user rewards, points, and gamification milestones.
+ * Growth Signals API — internal tracking of aliveness dimensions.
+ *
+ * ⚠️  PHILOSOPHY ALIGNMENT NOTE (see docs/Core/GROWTH_MODEL.md v2.0):
+ * This module was originally scaffolded as a conventional "points + badges" system.
+ * It is being repurposed toward the Bhumi Nature-Inspired Growth Model (v2.0):
+ *   - `points`  → internal growth_score (NEVER displayed to user as a number)
+ *   - `badges`  → signals fed into Whispered Moments (never a browsable badge collection)
+ *   - NEW v2.0: `impact_ripples` table handles Relatedness (Impact Ripple mechanism)
+ *   - NEW v2.0: `WarmMirrorDataPoints` aggregation handles Competence (Warm Mirror narrative)
+ *   - NEW v2.0: `user_growth_state` table tracks Bhumi life stages (Bijam → Purna Kamala)
+ *
+ * The Gurudevi North Star explicitly prohibits extractive gamification (points/rankings/streaks).
+ * The golden mean (v2.0): genuine human-sourced impact feedback IS healthy (relatedness ≠ gamification).
+ * Do NOT expose points or badge counts in any UI component.
+ * Use `user_growth_state` for the Lotus Life Stage visualization.
+ * Use `impact_ripples` for warm human connection signals.
+ * Use `WarmMirrorDataPoints` aggregation for the weekly personal narrative.
  */
 export const rewardsAPI = {
     /**
@@ -119,7 +135,13 @@ export const rewardsAPI = {
     },
 
     /**
-     * Checks if user qualifies for any new achievements.
+     * Checks if user qualifies for any new Whispered Moments or Bhumi stage transitions.
+     *
+     * ⚠️  MIGRATION PENDING (see GROWTH_MODEL.md Phase 1):
+     * Current implementation awards generic badge strings.
+     * Target implementation: check `user_growth_state` + emit `whispered_moments` events.
+     * The "Sanctuary Seeker" string badge should be migrated to the
+     * `whispered_moments` table with key 'the_seeker' and Sinhala name 'සොයන්නා'.
      */
     async checkAndAwardAchievements(userId: string) {
         // Fetch feature usage

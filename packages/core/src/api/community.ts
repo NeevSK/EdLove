@@ -1,4 +1,6 @@
 import { supabase } from '../lib/supabase';
+import { growthSignalsAPI } from './growthSignals';
+import { impactRipplesAPI } from './impactRipples';
 // Note: Types should ideally be shared in @repo/core/src/types, 
 // for now we use 'any' if types are not yet moved to core to prevent blocking the restoration.
 // However, the community package should ideally depend on core for types.
@@ -107,6 +109,13 @@ export const communityAPI = {
             .single();
 
         if (error) throw error;
+
+        // Growth signal: teacher joined the community conversation (Weaving dimension)
+        void growthSignalsAPI.emitSignal(userId, 'community_post_created', {
+            post_id: data?.id,
+            school_id: schoolId,
+        }).catch(() => {});
+
         return data;
     },
 
@@ -125,6 +134,12 @@ export const communityAPI = {
             .single();
 
         if (error) throw error;
+
+        // Growth signal: teacher started a community circle (Weaving — Banyan path)
+        void growthSignalsAPI.emitSignal(userId, 'circle_facilitated', {
+            group_id: data?.id,
+        }).catch(() => {});
+
         return data;
     },
 
@@ -132,6 +147,13 @@ export const communityAPI = {
      * Join a group
      */
     async joinGroup(groupId: string, userId: string, userRole: string) {
+        // Fetch the group's creator_id before inserting the member record
+        const { data: group } = await supabase
+            .from('community_groups')
+            .select('creator_id')
+            .eq('id', groupId)
+            .maybeSingle();
+
         const { data, error } = await supabase
             .from('group_members')
             .insert([{
@@ -143,6 +165,23 @@ export const communityAPI = {
             .single();
 
         if (error) throw error;
+
+        // Growth signal for the person joining (Weaving dimension)
+        void growthSignalsAPI.emitSignal(userId, 'group_joined', {
+            group_id: groupId,
+        }).catch(() => {});
+
+        // Impact Ripple for the circle creator — "someone joined the circle you started"
+        if (group?.creator_id && group.creator_id !== userId) {
+            void impactRipplesAPI.createRipple({
+                recipientUserId: group.creator_id,
+                actorUserId: userId,
+                rippleType: 'circle_joined',
+                sourceEntityType: 'circle',
+                sourceEntityId: groupId,
+            }).catch(() => {});
+        }
+
         return data;
     },
 
@@ -192,6 +231,12 @@ export const communityAPI = {
             .single();
 
         if (error) throw error;
+
+        // Growth signal: teacher engaged with the community (Weaving dimension)
+        void growthSignalsAPI.emitSignal(user.id, 'group_message_sent', {
+            group_id: groupId,
+        }).catch(() => {});
+
         return data;
     },
 

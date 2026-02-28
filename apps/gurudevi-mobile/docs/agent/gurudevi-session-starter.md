@@ -132,6 +132,21 @@ WHAT ALWAYS TO DO
 
 ## Session-Type Specific Additions
 
+### For Growth / Gamification / Aliveness Sessions
+```
+Additional context: Gurudevi uses a NATURE-INSPIRED GROWTH MODEL, NOT conventional gamification.
+Reference: apps/gurudevi-mobile/docs/Core/GROWTH_MODEL.md — read before touching any growth mechanics.
+
+Key rules:
+— NO points as visible scores. NO leaderboards. NO streak shaming. (North Star Law 3: EROI)
+— Growth is measured across 5 Aliveness Dimensions: Presence, Nourishing, Witnessing, Weaving, Blooming
+— The Bhumi Model uses Lotus Life Stages (Bijam → Purna Kamala) — not numerical levels
+— Whispered Moments are hidden discoveries, NOT a badge collection system
+— Thuthimal (alumni gifting subscriptions) is the HIGHEST recognition event — human-sourced, not algorithmic
+— The existing rewards.ts / AchievementGallery.tsx is misaligned with this model — see GROWTH_MODEL.md Section 9
+— Memory Garden replaces Achievement Gallery; Lotus Life Stage replaces Stats/Points display
+```
+
 ### For Color/Theme Sessions
 ```
 Additional context: The temporal phase system is the living heart of Gurudevi's theme.

@@ -9,6 +9,7 @@
  */
 
 import { supabase } from '../lib/supabase';
+import { growthSignalsAPI } from './growthSignals';
 
 export interface ThuthimalGift {
   id: string;
@@ -75,7 +76,19 @@ export const thuthimalAPI = {
     });
 
     if (error) throw new Error(`Claim RPC failed: ${error.message}`);
-    return data as ClaimResult;
+
+    const result = data as ClaimResult;
+
+    // Growth signal: receiving a Thuthimal is the apex Blooming event —
+    // a past student honoring their teacher years later.
+    // This can advance the teacher to Pūrṇa Kamala (Full Lotus).
+    if (result.success) {
+      void growthSignalsAPI.emitSignal(recipientId, 'thuthimal_received', {
+        gifter_name: result.gifter_name,
+      }).catch(() => {});
+    }
+
+    return result;
   },
 
   /**
