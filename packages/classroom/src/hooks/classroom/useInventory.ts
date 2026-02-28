@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api, InventoryItem } from '@repo/core';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 /**
  * useInventory Hook
@@ -9,7 +9,6 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
  * Loads instantly from cache, background fetches from API.
  */
 export function useInventory(classroomId: string) {
-    const queryClient = useQueryClient();
     const [items, setItems] = useState<InventoryItem[]>([]);
 
     const { data, isLoading } = useQuery({
