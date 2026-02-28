@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { StyleSheet, Dimensions } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, View } from 'react-native';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import {
     Box,
     VStack,
     HStack,
     Text,
-    Pressable,
     useThemedColors,
     Theme,
     ScreenWrapper,
@@ -13,10 +14,7 @@ import {
     SanctuaryButton,
 } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Bookmark, Share2 } from 'lucide-react-native';
-import Animated, { FadeIn } from 'react-native-reanimated';
-
-const { width } = Dimensions.get('window');
+import { Bookmark, Download, ExternalLink } from 'lucide-react-native';
 
 interface PDFViewerScreenProps {
     route: {
@@ -24,19 +22,86 @@ interface PDFViewerScreenProps {
             resourceId: string;
             title: string;
             url: string;
+            creator?: string;
         };
     };
     navigation: any;
 }
 
+type DownloadState = 'idle' | 'downloading' | 'ready' | 'error';
+
 export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
     const { title, url } = route.params;
     const navigation = useNavigation();
     const colors = useThemedColors();
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(12); // Simulated
-    const [zoomLevel, setZoomLevel] = useState(1);
     const [isBookmarked, setIsBookmarked] = useState(false);
+    const [downloadState, setDownloadState] = useState<DownloadState>('idle');
+    const [progress, setProgress] = useState(0);
+    const [localUri, setLocalUri] = useState<string | null>(null);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+    const fileName = `gurudevi_${route.params.resourceId}.pdf`;
+    const localPath = FileSystem.cacheDirectory + fileName;
+
+    const checkCached = useCallback(async () => {
+        try {
+            const info = await FileSystem.getInfoAsync(localPath);
+            if (info.exists) {
+                setLocalUri(localPath);
+                setDownloadState('ready');
+            }
+        } catch {
+            // not cached — that's fine
+        }
+    }, [localPath]);
+
+    useEffect(() => {
+        checkCached();
+    }, [checkCached]);
+
+    const startDownload = useCallback(async () => {
+        if (!url) {
+            setErrorMsg('No URL provided for this document.');
+            setDownloadState('error');
+            return;
+        }
+        setDownloadState('downloading');
+        setProgress(0);
+        setErrorMsg(null);
+        try {
+            const downloadResumable = FileSystem.createDownloadResumable(
+                url,
+                localPath,
+                {},
+                ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
+                    if (totalBytesExpectedToWrite > 0) {
+                        setProgress(totalBytesWritten / totalBytesExpectedToWrite);
+                    }
+                },
+            );
+            const result = await downloadResumable.downloadAsync();
+            if (result?.uri) {
+                setLocalUri(result.uri);
+                setDownloadState('ready');
+                // Auto-open after download completes
+                openNative(result.uri);
+            } else {
+                throw new Error('Download returned no URI');
+            }
+        } catch (e: any) {
+            setErrorMsg(e?.message ?? 'Download failed');
+            setDownloadState('error');
+        }
+    }, [url, localPath]);
+
+    const openNative = useCallback(async (uri?: string) => {
+        const target = uri ?? localUri;
+        if (!target) return;
+        const canShare = await Sharing.isAvailableAsync();
+        if (canShare) {
+            await Sharing.shareAsync(target, { mimeType: 'application/pdf' });
+        }
+    }, [localUri]);
 
     return (
         <ScreenWrapper scroll={false} style={{ backgroundColor: colors.secondary }}>
@@ -45,128 +110,102 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
                 subtitle="Institutional Document"
                 showBack
                 onBack={() => (navigation as any).goBack()}
+                rightActions={[
+                    {
+                        icon: Bookmark,
+                        onPress: () => setIsBookmarked(b => !b),
+                        accessibilityLabel: isBookmarked ? 'Remove bookmark' : 'Bookmark document',
+                        active: isBookmarked,
+                    },
+                ]}
             />
 
-            <VStack sx={{ flex: 1, position: 'relative' }}>
-                {/* PDF Placeholder / Canvas */}
+            <VStack sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}>
+                {/* Icon area */}
                 <Box
                     sx={{
-                        flex: 1,
-                        backgroundColor: '#F0F0F0',
-                        margin: Theme.spacing.md,
-                        borderRadius: Theme.corners.comfortable,
+                        width: 120,
+                        height: 120,
+                        borderRadius: Theme.corners.generous,
+                        backgroundColor: colors.primary + '22',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        overflow: 'hidden',
-                        borderWidth: 1,
-                        borderColor: colors.border
+                        marginBottom: Theme.spacing.xl,
+                        borderWidth: 2,
+                        borderColor: colors.border,
                     }}
                 >
-                    <Animated.View
-                        entering={FadeIn}
-                        style={[
-                            styles.pdfPage,
-                            { transform: [{ scale: zoomLevel }] }
-                        ]}
+                    <Download size={48} color={colors.action} />
+                </Box>
+
+                <Text size="xl" bold color={colors.text} style={{ textAlign: 'center', marginBottom: Theme.spacing.sm }}>
+                    {title}
+                </Text>
+                <Text size="sm" color={colors.textSecondary} style={{ textAlign: 'center', marginBottom: Theme.spacing.xl }}>
+                    Open this document in your device's native PDF viewer.
+                </Text>
+
+                {/* Progress bar — shown while downloading */}
+                {downloadState === 'downloading' && (
+                    <Box sx={{ width: '100%', marginBottom: Theme.spacing.lg }}>
+                        <View style={styles.progressTrack}>
+                            <View style={[styles.progressFill, { width: `${Math.round(progress * 100)}%`, backgroundColor: colors.action }]} />
+                        </View>
+                        <Text size="xs" color={colors.textSecondary} style={{ textAlign: 'center', marginTop: 6 }}>
+                            Downloading… {Math.round(progress * 100)}%
+                        </Text>
+                    </Box>
+                )}
+
+                {errorMsg && (
+                    <Text size="sm" color={Theme.colors.error ?? '#E53E3E'} style={{ textAlign: 'center', marginBottom: Theme.spacing.md }}>
+                        {errorMsg}
+                    </Text>
+                )}
+
+                {/* Action buttons */}
+                {downloadState === 'idle' || downloadState === 'error' ? (
+                    <SanctuaryButton
+                        onPress={startDownload}
+                        leftIcon={Download}
+                        accessibilityLabel="Download and open PDF"
                     >
-                        {/* This represents the PDF content area */}
-                        <VStack space="lg" p="$8" sx={{ width: '100%' }}>
-                            <Box sx={{ height: 20, width: '60%', backgroundColor: '#DDD', borderRadius: 4 }} />
-                            <Box sx={{ height: 12, width: '100%', backgroundColor: '#EEE', borderRadius: 2 }} />
-                            <Box sx={{ height: 12, width: '100%', backgroundColor: '#EEE', borderRadius: 2 }} />
-                            <Box sx={{ height: 12, width: '90%', backgroundColor: '#EEE', borderRadius: 2 }} />
-
-                            <Box sx={{ height: 150, width: '100%', backgroundColor: '#E8E8E8', borderRadius: 8, marginVertical: 20, alignItems: 'center', justifyContent: 'center' }}>
-                                <Text color="#AAA" italic>Diagram Placeholder</Text>
-                            </Box>
-
-                            <Box sx={{ height: 12, width: '100%', backgroundColor: '#EEE', borderRadius: 2 }} />
-                            <Box sx={{ height: 12, width: '100%', backgroundColor: '#EEE', borderRadius: 2 }} />
-                            <Box sx={{ height: 12, width: '40%', backgroundColor: '#EEE', borderRadius: 2 }} />
-                        </VStack>
-                    </Animated.View>
-                </Box>
-
-                {/* Controls Overlay */}
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        bottom: 40,
-                        left: 20,
-                        right: 20,
-                        backgroundColor: colors.secondary,
-                        borderRadius: Theme.corners.comfortable,
-                        padding: Theme.spacing.sm,
-                        shadowColor: '#000',
-                        shadowOffset: { width: 0, height: 4 },
-                        shadowOpacity: 0.1,
-                        shadowRadius: 10,
-                        elevation: 5,
-                        borderWidth: 1,
-                        borderColor: colors.border
-                    }}
-                >
-                    <HStack justifyContent="space-between" alignItems="center">
-                        <HStack space="md" alignItems="center">
-                            <SanctuaryButton
-                                size="xs"
-                                variant="ghost"
-                                onPress={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                                leftIcon={ChevronLeft}
-                                accessibilityLabel="Previous Page"
-                            >
-                                {''}
-                            </SanctuaryButton>
-                            <Text color={colors.text} size="sm" bold>
-                                Page {currentPage} of {totalPages}
-                            </Text>
-                            <SanctuaryButton
-                                size="xs"
-                                variant="ghost"
-                                onPress={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                                leftIcon={ChevronRight}
-                                accessibilityLabel="Next Page"
-                            >
-                                {''}
-                            </SanctuaryButton>
-                        </HStack>
-
-                        <HStack space="xs">
-                            <SanctuaryButton
-                                size="xs"
-                                variant="ghost"
-                                onPress={() => setZoomLevel(Math.max(0.5, zoomLevel - 0.2))}
-                                leftIcon={ZoomOut}
-                                accessibilityLabel="Zoom Out"
-                            >
-                                {''}
-                            </SanctuaryButton>
-                            <SanctuaryButton
-                                size="xs"
-                                variant="ghost"
-                                onPress={() => setZoomLevel(Math.min(3, zoomLevel + 0.2))}
-                                leftIcon={ZoomIn}
-                                accessibilityLabel="Zoom In"
-                            >
-                                {''}
-                            </SanctuaryButton>
-                        </HStack>
+                        Download & Open
+                    </SanctuaryButton>
+                ) : downloadState === 'ready' ? (
+                    <HStack space="md">
+                        <SanctuaryButton
+                            onPress={() => openNative()}
+                            leftIcon={ExternalLink}
+                            accessibilityLabel="Open in native viewer"
+                        >
+                            Open in Native Viewer
+                        </SanctuaryButton>
+                        <SanctuaryButton
+                            variant="outline"
+                            onPress={startDownload}
+                            leftIcon={Download}
+                            accessibilityLabel="Re-download PDF"
+                        >
+                            Re-download
+                        </SanctuaryButton>
                     </HStack>
-                </Box>
+                ) : null}
             </VStack>
         </ScreenWrapper>
     );
 }
 
 const styles = StyleSheet.create({
-    pdfPage: {
-        width: width * 0.85,
-        height: '90%',
-        backgroundColor: 'white',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 3,
-    }
+    progressTrack: {
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: 'rgba(0,0,0,0.1)',
+        overflow: 'hidden',
+        width: '100%',
+    },
+    progressFill: {
+        height: 6,
+        borderRadius: 3,
+    },
 });

@@ -34,6 +34,9 @@
         "@repo/ui": "*",
         "lucide-react-native": "*",
         "react-native-reanimated": "*",
-        "expo-linking": "*"
+        "expo-linking": "*",
+        "expo-av": "*",
+        "expo-file-system": "*",
+        "expo-sharing": "*"
     }
 }
