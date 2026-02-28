@@ -1074,14 +1074,18 @@
         "postalAddress": "Postal Address",
         "postalAddressPlaceholder": "No. 123, School Lane..."
     },
-    "feedback": {
-      "title": "Principal Echo",
-      "subtitle": "Send a reflection or request to administration",
-      "category": "Category",
-      "priority": "Urgency",
-      "content": "Your Reflection",
-      "placeholder": "Share your thoughts, resource needs, or concerns...",
-      "note": "This reflection will be surfaced on the Principal's Dashboard 'Echo' vistas."
-  },
-  
+    "teacher": {
+        "actions": {
+            "principalEcho": "Principal Echo"
+        },
+        "feedback": {
+            "title": "Principal Echo",
+            "subtitle": "Send a reflection or request to administration",
+            "category": "Category",
+            "priority": "Urgency",
+            "content": "Your Reflection",
+            "placeholder": "Share your thoughts, resource needs, or concerns...",
+            "note": "This reflection will be surfaced on the Principal's Dashboard 'Echo' vistas."
+        }
+    }
 }
