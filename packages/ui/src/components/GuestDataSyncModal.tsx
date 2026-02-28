@@ -88,7 +88,7 @@ export default function GuestDataSyncModal({
                 onPress={handleSync}
                 isLoading={syncing}
             >
-                {syncing ? '' : (t('sync.syncButton') || 'Sync Data')}
+                {syncing ? (t('sync.syncing') || 'Syncing…') : (t('sync.syncButton') || 'Sync Data')}
             </SanctuaryButton>
         </HStack>
     ) : undefined;

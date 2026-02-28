@@ -9,11 +9,10 @@ import {
     SanctuaryModal,
     Textarea,
     TextareaInput,
-    useThemedColors,
     useTheme,
     Theme,
 } from '@repo/ui';
-import { Mic, Image as ImageIcon, X, Trash2 } from 'lucide-react-native';
+import { Mic, Image as ImageIcon, Trash2 } from 'lucide-react-native';
 import { useCommunity } from '../hooks/useCommunity';
 import { uploadToCloudinary } from '@repo/core';
 import { TouchableOpacity, Image, ActivityIndicator, ScrollView } from 'react-native';
@@ -44,7 +43,6 @@ interface CreatePostModalProps {
 
 export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePostModalProps) {
     const { createPost } = useCommunity();
-    const colors = useThemedColors();
     const { text, accent, glass } = useTheme();
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);

@@ -1,12 +1,5 @@
 ﻿import React, { useState } from 'react';
 import {
-    Modal,
-    ModalBackdrop,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    Heading,
     VStack,
     HStack,
     Box,
@@ -328,13 +321,13 @@ export default function CreateClassroomModal({
                                 <Box
                                     sx={{
                                         padding: Theme.spacing.md,
-                                        backgroundColor: Theme.colors.emberRed + '30',
+                                        backgroundColor: `${accent.danger}30`,
                                         borderRadius: Theme.corners.comfortable,
                                         borderWidth: 1,
-                                        borderColor: Theme.colors.emberRed,
+                                        borderColor: accent.danger,
                                     }}
                                 >
-                                    <Text sx={{ color: Theme.colors.emberRed, fontSize: Theme.typography.fontSize.sm }}>
+                                    <Text sx={{ color: accent.danger, fontSize: Theme.typography.fontSize.sm }}>
                                         {error}
                                     </Text>
                                 </Box>
@@ -482,7 +475,7 @@ export default function CreateClassroomModal({
                                                                 </VStack>
                                                                 {selectedClassroomId === cls.id && (
                                                                     <Box sx={{ backgroundColor: accent.action, borderRadius: 10, padding: 2 }}>
-                                                                        <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: 'white', fontWeight: 'bold', paddingHorizontal: 4 }}>{t('common.selected') || 'SELECTED'}</Text>
+                                                                        <Text {...({ color: text.inverse } as any)} sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: 'bold', paddingHorizontal: 4 }}>{t('common.selected') || 'SELECTED'}</Text>
                                                                     </Box>
                                                                 )}
                                                             </HStack>

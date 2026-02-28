@@ -48,7 +48,7 @@ export default function SubmissionModal({
     const [photoUri, setPhotoUri] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
-    const { text, accent, glass } = useTheme();
+    const { text, accent, glass, isDark } = useTheme();
 
     const handlePickImage = async (useCamera: boolean = false) => {
         try {
@@ -121,7 +121,7 @@ export default function SubmissionModal({
         return (
             <Modal isOpen={isOpen} onClose={() => { }}>
                 <ModalBackdrop
-                    sx={{ backgroundColor: 'rgba(107,100,128,0.65)' }}
+                    sx={{ backgroundColor: isDark ? 'rgba(107,100,128,0.65)' : 'rgba(107,100,128,0.45)' }}
                 />
                 <ModalContent
                     sx={{
@@ -154,7 +154,7 @@ export default function SubmissionModal({
     return (
         <Modal isOpen={isOpen} onClose={handleCancel}>
             <ModalBackdrop
-                sx={{ backgroundColor: 'rgba(107,100,128,0.65)' }}
+                sx={{ backgroundColor: isDark ? 'rgba(107,100,128,0.65)' : 'rgba(107,100,128,0.45)' }}
             />
             <ModalContent
                 sx={{

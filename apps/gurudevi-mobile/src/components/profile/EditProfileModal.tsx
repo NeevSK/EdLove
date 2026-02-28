@@ -25,7 +25,7 @@ import {
     Center,
     useTheme,
 } from '@repo/ui';
-import { X, Save, User, Briefcase, ChevronDown, Camera } from 'lucide-react-native';
+import { X, Save, ChevronDown, Camera } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { supabase, useStore, UserRole, uploadToCloudinary, handleAPIError } from '@repo/core';
@@ -41,7 +41,7 @@ interface EditProfileModalProps {
 
 export default function EditProfileModal({ visible, onClose, onSave, currentProfile }: EditProfileModalProps) {
     const { t } = useTranslation();
-    const { text, accent, glass, isDark } = useTheme();
+    const { text, accent, glass } = useTheme();
     const [fullName, setFullName] = useState('');
     const [phone, setPhone] = useState('');
     const [bio, setBio] = useState('');

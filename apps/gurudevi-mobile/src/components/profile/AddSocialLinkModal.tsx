@@ -67,7 +67,7 @@ const PRIVACY_LEVELS: { value: PrivacyLevel; icon: any; labelKey: string; descKe
 export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible, onClose, userId }) => {
     const { links, addLink, deleteLink } = useSocialLinks(userId);
     const colors = useThemedColors();
-    const { text } = useTheme();
+    const { text, isDark } = useTheme();
     const { t } = useTranslation();
     const [platform, setPlatform] = useState<SocialPlatform>('whatsapp');
     const [url, setUrl] = useState('');
@@ -98,7 +98,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                 <Box sx={{
                     flex: 1,
                     // Backdrop: Shadow Violet — NEVER black rgba(0,0,0,x)
-                    backgroundColor: 'rgba(107,100,128,0.45)',
+                    backgroundColor: isDark ? 'rgba(107,100,128,0.65)' : 'rgba(107,100,128,0.45)',
                     width: '100%',
                 }}>
                     <TouchableOpacity style={{ flex: 1 }} onPress={onClose} />
