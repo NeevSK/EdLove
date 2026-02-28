@@ -1,7 +1,18 @@
 import { supabase } from '../lib/supabase';
 
 /**
- * API for managing user rewards, points, and gamification milestones.
+ * Growth Signals API — internal tracking of aliveness dimensions.
+ *
+ * ⚠️  PHILOSOPHY ALIGNMENT NOTE (see docs/Core/GROWTH_MODEL.md):
+ * This module was originally scaffolded as a conventional "points + badges" system.
+ * It is being repurposed toward the Bhumi Nature-Inspired Growth Model:
+ *   - `points` → internal growth_score (NEVER displayed to user as a number)
+ *   - `badges` → signals fed into Whispered Moments (never a browsable badge collection)
+ *   - NEW: `user_growth_state` table tracks Bhumi life stages (Bijam → Purna Kamala)
+ *
+ * The Gurudevi North Star explicitly prohibits extractive gamification.
+ * Do NOT expose points or badge counts in any UI component.
+ * Use `user_growth_state` for the Lotus Life Stage visualization instead.
  */
 export const rewardsAPI = {
     /**
@@ -119,7 +130,13 @@ export const rewardsAPI = {
     },
 
     /**
-     * Checks if user qualifies for any new achievements.
+     * Checks if user qualifies for any new Whispered Moments or Bhumi stage transitions.
+     *
+     * ⚠️  MIGRATION PENDING (see GROWTH_MODEL.md Phase 1):
+     * Current implementation awards generic badge strings.
+     * Target implementation: check `user_growth_state` + emit `whispered_moments` events.
+     * The "Sanctuary Seeker" string badge should be migrated to the
+     * `whispered_moments` table with key 'the_seeker' and Sinhala name 'සොයන්නා'.
      */
     async checkAndAwardAchievements(userId: string) {
         // Fetch feature usage

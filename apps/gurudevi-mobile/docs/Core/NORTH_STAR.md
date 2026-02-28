@@ -263,6 +263,8 @@ We replace competitive gamification with a "Gratitude Economy". Subscriptions ar
 
 **Exception**: Gentle acknowledgment of growth (like tree growing) is acceptable, but never comparative or pressure-inducing.
 
+**Growth Model**: See `docs/Core/GROWTH_MODEL.md` for the complete Bhumi Nature-Inspired Growth Model — the non-addictive, joyful, nature-inspired alternative to conventional gamification.
+
 
 ---
 
