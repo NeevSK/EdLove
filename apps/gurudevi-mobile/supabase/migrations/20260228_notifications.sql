@@ -18,6 +18,9 @@ CREATE TABLE IF NOT EXISTS public.notifications (
   body          TEXT,
   is_read       BOOLEAN DEFAULT FALSE NOT NULL,
   reference_id  UUID,                 -- e.g. submission_id, post_id
+  reference_type TEXT CHECK (reference_type IN (
+                  'submission', 'post', 'classroom', 'group', 'user', 'school'
+                )),                   -- which table reference_id points to
   created_at    TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 

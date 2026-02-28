@@ -209,15 +209,21 @@ gurudevi/   (pnpm workspace root)
 - `DeleteAccountModal.tsx` in `@repo/ui` ✅
 - `ThuthimalBadge.tsx` (full + compact modes); `thuthimal` table added Feb 26 migration ✅
 
-### ✅ QR & Invitation System (Partially Unified)
+### ✅ QR & Invitation System (Fully Working)
 **Verified in code** (`packages/scanner-kit/`):
 - `QRResolver.ts` — canonical parser, supports legacy formats, `resolveQR()` function ✅
 - `QRPayload.ts` — typed action payloads ✅
 - `QRBuilder.ts`, `QRShareButton.tsx` ✅
 - `useQRDeepLink` hook ✅; `QRHandlerScreen` for modal dispatch ✅
 - Invite code generation (GURU-ABC123-TEACH format), QR generation (SVG, ECC-H) ✅
+- `join-group:` QR consumer path ✅ (verified Feb 28 — QRResolver + FlowResolver.executeJoinGroup + QRHandlerScreen all wired)
+- Principal InviteManager QR modal ✅ (verified Feb 28 — modal renders QRCodeGenerator correctly)
+- Teacher QR join ✅ (fixed Feb 28 — FlowResolver.executeJoinClass is now role-aware; students→classroom_students; teachers only set teacher_id when null)
 
-**⚠️ Still broken**: `join-group:` QR generated but no consumer path found; Principal `InviteManager` QR state stored but modal not rendered; Teacher QR join does `classrooms.update({ teacher_id })` — overwrites ownership rather than creating membership link.
+**Scanner engine:**
+- Live camera: `expo-camera` → `CameraView.onBarcodeScanned` → Google ML Kit (Android) / Apple Vision (iOS)
+- Gallery image: `@react-native-ml-kit/barcode-scanning` → same ML Kit quality for static images (upgraded Feb 28 from jsQR+jpeg-js)
+- "Scanned by Google" toast = expected OS attribution for ML Kit API; cannot be removed; is not a privacy concern (on-device scan, no data leaves phone)
 
 ### ✅ Analytics & Monitoring
 **Verified in code** (`packages/core/src/monitoring/`):

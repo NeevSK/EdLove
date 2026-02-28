@@ -84,7 +84,7 @@ export function usePendingActions(teacherId: string | null | undefined): Pending
         .from('assignments')
         .select('id, title, classroom_id, due_date')
         .in('classroom_id', classroomIds)
-        .lte('due_date', today + 'T23:59:59Z')
+        .lte('due_date', todayEnd)
         .limit(30);
 
       if (!assignments?.length) {

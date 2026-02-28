@@ -24,6 +24,11 @@ import { uploadToCloudinary } from '@repo/core';
 import { TouchableOpacity, Image, ActivityIndicator, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
+interface PostMetadata {
+    education_tags?: string[];
+    [key: string]: unknown;
+}
+
 // Education tag catalogue — stored in metadata.education_tags
 const EDUCATION_TAGS = [
     { id: 'lesson', label: '📚 Lesson' },
@@ -99,7 +104,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                 visibility: 'school',
                 media_url: mediaUrl,
                 media_type: mediaType,
-                metadata: selectedTags.length > 0 ? { education_tags: selectedTags } : undefined,
+                metadata: selectedTags.length > 0 ? ({ education_tags: selectedTags } as PostMetadata) : undefined,
             });
             setContent('');
             setSelectedImage(null);

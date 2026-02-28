@@ -1,11 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Modal, TouchableOpacity, Alert, Text, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Modal, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-import * as ImageManipulator from 'expo-image-manipulator';
-import jsQR from 'jsqr';
-import jpeg from 'jpeg-js';
-import { Buffer } from 'buffer';
+
+/**
+ * ScannerModal — QR code scanner for Gurudevi
+ *
+ * Live camera:  expo-camera → CameraView.onBarcodeScanned
+ *               ↳ Android: Google ML Kit Barcode API (on-device, free, fast)
+ *                  The "Scanned by Google" OS toast is expected — it is ML Kit's attribution.
+ *               ↳ iOS:     Apple Vision / AVFoundation
+ *
+ * Gallery pick: @react-native-ml-kit/barcode-scanning
+ *               ↳ Same ML Kit quality for static images (replaces jsQR + jpeg-js)
+ *               ↳ On-device, free, handles curved/damaged QR codes well
+ *
+ * No API keys. No network calls. No billing. Works offline.
+ */
+
+/** Shape returned by @react-native-ml-kit/barcode-scanning */
+interface MLKitBarcode {
+    format?: string;
+    type?: string;
+    value?: string;
+    rawValue?: string;
+}
+let BarcodeScanning: typeof import('@react-native-ml-kit/barcode-scanning').default | null = null;
+try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    BarcodeScanning = require('@react-native-ml-kit/barcode-scanning').default;
+} catch {
+    // Not installed or not linked — will fall back gracefully
+    BarcodeScanning = null;
+}
 
 interface ScannerModalProps {
     visible: boolean;
@@ -27,63 +54,60 @@ export default function ScannerModal({
     const [scanned, setScanned] = useState(false);
     const [facing, setFacing] = useState<CameraType>('back');
     const [processing, setProcessing] = useState(false);
+    const [galleryError, setGalleryError] = useState<string | null>(null);
 
     useEffect(() => {
         if (visible) {
             setScanned(false);
             setProcessing(false);
+            setGalleryError(null);
         }
     }, [visible]);
 
+    /**
+     * Gallery scan — uses ML Kit barcode scanning (same engine as live camera).
+     * Falls back to a clear error message if the native module is not linked.
+     */
     const processImage = async (uri: string) => {
+        setProcessing(true);
+        setGalleryError(null);
         try {
-            setProcessing(true);
-
-            const manipResult = await ImageManipulator.manipulateAsync(
-                uri,
-                [{ resize: { width: 1000 } }],
-                { base64: true, format: ImageManipulator.SaveFormat.JPEG, compress: 1.0 }
-            );
-
-            if (!manipResult.base64) {
-                throw new Error('Could not get image data');
+            if (!BarcodeScanning) {
+                setGalleryError('Gallery scanning requires a custom dev build.\nRun: expo prebuild && expo run:android (or run:ios)');
+                return;
             }
 
-            const buffer = Buffer.from(manipResult.base64, 'base64');
-            const rawData = jpeg.decode(buffer, { useTArray: true });
-            const clampedData = Uint8ClampedArray.from(rawData.data);
-            const code = jsQR(clampedData, rawData.width, rawData.height);
+            const barcodes = await BarcodeScanning.scan(uri) as MLKitBarcode[];
 
-            if (code) {
-                handleBarCodeScanned({ data: code.data });
+            // Find the first QR code in the result
+            const qr = barcodes.find(
+                (b) => b.format === 'QR_CODE' || b.type === 'QR_CODE'
+            );
+
+            if (qr?.value || qr?.rawValue) {
+                handleBarCodeScanned({ data: (qr.value ?? qr.rawValue)! });
             } else {
-                Alert.alert(
-                    'No QR Code Found',
-                    'Could not detect a QR code. Would you like to try cropping the image?',
-                    [
-                        { text: 'Cancel', style: 'cancel' },
-                        { text: 'Crop & Retry', onPress: () => pickImage(true) },
-                    ]
-                );
+                setGalleryError('No QR code found in image.\nTry cropping closer to the QR code.');
             }
         } catch (error) {
             console.error('Gallery Scan Error:', error);
-            Alert.alert('Error', 'Failed to process image.');
+            setGalleryError('Could not scan image. Please try again.');
         } finally {
             setProcessing(false);
         }
     };
 
-    const pickImage = async (useCropping = false) => {
+    const pickImage = async () => {
+        setGalleryError(null);
         try {
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: useCropping,
+                allowsEditing: true, // let user crop to QR area
                 quality: 1,
             });
 
-            if (!result.canceled && result.assets && result.assets.length > 0) {
-                await processImage(result.assets[0]?.uri || '');
+            if (!result.canceled && result.assets?.[0]?.uri) {
+                await processImage(result.assets[0].uri);
             }
         } catch (error) {
             console.error('Pick Image Error:', error);
@@ -154,9 +178,16 @@ export default function ScannerModal({
 
                         <View style={styles.scannerArea}>
                             {processing ? (
-                                <View style={{ backgroundColor: 'rgba(0,0,0,0.7)', padding: 20, borderRadius: 10 }}>
+                                <View style={{ backgroundColor: 'rgba(0,0,0,0.7)', padding: 20, borderRadius: 10, alignItems: 'center' }}>
                                     <ActivityIndicator size="large" color={accentColor} />
-                                    <Text style={{ color: 'white', marginTop: 10 }}>Processing Image...</Text>
+                                    <Text style={{ color: 'white', marginTop: 10 }}>Scanning with ML Kit...</Text>
+                                </View>
+                            ) : galleryError ? (
+                                <View style={{ backgroundColor: 'rgba(220,50,50,0.85)', padding: 14, borderRadius: 10, maxWidth: 260 }}>
+                                    <Text style={{ color: 'white', textAlign: 'center', fontSize: 13 }}>{galleryError}</Text>
+                                    <TouchableOpacity onPress={() => setGalleryError(null)} style={{ marginTop: 8, alignSelf: 'center' }}>
+                                        <Text style={{ color: 'white', textDecorationLine: 'underline', fontSize: 12 }}>Dismiss</Text>
+                                    </TouchableOpacity>
                                 </View>
                             ) : (
                                 <Text style={styles.instructionText}>
@@ -167,7 +198,7 @@ export default function ScannerModal({
 
                         <View style={styles.controls}>
                             <TouchableOpacity
-                                onPress={() => pickImage(false)}
+                                onPress={pickImage}
                                 style={[styles.controlButton, { marginRight: 20 }]}
                                 disabled={processing}
                             >

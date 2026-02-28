@@ -182,7 +182,7 @@ function PulseActionItem({ title, time, status, onPress }: any) {
             alignItems="center"
         >
             <VStack space="xs" sx={{ flex: 1, marginRight: Theme.spacing.sm }}>
-                <Text sx={{ color: colors.text, fontSize: '$sm', fontWeight: '$600' }} numberOfLines={2}>{title}</Text>
+                <Text sx={{ color: colors.text, fontSize: '$sm', fontWeight: '$600' }} numberOfLines={3}>{title}</Text>
                 <HStack space="xs" alignItems="center">
                     <Clock size={12} color={colors.textTertiary} />
                     <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs }}>{time}</Text>

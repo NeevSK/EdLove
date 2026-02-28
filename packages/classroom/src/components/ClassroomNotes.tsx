@@ -198,19 +198,14 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
         }
     };
 
-    const handleDelete = (id: string) => {
-        // Use a simple async confirm pattern — show an inline confirm button rather than Alert
-        setNotes((prev) => prev.map((n) => n.id === id ? { ...n, _pendingDelete: true } as any : n));
-        setTimeout(async () => {
-            try {
-                await api.classroomNotes.delete(id);
-                setNotes((prev) => prev.filter((n) => n.id !== id));
-                showToast({ message: 'Note deleted.', type: 'success' });
-            } catch {
-                showToast({ message: 'Could not delete note.', type: 'error' });
-                setNotes((prev) => prev.map((n) => n.id === id ? { ...n, _pendingDelete: false } as any : n));
-            }
-        }, 0);
+    const handleDelete = async (id: string) => {
+        try {
+            await api.classroomNotes.delete(id);
+            setNotes((prev) => prev.filter((n) => n.id !== id));
+            showToast({ message: 'Note deleted.', type: 'success' });
+        } catch {
+            showToast({ message: 'Could not delete note.', type: 'error' });
+        }
     };
 
     const handleTogglePin = async (note: ClassroomNote) => {
