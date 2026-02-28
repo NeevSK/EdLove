@@ -30,6 +30,7 @@ import { communityAPI } from '@repo/community';
 import type { QRPayload } from '@repo/scanner-kit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { hapticSuccess, hapticError } from '@repo/ui';
+import { useTranslation } from 'react-i18next';
 
 type QRHandlerRouteParams = {
   QRHandler: { payload: QRPayload };
@@ -39,8 +40,9 @@ export default function QRHandlerScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute<RouteProp<QRHandlerRouteParams, 'QRHandler'>>();
   const colors = useThemedColors();
+  const { t } = useTranslation();
   const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
-  const [message, setMessage] = useState('Processing QR action...');
+  const [message, setMessage] = useState('');
 
   const payload = route.params?.payload;
 
@@ -67,7 +69,7 @@ export default function QRHandlerScreen() {
       if (result.outcome === 'success') {
         hapticSuccess();
         setStatus('success');
-        setMessage(result.message);
+        setMessage(t('qrHandler.actionSuccess'));
 
         if (result.intent) {
           // Map Abstract Core Intent -> Mobile Specific Navigation
@@ -85,7 +87,7 @@ export default function QRHandlerScreen() {
         }
       } else if (result.outcome === 'redirect') {
         setStatus('success');
-        setMessage(result.message);
+        setMessage(t('qrHandler.actionSuccess'));
         if (result.intent === 'GOTO_THUTHIMAL_CLAIM') {
           navigation.replace('ThuthimalClaim', result.params);
         }
@@ -96,7 +98,7 @@ export default function QRHandlerScreen() {
       console.error('QRHandlerScreen error:', err);
       hapticError();
       setStatus('error');
-      setMessage('Something went wrong. Please try again.');
+      setMessage(t('qrHandler.somethingWrong'));
       setTimeout(() => navigation.goBack(), 2500);
     }
   };
@@ -125,12 +127,12 @@ export default function QRHandlerScreen() {
             sx={{ textAlign: 'center', fontSize: Theme.typography.fontSize.xl }}
             color={statusColor as any}
           >
-            {status === 'processing' ? 'Processing QR' : status === 'success' ? 'Done!' : 'Error'}
+            {status === 'processing' ? t('qrHandler.processing') : status === 'success' ? t('qrHandler.done') : t('qrHandler.error')}
           </Heading>
           <Text
             sx={{ textAlign: 'center', color: colors.textSecondary }}
           >
-            {message}
+            {status === 'processing' ? t('qrHandler.processingMessage') : message}
           </Text>
         </VStack>
       </Box>

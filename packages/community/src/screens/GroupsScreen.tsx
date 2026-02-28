@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FlatList, ActivityIndicator } from 'react-native';
-import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, PositiveInvitation, Theme, FadeInDown, SanctuaryButton } from '@repo/ui';
+import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, PositiveInvitation, Theme, FadeInDown, SanctuaryButton, SanctuaryFlashList } from '@repo/ui';
 import Animated from 'react-native-reanimated';
 import ReportPostModal from '../components/ReportPostModal';
 import GroupCard from '../components/GroupCard';
@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 // @ts-ignore - Temporary until we decide on demo logic location
 import { isDemo } from '@repo/core';
 import { Compass, Shield, Users, Plus } from 'lucide-react-native';
-import { Group } from '../index';;
+import { Group } from '../index';
 
 type GroupsSubTab = 'sanctuary' | 'galaxy';
 
@@ -167,10 +167,11 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onNavigat
         <Box sx={{ flex: 1 }}>
             {renderSubTabs()}
             {renderGalaxyActions()}
-            <FlatList
+            <SanctuaryFlashList
                 data={activeGroups as any}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
+                estimatedItemSize={Theme.listSizes.communityCard}
                 onEndReached={() => {
                     if (hasNextGroups && !isFetchingNextGroups) {
                         fetchNextGroups();

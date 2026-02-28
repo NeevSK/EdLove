@@ -7,6 +7,8 @@ export * from './gluestack';
 export * from './components/BreathAnimation';
 export * from './components/DailyResonanceCard';
 export * from './components/GlassCard';
+export { default as SanctuaryFlashList } from './components/SanctuaryFlashList';
+export type { SanctuaryFlashListProps } from './components/SanctuaryFlashList';
 export * from './components';
 
 export * from './utils/DeviceUtils';

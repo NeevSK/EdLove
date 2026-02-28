@@ -21,8 +21,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { EnvironmentProvider } from '@repo/ui';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from '@repo/ui';
-import { NoiseOverlay } from '@repo/ui/native';
-
 // Import screens and navigation
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
@@ -43,12 +41,6 @@ const queryClient = new QueryClient();
 // Navigation ref for imperative navigation outside React tree (deep links, auth callbacks)
 export const navigationRef = createNavigationContainerRef<any>();
 
-// Initialize Sentry & PostHog
-initSentry();
-initPostHog().then(() => {
-  trackEvent('app_initialized', { platform: Platform.OS });
-});
-
 // Root Stack for Modals
 const RootStack = createNativeStackNavigator();
 
@@ -61,6 +53,14 @@ function App() {
   const [showWelcome, setShowWelcome] = useState(true);
   const toast = useStore((state) => state.toast);
   const hideToast = useStore((state) => state.hideToast);
+
+  // Initialize analytics inside App component to avoid HMRClient setup issues at startup
+  useEffect(() => {
+    initSentry();
+    initPostHog().then(() => {
+      trackEvent('app_initialized', { platform: Platform.OS });
+    });
+  }, []);
 
   const { i18n } = useTranslation();
 
@@ -185,8 +185,7 @@ function App() {
   });
 
   const handleFabPress = () => {
-    // TODO: Implement specific actions for each tab
-    console.log(`FAB pressed in ${currentTab} tab`);
+    // FAB actions are context-aware; individual action items handle navigation
   };
 
   // Define context-aware actions for each tab
@@ -194,33 +193,63 @@ function App() {
     switch (currentTab) {
       case 'self':
         return [
-          { label: 'Log Mood', onPress: () => console.log('Log mood'), icon: Home },
-          { label: 'Journal Entry', onPress: () => console.log('Journal'), icon: Home },
-          { label: 'Set Goal', onPress: () => console.log('Set goal'), icon: Home },
+          {
+            label: 'Log Mood',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Self' }),
+            icon: Home
+          },
+          {
+            label: 'Journal Entry',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Self' }),
+            icon: Home
+          },
         ];
       case 'classroom':
         return [
-          { label: 'Create Lesson', onPress: () => console.log('Create lesson'), icon: School },
-          { label: 'Add Assignment', onPress: () => console.log('Add assignment'), icon: School },
-          { label: 'Schedule Class', onPress: () => console.log('Schedule class'), icon: School },
+          {
+            label: 'Create Lesson',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('CreateLesson'),
+            icon: School
+          },
+          {
+            label: 'Add Assignment',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('CreateAssignment'),
+            icon: School
+          },
         ];
       case 'community':
         return [
-          { label: 'New Post', onPress: () => console.log('New post'), icon: Users },
-          { label: 'Share Resource', onPress: () => console.log('Share resource'), icon: Users },
-          { label: 'Start Discussion', onPress: () => console.log('Start discussion'), icon: Users },
+          {
+            label: 'New Post',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('CreatePost'),
+            icon: Users
+          },
+          {
+            label: 'Share Resource',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('CreatePost'),
+            icon: Users
+          },
         ];
       case 'library':
         return [
-          { label: 'Upload File', onPress: () => console.log('Upload file'), icon: Library },
-          { label: 'Create Collection', onPress: () => console.log('Create collection'), icon: Library },
-          { label: 'Add Bookmark', onPress: () => console.log('Add bookmark'), icon: Library },
+          {
+            label: 'Add Resource',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('AddLibraryResource'),
+            icon: Library
+          },
+          {
+            label: 'Add Bookmark',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('AddLibraryResource'),
+            icon: Library
+          },
         ];
       case 'profile':
         return [
-          { label: 'Edit Profile', onPress: () => console.log('Edit profile'), icon: User },
-          { label: 'Change Avatar', onPress: () => console.log('Change avatar'), icon: User },
-          { label: 'Update Bio', onPress: () => console.log('Update bio'), icon: User },
+          {
+            label: 'Edit Profile',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('EditProfile'),
+            icon: User
+          },
         ];
       default:
         return [];

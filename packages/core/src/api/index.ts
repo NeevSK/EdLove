@@ -15,14 +15,23 @@ import { classroomsAPI } from './classrooms';
 import { onboardingAPI } from './onboarding';
 import { inventoryAPI } from './inventory';
 import { dailyContentAPI } from './dailyContent';
-import { communityAPI } from './community';
 import { thuthimalAPI } from './thuthimal';
-
+import { classroomNotesAPI } from './classroomNotes';
+import { principalNotesAPI } from './principalNotes';
+import { communityAPI } from './community';
+import { ReliefCoordinator, TimetableScheduler } from './agents';
+import { sacredMissionsAPI } from './sacredMissions';
+import { isDemo, demoAPI } from './demo';
 
 export * from './mockData';
 export * from './types';
-export * from './thuthimal';
+export * from './thuthimal'; // Restore types and thuthimalAPI
+export * from './sacredMissions'; // Export mission types
+export * from './agents'; // Export agent types
 export * from './resonantProxy';
+export * from './classroomNotes';
+export * from './principalNotes';
+export * from './community'; // Export community types/API
 
 // Simplified named exports for direct access
 export {
@@ -46,6 +55,13 @@ export {
     onboardingAPI,
     dailyContentAPI,
     thuthimalAPI,
+    classroomNotesAPI,
+    principalNotesAPI,
+    communityAPI,
+    ReliefCoordinator,
+    TimetableScheduler,
+    sacredMissionsAPI,
+    demoAPI,
 };
 
 /**
@@ -75,7 +91,14 @@ export const api = {
     onboarding: onboardingAPI,
     dailyContent: dailyContentAPI,
     thuthimal: thuthimalAPI,
+    classroomNotes: classroomNotesAPI,
+    principalNotes: principalNotesAPI,
     community: communityAPI,
+    relief: ReliefCoordinator,
+    scheduler: TimetableScheduler,
+    missions: sacredMissionsAPI,
+    demo: demoAPI,
 };
 
 export default api;
+

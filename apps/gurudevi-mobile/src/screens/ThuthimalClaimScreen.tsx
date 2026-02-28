@@ -34,6 +34,7 @@ import Animated, {
   FadeInDown,
 } from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 type ClaimRouteParams = {
   ThuthimalClaim: {
@@ -48,6 +49,7 @@ export default function ThuthimalClaimScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute<RouteProp<ClaimRouteParams, 'ThuthimalClaim'>>();
   const colors = useThemedColors();
+  const { t } = useTranslation();
   const [claimState, setClaimState] = useState<ClaimState>('loading');
   const [gifterName, setGifterName] = useState(route.params?.gifter_name ?? 'Someone special');
 
@@ -113,7 +115,7 @@ export default function ThuthimalClaimScreen() {
           <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}>
             <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
             <Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}>
-              Receiving the flower of gratitude...
+              {t('thuthimalClaim.loading')}
             </Text>
           </VStack>
         </Box>
@@ -132,17 +134,16 @@ export default function ThuthimalClaimScreen() {
                 sx={{ textAlign: 'center', fontSize: Theme.typography.fontSize['2xl'] }}
                 color={Theme.colors.starlightGray as any}
               >
-                This flower has already bloomed
+                {t('thuthimalClaim.alreadyBloomedTitle')}
               </Heading>
               <Text sx={{ color: Theme.colors.mistGray, textAlign: 'center', lineHeight: 22 }}>
-                This Thuthimal gift has already been received by someone.{'\n'}
-                Each flower of gratitude blooms only once.
+                {t('thuthimalClaim.alreadyBloomedDesc')}
               </Text>
               <TouchableOpacity
                 onPress={() => navigation.goBack()}
                 style={[styles.button, { backgroundColor: Theme.colors.ink }]}
               >
-                <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>Go Back</Text>
+                <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>{t('thuthimalClaim.goBack')}</Text>
               </TouchableOpacity>
             </VStack>
           </Animated.View>
@@ -161,16 +162,16 @@ export default function ThuthimalClaimScreen() {
               sx={{ textAlign: 'center' }}
               color={Theme.colors.emberRed as any}
             >
-              Something went wrong
+              {t('thuthimalClaim.errorTitle')}
             </Heading>
             <Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}>
-              We couldn't process this gift. Please try again or contact support.
+              {t('thuthimalClaim.errorDesc')}
             </Text>
             <TouchableOpacity
               onPress={() => navigation.goBack()}
               style={[styles.button, { backgroundColor: Theme.colors.ink }]}
             >
-              <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>Go Back</Text>
+              <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>{t('thuthimalClaim.goBack')}</Text>
             </TouchableOpacity>
           </VStack>
         </Box>
@@ -199,7 +200,7 @@ export default function ThuthimalClaimScreen() {
           <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg, marginTop: Theme.spacing.xl }}>
             {/* Sinhala title */}
             <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 28, letterSpacing: 2, textAlign: 'center' }}>
-              තුතිමල්
+              {t('thuthimalClaim.flowerTitle')}
             </Text>
 
             <Heading
@@ -210,7 +211,7 @@ export default function ThuthimalClaimScreen() {
               }}
               color={Theme.colors.sacredWhite as any}
             >
-              A Flower of Gratitude
+              {t('thuthimalClaim.giftHeading')}
             </Heading>
 
             {/* Gift message */}
@@ -232,7 +233,7 @@ export default function ThuthimalClaimScreen() {
                   fontSize: 16,
                 }}
               >
-                Your Pro subscription is a gift of gratitude from
+                {t('thuthimalClaim.giftFrom')}
               </Text>
               <Text
                 sx={{
@@ -253,7 +254,7 @@ export default function ThuthimalClaimScreen() {
                   marginTop: Theme.spacing.sm,
                 }}
               >
-                A recognition of your sacred work as an educator.
+                {t('thuthimalClaim.giftRecognition')}
               </Text>
             </Box>
 
@@ -272,7 +273,7 @@ export default function ThuthimalClaimScreen() {
             >
               <Text sx={{ fontSize: 20 }}>✨</Text>
               <Text sx={{ color: Theme.colors.sageGreen, fontWeight: '600' }}>
-                Pro is now active on your account
+                {t('thuthimalClaim.proActive')}
               </Text>
             </HStack>
 
@@ -289,7 +290,7 @@ export default function ThuthimalClaimScreen() {
               ]}
             >
               <Text sx={{ color: Theme.colors.obsidian, fontWeight: '700', fontSize: 16, textAlign: 'center' }}>
-                Enter the Sanctuary ✦
+                {t('thuthimalClaim.enterSanctuary')}
               </Text>
             </TouchableOpacity>
           </VStack>

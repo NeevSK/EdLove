@@ -344,6 +344,13 @@ export const LIBRARY_RESOURCE_CATEGORIES = [
     { id: 'pedagogy', en: 'Pedagogy', si: 'අධ්‍යාපනික ශාස්ත්‍රය', ta: 'கற்பித்தல் முறை' },
     { id: 'video', en: 'Videos', si: 'වීඩියෝ', ta: 'காணொளிகள்' },
     { id: 'link', en: 'External Links', si: 'බාහිර සබැඳි', ta: 'வெளிப்புற இணைப்புகள்' },
+    // Holistic library expansion
+    { id: 'map', en: 'Maps & Visuals', si: 'සිතියම් සහ දෘශ්‍ය', ta: 'வரைபடங்கள் & காட்சிகள்' },
+    { id: 'infographic', en: 'Infographics', si: 'තොරතුරු රූප', ta: 'தகவல் வரைகலைகள்' },
+    { id: 'story', en: 'Stories', si: 'කථා', ta: 'கதைகள்' },
+    { id: 'circular', en: 'Edu Circulars', si: 'රජයේ චක්‍රලේඛ', ta: 'அரசு சுற்றறிக்கைகள்' },
+    { id: 'movie_trailer', en: 'Inspiring Films', si: 'ආනුභාවී චිත්‍රපට', ta: 'ஊக்கமளிக்கும் திரைப்படங்கள்' },
+    { id: 'tech_guide', en: 'Tech Guides', si: 'තාක්ෂණ මාර්ගෝපදේශ', ta: 'தொழில்நுட்ப வழிகாட்டிகள்' },
     { id: 'other', en: 'Other Resources', si: 'වෙනත් සම්පත්', ta: 'மற்ற வளங்கள்' },
 ] as const;
 

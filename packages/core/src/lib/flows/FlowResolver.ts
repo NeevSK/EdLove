@@ -104,12 +104,45 @@ export class FlowResolver {
     }
 
     private static async executeJoinClass(classroomId: string, userId: string): Promise<FlowResult> {
-        const { error } = await supabase
-            .from('classrooms')
-            .update({ teacher_id: userId })
-            .eq('id', classroomId);
+        // Look up the user's role so we can route correctly
+        const { data: userData } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', userId)
+            .single();
 
-        if (error) throw error;
+        const role = userData?.role ?? 'student';
+
+        if (role === 'student') {
+            // Students join via the classroom_students membership table
+            const { error } = await supabase
+                .from('classroom_students')
+                .upsert(
+                    { classroom_id: classroomId, student_id: userId },
+                    { onConflict: 'classroom_id,student_id' },
+                );
+            if (error) throw error;
+        } else {
+            // Teachers/staff: only claim teacher_id if the classroom has no teacher yet.
+            // Never overwrite an existing teacher_id — that would steal classroom ownership.
+            const { data: classroom, error: fetchError } = await supabase
+                .from('classrooms')
+                .select('teacher_id')
+                .eq('id', classroomId)
+                .single();
+
+            if (fetchError) throw fetchError;
+
+            if (!classroom?.teacher_id) {
+                // Unclaimed classroom — safe to assign
+                const { error: updateError } = await supabase
+                    .from('classrooms')
+                    .update({ teacher_id: userId })
+                    .eq('id', classroomId);
+                if (updateError) throw updateError;
+            }
+            // If classroom already has a teacher, just navigate — no ownership change.
+        }
 
         return {
             outcome: 'success',

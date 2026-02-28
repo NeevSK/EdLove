@@ -3,7 +3,12 @@
 // Educational Ecology Support System
 // ============================================================================
 
-import { UserRole } from '@repo/core';
+import { UserRole, Announcement } from '@repo/core';
+
+export interface AnnouncementWithAuthor extends Announcement {
+    author_name?: string;
+    author_avatar?: string;
+}
 
 // ============================================================================
 // COMMUNITY POST TYPES
@@ -370,6 +375,19 @@ export interface CreateGroupInput {
     image_url?: string;
     tags?: string[];
     school_id?: string;
+}
+
+// ============================================================================
+// GROUP CHAT TYPES
+// ============================================================================
+
+export interface GroupMessage {
+    id: string;
+    group_id: string;
+    author_id: string;
+    content: string;
+    created_at: string;
+    author?: { full_name: string; avatar_url?: string };
 }
 
 // ============================================================================

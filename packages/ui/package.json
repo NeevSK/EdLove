@@ -20,24 +20,25 @@
     "lucide-react-native": "^0.563.0"
   },
   "peerDependencies": {
+    "@react-native-async-storage/async-storage": "*",
+    "@react-native-community/netinfo": "*",
     "@react-navigation/native": "*",
+    "@shopify/react-native-skia": "2.4.18",
+    "expo-blur": "~55.0.8",
+    "expo-haptics": "~55.0.8",
+    "expo-linear-gradient": "~55.0.8",
     "i18next": "*",
     "react": "*",
     "react-i18next": "*",
-    "react-native": "*",
-    "@shopify/react-native-skia": "2.4.18",
-    "@react-native-async-storage/async-storage": "*",
-    "@react-native-community/netinfo": "*",
-    "expo-blur": "~55.0.8",
-    "expo-haptics": "~55.0.8",
-    "expo-linear-gradient": "~55.0.8"
+    "react-native": "*"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@shopify/flash-list": "2.0.2",
     "@types/react": "~19.1.10",
+    "eslint": "^9.38.0",
     "i18next": "^25.8.0",
     "react-i18next": "^16.5.4",
-    "eslint": "^9.38.0",
-    "@repo/eslint-config": "workspace:*",
     "tailwindcss": "~3.4.17",
     "typescript": "~5.9.2"
   }

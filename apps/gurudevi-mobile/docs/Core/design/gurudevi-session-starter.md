@@ -22,7 +22,7 @@ Color rules (non-negotiable):
 — Ground: Vellum #F5EDD6 (never pure white)
 — ALL shadows: rgba(107,100,128,opacity) — Shadow Violet, never grey or black
 — Living accent: Dalu Green #8BBF7A
-— Atmospheric: Aurora Blue #7DD4C0, Aurora Violet #B8A9E0
+— Atmospheric: Aurora Blue #95f5deff, Aurora Violet #e78ddbff
 — Text: Ink #2A2318 (never pure black)
 
 Luminosity: light comes THROUGH surfaces, not FROM edges. Inner luminosity, never outer glow on light backgrounds.

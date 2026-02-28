@@ -46,7 +46,7 @@ import {
     SelectItem
 } from '../gluestack';
 import { ChevronDown } from 'lucide-react-native';
-import { Theme, typography } from '../theme/Theme';;
+import { Theme, typography } from '../theme/Theme';
 
 // ============================================================================
 // TYPES

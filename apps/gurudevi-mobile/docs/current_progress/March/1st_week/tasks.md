@@ -1,11 +1,12 @@
 ## UI
 ### profile section
-- [ ] logout and delete account modal aligned with theme and content should be modern and premium, Modal shape also should be modern and premium
+- [ ] logout and delete account modal aligned with theme and content should be modern and premium, Modal shape also should be modern and premium. texts are too long and seems over explainig.
 - [ ] 
 
 ### Gobal header
 - [ ] should be modern and premium aligned with theme no blur may be skymorph
 - [ ] theme alignment of UI colors
+- [ ] one color for all sections? or different colors for different sections? 
 
 ### bottom navbar
 - [ ] should be modern and premium aligned with theme no blur may be skymorph

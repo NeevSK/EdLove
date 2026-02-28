@@ -49,3 +49,12 @@ export async function withDemoWrite<T>(
     }
     return originalCall();
 }
+
+/**
+ * Unified Demo API
+ */
+export const demoAPI = {
+    isDemo,
+    withDemo,
+    withDemoWrite,
+};

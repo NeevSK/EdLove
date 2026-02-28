@@ -47,7 +47,10 @@ export default function ClassroomList({
     emptyContent
 }: ClassroomListProps) {
     const { role } = useUserRole();
-    const { isGuest, canCreateClassroom } = useFeatureAccess();
+    const { isGuest } = useFeatureAccess();
+    // Only teachers and grade heads create classrooms — principals create the school
+    // structure (hierarchy/sections), students never create classrooms.
+    const canCreateClassroom = !isGuest && (role === 'teacher' || role === 'grade_head');
     const [classrooms, setClassrooms] = useState<Classroom[]>([]);
     const [loading, setLoading] = useState(true);
     const { t } = useTranslation();
@@ -294,7 +297,7 @@ export default function ClassroomList({
                             context="classroom"
                             onAction={() => {
                                 hapticLight();
-                                if (role !== 'student') {
+                                if (canCreateClassroom) {
                                     setPendingInitialData(null);
                                     setIsCreateModalOpen(true);
                                 }
@@ -341,8 +344,10 @@ export default function ClassroomList({
                     context="classroom"
                     onAction={() => {
                         hapticLight();
-                        setPendingInitialData(null);
-                        setIsCreateModalOpen(true);
+                        if (canCreateClassroom) {
+                            setPendingInitialData(null);
+                            setIsCreateModalOpen(true);
+                        }
                     }}
                 />
             ) : (
@@ -364,7 +369,7 @@ export default function ClassroomList({
                         removeClippedSubviews={true}
                     />
 
-                    {!isGuest && (
+                    {canCreateClassroom && (
                         <TouchableOpacity
                             onPress={() => {
                                 hapticLight();

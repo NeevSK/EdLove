@@ -1,40 +1,32 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { StudentAttendance, AttendanceStatus } from '@repo/core';
 
-export const useAttendance = (initialStudents: StudentAttendance[] = []) => {
+/**
+ * useAttendance Hook
+ * 
+ * Shared logic for managing student attendance.
+ * Located in @repo/classroom for domain-specific locality.
+ */
+export function useAttendance(initialStudents: StudentAttendance[] = []) {
     const [students, setStudents] = useState<StudentAttendance[]>(initialStudents);
     const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-        if (initialStudents.length > 0) {
-            setStudents(initialStudents);
-        }
-    }, [initialStudents]);
-
-    const updateStudentStatus = (studentId: string, status: AttendanceStatus) => {
-        setStudents((prev) =>
-            prev.map((student) =>
-                student.id === studentId ? { ...student, status } : student
-            )
-        );
+    const updateStudentStatus = (id: string, status: AttendanceStatus) => {
+        setStudents(prev => prev.map(s => s.id === id ? { ...s, status } : s));
     };
 
     const filteredStudents = useMemo(() => {
-        if (!searchQuery.trim()) return students;
-
-        const query = searchQuery.toLowerCase();
-        return students.filter(
-            (student) =>
-                student.full_name.toLowerCase().includes(query) ||
-                student.roll_number?.toString().includes(query)
+        return students.filter(s =>
+            s.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            s.roll_number?.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [students, searchQuery]);
 
     const stats = useMemo(() => {
-        const present = students.filter((s) => s.status === 'present').length;
-        const absent = students.filter((s) => s.status === 'absent').length;
-        const late = students.filter((s) => s.status === 'late').length;
-        return { present, absent, late, total: students.length };
+        return students.reduce((acc, curr) => {
+            acc[curr.status]++;
+            return acc;
+        }, { present: 0, absent: 0, late: 0 });
     }, [students]);
 
     return {
@@ -44,6 +36,6 @@ export const useAttendance = (initialStudents: StudentAttendance[] = []) => {
         setSearchQuery,
         updateStudentStatus,
         filteredStudents,
-        stats,
+        stats
     };
-};
+}

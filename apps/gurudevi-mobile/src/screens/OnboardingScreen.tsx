@@ -1,33 +1,5 @@
-// Onboarding Screen - Screens 1-7 for new users
-// Screens 1-2: Name + Role (NOT skippable)
-// Screens 3-7: Philosophy, Five Sections, Ecology, Privacy, Navigation (SKIPPABLE)
-
-// Onboarding Screen Redesign
 import React, { useState, useMemo } from 'react';
-import {
-    Box,
-    VStack,
-    HStack,
-    Input,
-    InputField,
-    Button,
-    ButtonText,
-    Text,
-    Heading,
-    useToast,
-    Toast,
-    ToastTitle,
-    Select,
-    SelectTrigger,
-    SelectInput,
-    SelectIcon,
-    SelectPortal,
-    SelectBackdrop,
-    SelectContent,
-    SelectDragIndicatorWrapper,
-    SelectDragIndicator,
-    SelectItem,
-} from '@repo/ui';
+import { Box, VStack, HStack, Input, InputField, Button, ButtonText, Text, Heading, useToast, Toast, ToastTitle, Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectDragIndicatorWrapper, SelectDragIndicator, SelectItem } from '@repo/ui';
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -38,6 +10,8 @@ import { ScreenWrapper } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 import AuthScreen from './AuthScreen';
 import { ProgressIndicator } from '@repo/ui';
+import { OrientationCaptureStep } from '../components/self/OrientationCaptureStep';
+import type { OrientationSeeds } from '@repo/profile';
 
 interface OnboardingScreenProps {
     onComplete: (name: string, role: UserRole, wantsAccount?: boolean) => void;
@@ -47,10 +21,10 @@ interface OnboardingScreenProps {
 export default function OnboardingScreen({ onComplete, isAnonymous = false }: OnboardingScreenProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
-    const [currentStep, setCurrentStep] = useState(0); // 0: Name, 1: Role, 2-6: Tour, 7: Auth
-    console.log('🏁 Onboarding: Render', { currentStep, isAnonymous });
+    const [currentStep, setCurrentStep] = useState(0); // 0: Name, 1: Role, 2: Orientation (optional), 3-7: Tour, 8: Auth
     const [name, setName] = useState('');
     const [role, setRole] = useState<UserRole>('teacher');
+    const [orientationSeeds, setOrientationSeeds] = useState<OrientationSeeds | null>(null);
     const [isCompleting, setIsCompleting] = useState(false);
     const toast = useToast();
 
@@ -108,7 +82,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
 
     const handleSkipTour = () => {
         hapticLight();
-        setCurrentStep(7); // Jump to Auth
+        setCurrentStep(8); // Jump to Auth
     };
     const handleCompleteOnboarding = async () => {
         console.log('🚀 Onboarding: Completing...', { name, role, isAnonymous });
@@ -150,6 +124,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                     onboarding_completed: true,
                     onboarding_completed_at: new Date().toISOString(),
                     is_anonymous: isAnonymous,
+                    ...(orientationSeeds ? { orientation_seeds: orientationSeeds } : {}),
                 });
 
             if (profileError) throw profileError;
@@ -175,7 +150,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
 
     const renderNameStep = () => (
         <VStack space="xl" mt="$8" px="$6">
-            <ProgressIndicator currentStep={0} totalSteps={8} />
+            <ProgressIndicator currentStep={0} totalSteps={9} />
             <Heading size="2xl" color={colors.action} textAlign="center">
                 {t('onboarding.nameTitle') || 'Welcome! What should we call you?'}
             </Heading>
@@ -198,7 +173,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
 
     const renderRoleStep = () => (
         <VStack space="xl" mt="$8" px="$6">
-            <ProgressIndicator currentStep={1} totalSteps={8} />
+            <ProgressIndicator currentStep={1} totalSteps={9} />
             <Heading size="2xl" color={colors.action} textAlign="center">
                 {t('onboarding.roleTitle') || 'What is your role?'}
             </Heading>
@@ -230,11 +205,11 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
     );
 
     const renderTourStep = (index: number) => {
-        const tourIdx = index - 2;
+        const tourIdx = index - 3; // steps 3-7 map to tour screens 0-4
         const screen = tourScreens[tourIdx];
         return (
             <VStack space="xl" mt="$8" px="$6" flex={1}>
-                <ProgressIndicator currentStep={index} totalSteps={8} />
+                <ProgressIndicator currentStep={index} totalSteps={9} />
                 {/* Tour content grouped as a single accessible unit */}
                 <VStack
                     space="md"
@@ -292,8 +267,20 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             <VStack flex={1}>
                 {currentStep === 0 && renderNameStep()}
                 {currentStep === 1 && renderRoleStep()}
-                {currentStep >= 2 && currentStep <= 6 && renderTourStep(currentStep)}
-                {currentStep === 7 && renderAuthStep()}
+                {currentStep === 2 && (
+                    <OrientationCaptureStep
+                        currentStep={2}
+                        totalSteps={9}
+                        onComplete={(seeds) => {
+                            setOrientationSeeds(seeds);
+                            setCurrentStep(3);
+                        }}
+                        onSkip={() => setCurrentStep(3)}
+                        onBack={() => setCurrentStep(1)}
+                    />
+                )}
+                {currentStep >= 3 && currentStep <= 7 && renderTourStep(currentStep)}
+                {currentStep === 8 && renderAuthStep()}
             </VStack>
         </ScreenWrapper>
     );

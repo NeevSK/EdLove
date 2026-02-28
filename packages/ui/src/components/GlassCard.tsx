@@ -45,7 +45,7 @@ export const GlassCard = ({ children, style, onLayout, ...props }: GlassCardProp
                         phase={phase}
                         cornerRadius={Theme.corners.generous}
                     >
-                        {children}
+                        {null}
                     </LivingCard>
                 </View>
             )}

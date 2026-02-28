@@ -1,8 +1,8 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Box, VStack, Text, Heading, Center } from '../gluestack';;
+import { Box, VStack, Text, Heading, Center } from '../gluestack';
 import { AlertTriangle, RefreshCw } from 'lucide-react-native';
-import { Theme } from '../theme/Theme';;
+import { Theme } from '../theme/Theme';
 import SanctuaryButton from './SanctuaryButton';
 
 interface Props {

@@ -59,6 +59,13 @@ export const colors = {
     lotusDeepPink: '#DA70D6',       // Lotus flower accent
     twilightBlue: '#6A5ACD',        // Relational ecology accent
 
+    // Social Brand Colors
+    whatsapp: '#25D366',
+    linkedin: '#0077B5',
+    instagram: '#E4405F',
+    twitter: '#1DA1F2',
+    portfolio: '#2A2318',           // Linktree/Portfolio (Dark base)
+
     // Functional Colors
     transparent: 'transparent',
     white: '#FCF9F2',               // REDEFINED: Pure White is forbidden, use Sacred White
@@ -335,6 +342,18 @@ export const opacity = {
 };
 
 // ============================================================================
+// LIST DIMENSIONS - For FlashList Optimization
+// ============================================================================
+
+export const listSizes = {
+    resourceRow: 80,
+    communityCard: 120,
+    chatMessage: 100,
+    classroomRow: 64,
+    groupItem: 72,
+} as const;
+
+// ============================================================================
 // Z-INDEX LAYERS (Stacking Order)
 // ============================================================================
 
@@ -364,6 +383,7 @@ export const Theme = {
     borders,
     opacity,
     zIndex,
+    listSizes,
 };
 
 export default Theme;

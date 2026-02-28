@@ -17,10 +17,6 @@ import {
     HStack,
     Text,
     Heading,
-    Slider,
-    SliderTrack,
-    SliderFilledTrack,
-    SliderThumb,
     Button,
     ButtonText,
     Pressable,
@@ -57,11 +53,11 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
     const colors = useThemedColors();
 
     const MOOD_STATES = useMemo(() => [
-        { value: 1, label: t('self.moodHeavy'), color: Theme.colors.shroud, glow: 0, image: LOTUS_BUD, scale: 0.8 },
-        { value: 2, label: t('self.moodChallenging'), color: Theme.colors.starlightGray, glow: 0.1, image: LOTUS_BUD, scale: 0.9 },
-        { value: 3, label: t('self.moodOkay'), color: Theme.colors.mistGray, glow: 0.2, image: LOTUS_BLOOM, scale: 0.8 },
-        { value: 4, label: t('self.moodGood'), color: colors.success, glow: 0.4, image: LOTUS_BLOOM, scale: 0.9 },
-        { value: 5, label: t('self.moodFlourishing'), color: colors.warning, glow: 0.6, image: LOTUS_BLOOM, scale: 1.0 },
+        { value: 1, label: t('self.moodHeavy'), emoji: '😔', color: Theme.colors.shroud, glow: 0, image: LOTUS_BUD, scale: 0.8 },
+        { value: 2, label: t('self.moodChallenging'), emoji: '😟', color: Theme.colors.starlightGray, glow: 0.1, image: LOTUS_BUD, scale: 0.9 },
+        { value: 3, label: t('self.moodOkay'), emoji: '😐', color: Theme.colors.mistGray, glow: 0.2, image: LOTUS_BLOOM, scale: 0.8 },
+        { value: 4, label: t('self.moodGood'), emoji: '🙂', color: colors.success, glow: 0.4, image: LOTUS_BLOOM, scale: 0.9 },
+        { value: 5, label: t('self.moodFlourishing'), emoji: '🌸', color: colors.warning, glow: 0.6, image: LOTUS_BLOOM, scale: 1.0 },
     ], [t, colors]);
 
     const [moodValue, setMoodValue] = useState(3);
@@ -285,78 +281,52 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
                         </Animated.Text>
                     </Box>
 
-                    {/* Custom Dotted Likert Slider */}
-                    <Box sx={{ paddingHorizontal: Theme.spacing.md, marginTop: Theme.spacing.lg }}>
-                        <VStack space="md">
-                            <Box sx={{ height: 40, justifyContent: 'center' }}>
-                                {/* The Track */}
-                                <Box
-                                    sx={{
-                                        position: 'absolute',
-                                        left: 16,
-                                        right: 16,
-                                        height: 2,
-                                        backgroundColor: colors.border,
-                                        borderRadius: 1,
-                                    }}
-                                />
-
-                                {/* Interactive Dots */}
-                                <HStack justifyContent="space-between" alignItems="center">
-                                    {MOOD_STATES.map((state) => {
-                                        const isActive = Math.round(moodValue) === state.value;
-                                        return (
-                                            <Pressable
-                                                key={state.value}
-                                                onPress={() => {
-                                                    handleMoodChange(state.value);
-                                                    handleSlidingComplete(state.value);
-                                                }}
+                    {/* Emoji Mood Picker */}
+                    <Box sx={{ paddingHorizontal: Theme.spacing.sm, marginTop: Theme.spacing.lg }}>
+                        <HStack justifyContent="space-between" alignItems="center">
+                            {MOOD_STATES.map((state) => {
+                                const isActive = Math.round(moodValue) === state.value;
+                                return (
+                                    <Pressable
+                                        key={state.value}
+                                        onPress={() => {
+                                            handleMoodChange(state.value);
+                                            handleSlidingComplete(state.value);
+                                        }}
+                                        sx={{
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        <VStack alignItems="center" space="xs">
+                                            <Box
                                                 sx={{
-                                                    width: 32,
-                                                    height: 32,
+                                                    width: 54,
+                                                    height: 54,
+                                                    borderRadius: 27,
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
+                                                    backgroundColor: isActive ? state.color + '33' : colors.secondary,
+                                                    borderWidth: 2,
+                                                    borderColor: isActive ? state.color : colors.border,
                                                 }}
                                             >
-                                                <Animated.View
-                                                    style={[
-                                                        {
-                                                            width: isActive ? 16 : 8,
-                                                            height: isActive ? 16 : 8,
-                                                            borderRadius: isActive ? 8 : 4,
-                                                            backgroundColor: isActive ? state.color : colors.textTertiary,
-                                                            borderWidth: isActive ? 0 : 1,
-                                                            borderColor: colors.border,
-                                                        },
-                                                        isActive && {
-                                                            shadowColor: state.color,
-                                                            shadowOffset: { width: 0, height: 0 },
-                                                            shadowOpacity: 0.8,
-                                                            shadowRadius: 10,
-                                                            elevation: 5,
-                                                        }
-                                                    ]}
-                                                />
-                                            </Pressable>
-                                        );
-                                    })}
-                                </HStack>
-                            </Box>
-
-                            {/* Mood labels with soft text */}
-                            <HStack
-                                justifyContent="space-between"
-                                sx={{ paddingHorizontal: 4 }}
-                            >
-                                <Text color={colors.textTertiary} size="xs" italic>
-                                    {t('self.moodHeavy')}
-                                </Text>
-                                <Text color={colors.textTertiary} size="xs" italic>
-                                    {t('self.moodFlourishing')}
-                                </Text>
-                            </HStack>
-                        </VStack>
+                                                <Text sx={{ fontSize: 26 }}>{state.emoji}</Text>
+                                            </Box>
+                                            <Text
+                                                numberOfLines={1}
+                                                sx={{
+                                                    fontSize: Theme.typography.fontSize.xs,
+                                                    color: isActive ? state.color : colors.textTertiary,
+                                                    fontWeight: isActive ? '700' : '400',
+                                                }}
+                                            >
+                                                {state.label}
+                                            </Text>
+                                        </VStack>
+                                    </Pressable>
+                                );
+                            })}
+                        </HStack>
                     </Box>
 
                     {/* Privacy note - Refined for Zen aesthetic */}

@@ -4,6 +4,17 @@
 
 ---
 
+## 🧭 The Steering Harness (TAIL-FIN Integration)
+
+This document is governed by the principles in [TAIL_FIN.md](../../../../docs/TAIL_FIN.md). Every UI task must be an act of **Reparative Extraction** rather than mere "Software Writing."
+
+### 1. The Convolutional Command
+*   **Upstream First**: If you find yourself importing from `@gluestack-ui/themed` or `react-native` inside a screen, you are likely violating the **Metacognitive OS**. Shared logic must reside in `@repo/ui`.
+*   **Aesthetic Resonance**: If a component looks "flat," it is because it lacks the **Glass Protocol** or **Breath-like Motion**. Self-correct before requested.
+
+### 2. The Reparative Mindset
+*   **Zero Biological Waste**: Magic numbers (e.g., `padding: 100`) and raw hex codes are "Software Decay." Every value must be a **Token of Intent**.
+
 ## What This Document Is
 
 This is not a philosophy document. It is not a long read.
@@ -90,7 +101,7 @@ vellumCool:     '#EEF0F5'   // Classroom space, clarity
 vellumNeutral:  '#FAF8F5'   // Profile space, quiet
 
 // THE PRIMARY — sacred, warm, divine teacher
-saffron:        '#D4843A'   // full presence, primary actions
+saffron:        '#f6bf8cff'   // full presence, primary actions
 saffronMuted:   '#C4956A'   // most common usage, morning mist
 saffronWhisper: '#F0D4B0'   // barely there warmth
 

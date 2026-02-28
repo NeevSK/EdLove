@@ -1,9 +1,15 @@
 export * from './types';
 export * from './api/profile';
+export * from './api/social';
+export * from './api/staff';
 export * from './hooks/useProfile';
+export * from './hooks/useSocialLinks';
+export * from './hooks/useStaffPresence';
+export * from './hooks/useSchoolPulse';
 export * from './lib/validator';
 export * from './components/EditableItem';
 export { isFieldFilled } from './lib/isFieldFilled';
 export * from './config/profileSections';
 export * from './hooks/useProfileCompletion';
 export { AvatarDisplay } from './components/AvatarDisplay';
+export { ContactLinktree } from './components/ContactLinktree';

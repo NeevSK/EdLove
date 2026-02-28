@@ -14,10 +14,12 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "org.edlove.gurudevi"
+      "bundleIdentifier": "org.edlove.gurudevi",
+      "newArchEnabled": true
     },
     "android": {
       "package": "org.edlove.gurudevi",
+      "newArchEnabled": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -56,7 +58,8 @@
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
     "extra": {
       "eas": {
@@ -70,7 +73,6 @@
       "expo-localization",
       "expo-asset",
       "expo-audio",
-      "expo-router",
       "expo-secure-store",
       "@sentry/react-native"
     ],

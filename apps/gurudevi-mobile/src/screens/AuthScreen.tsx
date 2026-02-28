@@ -24,6 +24,7 @@ import {
     GuestDataSyncModal,
 } from '@repo/ui';
 import { Mail } from 'lucide-react-native';
+import { Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { supabase, UserRole, handleAPIError, GuestDataSync } from '@repo/core';
 import { Theme } from '@repo/ui';
@@ -87,7 +88,9 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
         const { error } = await supabase.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: 'gurudevi://auth/callback',
+                redirectTo: Platform.OS === 'web'
+                    ? window.location.href
+                    : 'gurudevi://auth/callback',
                 queryParams: onboardingData ? {
                     full_name: onboardingData.name,
                     role: onboardingData.role,
