@@ -23,7 +23,7 @@ const ClassroomDetailView: React.FC<ClassroomDetailViewProps> = ({ classId, onBa
 
             <SectionHeader
                 title={className}
-                subtitle="Classroom Overview & Insights"
+                subtitle={`Classroom Overview & Insights • ID: ${classId}`}
                 icon={BookOpen}
             />
 
