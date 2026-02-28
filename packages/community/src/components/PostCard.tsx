@@ -97,7 +97,7 @@ const PostCard = React.memo(function PostCard({
         const prevCount = localLikeCount;
         const nowLiked = !liked;
         setLiked(nowLiked);
-        setLocalLikeCount(Math.max(0, localLikeCount + (nowLiked ? 1 : -1)));
+        setLocalLikeCount((prev) => Math.max(0, prev + (nowLiked ? 1 : -1)));
         try {
             await onLike?.();
         } catch {

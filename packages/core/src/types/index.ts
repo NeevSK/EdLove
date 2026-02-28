@@ -19,4 +19,4 @@ export * from './PrincipalNote';
 export * from './Assignment';
 export * from './StaffAttendance';
 export * from './StaffLeave';
-export { UserRole } from '../constants/SriLankanSchools';
+export type { UserRole } from '../constants/SriLankanSchools';
