@@ -57,4 +57,23 @@ Reference these files in `apps/gurudevi-mobile/docs/agent/` for all technical an
 - `TAIL_FIN.md`: The philosophical foundation (Resonance & Convolution).
 - `AGENT_RESONANCE.md`: Directives for ecosystem health.
 
+---
+
+## 🌐 WEB PLATFORM INVARIANTS
+Critical truths about this codebase's web support (Expo SDK 55 / Metro):
+
+### Entry Point Architecture
+This app uses **`registerRootComponent(App)`** (classic Expo entry via `index.ts`), NOT expo-router's file-based routing.
+- `package.json` → `"main": "index.ts"` → `App.tsx` via `registerRootComponent`.
+- `expo-router` is intentionally **NOT** listed as an `app.json` plugin. Adding it will silently break web by hijacking Metro to look for an `app/` directory that does not exist → blank page.
+
+### web section in `app.json`
+`"bundler": "metro"` is mandatory in the `expo.web` section for Expo SDK 50+. Without it the web target is undefined. See the actual config in `apps/gurudevi-mobile/app.json`.
+
+### Metro `isCSSEnabled`
+`getDefaultConfig(projectRoot, { isCSSEnabled: true })` must be used in `metro.config.js` to unlock CSS and stylesheet support on web.
+
+### Native-Only Modules
+When adding new packages, verify web compatibility via `react-native-web` or `Platform.OS === 'web'` guards. Packages without web support (`react-native-mmkv`, `@react-native-ml-kit/text-recognition`) must be guarded with platform checks or platform-specific files (`.web.ts`).
+
 **Awaiting your Architectural Plan for the requested task.**
