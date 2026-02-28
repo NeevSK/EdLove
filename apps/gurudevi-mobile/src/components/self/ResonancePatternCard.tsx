@@ -34,19 +34,23 @@ import {
 } from '@repo/ui';
 import { Sparkles } from 'lucide-react-native';
 import type { OrientationSeeds } from '@repo/profile';
+import type { MoodLog, EnergyForecast } from '@repo/self';
+import { useOrientationInference } from '@repo/self';
+import { useUserRole } from '@repo/core';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
 export interface ResonancePatternCardProps {
+    /** Explicit seeds from user profile — provided if onboarding was completed */
     orientationSeeds?: OrientationSeeds | null;
-    /** Average mood score 1-5 from recent logs — used for behavioral inference */
-    avgMood?: number;
-    /** Average energy level 1-5 from recent logs */
-    avgEnergy?: number;
-    /** Number of solo features used vs social features */
-    soloUsageRatio?: number;
+    /** Feed from useMoodLogs — used for behavioral inference */
+    moodLogs?: MoodLog[];
+    /** Feed from useEnergyForecast — used for behavioral inference */
+    energyForecasts?: EnergyForecast[];
+    /** Student grade number — narrows role-based default for students */
+    gradeNumber?: number | null;
     onExplore?: () => void;
 }
 
@@ -88,35 +92,6 @@ function buildPoints(seeds: Record<string, number>): { x: number; y: number }[] 
 }
 
 /** Infer seeds from behavioral signals when explicit seeds are absent */
-function inferSeeds(props: ResonancePatternCardProps): Record<string, number> {
-    const base: Record<string, number> = {
-        depth_breadth: 50,
-        reflect_act:   50,
-        solo_social:   50,
-        steady_surge:  50,
-    };
-
-    // Mood: consistently high mood → more active orientation
-    if (props.avgMood !== undefined) {
-        base.reflect_act += (props.avgMood - 3) * 4; // 1→-8, 5→+8
-    }
-    // Energy: higher energy → more surge-oriented
-    if (props.avgEnergy !== undefined) {
-        base.steady_surge += (props.avgEnergy - 3) * 6;
-    }
-    // Solo vs social usage
-    if (props.soloUsageRatio !== undefined) {
-        // soloUsageRatio: 0=all social, 1=all solo
-        base.solo_social = Math.round((1 - props.soloUsageRatio) * 100);
-    }
-
-    // Clamp
-    for (const k of Object.keys(base)) {
-        base[k] = Math.max(0, Math.min(100, base[k]));
-    }
-    return base;
-}
-
 // ============================================================================
 // RADAR CHART (no external SVG library — pure RN)
 // ============================================================================
@@ -162,7 +137,10 @@ function RadarChart({ points, color }: { points: { x: number; y: number }[]; col
                             width: length,
                             height: 1,
                             backgroundColor: color + '30',
-                            transformOrigin: 'left center' as any,
+                            // transformOrigin is not in RN's type defs but is used by Reanimated
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            transformOrigin: 'left center',
                             transform: [{ rotate: `${angleDeg}deg` }],
                         }}
                     />
@@ -208,27 +186,34 @@ function RadarChart({ points, color }: { points: { x: number; y: number }[]; col
 
 export function ResonancePatternCard({
     orientationSeeds,
-    avgMood,
-    avgEnergy,
-    soloUsageRatio,
+    moodLogs,
+    energyForecasts,
+    gradeNumber,
     onExplore,
 }: ResonancePatternCardProps) {
     const colors = useThemedColors();
+    const { role } = useUserRole();
 
-    const hasSeeds = !!orientationSeeds;
-    const isForming = !hasSeeds && avgMood === undefined && avgEnergy === undefined;
+    // useOrientationInference handles ALL fallback layers:
+    // explicit seeds → behavioral signals → role defaults → neutral 50
+    const { seeds: inferredSeeds, isDefault, confidence } = useOrientationInference({
+        explicitSeeds: orientationSeeds,
+        moodLogs,
+        energyForecasts,
+        role,
+        gradeNumber,
+    });
 
-    const seeds: Record<string, number> = useMemo(() => {
-        if (orientationSeeds) {
-            return {
-                depth_breadth: orientationSeeds.depth_breadth,
-                reflect_act:   orientationSeeds.reflect_act,
-                solo_social:   orientationSeeds.solo_social,
-                steady_surge:  orientationSeeds.steady_surge,
-            };
-        }
-        return inferSeeds({ orientationSeeds, avgMood, avgEnergy, soloUsageRatio });
-    }, [orientationSeeds, avgMood, avgEnergy, soloUsageRatio]);
+    const seeds: Record<string, number> = {
+        depth_breadth: inferredSeeds.depth_breadth,
+        reflect_act:   inferredSeeds.reflect_act,
+        solo_social:   inferredSeeds.solo_social,
+        steady_surge:  inferredSeeds.steady_surge,
+    };
+
+    // "Still forming" only when role-only defaults AND very low confidence
+    // (brand new user, no behavior yet — should be rare since role is always set)
+    const isForming = isDefault && confidence < 0.25;
 
     const points = useMemo(() => buildPoints(seeds), [seeds]);
 
@@ -332,9 +317,11 @@ export function ResonancePatternCard({
                         fontStyle: 'italic',
                     }}
                 >
-                    {hasSeeds
+                    {orientationSeeds
                         ? 'Based on your orientation — shifts as you grow'
-                        : 'Emerging from your usage patterns'}
+                        : confidence >= 0.5
+                            ? 'Emerging from your usage patterns'
+                            : 'Based on your role — refines as you use the app'}
                 </Text>
 
                 {!isForming && onExplore && (
