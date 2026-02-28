@@ -75,7 +75,6 @@
       "expo-asset",
       "expo-audio",
       "expo-secure-store",
-      "@sentry/react-native",
       [
         "@sentry/react-native/expo",
         {

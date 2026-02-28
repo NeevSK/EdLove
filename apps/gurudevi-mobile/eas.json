@@ -30,14 +30,18 @@
                 "simulator": false
             },
             "env": {
-                "NODE_ENV": "production"
+                "NODE_ENV": "production",
+                "SENTRY_ORG": "intuitui-labs",
+                "SENTRY_PROJECT": "gurudevi-mobile"
             }
         },
         "production": {
             "channel": "production",
             "autoIncrement": true,
             "env": {
-                "NODE_ENV": "production"
+                "NODE_ENV": "production",
+                "SENTRY_ORG": "intuitui-labs",
+                "SENTRY_PROJECT": "gurudevi-mobile"
             },
             "android": {
                 "buildType": "app-bundle"
