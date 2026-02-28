@@ -385,10 +385,10 @@ These features don't block launch, but without them the app is a utility, not a 
 ---
 
 ### T3.13 — Staff Leave Management Flow (Principal)
-**Source**: `docs/Tasks/mobile_feature_strategy.md` `PRN-CLS-042/044` — `🔴 Pending`
-**What**: Staff submit leave requests (Sick/Casual/Duty leave). Principal views and approves/rejects.
-**Effort**: M | **Code**: New `LeaveRequestScreen`, `LeaveApprovalScreen` in `packages/classroom/`, DB migration for `staff_leaves`
-**Note**: Pair with T2.9 (staff attendance infrastructure) — natural sibling feature.
+**Status**: ✅ Done (Feb 28 2026) — Covered under T1.7 Phase 2 / T2.9
+- `staff_leaves` table with RLS (migration `20260228_staff_management.sql`)
+- `LeaveApprovalSection.tsx` in Principal Dashboard — pending leave queue, inline approve/reject
+- `staffManagementAPI.getPendingLeaves` + `approveLeave` functions
 
 ---
 
