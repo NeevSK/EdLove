@@ -1,323 +1,378 @@
 # FUTURE ROADMAP: Gurudevi's Path Forward
 
-> Full roadmap from current state to Alpha → Beta → Launch, synthesized from all planning documents.
+> Full roadmap from current state to Alpha → Beta → Launch, synthesized from actual code state + first-principles product thinking.
+> This roadmap answers: **What is Gurudevi building, in what order, and why?**
+>
+> Not "fix UI then add features" — but "make the core loop work perfectly, then add depth, then breadth."
 
 ---
 
-## Short Term: Next 2 Weeks (March 2026)
+## North Star & Core Loop
 
-### Week 1: Stabilize & Polish
-**Theme**: Fix blockers, premium UI foundation
+**Gurudevi's core value proposition:**
+> A teacher-centric platform that reduces administrative burden, restores teacher energy, connects the school community, and personalizes student learning — in the Sri Lankan educational and cultural context.
 
-| Priority | Task | Owner | Effort |
-|----------|------|-------|--------|
-| P0 | Skia NoiseOverlay fix (feature flag, guarded rollout) | Joint | M |
-| P1 | Global Header premium redesign (no hardcoded colors) | Agent | M |
-| P1 | Bottom navbar premium redesign + token alignment | Agent | M |
-| P1 | Self screen: remove timetable, redesign default view | Joint | M |
-| P1 | Mood tracker complete overhaul | Joint | S |
-| P1 | Profile modals: premium Logout + Delete Account redesign | Agent | S |
-| P2 | Community: minimal redesign of default view | Agent | S |
+**The fundamental loop that must work perfectly:**
+```
+Teacher joins/creates school
+    → Creates classroom + adds students
+    → Marks attendance daily (reduces friction to < 30 seconds)
+    → Assigns and grades work
+    → PulseDashboard shows what actually needs attention today (REAL data)
+    → Connects with colleagues in Community groups
+    → Reflects and recharges in Self section
+    → Loop repeats daily, becoming habit
+```
 
-### Week 2: Core Feature Flows
-**Theme**: Community functionality, Classroom improvements
+**Why this loop matters above all else:**
+If any step in this loop is broken, unclear, or frustrating, teachers abandon the app. The beautiful Sanctuary theme, the Living Theme System, the 6-phase ambient shifts — none of it matters if the core loop has friction or fake data.
 
-| Priority | Task | Owner | Effort |
-|----------|------|-------|--------|
-| P2 | Community: create/join/leave/settings/members shell | Agent | L |
-| P2 | Community: education tag required for posts | Agent | M |
-| P2 | Classroom: student-specific demo view (replace teacher demo) | Joint | M |
-| P2 | Classroom: principal-specific demo view | Joint | M |
-| P2 | Library: minimal redesign + FAB z-index fix | Agent | M |
-| P3 | Error handling normalization (replace all Alert.alert) | Agent | M |
-| P3 | Skeleton loaders (SkeletonCard, SkeletonAvatar, SkeletonTextLine) | Agent | S |
+**What makes teachers stay after week 1:**
+- PulseDashboard shows real, actionable data (not fake tasks)
+- Community group chat (they talk to each other = they come back)
+- Self section feels like a genuine sanctuary, not a check-box
+- The app works offline without losing data
+
+**What makes the platform unique vs competing LMSes:**
+1. **Thuthimal** — the gratitude economy. Alumni honor teachers. No other LMS has this.
+2. **Self section** — teacher wellbeing as a first-class feature. Not an add-on.
+3. **Trilingual from day 1** — English, Sinhala, Tamil. Sri Lankan cultural DNA.
+4. **Living Theme** — 6-phase temporal ambient shifts. The app breathes with the day.
+5. **Community as ecosystem** — cross-school groups, Sacred Missions, inter-school collaboration.
 
 ---
 
-## Medium Term: Next Month (April 2026)
+## Now (Current Sprint — March 2026): Stabilize the Core Loop
 
-### Accessibility Overhaul (WCAG AA Compliance)
-Currently **5/100** — critical gap. Legal and ethical requirement.
+**Theme**: Make what's built actually work. Fix the trust-breaking gaps. Close the distance between what docs claim and what code does.
 
-**Phase 1 Foundation:**
-- Add `accessibilityLabel`/`accessibilityRole`/`accessibilityHint` to ~171 missing interactive elements
-- Priority order: WelcomeScreen → OnboardingScreen → AuthScreen → SelfScreen → LibraryScreen → ClassroomScreen → ProfileScreen
-- Add `accessibilityState` for all toggles
-- Add `accessible={true}` grouping for related content
-- Verify 44px+ touch targets everywhere (72px target for critical controls)
-- Implement `useAccessibility` hook with `isReduceMotionEnabled` checks for all animations
+### Week 1: Product Viability Fixes (TIER 0)
 
-**Phase 2 Automation:**
-- `eslint-plugin-react-native-a11y` lint gates active in CI
-- Screen-reader smoke tests in release checklist
-- Accessibility testing in `pnpm check-all`
+| Task | Why | Effort | Code Location |
+|------|-----|--------|---------------|
+| Verify all DB migrations applied in prod | Silent data failures without this | S | Supabase dashboard |
+| End-to-end new school journey validation | Core loop must work before anything else | M | Full app flow |
+| Fix PulseDashboard hardcoded action items | Trust destroyed on day 1 if fake | M | `src/components/PulseDashboard/` |
+| Wire FAB actions (all console.log today) | Dead buttons on every screen | S | `App.tsx getFabActions()` |
+| Fix Teacher QR join (ownership overwrite bug) | Data corruption in real schools | S | `packages/classroom/` QR handler |
+| Fix Principal InviteManager QR not rendering | Can't invite teachers without it | S | `InviteManager.tsx` |
 
-### Localization Completion (Production-Ready)
-Currently **70/100** for average si/ta coverage.
+### Week 2: Core Value Delivery (TIER 1)
 
-**Actions:**
+| Task | Why | Effort | Code Location |
+|------|-----|--------|---------------|
+| Wire SleepTracker/RemindersManager/VoiceJournaling | Built but invisible — wasted work | S | `packages/self/TeacherSelfView.tsx` |
+| Audit NotificationDrawer data (hardcoded?) | Notifications are re-engagement | S | `NotificationDrawer.tsx` |
+| Attendance flow: reliability check | Daily teacher workflow must be bulletproof | S–M | `packages/core/src/api/attendance.ts` |
+| Assignment/Submission/Grading: reliability check | Second daily workflow | M | Classroom + core API |
+| Fix join-group QR consumer path | Groups are inaccessible via QR | M | `QRResolver.ts`, `QRHandlerScreen` |
+| PulseDashboard UX polish (real data required first) | Morning home screen must feel sacred | M | `PulseDashboard/` |
+
+---
+
+## Short Term (April 2026): Deepen Core Value
+
+**Theme**: Make the app deeply valuable for the teachers who adopted it. Add the stickiness features. Fix the most visible UX gaps.
+
+### Community: Group Chat (The Retention Engine)
+Currently **ZERO code exists**. This is the most important new feature for retention.
+
+- **DB migration**: `group_messages` table (`id, group_id, user_id, content, type, created_at`)
+- **Backend**: Supabase Realtime subscription on `group_messages`
+- **UI**: `GroupChatScreen.tsx` in `packages/community/` — message bubbles, input bar
+- **Navigation**: Wire "Chat" button in GroupDetailsScreen to GroupChatScreen
+- **Features for v1**: Text messages, image sharing, message delivery status
+- **Future**: File attachments, read receipts, unread count badges, push notifications for messages
+
+### Library: Solve the Cold Start Problem
+New schools see an empty library. This must be fixed before launch.
+
+- **Add `is_default` flag** to `library_items` table
+- **Seed 20–30 curated resources**: Sri Lankan curriculum-aligned lesson plans, inspirational educator videos, government circulars, subject reference materials
+- **Human task**: Naveen curates actual content (agent implements the mechanism)
+- **Flash-Play preview**: Expand resource in mini bottom-sheet without losing search context
+
+### OCR: At Least One Real Provider
+Currently all providers are skeleton stubs. Implement `MLKitProvider` (free, on-device, offline-capable).
+
+- Wire `@react-native-ml-kit/text-recognition` into `MLKitProvider.ts` (replace stub)
+- Add basic image preprocessing: contrast normalization, resize for OCR
+- Wire `OCRScanner.tsx` to active UI path in `TeacherDashboard`
+- Test with real printed Sinhala/Tamil student register samples
+- Document accuracy limitations clearly in UI
+
+### Real Notifications (End-to-End)
+- Create `notifications` table migration if not existing
+- Wire `NotificationDrawer.tsx` to real Supabase data via Realtime
+- Notification types: assignment_created, grade_posted, invitation_received, community_post, manifesto_updated
+- Mark as read/unread
+- Notification badge count on Profile tab
+
+### UI/UX Polish (TIER 3 — Important but After Core Loop)
+These are the March tasks.md items — real work that improves quality, but sequenced correctly:
+
+- **Global header redesign**: Modern, premium, token-aligned, `UserAvatar` with correct spacing
+- **Bottom navbar redesign**: Glassmorphism/skeuomorphic, theme-aligned, no hardcoded colors
+- **Profile modals polish**: Logout + Delete Account modals premium redesign
+- **Community screen minimal redesign**: Theme alignment, group flow polish
+- **Library screen redesign + FAB z-index fix**
+- **Classroom role-specific demo views**: Remove stale content; add role-appropriate demos
+- **Error handling normalization**: Replace all `Alert.alert` with `SanctuaryToast`; add empty states
+- **Skeleton loaders**: `SkeletonCard`, `SkeletonAvatar`, `SkeletonTextLine` for all data screens
+
+### Accessibility: Begin Systematic Remediation
+Currently ~5/100. This is a legal and ethical liability, not just a polish item.
+
+- Priority order: WelcomeScreen → OnboardingScreen → AuthScreen → SelfScreen → LibraryScreen
+- Add `accessibilityLabel`, `accessibilityRole`, `accessibilityHint` to all ~171 missing interactive elements
+- Add `accessibilityState` on all toggles
+- Verify 72px minimum touch targets everywhere
+- Add `eslint-plugin-react-native-a11y` to CI
+
+### Localization: Close Key Gaps
 - Add 176 missing Sinhala keys to `i18n/locales/si.json`
 - Add 200 missing Tamil keys to `i18n/locales/ta.json`
-- Externalize top 272 hardcoded strings across 85 screens
-- Review translation quality per `TRANSLATION_IMPROVEMENTS.md` (natural Sri Lankan idioms, not robotic Google Translate)
-- Key improvements: Sinhala "හිතේ බර ඉවත් කරගන්න" > "දවසේ බර මුදා හරින්න"; Tamil "மனம் சொல்லுங்கள்" > "பாரம் இறக்கு"
-- Establish localization owner for translation workflow SLA
+- Externalize top 272 hardcoded strings in priority screens
+- Review translation quality: natural Sri Lankan idioms, not robotic Google Translate
+  - Sinhala: "හිතේ බර ඉවත් කරගන්න" > "දවසේ බර මුදා හරින්න"
+  - Tamil: "மனதில் இருப்பதை வெளியிடுங்கள்" > "நாளின் பாரத்தை விடுவியுங்கள்"
 
-### QR Flow Unification (Score 47/100 → 90+)
-Finite refactor sprint (6-10 weeks total, overlapping with other work):
+### Monorepo Deduplication (Infrastructure Debt)
+- **API first**: Migrate `src/lib/api/*.ts` → `@repo/core`; delete redundant files
+- **Community components**: Consolidate to `@repo/community` (remove app-local duplicates)
+- **LotusPetalFAB**: Merge PanResponder features into `@repo/ui` version; remove app version
+- **Hook cleanup**: `useTheme`/`useAccessibility` → `@repo/ui`; `useInventory` → `@repo/classroom`
 
-1. **Contract freeze (Week 1)**: Canonical payload schema: `{ type, payload, version }` — types: join-class, join-group, invite-teacher, invite-student, profile-connect, resource-share
-2. **Central resolver (Weeks 2-5)**: Parse → validate → authorize → dispatch routing
-3. **Migrate all scanners** to route through resolver
-4. **Fix incomplete surfaces**: Principal InviteManager QR modal, join-group consumer path
-5. **Fix Teacher QR join security bug**: membership link instead of `classrooms.update({ teacher_id })`
-6. **Sharing**: render QR to image + `expo-sharing` + deep-link generation
-7. **Backward-compatible parser** for legacy payload formats
-8. **CI enforcement**: Block new QR payload formats not going through resolver
-
-### Monorepo Deduplication (API + Components)
-Finite cleanup sprint:
-
-1. **API first**: Migrate `src/lib/api/*.ts` to `@repo/core` APIs; delete redundant files
-2. **Community components**: Consolidate GroupsScreen/GroupDetailsScreen/CreatePostModal/ReportPostModal to `@repo/community`
-3. **LotusPetalFAB harmonization**: Merge advanced features (PanResponder) into `@repo/ui` version
-4. **Hook cleanup**: `useTheme/useAccessibility` → `@repo/ui`; `useInventory` → `@repo/classroom`
-5. **CI enforcement**: Import boundary linting to prevent re-duplication
-
-### Group Chat Implementation
-WhatsApp-style full group chat:
-
-- Backend: Supabase Realtime for live messages; `group_messages` table
-- UI: `ChatScreen.tsx` — message bubbles, input bar, attachment support
-- Features: text messages, image sharing, file attachments (Cloudinary)
-- Message delivery status indicators
-- Unread message count badges
-- Push notifications for new messages
-
-### Real Notifications System
-Complete end-to-end notification system:
-
-- Supabase Realtime subscription to `notifications` table
-- Notification types: assignment_created, grade_posted, community_post, invitation_received, manifesto_updated, student_stuck_signal, group_message
-- `NotificationsScreen.tsx`: real data, paginated history, mark as read
-- Push notifications: `expo-notifications` + APNs/FCM setup
-- Notification badge on Profile tab icon
-- Bi-directional signals: student "Stuck" → teacher notification; teacher "Reality Check" → principal notification
-
-### Library: OCR Improvements
-Currently **34/100** — needs image preprocessing:
-
-- **Preprocessing pipeline**: deskew, perspective correction, adaptive binarization, denoise, contrast normalization, region segmentation
-- **Parser hardening**: per-line confidence scores, language-model correction pass, structured table reconstruction, duplicate name handling
-- **Integration**: Wire `OCRScanner.tsx` to active UI paths in Classroom → BulkStudentCreation
-- **Benchmark**: Create test set of printed Sinhala/Tamil registers to measure accuracy
-
-### Library: Content Acquisition Pipeline
-Currently empty — need to populate:
-
-- Content types: movies (inspirational trailers), government circulars, news updates, lesson plans, papers, books, maps/visualizations, short notes, mind maps
-- Teacher upload portal (currently works — needs UX polish)
-- Verification system for peer-approved content
-- Resource forking/remixing: teachers can "Fork" a collection and customize it (track lineage/pedigree)
-- Flash-Play mode: expand resource in mini bottom-sheet preview without losing search context
-- Collaborative Shadow Shelves: private study groups with shared resource shelves
-- AI-assisted discovery: "You're planning a lesson on Gravity. I've found 3 top-rated simulations in the Sanctuary."
+### QR Flow: Complete Unification (47/100 → 90+)
+- `join-group` consumer path: add to `QRResolver.ts` + `QRHandlerScreen`
+- Fix Principal InviteManager: render QR from stored `qrCodeData`
+- Fix Teacher QR join: membership link, not `teacher_id` overwrite
+- QR image sharing: render to image + `expo-sharing`
+- Backward-compatible parser for legacy payload formats
+- CI enforcement: block new QR payload formats not going through resolver
 
 ---
 
-## Long Term: 3-6 Months (April–September 2026)
+## Medium Term (May–June 2026): Network Effects & Student Integration
 
-### Alpha → Beta Milestones
+**Theme**: The platform should feel alive with activity. Students are active participants, not just data points. Cross-school connections create national scale.
 
-#### Alpha Release (March–April 2026)
-**Goal**: Polished, functional app for closed testing with selected schools
+### Student-Side Experience (First-Class Citizenship)
+Students are currently second-class citizens in the app. They see classrooms and assignments but feel no agency.
 
-**Requirements:**
-- ✅ Auth system (all flows functional)
-- ✅ 5-tab structure with role-based content
-- ✅ Teacher: Full classroom workflow (lessons, attendance, grading)
-- ✅ Student: Enrolled classroom view + submissions
-- ✅ Principal: School hierarchy + staff management
-- ✅ Community: Groups + Feed + Sacred Missions
-- ✅ Library: Basic browsing + upload
-- ✅ Self: All wellbeing features
-- ✅ Offline sync (outbox pattern)
-- 🔄 Accessibility: WCAG AA compliance (in progress)
-- 🔄 QR flows: Unified routing (in progress)
-- ❌ Real notifications: Supabase Realtime wired
-- ❌ Group chat: Basic messaging
-- ❌ EAS production build + App Store/Play Store closed testing
+- **Student PulseDashboard**: Today's assignments, upcoming deadlines, recent grades, attendance streak
+- **Student progress visualization**: Gamified streaks, completion percentage, "unlocked" rewards
+- **Assignment submission UX overhaul**: Clear status (submitted/pending/late/graded), drag-drop file upload
+- **Grade transparency**: Students see their grades immediately when posted; progress over time
 
-**Alpha success metrics (quantitative):**
-- App launch time < 3s on low-end Android
-- 60fps scrolling on all screens
-- App size < 20MB (monitor as features are added)
-- WCAG AA compliance > 80% (from current 5%)
-- Localization coverage > 90% for si/ta
+### Principal Aggregated Dashboards
+- School-wide attendance summary (% present today, trends by class/grade)
+- Assignment completion rates across all classrooms
+- Anonymized wellbeing pulse (aggregate mood data — never individual teacher data)
+- Top community contributors
 
-**Alpha success metrics (qualitative):**
-- Teachers feel "seen" and energized (not drained)
-- Reduces administrative friction
-- Culturally resonant (natural Sinhala/Tamil, lotus metaphor)
-- Works offline reliably
+### Thuthimal: Complete the Gratitude Economy
+- In-app Thuthimal gift flow: alumni finds teacher → initiates gift → payment gateway → badge appears
+- PayHere SDK integration (Sri Lanka payment gateway)
+- Gift confirmation email to teacher
+- Public "Wall of Honor" on teacher profiles
+- School can showcase top Thuthimal recipients
 
-#### Beta Release (May–June 2026)
-**Goal**: Feature-complete app tested with 3-5 real schools in Sri Lanka
+### Group Chat: Full Features
+- File attachments (Cloudinary upload)
+- Read receipts and delivery indicators
+- Unread message count badges on Community tab
+- Push notifications for new messages (`expo-notifications` + APNs/FCM)
+- Message search within group
+- Pinned messages (important announcements)
 
-**New features for Beta:**
-- Group chat (full WhatsApp-style functionality)
-- Push notifications (APNs + FCM)
-- OCR improvements (preprocessing pipeline)
-- PDF viewer (native in-app via `react-native-pdf`)
-- Video player (in-app streaming via `expo-av`)
+### PDF + Video: Native In-App Experience
+- `react-native-pdf` integration for in-app PDF reading (no external browser)
+- `expo-av` video player for educational video resources
 - Resource sharing with deep links
-- Principal aggregated dashboards (attendance patterns, mood analytics — anonymous)
-- Timetable system (moved from Self to Classroom)
-- Multi-year student data (when students change classes annually)
-- Thuthimal automation: In-app gifting UI + payment gateway
-- QR: Full unified routing + sharing
+- Offline download for key resources (`expo-file-system`)
+
+### Push Notifications (Full System)
+- `expo-notifications` + APNs (iOS) + FCM (Android) setup
+- Permission request flow with clear value explanation
+- Notification types: all from real notifications + group messages
+- Notification preference settings (per-type on/off)
+- Notification history (mark all as read)
+
+---
+
+## Long Term (Q3–Q4 2026): Scale, AI, and Platform
+
+**Theme**: After product-market fit is confirmed with 10+ real schools, add intelligence, scale, and platform depth.
+
+### AI Assistant Integration (After Product-Market Fit)
+*Build this after you know what teachers actually need help with — don't guess.*
+
+- **Shadow Agent (Orb Entry)**: Context-aware contemplative assistant in Self tab
+- **Weekly Wisdom Seeds**: AI-generated insights based on teacher's interaction patterns (not generic GPT output)
+- **Lesson planning assistant**: "You're teaching Gravity next week. I found 3 top-rated simulations in the library."
+- **Retrospective prompts**: AI-guided weekly school reflection for principals
+- **Predictive burnout signal**: Usage pattern analysis → gentle "Your energy looks low this week" nudge
+
+### Advanced Community Features
+- **Cross-school groups at national scale**: National Science Olympiad, Subject Teacher Networks
+- **Anonymous posts**: Safe space for sensitive professional discussions
+- **Community moderation queue**: Report → review → action
+- **"Vision Cycle"**: Principal Manifesto → Teacher Endorsement → Student Group → Community Feed
+- **Polls and institutional feedback forms**
+
+### Advanced Library Ecosystem
+- **AI Smart Summaries**: 3-bullet summary for long PDFs
+- **Knowledge Bridges**: "This video connects to your worksheet from Tuesday"
+- **Full-text + semantic search** across all library items
+- **Resource Remixing/Forking**: Teachers customize collections; evolutionary lineage tracked
+- **Popularity analytics**: Most-pulled, most-endorsed, trending by subject
+
+### Administrative Scale Features
+- **Timetable generation**: Agentic conflict-resolution timetabling
+- **Leave management**: Staff leave submission + principal approval
+- **Institutional calendar**: School-wide events + holidays
+- **Bulk data upload**: CSV import for student/staff records
+- **Letter templates**: Standard academic correspondence generation
+
+### Platform Architecture (v1.0)
+- **Hybrid sync**: Local SQLite + Cloud Sync (when offline is mission-critical)
+- **E2E encryption**: For Fire Journal, Decision Journal — truly private reflections
+- **Multi-tenant school isolation**: Verified RLS policy audit on every table
+- **School admin web panel**: For mass onboarding of large schools
+
+---
+
+## Alpha → Beta → Launch Milestones
+
+### Alpha (March–April 2026)
+**Goal**: Working app for closed testing with 3–5 selected schools in Sri Lanka.
+
+**Required to call it Alpha:**
+- ✅ Auth system (all flows working end-to-end)
+- ✅ 5-tab structure with verified role-based content
+- 🔄 Core loop validated: school creation → classroom → attendance → grading (T0.2)
+- 🔄 PulseDashboard shows REAL data (T0.3)
+- 🔄 FAB actions wired (T0.4)
+- 🔄 QR join bugs fixed (T0.5, T0.6, T1.5)
+- 🔄 SleepTracker / RemindersManager / VoiceJournaling wired (T1.1)
+- 🔄 Real notifications (T1.2, T2.3)
+- ❌ Group chat (v1 — basic text messaging)
+- ❌ Library: default seeded content
+- ❌ EAS production build + closed testing on Play Store
+
+**Alpha success criteria (quantitative):**
+- App launch time < 3s on low-end Android (Redmi/Samsung budget tier)
+- Attendance marking < 30 seconds for a class of 40 students
+- App size < 25MB initial download
+- 0 data loss incidents in 2-week pilot
+- WCAG AA compliance > 50% (from current ~5%)
+
+**Alpha success criteria (qualitative):**
+- At least 1 teacher says "this actually helps me"
+- Attendance and grading work reliably in a real classroom
+- PulseDashboard shows real pending tasks (not fake ones)
+
+---
+
+### Beta (May–June 2026)
+**Goal**: Feature-complete app tested with 5–10 real schools across Sri Lanka. Teachers are daily active users.
+
+**New features required for Beta:**
+- Group chat (full text + images)
+- Push notifications (APNs + FCM)
+- Native in-app PDF viewer
+- Video player for library resources
+- Principal aggregated dashboards (attendance, assignment completion)
+- OCR with at least one real provider (MLKit)
+- Thuthimal v1 (in-app gift flow)
+- Full QR unification (score 90+)
+- Student-side PulseDashboard
+- Accessibility: WCAG AA > 80%
+- Localization: si/ta > 95% coverage
+
+**Beta success criteria:**
+- 10+ schools with active daily usage
+- Average session length > 8 minutes/day for teachers
+- 60%+ 7-day retention for teachers who complete onboarding
+- 0 P0 data bugs reported in 4-week pilot
+- Teacher NPS > 30
 
 **Beta security requirements:**
-- All RLS policies audited and confirmed
+- All RLS policies audited and confirmed (row isolation by `school_id`)
 - API authorization checks on 100% of endpoints
 - No ID-guessing attacks possible
 - Privacy audit: grade, salary, contact data masked when The Veil is active
-- Security regression tests for privilege escalation
 
-#### Launch / v0.1 GA (July–August 2026)
-**Goal**: Public launch to Sri Lankan school market
+---
+
+### Launch / v0.1 GA (July–August 2026)
+**Goal**: Public launch to Sri Lankan school market.
 
 **Required for launch:**
 - App Store (iOS) submission + approval
-- Google Play Store submission + approval (including HuaweiMS variant if needed)
-- PayHere SDK integration (Sri Lanka payment gateway)
+- Google Play Store submission + approval
+- PayHere SDK integration + Thuthimal gifting live
 - Pricing tiers: Free, Pro (LKR 1,500/month), Premium (LKR 3,000/month)
-- Thuthimal automated gifting (alumni → teacher Pro subscriptions)
-- School admin panel (web) for mass onboarding
-- Privacy policy + Terms of Service (live pages, linked in app)
-- GDPR/PDPA compliant data handling
+- Privacy Policy + Terms of Service (live pages, linked in app)
+- GDPR/PDPA compliant data handling and deletion
 - Full localization: si/ta/en 100% coverage
 - Accessibility: WCAG 2.1 AA certified
-- Production monitoring: Sentry error rates, PostHog analytics dashboards
+- Production monitoring dashboards: Sentry error rates < 0.1%, PostHog analytics live
+- EAS build pipeline: Development → Staging → Production
 
-### Feature Backlog (v0.5 — Beta+)
+**Launch success metrics (Month 1):**
+- 50+ schools onboarded
+- 1,000+ daily active teachers
+- Average daily session > 10 minutes
+- Attendance feature used by > 80% of active teachers
 
-#### Principal & Administrative Features
-- **Leave Management**: Staff sick/casual/annual leave submission + principal approval portal
-- **Timetable Generation**: Agentic timetabling with conflict resolution
-- **Staff Attendance**: Daily check-in/out logging
-- **Bulk Data Upload**: CSV import for student and staff records
-- **Institutional Calendar**: School-wide events + holidays
-- **QR School Card**: Unique school code for kiosks and displays
-- **Department Tree**: Visual organizational chart
-- **Classroom Observation**: Walk-through feedback system
-- **Inventory & Resources**: Classroom equipment needs dashboard
-- **Report Generation**: Auto-generate student progress reports
-- **Letter Templates**: Standard academic correspondence
+---
 
-#### Library Ecosystem (Full Vision)
-- **The Personal Desk** fully offline-first with auto-sync
-- **Resource Remixing/Forking**: Evolutionary map tracking lineage
-- **Smart Summaries**: AI 3-bullet summaries for long PDFs
-- **Knowledge Bridges**: AI identifies connections between desk items ("This video matches yesterday's worksheet")
-- **FTS/Vector Search**: Full-text + semantic search across library
-- **Export pipeline**: OCR text → PDF/MD/TXT/DOCX
-- **Document ingestion queue**: Status/retry/audit metadata
-- **Popularity analytics**: Most-pulled, most-endorsed, trending by subject
+## Feature Backlog (Parking Lot — Good Ideas, Not Yet Prioritized)
 
-#### Community Ecosystem (Full Vision)
-- **"Vision Cycle"**: Principal Manifesto → Teacher Endorsement → Student Group → Community Feed
-- **Cross-school/Inter-school groups**: National Science Olympiad, React Developers, etc.
-- **Anonymous posts**: Safe space for sensitive community discussions
-- **Polls and forms**: Quick institutional feedback gathering
-- **Event broadcasting**: School-wide events promoted to feed
-- **Community moderation**: Report → review queue → ban/restrict
-- **Resonance Filter**: View feed based on "Positive Resonance" educational tags
+### Administrative Depth
+- Staff attendance daily check-in/out logging
+- Department tree (visual org chart)
+- Classroom walk-through observation feedback system
+- Inventory & resources dashboard
+- Report card generation (PDF export)
+- Timetable Generation (agentic, with conflict resolution)
 
-#### Cybernetic Feedback System (Advanced)
-From `agentic_vision_2026.md` and Phase 4 philosophy:
-- **Student "Stuck" Signal**: Student can anonymously signal "I'm stuck" → Teacher sees notification with Support Proposal
-- **Teacher "Reality Check"**: Teacher can signal capacity issues to Principal → Principal sees Support Proposal (not complaint)
-- **Aggregated Wellbeing Pulse**: Anonymous mood tracking aggregated for Principal (never individual teacher data exposed)
+### Cybernetic Feedback System (Advanced)
+From Phase 4 philosophy — these require product-market fit first:
+- **Student "Stuck" Signal**: Anonymous signal to teacher → Support Proposal generated
+- **Teacher "Reality Check"**: Capacity signal to principal → Support Proposal (not complaint)
+- **Aggregated Wellbeing Pulse**: Anonymous mood tracking for principal (never individual data exposed)
 - **Affective Loop Repair**: System detects "Vibe Shifts" and suggests structural interventions
-- **Resource Flow Repair**: When overloaded teacher spotted, suggest relief redistribution
 
-#### AI Assistant Integration
-- **Shadow Agent (Orb Entry)**: Context-aware contemplative assistant accessible from Self tab
-- **Socratic Prompting**: AI suggestions for classroom discussions
-- **AI Insights Summary**: Weekly "Wisdom Seeds" evolving based on teacher's interaction patterns
-- **Retrospective Prompts**: AI-generated guided review prompts for weekly school reflection
-- **Contextual Thought Seeds**: Role-specific reflection questions
-- **Predictive Burnout Detection**: AI flag when usage patterns suggest burnout risk
+### Gamification (Non-Extractive)
+Aligned with Thuthimal/Gratitude economy — not points for engagement's sake:
+- Hidden achievements scattered across app (exploration rewards)
+- Teacher recognition: "Staff Recognition" quick-actions for Gratitude Gifts
+- Community recognition wall ("stone tablet" aesthetic for achievements)
+- Exploration tracker: % of app discovered
 
-#### Gamification (Phase 2)
-*Non-extractive — aligned with Thuthimal/Gratitude economy*
-- Hidden achievements scattered across app
-- Exploration tracker (% of app explored)
-- Achievement gallery with animated unlocking
-- Profile completion celebration (AchievementUnlockOverlay already built)
-- Teacher recognition ("Staff Recognition" quick-actions for Gratitude Gifts)
-- Community recognition wall (achievements on "stone tablets" aesthetic)
-
-### Technical Debt Items
-
-#### Critical Technical Debt
-1. **A11y 5/100 → 90+**: ~171 interactive elements needing accessibility metadata
-2. **Localization 70/100 → 100%**: 376 missing keys (si + ta), 272 hardcoded strings
-3. **QR routing fragmentation**: Centralized resolver needed; 6+ independent handlers
-4. **src/lib/api duplication**: Near-fork of packages/core/src/api — double maintenance burden
-5. **Component duplication**: GroupsScreen, GroupDetailsScreen, LotusPetalFAB, useTheme, useInventory
-
-#### Architecture Debt
-6. **OCR no preprocessing**: Raw image → MLKit without deskew/binarization (poor accuracy for handwritten Sinhala/Tamil)
-7. **Type safety**: Widespread `any` usage in API/hooks; needs runtime validators (zod) at API ingress
-8. **No E2E tests**: Detox not configured; zero end-to-end test coverage
-9. **PDF viewer links out**: Native in-app PDF viewer (`react-native-pdf`) not integrated
-10. **Video player missing**: `expo-av` or YouTube component not integrated
-
-#### Performance Debt
-11. **Component size**: Large feature components mixing data fetching + orchestration + rendering; need container/presentational split
-12. **Memoization**: Heavy screens need `useMemo`/`useCallback` audit (beyond GradebookTable, ReportCard which already have it)
-13. **Bundle size**: No CI gate for bundle size — add to `pnpm check-all`
-14. **Render timing**: No CI gate for render performance on key screens (auth, classroom list, library browse)
-
-#### Security Debt
-15. **API authorization**: All API endpoints need `requireAuth()` at start; verify 100% coverage
-16. **RLS audit**: Full table-by-table verification of `school_id` isolation policies
-17. **QR ownership bug**: Teacher QR join overwrites `teacher_id` instead of creating membership
-18. **Error messages**: Ensure no sensitive information leaked in error responses
-19. **Data saver**: "No Image" mode placeholder only — needs real implementation
-
----
-
-## Living Theme System (v0.5+ Vision)
-
-The `gurudevi-skia-implementation.md` describes the full visual vision:
-
-- **Skia NoiseOverlay**: Subtle grain texture over gradients (when P0 bug fixed)
+### Living Theme: Full Vision
 - **AnimatedGradientMesh**: Smooth gradient transitions as temporal phase shifts
-- **LivingGlow protocol**: `PostCard` and `CollectionCard` focal points pulse with breath-like rhythm
-- **Temporal Fluidity**: Components consume `useThemedColors` with temporal phase integration
-- **Glass Protocol**: `BlurView` + structural glass tokens — layered sanctuary depth
-- **Bio-Resonance Layer** (still deferred):
-  - Adaptive Haptics: Crisp/Impact haptics for Day; Soft/Breathing haptics for Night
-  - Visual Unfolding: `UnfoldingView` wrapper — petal-scaling animation for all major card mounts
-  - Ecosystem Pulsing: `LotusPetalFAB` glimmers on student "Stuck" signals or received Thuthimal
+- **LivingGlow protocol**: PostCard and CollectionCard focal points pulse with breath-like rhythm
+- **Bio-Resonance Layer**: Adaptive haptics (crisp/Day, soft/Night); UnfoldingView petal-scaling animations
+- **Ecosystem Pulsing**: LotusPetalFAB glimmers on received Thuthimal
 
----
-
-## Gurudevi v1.0 Vision
-
-**From `NORTH_STAR.md` and `GURUDEVI_ARCHITECTURE_v5_0.md`:**
-
-v0.1 (Alpha): Cloud-first, core Teacher/Student flows, RLS lockdown  
-v0.5 (Beta): Thuthimal automation, OCR hardening, Principal dashboards, group chat  
-v1.0 (GA): Hybrid Sync (Local SQLite + Cloud Sync), E2E Encryption for sacred reflections, PayHere billing, full AI assistant
+### Platform Vision (v1.0)
+```
+v0.1 (Alpha): Cloud-first, core Teacher/Student flows, RLS lockdown
+v0.5 (Beta): Thuthimal automation, OCR hardening, Principal dashboards, group chat
+v1.0 (GA): Hybrid Sync (Local SQLite + Cloud), E2E encryption for sacred reflections,
+           PayHere billing, full AI assistant, national cross-school community
+```
 
 **By v1.0, Gurudevi will be:**
 - The go-to platform for Sri Lankan school educators
 - Trilingual, fully accessible, offline-first
 - A Gratitude Economy (Thuthimal) enabling alumni to honor teachers
-- An Educational Ecology (not an LMS) — repairing broken feedback loops
-- Technology that restores energy rather than extracting it
+- An Educational Ecology — repairing broken school feedback loops
+- Technology that restores teacher energy rather than extracting it
 - Sacred technology honoring 2000 years of Sri Lankan teaching wisdom — ජයවේවා 🪷
+
+---

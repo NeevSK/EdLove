@@ -1,294 +1,345 @@
 # ACTIVE TASKS: What Needs Done Right Now
 
-> Priority-ordered task list based on March 1st week priority matrix + Feb 4th week open tasks. Most recent first.
+> Priority-ordered task list applying **first-principles PM + architect thinking**.
+> The fundamental question answered here: **What actually matters to build right now?**
+>
+> The previous ACTIVE_TASKS.md was UI-polish-focused. This rewrite reorders by product impact.
+> If no real user can complete the "join a school + do daily work" loop, all UI polish is wasted effort.
+>
+> **Key insight**: The March tasks doc focused heavily on header/navbar/modal redesigns (TIER 3).
+> This is important work — but not before making sure the app actually works for real users.
 
 ---
 
-## 🔴 P0 — Critical Blockers (Do Today)
+## 🔴 TIER 0: Product Viability Gates
+### *Do FIRST — Nothing else matters until these work*
 
-### P0.1 — Fix Skia Dark Overlay (Visual Regression)
-**Source**: `docs/current_progress/March/1st_week/2026-02-27-priority-matrix-and-skia-runbook.md`  
-**Symptom**: Skia `NoiseOverlay` renders as full-screen dark opaque rectangle, hiding all app UI  
-**Location**: `packages/ui/src/components-native/`  
-**Owner**: Joint — Agent implements; User validates on real devices (low-end + mid-range + flagship)  
-**Effort**: M (1-2 days)  
-**Risk**: High
-
-**Exact fix sequence:**
-1. **Step A** — Render `NoiseOverlay` with opacity `0.0` first. Confirm no dark fill appears.
-2. **Step B** — Replace complex ColorMatrix pipeline with minimal additive grain: start at `opacity: 0.01 → 0.02`. Add turbulence only. Postpone tint matrix.
-3. **Step C** — Hard clamp all values: `0 ≤ opacity ≤ 0.03`, frequency `0.35..0.85`
-4. **Step D** — Mount as last child in root app tree with `pointerEvents="none"`. Keep behind modal blockers.
-5. **Step E** — Feature flag: `skiaNoiseOverlay=false` by default in production. Enable on dev builds first; staged rollout by role/percentage.
+These are the tasks that, if broken, mean zero real users can use the app. They are not glamorous. They are not visible in screenshots. But they are the foundation.
 
 ---
 
-## 🟠 P1 — High Priority This Week
+### T0.1 — Verify & Fix Database Migration Status
+**What**: Confirm all migrations from Feb 11–26 are applied in production Supabase. Specifically: `thuthimal` table (Feb 26), `sections`/`grades` tables, `profile_completion` table, `daily_content` table, `mood_logs`, `fire_journal`.
+**Why**: `migration_status.md` shows uncertainty for 10+ migrations. If these tables don't exist in prod, every feature that touches them will silently fail. Attendance will fail. Self features will fail. Profile completion will fail. This is the #1 silent killer.
+**Effort**: S (1 day)
+**Code to touch**: Supabase dashboard + `apps/gurudevi-mobile/docs/current_progress/*/migration_status.md`
+**Action**: Run each migration SQL against prod; confirm table existence; update migration_status.md with verified checkmarks.
 
-### P1.1 — Premium Global Header Redesign
-**Source**: `March/1st_week/tasks.md` item "Global header"  
-**Details**:
-- Modern and premium, aligned with theme
-- No blur — consider skeuomorphic/glassmorphism
-- Profile avatar + proper spacing from text in Self view
-- Theme alignment of all UI colors (no hardcoded hex)
-- Remove decorative hexagon behind avatar if present
+---
 
-**Sub-tasks:**
-- [ ] Design token audit: all hardcoded colors/sizes/padding → Theme tokens
-- [ ] `GlobalHeader.tsx` in `packages/ui/src/components/` — redesign
-- [ ] Add `UserAvatar` (already built) with correct sizing
-- [ ] Subtext below heading — evaluate if needed, keep or remove
+### T0.2 — End-to-End "New School" Journey Validation
+**What**: Manually walk through the complete new-user journey as each role:
+1. Teacher creates account → onboarding → creates school → creates classroom → invites student via QR
+2. Student joins via QR code → sees classroom → submits an assignment
+3. Principal creates account → joins school → views classrooms
 
-### P1.2 — Premium Bottom Navbar Redesign
-**Source**: `March/1st_week/tasks.md` item "bottom navbar"  
-**Details**:
-- Modern and premium, aligned with theme
-- No blur — skeuomorphic/glassmorphism if appropriate
-- Theme alignment of all UI colors
-- `LotusBottomNav.tsx` or `TabNavigator` visual layer
+**Why**: This is the core loop. If any step breaks, the app has no users. This has NEVER been formally validated end-to-end from code evidence. The QR join bug (T0.5) alone could break step 1.
+**Effort**: M (2 days including fixes)
+**Code to touch**: `WelcomeScreen`, `AuthScreen`, `OnboardingScreen`, `ClassroomScreen`, `ScannerModal`, QR flow
+**Action**: Document every broken step. Fix blocking bugs. Re-validate.
 
-**Sub-tasks:**
+---
+
+### T0.3 — Fix PulseDashboard: Replace Hardcoded Actions with Real Data
+**What**: The Self screen default view (`PulseDashboard`) shows hardcoded `console.log` fake tasks: "Mark Morning Attendance" and "Grade Science Assignment". These must query real pending data from the DB.
+**Why**: This is the FIRST THING a teacher sees every morning. If it shows fake data, the teacher immediately knows the app is not ready for real use. Trust is destroyed on first use.
+**Effort**: M (2–3 days)
+**Code to touch**: `apps/gurudevi-mobile/src/components/PulseDashboard/` + `packages/core/src/api/attendance.ts` + `packages/core/src/api/assignments.ts`
+**Action**: Query today's classrooms with no attendance taken → show as "Mark Attendance for [Class Name]". Query assignments with today's due date → show as "Grade [Assignment] for [Class]". Replace hardcoded strings.
+
+---
+
+### T0.4 — Wire FAB Actions (getFabActions)
+**What**: `getFabActions()` in `App.tsx` has all actions as `console.log` placeholders. Every FAB tap does nothing.
+**Why**: The FAB is visible on every screen. Dead buttons destroy trust immediately. This is a T0 bug masquerading as a "feature to implement."
+**Effort**: S (1 day)
+**Code to touch**: `apps/gurudevi-mobile/App.tsx` — `getFabActions()` function
+**Action**: Wire each action to its correct navigation target (create classroom, mark attendance, add post, add resource). Use `navigationRef.navigate()` for each.
+
+---
+
+### T0.5 — Fix Teacher QR Join Bug (ownership overwrite)
+**What**: When a teacher joins a classroom via QR, the code does `api.classrooms.update(classId, { teacher_id: user.id })`. This overwrites the original teacher's ownership.
+**Why**: This is a data corruption bug. Any teacher joining a classroom via QR immediately steals ownership from the original teacher. If this fires in a real school, it's catastrophic.
+**Effort**: S (half day)
+**Code to touch**: `packages/classroom/` — QR join handler; `packages/core/src/api/classroom.ts`
+**Action**: Change to create a `classroom_teachers` membership record instead of updating `teacher_id`. Requires verifying DB schema has or needs a join table.
+
+---
+
+### T0.6 — Fix Principal InviteManager QR Modal Not Rendering
+**What**: Principal generates a QR code → state is stored in `qrCodeData` but no modal renders it. The button silently does nothing.
+**Why**: Principals cannot invite teachers without this. School creation is broken for the primary administrative role.
+**Effort**: S (half day)
+**Code to touch**: `packages/classroom/InviteManager.tsx` (or wherever `qrCodeData` state lives)
+**Action**: Find the stored `qrCodeData` state and add the QR display modal that was never rendered.
+
+---
+
+## 🔴 TIER 1: Core Value Delivery
+### *The "Why" of the App — What Teachers Do Every Day*
+
+These are the features teachers will use daily. If they don't work reliably and feel good, teachers will stop using the app after week 1.
+
+---
+
+### T1.1 — Wire SleepTracker, RemindersManager, VoiceJournaling into TeacherSelfView
+**What**: These three components exist in `packages/self/` but are NOT rendered anywhere in `TeacherSelfView`. They are built but invisible.
+**Why**: These are key wellbeing features — teacher reminders and sleep tracking are explicit user requests. Built but unwired = wasted effort AND user disappointment if they were promised.
+**Effort**: S (1 day)
+**Code to touch**: `packages/self/TeacherSelfView.tsx` — add these components in the appropriate section
+**Action**: Import and render `SleepTracker`, `RemindersManager`, `VoiceJournaling` in TeacherSelfView with appropriate section headers.
+
+---
+
+### T1.2 — Audit and Fix NotificationDrawer Data
+**What**: `NotificationDrawer.tsx` exists but it's unclear if it shows real data or hardcoded content.
+**Why**: Notifications are how teachers know about new submissions, overdue attendance, community messages. If it shows fake data, it's worse than no notifications.
+**Effort**: S (1 day)
+**Code to touch**: `apps/gurudevi-mobile/src/components/NotificationDrawer.tsx`
+**Action**: Inspect the component. If data is hardcoded, wire to Supabase `notifications` table. If table doesn't exist, create it with migration.
+
+---
+
+### T1.3 — Attendance Flow: End-to-End Reliability Check
+**What**: Attendance is the daily job. Mark attendance → data persists → teacher can see history → principal can see summary. Verify this entire flow works in the current codebase.
+**Why**: This is the core daily teacher workflow. If attendance breaks on day 3 of real use, teachers abandon the app. Not optional.
+**Effort**: S–M (1–2 days)
+**Code to touch**: `packages/core/src/api/attendance.ts`, `packages/classroom/` attendance components
+**Action**: Walk through the full flow. Fix any broken steps. Verify data appears in both TeacherDashboard and (for principals) PrincipalSchoolView.
+
+---
+
+### T1.4 — Assignment/Submission/Grading: End-to-End Reliability Check
+**What**: Teacher creates assignment → student sees it → student submits → teacher sees submission → teacher grades. Verify the full loop.
+**Why**: This is the second daily teacher workflow. The grading system (`GradebookTable`, `ReportCard`, `GradeEntryForm`) all exist in code but have never been validated end-to-end from what we can verify.
+**Effort**: M (2 days)
+**Code to touch**: `packages/core/src/api/assignments.ts`, `packages/core/src/api/submissions.ts`, `packages/core/src/api/grading.ts`, classroom components
+**Action**: Walk through as teacher + student pair. Document and fix any breaking steps.
+
+---
+
+### T1.5 — Fix join-group QR Consumer Path
+**What**: QR codes for groups are generated but there is no code that handles scanning one. The consumer path doesn't exist.
+**Why**: Community groups are central to teacher connection. If the join flow for groups is broken, groups are invitation-only by manual search — killing discovery and adoption.
+**Effort**: M (2 days)
+**Code to touch**: `packages/scanner-kit/QRResolver.ts` — add `join-group` case; `packages/community/` — add group join handler; `QRHandlerScreen`
+**Action**: Add `join-group` resolution to `QRResolver.ts`. Create the group join action in community package. Wire `QRHandlerScreen` to dispatch it.
+
+---
+
+### T1.6 — Self Screen PulseDashboard UX Polish (after T0.3 makes it real)
+**What**: After T0.3 makes PulseDashboard show real data, do UX polish: layout, spacing, Sanctuary aesthetic, loading states, empty states.
+**Why**: This is what teachers see every morning. It should feel like a sacred, calm, energizing home base — not a task list.
+**Effort**: M (2 days) — depends on T0.3 being done first
+**Code to touch**: `apps/gurudevi-mobile/src/components/PulseDashboard/`
+**Action**: Design clean morning-dashboard layout. DailyResonanceCard prominent. Pending tasks below. "Enter Full Sanctuary" button prominent. Loading skeleton. Empty state: "Your day is clear 🪷"
+
+---
+
+## 🟠 TIER 2: Stickiness & Network Effects
+### *What Makes Teachers Come Back After Week 1*
+
+These features don't block launch, but without them the app is a utility, not a community. They drive retention.
+
+---
+
+### T2.1 — Group Chat: Backend + Basic UI
+**What**: Implement WhatsApp-style group messaging. Currently ZERO code exists.
+**Why**: Teachers talking to each other in groups is the #1 retention mechanic for community apps. Without it, Community is just a notice board. With it, teachers have a reason to open the app 5× per day.
+**Effort**: XL (1–2 weeks)
+**Code to touch**:
+- DB: New Supabase migration for `group_messages` table (`id, group_id, user_id, content, created_at, type`)
+- Backend: Supabase Realtime subscription on `group_messages`
+- UI: New `GroupChatScreen.tsx` in `packages/community/`
+- Navigation: Wire "Chat" button in GroupDetailsScreen to GroupChatScreen
+**Note**: Get user approval on UX direction (WhatsApp-style vs threaded vs hybrid) before implementing.
+
+---
+
+### T2.2 — Library: Seed Default Content (Cold Start Fix)
+**What**: New schools open the Library and see nothing. Curate and seed a default set of educational resources that appear for all schools.
+**Why**: An empty library = dead feature. Teachers need to see value immediately. Even 20 curated resources (inspirational videos, Sri Lankan curriculum lesson plans, government circulars) make the library feel alive.
+**Effort**: M (2 days — agent seeds schema; human curates content)
+**Code to touch**: `packages/core/src/api/resources.ts` — add `is_default` flag; seed script for `library_items`
+**Owner split**: Agent implements `is_default` flag and seed mechanism. Human (Naveen) curates actual content.
+
+---
+
+### T2.3 — Real Notifications (End-to-End)
+**What**: Remove hardcoded notifications. Wire `NotificationDrawer.tsx` to real Supabase `notifications` table via Realtime. Show: assignment created, grade posted, invitation received, community post.
+**Why**: Notifications are the primary re-engagement mechanism. Without real notifications, teachers must manually check every section. With real notifications, the app pulls them back.
+**Effort**: L (3–4 days)
+**Code to touch**: `apps/gurudevi-mobile/src/components/NotificationDrawer.tsx`, `packages/core/src/api/` (new notifications module), Supabase `notifications` table (migration if needed)
+
+---
+
+### T2.4 — OCR Providers: Implement at Least One Real Provider
+**What**: `GoogleVisionProvider`, `MLKitProvider`, `OpenAIVisionProvider` are all skeleton stubs. Implement `MLKitProvider` as the primary (free, on-device, works offline) using `@react-native-ml-kit/text-recognition`.
+**Why**: OCR bulk student import is a flagship feature for Sri Lankan schools that have printed registers. Currently it is a completely non-functional stub. Implementing even one real provider delivers actual value.
+**Effort**: L (3–4 days)
+**Code to touch**: `packages/classroom/src/providers/MLKitProvider.ts` — replace stub with real implementation; wire `OCRScanner.tsx` to active UI path in TeacherDashboard
+**Dependency**: Requires testing with real Sinhala/Tamil printed text.
+
+---
+
+### T2.5 — Community: Education Tags Required for Posts
+**What**: Add tag selection UI in `CreatePostModal`. Require at least 1 education-related tag before a post can be submitted. Show tags on posts in feed.
+**Why**: Without content constraints, the community feed becomes off-topic noise. Educational tagging keeps the community relevant and makes moderation tractable.
+**Effort**: M (2 days)
+**Code to touch**: `CreatePostModal.tsx` (whichever location is SSOT after deduplication), `packages/core/src/api/groups.ts`
+
+---
+
+### T2.6 — Thuthimal Flow: Wire Full Claim + Gift Experience
+**What**: `ThuthimalClaimScreen` and `ThuthimalBadge` are partially built. The `thuthimal` table was added Feb 26. Complete the flow: alumni discovers teacher → initiates gift → teacher claims → badge appears on profile.
+**Why**: Thuthimal is Gurudevi's core differentiator and brand story. It's the gratitude economy that makes the platform unique. Even a v1 of this working = powerful word-of-mouth.
+**Effort**: L (3–4 days)
+**Code to touch**: `ThuthimalClaimScreen`, `ThuthimalBadge`, `packages/core/src/api/thuthimal.ts`, Profile screen
+
+---
+
+## 🟡 TIER 3: Polish & UX Refinement
+### *Important But Not First — These tasks were the entire focus of March tasks.md*
+
+> **Honest statement to team**: The March `tasks.md` was almost entirely TIER 3 work (global header, bottom navbar, modal redesigns). This is real work that matters for quality and the teacher experience. But it is not the first thing to do. Build the foundation first. Then polish it.
+
+---
+
+### T3.1 — Premium Global Header Redesign
+**Source**: March/1st_week/tasks.md — "Global header"
+**What**: Modern and premium header, aligned with Sanctuary theme. Profile avatar with correct spacing. No hardcoded hex colors.
+**Effort**: M | **Code**: `packages/ui/src/components/GlobalHeader.tsx`
+**Sub-tasks**:
+- [ ] Token audit: all hardcoded colors/sizes/padding → Theme tokens
+- [ ] Add `UserAvatar` with correct sizing
+- [ ] Subtext below heading — evaluate and finalize
+
+---
+
+### T3.2 — Premium Bottom Navbar Redesign
+**Source**: March/1st_week/tasks.md — "bottom navbar"
+**What**: Modern and premium navbar. Skeuomorphic/glassmorphism if appropriate. Theme alignment.
+**Effort**: M | **Code**: `apps/gurudevi-mobile/src/navigation/TabNavigator.tsx`
+**Sub-tasks**:
 - [ ] Token audit: no hardcoded colors/shadows
-- [ ] Evaluate FAB placement vs navbar (FAB not under navbar issue from Feb tasks)
 - [ ] Active tab indicator styling
-
-### P1.3 — Self Screen Default View Redesign
-**Source**: `March/1st_week/tasks.md` + `Feb/4th_week/tasks.md` item 8  
-**Details**: New default view for all roles — described target: "PulseDashboard, professional and premium"  
-**Note**: Current implementation described as needing full redesign
-
-**Sub-tasks:**
-- [ ] 8.1 New default view for all roles (PulseDashboard or similar — get user approval first)
-- [ ] 8.2 Mood tracker redesign (current described as "fucking bad" — complete overhaul)
-- [ ] 8.3 Remove timetable from Self (moves to Classroom tab per task 9.1)
-- [ ] Add reminders, sleep trackers to Self
-- [ ] Redesign Energy tracker in Principal view
-- [ ] Organize Self components coherently
-
-### P1.4 — Profile Screen Modal Polish
-**Source**: `March/1st_week/tasks.md` item "profile section"  
-**Details**:
-- [ ] Logout modal and Delete Account modal: modern/premium, theme-aligned, premium shape
-- [ ] Ensure all UI components are responsive and aligned with theme
-- [ ] No hardcoded colors, texts, sizes, padding in profile components
+- [ ] FAB placement vs navbar (FAB not hidden under navbar)
 
 ---
 
-## 🟡 P2 — Core Feature Flows (This Week / Next Week)
-
-### P2.1 — Community: Create/Join/Leave/Settings/Members/Chat Shell
-**Source**: `March/1st_week/tasks.md` item "community screen" + `Feb/4th_week/tasks.md` item 5.2.4  
-**Effort**: L (3-4 days) | **Risk**: Medium
-
-**Sub-tasks:**
-- [ ] Minimal redesign of Community default view
-- [ ] Theme alignment of all UI colors and modals
-- [ ] Group creation flow (full UI)
-- [ ] Group join flow (QR + invite code)
-- [ ] Group leave flow with confirmation
-- [ ] Group settings screen
-- [ ] Group members list
-- [ ] Group chat screen scaffold (WhatsApp-style) — requires backend
-- [ ] Group profile/QR display
-- [ ] Manifesto settings for teachers/principals
-- [ ] Theme-aligned modals for all community flows
-
-**Note from delegation playbook**: Agent can implement navigation/state scaffolding; User must approve product rules.
-
-### P2.2 — Community: Education Tag Required for Posts
-**Source**: `Feb/4th_week/tasks.md` item 5.1.1  
-**Details**: When posting in community feed, user must select at least 1 education-related tag. Posts must be related to a group. This prevents off-topic content and keeps community educational.  
-**Effort**: M | **Risk**: Low  
-
-**Sub-tasks:**
-- [ ] Add tag selection UI in `CreatePostModal`
-- [ ] Validation: at least 1 tag required before post can be submitted
-- [ ] Available tags: define list (subjects, grades, etc.)
-- [ ] Tag display on posts in feed
-
-### P2.3 — Classroom: Role-Specific Default Demos/Views
-**Source**: `March/1st_week/tasks.md` item "classroom screen" + `Feb/4th_week/tasks.md` item 9  
-**Effort**: L | **Risk**: Medium  
-**Note**: Product rules and sample data choices need user input (Yellow in delegation playbook)
-
-**Sub-tasks:**
-- [ ] 9.9 Change default screen content in `TeacherDashboardView.tsx` (remove stale/demo content)
-- [ ] New demo for student classroom view (currently uses teacher demo)
-- [ ] New demo for principal classroom view
-- [ ] 9.11 ClassroomScreen: if guest user → nudge to profile creation or "play with sample school/classroom"; if registered user without NIC/index number → redirect to UpdateProfile with proper info
-- [ ] Fix: `ClassroomScreen.tsx` no blocking — show demo/previous content while loading
-
-### P2.4 — Library: Minimal Redesign + FAB Fix
-**Source**: `March/1st_week/tasks.md` item "library screen"  
-**Effort**: M | **Risk**: Low
-
-**Sub-tasks:**
-- [ ] Minimal redesign of Library default view
-- [ ] Theme alignment of all UI colors
-- [ ] UI alignment with screen layout
-- [ ] FAB not hidden under navbar (z-index/positioning fix)
-- [ ] Theme-aligned modals
-- [ ] Add/find content for library defaults (needs curation — user task)
+### T3.3 — Profile Screen Modal Polish
+**Source**: March/1st_week/tasks.md — "profile section"
+**What**: Logout and Delete Account modals: modern/premium, theme-aligned.
+**Effort**: S | **Code**: `packages/ui/src/components/LogoutModal.tsx`, `DeleteAccountModal.tsx`
 
 ---
 
-## 🟢 P3 — Important But Not Immediate
+### T3.4 — Community Screen Minimal Redesign
+**Source**: March/1st_week/tasks.md — "community screen"
+**What**: Minimal redesign of Community default view. Theme alignment. Group creation + join flows with polished UX.
+**Effort**: M | **Code**: `CommunityScreen.tsx`, `GroupsScreen.tsx`, community modals
 
-### P3.1 — Feature Mapping: Self + Community per Role
-**Source**: `Feb/4th_week/tasks.md` item 1  
-**Details**: Map features/functions/components for each role (Teacher, Student, Principal, Founder) to Self and Community sections specifically.
+---
 
-**Sub-tasks:**
-- [ ] Create `useRoleFeatures` hook if not already complete
-- [ ] Audit Self section: which widgets show for Teacher vs Student vs Principal vs Founder
-- [ ] Audit Community section: feed filters, group creation permissions, manifesto access per role
-- [ ] Ensure "Online Teachers" → renames to "Online Students" in student view
-- [ ] Principal Community: Manifesto edit, Announcement priority, Circle management
+### T3.5 — Library Screen Redesign + FAB Z-Index Fix
+**Source**: March/1st_week/tasks.md — "library screen"
+**What**: Library default view redesign. FAB not hidden under navbar.
+**Effort**: M | **Code**: `packages/library/LibraryScreen.tsx`
 
-### P3.2 — Fix QR Routing (Centralized Resolver)
-**Source**: `Feb/4th_week/codex/qr-ocr-implementation-audit.md` + `codex/sustainable-implementation-strategy.md`  
-**Effort**: L | **Risk**: High  
-**Current score**: 47/100 (critical integration risk)
+---
 
-**Sub-tasks:**
-- [ ] Define canonical QR payload schema with versioning: `{ type: 'join-class' | 'join-group' | 'invite' | 'profile', payload: {...}, version: 1 }`
-- [ ] Build central resolver/router: scan result → parse → validate → authorize → dispatch
-- [ ] Route all scanner entry points through this resolver
-- [ ] Fix `join-group:` payloads — create consumer path
-- [ ] Fix Principal `InviteManager` — render QR from stored `qrCodeData` state
-- [ ] Fix Teacher QR join: use membership link instead of `classrooms.update({ teacher_id })`
-- [ ] Implement QR image sharing: render-to-image + `expo-sharing` + deep-link payload
-- [ ] Add integration tests for QR join/claim/group flows
-- [ ] Add backward-compatible parser for legacy payload formats
+### T3.6 — Classroom Role-Specific Demo Views
+**Source**: March/1st_week/tasks.md + Feb/4th_week/tasks.md item 9
+**What**: Remove stale demo content from `TeacherDashboardView`. New demo for student and principal views.
+**Effort**: M | **Code**: `ClassroomScreen.tsx`, role-specific view components
+**Owner**: Agent implements; Human defines content/product rules (what does a "good" demo look like?)
 
-### P3.3 — Real Notifications System
-**Source**: `Feb/4th_week/tasks.md` item 7.1 + `March/1st_week/tasks.md` item "Notification Screen"  
+---
+
+### T3.7 — Self Section: Role-Based Feature Mapping Audit
+**Source**: Feb/4th_week/tasks.md item 1
+**What**: Audit which Self widgets show for Teacher vs Student vs Principal vs Founder. Ensure correct role-based rendering.
+**Effort**: M | **Code**: `SelfScreen.tsx`, role view components in `packages/self/`
+
+---
+
+### T3.8 — Error Handling Normalization
+**Source**: Feb/4th_week/tasks.md items 10.1, 10.2
+**What**: Audit all screens for unhandled errors. Replace all raw `Alert.alert` with `SanctuaryToast` or `ErrorMessage` components. Add empty states everywhere.
+**Effort**: M | **Code**: All screens
+
+---
+
+### T3.9 — Skeleton Loaders
+**What**: `SkeletonCard`, `SkeletonAvatar`, `SkeletonTextLine` shimmer components for all data-fetching screens.
+**Effort**: S | **Code**: `packages/ui/src/components/`
+
+---
+
+### T3.10 — Re-enable Skia NoiseOverlay (Properly)
+**Source**: Feb tasks Skia runbook
+**What**: Implement proper guarded rollout: opacity 0.0 test → minimal grain → feature flag off by default → staged rollout.
+**Effort**: M | **Code**: `packages/ui/src/components-native/NoiseOverlay`
+
+---
+
+## 🔵 TIER 4: Scale & Infrastructure
+### *Important for production. Not blocking alpha.*
+
+---
+
+### T4.1 — Accessibility: Critical Path Fix
+**Source**: Feb/4th_week/codex/a11y-localization-completeness-audit.md
+**Current score**: ~5/100 (CRITICAL gap — legal/ethical liability)
+**Effort**: L (ongoing) | **Code**: All screens
+**Priority order**: WelcomeScreen → OnboardingScreen → AuthScreen → SelfScreen → LibraryScreen → ClassroomScreen
+**Actions**: `accessibilityLabel`, `accessibilityRole`, `accessibilityHint` on all ~171 missing interactive elements; `accessibilityState` on all toggles; 72px minimum touch targets everywhere.
+
+---
+
+### T4.2 — Localization: Close Key Gaps
+**Source**: Feb/4th_week/codex/a11y-localization-completeness-audit.md
+**Effort**: M | **Code**: `i18n/locales/si.json`, `i18n/locales/ta.json`
+**Actions**: Add 176 missing Sinhala keys; add 200 missing Tamil keys; externalize top 272 hardcoded strings; verify natural translations (not robotic Google Translate).
+
+---
+
+### T4.3 — Monorepo Deduplication (Priority Order)
+**Source**: March/1st_week/monorepo_duplication_audit.md
 **Effort**: L | **Risk**: Medium
-
-**Sub-tasks:**
-- [ ] Remove hardcoded notifications from `NotificationsScreen.tsx`
-- [ ] Wire to `notifications` table in Supabase (schema: `notifications` table exists)
-- [ ] Real-time notifications via Supabase Realtime
-- [ ] Notification types: assignment created, grade posted, community post, invitation received, manifesto updated
-- [ ] Mark as read/unread
-- [ ] Push notifications (requires native notification permissions — separate task)
-- [ ] Notification badge count on Profile tab icon
-
-### P3.4 — Error Handling Normalization
-**Source**: `Feb/4th_week/tasks.md` items 10.1, 10.2  
-**Effort**: M | **Risk**: Low
-
-**Sub-tasks:**
-- [ ] 10.1 Audit all screens for unhandled errors; wrap in graceful error states
-- [ ] 10.2 Error messages should be informing AND nudging to necessary actions (not just "Error occurred")
-- [ ] Replace all raw `Alert.alert` with `SanctuaryToast` or `ErrorMessage` components
-- [ ] Verify `apiInterceptor.ts` covers all PostgREST error codes
-- [ ] Add empty states everywhere (use `PositiveInvitation.tsx` pattern: "This space is yours to create")
-- [ ] Skeleton loaders during data fetch (replace spinners with `SkeletonCard`, `SkeletonAvatar`, `SkeletonTextLine`)
+**Priority cleanup**:
+1. API first (highest ROI): migrate `src/lib/api/*.ts` → `@repo/core`; delete redundant files
+2. Community components: choose SSOT for `GroupsScreen`, `GroupDetailsScreen`, `CreatePostModal`, `ReportPostModal`
+3. LotusPetalFAB: merge PanResponder features into `@repo/ui` version; remove app version
+4. Hook deduplication: `useTheme`/`useAccessibility` → `@repo/ui`; `useInventory` → `@repo/classroom`
 
 ---
 
-## 🔵 P4 — Infrastructure & Production
-
-### P4.1 — Accessibility: Critical Path Fix
-**Source**: `Feb/4th_week/codex/a11y-localization-completeness-audit.md`  
-**Current score**: 5/100 (CRITICAL GAP)  
-**Effort**: L (ongoing) | **Risk**: Legal/Ethical
-
-**Immediate actions (priority order per accessibility_strategy.md):**
-1. [ ] `WelcomeScreen.tsx` — Add `accessibilityLabel`, `accessibilityRole` to all interactive elements
-2. [ ] `OnboardingScreen.tsx` — Same
-3. [ ] `AuthScreen.tsx` — Same
-4. [ ] `SelfScreen.tsx` — Same
-5. [ ] `LibraryScreen.tsx` — Same
-6. [ ] All `Pressable`, `TouchableOpacity`, `TouchableWithoutFeedback` without text: add `accessibilityLabel`
-7. [ ] All images without explicit `accessibilityLabel`
-8. [ ] `accessibilityRole="button"` on all action elements
-9. [ ] `accessibilityState` on all toggles (checked/unchecked)
-10. [ ] Use `accessible={true}` to group related text + controls
-11. [ ] Verify 72px minimum touch targets (currently implemented in AppSettingsScreen — replicate everywhere)
-
-**Do NOT suppress warnings with `eslint-disable` unless technically unavoidable with documentation.**
-
-### P4.2 — Localization: Close Key Gaps
-**Source**: `Feb/4th_week/codex/a11y-localization-completeness-audit.md`  
-**Effort**: M | **Risk**: Medium
-
-**Sub-tasks:**
-- [ ] Add ~176 missing Sinhala (`si.json`) keys
-- [ ] Add ~200 missing Tamil (`ta.json`) keys
-- [ ] Identify and externalize top 272 hardcoded strings in priority screens
-- [ ] Run `pnpm run lint` — fix missing `t()` calls flagged by `eslint-plugin-react-native-a11y`
-- [ ] Verify natural translations (see `TRANSLATION_IMPROVEMENTS.md` for specific improvements)
-  - Sinhala: "හිතේ බර ඉවත් කරගන්න" instead of "දවසේ බර මුදා හරින්න"
-  - Tamil: "மனதில் இருப்பதை வெளியிடுங்கள்" instead of "நாளின் பாரத்தை விடுவியுங்கள்"
-
-### P4.3 — Monorepo Deduplication
-**Source**: `March/1st_week/monorepo_duplication_audit.md` + `Feb/4th_week/codex/src-vs-packages-redundancy-audit.md`  
-**Effort**: L | **Risk**: Medium
-
-**Priority cleanup order:**
-1. **API first (highest ROI)**:
-   - [ ] Migrate all remaining `apps/gurudevi-mobile/src/lib/api/*.ts` references to `@repo/core` APIs
-   - [ ] Archive/deprecate redundant mobile API files
-2. **Community components second**:
-   - [ ] Choose SSOT: `@repo/community` or mobile-local for `GroupsScreen`, `GroupDetailsScreen`, `CreatePostModal`, `ReportPostModal`
-   - [ ] Move shared logic to package; keep thin wrapper in app only if truly app-specific
-3. **LotusPetalFAB harmonization**:
-   - [ ] Merge PanResponder/advanced features from app version into `@repo/ui` version
-   - [ ] Remove app version; all consumers use `@repo/ui`
-4. **Hook deduplication**:
-   - [ ] `useTheme`/`useAccessibility` — move to `@repo/ui`
-   - [ ] `useInventory` — move to `@repo/classroom`
-
-### P4.4 — QA and Testing
-**Source**: `Feb/4th_week/tasks.md` item 11  
-**Effort**: L | **Risk**: Medium
-
-**Sub-tasks:**
-- [ ] 11.1 Unit tests for critical business logic in `@repo/core`
-- [ ] 11.1 BDD tests for Classroom Management flow
-- [ ] 11.1 BDD tests for Library Upload flow
-- [ ] 11.2 Accessibility smoke tests (screen-reader + language-switch)
-- [ ] 11.2 Localization snapshot tests
-- [ ] 11.2 Performance budget: bundle size + render timings for key screens
-- [ ] 11.2 Security regression tests (privilege escalation paths)
-- [ ] E2E tests (Detox): setup for 5 critical flows (auth, classroom creation, content upload, QR scan, grading)
-
-### P4.5 — CI/CD and Production Build
-**Source**: `Feb/4th_week/tasks.md` item 12  
-**Effort**: M | **Risk**: Medium
-
-**Sub-tasks:**
-- [ ] 12.1 EAS Development Build (APK with dev client)
-- [ ] 12.2 EAS App Bundle (production AAB)
-- [ ] 12.3 App Store/Play Store closed testing submission
-- [ ] Set EAS secrets: SUPABASE_URL, SUPABASE_ANON_KEY, SENTRY_DSN, POSTHOG_API_KEY
-- [ ] Verify `.npmrc` has `shamefully-hoist=true` for cloud build
-- [ ] Run `npx expo-doctor` before each build
-- [ ] Test: GMS (Google Mobile Services) vs HuaweiMS build variants (task 13.3)
+### T4.4 — QA: BDD Tests for Core Flows
+**Source**: Feb/4th_week/tasks.md item 11
+**Effort**: L
+**Actions**: BDD tests for Classroom Management flow; Library Upload flow; E2E tests (Detox) for 5 critical flows: auth, classroom creation, content upload, QR scan, grading.
 
 ---
 
-## Blockers
+### T4.5 — CI/CD: Production Build
+**Source**: Feb/4th_week/tasks.md item 12
+**Effort**: M
+**Actions**: EAS Development Build (APK with dev client); EAS App Bundle (production AAB); Set EAS secrets (SUPABASE_URL, SUPABASE_ANON_KEY, SENTRY_DSN, POSTHOG_API_KEY); run `npx expo-doctor` before each build.
 
-### Hard Blockers (Cannot Proceed Without These)
-1. **Skia P0 bug**: Must be resolved or feature-flagged before any visual work makes sense
-2. **User approval on Self redesign direction**: Need agreement on PulseDashboard vs other concept before implementing
+---
 
-### Soft Blockers (Slow Things Down)
-3. **Monorepo duplication**: Making changes to GroupsScreen requires editing in two places until deduplicated
-4. **QR routing**: New QR features cannot be added until centralized resolver exists
-5. **API duplication**: Bug fixes in API layer require double-patching until consolidated
+## Dependency Chain
 
-### Dependency Chain
 ```
-Skia fix → Visual work (header, navbar, self)
-QR resolver → New QR features
-API deduplication → Reliable API behavior
-Library content → Library usefulness
-Group chat backend → Group chat UI
+T0.1 (DB migrations) → ALL other features (silent failures otherwise)
+T0.2 (journey validation) → Trust that core loop works
+T0.3 (real pulse data) → T1.6 (pulse UX polish)
+T0.5 (QR join fix) → T0.2 (journey works end-to-end)
+T1.5 (join-group QR) → T2.1 (group chat — groups must be joinable first)
+T2.1 (group chat backend) → T3.4 (community UI polish)
+T4.3 (deduplication) → safer to make changes in community + library
 ```
 
 ---
@@ -296,31 +347,35 @@ Group chat backend → Group chat UI
 ## Clear Action Items by Owner
 
 ### For the Human (Naveen — Vision, Taste, Critical Decisions)
-- [ ] Approve Self screen redesign direction (PulseDashboard concept — define specific wireframe)
-- [ ] Validate Skia fix on real devices (low-end Android + mid-range + flagship)
-- [ ] Define specific point values for gamification milestones
-- [ ] Curate/collect default content for Library (educational materials, inspirational movies, circulars)
-- [ ] Define education-related tags list for Community posts
-- [ ] Decide: phone number auth vs email vs magic link (task 13.2) for auth screen redesign
-- [ ] Review translation improvements in `TRANSLATION_IMPROVEMENTS.md` and approve
-- [ ] Define product rules for classroom role-specific demos
-- [ ] Review and approve Community flow UX before implementation
+- [ ] Validate DB migration status on production Supabase (T0.1)
+- [ ] Walk the "new school" journey on a real device (T0.2)
+- [ ] Curate default Library content — 20 resources minimum (T2.2)
+- [ ] Approve Self PulseDashboard redesign direction before T1.6 (wireframe approval)
+- [ ] Define education-related tags list for Community posts (T2.5)
+- [ ] Define product rules for classroom role-specific demos (T3.6)
+- [ ] Approve Community group chat UX direction before T2.1 (WhatsApp-style vs other)
+- [ ] Review and approve translation improvements in `TRANSLATION_IMPROVEMENTS.md`
 
-### For the Agent (AI — Architecture, Boilerplate, Pattern Implementation)
-- [ ] Skia overlay: implement guarded fallback path, clamps, and feature flag
-- [ ] Header + navbar: token audit and redesign implementation
-- [ ] `SkeletonLoader.tsx` with shimmer effect (variants: SkeletonCard, SkeletonAvatar, SkeletonTextLine)
-- [ ] Accessibility: add labels/roles/hints to all 171 interactive elements missing them
-- [ ] Localization: add missing si/ta keys, externalize hardcoded strings
-- [ ] QR resolver: centralized payload parser/router
-- [ ] API deduplication: migrate to `@repo/core`
-- [ ] Group chat: scaffold navigation/state (user approves UX direction first)
-- [ ] Community flow shells: create/join/leave/settings/members
-- [ ] Error handling normalization: replace raw `Alert.alert` everywhere
-- [ ] Notification screen: wire to real data
+### For the Agent (Architecture, Boilerplate, Pattern Implementation)
+- [ ] T0.3: Wire PulseDashboard to real attendance + assignment queries
+- [ ] T0.4: Wire getFabActions() to real navigation targets
+- [ ] T0.5: Fix teacher QR join (membership link, not teacher_id overwrite)
+- [ ] T0.6: Render QR modal for Principal InviteManager
+- [ ] T1.1: Wire SleepTracker / RemindersManager / VoiceJournaling into TeacherSelfView
+- [ ] T1.2: Audit NotificationDrawer data; wire to real Supabase if hardcoded
+- [ ] T1.5: Add join-group QR consumer path in QRResolver + QRHandlerScreen
+- [ ] T2.4: Implement MLKitProvider (real, not stub); wire OCRScanner to UI
+- [ ] T2.5: Add education tag selection to CreatePostModal
+- [ ] T3.8: Replace all raw Alert.alert with SanctuaryToast
+- [ ] T3.9: Build SkeletonCard / SkeletonAvatar / SkeletonTextLine
+- [ ] T4.3: Migrate API duplication; community screen deduplication
 
-### Joint Tasks (Agent starts, User finishes)
-- [ ] Self screen redesign: Agent implements, User approves emotional/visual direction
-- [ ] Classroom role-specific demos: Agent implements, User defines content/product rules
-- [ ] Community posting constraints: Agent implements validation, User defines tag taxonomy
-- [ ] Library redesign: Agent does UI, User does content curation
+### Joint Tasks (Agent starts, Human approves/validates)
+- [ ] T0.2: Agent creates test script + documents failures; Human validates on device
+- [ ] T1.3 + T1.4: Agent walks through flows in code; Human validates on device
+- [ ] T2.1: Agent builds chat backend schema + wires Realtime; Human approves UX direction first
+- [ ] T2.6: Agent builds Thuthimal claim flow; Human defines gift economics + content
+- [ ] T3.1–T3.6: Agent implements UI; Human approves visual direction first
+
+---
+
