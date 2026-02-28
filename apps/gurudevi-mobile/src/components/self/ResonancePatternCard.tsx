@@ -35,7 +35,7 @@ import {
 import { Sparkles } from 'lucide-react-native';
 import type { OrientationSeeds } from '@repo/profile';
 import type { MoodLog, EnergyForecast } from '@repo/self';
-import { useOrientationInference } from '@repo/self';
+import { useOrientationInference, type DataQuality } from '@repo/self';
 import { useUserRole } from '@repo/core';
 
 // ============================================================================
@@ -196,7 +196,7 @@ export function ResonancePatternCard({
 
     // useOrientationInference handles ALL fallback layers:
     // explicit seeds → behavioral signals → role defaults → neutral 50
-    const { seeds: inferredSeeds, isDefault, confidence } = useOrientationInference({
+    const { seeds: inferredSeeds, isDefault, confidence, dataQuality } = useOrientationInference({
         explicitSeeds: orientationSeeds,
         moodLogs,
         energyForecasts,
@@ -317,11 +317,13 @@ export function ResonancePatternCard({
                         fontStyle: 'italic',
                     }}
                 >
-                    {orientationSeeds
+                    {dataQuality === 'strong' && orientationSeeds
                         ? 'Based on your orientation — shifts as you grow'
-                        : confidence >= 0.5
-                            ? 'Emerging from your usage patterns'
-                            : 'Based on your role — refines as you use the app'}
+                        : dataQuality === 'strong'
+                            ? 'Pattern confirmed across consistent data'
+                            : dataQuality === 'emerging'
+                                ? 'Still emerging — keeps refining as you log'
+                                : 'Starting from your role — refines with use'}
                 </Text>
 
                 {!isForming && onExplore && (

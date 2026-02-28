@@ -1,35 +1,53 @@
 /**
  * useOrientationInference
  *
- * Derives a soft orientation fingerprint from signals that are ALREADY
- * collected by the app — no quiz, no onboarding, no labels.
+ * Derives a soft orientation fingerprint from signals already collected
+ * by the app.  No quiz, no onboarding, no type labels ever shown.
  *
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- * Signal priority (highest → lowest confidence):
+ * SIGNAL PRIORITY (highest → lowest confidence)
  *
- *  1. Explicit seeds from onboarding orientation step (stored on user)
- *  2. Behavioral signals from existing app data:
- *       mood_logs     → timing (morning/night), variability, valence
- *       energy_logs   → average level, consistency
- *  3. Role-based defaults (role + grade_number when available)
- *       — this is the fallback that fires even for brand-new users
- *       — based on well-established educational psychology research:
- *         • Students (especially junior grades) tend to be more
- *           social and action-oriented (solo_social high, reflect_act high)
- *         • Experienced teachers tend toward depth + reflection
- *         • Principals/senior staff: depth + steady rhythm
- *  4. Absolute neutral fallback (all 50) — only if even role is unknown
+ *  1. Explicit seeds  — set during onboarding orientation step
+ *  2. Behavioral signals — mood_logs + energy_forecasts, subject to
+ *       data-quality guardrails (see DATA QUALITY section below)
+ *  3. Role-based defaults — grounded in educational-psychology lit
+ *       (Vygotsky, Kolb; teachers=reflective/deep, students=social/active)
+ *  4. Neutral fallback (all 50) — only when role is unknown
  *
- * The returned seeds are EPHEMERAL — computed on-device each render
- * cycle, never persisted unless the user explicitly completes the
- * orientation step.  This means:
- *   • Privacy: no behavioral fingerprint is ever stored without intent
- *   • Freshness: re-computed from latest data on each mount
- *   • No schema migration needed for inference signals
+ * DATA QUALITY GUARDRAILS
+ * ───────────────────────
+ * Raw behavioral data can be misleading in several ways:
  *
- * The hook is designed to be called by ResonancePatternCard directly
- * so that the card "just works" regardless of whether the user
- * completed onboarding.
+ *   • All-same input   user always taps "5" — high avg, near-zero
+ *                      variance → appears "very active"; really just habit.
+ *                      Guard: signalConsistency() returns ~0 for flat series.
+ *
+ *   • Too sparse       2-3 entries — any pattern is noise.
+ *                      Guard: hard minimums (MOOD_MIN_SAMPLES=7, ENERGY_MIN=5).
+ *
+ *   • Stale data       all entries from 6 weeks ago — not representative now.
+ *                      Guard: recentWeightedAvg() uses exponential decay
+ *                      (half-life = 14 days); old entries matter very little.
+ *
+ *   • Single-session   user logs 10 times on day one then never again.
+ *     burst            Looks like rich data; is really one data point.
+ *                      Guard: uniqueDays() count; < 3 unique days → treated
+ *                      as sparse regardless of total count.
+ *
+ *   • Contradiction    mood signals "active" but energy signals "depleted".
+ *                      Trusting either would miscalibrate reflect_act.
+ *                      Guard: cross-signal contradiction check; if mood and
+ *                      energy point in opposite directions on the same dim,
+ *                      behavioralWeight for that dim is halved.
+ *
+ * The resulting `behavioralWeight` (0–1) scales how much the behavioral
+ * layer moves the needle away from role defaults.  Explicit seeds are
+ * never down-weighted — they represent deliberate user intent.
+ *
+ * EPHEMERALITY
+ * ────────────
+ * Seeds are computed on-device each mount.  Nothing is persisted unless
+ * the user explicitly completed the orientation step.  Privacy-first.
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  */
 
@@ -39,18 +57,20 @@ import type { MoodLog, EnergyForecast } from '../types';
 import type { OrientationSeeds } from '@repo/profile';
 
 // ============================================================================
+// CONSTANTS
+// ============================================================================
+
+/** Minimum unique calendar days before treating a signal as meaningful */
+const MIN_UNIQUE_DAYS = 3;
+/** Minimum total entries before mood is used at all */
+const MOOD_MIN_SAMPLES = 7;
+/** Minimum total entries before energy is used at all */
+const ENERGY_MIN_SAMPLES = 5;
+/** Recency half-life in milliseconds (14 days) */
+const HALF_LIFE_MS = 14 * 24 * 60 * 60 * 1000;
+
+// ============================================================================
 // ROLE-BASED DEFAULTS
-//
-// These capture the modal tendency of each role based on educational
-// psychology (Vygotsky, Kolb, Big Five / teaching literature).
-// They are NOT stereotypes — they are population-level starting points
-// that get overridden as soon as behavioral signals accumulate.
-//
-// Dimensions (all 0–100, neutral = 50):
-//   depth_breadth  — deep focus (low) ↔ wide exploration (high)
-//   reflect_act    — reflect first (low) ↔ act/try first (high)
-//   solo_social    — solo processing (low) ↔ social energy (high)
-//   steady_surge   — steady rhythm (low) ↔ burst energy (high)
 // ============================================================================
 
 interface RoleDefaults {
@@ -61,92 +81,213 @@ interface RoleDefaults {
 }
 
 const ROLE_DEFAULTS: Record<string, RoleDefaults> = {
-    // Students: curious, action-oriented, social, energetic bursts
-    // Junior grades lean more social + active; adjusted further below by grade
-    student: { depth_breadth: 60, reflect_act: 65, solo_social: 65, steady_surge: 60 },
-
-    // Teachers: depth-seekers, reflective, enjoy both solo prep and social delivery
-    teacher: { depth_breadth: 35, reflect_act: 35, solo_social: 55, steady_surge: 40 },
-
-    // Grade head / section head: deeper responsibility, more reflective
+    student:      { depth_breadth: 60, reflect_act: 65, solo_social: 65, steady_surge: 60 },
+    teacher:      { depth_breadth: 35, reflect_act: 35, solo_social: 55, steady_surge: 40 },
     grade_head:   { depth_breadth: 30, reflect_act: 30, solo_social: 55, steady_surge: 35 },
     section_head: { depth_breadth: 30, reflect_act: 30, solo_social: 55, steady_surge: 35 },
-
-    // Principal: systemic thinker, steady leadership rhythm, both solo and social
-    principal: { depth_breadth: 25, reflect_act: 25, solo_social: 60, steady_surge: 30 },
-
-    // Founder / admin: wide thinkers, action-oriented, social
-    founder: { depth_breadth: 65, reflect_act: 60, solo_social: 70, steady_surge: 65 },
-    admin:   { depth_breadth: 50, reflect_act: 50, solo_social: 55, steady_surge: 50 },
+    principal:    { depth_breadth: 25, reflect_act: 25, solo_social: 60, steady_surge: 30 },
+    founder:      { depth_breadth: 65, reflect_act: 60, solo_social: 70, steady_surge: 65 },
+    admin:        { depth_breadth: 50, reflect_act: 50, solo_social: 55, steady_surge: 50 },
 };
 
-// For students: grade_number nudges defaults
-// Junior (1-5): high social, high action
-// Middle (6-9): transitional, mixed
-// Senior (10-13): more reflective, more depth
 function studentGradeAdjustment(gradeNumber: number | null | undefined): Partial<RoleDefaults> {
     if (!gradeNumber) return {};
     if (gradeNumber <= 5)  return { solo_social: 75, reflect_act: 72, depth_breadth: 68 };
     if (gradeNumber <= 9)  return { solo_social: 65, reflect_act: 60, depth_breadth: 58 };
-    return                         { solo_social: 55, reflect_act: 50, depth_breadth: 48 }; // 10-13
+    return                         { solo_social: 55, reflect_act: 50, depth_breadth: 48 };
+}
+
+// ============================================================================
+// DATA QUALITY HELPERS
+// ============================================================================
+
+/** Count distinct ISO date strings (YYYY-MM-DD) from a list of timestamps. */
+function uniqueDays(timestamps: string[]): number {
+    return new Set(timestamps.map(ts => ts.slice(0, 10))).size;
+}
+
+/**
+ * Exponential recency weight for an entry at `entryTime` relative to `now`.
+ * Weight = 2^(-age / HALF_LIFE_MS), so entries from 14 days ago are half-weighted.
+ */
+function recencyWeight(entryTime: string, now: number): number {
+    const age = now - new Date(entryTime).getTime();
+    if (isNaN(age) || age < 0) return 1;
+    return Math.pow(2, -age / HALF_LIFE_MS);
+}
+
+/**
+ * Recency-weighted average of numeric values.
+ * Returns null if all weights are effectively zero (all entries very old).
+ */
+function recentWeightedAvg(
+    values: number[],
+    timestamps: string[],
+    now: number,
+): number | null {
+    let weightedSum = 0;
+    let totalWeight = 0;
+    for (let i = 0; i < values.length; i++) {
+        const w = recencyWeight(timestamps[i], now);
+        weightedSum += values[i] * w;
+        totalWeight += w;
+    }
+    if (totalWeight < 0.01) return null; // all data too stale to be meaningful
+    return weightedSum / totalWeight;
+}
+
+/**
+ * Signal consistency score — 0 to 1.
+ *
+ * A FLAT series (all same value) has near-zero information content:
+ * user is on auto-pilot, not expressing a real tendency.
+ *
+ * A WILDLY RANDOM series also has near-zero useful signal:
+ * noise, not pattern.
+ *
+ * The sweet spot is a series with moderate, interpretable variance.
+ * We model this as a tent function over the coefficient of variation (CV):
+ *   CV < 0.05  → flat/habitual (low consistency score)
+ *   CV 0.10–0.30 → clear signal (high consistency score)
+ *   CV > 0.55  → pure noise (low consistency score)
+ */
+function signalConsistency(values: number[]): number {
+    if (values.length < 2) return 0;
+    const mean = values.reduce((a, b) => a + b, 0) / values.length;
+    if (mean === 0) return 0;
+    const variance = values.reduce((acc, v) => acc + (v - mean) ** 2, 0) / values.length;
+    const sd = Math.sqrt(variance);
+    const cv = sd / mean; // coefficient of variation
+
+    // Tent function: peak at cv=0.20
+    if (cv < 0.05)  return cv / 0.05 * 0.3;          // flat → low but not zero
+    if (cv <= 0.30) return 0.3 + (cv - 0.05) / 0.25 * 0.7; // rising to 1.0
+    if (cv <= 0.55) return 1.0 - (cv - 0.30) / 0.25 * 0.7; // falling
+    return Math.max(0, 1.0 - (cv - 0.55) / 0.45);          // noise floor
 }
 
 // ============================================================================
 // BEHAVIORAL INFERENCE
 // ============================================================================
 
-interface BehavioralSignals {
-    moodLogs: MoodLog[];
-    energyForecasts: EnergyForecast[];
+/** Per-dimension result with its own quality weight */
+interface DimSignal {
+    value: number;   // 0–100
+    weight: number;  // 0–1, how much to trust this specific signal
 }
 
-function deriveFromBehavior(signals: BehavioralSignals): Partial<RoleDefaults> {
-    const { moodLogs, energyForecasts } = signals;
-    const result: Partial<RoleDefaults> = {};
+interface QualifiedSignals {
+    reflect_act?:  DimSignal;
+    solo_social?:  DimSignal;
+    steady_surge?: DimSignal;
+}
 
-    // ── Mood signals ────────────────────────────────────────────────
-    if (moodLogs.length >= 5) {
-        const scores = moodLogs.map(l => l.mood_score);
-        const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+interface DeriveResult {
+    signals: QualifiedSignals;
+    /** Overall behavioral data quality 0–1 */
+    quality: number;
+}
 
-        // Variance: high variance → surge tendency; low variance → steady
-        const variance = scores.reduce((acc, s) => acc + (s - avg) ** 2, 0) / scores.length;
-        if (variance > 1.5) result.steady_surge = 65;  // variable mood → surge
-        if (variance < 0.5) result.steady_surge = 38;  // very consistent → steady
+function deriveFromBehavior(
+    moodLogs: MoodLog[],
+    energyForecasts: EnergyForecast[],
+    now: number,
+): DeriveResult {
+    const signals: QualifiedSignals = {};
+    let qualityPoints = 0;
+    let qualityDivisor = 0;
 
-        // High average mood → more action-oriented
-        if (avg >= 4.0) result.reflect_act = 58;
-        if (avg <= 2.5) result.reflect_act = 42;  // low mood → more withdrawn/reflective
+    // ── MOOD signals ──────────────────────────────────────────────────────────
+    const moodDays  = uniqueDays(moodLogs.map(l => l.created_at));
+    const moodReady = moodLogs.length >= MOOD_MIN_SAMPLES && moodDays >= MIN_UNIQUE_DAYS;
 
-        // Log timing: morning logs → steady person; late-night logs → surge person
-        const hours = moodLogs
-            .map(l => new Date(l.created_at).getHours())
-            .filter(h => !isNaN(h));
-        if (hours.length > 0) {
-            const avgHour = hours.reduce((a, b) => a + b, 0) / hours.length;
-            if (avgHour < 9)  result.steady_surge = Math.min(result.steady_surge ?? 50, 40); // morning → steady
-            if (avgHour > 21) result.steady_surge = Math.max(result.steady_surge ?? 50, 62); // late-night → surge
+    if (moodReady) {
+        const scores     = moodLogs.map(l => l.mood_score);
+        const timestamps = moodLogs.map(l => l.created_at);
+        const consistency = signalConsistency(scores);
+        const recentAvg   = recentWeightedAvg(scores, timestamps, now);
+
+        // Only proceed if recent data exists and signal is meaningful
+        if (recentAvg !== null && consistency > 0.15) {
+            const moodWeight = Math.min(1, consistency *
+                Math.min(1, moodDays / 10)); // cap at 10 distinct days
+
+            // High recent mood → more action-oriented
+            if (recentAvg >= 3.8) {
+                signals.reflect_act = { value: 58, weight: moodWeight };
+            } else if (recentAvg <= 2.5) {
+                signals.reflect_act = { value: 40, weight: moodWeight };
+            }
+
+            // Variance → surge tendency (only if consistent enough)
+            const variance = scores.reduce((a, v) => a + (v - recentAvg) ** 2, 0) / scores.length;
+            if (variance > 1.2 && consistency > 0.2) {
+                signals.steady_surge = { value: 65, weight: moodWeight * 0.8 };
+            } else if (variance < 0.4 && consistency > 0.3) {
+                signals.steady_surge = { value: 38, weight: moodWeight * 0.8 };
+            }
+
+            qualityPoints += consistency * Math.min(1, moodDays / 10);
+        }
+        qualityDivisor += 1;
+    }
+
+    // ── ENERGY signals ────────────────────────────────────────────────────────
+    const energyDays  = uniqueDays(energyForecasts.map(f => f.forecast_date));
+    const energyReady = energyForecasts.length >= ENERGY_MIN_SAMPLES && energyDays >= MIN_UNIQUE_DAYS;
+
+    if (energyReady) {
+        const levels     = energyForecasts.map(f => f.energy_level);
+        const timestamps = energyForecasts.map(f => f.forecast_date);
+        const consistency = signalConsistency(levels);
+        const recentAvg   = recentWeightedAvg(levels, timestamps, now);
+
+        if (recentAvg !== null && consistency > 0.15) {
+            const energyWeight = Math.min(1, consistency *
+                Math.min(1, energyDays / 7));
+
+            if (recentAvg >= 3.8) {
+                signals.solo_social = { value: 62, weight: energyWeight };
+                // Only override reflect_act if mood didn't already set it
+                if (!signals.reflect_act) {
+                    signals.reflect_act = { value: 57, weight: energyWeight * 0.6 };
+                }
+            } else if (recentAvg <= 2.5) {
+                signals.solo_social = { value: 40, weight: energyWeight };
+                if (!signals.reflect_act) {
+                    signals.reflect_act = { value: 42, weight: energyWeight * 0.6 };
+                }
+            }
+
+            qualityPoints += consistency * Math.min(1, energyDays / 7);
+        }
+        qualityDivisor += 1;
+    }
+
+    // ── Cross-signal contradiction check ─────────────────────────────────────
+    // If mood and energy point in opposite directions on reflect_act,
+    // we have a contradiction — dampen both to avoid miscalibration.
+    if (moodReady && energyReady && signals.reflect_act) {
+        const moodScores    = moodLogs.map(l => l.mood_score);
+        const energyLevels  = energyForecasts.map(f => f.energy_level);
+        const moodRecentAvg    = recentWeightedAvg(moodScores,    moodLogs.map(l => l.created_at),          now) ?? 3;
+        const energyRecentAvg  = recentWeightedAvg(energyLevels,  energyForecasts.map(f => f.forecast_date), now) ?? 3;
+
+        const moodDirection   = moodRecentAvg   >= 3.5 ? 1 : moodRecentAvg   <= 2.5 ? -1 : 0;
+        const energyDirection = energyRecentAvg >= 3.5 ? 1 : energyRecentAvg <= 2.5 ? -1 : 0;
+
+        if (moodDirection !== 0 && energyDirection !== 0 && moodDirection !== energyDirection) {
+            // Contradiction: scale back — blend to neutral 50 by halving each signal's weight
+            signals.reflect_act = {
+                value: 50 + (signals.reflect_act.value - 50) * 0.5,
+                weight: signals.reflect_act.weight * 0.5,
+            };
         }
     }
 
-    // ── Energy signals ───────────────────────────────────────────────
-    if (energyForecasts.length >= 3) {
-        const levels = energyForecasts.map(f => f.energy_level);
-        const avgEnergy = levels.reduce((a, b) => a + b, 0) / levels.length;
+    const quality = qualityDivisor > 0 ? qualityPoints / qualityDivisor : 0;
 
-        // High sustained energy → more social + action
-        if (avgEnergy >= 4.0) {
-            result.solo_social = 62;
-            result.reflect_act = Math.max(result.reflect_act ?? 50, 58);
-        }
-        // Low sustained energy → more solo + reflective
-        if (avgEnergy <= 2.5) {
-            result.solo_social = 40;
-            result.reflect_act = Math.min(result.reflect_act ?? 50, 40);
-        }
-    }
-
-    return result;
+    return { signals, quality };
 }
 
 // ============================================================================
@@ -157,39 +298,54 @@ function clamp(v: number): number {
     return Math.max(0, Math.min(100, Math.round(v)));
 }
 
+const DIMS = ['depth_breadth', 'reflect_act', 'solo_social', 'steady_surge'] as const;
+type Dim = typeof DIMS[number];
+
 /**
- * Layered merge: start from explicit seeds (highest confidence) →
- * behavioral deltas → role defaults → neutral 50.
- * Later layers only fill gaps; they never override higher-confidence data.
+ * Layered merge with per-signal quality weights.
+ *
+ * For each dimension:
+ *   - Explicit seed: wins with a small behavioral drift allowance (10%)
+ *   - Behavioral signal: blended with role default; blend ratio = signal.weight
+ *   - Role default: baseline when no higher-quality data exists
+ *
+ * The `overallBehavioralQuality` parameter caps how far behavioral signals
+ * can move dimensions away from role defaults — poor-quality data can only
+ * nudge by a small amount even if its local weight is high.
  */
 function mergeLayers(
     explicit: OrientationSeeds | null | undefined,
-    behavioral: Partial<RoleDefaults>,
+    signals: QualifiedSignals,
     roleDefaults: RoleDefaults,
+    overallBehavioralQuality: number,
 ): OrientationSeeds {
-    const dims = ['depth_breadth', 'reflect_act', 'solo_social', 'steady_surge'] as const;
-
     const merged: Record<string, number> = {};
-    for (const dim of dims) {
+
+    for (const dim of DIMS) {
+        const roleDef = roleDefaults[dim];
+        const sig = signals[dim as keyof QualifiedSignals] as DimSignal | undefined;
+
         if (explicit) {
-            // Explicit seeds win — but blend with behavioral drift (10% weight)
-            const behavioralValue = behavioral[dim];
-            if (behavioralValue !== undefined) {
-                merged[dim] = clamp(explicit[dim] * 0.9 + behavioralValue * 0.1);
+            // Explicit seed — trust it; allow tiny behavioral drift only if quality is high
+            if (sig && overallBehavioralQuality > 0.4) {
+                const drift = sig.weight * overallBehavioralQuality * 0.1; // max 10% drift
+                merged[dim] = clamp(explicit[dim] * (1 - drift) + sig.value * drift);
             } else {
                 merged[dim] = explicit[dim];
             }
-        } else if (behavioral[dim] !== undefined) {
-            // Behavioral signal blended with role default (60/40)
-            merged[dim] = clamp((behavioral[dim]! * 0.6) + (roleDefaults[dim] * 0.4));
+        } else if (sig) {
+            // Behavioral signal present — blend proportionally to quality
+            // Low quality → stays close to role default; high quality → moves toward signal
+            const blendRatio = sig.weight * overallBehavioralQuality; // 0–1
+            merged[dim] = clamp(roleDef * (1 - blendRatio) + sig.value * blendRatio);
         } else {
-            // Role default alone
-            merged[dim] = roleDefaults[dim];
+            // Role default only
+            merged[dim] = roleDef;
         }
     }
 
     const source: OrientationSeeds['source'] = explicit
-        ? (Object.keys(behavioral).length > 0 ? 'mixed' : 'seeded')
+        ? (Object.keys(signals).length > 0 ? 'mixed' : 'seeded')
         : 'inferred';
 
     return {
@@ -220,12 +376,26 @@ export interface UseOrientationInferenceInput {
     gradeNumber?: number | null;
 }
 
+/** Quality of the inferred signal */
+export type DataQuality = 'strong' | 'emerging' | 'default';
+
 export interface UseOrientationInferenceResult {
     seeds: OrientationSeeds;
     /** True if based purely on role defaults — no behavioral data yet */
     isDefault: boolean;
-    /** Confidence 0–1: how much behavioral data contributed */
+    /**
+     * Confidence 0–1: overall trustworthiness of the fingerprint.
+     * Explicit seeds → ≥0.9; rich behavioral data → 0.5–0.8;
+     * role defaults only → 0.2.
+     */
     confidence: number;
+    /**
+     * Human-readable data quality band for UI use.
+     * 'strong'   — explicit seeds OR consistent multi-week behavioral data
+     * 'emerging' — behavioral signals present but still accumulating
+     * 'default'  — role-based baseline only, no behavioral data yet
+     */
+    dataQuality: DataQuality;
 }
 
 export function useOrientationInference(
@@ -240,40 +410,45 @@ export function useOrientationInference(
     } = input;
 
     return useMemo(() => {
-        // 1. Determine role defaults.
-        // When role is unknown (guest, not-yet-set) we use truly neutral values (50)
-        // rather than defaulting to a specific role's biases.
+        const now = Date.now();
+
+        // 1. Role defaults
         const NEUTRAL: RoleDefaults = { depth_breadth: 50, reflect_act: 50, solo_social: 50, steady_surge: 50 };
         const base: RoleDefaults = role ? (ROLE_DEFAULTS[role] ?? NEUTRAL) : NEUTRAL;
-
-        // 2. Grade adjustment for students
         const roleDefaults: RoleDefaults = role === 'student'
             ? { ...base, ...studentGradeAdjustment(gradeNumber) }
             : base;
 
-        // 3. Derive behavioral signals
-        const behavioral = deriveFromBehavior({ moodLogs, energyForecasts });
+        // 2. Derive behavioral signals with quality guardrails
+        const { signals, quality: behavioralQuality } = deriveFromBehavior(
+            moodLogs, energyForecasts, now,
+        );
 
-        // 4. Merge layers
-        const seeds = mergeLayers(explicitSeeds ?? null, behavioral, roleDefaults);
+        // 3. Merge all layers
+        const seeds = mergeLayers(explicitSeeds ?? null, signals, roleDefaults, behavioralQuality);
 
-        // 5. Compute metadata
-        const hasBehavioral = Object.keys(behavioral).length > 0;
-        const hasExplicit = !!explicitSeeds;
-        const confidence = hasExplicit ? 0.9 : hasBehavioral
-            ? Math.min(0.7, 0.3 + (moodLogs.length + energyForecasts.length) * 0.04)
-            : 0.2; // role-only baseline
+        // 4. Metadata
+        const hasExplicit   = !!explicitSeeds;
+        const hasBehavioral = Object.keys(signals).length > 0;
+
+        const confidence = hasExplicit
+            ? 0.9
+            : hasBehavioral
+                ? Math.min(0.85, 0.3 + behavioralQuality * 0.55)
+                : 0.2;
+
+        const dataQuality: DataQuality = hasExplicit || behavioralQuality > 0.55
+            ? 'strong'
+            : hasBehavioral
+                ? 'emerging'
+                : 'default';
 
         return {
             seeds,
             isDefault: !hasExplicit && !hasBehavioral,
             confidence,
+            dataQuality,
         };
-    }, [
-        explicitSeeds,
-        moodLogs,
-        energyForecasts,
-        role,
-        gradeNumber,
-    ]);
+    }, [explicitSeeds, moodLogs, energyForecasts, role, gradeNumber]);
 }
+
