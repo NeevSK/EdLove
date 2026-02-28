@@ -17,6 +17,8 @@ interface PostCardProps {
     onResonate?: () => void;
     onComment?: () => void;
     onReport?: () => void;
+    /** Called when the author avatar/name is tapped — use to navigate to the author's public profile */
+    onAuthorPress?: () => void;
     isSample?: boolean;
     currentUserId?: string;
 }
@@ -30,6 +32,7 @@ const PostCard = React.memo(function PostCard({
     onResonate,
     onComment,
     onReport,
+    onAuthorPress,
     isSample,
     currentUserId
 }: PostCardProps) {
@@ -80,7 +83,18 @@ const PostCard = React.memo(function PostCard({
         return null;
     };
 
-    const isLiked = false; // TODO: Implement reaction check logic
+    // Optimistic local like state
+    const [liked, setLiked] = React.useState(false);
+    const [localLikeCount, setLocalLikeCount] = React.useState(reactions['❤️'] || 0);
+
+    const handleLike = () => {
+        const nowLiked = !liked;
+        setLiked(nowLiked);
+        setLocalLikeCount(prev => Math.max(0, prev + (nowLiked ? 1 : -1)));
+        onLike?.();
+    };
+
+    const isLiked = liked;
     const hasResonated = false;
 
     return (
@@ -89,12 +103,18 @@ const PostCard = React.memo(function PostCard({
                 {/* Header: Author & Meta */}
                 <HStack justifyContent="space-between" alignItems="center">
                     <HStack space="md" alignItems="center">
-                        <Avatar size="sm" sx={{ backgroundColor: is_anonymous ? colors.secondary : colors.action }}>
-                            <AvatarFallbackText>{is_anonymous ? '?' : author_name}</AvatarFallbackText>
-                            {!is_anonymous && author_avatar && (
-                                <AvatarImage source={{ uri: author_avatar }} alt={author_name} />
-                            )}
-                        </Avatar>
+                        <TouchableOpacity
+                            onPress={!is_anonymous ? onAuthorPress : undefined}
+                            disabled={is_anonymous || !onAuthorPress}
+                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        >
+                            <Avatar size="sm" sx={{ backgroundColor: is_anonymous ? colors.secondary : colors.action }}>
+                                <AvatarFallbackText>{is_anonymous ? '?' : author_name}</AvatarFallbackText>
+                                {!is_anonymous && author_avatar && (
+                                    <AvatarImage source={{ uri: author_avatar }} alt={author_name} />
+                                )}
+                            </Avatar>
+                        </TouchableOpacity>
                         <VStack>
                             <HStack space="xs" alignItems="center">
                                 <Text color={colors.text} bold size="sm">
@@ -123,13 +143,18 @@ const PostCard = React.memo(function PostCard({
                 {/* Footer: Actions */}
                 <HStack justifyContent="space-between" alignItems="center" mt="$1">
                     <HStack space="lg">
-                        {/* Care Reaction */}
-                        <TouchableOpacity onPress={onLike} style={styles.actionButton}>
+                        {/* Like / Heart Reaction */}
+                        <TouchableOpacity onPress={handleLike} style={styles.actionButton}>
                             <Heart
                                 size={20}
                                 color={isLiked ? colors.error : colors.textTertiary}
                                 fill={isLiked ? colors.error : 'none'}
                             />
+                            {localLikeCount > 0 && (
+                                <Text color={isLiked ? colors.error : colors.textTertiary} size="xs" sx={{ marginLeft: 4 }}>
+                                    {localLikeCount}
+                                </Text>
+                            )}
                         </TouchableOpacity>
 
                         {/* Resonance Reaction */}

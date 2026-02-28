@@ -16,11 +16,13 @@ import { CommunityPresence } from '@repo/self';
 import ManifestoCard from '../components/ManifestoCard';
 import CommunityHearth from '../components/CommunityHearth';
 import { useManifestos } from '../hooks/useManifestos';
+import { communityAPI } from '../api/community';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CommunityStackParamList } from '@repo/core';
+import { Mail } from 'lucide-react-native';
 
-type TabType = 'feed' | 'groups';
+type TabType = 'feed' | 'groups' | 'dms';
 
 type FeedFilter = 'all' | string;
 
@@ -168,6 +170,28 @@ export default function CommunityScreen() {
                                 </Text>
                             </HStack>
                         </Pressable>
+
+                        <Pressable
+                            onPress={() => setActiveTab('dms')}
+                            sx={{
+                                borderBottomWidth: activeTab === 'dms' ? 2 : 0,
+                                borderBottomColor: colors.action,
+                                paddingBottom: 4,
+                            }}
+                        >
+                            <HStack space="xs" alignItems="center">
+                                <Mail
+                                    size={18}
+                                    color={activeTab === 'dms' ? colors.action : colors.textTertiary}
+                                />
+                                <Text
+                                    bold={activeTab === 'dms'}
+                                    color={activeTab === 'dms' ? colors.textPrimary : colors.textTertiary}
+                                >
+                                    {t('community.tabs.dms', 'Messages')}
+                                </Text>
+                            </HStack>
+                        </Pressable>
                     </HStack>
                 </Animated.View>
 
@@ -181,9 +205,20 @@ export default function CommunityScreen() {
                                 <PostCard
                                     post={item}
                                     onPress={() => { }}
+                                    onLike={() => {
+                                        if (userId) communityAPI.togglePostReaction(item.id, userId).catch(console.error);
+                                    }}
                                     onReport={() => {
                                         setReportPostId(item.id);
                                         setShowReportModal(true);
+                                    }}
+                                    onAuthorPress={() => {
+                                        if (item.author_id && !item.is_anonymous) {
+                                            navigation.navigate('UserProfile', {
+                                                userId: item.author_id,
+                                                userName: item.author_name ?? 'Member',
+                                            });
+                                        }
                                     }}
                                     isSample={item.id.startsWith('stub-') || item.id.startsWith('mock-')}
                                     currentUserId={userId ?? undefined}
@@ -207,7 +242,7 @@ export default function CommunityScreen() {
                         }
                         contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}
                     />
-                ) : (
+                ) : activeTab === 'groups' ? (
                     <GroupsScreen
                         userId={userId ?? undefined}
                         schoolId={schoolId}
@@ -216,6 +251,15 @@ export default function CommunityScreen() {
                             navigation.navigate('GroupDetails', { groupId });
                         }}
                     />
+                ) : (
+                    /* DMs — Coming Soon */
+                    <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: Theme.spacing.xl }}>
+                        <PositiveInvitation
+                            context="community"
+                            title={t('community.dms.comingSoon', 'Direct Messages Coming Soon')}
+                            description={t('community.dms.comingSoonDesc', 'Private 1-on-1 conversations are being thoughtfully built. For now, use Group Chat inside any group to connect with members.')}
+                        />
+                    </Box>
                 )}
 
                 {userId && (

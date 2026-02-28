@@ -33,7 +33,9 @@ import { ShadowAgentDrawer, EnergyForecast } from '../../components/self';
 import { useDecisionJournal } from '@repo/self';
 import { GlobalHeader } from '@repo/ui';
 import DailyContentCard from '../../components/self/DailyContentCard';
+import ResonancePatternCard from '../../components/self/ResonancePatternCard';
 import WelcomeModal from '../../components/self/WelcomeModal';
+import { useMoodLogs, useEnergyForecast } from '@repo/self';
 
 // Principal-specific core features
 const PRINCIPAL_CORE_FEATURES = [
@@ -63,11 +65,16 @@ export default function PrincipalSelfView() {
         email: user.email,
         role: user.role || 'principal',
         avatar_url: user.avatar_url,
+        orientation_seeds: (user as any).orientation_seeds ?? null,
         school_name: null // Simplified, will add actual lookup if needed
     } : null;
 
     // Remove the slow, manual loading effect
     const loadingUser = false;
+
+    // Behavioral signal hooks — feed into ResonancePatternCard inference
+    const { logs: moodLogs } = useMoodLogs();
+    const { forecasts: energyForecasts } = useEnergyForecast(userId ?? undefined);
 
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
@@ -197,6 +204,17 @@ export default function PrincipalSelfView() {
                     <DailyContentCard type="motivation" />
                     <DailyContentCard type="did_you_know" />
                 </Box>
+
+                {/* Resonance Pattern */}
+                {userProfile && (
+                    <Box sx={{ paddingHorizontal: Theme.spacing.md, marginBottom: Theme.spacing.md }}>
+                        <ResonancePatternCard
+                            orientationSeeds={userProfile.orientation_seeds}
+                            moodLogs={moodLogs}
+                            energyForecasts={energyForecasts}
+                        />
+                    </Box>
+                )}
 
                 {/* Feature Carousel */}
                 <Box sx={{ height: 100 }}>

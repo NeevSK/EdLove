@@ -12,37 +12,24 @@ import { useUserRole, useTracking } from '@repo/core';
 
 // Import role-specific views
 import { StudentSelfView, TeacherSelfView, PrincipalSelfView, FounderSelfView, AdminSelfView } from './self';
-import PulseDashboard from './self/PulseDashboard';
 
+/**
+ * SelfScreen — routes directly to the role-specific view.
+ * Each role view IS the home: DailyContentCard + horizontal feature carousel
+ * + feature content below. No intermediate "enter sanctuary" gate.
+ */
 export default function SelfScreen() {
     const { role } = useUserRole();
     const { discoverFeature } = useTracking();
-    const [showPulse, setShowPulse] = React.useState(true);
 
     React.useEffect(() => {
         discoverFeature('section_self');
     }, []);
 
-    if (showPulse) {
-        return <PulseDashboard onEnterDetails={() => setShowPulse(false)} />;
-    }
-
-    // Route to appropriate view based on role
-    if (role === 'student') {
-        return <StudentSelfView />;
-    }
-
-    if (role === 'principal') {
-        return <PrincipalSelfView />;
-    }
-
-    if (role === 'founder') {
-        return <FounderSelfView />;
-    }
-
-    if (role === 'admin') {
-        return <AdminSelfView />;
-    }
+    if (role === 'student') return <StudentSelfView />;
+    if (role === 'principal') return <PrincipalSelfView />;
+    if (role === 'founder') return <FounderSelfView />;
+    if (role === 'admin') return <AdminSelfView />;
 
     // Default: Teacher view (includes teacher, section_head, grade_head)
     return <TeacherSelfView />;

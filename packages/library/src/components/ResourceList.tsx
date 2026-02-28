@@ -16,6 +16,11 @@ import {
     Play,
     Bookmark,
     X,
+    Map,
+    BarChart2,
+    BookMarked,
+    Clapperboard,
+    Cpu,
 } from 'lucide-react-native';
 import {
     Actionsheet,
@@ -41,18 +46,26 @@ import type { LibraryResource } from '../types';
 // CONSTANTS & CONFIG
 // ============================================================================
 
-type DisplayResourceType = 'pdf' | 'video' | 'link' | 'doc' | 'note' | 'other';
+type DisplayResourceType =
+    | 'pdf' | 'video' | 'link' | 'doc' | 'note' | 'other'
+    | 'map' | 'infographic' | 'story' | 'circular' | 'movie_trailer' | 'tech_guide';
 
 const TYPE_CONFIG: Record<
     DisplayResourceType,
     { icon: React.ComponentType<any>; color: string; label: string }
 > = {
-    pdf: { icon: File, color: Theme.colors.emberRed, label: 'PDF' },
-    video: { icon: Video, color: Theme.colors.skyBlue, label: 'Video' },
-    link: { icon: Link, color: Theme.colors.sanctuarySaffron, label: 'Link' },
-    doc: { icon: FileText, color: Theme.colors.ink, label: 'Doc' },
-    note: { icon: StickyNote, color: Theme.colors.sageGreen, label: 'Note' },
-    other: { icon: BookOpen, color: Theme.colors.starlightGray, label: 'File' },
+    pdf:           { icon: File,        color: Theme.colors.emberRed,          label: 'PDF' },
+    video:         { icon: Video,       color: Theme.colors.skyBlue,           label: 'Video' },
+    link:          { icon: Link,        color: Theme.colors.sanctuarySaffron,  label: 'Link' },
+    doc:           { icon: FileText,    color: Theme.colors.ink,               label: 'Doc' },
+    note:          { icon: StickyNote,  color: Theme.colors.sageGreen,         label: 'Note' },
+    map:           { icon: Map,         color: '#10B981',                      label: 'Map' },
+    infographic:   { icon: BarChart2,   color: '#F59E0B',                      label: 'Visual' },
+    story:         { icon: BookMarked,  color: Theme.colors.gurudeviViolet,    label: 'Story' },
+    circular:      { icon: FileText,    color: '#EF4444',                      label: 'Circular' },
+    movie_trailer: { icon: Clapperboard,color: '#EC4899',                      label: 'Film' },
+    tech_guide:    { icon: Cpu,         color: Theme.colors.gurudeviBlue,      label: 'Tech' },
+    other:         { icon: BookOpen,    color: Theme.colors.starlightGray,     label: 'File' },
 };
 
 function resolveDisplayType(type: string): DisplayResourceType {

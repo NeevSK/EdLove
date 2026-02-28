@@ -979,5 +979,71 @@ export const communityAPI = {
 
         if (error) throw error;
         return data || [];
-    }
+    },
+
+    // ── Group Chat ───────────────────────────────────────────
+
+    /**
+     * Fetch the most recent messages for a group, oldest-first for chat display.
+     */
+    async getGroupMessages(groupId: string, limit = 60): Promise<GroupMessage[]> {
+        const { data, error } = await supabase
+            .from('group_messages')
+            .select('*, author:users!group_messages_author_id_fkey(full_name, avatar_url)')
+            .eq('group_id', groupId)
+            .order('created_at', { ascending: false })
+            .limit(limit);
+
+        if (error) throw new APIError('Failed to fetch group messages', error.code, error);
+        // Reverse so oldest is at top
+        return ((data || []) as GroupMessage[]).reverse();
+    },
+
+    /**
+     * Send a message to a group chat.
+     */
+    async sendGroupMessage(groupId: string, content: string): Promise<GroupMessage> {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
+
+        const { data, error } = await supabase
+            .from('group_messages')
+            .insert([{ group_id: groupId, author_id: user.id, content: content.trim() }])
+            .select('*, author:users!group_messages_author_id_fkey(full_name, avatar_url)')
+            .single();
+
+        if (error) throw new APIError('Failed to send message', error.code, error);
+        return data as GroupMessage;
+    },
+
+    /**
+     * Toggle a reaction (❤️) on a post for the current user.
+     * Uses community_reactions table (post_id, user_id PRIMARY KEY).
+     * Inserts if not present, deletes if already present (toggle).
+     */
+    async togglePostReaction(postId: string, userId: string): Promise<boolean> {
+        // Check if reaction already exists (minimal select — we only need existence)
+        const { data: existing } = await supabase
+            .from('community_reactions')
+            .select('user_id')
+            .eq('post_id', postId)
+            .eq('user_id', userId)
+            .maybeSingle();
+
+        if (existing) {
+            // Un-react
+            await supabase
+                .from('community_reactions')
+                .delete()
+                .eq('post_id', postId)
+                .eq('user_id', userId);
+            return false; // now unliked
+        } else {
+            // React
+            await supabase
+                .from('community_reactions')
+                .insert([{ post_id: postId, user_id: userId, reaction_code: '❤️' }]);
+            return true; // now liked
+        }
+    },
 };
