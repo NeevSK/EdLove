@@ -56,7 +56,8 @@
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
     "extra": {
       "eas": {
@@ -70,7 +71,6 @@
       "expo-localization",
       "expo-asset",
       "expo-audio",
-      "expo-router",
       "expo-secure-store",
       "@sentry/react-native"
     ],

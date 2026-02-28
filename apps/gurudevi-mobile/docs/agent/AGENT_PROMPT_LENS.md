@@ -57,4 +57,114 @@ Reference these files in `apps/gurudevi-mobile/docs/agent/` for all technical an
 - `TAIL_FIN.md`: The philosophical foundation (Resonance & Convolution).
 - `AGENT_RESONANCE.md`: Directives for ecosystem health.
 
+---
+
+## 🌐 WEB PLATFORM INVARIANTS
+Critical truths about this codebase's web support (Expo SDK 55 / Metro):
+
+### Entry Point Architecture
+This app uses **`registerRootComponent(App)`** (classic Expo entry via `index.ts`), NOT expo-router's file-based routing.
+- `package.json` → `"main": "index.ts"` → `App.tsx` via `registerRootComponent`.
+- `expo-router` is intentionally **NOT** listed as an `app.json` plugin. Adding it will silently break web by hijacking Metro to look for an `app/` directory that does not exist → blank page.
+
+### web section in `app.json`
+`"bundler": "metro"` is mandatory in the `expo.web` section for Expo SDK 50+. Without it the web target is undefined. See the actual config in `apps/gurudevi-mobile/app.json`.
+
+### Metro `isCSSEnabled`
+`getDefaultConfig(projectRoot, { isCSSEnabled: true })` must be used in `metro.config.js` to unlock CSS and stylesheet support on web.
+
+### Strategy: Two Complementary Patterns for Native-Only Modules
+
+Metro selects the most-specific file for the target platform. Use this to isolate native-only code without touching shared source.
+
+**Pattern A — Platform-specific file pair** (`*.web.tsx` alongside `*.tsx`)
+Best for: component files you own that import native-only packages.
+```
+SanctuaryFlashList.tsx       ← imported on native (uses @shopify/flash-list)
+SanctuaryFlashList.web.tsx   ← imported on web   (uses React Native FlatList)
+
+LivingCard.tsx       ← native Skia canvas
+LivingCard.web.tsx   ← plain View with background colour
+
+TemporalGlass.tsx    ← native Skia border
+TemporalGlass.web.tsx ← CSS border via borderColor
+
+NoiseOverlay.tsx     ← native Skia grain
+NoiseOverlay.web.tsx ← returns null (decorative, not needed on web)
+```
+
+**Pattern B — Metro `resolveRequest` shim** (in `metro.config.js`)
+Best for: third-party packages imported by files you DON'T want to modify
+(e.g. `App.tsx`, `packages/core/src/lib/monitoring/*.ts`).
+```js
+// metro.config.js — WEB_SHIMS map
+'@sentry/react-native'  → src/shims/sentry-web.js   (no-op init/wrap/captureException)
+'posthog-react-native'  → src/shims/posthog-web.js  (no-op PostHog class + pass-through PostHogProvider)
+```
+**Rule:** every entry in `WEB_SHIMS` must mirror the exported API used in this codebase.
+If you add a new call-site for a shimmed package, update the shim file.
+
+**Pattern C — `Platform.OS` guard** (in-source, inline)
+Best for: third-party APIs called conditionally inside a shared source file.
+```ts
+// storage.ts — skip MMKV on web; fall through to AsyncStorage
+if (isExpoGo || Platform.OS === 'web') { ... }
+
+// AvatarDisplay.tsx — skip expo-file-system/legacy (no web impl) via lazy require
+let FileSystem = Platform.OS !== 'web' ? require('expo-file-system/legacy') : null;
+```
+
+### Quick Reference: Web Compatibility Map
+| Package | Status on web | Fix applied |
+|---|---|---|
+| `@sentry/react-native` | ❌ No web | Shim (Pattern B) |
+| `posthog-react-native` | ❌ No web | Shim (Pattern B) |
+| `react-native-mmkv` | ❌ No web | Platform guard (Pattern C) → falls back to AsyncStorage |
+| `@shopify/flash-list` | ⚠ Unreliable | `.web.tsx` fallback using FlatList (Pattern A) |
+| `@shopify/react-native-skia` | ⚠ Needs WASM setup | `.web.tsx` fallbacks for LivingCard, TemporalGlass, NoiseOverlay (Pattern A) |
+| `expo-file-system/legacy` | ❌ No web | Platform guard in AvatarDisplay (Pattern C); web uses `fetch+arrayBuffer` |
+| `expo-haptics` | ✅ No-op on web | No change needed |
+| `expo-blur` | ✅ Works on web | No change needed |
+| `expo-image-picker` | ✅ Works on web | No change needed |
+| `expo-image-manipulator` | ✅ Works on web | No change needed |
+| `expo-device` | ✅ Returns null safely | `Device.totalMemory ?? 0` guard already in DeviceUtils |
+| `expo-clipboard` | ✅ Works on web | No change needed |
+| `@react-native-community/netinfo` | ✅ Works on web | No change needed |
+| `expo-audio` | ⚠ Playback OK; recording limited | Guard `AudioModule.requestRecordingPermissionsAsync` with `Platform.OS !== 'web'` |
+| `@react-native-ml-kit/text-recognition` | ❌ No web | Scanner feature unavailable on web (camera-based OCR) |
+
+---
+
+## 🚀 WEB DEPLOYMENT STRATEGY
+
+### Build
+```bash
+cd apps/gurudevi-mobile
+pnpm build:web          # runs: expo export -p web --output-dir dist
+```
+Produces a static site in `apps/gurudevi-mobile/dist/` — serves from any static host.
+
+### Environment Variables (required at build time)
+Set these as GitHub Secrets or in your hosting platform's dashboard:
+- `EXPO_PUBLIC_SUPABASE_URL`
+- `EXPO_PUBLIC_SUPABASE_ANON_KEY`
+- `EXPO_PUBLIC_POSTHOG_API_KEY` (optional)
+- `EXPO_PUBLIC_SENTRY_DSN` (optional)
+
+### Hosting Options (all compatible with Expo static exports)
+| Host | How to connect |
+|---|---|
+| **Vercel** | `vercel --prod apps/gurudevi-mobile/dist` or uncomment the Vercel step in `.github/workflows/web-deploy.yml` |
+| **Netlify** | Drag-and-drop `dist/` folder or configure `publish = apps/gurudevi-mobile/dist` in `netlify.toml` |
+| **GitHub Pages** | Add `gh-pages` deploy step to the web-deploy workflow |
+| **Firebase Hosting** | `firebase deploy --only hosting` pointing to `apps/gurudevi-mobile/dist` |
+
+### Supabase Auth — Required Steps
+1. In your Supabase project → **Authentication → URL Configuration → Site URL**: set to your deployed domain (e.g. `https://gurudevi.vercel.app`).
+2. Add the same URL to the **Redirect URLs** allowlist.
+3. For Google OAuth: ensure `https://your-domain.com` is in the allowed origins in Google Cloud Console.
+
+### CI/CD
+`.github/workflows/web-deploy.yml` builds `dist/` on every push to `main`. Uncomment the Vercel step to auto-deploy.
+
 **Awaiting your Architectural Plan for the requested task.**
