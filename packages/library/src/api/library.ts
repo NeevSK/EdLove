@@ -71,6 +71,9 @@ export const libraryAPI = {
             case 'most_endorsed':
                 query = query.order('endorsements', { ascending: false });
                 break;
+            case 'most_bookmarked':
+                query = query.order('bookmarks', { ascending: false });
+                break;
             default:
                 query = query.order('created_at', { ascending: false });
         }

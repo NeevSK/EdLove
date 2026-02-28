@@ -10,6 +10,7 @@ export { default as PositiveInvitation } from './PositiveInvitation';
 export { default as SandboxBanner } from './SandboxBanner';
 export * from './library/LibraryResourceCard';
 export * from './library/CollectionCard';
+export * from './library/LibraryThumbnailCard';
 export * from './SmartShelf';
 export { default as DeleteAccountModal } from './DeleteAccountModal';
 export { default as LogoutModal } from './LogoutModal';
