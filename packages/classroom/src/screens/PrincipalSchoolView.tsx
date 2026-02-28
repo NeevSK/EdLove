@@ -12,6 +12,7 @@
 
 import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
+
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useStore, ClassroomStackParamList, useAIAgent } from '@repo/core';
@@ -37,7 +38,8 @@ import {
     Zap,
     FileText,
     CalendarCheck,
-    AlertCircle
+    AlertCircle,
+    NotebookPen
 } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
@@ -51,6 +53,7 @@ import {
     PulseDashboard,
     PrincipalAdminWidget
 } from '../components';
+import PrincipalNotes from '../components/principal/PrincipalNotes';
 import RoleInitialState from '../components/RoleInitialState';
 
 interface PrincipalSchoolViewProps {
@@ -69,7 +72,7 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
     const { school, stats, isLoading, error, refreshData } = useSchoolStats(schoolId);
     const { generateTimetable, isThinking, lastTimetableDraft } = useAIAgent();
 
-    const [activeView, setActiveView] = useState<'dashboard' | 'hierarchy' | 'invites'>('dashboard');
+    const [activeView, setActiveView] = useState<'dashboard' | 'hierarchy' | 'invites' | 'notes'>('dashboard');
 
     if (activeView === 'hierarchy') {
         return (
@@ -91,6 +94,15 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                     onBack={() => setActiveView('dashboard')}
                 />
             </ScreenWrapper>
+        );
+    }
+
+    if (activeView === 'notes') {
+        return (
+            <PrincipalNotes
+                schoolId={schoolId}
+                onBack={() => setActiveView('dashboard')}
+            />
         );
     }
 
@@ -357,6 +369,45 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                                 >
                                     {`✉️ ${t('principal.actions.inviteStaff') || 'Invite Staff & Students'}`}
                                 </SanctuaryButton>
+
+                                {/* My Logbook — the principal's memory-offload layer */}
+                                <TouchableOpacity
+                                    onPress={() => setActiveView('notes')}
+                                    activeOpacity={0.8}
+                                >
+                                    <Box
+                                        sx={{
+                                            backgroundColor: colors.secondary,
+                                            borderRadius: Theme.corners.comfortable,
+                                            borderWidth: 1,
+                                            borderColor: Theme.colors.sanctuarySaffron + '55',
+                                            padding: Theme.spacing.lg,
+                                        }}
+                                    >
+                                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
+                                                <Box sx={{
+                                                    padding: Theme.spacing.sm,
+                                                    borderRadius: Theme.corners.medium,
+                                                    backgroundColor: Theme.colors.sanctuarySaffron + '22',
+                                                }}>
+                                                    <NotebookPen size={22} color={Theme.colors.sanctuarySaffron} />
+                                                </Box>
+                                                <VStack>
+                                                    <Text color={colors.text} sx={{ fontSize: 14, fontWeight: '700' }}>
+                                                        My Logbook
+                                                    </Text>
+                                                    <Text color={colors.textSecondary} sx={{ fontSize: 11 }}>
+                                                        Todos, observations, decisions
+                                                    </Text>
+                                                </VStack>
+                                            </HStack>
+                                            <Text color={Theme.colors.sanctuarySaffron} sx={{ fontSize: 13, fontWeight: '700' }}>
+                                                Open →
+                                            </Text>
+                                        </HStack>
+                                    </Box>
+                                </TouchableOpacity>
 
                                 <SanctuaryButton
                                     fullWidth
