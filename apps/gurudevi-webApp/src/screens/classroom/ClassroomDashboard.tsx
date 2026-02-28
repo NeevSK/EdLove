@@ -1,6 +1,8 @@
+import React, { useState } from 'react';
 import SectionHeader from '../../components/common/SectionHeader';
 import { GraduationCap, Users, Plus } from 'lucide-react';
 import ClassroomList from '../../components/classroom/ClassroomList';
+import ClassroomStats from '../../components/classroom/ClassroomStats';
 
 const ClassroomDashboard: React.FC = () => {
     // Mocking the check for classrooms
@@ -14,6 +16,8 @@ const ClassroomDashboard: React.FC = () => {
                 subtitle="Manage your learning spaces and students."
                 icon={GraduationCap}
             />
+
+            <ClassroomStats />
 
             {view === 'list' ? (
                 hasClassrooms ? (
