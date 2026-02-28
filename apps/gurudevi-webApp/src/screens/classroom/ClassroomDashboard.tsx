@@ -3,11 +3,18 @@ import SectionHeader from '../../components/common/SectionHeader';
 import { GraduationCap, Users, Plus } from 'lucide-react';
 import ClassroomList from '../../components/classroom/ClassroomList';
 import ClassroomStats from '../../components/classroom/ClassroomStats';
+import ClassroomDetailView from '../../components/classroom/ClassroomDetailView';
 
 const ClassroomDashboard: React.FC = () => {
     // Mocking the check for classrooms
     const hasClassrooms = true;
     const [view, setView] = useState<'list' | 'detail'>('list');
+    const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
+
+    const handleSelectClassroom = (id: string) => {
+        setSelectedClassId(id);
+        setView('detail');
+    };
 
     return (
         <div className="flex flex-col space-y-8 px-6 pt-6 pb-24 max-w-md mx-auto w-full animate-in fade-in duration-700">
@@ -21,7 +28,7 @@ const ClassroomDashboard: React.FC = () => {
 
             {view === 'list' ? (
                 hasClassrooms ? (
-                    <ClassroomList onSelectClassroom={() => setView('detail')} />
+                    <ClassroomList onSelectClassroom={handleSelectClassroom} />
                 ) : (
                     <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-6">
                         <div className="w-24 h-24 bg-orange-400/10 rounded-full flex items-center justify-center">
@@ -39,9 +46,10 @@ const ClassroomDashboard: React.FC = () => {
                     </div>
                 )
             ) : (
-                <div className="text-center text-gray-500 italic">
-                    Classroom Details View Coming Soon...
-                </div>
+                <ClassroomDetailView
+                    classId={selectedClassId || ''}
+                    onBack={() => setView('list')}
+                />
             )}
         </div>
     );
