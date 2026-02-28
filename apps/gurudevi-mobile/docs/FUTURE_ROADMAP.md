@@ -134,8 +134,8 @@ Currently ~5/100. This is a legal and ethical liability, not just a polish item.
 - Add 200 missing Tamil keys to `i18n/locales/ta.json`
 - Externalize top 272 hardcoded strings in priority screens
 - Review translation quality: natural Sri Lankan idioms, not robotic Google Translate
-  - Sinhala: "හිතේ බර ඉවත් කරගන්න" > "දවසේ බර මුදා හරින්න"
-  - Tamil: "மனதில் இருப்பதை வெளியிடுங்கள்" > "நாளின் பாரத்தை விடுவியுங்கள்"
+  - Sinhala: prefer "හිතේ බර ඉවත් කරගන්න" (natural) over "දවසේ බර මුදා හරින්න" (robotic)
+  - Tamil: prefer "மனதில் இருப்பதை வெளியிடுங்கள்" (natural) over "நாளின் பாரத்தை விடுவியுங்கள்" (robotic)
 
 ### Monorepo Deduplication (Infrastructure Debt)
 - **API first**: Migrate `src/lib/api/*.ts` → `@repo/core`; delete redundant files

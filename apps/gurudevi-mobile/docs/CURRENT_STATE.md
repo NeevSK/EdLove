@@ -39,7 +39,7 @@
 ## Monorepo Structure (Verified from Code)
 
 ```
-gurudevi/   (root name as per pnpm-workspace.yaml)
+gurudevi/   (workspace name per pnpm-workspace.yaml; directory may show as Gurudevi or polymath-platform depending on clone path)
 ├── apps/
 │   └── gurudevi-mobile/           # The mobile app (Expo 54)
 │       ├── App.tsx                # Provider stack: QueryClient → EnvironmentProvider →
@@ -343,7 +343,7 @@ Migrations from Feb 11–26 applied. Confirmed tables:
 | 6 | "QR payload routing: CRITICAL GAP — no centralized resolver" | Partially addressed: `QRResolver.ts` exists with `resolveQR()`. But `join-group` consumer path still missing and InviteManager modal not rendered. |
 | 7 | Feature matrix marks "Notifications" as "❌ Pending" | `NotificationDrawer.tsx` **exists** as component — needs investigation of what data it shows |
 | 8 | Docs say Onboarding is "5-screen philosophy flow" | Code confirms **7 screens**: Name + Role + 5 philosophy screens |
-| 9 | "NoiseOverlay: BUG — P0 fix needed" | Already mitigated: **DISABLED** in App.tsx via comment — not a blocking visual regression right now |
+| 9 | "NoiseOverlay: BUG — P0 fix needed" | Already mitigated: **DISABLED** in App.tsx via comment — not a blocking visual regression right now. Re-enabling is planned (T3.10) with proper guarded rollout. |
 | 10 | "API duplication: known issue" | Still not resolved — `apps/gurudevi-mobile/src/lib/api/` still exists alongside `packages/core/src/api/` |
 | 11 | Docs claimed DB migration status is known | `migration_status.md` shows uncertainty for 10+ migrations — **unknown if all tables exist in prod** |
 
