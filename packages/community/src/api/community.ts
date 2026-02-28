@@ -116,7 +116,7 @@ export const communityAPI = {
             .from('community_groups')
             .insert([{
                 ...group,
-                creator_id: userId,
+                created_by: userId,
                 created_at: new Date().toISOString()
             }])
             .select()
@@ -127,16 +127,59 @@ export const communityAPI = {
     },
 
     /**
+     * Create a group and immediately add the creator as admin.
+     * This is the canonical group-creation entry point — always use this
+     * instead of createGroup() to ensure the creator has admin rights.
+     */
+    async createGroupWithAdmin(group: any, userId: string): Promise<CommunityGroup> {
+        // 1. Create the group
+        const { data: created, error: groupErr } = await supabase
+            .from('community_groups')
+            .insert([{
+                name: group.name,
+                description: group.description ?? null,
+                group_type: group.group_type ?? 'general',
+                join_policy: group.join_policy ?? 'open',
+                school_id: group.school_id ?? null,
+                image_url: group.image_url ?? null,
+                created_by: userId,
+                created_at: new Date().toISOString(),
+            }])
+            .select()
+            .single();
+
+        if (groupErr) throw groupErr;
+
+        // 2. Add creator as admin member (status = 'active', role = 'admin')
+        const { error: memberErr } = await supabase
+            .from('community_group_members')
+            .insert([{
+                group_id: created.id,
+                user_id: userId,
+                role: 'admin',
+                status: 'active',
+            }]);
+
+        // Non-fatal: if this fails (e.g. duplicate), the group still exists.
+        if (memberErr) console.warn('createGroupWithAdmin: member insert warning', memberErr);
+
+        return created as CommunityGroup;
+    },
+
+    /**
      * Join a group
      */
-    async joinGroup(groupId: string, userId: string, userRole: string) {
+    async joinGroup(groupId: string, userId: string, joinPolicy: string = 'open') {
+        // status is 'active' for open groups, 'pending' for approval_required / invite_only
+        const status = joinPolicy === 'open' ? 'active' : 'pending';
         const { data, error } = await supabase
-            .from('group_members')
-            .insert([{
+            .from('community_group_members')
+            .upsert([{
                 group_id: groupId,
                 user_id: userId,
-                role: userRole
-            }])
+                role: 'member',
+                status,
+            }], { onConflict: 'group_id,user_id' })
             .select()
             .single();
 
@@ -224,10 +267,10 @@ export const communityAPI = {
      */
     async getPendingMembers(groupId: string) {
         const { data, error } = await supabase
-            .from('group_members')
+            .from('community_group_members')
             .select(`
                 *,
-                user:users!group_members_user_id_fkey(
+                user:users!community_group_members_user_id_fkey(
                     full_name,
                     role,
                     avatar_url,
@@ -247,7 +290,7 @@ export const communityAPI = {
      */
     async handleMemberRequest(groupId: string, userId: string, status: 'active' | 'rejected') {
         const { data, error } = await supabase
-            .from('group_members')
+            .from('community_group_members')
             .update({ status })
             .eq('group_id', groupId)
             .eq('user_id', userId)
@@ -278,7 +321,7 @@ export const communityAPI = {
      */
     async approveAllPending(groupId: string) {
         const { data, error } = await supabase
-            .from('group_members')
+            .from('community_group_members')
             .update({ status: 'active' })
             .eq('group_id', groupId)
             .eq('status', 'pending');

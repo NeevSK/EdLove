@@ -226,15 +226,16 @@ export default function CreateClassroomModal({
                     syllabus_version: syllabusId,
                 });
 
-                // Create linked sanctuary group
+                // Create linked sanctuary group — creator auto-added as admin
                 if (result && schoolId) {
-                    await communityAPI.createSanctuaryGroup({
+                    await communityAPI.createGroupWithAdmin({
                         name: `${name.trim()} Sanctuary`,
                         description: `A sacred space for the ${name.trim()} classroom ${subject ? `(${subject}) ` : ''}discussions and heart-sharing.`,
+                        group_type: 'class',
+                        join_policy: 'approval_required',
                         school_id: schoolId,
-                        creator_id: user.id,
                         classroom_id: result.id
-                    });
+                    }, user.id);
                 }
             }
 

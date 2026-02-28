@@ -15,6 +15,7 @@
     "dependencies": {
         "@repo/core": "workspace:*",
         "@repo/library": "workspace:*",
+        "@repo/scanner-kit": "workspace:*",
         "@repo/ui": "workspace:*",
         "@repo/self": "workspace:*",
         "@tanstack/react-query": "^5.90.20",

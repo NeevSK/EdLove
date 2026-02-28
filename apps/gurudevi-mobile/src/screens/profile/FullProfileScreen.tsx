@@ -16,6 +16,7 @@ import {
     SanctuaryProgressBar,
     hapticSuccess,
     AchievementUnlockOverlay,
+    SanctuaryButton,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { MapPin, Mail, Phone, Shield, Edit3, Check, X, User as UserIcon, FileText, Fingerprint, Briefcase, GraduationCap, BookOpen, School } from 'lucide-react-native';
@@ -31,7 +32,7 @@ import Reanimated, {
     withTiming,
 } from 'react-native-reanimated';
 
-import { useProfile, EditableItem, UserProfile, useProfileCompletion, AvatarDisplay, ContactLinktree } from '@repo/profile';
+import { useProfile, EditableItem, UserProfile, useProfileCompletion, AvatarDisplay, ContactLinktree, GiveThuthimalModal } from '@repo/profile';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ProfileStackParamList } from '../../types/navigation';
 
@@ -52,6 +53,9 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
     const [showCelebration, setShowCelebration] = useState(false);
     const [editingField, setEditingField] = useState<string | null>(null);
     const [showSocialModal, setShowSocialModal] = useState(false);
+    const [showThuthimalModal, setShowThuthimalModal] = useState(false);
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const [currentUserName, setCurrentUserName] = useState<string>('');
 
     // Per-field edit state: { fieldKey: { value, saved, saving, error } }
     interface EditState {
@@ -70,6 +74,16 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
             setProfile(initialProfile);
         }
     }, [initialProfile]);
+
+    // Resolve current session user
+    useEffect(() => {
+        supabase.auth.getUser().then(({ data: { user } }) => {
+            if (user) {
+                setCurrentUserId(user.id);
+                setCurrentUserName(user.user_metadata?.full_name ?? user.email ?? '');
+            }
+        });
+    }, []);
 
     // Clear all pending dismiss timers when the screen unmounts
     useEffect(() => {
@@ -101,6 +115,10 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
     }, [completionResult.isComplete, completionResult.hasSeenCompletionCelebration, completionResult, hapticSuccess, barOpacity]);
 
     if (!profile) return null;
+
+    // True when the signed-in user is viewing someone else's profile
+    const isOtherProfile = currentUserId !== null && currentUserId !== profile.id;
+    const isTeacherProfile = ['teacher', 'principal', 'grade_head', 'section_head'].includes(profile.role);
 
     const handleSave = async (field: string, value: any) => {
         // Handle array-based professional fields transformation before passing to hook
@@ -142,30 +160,46 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                             avatarUrl={profile.avatar_url}
                             fullName={profile.full_name}
                             size={72}
-                            editable={true}
+                            editable={!isOtherProfile}
                             onAvatarUpdated={async (url) => {
                                 await updateField('avatar_url', url);
                                 hapticSuccess();
                             }}
                         />
-                        <Text size="xs" color={colors.textTertiary} mt={Theme.spacing.xs}>
-                            Tap to update your photo
-                        </Text>
+                        {!isOtherProfile && (
+                            <Text size="xs" color={colors.textTertiary} mt={Theme.spacing.xs}>
+                                Tap to update your photo
+                            </Text>
+                        )}
                     </Center>
 
-                    {/* Completion bar — animated, fades out on 100% */}
-                    <Reanimated.View style={barAnimStyle}>
-                        <SanctuaryProgressBar
-                            percentage={completionResult.percentage}
-                            isComplete={completionResult.isComplete}
-                            nextHint={completionResult.nextHint}
-                            style={{
-                                paddingHorizontal: Theme.spacing.xl,
-                                marginTop: Theme.spacing.md,
-                                marginBottom: Theme.spacing.xs,
-                            }}
-                        />
-                    </Reanimated.View>
+                    {/* Give Thuthimal button — only shown when viewing another teacher's profile */}
+                    {isOtherProfile && isTeacherProfile && currentUserId && (
+                        <Center>
+                            <SanctuaryButton
+                                onPress={() => setShowThuthimalModal(true)}
+                                accessibilityLabel={`Give Thuthimal gift to ${profile.full_name}`}
+                            >
+                                🌸 Give Thuthimal
+                            </SanctuaryButton>
+                        </Center>
+                    )}
+
+                    {/* Completion bar — animated, fades out on 100% — only own profile */}
+                    {!isOtherProfile && (
+                        <Reanimated.View style={barAnimStyle}>
+                            <SanctuaryProgressBar
+                                percentage={completionResult.percentage}
+                                isComplete={completionResult.isComplete}
+                                nextHint={completionResult.nextHint}
+                                style={{
+                                    paddingHorizontal: Theme.spacing.xl,
+                                    marginTop: Theme.spacing.md,
+                                    marginBottom: Theme.spacing.xs,
+                                }}
+                            />
+                        </Reanimated.View>
+                    )}
 
                     {/* Detailed Information */}
                     <Center>
@@ -191,7 +225,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                     value={profile.full_name}
                                     field="full_name"
                                     placeholder="Enter full name"
-                                    onSave={handleSave}
+                                    onSave={isOtherProfile ? async () => {} : handleSave}
                                 />
 
                                 <EditableItem
@@ -200,7 +234,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                     value={profile.phone}
                                     field="phone"
                                     placeholder="+94 XX XXX XXXX"
-                                    onSave={handleSave}
+                                    onSave={isOtherProfile ? async () => {} : handleSave}
                                 />
 
                                 {profile.role === 'student' ? (
@@ -210,7 +244,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                         value={profile.index_number}
                                         field="index_number"
                                         placeholder="STU-XXXXX"
-                                        onSave={handleSave}
+                                        onSave={isOtherProfile ? async () => {} : handleSave}
                                     />
                                 ) : (
                                     <EditableItem
@@ -219,7 +253,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                         value={profile.nic_number}
                                         field="nic_number"
                                         placeholder="19XXXXXXXXXX"
-                                        onSave={handleSave}
+                                        onSave={isOtherProfile ? async () => {} : handleSave}
                                     />
                                 )}
                             </VStack>
@@ -260,7 +294,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                         value={profile.experience_years?.toString()}
                                         field="experience_years"
                                         placeholder="0"
-                                        onSave={handleSave}
+                                        onSave={isOtherProfile ? async () => {} : handleSave}
                                     />
 
                                     <EditableItem
@@ -269,7 +303,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                         value={Array.isArray(profile.subjects_taught) ? profile.subjects_taught.join(', ') : profile.subjects_taught}
                                         field="subjects_taught"
                                         placeholder="Math, Physics..."
-                                        onSave={handleSave}
+                                        onSave={isOtherProfile ? async () => {} : handleSave}
                                     />
 
                                     <EditableItem
@@ -278,7 +312,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                         value={Array.isArray(profile.qualifications) ? profile.qualifications.join(', ') : profile.qualifications}
                                         field="qualifications"
                                         placeholder="B.A, M.Sc, etc."
-                                        onSave={handleSave}
+                                        onSave={isOtherProfile ? async () => {} : handleSave}
                                     />
                                 </VStack>
                             </Box>
@@ -307,7 +341,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                 value={profile.bio}
                                 icon={FileText}
                                 placeholder={t('profile.tellUsAboutYourself', 'Tell us about yourself...')}
-                                onSave={handleSave}
+                                onSave={isOtherProfile ? async () => {} : handleSave}
                                 multiline={true}
                             />
                         </Box>
@@ -320,18 +354,20 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                 links={profile.social_links || []}
                                 userName={profile.full_name}
                                 bio={profile.bio}
-                                isOwnProfile={true}
+                                isOwnProfile={!isOtherProfile}
                             />
 
-                            <TouchableOpacity
-                                onPress={() => setShowSocialModal(true)}
-                                style={styles.manageSocialsBtn}
-                            >
-                                <HStack space="sm" alignItems="center">
-                                    <Edit3 size={18} color={colors.action} />
-                                    <Text color={colors.action} bold>Manage Social Hub</Text>
-                                </HStack>
-                            </TouchableOpacity>
+                            {!isOtherProfile && (
+                                <TouchableOpacity
+                                    onPress={() => setShowSocialModal(true)}
+                                    style={styles.manageSocialsBtn}
+                                >
+                                    <HStack space="sm" alignItems="center">
+                                        <Edit3 size={18} color={colors.action} />
+                                        <Text color={colors.action} bold>Manage Social Hub</Text>
+                                    </HStack>
+                                </TouchableOpacity>
+                            )}
                         </Box>
                     </Center>
 
@@ -356,31 +392,41 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                 </VStack>
             </ScrollView>
 
-            <AddSocialLinkModal
-                visible={showSocialModal}
-                onClose={() => setShowSocialModal(false)}
-                userId={profile.id}
-            />
+            {!isOtherProfile && (
+                <AddSocialLinkModal
+                    visible={showSocialModal}
+                    onClose={() => setShowSocialModal(false)}
+                    userId={profile.id}
+                />
+            )}
+
+            {/* Give Thuthimal modal */}
+            {isOtherProfile && currentUserId && (
+                <GiveThuthimalModal
+                    isOpen={showThuthimalModal}
+                    onClose={() => setShowThuthimalModal(false)}
+                    recipientId={profile.id}
+                    recipientName={profile.full_name ?? 'this person'}
+                    recipientRole={profile.role ?? 'teacher'}
+                    giverId={currentUserId}
+                    giverName={currentUserName}
+                />
+            )}
 
             {/* Overlay rendered outside ScrollView — uses position:absolute internally */}
-            <AchievementUnlockOverlay
-                title="✨ Profile Complete!"
-                visible={showCelebration}
-                onHide={() => setShowCelebration(false)}
-            />
+            {!isOtherProfile && (
+                <AchievementUnlockOverlay
+                    title="✨ Profile Complete!"
+                    visible={showCelebration}
+                    onHide={() => setShowCelebration(false)}
+                />
+            )}
         </ScreenWrapper>
     );
 }
 
+
 const styles = StyleSheet.create({
-    actionBtn: {
-        width: 28,
-        height: 28,
-        borderRadius: 8,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'transparent',
-    },
     manageSocialsBtn: {
         marginTop: 8,
         padding: 12,
@@ -389,6 +435,5 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(255,255,255,0.1)',
         alignItems: 'center',
         borderStyle: 'dashed',
-    }
+    },
 });
-
