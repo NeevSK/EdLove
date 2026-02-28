@@ -1053,6 +1053,64 @@ ALTER TABLE user_growth_state
   ADD COLUMN IF NOT EXISTS reflections_submitted_count INT DEFAULT 0,
   ADD COLUMN IF NOT EXISTS crystals_found_count INT DEFAULT 0,
   ADD COLUMN IF NOT EXISTS fractal_moments_count INT DEFAULT 0;
+
+-- Contextual Challenges (Section 14) — opt-in, collective, generative
+CREATE TABLE contextual_challenges (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  type TEXT NOT NULL CHECK (type IN ('class_collective_pulse', 'school_season_challenge')),
+  school_id UUID REFERENCES schools(id),
+  classroom_id UUID REFERENCES classrooms(id),
+  creator_user_id UUID REFERENCES users(id),
+  title_en TEXT NOT NULL,
+  description_en TEXT,
+  metric TEXT NOT NULL CHECK (metric IN (
+    'library_resources_opened', 'joy_jar_entries', 'assignments_submitted',
+    'community_posts', 'reflections_written', 'lessons_completed',
+    'attendance_recorded', 'feedback_given'
+  )),
+  target_count INT NOT NULL,
+  current_count INT DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'active'
+    CHECK (status IN ('active', 'completed', 'expired', 'draft')),
+  nature_metaphor TEXT NOT NULL CHECK (nature_metaphor IN (
+    'river_rising', 'forest_brightening', 'lotus_opening', 'crystal_growing'
+  )),
+  completion_celebration_en TEXT,
+  starts_at TIMESTAMPTZ NOT NULL,
+  ends_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Personal Compasses — individual opt-in, user-defined, private
+CREATE TABLE personal_compasses (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  title_en TEXT NOT NULL,
+  metric TEXT NOT NULL CHECK (metric IN (
+    'library_resources_opened', 'joy_jar_entries', 'assignments_submitted',
+    'community_posts', 'reflections_written', 'lessons_completed',
+    'attendance_recorded', 'feedback_given'
+  )),
+  target_count INT NOT NULL,
+  current_count INT DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'active'
+    CHECK (status IN ('active', 'completed', 'expired')),
+  starts_at TIMESTAMPTZ NOT NULL,
+  ends_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+-- Whispered Moments registry — the memory of discovered moments
+CREATE TABLE whispered_moments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  moment_key TEXT NOT NULL,
+  moment_name_en TEXT,
+  moment_name_si TEXT,
+  awarded_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, moment_key)  -- Each moment discovered once; quietly, permanently remembered
+);
 ```
 
 ---
@@ -1165,6 +1223,156 @@ firefly_warm: '#E8F068',     // Study companion
 > We build for the second kind. Always.
 >
 > **ජයවේවා** 🪷
+
+---
+
+## 14. THE CONTEXTUAL COMPETITION QUESTION
+
+*This section addresses a real tension that was identified in the design process: are we practicing "Kantian universal morality in a contextual world"? The answer is: no longer.*
+
+### The Duolingo Analysis — What They Got Right and Wrong
+
+Duolingo became the world's most downloaded education app on the back of:
+- Streaks (30-day, 365-day)
+- Experience Points (XP)
+- Weekly leagues with public leaderboards
+- Hearts system (losing progress for wrong answers)
+- Streak freeze (pay gems to protect your streak)
+
+**What they got right:**
+- Immediate feedback feels good
+- A visible sense of progress gives a hook to return
+- Gentle social comparison ("your friend Priya is ahead of you this week") activates competitive instinct
+- Streak mechanics do drive daily return
+
+**What they got wrong:**
+- Streaks create anxiety around breaking them — users report more stress than joy
+- Leaderboard ranking frames language learning as zero-sum competition with strangers
+- Hearts punish mistakes in the act of learning — the opposite of growth mindset
+- XP is decoupled from actual language acquisition; users game it to stay in leagues
+
+The critical distinction is not "competition vs. no competition." It is:
+
+```
+ADDICTIVE MECHANIC                     HEALTHY CHALLENGE
+────────────────────────────────────── ─────────────────────────────────────
+Variable reward schedule               Predictable, meaningful recognition
+Loss aversion ("don't break streak")   Progress framing ("look how far you've come")
+Zero-sum ranking (I win = you lose)    Shared collective challenge (we all win together)
+Mandatory (must log in or lose)        Opt-in (here when you want it)
+Abstract score (XP, points)           Concrete impact (lessons done, students helped)
+Peer comparison (ranked vs. others)    Personal best (compared to yourself)
+```
+
+### What Real Classrooms Actually Have — And Why That's Not Bad
+
+Real classrooms **do** have competition. And that is real and worth honoring:
+- Students compare test scores
+- Teachers compare their class performance
+- Schools compare among schools
+- Sports, debates, academic competitions are valuable pedagogical tools
+
+**The distinction is not between competition and no competition. It is between:**
+
+1. **Competition that creates losers** — ranking systems where half the population is definitionally "below average," streaks that shame the person who got sick for three days, leaderboards that identify the bottom performers
+2. **Competition that creates growth** — personal best improvement, class-vs-class collective challenges, opt-in competitions where participation itself is the win, recognition that raising others also raises you
+
+### The Gurudevi Middle Path — Contextual Challenges
+
+We add a new system: **Contextual Challenges** — opt-in, collective, personal-best-focused.
+
+The design principles for Contextual Challenges:
+
+| Principle | What It Means In Practice |
+|-----------|--------------------------|
+| **Collective, not individual** | Challenges measure the class/school as a whole, not individuals within it |
+| **Personal best, not peer comparison** | Each user sees their own trajectory, not a ranking |
+| **Opt-in entirely** | No challenge is mandatory. The app offers; the user decides. |
+| **Generative, not zero-sum** | Winning a challenge does not require another player to lose |
+| **Grounded in real impact** | "Your class submitted 85% of this week's assignments" not "You're #3 in your school" |
+| **Time-boxed and gentle** | Challenges end. The next one starts fresh. The past is not a score. |
+
+### Three Types of Contextual Challenges
+
+**Type 1: Class Collective Pulse** *(Teacher and Students)*
+> "This week, your class has a collective reading challenge: 20 library resources opened across the whole class."
+- Progress is shown as a shared nature visualization: the class river rising
+- No individual breakdown visible to the class
+- When complete: a gentle collective moment (the river reaches the sea)
+- Teacher sees aggregate; no student is identified as under-performing
+
+**Type 2: School Season Challenge** *(All Teachers in a School)*
+> "This term, your school's teachers have a collective wellness challenge: 100 Joy Jar entries across the staff."
+- Progress shown as the School Forest "brightening"
+- Principal can send encouragement to the whole forest (not to individual trees)
+- No individual teacher's data exposed to peers
+
+**Type 3: Personal Compass** *(Individual, opt-in)*
+> "You've set yourself a personal compass: open the Library 3 times this week."
+- User sets their own challenge (not app-assigned)
+- Only they can see it
+- When met: a Whispered Moment, not a leaderboard placement
+- No punishment for not meeting it — the compass simply resets
+
+### What We Explicitly Choose Not to Build
+
+| What Duolingo Has | Why We Pass |
+|---|---|
+| Weekly league rankings | Rankings create losers. We choose shared growth. |
+| Streak shame mechanics | Loss aversion is the mechanism of addiction, not education. |
+| Global leaderboards | Irrelevant to a Sri Lankan teacher's classroom context. |
+| Hearts/life system | Punishing mistakes is pedagogically backwards. |
+| Gems/premium streak freeze | Pay-to-not-lose-progress is the extraction model. |
+
+The user is right: the original GROWTH_MODEL stance was too absolute — close to Kantian universalism applied to a contextual world where real human competition exists and is sometimes healthy. The updated model honors competition as a genuine human experience while designing challenges that are generative rather than extractive.
+
+---
+
+## 15. THE LIVING JOURNEY PANEL
+
+*The holistic view that answers: "Where am I in my journey?"*
+
+Every user deserves a place where their full growth picture lives — not as a score dashboard, but as a **living visualization** of who they have become.
+
+### What the Living Journey Panel Shows
+
+The panel assembles all four nature paths into a single, beautiful, private view:
+
+```
+╔══════════════════════════════════════════════════════════╗
+║  🌸  Your Lotus          Nāla (Rising)                  ║
+║      ▓▓▓▓▓▓▓░░░░  Three petals open                    ║
+╠══════════════════════════════════════════════════════════╣
+║  🌳  Your Banyan         Roots Spreading                 ║
+║      You have offered shade to 3 colleagues             ║
+╠══════════════════════════════════════════════════════════╣
+║  🌊  Your River          Stream                          ║
+║      12 lessons have flowed through you this term        ║
+╠══════════════════════════════════════════════════════════╣
+║  🌙  Moon Tonight        Waxing Gibbous 🌔               ║
+║      "Building toward fullness..."                       ║
+╠══════════════════════════════════════════════════════════╣
+║  ✨  Whispered Moments   3 discovered                    ║
+║      [ still_water ] [ first_offering ] [ storm_holder ] ║
+╚══════════════════════════════════════════════════════════╝
+```
+
+### Design Principles for the Living Journey Panel
+
+1. **Private** — visible only to the user; never visible to colleagues or the principal
+2. **Story, not score** — each row shows a human-language description, not a number
+3. **All paths, not just one** — the user sees their whole nature, not a single dimension
+4. **Moon is live** — the moon phase is computed in real time; it changes each night
+5. **Whispered Moments as memory** — discovered moments are kept as beautiful memories, not trophies
+6. **Roles see different paths** — a teacher sees Lotus + Banyan; a student sees River + Crystal; everyone sees Moon
+7. **Always growing** — even at the earliest stage, the language honors where the user is ("Three petals opening" not "0% complete")
+
+### Where It Lives
+
+The Living Journey Panel **replaces** `UserStatsCard` + `AchievementGallery` in `ProfileScreen`.
+It lives as a single cohesive card, accessed from the Profile tab.
+
+The raw `guruPoints` number and badge string array are **internal analytics only** — they feed the visual but are never shown as numbers to the user.
 
 ---
 

@@ -214,4 +214,39 @@ export const userGrowthStateAPI = {
                 .catch(() => {});
         }
     },
+
+    /**
+     * Alias for getOrCreate — used by the LivingJourneyPanel UI component.
+     * Returns the full growth state (all paths) for a user.
+     */
+    async getOrCreateState(userId: string): Promise<UserGrowthState> {
+        return this.getOrCreate(userId);
+    },
+
+    /**
+     * Get all Whispered Moments that have been discovered by a user.
+     * Used by the LivingJourneyPanel to display memory tiles.
+     * Returns an empty array on any error.
+     */
+    async getWhisperedMoments(userId: string): Promise<Array<{
+        key: string;
+        name_en: string;
+        name_si: string;
+        awarded_at: string;
+    }>> {
+        const { data } = await supabase
+            .from('whispered_moments')
+            .select('moment_key, moment_name_en, moment_name_si, awarded_at')
+            .eq('user_id', userId)
+            .order('awarded_at', { ascending: false });
+
+        if (!data) return [];
+
+        return data.map(row => ({
+            key: row.moment_key as string,
+            name_en: (row.moment_name_en as string) ?? row.moment_key,
+            name_si: (row.moment_name_si as string) ?? row.moment_key,
+            awarded_at: row.awarded_at as string,
+        }));
+    },
 };

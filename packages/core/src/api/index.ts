@@ -28,7 +28,7 @@ import { impactRipplesAPI } from './impactRipples';
 import { warmMirrorAPI } from './warmMirror';
 import { naturePathsAPI } from './naturePaths';
 import { moonPhaseAPI } from './moonPhase';
-import { schoolForestAPI } from './schoolForest';
+import { contextualChallengesAPI } from './contextualChallenges';
 
 export * from './mockData';
 export * from './types';
@@ -47,6 +47,7 @@ export * from './warmMirror';
 export * from './naturePaths';
 export * from './moonPhase';
 export * from './schoolForest';
+export * from './contextualChallenges';
 
 // Simplified named exports for direct access
 export {
@@ -84,6 +85,7 @@ export {
     naturePathsAPI,
     moonPhaseAPI,
     schoolForestAPI,
+    contextualChallengesAPI,
 };
 
 /**
@@ -128,6 +130,7 @@ export const api = {
     naturePaths: naturePathsAPI,
     moonPhase: moonPhaseAPI,
     schoolForest: schoolForestAPI,
+    challenges: contextualChallengesAPI,
 };
 
 export default api;

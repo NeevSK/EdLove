@@ -21,11 +21,10 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useAccountDeletion, useTracking } from '@repo/core';
 import { hapticSuccess, hapticLight, hapticError } from '@repo/ui';
-import AchievementGallery from '../components/profile/AchievementGallery';
 import ProfileSkeleton from '../components/profile/ProfileSkeleton';
+import LivingJourneyPanel from '../components/profile/LivingJourneyPanel';
 import { Edit3, UserPlus, ChevronRight, Settings, LogOut, Trash2, HelpCircle, MessageSquare, Info, Heart, X } from 'lucide-react-native';
 import IdentityCard from '../components/profile/IdentityCard';
-import UserStatsCard from '../components/profile/UserStatsCard';
 import ThuthimalBadge from '../components/profile/ThuthimalBadge';
 import AppSettingsScreen from './AppSettingsScreen';
 import ProfileListItem from '../components/profile/ProfileListItem';
@@ -116,28 +115,11 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
     );
 };
 
-const StatsSection = ({ profile, rewards }: any) => (
-    <VStack space="2xl">
-        <Center>
-            <Box sx={{ width: CARD_WIDTH }}>
-                <UserStatsCard
-                    role={profile?.role || 'student'}
-                    stats={{
-                        classesTaught: profile?.classes_taught || 0,
-                        studentsCount: profile?.students_count || 0,
-                        guruPoints: rewards?.points || 0,
-                        attendanceStreak: profile?.attendance_streak || 0,
-                        assignmentsCompleted: profile?.assignments_count || 0
-                    }}
-                />
-            </Box>
-        </Center>
-        <Center>
-            <Box sx={{ width: CARD_WIDTH, mb: '$8' }}>
-                <AchievementGallery unlockedBadges={rewards?.badges || []} />
-            </Box>
-        </Center>
-    </VStack>
+const StatsSection = ({ profile, rewards, role }: any) => (
+    <LivingJourneyPanel
+        userId={profile?.id}
+        role={role ?? 'student'}
+    />
 );
 
 const SupportSection = ({ t, colors }: any) => (
@@ -512,7 +494,7 @@ export default function ProfileScreen() {
                         )}
 
                         <Animated.View entering={FadeInDown.delay(300).duration(500)}>
-                            <StatsSection profile={profile} rewards={rewards} />
+                            <StatsSection profile={profile} rewards={rewards} role={profile?.role} />
                         </Animated.View>
 
                         <Animated.View entering={FadeInDown.delay(400).duration(500)}>
