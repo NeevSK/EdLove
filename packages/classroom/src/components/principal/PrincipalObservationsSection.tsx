@@ -71,21 +71,8 @@ export default function PrincipalObservationsSection({
   }
 
   useEffect(() => {
-    let mounted = true;
     setLoading(true);
-    supabase
-      .from('principal_observations')
-      .select('*')
-      .eq('principal_id', principalId)
-      .order('created_at', { ascending: false })
-      .limit(5)
-      .then(({ data }) => {
-        if (mounted) {
-          setObservations((data ?? []) as Observation[]);
-          setLoading(false);
-        }
-      });
-    return () => { mounted = false; };
+    fetchObservations();
   }, [principalId]);
 
   async function handleSave() {

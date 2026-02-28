@@ -83,8 +83,7 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
             if (result?.uri) {
                 setLocalUri(result.uri);
                 setDownloadState('ready');
-                // Auto-open after download completes
-                openNative(result.uri);
+                // User taps "Open in Native Viewer" to open — do not auto-open
             } else {
                 throw new Error('Download returned no URI');
             }

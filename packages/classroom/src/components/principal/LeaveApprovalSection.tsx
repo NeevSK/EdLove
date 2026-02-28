@@ -58,12 +58,8 @@ export default function LeaveApprovalSection({
   }
 
   useEffect(() => {
-    let mounted = true;
     setLoading(true);
-    staffManagementAPI.getPendingLeaves(schoolId).then((data) => {
-      if (mounted) { setLeaves(data); setLoading(false); }
-    });
-    return () => { mounted = false; };
+    fetchLeaves();
   }, [schoolId]);
 
   async function handleDecision(leaveId: string, approve: boolean) {

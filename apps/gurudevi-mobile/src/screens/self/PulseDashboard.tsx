@@ -145,7 +145,7 @@ export default function PulseDashboard({ onEnterDetails }: { onEnterDetails: () 
                                             time={`${item.ungradedCount} ${t('pulse.submissions') || 'submission(s)'} · ${item.classroomName}`}
                                             status="upcoming"
                                             onPress={() => navigation.navigate('Gradebook', {
-                                                classroomId: item.assignmentId,
+                                                classroomId: item.classroomId,
                                                 classroomName: item.classroomName,
                                             })}
                                         />

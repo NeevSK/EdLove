@@ -72,12 +72,8 @@ export default function InstitutionalCalendarSection({
   }
 
   useEffect(() => {
-    let mounted = true;
     setLoading(true);
-    staffManagementAPI.getUpcomingCalendarEvents(schoolId, 5).then((data) => {
-      if (mounted) { setEvents(data); setLoading(false); }
-    });
-    return () => { mounted = false; };
+    fetchEvents();
   }, [schoolId]);
 
   async function handleSave() {
