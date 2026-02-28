@@ -57,7 +57,37 @@ export const libraryAPI = {
             query = query.overlaps('grades', filters.grades);
         }
         if (filters.search) {
-            query = query.or(`title.ilike.% ${filters.search}%, description.ilike.% ${filters.search}% `);
+            // Trim and sanitise.
+            // • Single-quotes are escaped to prevent breaking the PostgREST filter string.
+            // • Curly braces are stripped because they have special meaning in Postgres
+            //   array literals (used by the cs operator below).
+            // • User-supplied % / _ wildcards are also stripped so callers cannot craft
+            //   their own ilike patterns.
+            // Note: the Supabase JS client URL-encodes the entire filter string, which
+            // provides an additional layer of protection in transit.
+            const term = filters.search
+                .trim()
+                .replace(/[%_]/g, '')      // no user-supplied wildcards
+                .replace(/[{}]/g, '')      // safe for array cs operator
+                .replace(/'/g, "''");      // escape single quotes
+
+            if (term.length === 0) {
+                // Nothing left after sanitisation — skip the filter entirely
+            } else {
+                // Search across every useful text column.
+                // ilike gives case-insensitive substring matching.
+                // cs (contains) checks whether the text[] column contains an exact tag match.
+                query = query.or(
+                    [
+                        `title.ilike.%${term}%`,
+                        `description.ilike.%${term}%`,
+                        `subject.ilike.%${term}%`,
+                        `creator_name.ilike.%${term}%`,
+                        `tags.cs.{${term}}`,
+                        `topics.cs.{${term}}`,
+                    ].join(',')
+                );
+            }
         }
 
         // Sorting
@@ -443,7 +473,10 @@ resource: library_resources!resource_engagements_resource_id_fkey(
             query = query.overlaps('grades', filters.grades);
         }
         if (filters.search) {
-            query = query.or(`name.ilike.% ${filters.search}%, description.ilike.% ${filters.search}% `);
+            const term = filters.search.trim().replace(/'/g, "''");
+            query = query.or(
+                `name.ilike.%${term}%,description.ilike.%${term}%`
+            );
         }
 
         query = query.order('created_at', { ascending: false });

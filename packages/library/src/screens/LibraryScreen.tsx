@@ -105,6 +105,7 @@ export default function LibraryScreen() {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategoryId, setSelectedCategoryId] = useState('All');
+    const [selectedSort, setSelectedSort] = useState<'recent' | 'popular' | 'most_endorsed' | 'most_bookmarked'>('recent');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
 
@@ -135,8 +136,8 @@ export default function LibraryScreen() {
         isFetchingNextResources,
     } = useLibrary(
         isSearchMode
-            ? { type: resourceTypeFilter, search: searchQuery || undefined }
-            : { limit: 60 } as any     // fetch wide for Netflix grouping
+            ? { type: resourceTypeFilter, search: searchQuery || undefined, sort_by: selectedSort }
+            : { limit: 60 }   // fetch wide for Netflix shelf grouping
     );
 
     // Group resources by type for the shelf layout
@@ -198,6 +199,13 @@ export default function LibraryScreen() {
         value: cat.id,
     })), []);
 
+    const sortChips = useMemo(() => [
+        { label: '🕐 Recent',       value: 'recent' },
+        { label: '🔥 Popular',      value: 'popular' },
+        { label: '⭐ Endorsed',     value: 'most_endorsed' },
+        { label: '🔖 Saved',        value: 'most_bookmarked' },
+    ], []);
+
     // ── Shared shelf renderer ────────────────────────────────
     const renderShelf = useCallback((label: string, items: LibraryResource[], onSeeAll?: () => void) => {
         if (items.length === 0) return null;
@@ -248,6 +256,14 @@ export default function LibraryScreen() {
                             chips={chipData}
                             selectedValue={selectedCategoryId}
                             onSelect={setSelectedCategoryId}
+                            size="sm"
+                        />
+                    </Animated.View>
+                    <Animated.View entering={FadeInDown.delay(160).springify()}>
+                        <HorizontalChipRow
+                            chips={sortChips}
+                            selectedValue={selectedSort}
+                            onSelect={(v) => setSelectedSort(v as typeof selectedSort)}
                             size="sm"
                         />
                     </Animated.View>
