@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, GraduationCap, Users, BookOpen } from 'lucide-react';
+import { X, GraduationCap, Users, BookOpen, Plus } from 'lucide-react';
 
 interface CreateClassroomModalProps {
     isOpen: boolean;
@@ -28,7 +28,7 @@ const CreateClassroomModal: React.FC<CreateClassroomModalProps> = ({ isOpen, onC
                 <div className="p-6 border-b border-gray-700/30 flex justify-between items-center">
                     <div className="flex items-center space-x-3">
                         <div className="p-2 bg-orange-400/10 rounded-xl">
-                            <PlusIcon className="w-5 h-5 text-orange-400" />
+                            <Plus className="w-5 h-5 text-orange-400" />
                         </div>
                         <h3 className="text-xl font-bold text-white">Create Classroom</h3>
                     </div>
