@@ -57,7 +57,7 @@ export const libraryAPI = {
             query = query.overlaps('grades', filters.grades);
         }
         if (filters.search) {
-            // Trim and sanitise.
+            // Trim and sanitize.
             // • Single-quotes are escaped to prevent breaking the PostgREST filter string.
             // • Curly braces are stripped because they have special meaning in Postgres
             //   array literals (used by the cs operator below).

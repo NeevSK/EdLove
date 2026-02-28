@@ -30,6 +30,8 @@ import {
 } from '@repo/ui';
 import { ChevronLeft, Send } from 'lucide-react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { CommunityStackParamList } from '@repo/core';
 import { supabase, useStore } from '@repo/core';
 import { communityAPI } from '../api/community';
 import type { GroupMessage } from '../types';
@@ -42,7 +44,7 @@ type GroupChatRoute = {
 
 export default function GroupChatScreen() {
     const route = useRoute<GroupChatRoute>();
-    const navigation = useNavigation();
+    const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
     const { groupId, groupName } = route.params;
     const user = useStore(state => state.user);
     const colors = useThemedColors();
@@ -166,12 +168,20 @@ export default function GroupChatScreen() {
                 }}
             >
                 {!isOwn && (
-                    <Avatar size="xs" sx={{ marginRight: 8, marginTop: 4, backgroundColor: colors.action }}>
-                        {item.author?.avatar_url
-                            ? <AvatarImage source={{ uri: item.author.avatar_url }} alt={authorName} />
-                            : <AvatarFallbackText>{initials}</AvatarFallbackText>
-                        }
-                    </Avatar>
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('UserProfile', {
+                            userId: item.author_id,
+                            userName: item.author?.full_name || 'Member',
+                        })}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    >
+                        <Avatar size="xs" sx={{ marginRight: 8, marginTop: 4, backgroundColor: colors.action }}>
+                            {item.author?.avatar_url
+                                ? <AvatarImage source={{ uri: item.author.avatar_url }} alt={authorName} />
+                                : <AvatarFallbackText>{initials}</AvatarFallbackText>
+                            }
+                        </Avatar>
+                    </TouchableOpacity>
                 )}
 
                 <VStack sx={{ maxWidth: '72%', gap: 2 }}>

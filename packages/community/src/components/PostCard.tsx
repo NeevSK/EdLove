@@ -17,6 +17,8 @@ interface PostCardProps {
     onResonate?: () => void;
     onComment?: () => void;
     onReport?: () => void;
+    /** Called when the author avatar/name is tapped — use to navigate to the author's public profile */
+    onAuthorPress?: () => void;
     isSample?: boolean;
     currentUserId?: string;
 }
@@ -30,6 +32,7 @@ const PostCard = React.memo(function PostCard({
     onResonate,
     onComment,
     onReport,
+    onAuthorPress,
     isSample,
     currentUserId
 }: PostCardProps) {
@@ -100,12 +103,18 @@ const PostCard = React.memo(function PostCard({
                 {/* Header: Author & Meta */}
                 <HStack justifyContent="space-between" alignItems="center">
                     <HStack space="md" alignItems="center">
-                        <Avatar size="sm" sx={{ backgroundColor: is_anonymous ? colors.secondary : colors.action }}>
-                            <AvatarFallbackText>{is_anonymous ? '?' : author_name}</AvatarFallbackText>
-                            {!is_anonymous && author_avatar && (
-                                <AvatarImage source={{ uri: author_avatar }} alt={author_name} />
-                            )}
-                        </Avatar>
+                        <TouchableOpacity
+                            onPress={!is_anonymous ? onAuthorPress : undefined}
+                            disabled={is_anonymous || !onAuthorPress}
+                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        >
+                            <Avatar size="sm" sx={{ backgroundColor: is_anonymous ? colors.secondary : colors.action }}>
+                                <AvatarFallbackText>{is_anonymous ? '?' : author_name}</AvatarFallbackText>
+                                {!is_anonymous && author_avatar && (
+                                    <AvatarImage source={{ uri: author_avatar }} alt={author_name} />
+                                )}
+                            </Avatar>
+                        </TouchableOpacity>
                         <VStack>
                             <HStack space="xs" alignItems="center">
                                 <Text color={colors.text} bold size="sm">

@@ -11,4 +11,6 @@ export type CommunityStackParamList = {
     GroupDetails: { groupId: string; groupName?: string };
     GroupChat: { groupId: string; groupName: string };
     Announcements: undefined;
+    /** Public profile viewer — tapping any user avatar in community navigates here */
+    UserProfile: { userId: string; userName: string };
 };

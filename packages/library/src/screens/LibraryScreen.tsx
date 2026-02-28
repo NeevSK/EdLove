@@ -206,7 +206,9 @@ export default function LibraryScreen() {
         { label: '🔖 Saved',        value: 'most_bookmarked' },
     ], []);
 
-    // ── Shared shelf renderer ────────────────────────────────
+    const handleEndReached = useCallback(() => {
+        if (hasNextResources && !isFetchingNextResources) fetchNextResources();
+    }, [hasNextResources, isFetchingNextResources, fetchNextResources]);
     const renderShelf = useCallback((label: string, items: LibraryResource[], onSeeAll?: () => void) => {
         if (items.length === 0) return null;
         return (
@@ -274,7 +276,7 @@ export default function LibraryScreen() {
                         ListFooterComponent={isFetchingNextResources ? (
                             <ActivityIndicator size="small" color={Theme.colors.sanctuarySaffron} style={{ padding: 20 }} />
                         ) : null}
-                        onEndReached={() => { if (hasNextResources && !isFetchingNextResources) fetchNextResources(); }}
+                        onEndReached={handleEndReached}
                         refreshing={refreshing}
                         onRefresh={onRefresh}
                     />

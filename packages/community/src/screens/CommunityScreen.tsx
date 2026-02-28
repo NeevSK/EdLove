@@ -212,6 +212,14 @@ export default function CommunityScreen() {
                                         setReportPostId(item.id);
                                         setShowReportModal(true);
                                     }}
+                                    onAuthorPress={() => {
+                                        if (item.author_id && !item.is_anonymous) {
+                                            navigation.navigate('UserProfile', {
+                                                userId: item.author_id,
+                                                userName: item.author_name ?? 'Member',
+                                            });
+                                        }
+                                    }}
                                     isSample={item.id.startsWith('stub-') || item.id.startsWith('mock-')}
                                     currentUserId={userId ?? undefined}
                                 />
