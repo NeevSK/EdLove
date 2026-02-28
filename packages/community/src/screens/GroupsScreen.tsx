@@ -17,10 +17,11 @@ interface GroupsScreenProps {
     userId?: string;
     schoolId?: string;
     onCreatePost?: (groupId?: string) => void;
+    onCreateGroup?: () => void;
     onNavigateToGroup: (groupId: string) => void;
 }
 
-export default function GroupsScreen({ userId, schoolId, onCreatePost, onNavigateToGroup }: GroupsScreenProps) {
+export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateGroup, onNavigateToGroup }: GroupsScreenProps) {
     const { t } = useTranslation();
     const {
         sanctuaryGroups,
@@ -106,7 +107,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onNavigat
                 >
                     <SanctuaryButton
                         variant="outline"
-                        onPress={() => onCreatePost?.()}
+                        onPress={() => onCreateGroup?.()}
                         leftIcon={Plus}
                     >
                         {t('community.groups.create', 'Found a New Circle')}
@@ -142,7 +143,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onNavigat
                 context="community"
                 title={t('community.groups.noGalaxy', 'Galaxy Waiting to Bloom')}
                 description={t('community.groups.noGalaxyDesc', 'Be the first to create a club, interest group, or inter-school circle.')}
-                onAction={() => onCreatePost?.()} // Triggers group creation flow
+                onAction={() => onCreateGroup?.()} // Triggers group creation flow
             />
         );
     };
