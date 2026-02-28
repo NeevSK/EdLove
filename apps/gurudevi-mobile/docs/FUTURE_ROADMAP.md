@@ -246,7 +246,7 @@ From `agentic_vision_2026.md` and Phase 4 philosophy:
 - **Shadow Agent (Orb Entry)**: Context-aware contemplative assistant accessible from Self tab
 - **Socratic Prompting**: AI suggestions for classroom discussions
 - **AI Insights Summary**: Weekly "Wisdom Seeds" evolving based on teacher's interaction patterns
-- **Retrospecitlve Prompts**: AI-generated guided review prompts for weekly school reflection
+- **Retrospective Prompts**: AI-generated guided review prompts for weekly school reflection
 - **Contextual Thought Seeds**: Role-specific reflection questions
 - **Predictive Burnout Detection**: AI flag when usage patterns suggest burnout risk
 
