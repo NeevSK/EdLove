@@ -7,6 +7,8 @@ import {
     requireClassroomAccess,
     requireStudentAccess
 } from '../lib/authorization';
+import { growthSignalsAPI } from './growthSignals';
+import { impactRipplesAPI } from './impactRipples';
 
 // ============================================================================
 // GRADING API
@@ -47,6 +49,28 @@ export const gradingAPI = {
 
         if (error) {
             throw new APIError('Failed to submit grade', error.code, error);
+        }
+
+        // Growth signal: teacher nourished a student by reviewing their work
+        // (Tier 1 Work Signal — grading IS an act of care and presence)
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            void growthSignalsAPI.emitSignal(user.id, 'assignment_graded', {
+                classroom_id: classroomId,
+                has_feedback: !!feedback && feedback.length > 0,
+            }).catch(() => {});
+
+            // If the teacher wrote substantive written feedback, create an Impact Ripple
+            // for the student — "your teacher thought carefully about your work"
+            if (feedback && feedback.length > 20 && studentId) {
+                void impactRipplesAPI.createRipple({
+                    recipientUserId: studentId,
+                    actorUserId: user.id,
+                    rippleType: 'feedback_given',
+                    sourceEntityType: 'lesson',
+                    sourceEntityId: assignmentId,
+                }).catch(() => {});
+            }
         }
 
         return data;

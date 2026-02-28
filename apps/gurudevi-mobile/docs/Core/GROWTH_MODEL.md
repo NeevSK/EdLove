@@ -189,6 +189,46 @@ Instead of points accumulated across all actions, growth is recognized across **
 **Never**: "You're on a 7-day streak!" or "You broke your streak."  
 **Always**: The app is simply present, like a lamp that's always on.
 
+#### THE PRESENCE INFERENCE MODEL: Work as Witness
+
+> *"How do we know if a teacher was present without asking them?"*
+
+This is the hardest design problem in the Presence dimension — and the answer is the core engineering principle of the entire growth system:
+
+**We do not ask. We observe the natural residue of their work.**
+
+A teacher recording attendance was in class that day. A teacher grading fifteen papers with written feedback was deeply engaged. A teacher who opened the Fire Journal at 10pm was present with themselves even when exhausted. None of these require a single extra tap, question, or explicit "check-in." The work itself is the witness.
+
+**The Three-Tier Signal Architecture:**
+
+| Tier | Signal Type | What It Infers | Example Actions |
+|------|------------|----------------|-----------------|
+| **Tier 1: Work Signals** | The highest-confidence evidence of presence — direct professional activity | Teacher was actively teaching, preparing, or caring for students | Recording attendance, grading assignments, creating lesson materials, creating assignments |
+| **Tier 2: Care Signals** | Teacher chose to prioritize their own wellbeing | Teacher is present *with themselves* — a form of presence just as valid | Logging mood, writing in Fire Journal, completing a breathing exercise |
+| **Tier 3: Context Signals** | Ambient evidence of engagement | Teacher was in the app and thinking about their work | Opening specific sections (Community, Library, Self, Classroom tab) |
+
+**The Fire-and-Forget Principle:**
+
+```typescript
+// In every API that represents meaningful action:
+// After the primary operation succeeds, add:
+void growthSignalsAPI.emitSignal(userId, 'attendance_recorded').catch(() => {});
+//                                  ↑ never blocks the main operation
+//                                  ↑ never surfaces errors to the user
+//                                  ↑ growth signal failures are silent
+```
+
+The growth layer must NEVER fail the primary operation. A teacher marking attendance should not see an error because the growth signal failed. The primary action always succeeds first; the growth observation is a silent witness.
+
+**What This Means for the Teacher:**
+
+The teacher opens the app to mark attendance (their job). As a natural byproduct:
+- A `attendance_recorded` signal fires → increments their **Presence** dimension
+- After 5 separate school days of activity → their lotus advances from Bijam to Mūla
+- After 10 graded assignments with written feedback → the *"Caring Teacher"* Whispered Moment may appear on the classroom header — a golden ember, private, warm
+
+The teacher never "earned" anything. They simply did their job. The app witnessed it.
+
 ---
 
 ### Dimension 2: NOURISHING (Contribution)

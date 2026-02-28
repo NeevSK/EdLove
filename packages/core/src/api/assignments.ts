@@ -6,6 +6,7 @@
 
 import { supabase } from '../lib/supabase';
 import { APIError, Assignment } from './types';
+import { growthSignalsAPI } from './growthSignals';
 
 export const assignmentsAPI = {
     /**
@@ -56,6 +57,14 @@ export const assignmentsAPI = {
 
         if (error) {
             throw new APIError('Failed to create assignment', error.code, error);
+        }
+
+        // Growth signal: teacher designed work for their students (Nourishing dimension)
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            void growthSignalsAPI.emitSignal(user.id, 'assignment_created', {
+                classroom_id: assignment.classroom_id,
+            }).catch(() => {});
         }
 
         return data;

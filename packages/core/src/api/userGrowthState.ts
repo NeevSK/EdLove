@@ -1,0 +1,198 @@
+/**
+ * User Growth State API — Bhumi life stage management.
+ *
+ * Manages the `user_growth_state` table which tracks each user's position in the
+ * Bhumi Nature-Inspired Growth Model (see docs/Core/GROWTH_MODEL.md Section 5).
+ *
+ * The six Bhumi stages (Bijam → Mūla → Nāla → Patra → Kamala → Pūrṇa Kamala)
+ * are NOT levels to grind. They advance naturally when the app notices that a user
+ * has genuinely engaged with its core dimensions over time.
+ *
+ * USAGE:
+ *   - Import from '@repo/core' in any downstream package.
+ *   - growthSignalsAPI calls incrementDimension automatically after every signal.
+ *   - UI reads getBhumiStage to render the Lotus Life Stage visualization (Self tab only).
+ *   - NEVER display the stage name or a progress bar — only the living lotus visual.
+ */
+
+import { supabase } from '../lib/supabase';
+
+export type BhumiStage =
+    | 'bijam'
+    | 'mula'
+    | 'nala'
+    | 'patra'
+    | 'kamala'
+    | 'purna_kamala';
+
+export type GrowthDimension =
+    | 'presence'
+    | 'nourishing'
+    | 'witnessing'
+    | 'weaving'
+    | 'blooming';
+
+export interface UserGrowthState {
+    id: string;
+    user_id: string;
+    bhumi_stage: BhumiStage;
+    presence_signals: number;
+    nourishing_signals: number;
+    witnessing_signals: number;
+    weaving_signals: number;
+    blooming_signals: number;
+    last_seen_at: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
+/** Column name for each dimension counter. */
+const DIMENSION_COLUMN: Record<GrowthDimension, keyof UserGrowthState> = {
+    presence: 'presence_signals',
+    nourishing: 'nourishing_signals',
+    witnessing: 'witnessing_signals',
+    weaving: 'weaving_signals',
+    blooming: 'blooming_signals',
+};
+
+/**
+ * Bhumi stage transition criteria.
+ * Intentionally approximate and lenient — natural engagement, not metric grind.
+ * (See GROWTH_MODEL.md Section 5 for the full design specification.)
+ */
+function meetsTransitionCriteria(
+    currentStage: BhumiStage,
+    state: UserGrowthState
+): BhumiStage | null {
+    switch (currentStage) {
+        case 'bijam':
+            // Bijam → Mūla: First meaningful presence signal — just showing up
+            return state.presence_signals >= 1 ? 'mula' : null;
+
+        case 'mula':
+            // Mūla → Nāla: Present on 5+ occasions AND engaged with at least one other dimension
+            return state.presence_signals >= 5 &&
+                (state.nourishing_signals + state.witnessing_signals + state.weaving_signals) >= 1
+                ? 'nala'
+                : null;
+
+        case 'nala':
+            // Nāla → Patra: Contributed to community or library (nourishing or weaving)
+            return (state.weaving_signals >= 1 || state.nourishing_signals >= 1) ? 'patra' : null;
+
+        case 'patra': {
+            // Patra → Kamala: Active across at least 3 aliveness dimensions
+            const activeDimensions = (
+                [
+                    state.presence_signals,
+                    state.nourishing_signals,
+                    state.witnessing_signals,
+                    state.weaving_signals,
+                    state.blooming_signals,
+                ] as number[]
+            ).filter(v => v > 0).length;
+            return activeDimensions >= 3 ? 'kamala' : null;
+        }
+
+        case 'kamala':
+            // Kamala → Pūrṇa: Received a Thuthimal or other blooming signal
+            return state.blooming_signals >= 1 ? 'purna_kamala' : null;
+
+        case 'purna_kamala':
+            return null; // Already at full bloom — no further advancement
+    }
+}
+
+export const userGrowthStateAPI = {
+    /**
+     * Get the growth state for a user, creating a new seed record if none exists.
+     * Every user starts as Bijam — a seed in the mud.
+     */
+    async getOrCreate(userId: string): Promise<UserGrowthState> {
+        const { data: existing } = await supabase
+            .from('user_growth_state')
+            .select('*')
+            .eq('user_id', userId)
+            .maybeSingle();
+
+        if (existing) return existing as UserGrowthState;
+
+        const { data, error } = await supabase
+            .from('user_growth_state')
+            .insert({ user_id: userId })
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data as UserGrowthState;
+    },
+
+    /**
+     * Get the current Bhumi life stage for a user.
+     * Returns 'bijam' for new users (seed in the mud — never empty, seeds are beautiful).
+     * Non-throwing: returns 'bijam' on any error.
+     */
+    async getBhumiStage(userId: string): Promise<BhumiStage> {
+        const { data } = await supabase
+            .from('user_growth_state')
+            .select('bhumi_stage')
+            .eq('user_id', userId)
+            .maybeSingle();
+        return (data?.bhumi_stage as BhumiStage | undefined) ?? 'bijam';
+    },
+
+    /**
+     * Get the full growth state (all dimension counters).
+     * Used by Warm Mirror data aggregation.
+     */
+    async getFullState(userId: string): Promise<UserGrowthState | null> {
+        const { data } = await supabase
+            .from('user_growth_state')
+            .select('*')
+            .eq('user_id', userId)
+            .maybeSingle();
+        return (data as UserGrowthState | null) ?? null;
+    },
+
+    /**
+     * Increment a dimension's signal counter and update last_seen_at.
+     * Checks and applies a stage transition if conditions are met.
+     *
+     * Non-fatal: errors are silently swallowed so growth signals never interrupt
+     * the primary operation.
+     */
+    async incrementDimension(userId: string, dimension: GrowthDimension): Promise<void> {
+        const state = await this.getOrCreate(userId).catch(() => null);
+        if (!state) return;
+
+        const column = DIMENSION_COLUMN[dimension];
+        const currentValue = (state[column] as number) ?? 0;
+
+        const { error } = await supabase
+            .from('user_growth_state')
+            .update({
+                [column]: currentValue + 1,
+                last_seen_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+            })
+            .eq('user_id', userId);
+
+        if (error) {
+            console.warn('[UserGrowthState] Failed to increment dimension:', error.message);
+            return;
+        }
+
+        // Construct the updated state locally (avoids a second DB read)
+        const updatedState: UserGrowthState = { ...state, [column]: currentValue + 1 };
+
+        // Check if the user has graduated to the next Bhumi stage
+        const nextStage = meetsTransitionCriteria(state.bhumi_stage as BhumiStage, updatedState);
+        if (nextStage) {
+            await supabase
+                .from('user_growth_state')
+                .update({ bhumi_stage: nextStage, updated_at: new Date().toISOString() })
+                .eq('user_id', userId)
+                .catch(() => {});
+        }
+    },
+};

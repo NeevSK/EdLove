@@ -6,7 +6,9 @@ import {
     requireStudentAccess,
     UserRole,
     hasRole,
-    STAFF_ROLES
+    STAFF_ROLES,
+    growthSignalsAPI,
+    impactRipplesAPI,
 } from '@repo/core';
 
 import {
@@ -198,6 +200,13 @@ export const libraryAPI = {
             throw new APIError('Failed to create resource', error.code, error);
         }
 
+        // Growth signal: teacher shared their wisdom with the school community (Nourishing dimension)
+        // Also triggers the 'first_offering' Whispered Moment check
+        void growthSignalsAPI.emitSignal(creatorId, 'resource_uploaded', {
+            resource_id: data.id,
+            resource_type: input.type,
+        }).catch(() => {});
+
         return {
             ...data,
             creator_name: data.creator?.full_name || 'Unknown',
@@ -270,6 +279,11 @@ export const libraryAPI = {
                     engagement_type: 'view',
                 },
             ]);
+
+            // Growth signal: user explored a resource (Witnessing dimension — absorbing, growing inward)
+            void growthSignalsAPI.emitSignal(userId, 'resource_read', {
+                resource_id: resourceId,
+            }).catch(() => {});
         }
     },
 
@@ -385,6 +399,24 @@ export const libraryAPI = {
             await supabase.rpc('increment_resource_bookmarks', {
                 resource_id: resourceId,
             });
+
+            // Impact Ripple: the resource creator gets a warm echo —
+            // "a teacher in your school kept your resource close"
+            const { data: resource } = await supabase
+                .from('library_resources')
+                .select('creator_id')
+                .eq('id', resourceId)
+                .maybeSingle();
+
+            if (resource?.creator_id) {
+                void impactRipplesAPI.createRipple({
+                    recipientUserId: resource.creator_id,
+                    actorUserId: userId,
+                    rippleType: 'resource_saved',
+                    sourceEntityType: 'resource',
+                    sourceEntityId: resourceId,
+                }).catch(() => {});
+            }
         }
     },
 

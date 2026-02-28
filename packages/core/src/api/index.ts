@@ -22,6 +22,10 @@ import { communityAPI } from './community';
 import { ReliefCoordinator, TimetableScheduler } from './agents';
 import { sacredMissionsAPI } from './sacredMissions';
 import { isDemo, demoAPI } from './demo';
+import { growthSignalsAPI } from './growthSignals';
+import { userGrowthStateAPI } from './userGrowthState';
+import { impactRipplesAPI } from './impactRipples';
+import { warmMirrorAPI } from './warmMirror';
 
 export * from './mockData';
 export * from './types';
@@ -32,6 +36,11 @@ export * from './resonantProxy';
 export * from './classroomNotes';
 export * from './principalNotes';
 export * from './community'; // Export community types/API
+// Growth Model v2.0 — Bhumi Nature-Inspired Growth System
+export * from './growthSignals';
+export * from './userGrowthState';
+export * from './impactRipples';
+export * from './warmMirror';
 
 // Simplified named exports for direct access
 export {
@@ -62,6 +71,10 @@ export {
     TimetableScheduler,
     sacredMissionsAPI,
     demoAPI,
+    growthSignalsAPI,
+    userGrowthStateAPI,
+    impactRipplesAPI,
+    warmMirrorAPI,
 };
 
 /**
@@ -98,6 +111,11 @@ export const api = {
     scheduler: TimetableScheduler,
     missions: sacredMissionsAPI,
     demo: demoAPI,
+    // Growth Model v2.0
+    growth: growthSignalsAPI,
+    growthState: userGrowthStateAPI,
+    ripples: impactRipplesAPI,
+    warmMirror: warmMirrorAPI,
 };
 
 export default api;

@@ -6,6 +6,7 @@
 
 import { supabase } from '../lib/supabase';
 import { APIError, LessonMaterial } from './types';
+import { growthSignalsAPI } from './growthSignals';
 
 export const lessonMaterialsAPI = {
     /**
@@ -58,6 +59,16 @@ export const lessonMaterialsAPI = {
 
         if (error) {
             throw new APIError('Failed to create lesson material', error.code, error);
+        }
+
+        // Growth signal: teacher prepared materials for students (Nourishing dimension)
+        // Also triggers the 'first_offering' Whispered Moment check
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            void growthSignalsAPI.emitSignal(user.id, 'lesson_material_created', {
+                classroom_id: material.classroom_id,
+                material_type: material.type,
+            }).catch(() => {});
         }
 
         return data;
