@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Flame, Ghost } from 'lucide-react';
+import { Flame } from 'lucide-react';
 import SectionHeader from '../common/SectionHeader';
 
 const FireJournal: React.FC = () => {
