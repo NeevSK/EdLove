@@ -288,7 +288,7 @@ Complete system built:
 
 ---
 
-## Phase 6: March 1st Week (February 27, 2026 — Current)
+## Phase 6: Late February / March 1st Week (February 27, 2026 — Current)
 
 ### Skia Dark Overlay Bug (P0 Blocker)
 The `2026-02-27-priority-matrix-and-skia-runbook.md` documents a critical rendering bug:
