@@ -50,7 +50,9 @@ import {
     DashboardEcho,
     CurriculumPulse,
     PulseDashboard,
-    PrincipalAdminWidget
+    PrincipalAdminWidget,
+    MorningSituationalBrief,
+    TeacherCarousel,
 } from '../components';
 import PrincipalNotes from '../components/principal/PrincipalNotes';
 import RoleInitialState from '../components/RoleInitialState';
@@ -139,6 +141,19 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                             <Text color={colors.text}>{error}</Text>
                         </Box>
                     )}
+
+                    {/* Morning Brief — first thing principal sees */}
+                    <MorningSituationalBrief
+                        schoolId={schoolId}
+                        onViewStaff={() => {/* navigate to staff list */}}
+                        onViewApprovals={() => {/* navigate to approvals */}}
+                    />
+
+                    {/* Teacher Faculty Carousel */}
+                    <TeacherCarousel
+                        schoolId={schoolId}
+                        onTapTeacher={(teacherId) => {/* navigate to teacher detail */}}
+                    />
 
                     {/* Stats Dashboard */}
                     {stats && !isLoading ? (

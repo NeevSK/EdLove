@@ -13,9 +13,11 @@ import {
     BreathAnimation,
     SkeletonCard
 } from '@repo/ui';
-import { useUserRole, useStore, dailyContentAPI, usePendingActions } from '@repo/core';
+import { useUserRole, useStore, dailyContentAPI, usePendingActions, ClassroomStackParamList } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import { Sparkles, Calendar, BookOpen, Clock, CheckCircle } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 /**
  * PulseDashboard - The "Entrance" to the Daily Sanctuary
@@ -27,6 +29,7 @@ export default function PulseDashboard({ onEnterDetails }: { onEnterDetails: () 
     const user = useStore((state) => state.user);
     const teacherName = useStore((state) => state.teacherName);
     const colors = useThemedColors();
+    const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
     const [refreshing, setRefreshing] = React.useState(false);
     const [dailyContent, setDailyContent] = React.useState<{ motivation: any; didYouKnow: any } | null>(null);
 
@@ -129,7 +132,10 @@ export default function PulseDashboard({ onEnterDetails }: { onEnterDetails: () 
                                             title={`${t('pulse.markAttendance') || 'Mark Attendance'}: ${item.classroomName}`}
                                             time={t('pulse.beforeNine') || 'Before 9:00 AM'}
                                             status="pending"
-                                            onPress={() => { }}
+                                            onPress={() => navigation.navigate('Attendance', {
+                                                classroomId: item.classroomId,
+                                                classroomName: item.classroomName,
+                                            })}
                                         />
                                     ))}
                                     {gradingPending.map((item) => (
@@ -138,7 +144,10 @@ export default function PulseDashboard({ onEnterDetails }: { onEnterDetails: () 
                                             title={`${t('pulse.grade') || 'Grade'}: ${item.assignmentTitle}`}
                                             time={`${item.ungradedCount} ${t('pulse.submissions') || 'submission(s)'} · ${item.classroomName}`}
                                             status="upcoming"
-                                            onPress={() => { }}
+                                            onPress={() => navigation.navigate('Gradebook', {
+                                                classroomId: item.assignmentId,
+                                                classroomName: item.classroomName,
+                                            })}
                                         />
                                     ))}
                                 </VStack>

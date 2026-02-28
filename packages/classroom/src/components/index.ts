@@ -24,6 +24,8 @@ export { default as DashboardEcho } from './principal/DashboardEcho';
 export { default as CurriculumPulse } from './principal/CurriculumPulse';
 export { default as PulseDashboard } from './principal/PulseDashboard';
 export { default as TeacherFeedbackModal } from './teacher/TeacherFeedbackModal';
+export { default as MorningSituationalBrief } from './principal/MorningSituationalBrief';
+export { default as TeacherCarousel } from './principal/TeacherCarousel';
 export { default as TeacherAdminWidget } from './TeacherAdminWidget';
 export { default as PrincipalAdminWidget } from './PrincipalAdminWidget';
 export { default as NoSchoolOnboarding } from './NoSchoolOnboarding';
