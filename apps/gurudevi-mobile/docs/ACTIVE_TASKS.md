@@ -161,6 +161,141 @@ These are the features teachers will use daily. If they don't work reliably and 
 
 ---
 
+### T1.7 — Principal Dashboard: Comprehensive Redesign
+**What**: The current `PrincipalSchoolView` is a linear scroll of static number widgets. It needs to become a living command center that a principal actually uses every morning. The current state has: 4 stat number boxes, timetable widget (AI draft), PrincipalAdminWidget (3 action cards), ResourceNeedsDashboard, DashboardEcho, CurriculumPulse, and two action buttons (Manage Hierarchy, Invite Staff). What it is missing is everything that makes it uniquely valuable for a *principal* vs a teacher.
+
+**Why**: Principals drive school-wide adoption. If the principal loves the app, every teacher will use it. If the principal finds it thin, the whole school disengages. A principal's job is fundamentally different from a teacher's: they manage people, not classrooms. Their dashboard must reflect that. Currently the principal Classroom tab feels like a data viewer with no agency or depth.
+
+**The design (each section below is a distinct scrollable section, with a horizontal carousel where noted):**
+
+---
+
+#### Section 1 — Morning Situational Awareness ("The Briefing")
+*What the principal needs to know in the first 60 seconds of their day. Mirrors the teacher's PulseDashboard but for the whole school.*
+
+- **Staff Presence Strip**: Count of teachers present / absent / on-leave today. Tap → Staff Attendance screen.
+- **Student Attendance Pulse**: School-wide attendance rate today (%) with delta vs yesterday. Tap → drill into section/grade breakdown.
+- **Pending Approvals Badge**: Count of items waiting for principal action: leave requests + enrollment requests + resource requests. Tap → Approvals queue.
+- **Critical Echoes**: Count of unread high-priority feedback from DashboardEcho. Tap → Echo full screen.
+- **Data source**: `staff_attendance` table (T2.9), `attendance` table aggregated, `staff_leaves` + `enrollment_requests` + `school_echo_feedback`
+
+#### Section 2 — Teacher Carousel ("Your Faculty")
+*Horizontal scroll of teacher cards. Each card = one teacher. This is the principal's daily people check.*
+
+**Per teacher card** (compact, ~160px wide):
+- Name + subject tag
+- Today's status dot: 🟢 Present / 🔴 Absent / 🟡 On Leave
+- Mood indicator: last recorded mood from Self section (anonymized 1–5, shown as lotus petal fill — no number, preserves dignity)
+- Classes today: number of classes scheduled today
+- Tap → **Teacher Detail Sheet** (bottom sheet or push screen):
+  - Full attendance history (last 30 days)
+  - Classes they teach + current grades per class
+  - Lesson/assignment completion rate
+  - Principal's private observation notes (CRUD — new note → date-stamped entry)
+  - Historical mood trend (sparkline, no specific values — just pattern)
+  - Quick actions: Send recognition gift (Thuthimal), schedule observation visit, send direct message
+
+**Data source**: `staff_attendance`, `mood_logs` (aggregate, no raw values), `classrooms`, `users` (staff)
+
+#### Section 3 — Student Pulse ("The Learning Body")
+*Simpler than the teacher section — principals think in aggregates about students, not individuals (that's the teacher's job).*
+
+- **Attendance by Section**: Horizontal bar chart — each section (Primary/Junior/Senior) showing attendance %. Color-coded (green > 90%, amber 75–90%, red < 75%).
+- **Submission Rate**: % of assignments submitted school-wide this week. Delta vs last week.
+- **At-Risk Flags**: Count of students flagged as at-risk (criteria: attendance < 75% AND last grade < 50% AND mood logged as 1–2 in last 7 days). Tap → anonymized list with teacher assigned.
+- **New Enrollments Pending**: Badge count. Tap → approve/reject enrollment queue.
+- **Data source**: `attendance`, `submissions`, `mood_logs`, `grades`, `enrollment_requests`
+
+#### Section 4 — Principal's Eco ("Governance Logbook")
+*The equivalent of what teachers have in their Self section — a place for the principal to input observations, decisions, and notes. This is the principal's private professional record.*
+
+- **Observation Notes** (new entry button): Free-text notes after classroom walk-throughs. Date-stamped, tagged to teacher/classroom. Private to principal. List view of recent entries.
+- **Decision Journal**: Strategic decisions log — "What I decided, why, and what outcome I expect." This is `PRN-SLF-003` which the strategy doc marks 🟢 Complete but hasn't been surfaced in the Classroom tab.
+- **Staff Recognition** (quick action): One-tap to send a Thuthimal gratitude gift to a staff member. Feeds into the Thuthimal economy.
+- **Institutional Vision Note**: Editable card showing the current school manifesto + a "How are we living up to this today?" private reflection field.
+- **Data source**: New `principal_observations` table (schema: id, school_id, principal_id, teacher_id, classroom_id, content, type, created_at), `journal_entries` (shared with Self section), `thuthimal_gifts`
+
+#### Section 5 — Academic Overview ("The Pulse of Learning")
+*Aggregate trends over time — what the strategy doc calls "Analytical Deep-Dive" (PRN-SLF-021) and "Divisional Performance" (PRN-CLS-029).*
+
+- **Grade Trend Chart**: Line chart showing school-wide average grade over the last 3 terms. Per-section breakdown toggle.
+- **Syllabus Completion** (existing CurriculumPulse — keep it): Progress bars per grade/section.
+- **Assignment Submission Trend**: Weekly submission rate over last 8 weeks — is engagement going up or down?
+- **Attendance Trend**: Monthly attendance rate for staff + students. Are there seasonal dips?
+- **Filter**: Switch between "This Term", "Last 3 Months", "This Year".
+- **Data source**: `grades`, `submissions`, `attendance`, `lessons` (existing CurriculumPulse queries), aggregated on client or via Supabase edge function
+
+#### Section 6 — Inventory & Resources ("The Stewardship Center")
+*The principal as custodian of the school's physical and digital assets.*
+
+- **Inventory CRUD**: Full list of school assets with category (Books, Equipment, Furniture, Digital). Add / edit / mark as damaged / retire. Each item: name, category, quantity, condition, last updated.
+- **Teacher Resource Requests**: Queue of requests submitted by teachers (existing ResourceNeedsDashboard). Add approve/reject/order inline actions with a comment field.
+- **Low Stock Alerts**: Items below minimum threshold shown as red flags at top.
+- **Data source**: `inventory` table (exists), new `resource_requests` table or extension of existing `school_echo_feedback` with category=facility
+
+#### Section 7 — Admin Tasks ("The Governance Engine")
+*The paperwork and communications that are an unavoidable part of a principal's role in the Sri Lankan education system.*
+
+- **Circular Composer**: Draft and send school-wide announcements to all staff + students + parents (if parent module exists). Templates: Term Start, Exam Notice, Holiday, Event. Rich text + attach document.
+- **Report Generator**: One-tap generation of standard reports:
+  - Term Attendance Report (PDF): per class attendance summary
+  - Staff Attendance Report (PDF): monthly staff attendance
+  - Grade Distribution Report (PDF): school-wide performance
+  - Principal's Report to DoE (template-based): annual progress narrative
+- **Letters**: Template library for common letters — Admission Letter, Transfer Certificate, Character Certificate, Warning Letter. Fill-in-the-blank form → generate formatted letter → share/print.
+- **Pending Admin Queue**: Leave approvals + enrollment approvals + resource request approvals in one unified queue with approve/reject/delegate actions.
+- **Institutional Calendar**: Add/edit school events (term dates, exams, holidays, sports meets). Students and teachers see read-only version.
+- **Data source**: `announcements` table (exists), new `generated_reports` table, new `admin_letters` table (or PDF generation via Supabase edge function + expo-print), `institutional_calendar` table
+
+---
+
+**What the PM/architect adds beyond the user's request:**
+
+1. **Teacher Observation System** (Section 4): Principals walk into classrooms. They need to capture observations against specific teachers/classrooms immediately. No other LMS has a native mobile observation tool. This is a competitive differentiator.
+
+2. **At-Risk Student Flags** (Section 3): Cross-referencing attendance + grades + mood to surface at-risk students is uniquely possible with Gurudevi because we have all three data sources. No other Sri Lankan school tool does this. It turns the principal from reactive (waiting for teachers to escalate) to proactive.
+
+3. **Institutional Calendar** (Section 7): Every school needs a calendar. Currently missing entirely. It's the canonical source of truth for events that both staff and students reference.
+
+4. **Report Generator** (Section 7): Sri Lankan principals spend significant time generating reports for the Ministry of Education. If Gurudevi generates these automatically, it saves hours per term and creates real stickiness — principals *can't stop* using the app because their DoE reports depend on it.
+
+5. **Staff Mood as Anonymous Trend** (Section 2): Not visible as individual data, only as aggregate pattern. This is ethically correct *and* practically useful — a principal should know if staff morale is declining without knowing which individual is struggling. Preserves dignity, enables early intervention.
+
+6. **Communication Center** (Section 7): Parent communication is missing entirely from the current app. Even a simple "share circular to parents via WhatsApp" integration would serve a core Sri Lankan school need.
+
+---
+
+**Effort**: XL (2–3 weeks total — can be built in phases)
+**Phase order** (recommended):
+1. Section 1 (Morning Brief) + Section 2 (Teacher Carousel) — highest daily value, 3–4 days
+2. Section 3 (Student Pulse) + Section 4 (Eco/Observations) — 3–4 days
+3. Section 7 (Admin Tasks — circular + report generator) — 4–5 days, high stickiness
+4. Section 5 (Trends) + Section 6 (Inventory CRUD) — 3–4 days
+
+**DB migrations needed** (all new):
+- `staff_attendance` table: `(id, school_id, user_id, date, status: present|absent|leave, check_in_time, check_out_time)`
+- `principal_observations` table: `(id, school_id, principal_id, teacher_id, classroom_id, content, type: walkthrough|note|concern|praise, created_at)`
+- `generated_reports` table: `(id, school_id, type, period, url, created_at)`
+- `institutional_calendar` table: `(id, school_id, title, type, start_date, end_date, is_public)`
+- Extend `resource_requests` with `status: pending|approved|rejected|ordered` + `principal_comment`
+
+**Code to touch**:
+- `packages/classroom/src/screens/PrincipalSchoolView.tsx` — full redesign as scrollable sectioned view
+- New components in `packages/classroom/src/components/principal/`:
+  - `MorningSituationalBrief.tsx`
+  - `TeacherCarousel.tsx` + `TeacherDetailSheet.tsx`
+  - `StudentPulseSection.tsx`
+  - `PrincipalEcoSection.tsx` (observation notes + decision journal)
+  - `AcademicTrendsSection.tsx`
+  - `InventoryCRUD.tsx`
+  - `AdminTasksSection.tsx` (circulars + reports + letters + calendar)
+- `packages/core/src/api/` — new `staffAttendance.ts`, `principalObservations.ts`, `reportGenerator.ts`
+- Supabase migrations for new tables above
+
+**Owner**: Agent for architecture + component scaffolding. Human (Naveen) must approve: (a) teacher mood visibility design (dignity vs utility balance), (b) at-risk criteria definition, (c) report templates for Sri Lankan DoE format, (d) parent communication approach.
+
+---
+
 ## 🟠 TIER 2: Stickiness & Network Effects
 ### *What Makes Teachers Come Back After Week 1*
 
