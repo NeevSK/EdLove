@@ -10,11 +10,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useThemedColors } from '../hooks/useThemedColors';
 import { Theme } from '../theme/Theme';
+import { Box } from '../gluestack';
 
 interface LivingGlowProps extends ViewProps {
-    children: React.ReactNode;
+    children?: React.ReactNode;
     active?: boolean;
     duration?: number;
+    glowColor?: string;
+    size?: number;
 }
 
 /**
@@ -23,7 +26,15 @@ interface LivingGlowProps extends ViewProps {
  * Philosophy: Focal points in the Sanctuary should not be static. 
  * They should have a "Breath-like" pulse that signifies life.
  */
-export function LivingGlow({ children, active = true, duration = 2000, style, ...props }: LivingGlowProps) {
+export function LivingGlow({
+    children,
+    active = true,
+    duration = 2000,
+    glowColor,
+    size,
+    style,
+    ...props
+}: LivingGlowProps) {
     const colors = useThemedColors();
     const opacity = useSharedValue(0.4);
 
@@ -43,16 +54,17 @@ export function LivingGlow({ children, active = true, duration = 2000, style, ..
     }, [active, duration]);
 
     const animatedStyle = useAnimatedStyle(() => ({
-        shadowColor: colors.glow,
+        shadowColor: glowColor || colors.glow,
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: opacity.value,
-        shadowRadius: 10,
+        shadowRadius: size ? size / 4 : 10,
         elevation: active ? 5 : 0,
+        ...(size ? { width: size, height: size } : {})
     }));
 
     return (
         <Animated.View style={[animatedStyle, style]} {...props}>
-            {children}
+            {children || (size ? <Box sx={{ width: size, height: size, borderRadius: size / 2, backgroundColor: glowColor || colors.glow }} /> : null)}
         </Animated.View>
     );
 }

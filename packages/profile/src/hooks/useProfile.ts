@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useUserRole, useRewards, handleAPIError, useMutationQueue } from '@repo/core';
+import { useUserRole, useRewards, handleAPIError, useMutationQueue, supabase } from '@repo/core';
 import { profileAPI } from '../api/profile';
 import { UserProfile } from '../types';
 import { ProfileValidator } from '../lib/validator';
@@ -15,7 +15,7 @@ export function useProfile() {
     const fetchProfile = useCallback(async () => {
         try {
             setLoading(true);
-            const { data: { user } } = await import('@repo/core').then(m => m.supabase.auth.getUser());
+            const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
             const data = await profileAPI.getUserProfile(user.id);
@@ -27,7 +27,10 @@ export function useProfile() {
                 } as UserProfile);
             }
         } catch (error) {
-            handleAPIError(error);
+            // Only log if it's not the HMR client error
+            if (error?.message !== 'Expected HMRClient.setup() call at startup.') {
+                handleAPIError(error);
+            }
         } finally {
             setLoading(false);
             setRefreshing(false);

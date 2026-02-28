@@ -40,9 +40,8 @@ class RobustAsyncStorage implements StorageInterface {
                 }
             });
             this.initialized = true;
-            console.log('📦 Storage: Hydrated cache from AsyncStorage');
         } catch (e) {
-            console.error('📦 Storage Error during hydration:', e);
+            // Silently fail during hydration to avoid HMR issues, or defer to a safe time
         }
     }
 
@@ -96,7 +95,6 @@ let storageInstance: StorageInterface;
 const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
 if (isExpoGo) {
-    console.log('⚠️ Running in Expo Go: Defaulting to Robust AsyncStorage');
     storageInstance = new RobustAsyncStorage();
 } else {
     try {
@@ -105,9 +103,7 @@ if (isExpoGo) {
         storageInstance = new MMKV({
             id: 'gurudevi-storage',
         });
-        console.log('✅ MMKV initialized successfully (Speed Mode)');
     } catch (e) {
-        console.warn('⚠️ MMKV failed (Native module missing), using Robust AsyncStorage');
         storageInstance = new RobustAsyncStorage();
     }
 }

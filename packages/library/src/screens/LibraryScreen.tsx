@@ -20,8 +20,9 @@ import {
     SanctuaryButton,
     LivingGlow,
     HorizontalChipRow,
-    SanctuaryChip
+    SanctuaryChip,
 } from '@repo/ui';
+import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
 import AddResourceModal from '../components/AddResourceModal';
 import { ResourceList } from '../components/ResourceList';
@@ -44,6 +45,7 @@ import { LIBRARY_UI_CATEGORIES } from '../constants/categories'; // I'll need to
 
 export default function LibraryScreen() {
     const { t } = useTranslation();
+    const navigation = useNavigation<any>();
     const { role } = useUserRole();
     const { isGuest } = useRoleFeatures();
 
@@ -92,9 +94,31 @@ export default function LibraryScreen() {
         }
     };
 
-    const handleOpenResource = (url: string) => {
-        if (!url) return;
-        Linking.openURL(url).catch(err => console.error("Couldn't load page", err));
+    const handleOpenResource = (resource: LibraryResource) => {
+        if (!resource.url) return;
+
+        // Check for internal viewer support
+        if (resource.type === 'pdf') {
+            navigation.navigate('PDFViewer', {
+                resourceId: resource.id,
+                title: resource.title,
+                url: resource.url
+            });
+            return;
+        }
+
+        if (resource.type === 'video') {
+            navigation.navigate('VideoPlayer', {
+                resourceId: resource.id,
+                title: resource.title,
+                url: resource.url,
+                creator: resource.creator_name
+            });
+            return;
+        }
+
+        // Fallback to external linking for other types
+        Linking.openURL(resource.url).catch(err => console.error("Couldn't load page", err));
     };
 
     const chipData = useMemo(() => LIBRARY_UI_CATEGORIES.map(cat => ({
@@ -164,7 +188,7 @@ export default function LibraryScreen() {
                                 subjectTag={res.type}
                                 thumbnailUrl={res.thumbnailUrl}
                                 verified={true}
-                                onPress={() => handleOpenResource(res.url || '')}
+                                onPress={() => handleOpenResource(res)}
                                 onPullToDesk={() => removeFromDeskLocal(res.id)}
                             />
                         ))}
@@ -248,7 +272,7 @@ export default function LibraryScreen() {
             <Box sx={{ flex: 1, backgroundColor: colors.secondary }}>
                 <ResourceList
                     resources={resources}
-                    onOpenResource={(res) => handleOpenResource(res.url || '')}
+                    onOpenResource={(res) => handleOpenResource(res)}
                     onPullToDesk={(res) => console.log('Pull to desk', res.id)}
                     ListHeaderComponent={renderHeader()}
                     ListFooterComponent={isFetchingNextResources ? (

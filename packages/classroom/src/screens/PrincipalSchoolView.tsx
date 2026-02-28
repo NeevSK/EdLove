@@ -48,6 +48,7 @@ import {
     ResourceNeedsDashboard,
     DashboardEcho,
     CurriculumPulse,
+    PulseDashboard,
     PrincipalAdminWidget
 } from '../components';
 import RoleInitialState from '../components/RoleInitialState';
@@ -160,6 +161,9 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                                     </SanctuaryButton>
                                 </Box>
                             )}
+
+                            {/* Institutional Resonance Dashboard */}
+                            <PulseDashboard schoolId={schoolId} />
 
                             {/* Row 1: Students & Teachers */}
                             <HStack sx={{ gap: Theme.spacing.md }}>
@@ -387,6 +391,6 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
             />
 
             {/* CreateSchoolModal removed - now uses SchoolCreationScreen */}
-        </ScreenWrapper>
+        </ScreenWrapper >
     );
 }

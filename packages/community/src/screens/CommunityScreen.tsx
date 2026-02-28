@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect, useMemo } from 'react';
 import { RefreshControl, FlatList, ActivityIndicator } from 'react-native';
-import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, Theme, useBottomTabPadding, LotusPetalFAB, FadeInDown, HorizontalChipRow } from '@repo/ui';
+import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, Theme, useBottomTabPadding, LotusPetalFAB, FadeInDown, HorizontalChipRow, SanctuaryFlashList } from '@repo/ui';
 import Animated from 'react-native-reanimated';
 import PostCard from '../components/PostCard';
 import CreatePostModal from '../components/CreatePostModal';
@@ -172,9 +172,10 @@ export default function CommunityScreen() {
                 </Animated.View>
 
                 {activeTab === 'feed' ? (
-                    <FlatList
+                    <SanctuaryFlashList
                         data={listData}
                         keyExtractor={(item) => item.id}
+                        estimatedItemSize={Theme.listSizes.communityCard}
                         renderItem={({ item, index }) => (
                             <Animated.View entering={FadeInDown.duration(400).delay(index * 150).springify()}>
                                 <PostCard
@@ -195,24 +196,16 @@ export default function CommunityScreen() {
                                 {renderFeedFilterChips()}
                             </VStack>
                         }
-                        refreshControl={
-                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Theme.colors.sanctuarySaffron} />
-                        }
+                        onRefresh={onRefresh}
+                        refreshing={refreshing}
                         onEndReached={() => hasNextPosts && fetchNextPosts()}
                         onEndReachedThreshold={0.5}
                         ListFooterComponent={
                             isFetchingNextPosts ? (
-                                <ActivityIndicator style={{ marginVertical: 20 }} color={Theme.colors.sanctuarySaffron} />
+                                <ActivityIndicator style={{ marginVertical: Theme.spacing.md }} color={Theme.colors.sanctuarySaffron} />
                             ) : null
                         }
-                        contentContainerStyle={{ paddingBottom: bottomPadding + 80 }}
-                        ListEmptyComponent={
-                            !loading ? (
-                                <Box alignItems="center" justifyContent="center" py="$20">
-                                    <Text color={colors.textTertiary}>{t('community.feed.empty', 'No updates in this layer yet.')}</Text>
-                                </Box>
-                            ) : null
-                        }
+                        contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}
                     />
                 ) : (
                     <GroupsScreen

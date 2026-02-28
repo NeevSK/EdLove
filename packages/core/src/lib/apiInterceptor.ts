@@ -37,6 +37,11 @@ function mapErrorToMessage(error: any): string {
     if (code === '42P01') return "We couldn't find the requested section in our database.";
     if (code === '42501') return "Huh! You are a newbie aren't you?";
 
+    // Environment / Bootstrap Errors
+    if (message.includes('HMRClient')) {
+        return ''; // Silence these environment-level bootstrap errors
+    }
+
     // Default Fallback
     if (message.length > 0 && !message.includes('PostgreSQL')) {
         return message; // Keep custom messages if they aren't robotic DB notes
@@ -62,7 +67,7 @@ export function handleAPIError(error: any, silent = false) {
     // TODO: Track with Sentry
     // Sentry.captureException(error);
 
-    if (!silent) {
+    if (!silent && apiError.message) {
         useStore.getState().showToast(apiError.message, 'error');
     }
 

@@ -1,4 +1,4 @@
-import { UserRole } from '@repo/core';
+import { UserRole, SocialLink, StaffAttendance, StaffLeave } from '@repo/core';
 
 export interface ProfileStats {
     classes_taught?: number;
@@ -32,4 +32,5 @@ export interface UserProfile extends ProfileStats {
     experience_years?: number;
     subjects_taught?: string | string[];
     qualifications?: string | string[];
+    social_links?: SocialLink[];
 }

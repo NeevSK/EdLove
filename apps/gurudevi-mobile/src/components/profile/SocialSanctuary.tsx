@@ -1,0 +1,200 @@
+
+import React from 'react';
+import { View, StyleSheet, TouchableOpacity, Linking, Share } from 'react-native';
+import { Text, GlassCard, useTheme, Icon, SanctuaryCard } from '@repo/ui';
+import { useSocialLinks } from '@repo/profile';
+import { SocialLink, SocialPlatform } from '@repo/core';
+import {
+    Instagram,
+    Linkedin,
+    Facebook,
+    Twitter,
+    Github,
+    Globe,
+    Phone as WhatsApp,
+    ExternalLink,
+    Shield,
+    ShieldCheck,
+    ShieldAlert,
+    Share2
+} from 'lucide-react-native';
+
+interface SocialSanctuaryProps {
+    userId: string;
+    isOwnProfile: boolean;
+}
+
+const PLATFORM_ICONS: Record<SocialPlatform, any> = {
+    whatsapp: WhatsApp,
+    instagram: Instagram,
+    linkedin: Linkedin,
+    facebook: Facebook,
+    twitter: Twitter,
+    github: Github,
+    website: Globe,
+};
+
+const PRIVACY_ICONS = {
+    public: ShieldCheck,
+    particulars: Shield,
+    private: ShieldAlert,
+};
+
+export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnProfile }) => {
+    const { theme } = useTheme();
+    const { links, loading, deleteLink, updateLink } = useSocialLinks(userId);
+
+    const handlePress = async (link: SocialLink) => {
+        let url = link.url;
+        if (link.platform === 'whatsapp' && !url.startsWith('http')) {
+            // Handle whatsapp numbers
+            url = `https://wa.me/${url.replace(/[^0-9]/g, '')}`;
+        } else if (!url.startsWith('http')) {
+            url = `https://${url}`;
+        }
+
+        try {
+            const supported = await Linking.canOpenURL(url);
+            if (supported) {
+                await Linking.openURL(url);
+            }
+        } catch (error) {
+            console.error('Failed to open URL:', error);
+        }
+    };
+
+    const shareProfile = () => {
+        Share.share({
+            message: `Connect with me on Gurudevi!`,
+            url: `https://gurudevi.app/profile/${userId}`, // Deep link placeholder
+        });
+    };
+
+    if (loading) return null;
+
+    const visibleLinks = isOwnProfile
+        ? links
+        : links.filter(l => l.is_public && l.privacy_level !== 'private');
+
+    if (visibleLinks.length === 0 && !isOwnProfile) return null;
+
+    return (
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <Text variant="h3" style={styles.title}>Social Sanctuary</Text>
+                {isOwnProfile && (
+                    <TouchableOpacity onPress={shareProfile} style={styles.shareBtn}>
+                        <Share2 size={20} color={theme.colors.ink} />
+                    </TouchableOpacity>
+                )}
+            </View>
+
+            <View style={styles.linksContainer}>
+                {visibleLinks.map((link) => {
+                    const PlatformIcon = PLATFORM_ICONS[link.platform] || ExternalLink;
+                    const PrivacyIcon = PRIVACY_ICONS[link.privacy_level];
+
+                    return (
+                        <TouchableOpacity
+                            key={link.id}
+                            onPress={() => handlePress(link)}
+                            activeOpacity={0.7}
+                        >
+                            <GlassCard style={styles.linkCard}>
+                                <View style={styles.linkContent}>
+                                    <View style={[styles.platformIcon, { backgroundColor: theme.colors.primary + '20' }]}>
+                                        <PlatformIcon size={24} color={theme.colors.primary} />
+                                    </View>
+                                    <View style={styles.linkTextContainer}>
+                                        <Text variant="p2" weight="bold" style={styles.platformName}>
+                                            {link.platform.charAt(0).toUpperCase() + link.platform.slice(1)}
+                                        </Text>
+                                        <Text variant="p3" numberOfLines={1} style={styles.linkUrl}>
+                                            {link.url}
+                                        </Text>
+                                    </View>
+                                    {isOwnProfile && (
+                                        <View style={styles.privacyIndicator}>
+                                            <PrivacyIcon size={16} color={theme.colors.starlightGray} />
+                                        </View>
+                                    )}
+                                    <ExternalLink size={18} color={theme.colors.starlightGray} style={styles.arrowIcon} />
+                                </View>
+                            </GlassCard>
+                        </TouchableOpacity>
+                    );
+                })}
+
+                {isOwnProfile && visibleLinks.length === 0 && (
+                    <SanctuaryCard variant="outlined" style={styles.emptyCard}>
+                        <Text variant="p3" style={styles.emptyText}>
+                            No social links added yet. Add your WhatsApp, Instagram or LinkedIn to help others connect with you.
+                        </Text>
+                    </SanctuaryCard>
+                )}
+            </View>
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        marginVertical: 16,
+        paddingHorizontal: 4,
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    title: {
+        letterSpacing: 0.5,
+    },
+    shareBtn: {
+        padding: 8,
+    },
+    linksContainer: {
+        gap: 12,
+    },
+    linkCard: {
+        padding: 12,
+        borderRadius: 16,
+    },
+    linkContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    platformIcon: {
+        width: 44,
+        height: 44,
+        borderRadius: 12,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 12,
+    },
+    linkTextContainer: {
+        flex: 1,
+    },
+    platformName: {
+        marginBottom: 2,
+    },
+    linkUrl: {
+        opacity: 0.6,
+    },
+    privacyIndicator: {
+        marginRight: 8,
+    },
+    arrowIcon: {
+        opacity: 0.4,
+    },
+    emptyCard: {
+        padding: 20,
+        alignItems: 'center',
+        borderStyle: 'dashed',
+    },
+    emptyText: {
+        textAlign: 'center',
+        opacity: 0.6,
+    }
+});

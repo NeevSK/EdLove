@@ -31,7 +31,8 @@ import {
     SanctuaryCard,
     SanctuaryButton,
     useThemedColors,
-    LivingGlow
+    LivingGlow,
+    SanctuaryFlashList
 } from '@repo/ui';
 import { getMediaUrl, formatFileSize, formatDuration } from '@repo/core';
 import type { LibraryResource } from '../types';
@@ -91,21 +92,22 @@ export function ResourceList({
         setFlashPlayResource(null);
     }, []);
 
-    const renderItem = ({ item }: { item: LibraryResource }) => (
+    const renderItem = useCallback(({ item }: { item: LibraryResource }) => (
         <ResourceRow
             resource={item}
             onOpen={() => onOpenResource?.(item)}
             onFlashPlay={() => handleFlashPlay(item)}
             onPullToDesk={onPullToDesk ? () => onPullToDesk(item) : undefined}
         />
-    );
+    ), [onOpenResource, handleFlashPlay, onPullToDesk]);
 
     return (
         <Box sx={{ flex: 1 }}>
-            <FlatList
+            <SanctuaryFlashList
                 data={resources}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
+                estimatedItemSize={Theme.listSizes.resourceRow}
                 ListHeaderComponent={ListHeaderComponent}
                 ListFooterComponent={ListFooterComponent}
                 onEndReached={onEndReached}
@@ -113,7 +115,7 @@ export function ResourceList({
                 refreshing={refreshing}
                 onRefresh={onRefresh}
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 100 }}
+                contentContainerStyle={{ paddingBottom: Theme.spacing.xl }}
             />
 
             <FlashPlaySheet
@@ -154,9 +156,9 @@ function ResourceRow({ resource, onOpen, onFlashPlay, onPullToDesk }: ResourceRo
     ].filter(Boolean);
 
     return (
-        <Box sx={{ marginBottom: 8 }}>
+        <Box sx={{ marginBottom: Theme.spacing.sm }}>
             <SanctuaryCard onPress={onOpen}>
-                <HStack space="md" alignItems="center" sx={{ padding: 8 }}>
+                <HStack space="md" alignItems="center" sx={{ padding: Theme.spacing.sm }}>
                     {/* File Type Icon - Refined Glass Effect */}
                     <Box
                         sx={{
@@ -171,7 +173,7 @@ function ResourceRow({ resource, onOpen, onFlashPlay, onPullToDesk }: ResourceRo
                         }}
                     >
                         <Icon color={config.color} size={20} />
-                        <Text size="2xs" bold color={config.color} sx={{ marginTop: 2 }}>{config.label}</Text>
+                        <Text size="2xs" bold color={config.color} sx={{ marginTop: Theme.spacing.xs }}>{config.label}</Text>
                     </Box>
 
                     {/* Content */}
@@ -259,7 +261,7 @@ function FlashPlaySheet({ resource, onClose, onOpenFull }: FlashPlaySheetProps) 
                     <ActionsheetDragIndicator />
                 </ActionsheetDragIndicatorWrapper>
 
-                <VStack space="lg" p="$4" sx={{ width: '100%' }}>
+                <VStack space="lg" p={Theme.spacing.lg} sx={{ width: '100%' }}>
                     <HStack space="md" alignItems="center">
                         <Box
                             sx={{
@@ -284,7 +286,7 @@ function FlashPlaySheet({ resource, onClose, onOpenFull }: FlashPlaySheetProps) 
                     </HStack>
 
                     {resource.description ? (
-                        <Box sx={{ backgroundColor: Theme.colors.glass.dark.highlight, padding: 12, borderRadius: Theme.corners.comfortable }}>
+                        <Box sx={{ backgroundColor: Theme.colors.glass.dark.highlight, padding: Theme.spacing.md, borderRadius: Theme.corners.comfortable }}>
                             <Text color={Theme.colors.starlightGray} size="sm" sx={{ lineHeight: 20 }} numberOfLines={3}>
                                 {resource.description}
                             </Text>

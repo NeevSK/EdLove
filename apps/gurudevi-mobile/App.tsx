@@ -41,12 +41,6 @@ const queryClient = new QueryClient();
 // Navigation ref for imperative navigation outside React tree (deep links, auth callbacks)
 export const navigationRef = createNavigationContainerRef<any>();
 
-// Initialize Sentry & PostHog
-initSentry();
-initPostHog().then(() => {
-  trackEvent('app_initialized', { platform: Platform.OS });
-});
-
 // Root Stack for Modals
 const RootStack = createNativeStackNavigator();
 
@@ -59,6 +53,14 @@ function App() {
   const [showWelcome, setShowWelcome] = useState(true);
   const toast = useStore((state) => state.toast);
   const hideToast = useStore((state) => state.hideToast);
+
+  // Initialize analytics inside App component to avoid HMRClient setup issues at startup
+  useEffect(() => {
+    initSentry();
+    initPostHog().then(() => {
+      trackEvent('app_initialized', { platform: Platform.OS });
+    });
+  }, []);
 
   const { i18n } = useTranslation();
 

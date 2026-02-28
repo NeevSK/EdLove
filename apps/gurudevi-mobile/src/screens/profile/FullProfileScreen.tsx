@@ -3,6 +3,7 @@ import { ScrollView, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingVi
 import {
     Box,
     VStack,
+    HStack,
     Text,
     Heading,
     useThemedColors,
@@ -21,6 +22,8 @@ import { MapPin, Mail, Phone, Shield, Edit3, Check, X, User as UserIcon, FileTex
 import { hapticLight, hapticError } from '@repo/ui';
 import { supabase } from '@repo/core';
 import IdentityCard from '../../components/profile/IdentityCard';
+import { AddSocialLinkModal } from '../../components/profile/AddSocialLinkModal';
+import { StaffPresencePulse } from '../../components/profile/StaffPresencePulse';
 
 import Reanimated, {
     useSharedValue,
@@ -28,7 +31,7 @@ import Reanimated, {
     withTiming,
 } from 'react-native-reanimated';
 
-import { useProfile, EditableItem, UserProfile, useProfileCompletion, AvatarDisplay } from '@repo/profile';
+import { useProfile, EditableItem, UserProfile, useProfileCompletion, AvatarDisplay, ContactLinktree } from '@repo/profile';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ProfileStackParamList } from '../../types/navigation';
 
@@ -48,6 +51,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
     const completionResult = useProfileCompletion(profile, role ?? null);
     const [showCelebration, setShowCelebration] = useState(false);
     const [editingField, setEditingField] = useState<string | null>(null);
+    const [showSocialModal, setShowSocialModal] = useState(false);
 
     // Per-field edit state: { fieldKey: { value, saved, saving, error } }
     interface EditState {
@@ -309,6 +313,40 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                         </Box>
                     </Center>
 
+                    {/* Social Sanctuary */}
+                    <Center>
+                        <Box sx={{ width: CARD_WIDTH }}>
+                            <ContactLinktree
+                                links={profile.social_links || []}
+                                userName={profile.full_name}
+                                bio={profile.bio}
+                                isOwnProfile={true}
+                            />
+
+                            <TouchableOpacity
+                                onPress={() => setShowSocialModal(true)}
+                                style={styles.manageSocialsBtn}
+                            >
+                                <HStack space="sm" alignItems="center">
+                                    <Edit3 size={18} color={colors.action} />
+                                    <Text color={colors.action} bold>Manage Social Hub</Text>
+                                </HStack>
+                            </TouchableOpacity>
+                        </Box>
+                    </Center>
+
+                    {/* Professional Pulse (Staff Attendance) */}
+                    {['teacher', 'principal', 'grade_head', 'section_head'].includes(profile.role) && (
+                        <Center>
+                            <Box sx={{ width: CARD_WIDTH }}>
+                                <StaffPresencePulse
+                                    userId={profile.id}
+                                    schoolId={profile.school_id}
+                                />
+                            </Box>
+                        </Center>
+                    )}
+
                     {/* App Version Info */}
                     <Box alignItems="center" mt="$4">
                         <Text size="xs" color={colors.textTertiary}>
@@ -317,6 +355,12 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                     </Box>
                 </VStack>
             </ScrollView>
+
+            <AddSocialLinkModal
+                visible={showSocialModal}
+                onClose={() => setShowSocialModal(false)}
+                userId={profile.id}
+            />
 
             {/* Overlay rendered outside ScrollView — uses position:absolute internally */}
             <AchievementUnlockOverlay
@@ -337,5 +381,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: 'transparent',
     },
+    manageSocialsBtn: {
+        marginTop: 8,
+        padding: 12,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.1)',
+        alignItems: 'center',
+        borderStyle: 'dashed',
+    }
 });
 
