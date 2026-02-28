@@ -34,21 +34,24 @@ import {
     ClipboardCheck,
     GraduationCap,
     LayoutGrid,
+    NotebookPen,
     Plus
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { api, supabase } from '@repo/core';
 import type { Classroom } from '@repo/core';
 import { StudentList, GradebookTable, AttendanceView, InventoryView, ResourcesView } from '../components';
+import ClassroomNotes from '../components/ClassroomNotes';
 import LessonFeed from './LessonFeed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ClassroomStackParamList } from '@repo/core';
 
 type Props = NativeStackScreenProps<ClassroomStackParamList, 'ClassroomDetails'>;
 
-type FeatureId = 'students' | 'attendance' | 'gradebook' | 'lessons' | 'resources' | 'inventory';
+type FeatureId = 'notes' | 'students' | 'attendance' | 'gradebook' | 'lessons' | 'resources' | 'inventory';
 
 const ALL_FEATURES: { id: FeatureId; label: string; icon: any }[] = [
+    { id: 'notes', label: 'Notes', icon: NotebookPen },
     { id: 'students', label: 'Students', icon: Users },
     { id: 'attendance', label: 'Attendance', icon: ClipboardCheck },
     { id: 'gradebook', label: 'Gradebook', icon: GraduationCap },
@@ -61,7 +64,7 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
     const { classroomId, classroomName } = route.params;
     const { t } = useTranslation();
     const [classroom, setClassroom] = useState<Classroom | null>(null);
-    const [activeFeature, setActiveFeature] = useState<FeatureId>('students');
+    const [activeFeature, setActiveFeature] = useState<FeatureId>('notes');
     const [loading, setLoading] = useState(true);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const [students, setStudents] = useState<any[]>([]);
@@ -194,15 +197,19 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
             return true;
         });
     }, [isClassTeacher]);
-
-    useEffect(() => {
-        if (activeFeature === 'students' && students.length === 0 && classroomId) {
             api.classroomStudents.getAll(classroomId).then(setStudents).catch(console.error);
         }
     }, [activeFeature, classroomId]);
 
     const renderFeatureContent = () => {
         switch (activeFeature) {
+            case 'notes':
+                return (
+                    <ClassroomNotes
+                        classroomId={classroomId}
+                        isTeacher={isClassTeacher}
+                    />
+                );
             case 'students':
                 return (
                     <StudentList

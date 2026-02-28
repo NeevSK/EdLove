@@ -10,6 +10,7 @@ export * from './StaffLeave';
 export * from './Classroom';
 export * from './Student';
 export * from './TeacherNote';
+export * from './ClassroomNote';
 export * from './Task';
 export * from './Assignment';
 export * from './Resource';

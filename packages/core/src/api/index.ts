@@ -17,12 +17,14 @@ import { inventoryAPI } from './inventory';
 import { dailyContentAPI } from './dailyContent';
 import { communityAPI } from './community';
 import { thuthimalAPI } from './thuthimal';
+import { classroomNotesAPI } from './classroomNotes';
 
 
 export * from './mockData';
 export * from './types';
 export * from './thuthimal';
 export * from './resonantProxy';
+export * from './classroomNotes';
 
 // Simplified named exports for direct access
 export {
@@ -46,6 +48,7 @@ export {
     onboardingAPI,
     dailyContentAPI,
     thuthimalAPI,
+    classroomNotesAPI,
 };
 
 /**
@@ -76,6 +79,7 @@ export const api = {
     dailyContent: dailyContentAPI,
     thuthimal: thuthimalAPI,
     community: communityAPI,
+    classroomNotes: classroomNotesAPI,
 };
 
 export default api;
