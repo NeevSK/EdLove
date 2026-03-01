@@ -16,7 +16,7 @@ export async function openExternalURL(url: string): Promise<void> {
         if (typeof window !== 'undefined') {
             window.open(url, '_blank', 'noopener,noreferrer');
         }
-        // If window is undefined (e.g. SSR context), silently skip — no meaningful action possible
+        // If window is undefined (server-side rendering or non-browser environment), silently skip
         return;
     }
     try {

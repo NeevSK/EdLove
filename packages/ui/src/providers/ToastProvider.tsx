@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { Box, Text, VStack } from '../gluestack';
 import { Theme } from '../theme/Theme';
 import { useThemedColors } from '../hooks/useThemedColors';
@@ -23,6 +23,13 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const colors = useThemedColors();
     // Track the active timer so rapid showToast calls don't leave orphaned timers
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // Clear the pending dismiss timer on unmount to prevent state updates after unmount
+    useEffect(() => {
+        return () => {
+            if (timerRef.current !== null) clearTimeout(timerRef.current);
+        };
+    }, []);
 
     const showToast = useCallback(({ message, type = 'sanctuary', duration = 3000 }: ToastOptions) => {
         // Clear any in-flight dismiss timer before starting a fresh one
@@ -68,7 +75,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                         ...Theme.shadows.md
                     }}>
                         <VStack sx={{ alignItems: 'center', gap: 4 }}>
-                            <Text sx={{ color: '#FFFFFF', fontWeight: '700', textAlign: 'center' }}>
+                            <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '700', textAlign: 'center' }}>
                                 {getToastStyles(toast.type!).icon} {toast.message}
                             </Text>
                         </VStack>

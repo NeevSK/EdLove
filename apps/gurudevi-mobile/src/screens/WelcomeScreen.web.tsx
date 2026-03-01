@@ -27,13 +27,12 @@ import {
     useWindowDimensions,
     ScrollView,
     ActivityIndicator,
-    Linking,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { useTheme } from '@repo/ui';
 import { authAPI, handleAPIError } from '@repo/core';
-import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
+import { hapticLight, hapticSuccess, hapticError, openExternalURL } from '@repo/ui';
 import { LanguageUtils } from '../utils/LanguageUtils';
 import AuthScreen from './AuthScreen';
 
@@ -53,11 +52,11 @@ const STATS = [
 ];
 
 const PILLARS = [
-    { name: 'Self', emoji: '♥', color: '#D4843A' },
-    { name: 'Classroom', emoji: '🏫', color: '#8BBF7A' },
-    { name: 'Community', emoji: '🤝', color: '#6B6480' },
-    { name: 'Library', emoji: '📚', color: '#5F9EA0' },
-    { name: 'Profile', emoji: '🪪', color: '#D4843A' },
+    { name: 'Self',      emoji: '♥',  color: Theme.colors.sanctuarySaffron },
+    { name: 'Classroom', emoji: '🏫', color: Theme.colors.sageGreen },
+    { name: 'Community', emoji: '🤝', color: Theme.colors.shadowViolet },
+    { name: 'Library',   emoji: '📚', color: Theme.colors.skyBlue },
+    { name: 'Profile',   emoji: '🪪', color: Theme.colors.sanctuarySaffron },
 ];
 
 // Phase → gradient stop colours
@@ -305,7 +304,7 @@ function RightPanel({
                     <Pressable
                         onPress={(e) => {
                             e.stopPropagation();
-                            Linking.openURL('https://neevsk.org/privacy');
+                            openExternalURL('https://neevsk.org/privacy');
                         }}
                         accessibilityRole="link"
                         accessibilityLabel="Read Privacy Pact"

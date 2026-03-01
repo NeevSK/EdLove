@@ -126,13 +126,13 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile }: ContactL
         if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.share) {
             try {
                 await navigator.share({ title: `${userName} on Gurudevi`, url });
+                return; // Share succeeded — no clipboard needed
             } catch {
-                // Cancelled or unavailable — fall back to clipboard
-                try { await Clipboard.setStringAsync(url); } catch { /* ignore */ }
+                // User cancelled or Share unavailable — fall through to clipboard
             }
-        } else {
-            await Clipboard.setStringAsync(url);
         }
+        // Clipboard fallback (native path + web Share cancel/unavailable)
+        await Clipboard.setStringAsync(url).catch(() => { /* non-fatal */ });
     }, [userName]);
 
     const visibleLinks = isOwnProfile
