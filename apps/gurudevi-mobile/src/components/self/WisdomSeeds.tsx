@@ -18,12 +18,14 @@ import { supabase, useSafeMutation } from '@repo/core';
 import { WisdomNote } from '@repo/self';
 import { hapticLight, hapticSuccess, SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useWisdom } from '@repo/self';
+import { useNavigation } from '@react-navigation/native';
 
 interface WisdomSeedsProps {
   userId?: string;
 }
 
 export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
+  const navigation = useNavigation<any>();
   const { t } = useTranslation();
   // Resilient Data Hook
   const { notes, refreshData, isLoading } = useWisdom(userId);
@@ -84,7 +86,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
     return (
       <PositiveInvitation
         type="guest"
-        onAction={() => { }} // TODO: Navigate to Auth
+        onAction={() => navigation.navigate('Auth' as never)}
       />
     );
   }

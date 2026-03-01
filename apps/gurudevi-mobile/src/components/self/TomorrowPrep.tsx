@@ -16,6 +16,7 @@ import {
 } from '@repo/ui';
 import { Calendar, Plus, Trash2, Check } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 import { Theme } from '@repo/ui';
 import { supabase, useSafeMutation } from '@repo/core';
 import { DailyPrepItem } from '@repo/self';
@@ -27,6 +28,7 @@ interface TomorrowPrepProps {
 }
 
 export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
+  const navigation = useNavigation<any>();
   const { t } = useTranslation();
 
   // Resilient Data Hook
@@ -102,7 +104,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
     return (
       <PositiveInvitation
         type="guest"
-        onAction={() => { }} // TODO: Navigate to Auth
+        onAction={() => navigation.navigate('Auth' as never)}
       />
     );
   }

@@ -39,6 +39,7 @@ import { supabase, useSafeMutation } from '@repo/core';
 import { hapticLight, hapticMedium, SkeletonCard, SkeletonLoader, PositiveInvitation } from '@repo/ui';
 import { useJournal } from '@repo/self';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 
 interface FireJournalProps {
     userId?: string;
@@ -46,6 +47,7 @@ interface FireJournalProps {
 }
 
 export default function FireJournal({ userId, onBurned }: FireJournalProps) {
+    const navigation = useNavigation<any>();
     const [content, setContent] = useState('');
     const [isBurning, setIsBurning] = useState(false);
     // Use useJournal to keep cache in sync (even if not explicitly showing history)
@@ -271,7 +273,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
         return (
             <PositiveInvitation
                 type="guest"
-                onAction={() => { }} // TODO: Navigate to Auth
+                onAction={() => navigation.navigate('Auth' as never)}
             />
         );
     }
