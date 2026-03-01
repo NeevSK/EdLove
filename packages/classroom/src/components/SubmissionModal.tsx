@@ -25,7 +25,7 @@ import {
     Spinner,
     useTheme,
 } from '@repo/ui';
-import { Alert, Image } from 'react-native';
+import { Alert, Image, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { handleAPIError } from '@repo/core';
@@ -52,6 +52,7 @@ export default function SubmissionModal({
 
     const handlePickImage = async (useCamera: boolean = false) => {
         try {
+            // TODO: implement expo-image-picker; on web this is already supported
             Alert.alert(
                 t('submission.photoPlaceholder') || 'Photo Feature',
                 t('submission.photoPlaceholderDesc') ||
@@ -64,6 +65,7 @@ export default function SubmissionModal({
 
     const handleSubmit = async () => {
         if (!content.trim() && !photoUri) {
+            // Single-button info alert — on web use browser alert (no toast available here)
             Alert.alert(
                 t('submission.emptyWarning') || 'Empty Submission',
                 t('submission.emptyWarningDesc') ||
@@ -92,6 +94,15 @@ export default function SubmissionModal({
 
     const handleCancel = () => {
         if (content.trim() || photoUri) {
+            if (Platform.OS === 'web') {
+                // window.confirm is acceptable for a two-button destructive confirmation on web
+                if (window.confirm(t('submission.cancelWarningDesc') || 'Your work will be lost. Are you sure?')) {
+                    setContent('');
+                    setPhotoUri(null);
+                    onClose();
+                }
+                return;
+            }
             Alert.alert(
                 t('submission.cancelWarning') || 'Discard Changes?',
                 t('submission.cancelWarningDesc') ||

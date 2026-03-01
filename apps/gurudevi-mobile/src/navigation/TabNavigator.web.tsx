@@ -122,7 +122,6 @@ function WebSidebar({
 
     return (
         <View
-            accessibilityRole="navigation"
             accessibilityLabel="Main navigation sidebar"
             style={[
                 styles.sidebar,

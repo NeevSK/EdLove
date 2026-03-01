@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect, useMemo } from 'react';
-import { ScrollView, RefreshControl, Alert, Dimensions, Modal, TouchableOpacity } from 'react-native';
+import { ScrollView, RefreshControl, Alert, Dimensions, Modal, TouchableOpacity, Platform } from 'react-native';
 import {
     Box,
     VStack,
@@ -19,7 +19,7 @@ import {
     useEnvironment
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { useAccountDeletion, useTracking } from '@repo/core';
+import { useAccountDeletion, useTracking, useStore } from '@repo/core';
 import { hapticSuccess, hapticLight, hapticError } from '@repo/ui';
 import ProfileSkeleton from '../components/profile/ProfileSkeleton';
 import LivingJourneyPanel from '../components/profile/LivingJourneyPanel';
@@ -173,7 +173,9 @@ const SupportSection = ({ t, colors }: any) => (
     </Center>
 );
 
-const AppExperienceSection = ({ t, colors }: any) => (
+const AppExperienceSection = ({ t, colors }: any) => {
+    const showToast = useStore((state) => state.showToast);
+    return (
     <Center>
         <VStack
             sx={{
@@ -204,11 +206,15 @@ const AppExperienceSection = ({ t, colors }: any) => (
                 label={t('profile.loveApp', 'I love this app')}
                 onPress={() => {
                     hapticSuccess();
-                    Alert.alert(
-                        t('profile.loveTitle', 'Radiant Energy'),
-                        t('profile.loveMessage', 'Your love for the Sanctuary fuels our mission. We are grateful for your presence in our community!'),
-                        [{ text: t('common.ok', 'OK'), style: 'default' }]
-                    );
+                    if (Platform.OS === 'web') {
+                        showToast(t('profile.loveTitle', 'Radiant Energy'), 'success');
+                    } else {
+                        Alert.alert(
+                            t('profile.loveTitle', 'Radiant Energy'),
+                            t('profile.loveMessage', 'Your love for the Sanctuary fuels our mission. We are grateful for your presence in our community!'),
+                            [{ text: t('common.ok', 'OK'), style: 'default' }]
+                        );
+                    }
                 }}
             />
             <ProfileListItem
@@ -216,16 +222,21 @@ const AppExperienceSection = ({ t, colors }: any) => (
                 label={t('profile.helpSupportApp', 'I want to support this app')}
                 onPress={() => {
                     hapticSuccess();
-                    Alert.alert(
-                        t('profile.thankYouTitle', 'Radiant Gratitude'),
-                        t('profile.thankYouMessage', 'Your desire to support the Sanctuary is deeply appreciated. We are currently preparing premium patronage options for our most dedicated explorers.'),
-                        [{ text: t('common.ok', 'OK'), style: 'default' }]
-                    );
+                    if (Platform.OS === 'web') {
+                        showToast(t('profile.thankYouTitle', 'Radiant Gratitude'), 'success');
+                    } else {
+                        Alert.alert(
+                            t('profile.thankYouTitle', 'Radiant Gratitude'),
+                            t('profile.thankYouMessage', 'Your desire to support the Sanctuary is deeply appreciated. We are currently preparing premium patronage options for our most dedicated explorers.'),
+                            [{ text: t('common.ok', 'OK'), style: 'default' }]
+                        );
+                    }
                 }}
             />
         </VStack>
     </Center>
-);
+    );
+};
 
 const AccountActions = ({ t, colors, isGuest, navigation }: any) => {
     if (isGuest) return null;
@@ -331,6 +342,7 @@ export default function ProfileScreen() {
     const [isSettingsVisible, setSettingsVisible] = useState(false);
     const { deleteAccount, isDeleting } = useAccountDeletion();
     const { discoverFeature } = useTracking();
+    const showToast = useStore((state) => state.showToast);
 
     // --- Shake Animation Logic ---
     const bannerShake = useSharedValue(0);
@@ -380,11 +392,15 @@ export default function ProfileScreen() {
             setDeleteModalVisible(false);
         } catch (error) {
             hapticError();
-            Alert.alert(
-                t('profile.deleteFailedTitle', 'Deletion Failed'),
-                t('profile.deleteFailedMessage', 'We could not delete your account. Please try again later.'),
-                [{ text: 'OK' }]
-            );
+            if (Platform.OS === 'web') {
+                showToast(t('profile.deleteFailedTitle', 'Deletion Failed'), 'error');
+            } else {
+                Alert.alert(
+                    t('profile.deleteFailedTitle', 'Deletion Failed'),
+                    t('profile.deleteFailedMessage', 'We could not delete your account. Please try again later.'),
+                    [{ text: 'OK' }]
+                );
+            }
         }
     };
 

@@ -35,6 +35,7 @@ yarn-error.log*
 
 # Misc
 *.txt
+!**/public/robots.txt
 .DS_Store
 *.pem
 .claude/settings.local.json

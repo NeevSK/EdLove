@@ -1,0 +1,12 @@
+# Gurudevi — robots.txt
+# https://app.gurudevi.edlove.org
+
+User-agent: *
+Allow: /
+
+# Block auth callback and API paths from indexing
+Disallow: /auth/callback
+Disallow: /qr
+Disallow: /thuthimal
+
+Sitemap: https://app.gurudevi.edlove.org/sitemap.xml
