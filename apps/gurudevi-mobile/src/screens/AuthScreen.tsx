@@ -90,7 +90,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
             provider,
             options: {
                 redirectTo: Platform.OS === 'web'
-                    ? window.location.href
+                    ? window.location.origin   // base URL only — avoids leaking current path/query params
                     : 'gurudevi://auth/callback',
                 queryParams: onboardingData ? {
                     full_name: onboardingData.name,
@@ -329,6 +329,8 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                                     value={email}
                                     onChangeText={setEmail}
                                     keyboardType="email-address"
+                                    autoComplete="email"
+                                    textContentType="emailAddress"
                                     returnKeyType="next"
                                     onSubmitEditing={() => passwordRef.current?.focus()}
                                     blurOnSubmit={false}
@@ -342,6 +344,8 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                                     value={password}
                                     onChangeText={setPassword}
                                     secureTextEntry
+                                    autoComplete={isSignUp ? 'new-password' : 'current-password'}
+                                    textContentType={isSignUp ? 'newPassword' : 'password'}
                                     returnKeyType="go"
                                     onSubmitEditing={handleAuth}
                                 />

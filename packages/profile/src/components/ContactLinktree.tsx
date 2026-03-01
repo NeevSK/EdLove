@@ -17,7 +17,8 @@ import {
     SanctuaryButton,
     useThemedColors,
     LivingGlow,
-    FadeInDown
+    FadeInDown,
+    openExternalURL,
 } from '@repo/ui';
 import {
     Phone,
@@ -29,10 +30,12 @@ import {
     MessagesSquare,
     ShieldCheck,
     Shield,
-    ShieldAlert
+    ShieldAlert,
+    Link
 } from 'lucide-react-native';
 import Animated from 'react-native-reanimated';
 import { SocialLink } from '@repo/core';
+import * as Clipboard from 'expo-clipboard';
 
 interface ContactLinktreeProps {
     links: SocialLink[];
@@ -93,12 +96,21 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile }: ContactL
         if (!config) return;
 
         const uri = config.getUri(value);
-        const supported = await Linking.canOpenURL(uri);
 
+        if (Platform.OS === 'web') {
+            // On web, always open in a new tab — never replace the running app
+            const webUrl = uri.startsWith('http') ? uri
+                : uri.startsWith('whatsapp://') ? `https://wa.me/${value.replace(/\D/g, '')}`
+                : null;
+            if (webUrl) { openExternalURL(webUrl); }
+            return;
+        }
+
+        const supported = await Linking.canOpenURL(uri);
         if (supported) {
             await Linking.openURL(uri);
         } else {
-            // Fallback for web or if app not installed
+            // Fallback if app not installed
             if (uri.startsWith('whatsapp://')) {
                 await Linking.openURL(`https://wa.me/${value.replace(/\D/g, '')}`);
             } else if (!uri.startsWith('http')) {
@@ -106,6 +118,22 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile }: ContactL
             }
         }
     }, []);
+
+    const handleCopyProfileLink = useCallback(async () => {
+        const url = typeof window !== 'undefined'
+            ? window.location.href
+            : `https://app.gurudevi.edlove.org`;
+        if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.share) {
+            try {
+                await navigator.share({ title: `${userName} on Gurudevi`, url });
+                return; // Share succeeded — no clipboard needed
+            } catch {
+                // User cancelled or Share unavailable — fall through to clipboard
+            }
+        }
+        // Clipboard fallback (native path + web Share cancel/unavailable)
+        await Clipboard.setStringAsync(url).catch(() => { /* non-fatal */ });
+    }, [userName]);
 
     const visibleLinks = isOwnProfile
         ? links
@@ -140,6 +168,17 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile }: ContactL
                     <Text size="sm" color={colors.textSecondary} textAlign="center" sx={{ paddingHorizontal: Theme.spacing.xl }}>
                         {bio}
                     </Text>
+                )}
+                {/* Copy/Share profile link — visible on web always, on native only for own profile */}
+                {(Platform.OS === 'web' || isOwnProfile) && (
+                    <SanctuaryButton
+                        size="sm"
+                        variant="outline"
+                        onPress={handleCopyProfileLink}
+                        leftIcon={Link}
+                    >
+                        {Platform.OS === 'web' ? 'Share Profile Link' : 'Copy Profile Link'}
+                    </SanctuaryButton>
                 )}
             </VStack>
 

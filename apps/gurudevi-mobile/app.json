@@ -67,8 +67,7 @@
       "lang": "en",
       "display": "standalone",
       "themeColor": "#D4843A",
-      "backgroundColor": "#F5EDD6",
-      "description": "A sacred space for teachers — wellbeing, classroom, and community."
+      "backgroundColor": "#F5EDD6"
     },
     "extra": {
       "eas": {

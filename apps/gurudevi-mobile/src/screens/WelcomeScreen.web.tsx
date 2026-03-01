@@ -27,13 +27,12 @@ import {
     useWindowDimensions,
     ScrollView,
     ActivityIndicator,
-    Linking,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { useTheme } from '@repo/ui';
 import { authAPI, handleAPIError } from '@repo/core';
-import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
+import { hapticLight, hapticSuccess, hapticError, openExternalURL } from '@repo/ui';
 import { LanguageUtils } from '../utils/LanguageUtils';
 import AuthScreen from './AuthScreen';
 
@@ -47,29 +46,29 @@ const LANGUAGES = [
 ];
 
 const STATS = [
-    { value: '500+', label: 'Teachers' },
-    { value: '20k+', label: 'Students' },
-    { value: '150+', label: 'Schools' },
+    { value: 'Teacher', label: 'First' },
+    { value: 'Care', label: 'Mission' },
+    { value: 'LK', label: 'Home' },
 ];
 
 const PILLARS = [
-    { name: 'Self', emoji: '♥', color: '#D4843A' },
-    { name: 'Classroom', emoji: '🏫', color: '#8BBF7A' },
-    { name: 'Community', emoji: '🤝', color: '#6B6480' },
-    { name: 'Library', emoji: '📚', color: '#5F9EA0' },
-    { name: 'Profile', emoji: '🪪', color: '#D4843A' },
+    { name: 'Self',      emoji: '♥',  color: Theme.colors.sanctuarySaffron },
+    { name: 'Classroom', emoji: '🏫', color: Theme.colors.sageGreen },
+    { name: 'Community', emoji: '🤝', color: Theme.colors.shadowViolet },
+    { name: 'Library',   emoji: '📚', color: Theme.colors.skyBlue },
+    { name: 'Profile',   emoji: '🪪', color: Theme.colors.sanctuarySaffron },
 ];
 
-// Phase → gradient stop colours
+// Phase → gradient stop colours — mapped to Theme tokens (circadian identity, no raw hex)
 const PHASE_GRADIENT: Record<string, [string, string]> = {
-    predawn: ['#1A1610', '#2A2318'],
-    dawn: ['#FAF3E0', '#F5EDD6'],
-    morning: ['#F5EDD6', '#FAF7ED'],
-    midday: ['#FAF7ED', '#F0EBD8'],
-    afternoon: ['#F5EDD6', '#FAF3E0'],
-    evening: ['#F0E8D0', '#E8DFC8'],
-    dusk: ['#2A2318', '#3D3528'],
-    night: ['#1A1610', '#2A2318'],
+    predawn:   [Theme.colors.obsidian,    Theme.colors.ink],
+    dawn:      [Theme.colors.dawnWhite,   Theme.colors.vellum],
+    morning:   [Theme.colors.vellum,      Theme.colors.silk],
+    midday:    [Theme.colors.silk,        Theme.colors.linen],
+    afternoon: [Theme.colors.vellum,      Theme.colors.dawnWhite],
+    evening:   [Theme.colors.eveningWarm, Theme.colors.linen],
+    dusk:      [Theme.colors.ink,         Theme.colors.shroud],
+    night:     [Theme.colors.obsidian,    Theme.colors.ink],
 };
 
 // ─────────────────────────────────────────────
@@ -305,7 +304,7 @@ function RightPanel({
                     <Pressable
                         onPress={(e) => {
                             e.stopPropagation();
-                            Linking.openURL('https://neevsk.org/privacy');
+                            openExternalURL('https://neevsk.org/privacy');
                         }}
                         accessibilityRole="link"
                         accessibilityLabel="Read Privacy Pact"

@@ -15,12 +15,14 @@ import { supabase, useSafeMutation } from '@repo/core';
 import { EnergyForecast as EnergyForecastType } from '@repo/self';
 import { hapticLight, hapticSuccess, SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useEnergyForecast } from '@repo/self';
+import { useNavigation } from '@react-navigation/native';
 
 interface EnergyForecastProps {
   userId?: string;
 }
 
 export default function EnergyForecast({ userId }: EnergyForecastProps) {
+  const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const colors = useThemedColors();
 
@@ -92,7 +94,7 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
     return (
       <PositiveInvitation
         type="guest"
-        onAction={() => { }} // TODO: Navigate to Auth
+        onAction={() => navigation.navigate('Auth' as never)}
       />
     );
   }

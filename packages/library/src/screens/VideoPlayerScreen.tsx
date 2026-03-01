@@ -49,7 +49,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
 
     const onPlaybackStatusUpdate = useCallback((status: AVPlaybackStatus) => {
         if (!status.isLoaded) {
-            if (status.error) setHasError(true);
+            if ((status as { error?: string }).error) setHasError(true);
             return;
         }
         setIsPlaying(status.isPlaying);

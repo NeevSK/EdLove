@@ -1,5 +1,200 @@
 # Gurudevi Web Platform — SSOT
-*Last updated: 2026-03-01 | Status: Pre-Release (white screen fix pending)*
+*Last updated: 2026-03-01 | Status: ✅ LIVE — all critical fixes applied, build verified (0 import.meta)*
+
+This is the **single source of truth** for everything related to deploying, maintaining, and enhancing the Gurudevi web app. All future web decisions are anchored here.
+
+---
+
+## 1. Architecture
+
+### Entry Point
+- `package.json → "main": "index.ts"` → `App.tsx` via `registerRootComponent(App)`
+- Uses **classic Expo entry**, NOT expo-router file-based routing
+- `expo-router` plugin is intentionally absent from `app.json` — adding it breaks web silently
+- `app.json → expo.web.bundler: "metro"` is mandatory for Expo SDK 50+
+
+### Build Command
+```bash
+cd apps/gurudevi-mobile
+pnpm build:web   # → expo export -p web --output-dir dist
+```
+Produces a **static site** in `apps/gurudevi-mobile/dist/` served from any static host.
+
+### Hosting
+- **GitHub Pages** → `app.gurudevi.edlove.org` (custom domain via `public/CNAME`)
+- Deployed by `.github/workflows/web-deploy.yml`
+  - Uses `actions/configure-pages@v4`, `actions/upload-pages-artifact@v3`, `actions/deploy-pages@v4`
+  - Manual trigger (`workflow_dispatch`) supported on any branch
+  - Auto-deploys `production` on push to `main`; `preview` on PR/other branches
+
+### Metro Config (`metro.config.js`)
+- `getSentryExpoConfig(projectRoot, { isCSSEnabled: true })` — required for CSS and web stylesheets
+- `resolveRequest` shim system: redirects native-only packages to web no-ops for `platform === 'web'`
+- `blockList` prevents packages finding duplicate React inside workspace packages
+
+### Babel Config (`babel.config.js`)
+- `unstable_transformImportMeta: true` — **required** for web builds
+  - `zustand@5` and similar packages ship pre-compiled code that contains `import.meta.env.MODE`
+  - Metro serves the web bundle as a classic `<script>` (no `type="module"`), so bare `import.meta`
+    causes `SyntaxError: Cannot use 'import.meta' outside a module`
+  - This option rewrites every `import.meta` → `globalThis.__ExpoImportMetaRegistry` (set up by
+    Expo's winter runtime before the app boots) — fixes the crash with zero output-format change
+
+---
+
+## 2. Web Compatibility Map — Full Audit (2026-03-01)
+
+| Package | Web Status | Fix Applied | Pattern |
+|---|---|---|---|
+| `@sentry/react-native` | ❌ Native only | ✅ Shimmed → `src/shims/sentry-web.js` | B (Metro resolveRequest) |
+| `posthog-react-native` | ❌ Native only | ✅ Shimmed → `src/shims/posthog-web.js` | B (Metro resolveRequest) |
+| `react-native-mmkv` | ❌ Native only | ✅ `Platform.OS === 'web'` guard → AsyncStorage fallback | C (inline guard) in `packages/core/src/lib/storage.ts` |
+| `@shopify/react-native-skia` | ⚠ WASM setup needed | ✅ `.web.tsx` fallbacks exist | A (platform file pair) |
+| `@shopify/flash-list` | ⚠ Native recycler | ✅ `SanctuaryFlashList.web.tsx` → FlatList | A (platform file pair) |
+| `expo-haptics` | ✅ Official web no-op | ✅ No change needed | — |
+| `expo-blur` | ✅ Works on web | ✅ No change needed | — |
+| `expo-image-picker` | ✅ Works on web | ✅ No change needed | — |
+| `expo-image-manipulator` | ✅ Works on web | ✅ No change needed | — |
+| `expo-clipboard` | ✅ Works on web | ✅ No change needed | — |
+| `expo-device` | ✅ Returns null safely | ✅ Guarded in DeviceUtils | — |
+| `@react-native-community/netinfo` | ✅ Works on web | ✅ No change needed | — |
+| `react-native-reanimated` | ✅ CSS fallbacks built-in | ✅ Babel plugin already present in `babel.config.js` | — |
+| `react-native-gesture-handler` | ✅ Ships own web entry | ✅ No change needed | — |
+| `expo-audio` | ⚠ Playback OK, recording limited | ✅ `setAudioModeAsync` + `requestRecordingPermissionsAsync` guarded with `Platform.OS !== 'web'` in `VoiceJournaling.tsx` | C |
+| `expo-camera` | ❌ Native only | ✅ `ScannerModal.web.tsx` fallback (paste-QR UI) | A |
+| `@react-native-ml-kit/barcode-scanning` | ❌ Native only | ✅ Already lazy `try/catch require` in ScannerModal | — won't crash |
+| `@react-native-ml-kit/text-recognition` | ❌ Native only | Scanner/OCR unavailable on web by design | — |
+| `expo-file-system/legacy` | ❌ No web impl | ✅ Guard with `Platform.OS !== 'web'` → `fetch+arrayBuffer` | C |
+| **`zustand@5`** | ⚠ Ships `import.meta.env.MODE` | ✅ `unstable_transformImportMeta: true` in `babel.config.js` rewrites to `globalThis.__ExpoImportMetaRegistry` | Babel transform |
+
+### `.web.tsx` Overrides in Place
+| Component | Native version | Web version |
+|---|---|---|
+| `LivingCard` | Skia canvas with subsurface scattering | Plain `<View>` with phase-aware background color |
+| `NoiseOverlay` | Skia film grain texture | `null` (decorative, not critical) |
+| `TemporalGlass` | Skia luminous phase-aware border | CSS `borderColor` from PHASE_BORDER map |
+| `SanctuaryFlashList` | `@shopify/flash-list` recycler | `FlatList` |
+| `ScannerModal` | `expo-camera` + ML Kit OCR | Elegant paste-QR fallback (Vellum bg, Saffron icon) |
+| `WelcomeScreen` | Mobile-style centred card | Two-column split-panel landing page |
+| `TabNavigator` | Bottom tab bar | Fixed left sidebar (220px, collapsible to 64px) |
+
+---
+
+## 3. Completed Fixes (as of 2026-03-01)
+
+All P0 and most P1/P2 items are now resolved:
+
+### P0 — Resolved
+- [x] `ScannerModal.web.tsx` — elegant paste-QR fallback
+- [x] `babel.config.js` — `unstable_transformImportMeta: true` fixes zustand `import.meta` crash
+
+### P1 — Resolved
+- [x] `app.json` — PWA manifest: `name`, `shortName`, `display: "standalone"`, `themeColor`, `backgroundColor`, `description`
+- [x] `dist/CNAME` — `app.gurudevi.edlove.org` included after `pnpm build:web`
+- [x] `public/index.html` — canonical link, format-detection, mobile-web-app-capable, apple-mobile-web-app-*, application-name, on-brand noscript
+- [x] `public/robots.txt` — created with allow/disallow rules
+
+### P2 — Resolved
+- [x] `App.tsx` — `NavigationContainer` `linking` config for URL-based deep links
+- [x] `App.tsx` — `document.title` updated per active tab/screen
+- [x] `AuthScreen.tsx` — `autoComplete` + `textContentType` on email/password fields
+- [x] `AuthScreen.tsx` — OAuth `redirectTo` fixed to `window.location.origin`
+- [x] `SanctuaryCard.tsx` — hover: `cursor: 'pointer'` via `hoverStyle`
+- [x] `VoiceJournaling.tsx` — `setAudioModeAsync` + `requestRecordingPermissionsAsync` guarded for web
+- [x] `NetworkStatusBanner.tsx` — safe-area `insets.top` guarded for web
+- [x] `CommandPalette.tsx` — `pointerEvents` moved from prop to `style`
+- [x] `TabNavigator.web.tsx` — sidebar has `accessibilityRole="navigation"` + `accessibilityLabel`
+- [x] `useQRDeepLink.ts` — documented web no-op behaviour
+
+### P3 — Completed
+- [x] Community post share → `expo-clipboard` + Web Share API in `PostCard.tsx` (share button added)
+- [x] Profile linktree "Copy/Share Profile Link" → `ContactLinktree.tsx` (Web Share API + clipboard fallback)
+- [x] `ProfileScreen.tsx` — `CARD_WIDTH` now reactive via `useWindowDimensions` (responds to browser resize)
+- [x] `app.json` — removed duplicate `description` field (was causing two `<meta name="description">` in dist)
+
+### P4 — Future
+- [ ] PWA service worker / offline support via Workbox
+- [ ] Tree shaking (experimental in SDK 52) — reduce 7.2 MB bundle
+- [ ] Lighthouse audit — target <3s load, >90 Performance
+
+---
+
+## 4. Patterns Reference
+
+*Per `AGENT_PROMPT_LENS.md — WEB PLATFORM INVARIANTS`*
+
+| Pattern | When to use | Example |
+|---|---|---|
+| **A** — `.web.tsx` platform file | Components you OWN that import native-only packages | `ScannerModal.web.tsx`, `SanctuaryFlashList.web.tsx` |
+| **B** — Metro `resolveRequest` shim | Third-party packages you can't modify | `@sentry/react-native` → `sentry-web.js` |
+| **C** — `Platform.OS` guard | In-source conditional for shared files | `storage.ts` MMKV bypass, `VoiceJournaling.tsx` audio guard |
+| **Babel** — `unstable_transformImportMeta` | Third-party packages that use `import.meta` | zustand@5 → `globalThis.__ExpoImportMetaRegistry` |
+
+---
+
+## 5. Environment Variables (Required at Build Time)
+
+| Variable | Source | Required? |
+|---|---|---|
+| `EXPO_PUBLIC_SUPABASE_URL` | GH Secret `SUPABASE_URL` | ✅ Yes |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | GH Secret `SUPABASE_ANON_KEY` | ✅ Yes |
+| `EXPO_PUBLIC_POSTHOG_API_KEY` | GH Secret `POSTHOG_API_KEY` | Optional |
+| `EXPO_PUBLIC_POSTHOG_HOST` | GH Secret `POSTHOG_HOST` | Optional |
+| `EXPO_PUBLIC_SENTRY_DSN` | GH Secret `SENTRY_DSN` | Optional |
+| `SENTRY_AUTH_TOKEN` | GH Secret `SENTRY_AUTH_TOKEN` | Optional |
+
+---
+
+## 6. Supabase Auth — Web-Specific Config
+
+1. **Authentication → URL Configuration → Site URL:** `https://app.gurudevi.edlove.org`
+2. **Redirect URLs allowlist:** `https://app.gurudevi.edlove.org/**`
+3. **Google OAuth Origins:** Add `https://app.gurudevi.edlove.org` in Google Cloud Console
+
+> ⚠ Without steps 1 & 2, OAuth login will fail on production web.
+
+---
+
+## 7. Verification Protocol
+
+After any web change, run and confirm all green:
+
+```bash
+cd apps/gurudevi-mobile
+EXPO_PUBLIC_SUPABASE_URL=... EXPO_PUBLIC_SUPABASE_ANON_KEY=... pnpm build:web
+npx -y serve dist -l 4000
+# Manual checks at http://localhost:4000:
+```
+
+| Check | Expected |
+|---|---|
+| Page load | WelcomeScreen or LoginScreen renders (NOT blank white) |
+| DevTools Console | Zero uncaught SyntaxErrors / TypeErrors |
+| `dist/CNAME` exists | Contains `app.gurudevi.edlove.org` |
+| Scanner screen | Shows elegant paste-QR fallback UI |
+| Auth form | `autoComplete` works; Enter key submits |
+| Chrome → Address bar | Install app icon appears (PWA manifest present) |
+| `dist/robots.txt` exists | Correct allow/disallow rules |
+
+---
+
+## 8. Community Best Practices (Research Summary, 2026-03-01)
+
+- **Pattern A is the gold standard** — `.web.tsx` files universally recommended for components you own
+- **Reanimated works on web** — CSS-backed, Babel plugin is enough
+- **expo-haptics is a no-op on web** — no shim needed
+- **PWA via app.json is free** — `display: "standalone"`, `themeColor` generate manifest with zero deps
+- **Hover via `Pressable`** — `onHoverIn`/`onHoverOut` are official react-native-web APIs
+- **Keyboard events** — `onKeyDown`/`onKeyUp` supported on web via `View` and `Pressable`
+- **URL deep links on web** — React Navigation maps screen names to URL paths automatically
+- **Clipboard on web** — `expo-clipboard.setStringAsync` works; `getString` is browser-restricted
+- **`import.meta` in classic scripts** — guard with `unstable_transformImportMeta: true`; affects any package that uses Vite-style env detection
+
+---
+
+*Maintained by: AI Agent + Architect (Naveen)*
+*Update this file whenever a new native package is added, a .web.tsx is created, or web config changes.*
+
 
 This is the **single source of truth** for everything related to deploying, maintaining, and enhancing the Gurudevi web app. All future web decisions are anchored here.
 

@@ -108,7 +108,14 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                     <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                         <Text sx={{ fontWeight: '700' }}>Pending Requests ({pendingMembers.length})</Text>
                         {pendingMembers.length > 0 && (
-                            <Pressable onPress={() => communityAPI.approveAllPending(groupId).then(loadData)}>
+                            <Pressable
+                                onPress={() =>
+                                    communityAPI.approveAllPending(groupId)
+                                        .then(loadData)
+                                        .catch(() => { /* non-fatal — individual approve buttons remain available */ })
+                                }
+                                accessibilityLabel="Approve all pending requests"
+                            >
                                 <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '600' }}>Approve All</Text>
                             </Pressable>
                         )}
@@ -151,15 +158,17 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                     <HStack sx={{ gap: Theme.spacing.sm }}>
                                         <Pressable
                                             onPress={() => handleApproval(request.user_id, 'rejected')}
-                                            sx={{ padding: 10, borderRadius: 50, backgroundColor: '#EF444420' }}
+                                            accessibilityLabel={`Reject ${request.user?.full_name ?? 'member'}`}
+                                            sx={{ padding: 10, borderRadius: 50, backgroundColor: `${colors.error}20` }}
                                         >
-                                            <UserX size={20} color="#EF4444" />
+                                            <UserX size={20} color={colors.error} />
                                         </Pressable>
                                         <Pressable
                                             onPress={() => handleApproval(request.user_id, 'active')}
-                                            sx={{ padding: 10, borderRadius: 50, backgroundColor: '#10B98120' }}
+                                            accessibilityLabel={`Approve ${request.user?.full_name ?? 'member'}`}
+                                            sx={{ padding: 10, borderRadius: 50, backgroundColor: `${colors.success}20` }}
                                         >
-                                            <UserCheck size={20} color="#10B981" />
+                                            <UserCheck size={20} color={colors.success} />
                                         </Pressable>
                                     </HStack>
                                 </HStack>

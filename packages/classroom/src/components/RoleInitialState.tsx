@@ -44,8 +44,6 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
     const setDemoMode = useStore((state) => state.setDemoMode);
     const setUserRole = useStore((state) => state.setUserRole);
 
-    console.log('[RoleInitialState] Received role:', role);
-
     const getRoleContent = () => {
         switch (role) {
             case 'teacher':

@@ -98,7 +98,7 @@ export default function AdminSelfView() {
 
     const renderFeature = () => {
         if (!userId) {
-            return <PositiveInvitation type="guest" onAction={() => { }} />;
+            return <PositiveInvitation type="guest" onAction={() => navigation.navigate('Auth' as never)} />;
         }
 
         switch (activeFeature) {

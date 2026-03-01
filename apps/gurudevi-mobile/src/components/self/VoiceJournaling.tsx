@@ -62,16 +62,13 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
     const waveHeight = useSharedValue(20);
 
     useEffect(() => {
-        // Just set up audio mode if needed, permissions are handled by expo-audio recorder
+        // setAudioModeAsync is iOS/Android only — skip on web
+        if (Platform.OS === 'web') return;
         setAudioModeAsync({
             playsInSilentMode: true,
             interruptionMode: 'doNotMix',
             allowsRecording: true,
         });
-
-        return () => {
-            // Cleanup happens via hooks
-        };
     }, []);
 
     useEffect(() => {
@@ -123,8 +120,12 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
 
     const startRecording = async () => {
         try {
-            const permission = await AudioModule.requestRecordingPermissionsAsync();
-            if (!permission.granted) return;
+            // AudioModule.requestRecordingPermissionsAsync is native-only;
+            // browser microphone access goes through MediaRecorder instead.
+            if (Platform.OS !== 'web') {
+                const permission = await AudioModule.requestRecordingPermissionsAsync();
+                if (!permission.granted) return;
+            }
 
             hapticMedium();
             await recorder.prepareToRecordAsync();

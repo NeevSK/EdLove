@@ -25,7 +25,8 @@ import {
     Spinner,
     useTheme,
 } from '@repo/ui';
-import { Alert, Image } from 'react-native';
+import { Alert, Image, Platform, Pressable } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { handleAPIError } from '@repo/core';
@@ -50,13 +51,38 @@ export default function SubmissionModal({
     const [showSuccess, setShowSuccess] = useState(false);
     const { text, accent, glass, isDark } = useTheme();
 
+    const requestPermission = async (useCamera: boolean): Promise<boolean> => {
+        const { status } = useCamera
+            ? await ImagePicker.requestCameraPermissionsAsync()
+            : await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted' && Platform.OS !== 'web') {
+            Alert.alert(
+                t('submission.permissionTitle') || (useCamera ? 'Camera Access' : 'Gallery Access'),
+                t('submission.permissionDesc') || 'Permission is needed to attach a photo.'
+            );
+        }
+        return status === 'granted';
+    };
+
     const handlePickImage = async (useCamera: boolean = false) => {
         try {
-            Alert.alert(
-                t('submission.photoPlaceholder') || 'Photo Feature',
-                t('submission.photoPlaceholderDesc') ||
-                'Image picker would be implemented here using expo-image-picker'
-            );
+            if (!(await requestPermission(useCamera))) return;
+
+            const result = useCamera
+                ? await ImagePicker.launchCameraAsync({
+                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                    allowsEditing: true,
+                    quality: 0.7,
+                })
+                : await ImagePicker.launchImageLibraryAsync({
+                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                    allowsEditing: true,
+                    quality: 0.7,
+                });
+
+            if (!result.canceled && result.assets?.[0]?.uri) {
+                setPhotoUri(result.assets[0].uri);
+            }
         } catch (error) {
             handleAPIError(error);
         }
@@ -64,11 +90,19 @@ export default function SubmissionModal({
 
     const handleSubmit = async () => {
         if (!content.trim() && !photoUri) {
-            Alert.alert(
-                t('submission.emptyWarning') || 'Empty Submission',
-                t('submission.emptyWarningDesc') ||
-                'Please add some content or attach a photo before submitting.'
-            );
+            if (Platform.OS === 'web') {
+                // window.alert is the correct web equivalent for a single-button info dialog
+                window.alert(
+                    (t('submission.emptyWarning') || 'Empty Submission') + '\n\n' +
+                    (t('submission.emptyWarningDesc') || 'Please add some content or attach a photo before submitting.')
+                );
+            } else {
+                Alert.alert(
+                    t('submission.emptyWarning') || 'Empty Submission',
+                    t('submission.emptyWarningDesc') ||
+                    'Please add some content or attach a photo before submitting.'
+                );
+            }
             return;
         }
 
@@ -92,6 +126,15 @@ export default function SubmissionModal({
 
     const handleCancel = () => {
         if (content.trim() || photoUri) {
+            if (Platform.OS === 'web') {
+                // window.confirm is acceptable for a two-button destructive confirmation on web
+                if (window.confirm(t('submission.cancelWarningDesc') || 'Your work will be lost. Are you sure?')) {
+                    setContent('');
+                    setPhotoUri(null);
+                    onClose();
+                }
+                return;
+            }
             Alert.alert(
                 t('submission.cancelWarning') || 'Discard Changes?',
                 t('submission.cancelWarningDesc') ||

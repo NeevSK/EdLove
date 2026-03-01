@@ -30,6 +30,8 @@ const PHASE_BORDER: Record<string, string> = {
     night: 'rgba(184,169,224,0.24)',
 };
 
+const PHASE_BORDER_DEFAULT = 'rgba(212,132,58,0.18)';
+
 export const TemporalGlass: React.FC<TemporalGlassProps> = ({
     children,
     style,
@@ -38,7 +40,7 @@ export const TemporalGlass: React.FC<TemporalGlassProps> = ({
     phase,
     cornerRadius = 20,
 }) => {
-    const borderColor = PHASE_BORDER[phase] ?? PHASE_BORDER.midday;
+    const borderColor = PHASE_BORDER[phase] ?? PHASE_BORDER_DEFAULT;
 
     return (
         <View

@@ -1,11 +1,12 @@
 import React from 'react';
-import { Linking, TouchableOpacity } from 'react-native';
+import { Linking, TouchableOpacity, Platform } from 'react-native';
 import {
     Box,
     VStack,
     HStack,
     Text,
     Heading,
+    openExternalURL,
 } from '@repo/ui';
 import { Theme } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
@@ -16,8 +17,9 @@ export default function SupportSection() {
     const colors = useThemedColors();
     const { t } = useTranslation();
     const handleSupport = () => {
-        // TODO: Replace with actual support URL or email
-        Linking.openURL('mailto:support@gurudevi.org');
+        openExternalURL('mailto:support@gurudevi.org').catch(() => {
+            // No email client available — nothing actionable to show without a toast context here
+        });
     };
 
     const SupportItem = ({ icon: Icon, title, subtitle, onPress }: any) => (

@@ -60,6 +60,7 @@ import {
     LotusPetalFAB,
     FadeInDown,
     HorizontalChipRow,
+    openExternalURL,
 } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
@@ -67,7 +68,6 @@ import AddResourceModal from '../components/AddResourceModal';
 import { ResourceList } from '../components/ResourceList';
 import { useTranslation } from 'react-i18next';
 import { Play, Plus } from 'lucide-react-native';
-import * as Linking from 'expo-linking';
 import { useLibrary } from '../hooks/useLibrary';
 import { LibraryResource } from '../types';
 import {
@@ -214,7 +214,7 @@ export default function LibraryScreen() {
             navigation.navigate('VideoPlayer', { resourceId: resource.id, title: resource.title, url: resource.url, creator: resource.creator_name });
             return;
         }
-        Linking.openURL(resource.url).catch(err => console.error("Couldn't load page", err));
+        openExternalURL(resource.url).catch(err => console.error("Couldn't load page", err));
     }, [navigation]);
 
     const handleAddResource = useCallback(async () => {

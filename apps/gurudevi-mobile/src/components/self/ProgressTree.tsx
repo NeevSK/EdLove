@@ -30,6 +30,7 @@ import { supabase } from '@repo/core';
 import { SkeletonCard } from '@repo/ui';
 import { PositiveInvitation } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 
 interface ProgressTreeProps {
     userId?: string;
@@ -46,6 +47,7 @@ const GROWTH_STAGES = [
 ];
 
 export default function ProgressTree({ userId }: ProgressTreeProps) {
+    const navigation = useNavigation<any>();
     const [interactionCount, setInteractionCount] = useState(0);
     const [currentStage, setCurrentStage] = useState(GROWTH_STAGES[0]);
     const [showBloom, setShowBloom] = useState(false);
@@ -170,7 +172,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
         return (
             <PositiveInvitation
                 type="guest"
-                onAction={() => { }} // TODO: Navigate to Auth
+                onAction={() => navigation.navigate('Auth' as never)}
             />
         );
     }

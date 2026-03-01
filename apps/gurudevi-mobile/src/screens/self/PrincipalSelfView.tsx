@@ -84,7 +84,7 @@ export default function PrincipalSelfView() {
 
     const renderFeature = () => {
         if (!userId && activeFeature !== 'energy') {
-            return <PositiveInvitation type="guest" onAction={() => { }} />;
+            return <PositiveInvitation type="guest" onAction={() => navigation.navigate('Auth' as never)} />;
         }
 
         switch (activeFeature) {
@@ -337,6 +337,7 @@ export default function PrincipalSelfView() {
 
 // Sub-component for Decision Journal Logic
 function DecisionJournalSection({ userId, colors, t }: { userId: string | null, colors: any, t: any }) {
+    const navigation = useNavigation<any>();
     const [decisionText, setDecisionText] = useState('');
     const { decisions, refreshData } = useDecisionJournal(userId ?? undefined);
 
@@ -375,7 +376,7 @@ function DecisionJournalSection({ userId, colors, t }: { userId: string | null, 
     };
 
     if (!userId) {
-        return <PositiveInvitation type="guest" onAction={() => { }} />;
+        return <PositiveInvitation type="guest" onAction={() => navigation.navigate('Auth' as never)} />;
     }
 
     return (

@@ -92,7 +92,7 @@ export default function FounderSelfView() {
 
     const renderFeature = () => {
         if (!userId && activeFeature !== 'vision') {
-            return <PositiveInvitation type="guest" onAction={() => { }} />;
+            return <PositiveInvitation type="guest" onAction={() => navigation.navigate('Auth' as never)} />;
         }
 
         switch (activeFeature) {

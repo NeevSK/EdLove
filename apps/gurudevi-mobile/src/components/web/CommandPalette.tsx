@@ -101,7 +101,8 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
 
     const navigate = (screen: string, params?: Record<string, unknown>) => {
         if (navigationRef.isReady()) {
-            navigationRef.navigate(screen as never, params as never);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (navigationRef as any).navigate(screen, params);
         }
     };
 
