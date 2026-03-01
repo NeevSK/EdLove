@@ -65,12 +65,19 @@ export default function SubmissionModal({
 
     const handleSubmit = async () => {
         if (!content.trim() && !photoUri) {
-            // Single-button info alert — on web use browser alert (no toast available here)
-            Alert.alert(
-                t('submission.emptyWarning') || 'Empty Submission',
-                t('submission.emptyWarningDesc') ||
-                'Please add some content or attach a photo before submitting.'
-            );
+            if (Platform.OS === 'web') {
+                // window.alert is the correct web equivalent for a single-button info dialog
+                window.alert(
+                    (t('submission.emptyWarning') || 'Empty Submission') + '\n\n' +
+                    (t('submission.emptyWarningDesc') || 'Please add some content or attach a photo before submitting.')
+                );
+            } else {
+                Alert.alert(
+                    t('submission.emptyWarning') || 'Empty Submission',
+                    t('submission.emptyWarningDesc') ||
+                    'Please add some content or attach a photo before submitting.'
+                );
+            }
             return;
         }
 

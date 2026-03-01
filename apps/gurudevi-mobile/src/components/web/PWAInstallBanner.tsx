@@ -57,7 +57,14 @@ export function PWAInstallBanner() {
             <View style={styles.actions}>
                 {!isIOS && (
                     <TouchableOpacity
-                        onPress={() => promptInstall()}
+                        onPress={async () => {
+                            try {
+                                await promptInstall();
+                            } catch {
+                                // User cancelled or browser rejected — dismiss the banner quietly
+                                dismiss();
+                            }
+                        }}
                         style={[styles.installBtn, { backgroundColor: Theme.colors.sanctuarySaffron }]}
                         accessibilityLabel="Install Gurudevi as an app"
                     >

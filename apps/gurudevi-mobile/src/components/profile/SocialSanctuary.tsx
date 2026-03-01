@@ -71,7 +71,12 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
         if (Platform.OS === 'web') {
             // Web Share API (modern browsers) or clipboard fallback
             if (typeof navigator !== 'undefined' && navigator.share) {
-                await navigator.share({ title: 'Gurudevi Profile', url: profileUrl });
+                try {
+                    await navigator.share({ title: 'Gurudevi Profile', url: profileUrl });
+                } catch {
+                    // Cancelled or unavailable — fall back to clipboard
+                    try { await Clipboard.setStringAsync(profileUrl); } catch { /* ignore */ }
+                }
             } else {
                 await Clipboard.setStringAsync(profileUrl);
             }

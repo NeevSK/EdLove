@@ -11,7 +11,7 @@
  */
 
 import React, { FC, useMemo, useState } from 'react';
-import { View, Pressable, Text, StyleSheet, TextStyle, Platform } from 'react-native';
+import { View, Pressable, Text, StyleSheet, TextStyle, ViewStyle, Platform } from 'react-native';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -65,8 +65,9 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
     // Note: blurEnabled accounts for device tier and fidelity settings.
 
     // Hover style — memoized so the object reference is stable between renders
+    // `cursor` is a web-only CSS property; typed via ViewStyle intersection to avoid `as any`
     const hoverStyle = useMemo(
-        () => ({ opacity: 0.93, transform: [{ scale: 1.012 }], cursor: 'pointer' } as any),
+        () => ({ opacity: 0.93, transform: [{ scale: 1.012 }], cursor: 'pointer' } as ViewStyle & { cursor?: string }),
         [],
     );
 

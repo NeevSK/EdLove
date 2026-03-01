@@ -119,11 +119,14 @@ const PostCard = React.memo(function PostCard({
         const shareUrl = `https://app.gurudevi.edlove.org/app?post=${id}`;
         if (Platform.OS === 'web') {
             if (typeof navigator !== 'undefined' && navigator.share) {
-                await navigator.share({ title: `Post by ${is_anonymous ? 'Anonymous' : author_name}`, url: shareUrl });
+                try {
+                    await navigator.share({ title: `Post by ${is_anonymous ? 'Anonymous' : author_name}`, url: shareUrl });
+                } catch {
+                    // User cancelled or share unavailable — fall back to clipboard silently
+                    try { await Clipboard.setStringAsync(shareUrl); } catch { /* ignore */ }
+                }
             } else {
                 await Clipboard.setStringAsync(shareUrl);
-                // Toast feedback is handled by callers; clipboard copy is silent here
-                // because PostCard doesn't have access to the toast store
             }
         } else {
             if (onShare) {

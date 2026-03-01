@@ -8,5 +8,3 @@ Allow: /
 Disallow: /auth/callback
 Disallow: /qr
 Disallow: /thuthimal
-
-Sitemap: https://app.gurudevi.edlove.org/sitemap.xml

@@ -288,7 +288,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
     let globalIndex = 0;
 
     return (
-        <View style={[StyleSheet.absoluteFill, { pointerEvents: 'box-none' } as any]}>
+        <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
             {/* Backdrop */}
             <Animated.View
                 style={[StyleSheet.absoluteFill, styles.backdrop, backdropStyle]}
@@ -301,7 +301,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
             </Animated.View>
 
             {/* Palette card — dialog role for screen readers */}
-            <View style={[styles.centeredWrap, { pointerEvents: 'box-none' } as any]}>
+            <View style={styles.centeredWrap} pointerEvents="box-none">
                 <Animated.View
                     accessibilityViewIsModal
                     accessibilityRole="none"
