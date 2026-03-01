@@ -19,6 +19,7 @@
     },
     "android": {
       "package": "org.edlove.gurudevi",
+      "versionCode": 21,
       "newArchEnabled": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -89,9 +90,9 @@
           "url": "https://sentry.io/",
           "project": "gurudevi-mobile",
           "organization": "intuitui-labs",
-          "uploadNativeSymbols": true,
-          "autoUploadNativeSymbols": true,
-          "autoUpload": true
+          "uploadNativeSymbols": false,
+          "autoUploadNativeSymbols": false,
+          "autoUpload": false
         }
       ]
     ],

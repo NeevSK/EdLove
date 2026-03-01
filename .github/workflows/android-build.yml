@@ -126,3 +126,25 @@ jobs:
           name: android-build-${{ matrix.type }}
           path: apps/gurudevi-mobile/app.${{ matrix.type }}
 
+      - name: 🚀 Sentry Sourcemap Upload
+        if: github.event.inputs.build_method == 'local'
+        continue-on-error: true
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: intuitui-labs
+          SENTRY_PROJECT: gurudevi-mobile
+        run: |
+          cd apps/gurudevi-mobile
+          
+          # Extract versioning from app.json
+          VERSION=$(node -p "require('./app.json').expo.version")
+          VERSION_CODE=$(node -p "require('./app.json').expo.android.versionCode")
+          
+          echo "📦 Uploading sourcemaps for Release: org.edlove.gurudevi@$VERSION+$VERSION_CODE"
+          
+          npx @sentry/cli sourcemaps upload \
+            --release "org.edlove.gurudevi@$VERSION+$VERSION_CODE" \
+            --dist "$VERSION_CODE" \
+            ./android/app/build/generated/assets/react/release/index.android.bundle \
+            ./android/app/build/generated/sourcemaps/react/release/index.android.bundle.map
+
