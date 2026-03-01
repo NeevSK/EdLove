@@ -66,7 +66,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
 
     // Hover style — memoized so the object reference is stable between renders
     const hoverStyle = useMemo(
-        () => ({ opacity: 0.93, transform: [{ scale: 1.012 }] }),
+        () => ({ opacity: 0.93, transform: [{ scale: 1.012 }], cursor: 'pointer' } as any),
         [],
     );
 

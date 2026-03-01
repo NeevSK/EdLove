@@ -40,7 +40,7 @@ export default function NetworkStatusBanner() {
                 left: 0,
                 right: 0,
                 zIndex: Theme.zIndex.modal + 1,
-                paddingTop: insets.top,
+                paddingTop: Platform.OS !== 'web' ? insets.top : 0,
             }}
         >
             <Box sx={{

@@ -28,6 +28,19 @@
     <!-- ── PWA / Icons ──────────────────────────────────────────────── -->
     <link rel="icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href="https://app.gurudevi.edlove.org/" />
+
+    <!-- Prevent iOS from auto-linking phone numbers, dates, addresses -->
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
+    <!-- Chrome on Android — "Add to Home Screen" prompt -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <!-- Safari on iOS — full-screen web app mode -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Gurudevi" />
+    <!-- Windows / Edge tile -->
+    <meta name="application-name" content="Gurudevi" />
+    <meta name="msapplication-TileColor" content="#D4843A" />
 
     <!-- Expo root element reset -->
     <style id="expo-reset">
@@ -263,7 +276,22 @@
     <div class="lotus-petal petal-7" aria-hidden="true">🪷</div>
     <div class="lotus-petal petal-8" aria-hidden="true">🪷</div>
 
-    <noscript>You need to enable JavaScript to run Gurudevi.</noscript>
+    <noscript>
+      <style>
+        .noscript-msg {
+          position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+          background: #F5EDD6; font-family: Georgia, serif; color: #2A2318; text-align: center; padding: 32px;
+        }
+        .noscript-msg h1 { color: #D4843A; font-size: 24px; margin-bottom: 12px; }
+        .noscript-msg p  { font-size: 15px; line-height: 1.6; max-width: 400px; }
+      </style>
+      <div class="noscript-msg">
+        <div>
+          <h1>🪷 Gurudevi</h1>
+          <p>Gurudevi requires JavaScript to run. Please enable JavaScript in your browser to access this sanctuary for teachers.</p>
+        </div>
+      </div>
+    </noscript>
     <div id="root"></div>
   </body>
 </html>
