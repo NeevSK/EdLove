@@ -10,8 +10,8 @@
  * Philosophy: Simple, reusable foundation for UI cards
  */
 
-import React, { FC, useMemo } from 'react';
-import { View, Pressable, Text, StyleSheet, TextStyle } from 'react-native';
+import React, { FC, useMemo, useState } from 'react';
+import { View, Pressable, Text, StyleSheet, TextStyle, Platform } from 'react-native';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -57,9 +57,18 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
 }) => {
     const { isDark, glass, glow, blurEnabled } = useTheme();
 
+    // Hover state — only meaningful on web (desktop pointer devices)
+    const [hovered, setHovered] = useState(false);
+
     // Check if we should use glass (blur enabled + glass variant)
     const useGlass = blurEnabled && variant === 'glass';
     // Note: blurEnabled accounts for device tier and fidelity settings.
+
+    // Hover style — memoized so the object reference is stable between renders
+    const hoverStyle = useMemo(
+        () => ({ opacity: 0.93, transform: [{ scale: 1.012 }] }),
+        [],
+    );
 
     // Shared value for lift animation
     const scale = useSharedValue(LIFT_SCALE_NORMAL);
@@ -197,6 +206,9 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
                 onPress={onPress}
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
+                onHoverIn={Platform.OS === 'web' ? () => setHovered(true) : undefined}
+                onHoverOut={Platform.OS === 'web' ? () => setHovered(false) : undefined}
+                style={Platform.OS === 'web' && hovered ? hoverStyle : undefined}
             >
                 {renderCard()}
             </Pressable>

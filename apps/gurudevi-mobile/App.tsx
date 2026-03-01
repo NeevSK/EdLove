@@ -3,7 +3,8 @@ import './src/i18n/config'; // Initialize i18n
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
+import { NavigationContainer, type LinkingOptions } from '@react-navigation/native';
+import { navigationRef } from './src/navigation/navigationRef';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GluestackUIProvider, Spinner, Center, VStack, Text } from '@repo/ui';
@@ -34,12 +35,13 @@ import type { ActionItem } from '@repo/ui';
 import { ErrorBoundary, NetworkStatusBanner } from '@repo/ui';
 import { SyncManager } from '@repo/core';
 import { LanguageUtils } from './src/utils/LanguageUtils';
+import CommandPalette from './src/components/web/CommandPalette';
 
 // Create a client
 const queryClient = new QueryClient();
 
 // Navigation ref for imperative navigation outside React tree (deep links, auth callbacks)
-export const navigationRef = createNavigationContainerRef<any>();
+export { navigationRef } from './src/navigation/navigationRef';
 
 // Root Stack for Modals
 const RootStack = createNativeStackNavigator();
@@ -304,12 +306,42 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
   const { phase } = useTheme();
   const isWarmPhase = ['morning', 'afternoon', 'evening'].includes(phase);
 
+  // Update document.title based on the active tab/screen (web only)
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const TITLES: Record<string, string> = {
+      self: 'Self',
+      classroom: 'Classroom',
+      community: 'Community',
+      library: 'Library',
+      profile: 'Profile',
+    };
+    const label = TITLES[currentTab] ?? 'Gurudevi';
+    (document as Document).title = `${label} | Gurudevi 🪷`;
+  }, [currentTab]);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <ToastProvider>
           <ErrorBoundary name="App Root">
-            <NavigationContainer ref={navigationRef}>
+            <NavigationContainer
+              ref={navigationRef}
+              linking={Platform.OS === 'web' ? ({
+                prefixes: ['https://app.gurudevi.edlove.org', 'http://localhost:4000'],
+                config: {
+                  screens: {
+                    Welcome: '',
+                    Onboarding: 'onboarding',
+                    Main: 'app',
+                    Auth: 'auth',
+                    AIAssistant: 'ai',
+                    QRHandler: 'qr',
+                    ThuthimalClaim: 'thuthimal',
+                  },
+                },
+              } as LinkingOptions<any>) : undefined}
+            >
               <PostHogProvider
                 apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
                 options={{
@@ -396,6 +428,13 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
 
             <SyncManager />
             <NetworkStatusBanner />
+
+            {/* Command Palette — web-only power feature (Cmd+K) */}
+            {Platform.OS === 'web' && (
+              <CommandPalette
+                onOpenAI={() => navigationRef.navigate('AIAssistant' as never)}
+              />
+            )}
 
             {toast.visible && (
               <SanctuaryToast
