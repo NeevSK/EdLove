@@ -73,7 +73,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
     const [query, setQuery] = useState('');
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [searchFocused, setSearchFocused] = useState(false);
-    const { isDark, phase } = useTheme();
+    const { isDark } = useTheme();
     const { width } = useWindowDimensions();
     const inputRef = useRef<TextInput>(null);
 
@@ -106,7 +106,15 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
     };
 
     const goToTab = (tabName: string) => {
-        navigate('Main', { screen: tabName });
+        if (!navigationRef.isReady()) return;
+        // Only navigate to Main tabs when the Main route is already in the stack.
+        // Pressing Cmd+1-5 on the Welcome or Onboarding screens would otherwise
+        // emit an unhandled NAVIGATE action and produce a console warning.
+        const state = navigationRef.getState() as { routes?: Array<{ name: string }> } | undefined;
+        const hasMain = state?.routes?.some((r) => r.name === 'Main');
+        if (hasMain) {
+            navigate('Main', { screen: tabName });
+        }
         close();
     };
 
@@ -273,7 +281,6 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
     const bg = isDark ? Theme.colors.shroud : '#FFFDF7';
     const border = isDark ? 'rgba(252,249,242,0.10)' : 'rgba(42,35,24,0.08)';
     const sectionColor = isDark ? Theme.colors.mistGray : Theme.colors.willow;
-    const inputBg = isDark ? 'rgba(252,249,242,0.05)' : 'rgba(42,35,24,0.04)';
     const inputColor = isDark ? Theme.colors.sacredWhite : Theme.colors.inkTruth;
 
     // Flat list of commands for tracking globalIndex
@@ -285,12 +292,18 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
             <Animated.View
                 style={[StyleSheet.absoluteFill, styles.backdrop, backdropStyle]}
             >
-                <Pressable style={StyleSheet.absoluteFill} onPress={close} />
+                <Pressable
+                    style={StyleSheet.absoluteFill}
+                    onPress={close}
+                    accessibilityLabel="Close command palette"
+                />
             </Animated.View>
 
-            {/* Palette card */}
+            {/* Palette card — dialog role for screen readers */}
             <View style={styles.centeredWrap} pointerEvents="box-none">
                 <Animated.View
+                    accessibilityViewIsModal
+                    accessibilityRole="none"
                     style={[
                         styles.card,
                         {
@@ -302,7 +315,6 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                         cardStyle,
                     ]}
                 >
-                    {/* Search input */}
                     {/* Search input — border glows Saffron when focused */}
                     <View style={[
                         styles.searchRow,

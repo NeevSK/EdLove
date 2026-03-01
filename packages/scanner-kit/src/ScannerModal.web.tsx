@@ -21,8 +21,6 @@ import {
     TextInput,
     TouchableOpacity,
     StyleSheet,
-    KeyboardAvoidingView,
-    Platform,
 } from 'react-native';
 
 interface ScannerModalProps {
@@ -72,10 +70,8 @@ export default function ScannerModal({
             onRequestClose={onClose}
         >
             <View style={styles.backdrop}>
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    style={styles.centeredView}
-                >
+                {/* The browser handles keyboard avoidance natively for web modals */}
+                <View style={styles.centeredView}>
                     <View style={styles.card}>
                         {/* Header */}
                         <View style={styles.header}>
@@ -132,7 +128,7 @@ export default function ScannerModal({
                             <Text style={styles.submitText}>Submit Code</Text>
                         </TouchableOpacity>
                     </View>
-                </KeyboardAvoidingView>
+                </View>
             </View>
         </Modal>
     );

@@ -27,10 +27,11 @@ import {
     useWindowDimensions,
     ScrollView,
     ActivityIndicator,
+    Linking,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
-import { useThemedColors, useTheme } from '@repo/ui';
+import { useTheme } from '@repo/ui';
 import { authAPI, handleAPIError } from '@repo/core';
 import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
 import { LanguageUtils } from '../utils/LanguageUtils';
@@ -72,68 +73,15 @@ const PHASE_GRADIENT: Record<string, [string, string]> = {
 };
 
 // ─────────────────────────────────────────────
-// WelcomeScreen (web)
+// LeftPanel — standalone component (must NOT be defined inside render)
 // ─────────────────────────────────────────────
-interface WelcomeScreenProps {
-    onNext?: () => void;
-    initialShowAuth?: boolean;
+interface LeftPanelProps {
+    isDark: boolean;
+    isNarrow: boolean;
 }
 
-export default function WelcomeScreen({ onNext, initialShowAuth = false }: WelcomeScreenProps) {
-    const { t, i18n } = useTranslation();
-    const colors = useThemedColors();
-    const { phase, isDark } = useTheme();
-    const { width } = useWindowDimensions();
-
-    const [showAuth, setShowAuth] = useState(initialShowAuth);
-    const [acceptedTerms, setAcceptedTerms] = useState(false);
-    const [isConnecting, setIsConnecting] = useState(false);
-    const [langHover, setLangHover] = useState<string | null>(null);
-    const [btnHover, setBtnHover] = useState<'explore' | 'login' | null>(null);
-
-    const isNarrow = width < 768;
-
-    const [bgFrom, bgTo] = PHASE_GRADIENT[phase] ?? PHASE_GRADIENT.morning;
-
-    const changeLanguage = async (code: string) => {
-        hapticLight();
-        await LanguageUtils.setLanguage(code as 'en' | 'si' | 'ta');
-    };
-
-    const handleStartExploring = async () => {
-        if (!acceptedTerms) { hapticError(); return; }
-        hapticSuccess();
-        setIsConnecting(true);
-        try {
-            await authAPI.signInAnonymously();
-            onNext?.();
-        } catch (err) {
-            handleAPIError(err);
-            setIsConnecting(false);
-        }
-    };
-
-    const handleLogin = () => {
-        if (!acceptedTerms) { hapticError(); return; }
-        hapticLight();
-        setShowAuth(true);
-    };
-
-    // ── Auth mode: render AuthScreen full-screen ──────────────────────────
-    if (showAuth) {
-        return (
-            <AuthScreen
-                isAnonymous
-                onContinueAsGuest={handleStartExploring}
-                onSuccess={() => { onNext?.(); }}
-            />
-        );
-    }
-
-    // ─────────────────────────────────────────
-    // Left panel — branding & philosophy
-    // ─────────────────────────────────────────
-    const LeftPanel = () => (
+function LeftPanel({ isDark, isNarrow }: LeftPanelProps) {
+    return (
         <View style={[styles.leftPanel, isNarrow && styles.leftPanelNarrow]}>
             {/* Logo */}
             <View style={styles.logoRow}>
@@ -187,11 +135,47 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
             </View>
         </View>
     );
+}
 
-    // ─────────────────────────────────────────
-    // Right panel — auth card
-    // ─────────────────────────────────────────
-    const RightPanel = () => (
+// ─────────────────────────────────────────────
+// RightPanel — standalone component (must NOT be defined inside render)
+// ─────────────────────────────────────────────
+interface RightPanelProps {
+    isDark: boolean;
+    i18nLanguage: string;
+    acceptedTerms: boolean;
+    isConnecting: boolean;
+    langHover: string | null;
+    btnHover: 'explore' | 'login' | null;
+    onChangeLanguage: (code: string) => void;
+    onStartExploring: () => void;
+    onLogin: () => void;
+    onToggleTerms: () => void;
+    onLangHoverIn: (code: string) => void;
+    onLangHoverOut: () => void;
+    onBtnHoverIn: (btn: 'explore' | 'login') => void;
+    onBtnHoverOut: () => void;
+    footer: string;
+}
+
+function RightPanel({
+    isDark,
+    i18nLanguage,
+    acceptedTerms,
+    isConnecting,
+    langHover,
+    btnHover,
+    onChangeLanguage,
+    onStartExploring,
+    onLogin,
+    onToggleTerms,
+    onLangHoverIn,
+    onLangHoverOut,
+    onBtnHoverIn,
+    onBtnHoverOut,
+    footer,
+}: RightPanelProps) {
+    return (
         <View style={styles.rightPanel}>
             <View style={[
                 styles.authCard,
@@ -204,14 +188,14 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
                 {/* Language selector */}
                 <View style={styles.langRow}>
                     {LANGUAGES.map((lang) => {
-                        const isActive = i18n.language?.startsWith(lang.code);
+                        const isActive = i18nLanguage?.startsWith(lang.code);
                         const isHov = langHover === lang.code;
                         return (
                             <Pressable
                                 key={lang.code}
-                                onPress={() => changeLanguage(lang.code)}
-                                onHoverIn={() => setLangHover(lang.code)}
-                                onHoverOut={() => setLangHover(null)}
+                                onPress={() => onChangeLanguage(lang.code)}
+                                onHoverIn={() => onLangHoverIn(lang.code)}
+                                onHoverOut={onLangHoverOut}
                                 style={[
                                     styles.langPill,
                                     {
@@ -249,10 +233,11 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
 
                 {/* Explore button */}
                 <Pressable
-                    onPress={handleStartExploring}
-                    onHoverIn={() => setBtnHover('explore')}
-                    onHoverOut={() => setBtnHover(null)}
+                    onPress={onStartExploring}
+                    onHoverIn={() => onBtnHoverIn('explore')}
+                    onHoverOut={onBtnHoverOut}
                     disabled={isConnecting}
+                    accessibilityRole="button"
                     style={[
                         styles.primaryBtn,
                         {
@@ -268,16 +253,17 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
                         <ActivityIndicator color="#FFFDF7" size="small" />
                     ) : (
                         <Text style={styles.primaryBtnText}>
-                            {t('welcome.exploreAsGuest') || 'Explore as Guest'}
+                            Explore as Guest
                         </Text>
                     )}
                 </Pressable>
 
                 {/* Login button */}
                 <Pressable
-                    onPress={handleLogin}
-                    onHoverIn={() => setBtnHover('login')}
-                    onHoverOut={() => setBtnHover(null)}
+                    onPress={onLogin}
+                    onHoverIn={() => onBtnHoverIn('login')}
+                    onHoverOut={onBtnHoverOut}
+                    accessibilityRole="button"
                     style={[
                         styles.secondaryBtn,
                         {
@@ -292,13 +278,16 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
                         styles.secondaryBtnText,
                         { color: isDark ? Theme.colors.starlightGray : Theme.colors.bark },
                     ]}>
-                        {t('welcome.login') || 'I have an account'}
+                        I have an account
                     </Text>
                 </Pressable>
 
-                {/* Terms */}
+                {/* Terms — accessible checkbox */}
                 <Pressable
-                    onPress={() => setAcceptedTerms((v) => !v)}
+                    onPress={onToggleTerms}
+                    accessibilityRole="checkbox"
+                    accessibilityState={{ checked: acceptedTerms }}
+                    accessibilityLabel="Accept Terms and Privacy Pact"
                     style={styles.termsRow}
                 >
                     <View style={[
@@ -312,19 +301,89 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
                     </View>
                     <Text style={[styles.termsText, { color: isDark ? Theme.colors.starlightGray : Theme.colors.bark }]}>
                         I agree to the{' '}
-                        <Text style={{ color: Theme.colors.sanctuarySaffron, fontWeight: '600' }}>
+                    </Text>
+                    <Pressable
+                        onPress={(e) => {
+                            e.stopPropagation();
+                            Linking.openURL('https://neevsk.org/privacy');
+                        }}
+                        accessibilityRole="link"
+                        accessibilityLabel="Read Privacy Pact"
+                    >
+                        <Text style={{ color: Theme.colors.sanctuarySaffron, fontWeight: '600', textDecorationLine: 'underline', fontSize: 13 }}>
                             Privacy Pact
                         </Text>
-                    </Text>
+                    </Pressable>
                 </Pressable>
 
                 {/* Footer note */}
                 <Text style={[styles.cardFooter, { color: isDark ? Theme.colors.mistGray : Theme.colors.willow }]}>
-                    {t('welcome.footer') || 'Part of the EdLove Constellation · Made with 💖 in Sri Lanka'}
+                    {footer}
                 </Text>
             </View>
         </View>
     );
+}
+
+// ─────────────────────────────────────────────
+// WelcomeScreen (web)
+// ─────────────────────────────────────────────
+interface WelcomeScreenProps {
+    onNext?: () => void;
+    initialShowAuth?: boolean;
+}
+
+export default function WelcomeScreen({ onNext, initialShowAuth = false }: WelcomeScreenProps) {
+    const { t, i18n } = useTranslation();
+    const { phase, isDark } = useTheme();
+    const { width } = useWindowDimensions();
+
+    const [showAuth, setShowAuth] = useState(initialShowAuth);
+    const [acceptedTerms, setAcceptedTerms] = useState(false);
+    const [isConnecting, setIsConnecting] = useState(false);
+    const [langHover, setLangHover] = useState<string | null>(null);
+    const [btnHover, setBtnHover] = useState<'explore' | 'login' | null>(null);
+
+    const isNarrow = width < 768;
+
+    const [bgFrom] = PHASE_GRADIENT[phase] ?? PHASE_GRADIENT.morning;
+
+    const changeLanguage = async (code: string) => {
+        hapticLight();
+        await LanguageUtils.setLanguage(code as 'en' | 'si' | 'ta');
+    };
+
+    const handleStartExploring = async () => {
+        if (!acceptedTerms) { hapticError(); return; }
+        hapticSuccess();
+        setIsConnecting(true);
+        try {
+            await authAPI.signInAnonymously();
+            onNext?.();
+        } catch (err) {
+            handleAPIError(err);
+            setIsConnecting(false);
+        }
+    };
+
+    const handleLogin = () => {
+        if (!acceptedTerms) { hapticError(); return; }
+        hapticLight();
+        setShowAuth(true);
+    };
+
+    // ── Auth mode: render AuthScreen full-screen ──────────────────────────
+    if (showAuth) {
+        return (
+            <AuthScreen
+                isAnonymous
+                onContinueAsGuest={handleStartExploring}
+                onSuccess={() => { onNext?.(); }}
+            />
+        );
+    }
+
+    const footer = t('welcome.footer') || 'Part of the EdLove Constellation · Made with 💖 in Sri Lanka';
 
     // ─────────────────────────────────────────
     // Full layout
@@ -341,14 +400,46 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
                     contentContainerStyle={styles.narrowContent}
                     showsVerticalScrollIndicator={false}
                 >
-                    <LeftPanel />
-                    <RightPanel />
+                    <LeftPanel isDark={isDark} isNarrow={isNarrow} />
+                    <RightPanel
+                        isDark={isDark}
+                        i18nLanguage={i18n.language}
+                        acceptedTerms={acceptedTerms}
+                        isConnecting={isConnecting}
+                        langHover={langHover}
+                        btnHover={btnHover}
+                        onChangeLanguage={changeLanguage}
+                        onStartExploring={handleStartExploring}
+                        onLogin={handleLogin}
+                        onToggleTerms={() => setAcceptedTerms((v) => !v)}
+                        onLangHoverIn={setLangHover}
+                        onLangHoverOut={() => setLangHover(null)}
+                        onBtnHoverIn={setBtnHover}
+                        onBtnHoverOut={() => setBtnHover(null)}
+                        footer={footer}
+                    />
                 </ScrollView>
             ) : (
                 // ── Desktop web: two-column layout ────────────────────────
                 <View style={styles.twoCol}>
-                    <LeftPanel />
-                    <RightPanel />
+                    <LeftPanel isDark={isDark} isNarrow={false} />
+                    <RightPanel
+                        isDark={isDark}
+                        i18nLanguage={i18n.language}
+                        acceptedTerms={acceptedTerms}
+                        isConnecting={isConnecting}
+                        langHover={langHover}
+                        btnHover={btnHover}
+                        onChangeLanguage={changeLanguage}
+                        onStartExploring={handleStartExploring}
+                        onLogin={handleLogin}
+                        onToggleTerms={() => setAcceptedTerms((v) => !v)}
+                        onLangHoverIn={setLangHover}
+                        onLangHoverOut={() => setLangHover(null)}
+                        onBtnHoverIn={setBtnHover}
+                        onBtnHoverOut={() => setBtnHover(null)}
+                        footer={footer}
+                    />
                 </View>
             )}
         </View>

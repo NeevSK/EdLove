@@ -33,9 +33,8 @@ import {
 import { createBottomTabNavigator, type BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useTranslation } from 'react-i18next';
 import { Theme, SanctuaryBackground, ErrorBoundary, AchievementUnlockOverlay } from '@repo/ui';
-import { useTheme, useThemedColors } from '@repo/ui';
-import { useUserRole, useRewards, useTracking } from '@repo/core';
-
+import { useTheme } from '@repo/ui';
+import { useUserRole, useRewards } from '@repo/core';
 // Icons (same set as native TabNavigator)
 import { User, Heart, Users, Library, School } from 'lucide-react-native';
 
@@ -297,11 +296,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
     const { role } = useUserRole();
     const { phase, isDark } = useTheme();
     const { width } = useWindowDimensions();
-    const colors = useThemedColors();
     const { newAchievements } = useRewards();
-    const { exploredFeatures } = useTracking();
-
-    const [currentTab, setCurrentTab] = React.useState<string>('self');
     const [collapsed, setCollapsed] = React.useState(width < 960);
     const [showCelebration, setShowCelebration] = React.useState(false);
     const [currentAchievement, setCurrentAchievement] = React.useState('');
@@ -332,7 +327,6 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         <WebSidebar
             {...props}
             onTabChange={(tab) => {
-                setCurrentTab(tab);
                 onTabChange?.(tab);
             }}
             phase={phase}
@@ -358,7 +352,6 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
                         const routeName = s.routes[s.index]?.name;
                         if (routeName) {
                             const tab = routeName.toLowerCase();
-                            setCurrentTab(tab);
                             onTabChange?.(tab);
                         }
                     },
