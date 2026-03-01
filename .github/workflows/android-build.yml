@@ -104,16 +104,19 @@ jobs:
           SENTRY_ORG: 'intuitui-labs'
           SENTRY_PROJECT: 'gurudevi-mobile'
         run: |
-          cd apps/gurudevi-mobile
-          
-          # 1. Ensure pnpm allows the Sentry CLI to run (disable side-effects-cache)
+          # 1. Ensure pnpm allows the Sentry CLI to run
           pnpm config set side-effects-cache false
           
-          # 2. Run prebuild (this clears/reinitializes the android folder)
+          # 2. Approve pnpm build scripts (important for isolated eas local build)
+          pnpm approve-builds --yes || true
+          
+          cd apps/gurudevi-mobile
+          
+          # 3. Run prebuild (this clears/reinitializes the android folder)
           echo "🚀 Starting Expo Prebuild..."
           npx expo prebuild --platform android --no-install
           
-          # 3. NOW inject the properties into the freshly created folder
+          # 4. NOW inject the properties into the freshly created folder
           echo "🔍 Injecting Sentry properties into android/sentry.properties..."
           echo "auth.token=$SENTRY_AUTH_TOKEN" > android/sentry.properties
           echo "defaults.org=$SENTRY_ORG" >> android/sentry.properties
@@ -122,10 +125,7 @@ jobs:
           echo "🔍 App-level android/sentry.properties content (masked):"
           cat android/sentry.properties | sed 's/auth.token=.*/auth.token=********/'
           
-          echo "🔍 Checking android folder structure:"
-          ls -R android/app | grep -E "build.gradle|sentry.properties" || true
-          
-          # Sentry Linking Guard: Ensure plugin is present in build.gradle
+          # 5. Sentry Linking Guard: Ensure plugin is present in build.gradle
           if ! grep -q "sentry.gradle" android/app/build.gradle; then
             echo "⚠️ Sentry plugin missing from build.gradle, injecting manually..."
             echo 'apply from: new File(["node", "--print", "require('\''path'\'').dirname(require.resolve('\''@sentry/react-native/package.json'\''))"].execute().text.trim(), "sentry.gradle")' >> android/app/build.gradle
@@ -133,12 +133,12 @@ jobs:
             echo "✅ Sentry plugin confirmed in build.gradle"
           fi
 
-          echo "🔍 Final build.gradle Sentry check:"
-          grep "sentry.gradle" android/app/build.gradle || echo "NOT FOUND"
-
-          # Set Sentry CLI to debug mode for verbose logs during build
+          # 6. Set Sentry CLI to debug mode and EXPORT env vars for EAS subprocess
           export SENTRY_LOG_LEVEL=debug
-          
+          export SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
+          export SENTRY_ORG=$SENTRY_ORG
+          export SENTRY_PROJECT=$SENTRY_PROJECT
+
           if [ "${{ github.event.inputs.build_method }}" == "local" ]; then
             echo "🏗️ Starting LOCAL EAS Build..."
             eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive --local --output=app.${{ matrix.type }}

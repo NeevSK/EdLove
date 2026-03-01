@@ -41,6 +41,9 @@
       "nitro-modules": "0.33.9"
     },
     "onlyBuiltDependencies": [
+      "@sentry/cli",
+      "@parcel/watcher",
+      "esbuild",
       "@img/sharp-win32-x64",
       "sharp",
       "turbo",
