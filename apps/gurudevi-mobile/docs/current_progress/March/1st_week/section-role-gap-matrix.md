@@ -250,20 +250,28 @@ The five sections map to five dimensions of a teacher's life:
 - ✅ `SubmissionModal.handlePickImage` — real `expo-image-picker`
 - ✅ `useSchoolPulse` — real activity aggregation from school-scoped tables
 
-### Tier 1 — Ready to build (no backend work needed)
-- [ ] `StudentSelfView 'progress'` → wire existing `ProgressTree` component
-- [ ] `TeacherSelfView` → add `DecisionJournal` to teacher feature carousel
+### Tier 1 — Fixed in Round 6
+- ✅ `AttendanceView` — pre-loads today's saved statuses (no more 9am→2pm reset)
+- ✅ `StudentSelfView 'reflection'` → wired `FireJournal`
+- ✅ `StudentSelfView 'progress'` → wired `ProgressTree` + `MyGradesView`
+- ✅ `TeacherSelfView` → `DecisionJournal` added to MORE_TOOLS carousel
+- ✅ `MyGradesView` component built — student sees own grades with color-coded badges
+- ✅ `submissions` RLS migration — students can SELECT/INSERT, teachers can manage all
 
-### Tier 2 — Needs light backend (migration exists)
-- [ ] Student grade visibility: `MyGradesView` querying `submissions` where `student_id = auth.uid()` and grade is set
+### Tier 2 — Fixed in Round 7
+- ✅ `StudentSelfView 'study'` → wired `DailyRhythm` (timetable + period manager)
+- ✅ `StudentDashboard` Timetable quick-action → navigates to Self tab (not toast)
+- ✅ `RoleInitialState` console.log removed
+- ✅ `useSchoolPulse` `groupCount` now included in `communityVolume` signal
+
+### Tier 3 — Ready to build (no backend work needed)
 - [ ] Community manifesto creation: role-gate to `teacher`/`principal` only
 
-### Tier 3 — Requires curation / external work
+### Tier 4 — Requires curation / external work
 - [ ] Library cold-start: curated seed content (human task: Naveen selects 20–30 Sri Lankan curriculum resources)
 - [ ] `aggregated_mood` in school pulse: privacy-preserving Supabase Edge Function
 
-### Tier 4 — Post-Alpha features (architecture is ready)
-- [ ] Student timetable view (migration `timetable` table exists, no UI)
+### Tier 5 — Post-Alpha features (architecture is ready)
 - [ ] Student rewards display (hook exists, no display UI)
 - [ ] Principal school-wide announcement type
 - [ ] DM tab in Community

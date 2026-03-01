@@ -194,7 +194,7 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
                             label={t('student.timetable') || 'Timetable'}
                             onPress={() => {
                                 hapticLight();
-                                useStore.getState().showToast(t('common.comingSoon') || 'Timetables are in preparation. 🍃', 'info');
+                                navigation.navigate('Self' as any);
                             }}
                             color={Theme.colors.sageGreen}
                         />

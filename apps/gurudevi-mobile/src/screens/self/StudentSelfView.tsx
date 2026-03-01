@@ -30,6 +30,7 @@ import ResonancePatternCard from '../../components/self/ResonancePatternCard';
 import FireJournal from '../../components/self/FireJournal';
 import ProgressTree from '../../components/self/ProgressTree';
 import MyGradesView from '../../components/self/MyGradesView';
+import DailyRhythm from '../../components/self/DailyRhythm';
 import { supabase, useStore, useUserRole } from '@repo/core';
 import { useMoodLogs, useEnergyForecast } from '@repo/self';
 import { GlobalHeader } from '@repo/ui';
@@ -126,12 +127,7 @@ export default function StudentSelfView() {
                                 {t('student.studyRhythmDesc')}
                             </Text>
                         </VStack>
-
-                        <PositiveInvitation
-                            context="self"
-                            title={t('student.studyComingSoon', 'Find Your Rhythm')}
-                            description={t('student.studyComingSoonDesc', 'A gentle study timer and focus tool are in production.')}
-                        />
+                        <DailyRhythm />
                     </VStack>
                 );
             case 'reflection':

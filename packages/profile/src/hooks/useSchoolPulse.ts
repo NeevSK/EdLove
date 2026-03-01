@@ -60,14 +60,15 @@ export function useSchoolPulse(schoolId?: string) {
                     .eq('school_id', schoolId),
             ]);
 
-            const totalVolume = (postsThisWeek ?? 0) + (libraryActivity ?? 0);
+            // Group activity adds weight to the community signal (each active group = extra interactions)
+            const communityVolume = totalVolume + (groupCount ?? 0);
             const dailyPosts = postsLastDay ?? 0;
             const weeklyPosts = postsThisWeek ?? 0;
 
             // Derive resonance score from real activity signals (0-100)
             // Guard against accidental zero anchor (defensive — constant is 50)
             const anchor = RESONANCE_ACTIVITY_ANCHOR > 0 ? RESONANCE_ACTIVITY_ANCHOR : 50;
-            const activityScore = Math.min(100, Math.round((totalVolume / anchor) * 100));
+            const activityScore = Math.min(100, Math.round((communityVolume / anchor) * 100));
 
             // Trend: compare last-day posts vs weekly average (explicit null guard)
             const weeklyAvgPerDay = (weeklyPosts ?? 0) / 7;
@@ -83,9 +84,9 @@ export function useSchoolPulse(schoolId?: string) {
                 resonance_score: activityScore,
                 aggregated_mood,
                 trend,
-                participation_rate: classroomCount ? Math.min(100, Math.round((totalVolume / classroomCount) * PARTICIPATION_SCALE_FACTOR)) : 0,
+                participation_rate: classroomCount ? Math.min(100, Math.round((communityVolume / classroomCount) * PARTICIPATION_SCALE_FACTOR)) : 0,
                 top_subjects: [],   // Requires Edge Function aggregation — left empty for now
-                interaction_volume: totalVolume,
+                interaction_volume: communityVolume,
             });
             setError(null);
         } catch (err) {
