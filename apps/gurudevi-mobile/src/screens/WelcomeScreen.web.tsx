@@ -86,7 +86,7 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
     const { width } = useWindowDimensions();
 
     const [showAuth, setShowAuth] = useState(initialShowAuth);
-    const [acceptedTerms, setAcceptedTerms] = useState(true);
+    const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [isConnecting, setIsConnecting] = useState(false);
     const [langHover, setLangHover] = useState<string | null>(null);
     const [btnHover, setBtnHover] = useState<'explore' | 'login' | null>(null);

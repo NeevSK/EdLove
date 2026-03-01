@@ -75,9 +75,14 @@ const ROLE_META: Record<string, { label: string; color: string }> = {
     guest: { label: 'Guest', color: '#8C8273' },
 };
 
-// ─────────────────────────────────────────────
-// WebSidebar component (custom tabBar)
-// ─────────────────────────────────────────────
+// ─── Keyboard shortcut label per tab (matches Cmd+1-5) ────────────────────────
+const TAB_SHORTCUTS: Record<string, string> = {
+    Profile:   '⌘1',
+    Classroom: '⌘2',
+    Self:      '⌘3',
+    Community: '⌘4',
+    Library:   '⌘5',
+};
 interface WebSidebarProps extends BottomTabBarProps {
     onTabChange?: (tab: string) => void;
     phase: string;
@@ -245,6 +250,15 @@ function WebSidebar({
                                 >
                                     {label}
                                 </Text>
+                            )}
+
+                            {/* Shortcut hint — visible on hover when expanded */}
+                            {!collapsed && isHovered && !isActive && TAB_SHORTCUTS[route.name] && (
+                                <View style={[styles.shortcutHint, { borderColor: isDark ? 'rgba(252,249,242,0.12)' : 'rgba(42,35,24,0.10)' }]}>
+                                    <Text style={[styles.shortcutText, { color: inactiveColor }]}>
+                                        {TAB_SHORTCUTS[route.name]}
+                                    </Text>
+                                </View>
                             )}
                         </Pressable>
                     );
@@ -538,6 +552,18 @@ const styles = StyleSheet.create({
         fontSize: 14,
         letterSpacing: 0.1,
         flexShrink: 1,
+    },
+    shortcutHint: {
+        marginLeft: 'auto',
+        paddingHorizontal: 7,
+        paddingVertical: 2,
+        borderRadius: 6,
+        borderWidth: 1,
+    },
+    shortcutText: {
+        fontSize: 11,
+        fontWeight: '600',
+        letterSpacing: 0.3,
     },
     sidebarFooter: {
         paddingHorizontal: 14,

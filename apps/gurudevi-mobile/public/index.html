@@ -5,24 +5,35 @@
     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>Gurudevi</title>
-    <!-- Expo reset -->
+
+    <!-- Expo root element reset -->
     <style id="expo-reset">
-      html, body { height: 100%; }
+      html, body { height: 100%; margin: 0; padding: 0; }
       body { overflow: hidden; }
       #root { display: flex; height: 100%; flex: 1; }
     </style>
 
-    <!-- ─────────────────────────────────────────────────────────────
-         Sanctuary Web Polish
-         Design tokens: Saffron #D4843A · Vellum #F5EDD6 · Ink #2A2318
-         Shadow Violet rgba(107,100,128,x) — no grey/black shadows
-         ───────────────────────────────────────────────────────────── -->
+    <!-- ═══════════════════════════════════════════════════════════════════
+         GURUDEVI SANCTUARY WEB POLISH
+         Design laws:
+           • Background: Vellum #F5EDD6 — never pure white
+           • Text: Ink #2A2318 — never pure black
+           • Primary: Saffron #D4843A
+           • Shadows: rgba(107,100,128,x) — ONLY Shadow Violet, never grey/black
+         ═══════════════════════════════════════════════════════════════════ -->
     <style id="sanctuary-web">
 
-      /* Smooth scrolling globally */
-      * { scroll-behavior: smooth; }
+      /* ── Global ─────────────────────────────────────────────────────── */
+      * { scroll-behavior: smooth; box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+      body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+      }
+      * { -webkit-tap-highlight-color: transparent; }
 
-      /* ── Saffron focus ring (replaces browser default blue) ─────── */
+      /* ── Saffron focus ring ──────────────────────────────────────────── */
       *:focus-visible {
         outline: 2.5px solid #D4843A;
         outline-offset: 3px;
@@ -30,45 +41,31 @@
       }
       *:focus:not(:focus-visible) { outline: none; }
 
-      /* ── Text selection colours ──────────────────────────────────── */
-      ::selection {
-        background-color: rgba(212, 132, 58, 0.25);
-        color: #2A2318;
-      }
+      /* ── Text selection — warm saffron tint ─────────────────────────── */
+      ::selection { background-color: rgba(212,132,58,0.22); color: #2A2318; }
 
-      /* ── Custom scrollbar — Saffron thumb on Vellum track ────────── */
-      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      /* ── Custom scrollbar — saffron thumb on transparent track ─────── */
+      ::-webkit-scrollbar { width: 5px; height: 5px; }
       ::-webkit-scrollbar-track { background: transparent; }
       ::-webkit-scrollbar-thumb {
-        background: rgba(212, 132, 58, 0.35);
+        background: rgba(212,132,58,0.30);
         border-radius: 100px;
+        transition: background 0.2s;
       }
-      ::-webkit-scrollbar-thumb:hover {
-        background: rgba(212, 132, 58, 0.65);
+      ::-webkit-scrollbar-thumb:hover { background: rgba(212,132,58,0.60); }
+      * { scrollbar-width: thin; scrollbar-color: rgba(212,132,58,0.30) transparent; }
+
+      /* ── Custom cursor — lotus petal SVG ────────────────────────────── */
+      :root {
+        --cursor-lotus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cellipse cx='12' cy='18' rx='4' ry='7' fill='%23D4843A' opacity='0.85' transform='rotate(-10 12 12)'/%3E%3Cellipse cx='12' cy='18' rx='4' ry='7' fill='%23E8A070' opacity='0.60' transform='rotate(10 12 12)'/%3E%3Ccircle cx='12' cy='14' r='2.5' fill='%23F5EDD6' opacity='0.90'/%3E%3C/svg%3E") 12 20;
+        --cursor-lotus-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cellipse cx='12' cy='18' rx='4' ry='7' fill='%23D4843A' opacity='1' transform='rotate(-10 12 12)'/%3E%3Cellipse cx='12' cy='18' rx='4' ry='7' fill='%23E8A070' opacity='0.75' transform='rotate(10 12 12)'/%3E%3Ccircle cx='12' cy='14' r='2.5' fill='%23F5EDD6'/%3E%3C/svg%3E") 12 20;
       }
-      /* Firefox */
-      * {
-        scrollbar-width: thin;
-        scrollbar-color: rgba(212, 132, 58, 0.35) transparent;
-      }
-
-      /* ── Cursor improvements ─────────────────────────────────────── */
-      [role="button"], button, [tabindex] { cursor: pointer; }
-
-      /* ── Prevent text size adjustment on mobile web ──────────────── */
-      html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-
-      /* ── Smooth font rendering ───────────────────────────────────── */
-      body {
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-rendering: optimizeLegibility;
+      * { cursor: var(--cursor-lotus), auto; }
+      [role="button"], button, a, [tabindex], input, textarea, select {
+        cursor: var(--cursor-lotus-pointer), pointer;
       }
 
-      /* ── Disable tap highlight on mobile web ─────────────────────── */
-      * { -webkit-tap-highlight-color: transparent; }
-
-      /* ── Input autofill — match Vellum palette ───────────────────── */
+      /* ── Input autofill — stay warm ──────────────────────────────────── */
       input:-webkit-autofill,
       input:-webkit-autofill:hover,
       input:-webkit-autofill:focus {
@@ -78,10 +75,135 @@
         transition: background-color 5000s ease-in-out 0s;
       }
 
+      /* ══════════════════════════════════════════════════════════════════
+         TEMPORAL LIVING BACKGROUND
+         Phase-aware gradient that shifts with the time of day.
+         Transitions smoothly over 10 seconds when phase changes.
+         ══════════════════════════════════════════════════════════════════ */
+      html {
+        transition: background 10s ease;
+        background: linear-gradient(160deg, #F5EDD6 0%, #FAF7ED 100%); /* default: morning */
+      }
+
+      /* Pre-dawn: deep ink emerging from absolute dark */
+      html.phase-predawn {
+        background: linear-gradient(160deg, #1A1610 0%, #0F0D0A 60%, #1A1610 100%);
+      }
+      /* Dawn: first warm light touching vellum */
+      html.phase-dawn {
+        background: linear-gradient(160deg, #FFF0D0 0%, #F5E8C0 40%, #F5EDD6 100%);
+      }
+      /* Morning: classic vellum, fresh start */
+      html.phase-morning {
+        background: linear-gradient(160deg, #F5EDD6 0%, #FAF7ED 60%, #F0EBD8 100%);
+      }
+      /* Midday: the clearest, most neutral, cool blue cast */
+      html.phase-midday {
+        background: linear-gradient(160deg, #EEF4F5 0%, #F5EDD6 50%, #FAF7ED 100%);
+      }
+      /* Afternoon: golden hour begins, saffron warmth */
+      html.phase-afternoon {
+        background: linear-gradient(160deg, #FAF3E0 0%, #F5EDD6 50%, #FDF0D8 100%);
+      }
+      /* Evening: deeper gold, the sun descending */
+      html.phase-evening {
+        background: linear-gradient(160deg, #F5E8C8 0%, #F0D8A8 40%, #E8D0A0 100%);
+      }
+      /* Dusk: the violet threshold between day and night */
+      html.phase-dusk {
+        background: linear-gradient(160deg, #3D2E1C 0%, #2A2318 60%, #1A1610 100%);
+      }
+      /* Night: full bioluminescence — deep ink, luminous depth */
+      html.phase-night {
+        background: linear-gradient(160deg, #1A1610 0%, #0F0D0A 50%, #1A1610 100%);
+      }
+
+      /* ── Body breathing animation — the sanctuary is alive ──────────── */
+      @keyframes sanctuaryBreathe {
+        0%   { filter: brightness(1.000); }
+        50%  { filter: brightness(1.018); }
+        100% { filter: brightness(1.000); }
+      }
+      body {
+        animation: sanctuaryBreathe 5s ease-in-out infinite;
+      }
+
+      /* ══════════════════════════════════════════════════════════════════
+         AMBIENT LOTUS PARTICLES
+         8 lotus petals float upward from the bottom of the viewport.
+         Pure CSS — zero JavaScript, zero React, zero performance cost.
+         Opacity kept very low (0.07–0.13) so they never distract.
+         The Secret-of-Kells aesthetic: life present at the periphery.
+         ══════════════════════════════════════════════════════════════════ */
+
+      @keyframes floatPetal {
+        0%   { transform: translateY(105vh) rotate(0deg)   translateX(0px);  opacity: 0;    }
+        5%   { opacity: var(--peak-opacity); }
+        40%  { transform: translateY(55vh)  rotate(120deg) translateX(var(--drift)); }
+        85%  { opacity: var(--peak-opacity); }
+        100% { transform: translateY(-8vh)  rotate(260deg) translateX(0px);  opacity: 0;    }
+      }
+
+      .lotus-petal {
+        position: fixed;
+        bottom: 0;
+        font-size: var(--size, 18px);
+        left: var(--left, 50%);
+        --peak-opacity: var(--opacity, 0.09);
+        pointer-events: none;
+        z-index: 0;
+        user-select: none;
+        animation: floatPetal var(--duration, 28s) var(--delay, 0s) infinite linear;
+        will-change: transform, opacity;
+      }
+
+      /* 8 petals at varied positions, durations, opacities */
+      .petal-1  { --left:  7%;  --size: 14px; --duration: 26s; --delay:  -2s;  --drift:  18px; --opacity: 0.08; }
+      .petal-2  { --left: 18%;  --size: 20px; --duration: 34s; --delay: -11s;  --drift: -22px; --opacity: 0.07; }
+      .petal-3  { --left: 31%;  --size: 12px; --duration: 22s; --delay:  -5s;  --drift:  14px; --opacity: 0.11; }
+      .petal-4  { --left: 45%;  --size: 22px; --duration: 38s; --delay: -19s;  --drift: -10px; --opacity: 0.07; }
+      .petal-5  { --left: 58%;  --size: 16px; --duration: 29s; --delay:  -8s;  --drift:  20px; --opacity: 0.09; }
+      .petal-6  { --left: 70%;  --size: 11px; --duration: 24s; --delay: -14s;  --drift: -16px; --opacity: 0.13; }
+      .petal-7  { --left: 82%;  --size: 18px; --duration: 32s; --delay:  -3s;  --drift:  12px; --opacity: 0.08; }
+      .petal-8  { --left: 92%;  --size: 13px; --duration: 27s; --delay: -22s;  --drift: -20px; --opacity: 0.10; }
+
     </style>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         TEMPORAL PHASE INITIALISER
+         Reads the current hour BEFORE React loads and sets the phase
+         CSS class on <html>. This means the correct background colour is
+         present from the very first paint — no flicker, no flash.
+         ═══════════════════════════════════════════════════════════════════ -->
+    <script>
+      (function () {
+        var h = new Date().getHours();
+        var phase =
+          h < 4  ? 'night'     :
+          h < 6  ? 'predawn'   :
+          h < 8  ? 'dawn'      :
+          h < 12 ? 'morning'   :
+          h < 15 ? 'midday'    :
+          h < 18 ? 'afternoon' :
+          h < 20 ? 'evening'   :
+          h < 22 ? 'dusk'      : 'night';
+        document.documentElement.classList.add('phase-' + phase);
+      })();
+    </script>
+
   </head>
 
   <body>
+    <!-- Ambient lotus petals — 8 petals, pure CSS, zero JS -->
+    <div class="lotus-petal petal-1" aria-hidden="true">🪷</div>
+    <div class="lotus-petal petal-2" aria-hidden="true">🌸</div>
+    <div class="lotus-petal petal-3" aria-hidden="true">🪷</div>
+    <div class="lotus-petal petal-4" aria-hidden="true">🌸</div>
+    <div class="lotus-petal petal-5" aria-hidden="true">🪷</div>
+    <div class="lotus-petal petal-6" aria-hidden="true">🌸</div>
+    <div class="lotus-petal petal-7" aria-hidden="true">🪷</div>
+    <div class="lotus-petal petal-8" aria-hidden="true">🪷</div>
+
     <noscript>You need to enable JavaScript to run Gurudevi.</noscript>
     <div id="root"></div>
   </body>
