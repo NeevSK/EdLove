@@ -29,10 +29,12 @@ import {
     MessagesSquare,
     ShieldCheck,
     Shield,
-    ShieldAlert
+    ShieldAlert,
+    Link
 } from 'lucide-react-native';
 import Animated from 'react-native-reanimated';
 import { SocialLink } from '@repo/core';
+import * as Clipboard from 'expo-clipboard';
 
 interface ContactLinktreeProps {
     links: SocialLink[];
@@ -107,6 +109,17 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile }: ContactL
         }
     }, []);
 
+    const handleCopyProfileLink = useCallback(async () => {
+        const url = typeof window !== 'undefined'
+            ? window.location.href
+            : `https://app.gurudevi.edlove.org/app`;
+        if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.share) {
+            await navigator.share({ title: `${userName} on Gurudevi`, url });
+        } else {
+            await Clipboard.setStringAsync(url);
+        }
+    }, [userName]);
+
     const visibleLinks = isOwnProfile
         ? links
         : links.filter(l => l.is_public && l.privacy_level !== 'private');
@@ -140,6 +153,17 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile }: ContactL
                     <Text size="sm" color={colors.textSecondary} textAlign="center" sx={{ paddingHorizontal: Theme.spacing.xl }}>
                         {bio}
                     </Text>
+                )}
+                {/* Copy/Share profile link — visible on web always, on native only for own profile */}
+                {(Platform.OS === 'web' || isOwnProfile) && (
+                    <SanctuaryButton
+                        size="sm"
+                        variant="outline"
+                        onPress={handleCopyProfileLink}
+                        leftIcon={Link}
+                    >
+                        {Platform.OS === 'web' ? 'Share Profile Link' : 'Copy Profile Link'}
+                    </SanctuaryButton>
                 )}
             </VStack>
 

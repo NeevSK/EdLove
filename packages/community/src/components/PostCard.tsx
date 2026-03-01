@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, Platform, Share } from 'react-native';
 import { Box, HStack, VStack, Text, Avatar, AvatarFallbackText, AvatarImage } from '@repo/ui';
-import { MoreHorizontal, Heart, MessageCircle, Sparkles, Globe } from 'lucide-react-native';
+import { MoreHorizontal, Heart, MessageCircle, Sparkles, Globe, Share2 } from 'lucide-react-native';
 import { SanctuaryCard, Theme, useThemedColors, LivingGlow } from '@repo/ui';
 import { formatDistanceToNow } from 'date-fns';
 import { MediaAsset } from '@repo/core';
+import * as Clipboard from 'expo-clipboard';
 
 export type PostType = 'post' | 'text' | 'announcement' | 'poll';
 
@@ -19,6 +20,8 @@ interface PostCardProps {
     onReport?: () => void;
     /** Called when the author avatar/name is tapped — use to navigate to the author's public profile */
     onAuthorPress?: () => void;
+    /** Called when the share button is tapped on native. On web, the post link is copied to clipboard automatically. */
+    onShare?: () => void;
     isSample?: boolean;
     currentUserId?: string;
 }
@@ -33,6 +36,7 @@ const PostCard = React.memo(function PostCard({
     onComment,
     onReport,
     onAuthorPress,
+    onShare,
     isSample,
     currentUserId
 }: PostCardProps) {
@@ -110,6 +114,19 @@ const PostCard = React.memo(function PostCard({
     const isLiked = liked;
     const hasResonated = false;
 
+    const handleShare = async () => {
+        const shareUrl = `https://app.gurudevi.edlove.org/app`;
+        if (Platform.OS === 'web') {
+            if (typeof navigator !== 'undefined' && navigator.share) {
+                await navigator.share({ title: 'Gurudevi post', url: shareUrl });
+            } else {
+                await Clipboard.setStringAsync(shareUrl);
+            }
+        } else {
+            onShare?.() ?? Share.share({ message: shareUrl });
+        }
+    };
+
     return (
         <SanctuaryCard onPress={onPress} elevated={isAnnouncement}>
             <VStack space="md">
@@ -185,6 +202,11 @@ const PostCard = React.memo(function PostCard({
                             <Text color={colors.textTertiary} size="sm" sx={{ marginLeft: 4 }}>
                                 {comment_count}
                             </Text>
+                        </TouchableOpacity>
+
+                        {/* Share button — clipboard on web, native share sheet otherwise */}
+                        <TouchableOpacity onPress={handleShare} style={styles.actionButton} accessibilityLabel="Share post">
+                            <Share2 size={18} color={colors.textTertiary} />
                         </TouchableOpacity>
                     </HStack>
 

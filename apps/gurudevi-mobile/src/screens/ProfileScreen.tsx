@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect, useMemo } from 'react';
-import { ScrollView, RefreshControl, Alert, Dimensions, Modal, TouchableOpacity, Platform } from 'react-native';
+import { ScrollView, RefreshControl, Alert, Dimensions, Modal, TouchableOpacity, Platform, useWindowDimensions } from 'react-native';
 import {
     Box,
     VStack,
@@ -35,12 +35,16 @@ import { useProfile, useProfileCompletion } from '@repo/profile';
 import { SanctuaryProgressBar } from '@repo/ui';
 
 // --- Constants ---
+// SCREEN_WIDTH is kept for native (doesn't change); on web, cardWidth is computed
+// reactively inside ProfileScreen via useWindowDimensions.
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const CARD_WIDTH = SCREEN_WIDTH - Theme.spacing.xl;
+// CARD_WIDTH is a fallback used by sub-components before the parent can inject cardWidth.
+// Sub-components that receive cardWidth as a prop override this value.
+const CARD_WIDTH = Math.min(SCREEN_WIDTH, 600) - Theme.spacing.xl;
 
 // --- Internal Sub-Components ---
 
-const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, completionResult }: any) => {
+const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, completionResult, cardWidth = CARD_WIDTH }: any) => {
     const isGuest = !profile || profile?.is_anonymous === true;
 
     return (
@@ -63,7 +67,7 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
                     percentage={completionResult.percentage}
                     isComplete={completionResult.isComplete}
                     nextHint={completionResult.nextHint}
-                    style={{ width: CARD_WIDTH, marginTop: Theme.spacing.md }}
+                    style={{ width: cardWidth, marginTop: Theme.spacing.md }}
                 />
             )}
 
@@ -82,7 +86,7 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
                 accessibilityLabel={isGuest ? t('auth.createAccount', 'Create Account') : t('profile.viewEditProfile', 'View or Edit Profile')}
                 style={{
                     marginTop: Theme.spacing.lg,
-                    width: CARD_WIDTH,
+                    width: cardWidth,
                     height: 52,
                     backgroundColor: colors.secondary,
                     borderRadius: Theme.corners.comfortable,
@@ -128,11 +132,11 @@ const StatsSection = ({ profile, role }: any) => {
     );
 };
 
-const SupportSection = ({ t, colors }: any) => (
+const SupportSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => (
     <Center>
         <VStack
             sx={{
-                width: CARD_WIDTH,
+                width: cardWidth,
                 p: Theme.spacing.md,
                 backgroundColor: `${colors.secondary}${Math.round(Theme.opacity.strong * 255).toString(16).padStart(2, '0')}`,
                 borderRadius: Theme.corners.generous,
@@ -173,13 +177,13 @@ const SupportSection = ({ t, colors }: any) => (
     </Center>
 );
 
-const AppExperienceSection = ({ t, colors }: any) => {
+const AppExperienceSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => {
     const showToast = useStore((state) => state.showToast);
     return (
     <Center>
         <VStack
             sx={{
-                width: CARD_WIDTH,
+                width: cardWidth,
                 p: Theme.spacing.md,
                 backgroundColor: colors.secondary,
                 borderRadius: Theme.corners.generous,
@@ -238,11 +242,11 @@ const AppExperienceSection = ({ t, colors }: any) => {
     );
 };
 
-const AccountActions = ({ t, colors, isGuest, navigation }: any) => {
+const AccountActions = ({ t, colors, isGuest, navigation, cardWidth = CARD_WIDTH }: any) => {
     if (isGuest) return null;
 
     return (
-        <VStack space="md" sx={{ width: CARD_WIDTH }}>
+        <VStack space="md" sx={{ width: cardWidth }}>
             <Heading
                 size="sm"
                 color={colors.textSecondary as any}
@@ -336,6 +340,9 @@ export default function ProfileScreen() {
     const completionResult = useProfileCompletion(profile, role ?? null);
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
+    // Reactive width — responds to browser resize on web, device rotation on native
+    const { width: windowWidth } = useWindowDimensions();
+    const cardWidth = Math.min(windowWidth, 600) - Theme.spacing.xl;
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
     const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
     const [isLoggingOut, setLoggingOut] = useState(false);
@@ -458,7 +465,7 @@ export default function ProfileScreen() {
                         {/* Animated Modular Profile Sections */}
                         {profile?.is_anonymous && (
                             <Center>
-                                <Animated.View style={[{ width: CARD_WIDTH }, animatedBannerStyle]}>
+                                <Animated.View style={[{ width: cardWidth }, animatedBannerStyle]}>
                                     <Box sx={{
                                         p: Theme.spacing.md,
                                         bg: colors.action,
@@ -498,13 +505,14 @@ export default function ProfileScreen() {
                                 t={t}
                                 onGuestAction={triggerBannerShake}
                                 completionResult={completionResult}
+                                cardWidth={cardWidth}
                             />
                         </Animated.View>
 
                         {profile?.is_thuthimal && (
                             <Animated.View entering={FadeInDown.delay(200).duration(500)}>
                                 <Center>
-                                    <Box sx={{ width: CARD_WIDTH }}>
+                                    <Box sx={{ width: cardWidth }}>
                                         <ThuthimalBadge
                                             gifterName={profile.thuthimal_gifter}
                                             giftedAt={profile.thuthimal_gifted_at}
@@ -521,7 +529,7 @@ export default function ProfileScreen() {
 
                         <Animated.View entering={FadeInDown.delay(400).duration(500)}>
                             <Center>
-                                <Box sx={{ width: CARD_WIDTH }}>
+                                <Box sx={{ width: cardWidth }}>
                                     <ProfileListItem
                                         icon={Settings}
                                         label={t('settings.title', 'App Settings')}
@@ -532,21 +540,22 @@ export default function ProfileScreen() {
                         </Animated.View>
 
                         <Animated.View entering={FadeInDown.delay(500).duration(500)}>
-                            <SupportSection t={t} colors={colors} />
+                            <SupportSection t={t} colors={colors} cardWidth={cardWidth} />
                         </Animated.View>
 
                         <Animated.View entering={FadeInDown.delay(600).duration(500)}>
-                            <AppExperienceSection t={t} colors={colors} />
+                            <AppExperienceSection t={t} colors={colors} cardWidth={cardWidth} />
                         </Animated.View>
 
                         <Animated.View entering={FadeInDown.delay(700).duration(500)}>
                             <Center>
-                                <Box sx={{ width: CARD_WIDTH, mt: Theme.spacing.md }}>
+                                <Box sx={{ width: cardWidth, mt: Theme.spacing.md }}>
                                     <AccountActions
                                         t={t}
                                         colors={colors}
                                         navigation={navigation}
                                         isGuest={profile?.is_anonymous}
+                                        cardWidth={cardWidth}
                                     />
                                 </Box>
                             </Center>
@@ -555,7 +564,7 @@ export default function ProfileScreen() {
                         <Animated.View entering={FadeInDown.delay(750).duration(500)}>
                             {/* Account Actions Box */}
                             <Center>
-                                <Box sx={{ width: CARD_WIDTH, mb: Theme.spacing.xl, mt: Theme.spacing.md }}>
+                                <Box sx={{ width: cardWidth, mb: Theme.spacing.xl, mt: Theme.spacing.md }}>
                                     <VStack space="md" sx={{
                                         p: Theme.spacing.md,
                                         bg: colors.tertiary,

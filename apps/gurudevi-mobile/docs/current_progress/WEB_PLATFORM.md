@@ -1,5 +1,5 @@
 # Gurudevi Web Platform — SSOT
-*Last updated: 2026-03-01 | Status: Pre-Release — all critical web fixes applied*
+*Last updated: 2026-03-01 | Status: ✅ LIVE — all critical fixes applied, build verified (0 import.meta)*
 
 This is the **single source of truth** for everything related to deploying, maintaining, and enhancing the Gurudevi web app. All future web decisions are anchored here.
 
@@ -106,12 +106,16 @@ All P0 and most P1/P2 items are now resolved:
 - [x] `TabNavigator.web.tsx` — sidebar has `accessibilityRole="navigation"` + `accessibilityLabel`
 - [x] `useQRDeepLink.ts` — documented web no-op behaviour
 
-### P3 — Pending
+### P3 — Completed
+- [x] Community post share → `expo-clipboard` + Web Share API in `PostCard.tsx` (share button added)
+- [x] Profile linktree "Copy/Share Profile Link" → `ContactLinktree.tsx` (Web Share API + clipboard fallback)
+- [x] `ProfileScreen.tsx` — `CARD_WIDTH` now reactive via `useWindowDimensions` (responds to browser resize)
+- [x] `app.json` — removed duplicate `description` field (was causing two `<meta name="description">` in dist)
+
+### P4 — Future
 - [ ] PWA service worker / offline support via Workbox
 - [ ] Tree shaking (experimental in SDK 52) — reduce 7.2 MB bundle
 - [ ] Lighthouse audit — target <3s load, >90 Performance
-- [ ] Community post share → `expo-clipboard` on web
-- [ ] Profile linktree "Copy Link" → `window.location.href`
 
 ---
 
