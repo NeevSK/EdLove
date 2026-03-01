@@ -134,17 +134,28 @@ jobs:
           SENTRY_ORG: intuitui-labs
           SENTRY_PROJECT: gurudevi-mobile
         run: |
+          # SENTRY_AUTH_TOKEN must be added to GitHub repo secrets:
+          # Settings → Secrets and variables → Actions → New repository secret
+          # Name: SENTRY_AUTH_TOKEN
+          # EAS secrets do NOT work for local builds — use GitHub secrets here.
+          
           cd apps/gurudevi-mobile
           
           # Extract versioning from app.json
           VERSION=$(node -p "require('./app.json').expo.version")
           VERSION_CODE=$(node -p "require('./app.json').expo.android.versionCode")
           
-          echo "📦 Uploading sourcemaps for Release: org.edlove.gurudevi@$VERSION+$VERSION_CODE"
+          BUNDLE_PATH="./android/app/build/generated/assets/react/release/index.android.bundle"
+          MAP_PATH="./android/app/build/generated/sourcemaps/react/release/index.android.bundle.map"
           
-          npx @sentry/cli sourcemaps upload \
-            --release "org.edlove.gurudevi@$VERSION+$VERSION_CODE" \
-            --dist "$VERSION_CODE" \
-            ./android/app/build/generated/assets/react/release/index.android.bundle \
-            ./android/app/build/generated/sourcemaps/react/release/index.android.bundle.map
+          if [ -f "$BUNDLE_PATH" ] && [ -f "$MAP_PATH" ]; then
+            echo "📦 Uploading sourcemaps for Release: org.edlove.gurudevi@$VERSION+$VERSION_CODE"
+            
+            pnpm exec sentry-cli sourcemaps upload \
+              --release "org.edlove.gurudevi@$VERSION+$VERSION_CODE" \
+              --dist "$VERSION_CODE" \
+              "$BUNDLE_PATH" "$MAP_PATH"
+          else
+            echo "⚠️ Bundle or sourcemap not found. Skipping Sentry sourcemap upload."
+          fi
 

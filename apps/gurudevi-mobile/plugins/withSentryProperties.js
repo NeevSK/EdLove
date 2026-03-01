@@ -11,15 +11,13 @@ const withSentryProperties = (config) => {
                 'sentry.properties'
             );
 
-            const token = process.env.SENTRY_AUTH_TOKEN || '';
             const org = process.env.SENTRY_ORG || 'intuitui-labs';
             const project = process.env.SENTRY_PROJECT || 'gurudevi-mobile';
 
             console.log(`[withSentryProperties] Injecting properties into ${sentryPropsPath}`);
-            console.log(`[withSentryProperties] Org: ${org}, Project: ${project}, Token present: ${!!token}`);
+            console.log(`[withSentryProperties] Org: ${org}, Project: ${project}`);
 
             const content = [
-                `auth.token=${token}`,
                 `defaults.org=${org}`,
                 `defaults.project=${project}`,
                 ''

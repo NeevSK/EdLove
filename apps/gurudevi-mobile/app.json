@@ -92,7 +92,8 @@
           "organization": "intuitui-labs",
           "uploadNativeSymbols": false,
           "autoUploadNativeSymbols": false,
-          "autoUpload": false
+          "autoUpload": false,
+          "uploadSourceMaps": false
         }
       ]
     ],
