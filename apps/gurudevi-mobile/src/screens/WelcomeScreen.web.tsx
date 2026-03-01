@@ -46,9 +46,9 @@ const LANGUAGES = [
 ];
 
 const STATS = [
-    { value: '500+', label: 'Teachers' },
-    { value: '20k+', label: 'Students' },
-    { value: '150+', label: 'Schools' },
+    { value: 'Teacher', label: 'First' },
+    { value: 'Care', label: 'Mission' },
+    { value: 'LK', label: 'Home' },
 ];
 
 const PILLARS = [

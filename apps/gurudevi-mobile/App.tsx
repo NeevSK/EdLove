@@ -314,11 +314,47 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                   screens: {
                     Welcome: '',
                     Onboarding: 'onboarding',
-                    Main: 'app',
                     Auth: 'auth',
                     AIAssistant: 'ai',
                     QRHandler: 'qr',
                     ThuthimalClaim: 'thuthimal',
+                    Main: {
+                      path: 'app',
+                      screens: {
+                        Self: 'self',
+                        Profile: {
+                          path: 'profile',
+                          screens: {
+                            ProfileMain: '',
+                            FullProfile: 'full',
+                          },
+                        },
+                        Classroom: {
+                          path: 'classroom',
+                          screens: {
+                            ClassroomList: '',
+                            SchoolCreation: 'new',
+                            ClassroomDetails: {
+                              path: ':classroomId',
+                              screens: {
+                                Attendance: 'attendance',
+                                Gradebook: 'gradebook',
+                              },
+                            },
+                          },
+                        },
+                        Community: {
+                          path: 'community',
+                          screens: {
+                            CommunityMain: '',
+                            GroupDetails: 'group/:groupId',
+                            GroupChat: 'group/:groupId/chat',
+                            UserProfile: 'user/:userId',
+                          },
+                        },
+                        Library: 'library',
+                      },
+                    },
                   },
                 },
               } as LinkingOptions<any>) : undefined}
