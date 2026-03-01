@@ -179,7 +179,7 @@ export default function AppSettingsScreen({ navigation }: any) {
     enableLivingTheme,
     setEnableLivingTheme,
   } = useEnvironment();
-  const { isDemoMode, setDemoMode } = useStore();
+  const { isDemoMode, setDemoMode, showToast } = useStore();
 
   const [showThemeModal, setShowThemeModal] = useState(false);
   const [showFidelityModal, setShowFidelityModal] = useState(false);
@@ -680,7 +680,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                 hapticSuccess();
                 const testError = new Error('Sentry Test Event: Button Tapped');
                 captureException(testError, { source: 'AppSettingsScreen_TestButton' });
-                useStore.getState().showToast('Sentry test event sent!', 'success');
+                showToast('Sentry test event sent!', 'success');
               }}
               sx={{
                 backgroundColor: colors.tertiary,

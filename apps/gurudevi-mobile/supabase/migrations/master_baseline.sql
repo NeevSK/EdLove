@@ -663,11 +663,15 @@ CREATE POLICY "Service role manages rewards" ON public.user_rewards FOR ALL TO s
 -- GRANTS & PERMISSIONS (For specific tables where required)
 -- ========================================================
 GRANT ALL ON TABLE public.feature_usage_log TO authenticated;
-GRANT ALL ON TABLE public.feature_usage_log TO anon;
+-- anon users must NOT have write access to feature_usage_log; RLS restricts by user_id = auth.uid()
+-- but GRANT ALL to anon is overly permissive at the privilege level — restrict to INSERT only
+-- so anonymous sessions can still log feature usage, but cannot SELECT/UPDATE/DELETE others' rows.
+GRANT INSERT ON TABLE public.feature_usage_log TO anon;
 GRANT ALL ON TABLE public.feature_usage_log TO service_role;
 
 GRANT ALL ON TABLE public.user_rewards TO authenticated;
-GRANT ALL ON TABLE public.user_rewards TO anon;
+-- anon users have no legitimate reason to touch reward rows at any privilege level.
+-- RLS blocks them anyway, but removing GRANT ALL to anon removes the unnecessary privilege.
 GRANT ALL ON TABLE public.user_rewards TO service_role;
 
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO authenticated;

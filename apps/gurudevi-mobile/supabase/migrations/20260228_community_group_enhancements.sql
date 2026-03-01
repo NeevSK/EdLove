@@ -168,7 +168,9 @@ BEGIN
         )
       )
       WITH CHECK (
-        -- Updated row must remain within the same group
+        -- Ensure the updated row's group_id stays the same.
+        -- PostgreSQL RLS WITH CHECK does not expose OLD, so we compare the proposed
+        -- new value against the persisted value via a self-join on id.
         group_id = (SELECT cgm0.group_id FROM public.community_group_members cgm0 WHERE cgm0.id = community_group_members.id)
         AND EXISTS (
           SELECT 1 FROM public.community_group_members a

@@ -60,11 +60,8 @@ CREATE POLICY "staff_leaves_principal_update" ON public.staff_leaves FOR UPDATE
         AND u.role IN ('principal','founder')
     )
     -- Prevent changing scoping/identity fields on update
-    AND staff_leaves.school_id = (
-      SELECT sl0.school_id FROM public.staff_leaves sl0 WHERE sl0.id = staff_leaves.id
-    )
-    AND staff_leaves.user_id = (
-      SELECT sl0.user_id FROM public.staff_leaves sl0 WHERE sl0.id = staff_leaves.id
+    AND (staff_leaves.school_id, staff_leaves.user_id) = (
+      SELECT sl0.school_id, sl0.user_id FROM public.staff_leaves sl0 WHERE sl0.id = staff_leaves.id
     )
   );
 

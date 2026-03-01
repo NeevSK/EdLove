@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@repo/core';
 
 export interface PulseMetrics {
@@ -22,19 +22,10 @@ export function useSchoolPulse(schoolId?: string) {
     const [pulse, setPulse] = useState<PulseMetrics | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    // refreshToken is bumped by the manual refresh() to re-run the effect
+    const [refreshToken, setRefreshToken] = useState(0);
 
-    useEffect(() => {
-        if (!schoolId) {
-            setPulse(null);
-            setLoading(false);
-            return;
-        }
-
-        fetchPulse();
-    }, [schoolId]);
-
-    const fetchPulse = async () => {
-        if (!schoolId) { setLoading(false); return; }
+    const fetchPulse = useCallback(async (id: string, signal: { cancelled: boolean }) => {
         setLoading(true);
         try {
             const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString();
@@ -49,16 +40,18 @@ export function useSchoolPulse(schoolId?: string) {
                 { count: classroomCount },
             ] = await Promise.all([
                 supabase.from('community_posts').select('id', { count: 'exact', head: true })
-                    .eq('school_id', schoolId).gte('created_at', sevenDaysAgo),
+                    .eq('school_id', id).gte('created_at', sevenDaysAgo),
                 supabase.from('community_posts').select('id', { count: 'exact', head: true })
-                    .eq('school_id', schoolId).gte('created_at', yesterday),
+                    .eq('school_id', id).gte('created_at', yesterday),
                 supabase.from('library_items').select('id', { count: 'exact', head: true })
-                    .eq('school_id', schoolId).gte('created_at', sevenDaysAgo),
+                    .eq('school_id', id).gte('created_at', sevenDaysAgo),
                 supabase.from('community_groups').select('id', { count: 'exact', head: true })
-                    .eq('school_id', schoolId),
+                    .eq('school_id', id),
                 supabase.from('classrooms').select('id', { count: 'exact', head: true })
-                    .eq('school_id', schoolId),
+                    .eq('school_id', id),
             ]);
+
+            if (signal.cancelled) return;
 
             // Group activity adds weight to the community signal (each active group = extra interactions)
             const totalVolume = (postsThisWeek ?? 0) + (libraryActivity ?? 0);
@@ -91,11 +84,22 @@ export function useSchoolPulse(schoolId?: string) {
             });
             setError(null);
         } catch (err) {
-            setError('Failed to sync school pulse');
+            if (!signal.cancelled) setError('Failed to sync school pulse');
         } finally {
-            setLoading(false);
+            if (!signal.cancelled) setLoading(false);
         }
-    };
+    }, []);
 
-    return { pulse, loading, error, refresh: fetchPulse };
+    useEffect(() => {
+        if (!schoolId) {
+            setPulse(null);
+            setLoading(false);
+            return;
+        }
+        const signal = { cancelled: false };
+        fetchPulse(schoolId, signal);
+        return () => { signal.cancelled = true; };
+    }, [schoolId, refreshToken, fetchPulse]);
+
+    return { pulse, loading, error, refresh: () => setRefreshToken(t => t + 1) };
 }
