@@ -61,6 +61,7 @@ export function useSchoolPulse(schoolId?: string) {
             ]);
 
             // Group activity adds weight to the community signal (each active group = extra interactions)
+            const totalVolume = (postsThisWeek ?? 0) + (libraryActivity ?? 0);
             const communityVolume = totalVolume + (groupCount ?? 0);
             const dailyPosts = postsLastDay ?? 0;
             const weeklyPosts = postsThisWeek ?? 0;

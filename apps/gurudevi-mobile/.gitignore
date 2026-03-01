@@ -52,5 +52,7 @@ assets/*
 !assets/adaptive-icon.png
 !assets/favicon.png
 
-.env.local
+# IDE / editor config (keep out of source control)
+.cursor/
 
+.env.local

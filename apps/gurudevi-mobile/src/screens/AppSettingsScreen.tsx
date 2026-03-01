@@ -31,7 +31,6 @@ import {
 
 import { ScreenWrapper } from '@repo/ui';
 import { useStore, captureException } from '@repo/core';
-import * as Sentry from '@sentry/react-native';
 
 interface SettingsOptionProps {
   icon: React.ReactNode;
@@ -680,10 +679,6 @@ export default function AppSettingsScreen({ navigation }: any) {
                 hapticSuccess();
                 const testError = new Error('Sentry Test Event: Button Tapped');
                 captureException(testError, { source: 'AppSettingsScreen_TestButton' });
-                // Also call Sentry directly as per user request snippet
-                Sentry.captureException(new Error('First Sentry Test Error from Button'));
-
-                const { useStore } = require('@repo/core');
                 useStore.getState().showToast('Sentry test event sent!', 'success');
               }}
               sx={{
