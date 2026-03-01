@@ -153,7 +153,13 @@ function PathRow({ emoji, pathName, stageLabel, narrative, colors }: PathRowProp
 // MOON ROW COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 
-function MoonRow({ moon, colors }: { moon: MoonPhase; colors: ReturnType<typeof useThemedColors> }) {
+interface MoonRowProps {
+    moon: MoonPhase;
+    colors: ReturnType<typeof useThemedColors>;
+    t: ReturnType<typeof useTranslation>['t'];
+}
+
+function MoonRow({ moon, colors, t }: MoonRowProps) {
     return (
         <Box
             sx={{
@@ -414,7 +420,7 @@ export default function LivingJourneyPanel({ userId, role }: LivingJourneyPanelP
                     )}
 
                     {/* Moon — all users, live */}
-                    {moon && <MoonRow moon={moon} colors={colors} />}
+                    {moon && <MoonRow moon={moon} colors={colors} t={t} />}
 
                     {/* Whispered Moments — all users */}
                     <WhisperedMomentsRow
