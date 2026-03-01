@@ -104,25 +104,25 @@ jobs:
           SENTRY_ORG: 'intuitui-labs'
           SENTRY_PROJECT: 'gurudevi-mobile'
         run: |
-          # Sentry Hardening: Create properties in root and app level
-          echo "defaults.org=$SENTRY_ORG" > sentry.properties
-          echo "defaults.project=$SENTRY_PROJECT" >> sentry.properties
-          echo "auth.token=$SENTRY_AUTH_TOKEN" >> sentry.properties
-          
-          echo "🔍 Root sentry.properties created:"
-          cat sentry.properties | sed 's/auth.token=.*/auth.token=********/'
-          
           cd apps/gurudevi-mobile
-          mkdir -p android
-          cp ../../sentry.properties android/sentry.properties
           
-          echo "🔍 App-level android/sentry.properties content:"
-          cat android/sentry.properties | sed 's/auth.token=.*/auth.token=********/'
+          # 1. Ensure pnpm allows the Sentry CLI to run (disable side-effects-cache)
+          pnpm config set side-effects-cache false
           
+          # 2. Run prebuild (this clears/reinitializes the android folder)
           echo "🚀 Starting Expo Prebuild..."
           npx expo prebuild --platform android --no-install
           
-          echo "🔍 Checking android folder structure after prebuild:"
+          # 3. NOW inject the properties into the freshly created folder
+          echo "🔍 Injecting Sentry properties into android/sentry.properties..."
+          echo "auth.token=$SENTRY_AUTH_TOKEN" > android/sentry.properties
+          echo "defaults.org=$SENTRY_ORG" >> android/sentry.properties
+          echo "defaults.project=$SENTRY_PROJECT" >> android/sentry.properties
+          
+          echo "🔍 App-level android/sentry.properties content (masked):"
+          cat android/sentry.properties | sed 's/auth.token=.*/auth.token=********/'
+          
+          echo "🔍 Checking android folder structure:"
           ls -R android/app | grep -E "build.gradle|sentry.properties" || true
           
           # Sentry Linking Guard: Ensure plugin is present in build.gradle
