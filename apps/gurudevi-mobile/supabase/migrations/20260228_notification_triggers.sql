@@ -72,25 +72,25 @@ AS $$
 DECLARE
   v_author_name TEXT;
   v_group_name  TEXT;
-  v_member      RECORD;
 BEGIN
   SELECT full_name INTO v_author_name FROM public.users WHERE id = NEW.author_id;
   SELECT name INTO v_group_name FROM public.community_groups WHERE id = NEW.group_id;
 
-  FOR v_member IN
-    SELECT user_id FROM public.community_group_members
-    WHERE group_id = NEW.group_id AND user_id <> NEW.author_id AND status = 'active'
-  LOOP
-    INSERT INTO public.notifications(user_id, type, title, body, reference_id, reference_type)
-    VALUES (
-      v_member.user_id,
-      'new_post',
-      COALESCE(v_group_name, 'Group') || ': New Post',
-      COALESCE(v_author_name, 'Someone') || ' posted in ' || COALESCE(v_group_name, 'your circle'),
-      NEW.id,
-      'post'
-    );
-  END LOOP;
+  -- Batch-insert one notification per active group member (excluding the author).
+  -- Avoids the N+1 loop (one INSERT per member) by using INSERT ... SELECT.
+  INSERT INTO public.notifications(user_id, type, title, body, reference_id, reference_type)
+  SELECT
+    m.user_id,
+    'new_post',
+    COALESCE(v_group_name, 'Group') || ': New Post',
+    COALESCE(v_author_name, 'Someone') || ' posted in ' || COALESCE(v_group_name, 'your circle'),
+    NEW.id,
+    'post'
+  FROM public.community_group_members m
+  WHERE m.group_id = NEW.group_id
+    AND m.user_id <> NEW.author_id
+    AND m.status = 'active';
+
   RETURN NEW;
 END;
 $$;
