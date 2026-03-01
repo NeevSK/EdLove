@@ -314,11 +314,12 @@ export const moonPhaseAPI = {
             // Find the full moon date for this month by iterating days
             const calendar = this.getMonthCalendar(year, month);
             const fullMoonDay = calendar.find(d => d.is_poya);
-            if (fullMoonDay && POYA_NAMES[month]) {
+            const poyaName = POYA_NAMES[month];
+            if (fullMoonDay && poyaName) {
                 poyaDays.push({
                     date: fullMoonDay.date,
-                    name_en: POYA_NAMES[month].name_en,
-                    name_si: POYA_NAMES[month].name_si,
+                    name_en: poyaName.name_en,
+                    name_si: poyaName.name_si,
                 });
             }
         }

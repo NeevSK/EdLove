@@ -165,13 +165,14 @@ export const naturePathsAPI = {
         );
         if (!next) return;
 
-        await supabase
-            .from('user_growth_state')
-            .update({ banyan_stage: next, updated_at: new Date().toISOString() })
-            .eq('user_id', userId)
-            .catch((err: Error) =>
-                console.warn('[NaturePaths] Banyan advance failed:', err.message)
-            );
+        try {
+            await supabase
+                .from('user_growth_state')
+                .update({ banyan_stage: next, updated_at: new Date().toISOString() })
+                .eq('user_id', userId);
+        } catch (err) {
+            console.warn('[NaturePaths] Banyan advance failed:', err instanceof Error ? err.message : String(err));
+        }
     },
 
     /**
@@ -193,13 +194,14 @@ export const naturePathsAPI = {
         );
         if (!next) return;
 
-        await supabase
-            .from('user_growth_state')
-            .update({ river_stage: next, updated_at: new Date().toISOString() })
-            .eq('user_id', userId)
-            .catch((err: Error) =>
-                console.warn('[NaturePaths] River advance failed:', err.message)
-            );
+        try {
+            await supabase
+                .from('user_growth_state')
+                .update({ river_stage: next, updated_at: new Date().toISOString() })
+                .eq('user_id', userId);
+        } catch (err) {
+            console.warn('[NaturePaths] River advance failed:', err instanceof Error ? err.message : String(err));
+        }
     },
 
     /**
@@ -224,20 +226,21 @@ export const naturePathsAPI = {
         sourceEntityId?: string
     ): Promise<void> {
         // 1. Record the crystal
-        await supabase
-            .from('crystal_discoveries')
-            .insert({
-                user_id: userId,
-                crystal_type: crystalType,
-                subject_tags: subjectTags,
-                crystal_name_en: nameEn,
-                crystal_description_en: descriptionEn,
-                is_fractal_moment: isFractalMoment,
-                source_entity_id: sourceEntityId ?? null,
-            })
-            .catch((err: Error) =>
-                console.warn('[NaturePaths] Crystal insert failed:', err.message)
-            );
+        try {
+            await supabase
+                .from('crystal_discoveries')
+                .insert({
+                    user_id: userId,
+                    crystal_type: crystalType,
+                    subject_tags: subjectTags,
+                    crystal_name_en: nameEn,
+                    crystal_description_en: descriptionEn,
+                    is_fractal_moment: isFractalMoment,
+                    source_entity_id: sourceEntityId ?? null,
+                });
+        } catch (err) {
+            console.warn('[NaturePaths] Crystal insert failed:', err instanceof Error ? err.message : String(err));
+        }
 
         // 2. Update counters and check for tier advancement
         const { data: state } = await supabase
@@ -257,18 +260,19 @@ export const naturePathsAPI = {
             newFractalMoments
         );
 
-        await supabase
-            .from('user_growth_state')
-            .update({
-                crystals_found_count: newCrystalsFound,
-                fractal_moments_count: newFractalMoments,
-                ...(next ? { crystal_tier: next } : {}),
-                updated_at: new Date().toISOString(),
-            })
-            .eq('user_id', userId)
-            .catch((err: Error) =>
-                console.warn('[NaturePaths] Crystal state update failed:', err.message)
-            );
+        try {
+            await supabase
+                .from('user_growth_state')
+                .update({
+                    crystals_found_count: newCrystalsFound,
+                    fractal_moments_count: newFractalMoments,
+                    ...(next ? { crystal_tier: next } : {}),
+                    updated_at: new Date().toISOString(),
+                })
+                .eq('user_id', userId);
+        } catch (err) {
+            console.warn('[NaturePaths] Crystal state update failed:', err instanceof Error ? err.message : String(err));
+        }
     },
 
     /**

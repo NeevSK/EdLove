@@ -221,11 +221,14 @@ export const userGrowthStateAPI = {
             }
             const nextStageFallback = meetsTransitionCriteria(fallbackRow.bhumi_stage as BhumiStage, fallbackRow as UserGrowthState);
             if (nextStageFallback) {
-                await supabase
-                    .from('user_growth_state')
-                    .update({ bhumi_stage: nextStageFallback, updated_at: new Date().toISOString() })
-                    .eq('user_id', userId)
-                    .catch(() => {});
+                try {
+                    await supabase
+                        .from('user_growth_state')
+                        .update({ bhumi_stage: nextStageFallback, updated_at: new Date().toISOString() })
+                        .eq('user_id', userId);
+                } catch (e) {
+                    // ignore
+                }
             }
             return;
         }
@@ -233,11 +236,14 @@ export const userGrowthStateAPI = {
         // Check if the user has graduated to the next Bhumi stage (using DB-authoritative value)
         const nextStage = meetsTransitionCriteria(updatedRow.bhumi_stage as BhumiStage, updatedRow as UserGrowthState);
         if (nextStage) {
-            await supabase
-                .from('user_growth_state')
-                .update({ bhumi_stage: nextStage, updated_at: new Date().toISOString() })
-                .eq('user_id', userId)
-                .catch(() => {});
+            try {
+                await supabase
+                    .from('user_growth_state')
+                    .update({ bhumi_stage: nextStage, updated_at: new Date().toISOString() })
+                    .eq('user_id', userId);
+            } catch (e) {
+                // ignore
+            }
         }
     },
 

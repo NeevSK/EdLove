@@ -41,7 +41,7 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     const fileName = `gurudevi_${route.params.resourceId}.pdf`;
-    const localPath = FileSystem.cacheDirectory + fileName;
+    const localPath = ((FileSystem as any).cacheDirectory ?? (FileSystem as any).documentDirectory) + fileName;
 
     const checkCached = useCallback(async () => {
         try {
@@ -109,14 +109,19 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
                 subtitle="Institutional Document"
                 showBack
                 onBack={() => (navigation as any).goBack()}
-                rightActions={[
-                    {
-                        icon: Bookmark,
-                        onPress: () => setIsBookmarked(b => !b),
-                        accessibilityLabel: isBookmarked ? 'Remove bookmark' : 'Bookmark document',
-                        active: isBookmarked,
-                    },
-                ]}
+                rightAction={
+                    <Box sx={{ backgroundColor: isBookmarked ? colors.primary + '22' : 'transparent', borderRadius: 20 }}>
+                        <SanctuaryButton
+                            variant="ghost"
+                            size="sm"
+                            leftIcon={Bookmark}
+                            onPress={() => setIsBookmarked(b => !b)}
+                            accessibilityLabel={isBookmarked ? 'Remove bookmark' : 'Bookmark document'}
+                        >
+                            {''}
+                        </SanctuaryButton>
+                    </Box>
+                }
             />
 
             <VStack sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}>

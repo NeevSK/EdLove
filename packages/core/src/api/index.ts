@@ -41,6 +41,7 @@ export * from './resonantProxy';
 export * from './classroomNotes';
 export * from './principalNotes';
 export * from './community'; // Export community types/API
+export * from './staffManagement'; // Export staff management types
 // Growth Model v3.0 — Full Nature-Inspired Growth Ecosystem
 export * from './growthSignals';
 export * from './userGrowthState';
@@ -50,7 +51,7 @@ export * from './naturePaths';
 export * from './moonPhase';
 export * from './schoolForest';
 export * from './contextualChallenges';
-export * from './staffManagement'; // Export staff management types/API
+// Staff management types/API only exported selectively or implicitly required
 
 // Simplified named exports for direct access
 export {

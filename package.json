@@ -22,36 +22,7 @@
     "typescript": "5.9.2"
   },
   "pnpm": {
-    "packageExtensions": {
-      "react-native-reanimated": {
-        "dependencies": {
-          "semver": "^7.6.3"
-        }
-      },
-      "eslint-plugin-react-native-a11y": {
-        "peerDependencies": {
-          "eslint": ">=3.0.0"
-        }
-      },
-      "jest-watch-typeahead": {
-        "peerDependencies": {
-          "jest": ">=27.0.0 || ^30.0.0"
-        }
-      },
-      "@expo/router-server": {
-        "peerDependencies": {
-          "@expo/metro-runtime": "~55.0.6"
-        }
-      },
-      "@gluestack-ui/themed": {
-        "peerDependencies": {
-          "@types/react-native": "*"
-        },
-        "dependencies": {
-          "@types/react-native": "workspace:*"
-        }
-      }
-    },
+    "packageExtensions": {},
     "overrides": {
       "react": "19.2.0",
       "react-dom": "19.2.0",
@@ -60,7 +31,7 @@
       "react-test-renderer": "19.2.0",
       "@types/react": "19.2.14",
       "@types/react-dom": "19.2.1",
-      "@types/react-native": "workspace:*",
+      "@types/react-native": "workspace:@repo/types-shim",
       "glob": "^11.0.0",
       "rimraf": "^6.0.0",
       "inflight": "*",

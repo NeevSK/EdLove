@@ -21,9 +21,9 @@ interface StudentPulseSectionProps {
 }
 
 function attendanceColor(rate: number): string {
-  if (rate >= 90) return Theme.colors.sage ?? '#4caf50';
+  if (rate >= 90) return Theme.colors.sageGreen ?? '#4caf50';
   if (rate >= 75) return Theme.colors.amberGlow ?? '#ffc107';
-  return Theme.colors.roseQuartz ?? '#f44336';
+  return Theme.colors.emberRed ?? '#f44336';
 }
 
 function weekStartISO(): string {
@@ -31,7 +31,7 @@ function weekStartISO(): string {
   const day = d.getDay(); // 0=Sun
   const diff = day === 0 ? 6 : day - 1; // Monday=0
   d.setDate(d.getDate() - diff);
-  return d.toISOString().split('T')[0];
+  return d.toISOString().split('T')[0] ?? '';
 }
 
 export default function StudentPulseSection({
@@ -65,9 +65,9 @@ export default function StudentPulseSection({
         staffManagementAPI.getStudentAttendancePulse(schoolId),
         assignmentIds.length > 0
           ? supabase
-              .from('submissions')
-              .select('assignment_id')
-              .in('assignment_id', assignmentIds)
+            .from('submissions')
+            .select('assignment_id')
+            .in('assignment_id', assignmentIds)
           : Promise.resolve({ data: [] as { assignment_id: string }[], error: null }),
         supabase
           .from('enrollment_requests')
@@ -111,10 +111,10 @@ export default function StudentPulseSection({
     delta > 0
       ? `+${delta}% vs yesterday`
       : delta < 0
-      ? `${delta}% vs yesterday`
-      : 'same as yesterday';
+        ? `${delta}% vs yesterday`
+        : 'same as yesterday';
   const deltaColor =
-    delta >= 0 ? (Theme.colors.sage ?? '#4caf50') : (Theme.colors.roseQuartz ?? '#f44336');
+    delta >= 0 ? (Theme.colors.sageGreen ?? '#4caf50') : (Theme.colors.emberRed ?? '#f44336');
 
   return (
     <VStack sx={{ gap: Theme.spacing.sm }}>
@@ -124,14 +124,14 @@ export default function StudentPulseSection({
         <Box
           sx={{
             flex: 1,
-            backgroundColor: colors.surface,
+            backgroundColor: colors.primary,
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
             borderColor: colors.border,
           }}
         >
-          <Text sx={{ fontSize: 12, color: colors.textMuted, marginBottom: 2 }}>
+          <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>
             Attendance Today
           </Text>
           <Text
@@ -152,20 +152,20 @@ export default function StudentPulseSection({
         <Box
           sx={{
             flex: 1,
-            backgroundColor: colors.surface,
+            backgroundColor: colors.primary,
             borderRadius: Theme.corners.comfortable,
             padding: Theme.spacing.md,
             borderWidth: 1,
             borderColor: colors.border,
           }}
         >
-          <Text sx={{ fontSize: 12, color: colors.textMuted, marginBottom: 2 }}>
+          <Text sx={{ fontSize: 12, color: colors.textSecondary, marginBottom: 2 }}>
             Submissions This Week
           </Text>
           <Text sx={{ fontSize: 28, fontWeight: '700', color: colors.text }}>
             {submissionRate !== null ? `${submissionRate}%` : '—'}
           </Text>
-          <Text sx={{ fontSize: 11, color: colors.textMuted }}>of assignments</Text>
+          <Text sx={{ fontSize: 11, color: colors.textSecondary }}>of assignments</Text>
         </Box>
       </HStack>
 
@@ -176,20 +176,20 @@ export default function StudentPulseSection({
           <Box
             sx={{
               flex: 1,
-              backgroundColor: colors.surface,
+              backgroundColor: colors.primary,
               borderRadius: Theme.corners.comfortable,
               padding: Theme.spacing.md,
               borderWidth: 1,
               borderColor:
                 (pulse?.atRiskCount ?? 0) > 0
-                  ? (Theme.colors.roseQuartz ?? '#f44336')
+                  ? (Theme.colors.emberRed ?? '#f44336')
                   : colors.border,
             }}
           >
             <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
               <Box
                 sx={{
-                  backgroundColor: Theme.colors.roseQuartz ?? '#f44336',
+                  backgroundColor: Theme.colors.emberRed ?? '#f44336',
                   borderRadius: 10,
                   paddingHorizontal: 8,
                   paddingVertical: 2,
@@ -202,7 +202,7 @@ export default function StudentPulseSection({
               <Text sx={{ fontSize: 12, color: colors.text, flex: 1 }}>At-risk students</Text>
             </HStack>
             {onViewAtRisk && (
-              <Text sx={{ fontSize: 11, color: colors.textMuted, marginTop: 2 }}>
+              <Text sx={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>
                 Tap to review
               </Text>
             )}
@@ -214,7 +214,7 @@ export default function StudentPulseSection({
           <Box
             sx={{
               flex: 1,
-              backgroundColor: colors.surface,
+              backgroundColor: colors.primary,
               borderRadius: Theme.corners.comfortable,
               padding: Theme.spacing.md,
               borderWidth: 1,
@@ -240,7 +240,7 @@ export default function StudentPulseSection({
               <Text sx={{ fontSize: 12, color: colors.text, flex: 1 }}>Pending enrollments</Text>
             </HStack>
             {onViewEnrollments && (
-              <Text sx={{ fontSize: 11, color: colors.textMuted, marginTop: 2 }}>
+              <Text sx={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>
                 Tap to review
               </Text>
             )}

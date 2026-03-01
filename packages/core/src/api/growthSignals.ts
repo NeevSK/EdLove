@@ -320,10 +320,10 @@ export const growthSignalsAPI = {
         }
 
         // 2. Increment the dimension counter + check Bhumi stage transition
-        await userGrowthStateAPI.incrementDimension(userId, dimension).catch(() => {});
+        await userGrowthStateAPI.incrementDimension(userId, dimension).catch(() => { });
 
         // 3. Check for Whispered Moments triggered by this signal type
-        await checkWhisperedMoments(userId, signalType).catch(() => {});
+        await checkWhisperedMoments(userId, signalType).catch(() => { });
 
         // 4. Advance nature path if this signal is relevant to Banyan / River / Crystal
         if (BANYAN_SIGNALS.has(signalType)) {
@@ -334,7 +334,7 @@ export const growthSignalsAPI = {
                     peer_mentored_count: state.peer_mentored_count ?? 0,
                     circles_facilitated_count: state.circles_facilitated_count ?? 0,
                     blooming_signals: state.blooming_signals ?? 0,
-                }).catch(() => {});
+                }).catch(() => { });
             }
         } else if (RIVER_SIGNALS.has(signalType)) {
             const state = await userGrowthStateAPI.getFullState(userId).catch(() => null);
@@ -344,7 +344,7 @@ export const growthSignalsAPI = {
                     lessons_completed_count: state.lessons_completed_count ?? 0,
                     reflections_submitted_count: state.reflections_submitted_count ?? 0,
                     weaving_signals: state.weaving_signals ?? 0,
-                }).catch(() => {});
+                }).catch(() => { });
             }
         }
         if (CRYSTAL_SIGNALS.has(signalType)) {
@@ -354,7 +354,7 @@ export const growthSignalsAPI = {
                 ?? 'general';
             void naturePathsAPI.recordCrystalDiscovery(
                 userId,
-                isFractal ? 'fractal' : 'discovery',
+                isFractal ? 'fractal_crystal' : 'subject_crystal',
                 [subjectArea],
                 isFractal ? 'A Fractal Moment' : 'A New Discovery',
                 isFractal
@@ -362,7 +362,7 @@ export const growthSignalsAPI = {
                     : 'Something clicked — a new crystal formed in your collection.',
                 isFractal,
                 metadata.entity_id as string | undefined,
-            ).catch(() => {});
+            ).catch(() => { });
         }
 
         // 5. Record contribution toward any active Contextual Challenges
@@ -373,7 +373,7 @@ export const growthSignalsAPI = {
                 challengeMetric,
                 metadata.classroom_id as string | undefined,
                 metadata.school_id as string | undefined,
-            ).catch(() => {});
+            ).catch(() => { });
         }
     },
 
@@ -393,7 +393,7 @@ export const growthSignalsAPI = {
         signalType: GrowthSignalType,
         metadata: Record<string, unknown> = {}
     ): void {
-        void this.emitSignal(userId, signalType, metadata).catch(() => {});
+        void this.emitSignal(userId, signalType, metadata).catch(() => { });
     },
 };
 
@@ -426,15 +426,18 @@ async function checkWhisperedMoments(
         if (!conditionMet) continue;
 
         // Award the whispered moment — silently ignore duplicate-key errors
-        await supabase
-            .from('whispered_moments')
-            .insert({
-                user_id: userId,
-                moment_key: moment.key,
-                moment_name_si: moment.name_si,
-                moment_name_en: moment.name_en,
-            })
-            .catch(() => {});
+        try {
+            await supabase
+                .from('whispered_moments')
+                .insert({
+                    user_id: userId,
+                    moment_key: moment.key,
+                    moment_name_si: moment.name_si,
+                    moment_name_en: moment.name_en,
+                });
+        } catch (e) {
+            // ignore
+        }
     }
 }
 

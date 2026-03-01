@@ -20,9 +20,9 @@ interface TeacherCarouselProps {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  present: Theme.colors.sage ?? '#4caf50',
-  late: Theme.colors.sage ?? '#8bc34a',
-  absent: Theme.colors.roseQuartz ?? '#f44336',
+  present: Theme.colors.sageGreen ?? '#4caf50',
+  late: Theme.colors.sageGreen ?? '#8bc34a',
+  absent: Theme.colors.emberRed ?? '#f44336',
   on_leave: Theme.colors.amberGlow ?? '#ffc107',
   half_day: Theme.colors.amberGlow ?? '#ffc107',
 };
@@ -62,7 +62,7 @@ function TeacherCard({
   onTap?: () => void;
   colors: ReturnType<typeof useThemedColors>;
 }) {
-  const statusColor = item.todayStatus ? (STATUS_COLORS[item.todayStatus] ?? colors.textMuted) : colors.textMuted;
+  const statusColor = item.todayStatus ? (STATUS_COLORS[item.todayStatus] ?? colors.textSecondary) : colors.textSecondary;
   const statusLabel = item.todayStatus ? (STATUS_LABELS[item.todayStatus] ?? item.todayStatus) : 'No data';
 
   return (
@@ -71,7 +71,7 @@ function TeacherCard({
         sx={{
           width: 160,
           minHeight: 200,
-          backgroundColor: colors.surface,
+          backgroundColor: colors.primary,
           borderRadius: Theme.corners.comfortable,
           borderWidth: 1,
           borderColor: colors.border,
@@ -109,13 +109,13 @@ function TeacherCard({
         {/* Role tag */}
         <Box
           sx={{
-            backgroundColor: colors.background,
+            backgroundColor: colors.secondary,
             borderRadius: 999,
             paddingHorizontal: 8,
             paddingVertical: 2,
           }}
         >
-          <Text sx={{ fontSize: 10, color: colors.textMuted }}>
+          <Text sx={{ fontSize: 10, color: colors.textSecondary }}>
             {formatRole(item.role)}
           </Text>
         </Box>
@@ -130,11 +130,11 @@ function TeacherCard({
               backgroundColor: statusColor,
             }}
           />
-          <Text sx={{ fontSize: 11, color: colors.textMuted }}>{statusLabel}</Text>
+          <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{statusLabel}</Text>
         </HStack>
 
         {/* Classroom count */}
-        <Text sx={{ fontSize: 11, color: colors.textMuted }}>
+        <Text sx={{ fontSize: 11, color: colors.textSecondary }}>
           {item.classroomCount === 1 ? '1 assigned class' : `${item.classroomCount} assigned classes`}
         </Text>
       </Box>

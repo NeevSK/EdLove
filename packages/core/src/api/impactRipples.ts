@@ -163,25 +163,26 @@ export const impactRipplesAPI = {
 
         const messages = WARM_MESSAGES[input.rippleType];
 
-        await supabase
-            .from('impact_ripples')
-            .insert({
-                recipient_user_id: input.recipientUserId,
-                ripple_type: input.rippleType,
-                school_id: input.schoolId ?? null,
-                actor_user_id: input.actorUserId ?? null,
-                is_actor_visible: input.isActorVisible ?? false,
-                source_entity_type: input.sourceEntityType ?? null,
-                source_entity_id: input.sourceEntityId ?? null,
-                warm_message_en: messages.en,
-                warm_message_si: messages.si,
-                warm_message_ta: messages.ta,
-                batch_window: getBatchWindow(),
-                delivered: false,
-            })
-            .catch((err: Error) =>
-                console.warn('[ImpactRipples] Failed to create ripple:', err.message)
-            );
+        try {
+            await supabase
+                .from('impact_ripples')
+                .insert({
+                    recipient_user_id: input.recipientUserId,
+                    ripple_type: input.rippleType,
+                    school_id: input.schoolId ?? null,
+                    actor_user_id: input.actorUserId ?? null,
+                    is_actor_visible: input.isActorVisible ?? false,
+                    source_entity_type: input.sourceEntityType ?? null,
+                    source_entity_id: input.sourceEntityId ?? null,
+                    warm_message_en: messages.en,
+                    warm_message_si: messages.si,
+                    warm_message_ta: messages.ta,
+                    batch_window: getBatchWindow(),
+                    delivered: false,
+                });
+        } catch (err) {
+            console.warn('[ImpactRipples] Failed to create ripple:', err instanceof Error ? err.message : String(err));
+        }
     },
 
     /**
@@ -209,16 +210,17 @@ export const impactRipplesAPI = {
      * Called after the in-app notification has been displayed to the recipient.
      */
     async markDelivered(rippleId: string): Promise<void> {
-        await supabase
-            .from('impact_ripples')
-            .update({
-                delivered: true,
-                delivered_at: new Date().toISOString(),
-            })
-            .eq('id', rippleId)
-            .catch((err: Error) =>
-                console.warn('[ImpactRipples] Failed to mark delivered:', err.message)
-            );
+        try {
+            await supabase
+                .from('impact_ripples')
+                .update({
+                    delivered: true,
+                    delivered_at: new Date().toISOString(),
+                })
+                .eq('id', rippleId);
+        } catch (err) {
+            console.warn('[ImpactRipples] Failed to mark delivered:', err instanceof Error ? err.message : String(err));
+        }
     },
 
     /**

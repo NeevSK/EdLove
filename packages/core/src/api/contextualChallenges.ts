@@ -348,14 +348,16 @@ export const contextualChallengesAPI = {
         titleEn: string,
         durationDays = 7
     ): Promise<PersonalCompass> {
-        // Expire any current active compass
-        await supabase
-            .from('personal_compasses')
-            .update({ status: 'expired', updated_at: new Date().toISOString() })
-            .eq('user_id', userId)
-            .eq('status', 'active')
-            .catch(() => {});
-
+        try {
+            // Expire any current active compass
+            await supabase
+                .from('personal_compasses')
+                .update({ status: 'expired', updated_at: new Date().toISOString() })
+                .eq('user_id', userId)
+                .eq('status', 'active');
+        } catch (e) {
+            // ignore network errors
+        }
         const now = new Date();
         const endsAt = new Date(now.getTime() + durationDays * 86400000);
 
@@ -383,14 +385,15 @@ export const contextualChallengesAPI = {
      * No penalty. The compass simply goes away.
      */
     async clearPersonalCompass(userId: string): Promise<void> {
-        await supabase
-            .from('personal_compasses')
-            .update({ status: 'expired', updated_at: new Date().toISOString() })
-            .eq('user_id', userId)
-            .eq('status', 'active')
-            .catch((err: Error) =>
-                console.warn('[Challenges] Failed to clear compass:', err.message)
-            );
+        try {
+            await supabase
+                .from('personal_compasses')
+                .update({ status: 'expired', updated_at: new Date().toISOString() })
+                .eq('user_id', userId)
+                .eq('status', 'active');
+        } catch (err) {
+            console.warn('[Challenges] Failed to clear compass:', err instanceof Error ? err.message : String(err));
+        }
     },
 
     // ── CONTRIBUTION + PROGRESS ───────────────────────────────────────────────
@@ -414,89 +417,87 @@ export const contextualChallengesAPI = {
 
         // Check class challenge — fetch current count, then increment
         if (classroomId) {
-            updates.push(
-                supabase
+            updates.push((async () => {
+                const { data } = await supabase
                     .from('contextual_challenges')
                     .select('id, current_count, target_count')
                     .eq('classroom_id', classroomId)
                     .eq('metric', metric)
                     .eq('status', 'active')
-                    .maybeSingle()
-                    .then(async ({ data }) => {
-                        if (!data) return;
-                        const newCount = (data.current_count ?? 0) + 1;
-                        const isComplete = newCount >= data.target_count;
-                        await supabase
-                            .from('contextual_challenges')
-                            .update({
-                                current_count: newCount,
-                                status: isComplete ? 'completed' : 'active',
-                                updated_at: new Date().toISOString(),
-                            })
-                            .eq('id', data.id)
-                            .then(({ error }) => {
-                                if (error) console.warn('[Challenges] Class count update failed:', error.message);
-                            });
+                    .maybeSingle();
+
+                if (!data) return;
+                const newCount = (data.current_count ?? 0) + 1;
+                const isComplete = newCount >= data.target_count;
+                const { error } = await supabase
+                    .from('contextual_challenges')
+                    .update({
+                        current_count: newCount,
+                        status: isComplete ? 'completed' : 'active',
+                        updated_at: new Date().toISOString(),
                     })
-            );
+                    .eq('id', data.id);
+
+                if (error) console.warn('[Challenges] Class count update failed:', error.message);
+            })());
         }
 
         // Check school challenge — fetch current count, then increment
         if (schoolId) {
-            updates.push(
-                supabase
+            updates.push((async () => {
+                const { data } = await supabase
                     .from('contextual_challenges')
                     .select('id, current_count, target_count')
                     .eq('school_id', schoolId)
                     .eq('type', 'school_season_challenge')
                     .eq('metric', metric)
                     .eq('status', 'active')
-                    .maybeSingle()
-                    .then(async ({ data }) => {
-                        if (!data) return;
-                        const newCount = (data.current_count ?? 0) + 1;
-                        const isComplete = newCount >= data.target_count;
-                        await supabase
-                            .from('contextual_challenges')
-                            .update({
-                                current_count: newCount,
-                                status: isComplete ? 'completed' : 'active',
-                                updated_at: new Date().toISOString(),
-                            })
-                            .eq('id', data.id)
-                            .then(({ error }) => {
-                                if (error) console.warn('[Challenges] School count update failed:', error.message);
-                            });
+                    .maybeSingle();
+
+                if (!data) return;
+                const newCount = (data.current_count ?? 0) + 1;
+                const isComplete = newCount >= data.target_count;
+                const { error } = await supabase
+                    .from('contextual_challenges')
+                    .update({
+                        current_count: newCount,
+                        status: isComplete ? 'completed' : 'active',
+                        updated_at: new Date().toISOString(),
                     })
-            );
+                    .eq('id', data.id);
+
+                if (error) console.warn('[Challenges] School count update failed:', error.message);
+            })());
         }
 
         // Check personal compass
-        updates.push(
-            supabase
+        updates.push((async () => {
+            const { data } = await supabase
                 .from('personal_compasses')
                 .select('id, current_count, target_count')
                 .eq('user_id', userId)
                 .eq('metric', metric)
                 .eq('status', 'active')
-                .maybeSingle()
-                .then(async ({ data }) => {
-                    if (!data) return;
-                    const newCount = (data.current_count ?? 0) + 1;
-                    const isComplete = newCount >= data.target_count;
-                    await supabase
-                        .from('personal_compasses')
-                        .update({
-                            current_count: newCount,
-                            status: isComplete ? 'completed' : 'active',
-                            updated_at: new Date().toISOString(),
-                        })
-                        .eq('id', data.id)
-                        .catch((err: Error) =>
-                            console.warn('[Challenges] Personal compass update failed:', err.message)
-                        );
-                })
-        );
+                .maybeSingle();
+
+            if (!data) return;
+            const newCount = (data.current_count ?? 0) + 1;
+            const isComplete = newCount >= data.target_count;
+            try {
+                const { error } = await supabase
+                    .from('personal_compasses')
+                    .update({
+                        current_count: newCount,
+                        status: isComplete ? 'completed' : 'active',
+                        updated_at: new Date().toISOString(),
+                    })
+                    .eq('id', data.id);
+
+                if (error) console.warn('[Challenges] Personal compass update failed:', error.message);
+            } catch (err) {
+                console.warn('[Challenges] Personal compass update failed:', err instanceof Error ? err.message : String(err));
+            }
+        })());
 
         await Promise.allSettled(updates);
     },

@@ -29,7 +29,7 @@ export interface TeacherCarouselItem {
   avatarUrl: string | null;
 }
 
-export interface StaffLeave {
+export interface StaffLeaveDTO {
   id: string;
   school_id: string;
   user_id: string;
@@ -208,7 +208,7 @@ export const staffManagementAPI = {
   /**
    * Returns pending leave requests for a school (principal view).
    */
-  async getPendingLeaves(schoolId: string): Promise<StaffLeave[]> {
+  async getPendingLeaves(schoolId: string): Promise<StaffLeaveDTO[]> {
     try {
       const { data, error } = await supabase
         .from('staff_leaves')

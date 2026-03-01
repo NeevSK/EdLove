@@ -190,7 +190,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                                 accessibilityLabel="Seek in video"
                             >
                                 <View style={styles.progressTrack}>
-                                    <View style={[styles.progressFill, { width: progressWidth }]} />
+                                    <View style={[styles.progressFill, { width: progressWidth as any }]} />
                                 </View>
                             </TouchableOpacity>
 

@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors } from '@repo/ui';
 import { Theme } from '@repo/ui';
-import { staffManagementAPI, StaffLeave } from '@repo/core';
+import { staffManagementAPI, StaffLeaveDTO } from '@repo/core';
 
 interface LeaveApprovalSectionProps {
   schoolId: string;
@@ -18,16 +18,16 @@ interface LeaveApprovalSectionProps {
 }
 
 const LEAVE_TYPE_COLORS: Record<string, string> = {
-  sick: Theme.colors.roseQuartz ?? '#f44336',
+  sick: Theme.colors.emberRed ?? '#f44336',
   casual: Theme.colors.gurudeviBlue ?? '#2196f3',
-  annual: Theme.colors.sage ?? '#4caf50',
+  annual: Theme.colors.sageGreen ?? '#4caf50',
   maternity: Theme.colors.sanctuarySaffron ?? '#ff9800',
   paternity: Theme.colors.sanctuarySaffron ?? '#ff9800',
-  other: Theme.colors.textMuted ?? '#9e9e9e',
+  other: '#9e9e9e',
 };
 
 function leaveTypeColor(type: string): string {
-  return LEAVE_TYPE_COLORS[type.toLowerCase()] ?? (Theme.colors.textMuted ?? '#9e9e9e');
+  return LEAVE_TYPE_COLORS[type.toLowerCase()] ?? '#9e9e9e';
 }
 
 function formatDate(dateStr: string): string {
@@ -48,7 +48,7 @@ export default function LeaveApprovalSection({
 }: LeaveApprovalSectionProps) {
   const colors = useThemedColors();
   const [loading, setLoading] = useState(true);
-  const [leaves, setLeaves] = useState<StaffLeave[]>([]);
+  const [leaves, setLeaves] = useState<StaffLeaveDTO[]>([]);
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   async function fetchLeaves() {
@@ -72,7 +72,7 @@ export default function LeaveApprovalSection({
   return (
     <Box
       sx={{
-        backgroundColor: colors.surface,
+        backgroundColor: colors.primary,
         borderRadius: Theme.corners.comfortable,
         borderWidth: 1,
         borderColor: colors.border,
@@ -105,7 +105,7 @@ export default function LeaveApprovalSection({
 
       {/* Empty state */}
       {!loading && leaves.length === 0 && (
-        <Text sx={{ fontSize: 13, color: colors.textMuted, textAlign: 'center', paddingVertical: Theme.spacing.md }}>
+        <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}>
           No pending leave requests
         </Text>
       )}
@@ -142,14 +142,14 @@ export default function LeaveApprovalSection({
                 {shortId(leave.user_id)}…
               </Text>
               {/* Date range */}
-              <Text sx={{ fontSize: 11, color: colors.textMuted }}>
+              <Text sx={{ fontSize: 11, color: colors.textSecondary }}>
                 {formatDate(leave.start_date)} – {formatDate(leave.end_date)}
               </Text>
             </HStack>
 
             {/* Reason */}
             {leave.reason ? (
-              <Text sx={{ fontSize: 12, color: colors.textMuted }} numberOfLines={1}>
+              <Text sx={{ fontSize: 12, color: colors.textSecondary }} numberOfLines={1}>
                 {leave.reason}
               </Text>
             ) : null}
@@ -164,7 +164,7 @@ export default function LeaveApprovalSection({
               >
                 <Box
                   sx={{
-                    backgroundColor: Theme.colors.sage ?? '#4caf50',
+                    backgroundColor: Theme.colors.sageGreen ?? '#4caf50',
                     borderRadius: Theme.corners.medium ?? 8,
                     padding: Theme.spacing.xs,
                     alignItems: 'center',
@@ -189,10 +189,10 @@ export default function LeaveApprovalSection({
                     alignItems: 'center',
                     opacity: isProcessing ? 0.5 : 1,
                     borderWidth: 1,
-                    borderColor: Theme.colors.roseQuartz ?? '#f44336',
+                    borderColor: Theme.colors.emberRed ?? '#f44336',
                   }}
                 >
-                  <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.roseQuartz ?? '#f44336' }}>
+                  <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.emberRed ?? '#f44336' }}>
                     Reject
                   </Text>
                 </Box>

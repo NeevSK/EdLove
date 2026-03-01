@@ -323,7 +323,7 @@ export const schoolForestAPI = {
             const lastSignal = signals.length > 0
                 ? signals.slice().sort((a, b) =>
                     new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-                )[0].created_at
+                )[0]?.created_at ?? null
                 : null;
 
             const daysSince = lastSignal
@@ -398,10 +398,10 @@ export const schoolForestAPI = {
         const pulseNarrative = presenceFraction > 0.7
             ? `Most of your school's teachers have been active this week. The forest is alive.`
             : presenceFraction > 0.4
-            ? `About half the school has been engaged this week — steady and growing.`
-            : presenceFraction > 0.2
-            ? `A quieter week for many. Some trees may be resting; some may need rain.`
-            : `This has been a very quiet week across the school. A compassionate check-in with your team may be timely.`;
+                ? `About half the school has been engaged this week — steady and growing.`
+                : presenceFraction > 0.2
+                    ? `A quieter week for many. Some trees may be resting; some may need rain.`
+                    : `This has been a very quiet week across the school. A compassionate check-in with your team may be timely.`;
 
         return {
             school_id: schoolId,
@@ -434,22 +434,23 @@ export const schoolForestAPI = {
 
         const messages = GIFT_MESSAGES[giftType];
 
-        await supabase
-            .from('gratitude_gifts')
-            .insert({
-                sender_user_id: principalUserId,
-                recipient_user_id: recipientUserId,
-                school_id: schoolId ?? null,
-                message: personalMessage ?? null,
-                gift_type: giftType,
-                warm_message_en: messages.en,
-                warm_message_si: messages.si,
-                warm_message_ta: messages.ta,
-                delivered: false,
-            })
-            .catch((err: Error) =>
-                console.warn('[SchoolForest] Failed to create gratitude gift:', err.message)
-            );
+        try {
+            await supabase
+                .from('gratitude_gifts')
+                .insert({
+                    sender_user_id: principalUserId,
+                    recipient_user_id: recipientUserId,
+                    school_id: schoolId ?? null,
+                    message: personalMessage ?? null,
+                    gift_type: giftType,
+                    warm_message_en: messages.en,
+                    warm_message_si: messages.si,
+                    warm_message_ta: messages.ta,
+                    delivered: false,
+                });
+        } catch (err) {
+            console.warn('[SchoolForest] Failed to create gratitude gift:', err instanceof Error ? err.message : String(err));
+        }
 
         // Also create an Impact Ripple so it arrives through the normal delivery channel
         void impactRipplesAPI.createRipple({
@@ -458,7 +459,7 @@ export const schoolForestAPI = {
             rippleType: 'principal_recognition',
             sourceEntityType: 'gratitude_gift',
             sourceEntityId: undefined,
-        }).catch(() => {});
+        }).catch(() => { });
     },
 
     /**
@@ -484,12 +485,13 @@ export const schoolForestAPI = {
      * Mark a Gratitude Gift as delivered.
      */
     async markGiftDelivered(giftId: string): Promise<void> {
-        await supabase
-            .from('gratitude_gifts')
-            .update({ delivered: true, delivered_at: new Date().toISOString() })
-            .eq('id', giftId)
-            .catch((err: Error) =>
-                console.warn('[SchoolForest] Failed to mark gift delivered:', err.message)
-            );
+        try {
+            await supabase
+                .from('gratitude_gifts')
+                .update({ delivered: true, delivered_at: new Date().toISOString() })
+                .eq('id', giftId);
+        } catch (err) {
+            console.warn('[SchoolForest] Failed to mark gift delivered:', err instanceof Error ? err.message : String(err));
+        }
     },
 };

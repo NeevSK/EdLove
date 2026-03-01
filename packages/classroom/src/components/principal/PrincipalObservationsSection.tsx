@@ -26,15 +26,15 @@ interface PrincipalObservationsSectionProps {
 
 const OBS_TYPE_COLORS: Record<string, string> = {
   walkthrough: Theme.colors.gurudeviBlue ?? '#2196f3',
-  note: Theme.colors.textMuted ?? '#9e9e9e',
-  concern: Theme.colors.roseQuartz ?? '#f44336',
-  praise: Theme.colors.sage ?? '#4caf50',
+  note: '#9e9e9e',
+  concern: Theme.colors.emberRed ?? '#f44336',
+  praise: Theme.colors.sageGreen ?? '#4caf50',
 };
 
 const OBS_TYPE_OPTIONS = ['walkthrough', 'note', 'concern', 'praise'];
 
 function obsBadgeColor(type: string): string {
-  return OBS_TYPE_COLORS[type] ?? (Theme.colors.textMuted ?? '#9e9e9e');
+  return OBS_TYPE_COLORS[type] ?? '#9e9e9e';
 }
 
 function formatDate(dateStr: string): string {
@@ -99,7 +99,7 @@ export default function PrincipalObservationsSection({
     borderRadius: Theme.corners.medium ?? 8,
     padding: Theme.spacing.sm,
     color: colors.text,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.primary,
     fontSize: 14,
     marginBottom: Theme.spacing.sm,
     minHeight: 72,
@@ -109,7 +109,7 @@ export default function PrincipalObservationsSection({
   return (
     <Box
       sx={{
-        backgroundColor: colors.surface,
+        backgroundColor: colors.primary,
         borderRadius: Theme.corners.comfortable,
         borderWidth: 1,
         borderColor: colors.border,
@@ -140,7 +140,7 @@ export default function PrincipalObservationsSection({
 
       {/* Empty state */}
       {!loading && observations.length === 0 && (
-        <Text sx={{ fontSize: 13, color: colors.textMuted, textAlign: 'center', paddingVertical: Theme.spacing.md }}>
+        <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}>
           No observations yet. Start your first classroom walkthrough note.
         </Text>
       )}
@@ -164,7 +164,7 @@ export default function PrincipalObservationsSection({
                 {obs.type}
               </Text>
             </Box>
-            <Text sx={{ fontSize: 11, color: colors.textMuted, marginLeft: 'auto' }}>
+            <Text sx={{ fontSize: 11, color: colors.textSecondary, marginLeft: 'auto' }}>
               {formatDate(obs.created_at)}
             </Text>
           </HStack>
@@ -179,7 +179,7 @@ export default function PrincipalObservationsSection({
         <VStack sx={{ marginTop: Theme.spacing.md, gap: 0 }}>
           <TextInput
             placeholder="Write your observation…"
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={colors.textSecondary}
             value={content}
             onChangeText={setContent}
             multiline
@@ -203,7 +203,7 @@ export default function PrincipalObservationsSection({
                     sx={{
                       fontSize: 12,
                       fontWeight: '600',
-                      color: obsType === t ? '#fff' : colors.textMuted,
+                      color: obsType === t ? '#fff' : colors.textSecondary,
                       textTransform: 'capitalize',
                     }}
                   >

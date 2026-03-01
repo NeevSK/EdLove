@@ -56,7 +56,7 @@ export function GiveThuthimalModal({
         try {
             await thuthimalAPI.createGift(giverId, {
                 gifterName: giverName,
-                recipientRole,
+                recipientRole: recipientRole as 'teacher' | 'principal',
                 recipientId: resolvedRecipientId,
                 message: message.trim() || undefined,
             });
@@ -116,14 +116,14 @@ export function GiveThuthimalModal({
                             value={message}
                             onChangeText={setMessage}
                             placeholder="Add a personal message (optional)"
-                            placeholderTextColor={colors.textMuted}
+                            placeholderTextColor={colors.textSecondary}
                             multiline
                             numberOfLines={3}
                             maxLength={300}
                             style={[
                                 styles.messageInput,
                                 {
-                                    backgroundColor: colors.background,
+                                    backgroundColor: colors.primary,
                                     color: colors.text,
                                     borderColor: colors.border,
                                 },

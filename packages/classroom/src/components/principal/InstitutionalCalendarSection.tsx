@@ -20,10 +20,10 @@ interface InstitutionalCalendarSectionProps {
 
 const TYPE_COLORS: Record<string, string> = {
   term_start: Theme.colors.gurudeviBlue ?? '#2196f3',
-  exam: Theme.colors.roseQuartz ?? '#f44336',
-  holiday: Theme.colors.sage ?? '#4caf50',
+  exam: Theme.colors.amberGlow ?? '#f44336',
+  holiday: Theme.colors.sageGreen ?? '#4caf50',
   event: Theme.colors.sanctuarySaffron ?? '#ff9800',
-  other: Theme.colors.textMuted ?? '#9e9e9e',
+  other: '#9e9e9e',
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -37,7 +37,7 @@ const TYPE_LABELS: Record<string, string> = {
 const TYPE_OPTIONS = ['term_start', 'exam', 'holiday', 'event', 'other'];
 
 function typeBadgeColor(type: string): string {
-  return TYPE_COLORS[type] ?? (Theme.colors.textMuted ?? '#9e9e9e');
+  return TYPE_COLORS[type] ?? '#9e9e9e';
 }
 
 function formatDate(dateStr: string): string {
@@ -102,7 +102,7 @@ export default function InstitutionalCalendarSection({
     borderRadius: Theme.corners.medium ?? 8,
     padding: Theme.spacing.sm,
     color: colors.text,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.primary,
     fontSize: 14,
     marginBottom: Theme.spacing.sm,
   } as const;
@@ -110,7 +110,7 @@ export default function InstitutionalCalendarSection({
   return (
     <Box
       sx={{
-        backgroundColor: colors.surface,
+        backgroundColor: colors.primary,
         borderRadius: Theme.corners.comfortable,
         borderWidth: 1,
         borderColor: colors.border,
@@ -147,7 +147,7 @@ export default function InstitutionalCalendarSection({
 
       {/* Event list */}
       {!loading && events.length === 0 && (
-        <Text sx={{ fontSize: 13, color: colors.textMuted, textAlign: 'center', paddingVertical: Theme.spacing.md }}>
+        <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}>
           No upcoming events
         </Text>
       )}
@@ -172,7 +172,7 @@ export default function InstitutionalCalendarSection({
           <Text sx={{ flex: 1, fontSize: 13, color: colors.text }} numberOfLines={1}>
             {ev.title}
           </Text>
-          <Text sx={{ fontSize: 11, color: colors.textMuted }}>{formatDate(ev.start_date)}</Text>
+          <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{formatDate(ev.start_date)}</Text>
         </HStack>
       ))}
 
@@ -181,7 +181,7 @@ export default function InstitutionalCalendarSection({
         <VStack sx={{ marginTop: Theme.spacing.md, gap: 0 }}>
           <TextInput
             placeholder="Event title"
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={colors.textSecondary}
             value={title}
             onChangeText={setTitle}
             style={inputStyle}
@@ -207,7 +207,7 @@ export default function InstitutionalCalendarSection({
                       sx={{
                         fontSize: 12,
                         fontWeight: '600',
-                        color: selectedType === t ? '#fff' : colors.textMuted,
+                        color: selectedType === t ? '#fff' : colors.textSecondary,
                       }}
                     >
                       {TYPE_LABELS[t]}
@@ -220,14 +220,14 @@ export default function InstitutionalCalendarSection({
 
           <TextInput
             placeholder="Start date (YYYY-MM-DD)"
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={colors.textSecondary}
             value={startDate}
             onChangeText={setStartDate}
             style={inputStyle}
           />
           <TextInput
             placeholder="End date (YYYY-MM-DD, optional)"
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={colors.textSecondary}
             value={endDate}
             onChangeText={setEndDate}
             style={inputStyle}

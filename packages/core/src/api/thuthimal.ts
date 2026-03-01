@@ -21,6 +21,7 @@ export interface ThuthimalGift {
   claimed: boolean;
   claimed_at: string | null;
   expires_at: string | null;
+  message: string | null;
   created_at: string;
 }
 
@@ -31,6 +32,8 @@ export interface CreateGiftInput {
   recipientId?: string;
   /** Optional: ISO date string for expiry */
   expiresAt?: string;
+  /** Optional personal message */
+  message?: string;
 }
 
 export interface ClaimResult {
@@ -57,6 +60,7 @@ export const thuthimalAPI = {
         recipient_role: input.recipientRole,
         recipient_id: input.recipientId ?? null,
         expires_at: input.expiresAt ?? null,
+        message: input.message ?? null,
       })
       .select('gift_token')
       .single();
@@ -85,7 +89,7 @@ export const thuthimalAPI = {
     if (result.success) {
       void growthSignalsAPI.emitSignal(recipientId, 'thuthimal_received', {
         gifter_name: result.gifter_name,
-      }).catch(() => {});
+      }).catch(() => { });
     }
 
     return result;
