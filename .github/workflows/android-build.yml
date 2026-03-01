@@ -104,8 +104,22 @@ jobs:
           SENTRY_ORG: 'intuitui-labs'
           SENTRY_PROJECT: 'gurudevi-mobile'
         run: |
+          # Sentry Hardening: Create properties in root and app level
+          echo "defaults.org=$SENTRY_ORG" > sentry.properties
+          echo "defaults.project=$SENTRY_PROJECT" >> sentry.properties
+          echo "auth.token=$SENTRY_AUTH_TOKEN" >> sentry.properties
+          
           cd apps/gurudevi-mobile
+          cp ../../sentry.properties android/sentry.properties
+          
           npx expo prebuild --platform android --no-install
+          
+          # Sentry Linking Guard: Ensure plugin is present in build.gradle
+          if ! grep -q "sentry.gradle" android/app/build.gradle; then
+            echo "⚠️ Sentry plugin missing from build.gradle, injecting manually..."
+            echo 'apply from: new File(["node", "--print", "require('\''path'\'').dirname(require.resolve('\''@sentry/react-native/package.json'\''))"].execute().text.trim(), "sentry.gradle")' >> android/app/build.gradle
+          fi
+
           if [ "${{ github.event.inputs.build_method }}" == "local" ]; then
             # Build locally on the runner
             eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive --local --output=app.${{ matrix.type }}
