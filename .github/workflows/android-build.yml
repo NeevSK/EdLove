@@ -109,22 +109,41 @@ jobs:
           echo "defaults.project=$SENTRY_PROJECT" >> sentry.properties
           echo "auth.token=$SENTRY_AUTH_TOKEN" >> sentry.properties
           
+          echo "🔍 Root sentry.properties created:"
+          cat sentry.properties | sed 's/auth.token=.*/auth.token=********/'
+          
           cd apps/gurudevi-mobile
+          mkdir -p android
           cp ../../sentry.properties android/sentry.properties
           
+          echo "🔍 App-level android/sentry.properties content:"
+          cat android/sentry.properties | sed 's/auth.token=.*/auth.token=********/'
+          
+          echo "🚀 Starting Expo Prebuild..."
           npx expo prebuild --platform android --no-install
+          
+          echo "🔍 Checking android folder structure after prebuild:"
+          ls -R android/app | grep -E "build.gradle|sentry.properties" || true
           
           # Sentry Linking Guard: Ensure plugin is present in build.gradle
           if ! grep -q "sentry.gradle" android/app/build.gradle; then
             echo "⚠️ Sentry plugin missing from build.gradle, injecting manually..."
             echo 'apply from: new File(["node", "--print", "require('\''path'\'').dirname(require.resolve('\''@sentry/react-native/package.json'\''))"].execute().text.trim(), "sentry.gradle")' >> android/app/build.gradle
+          else
+            echo "✅ Sentry plugin confirmed in build.gradle"
           fi
 
+          echo "🔍 Final build.gradle Sentry check:"
+          grep "sentry.gradle" android/app/build.gradle || echo "NOT FOUND"
+
+          # Set Sentry CLI to debug mode for verbose logs during build
+          export SENTRY_LOG_LEVEL=debug
+          
           if [ "${{ github.event.inputs.build_method }}" == "local" ]; then
-            # Build locally on the runner
+            echo "🏗️ Starting LOCAL EAS Build..."
             eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive --local --output=app.${{ matrix.type }}
           else
-            # Trigger remote EAS build
+            echo "☁️ Triggering REMOTE EAS Build..."
             eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive --no-wait
           fi
 
