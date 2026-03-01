@@ -623,6 +623,7 @@ export default function AppSettingsScreen({ navigation }: any) {
           )}
         />
 
+        {__DEV__ && (
         <Box
           sx={{
             backgroundColor: colors.secondary,
@@ -691,6 +692,7 @@ export default function AppSettingsScreen({ navigation }: any) {
             </Button>
           </HStack>
         </Box>
+        )}
 
         {/* Gentle guidance footer */}
         <Box

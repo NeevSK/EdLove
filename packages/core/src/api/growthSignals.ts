@@ -411,16 +411,18 @@ async function checkWhisperedMoments(
     );
     if (relevantMoments.length === 0) return;
 
-    for (const moment of relevantMoments) {
-        // Skip if already experienced (UNIQUE constraint on user_id + moment_key)
-        const { data: existing } = await supabase
-            .from('whispered_moments')
-            .select('id')
-            .eq('user_id', userId)
-            .eq('moment_key', moment.key)
-            .maybeSingle();
+    // Batch-fetch already-experienced moments so we avoid one SELECT per moment key
+    const momentKeys = relevantMoments.map(m => m.key);
+    const { data: existingRows } = await supabase
+        .from('whispered_moments')
+        .select('moment_key')
+        .eq('user_id', userId)
+        .in('moment_key', momentKeys);
 
-        if (existing) continue;
+    const alreadyExperienced = new Set((existingRows ?? []).map((r: any) => r.moment_key as string));
+
+    for (const moment of relevantMoments) {
+        if (alreadyExperienced.has(moment.key)) continue;
 
         const conditionMet = await evaluateMomentCondition(userId, moment.key);
         if (!conditionMet) continue;
@@ -436,7 +438,7 @@ async function checkWhisperedMoments(
                     moment_name_en: moment.name_en,
                 });
         } catch (e) {
-            // ignore
+            // ignore duplicate-key violations (race condition guard)
         }
     }
 }

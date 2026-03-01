@@ -533,10 +533,10 @@ CREATE TABLE IF NOT EXISTS public.principal_notes (
 -- Helper to get school id
 CREATE OR REPLACE FUNCTION get_auth_user_school_id() RETURNS uuid AS $$
   SELECT school_id FROM public.users WHERE id = auth.uid();
-$$ LANGUAGE sql SECURITY DEFINER;
+$$ LANGUAGE sql SECURITY DEFINER SET search_path = public, pg_temp;
 
 -- New User lifecycle
-CREATE OR REPLACE FUNCTION public.handle_new_user() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER AS $$
+CREATE OR REPLACE FUNCTION public.handle_new_user() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$
 BEGIN
   INSERT INTO public.users (id, email, full_name, role)
   VALUES (new.id, new.email, COALESCE(new.raw_user_meta_data->>'full_name', 'Sanctuary User'), 'teacher')
@@ -546,7 +546,7 @@ END; $$;
 
 -- Thuthimal Claim
 CREATE OR REPLACE FUNCTION claim_thuthimal_gift(p_token UUID, p_recipient UUID) RETURNS JSONB
-LANGUAGE plpgsql SECURITY DEFINER AS $$
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$
 DECLARE v_gift thuthimal_gifts;
 BEGIN
   SELECT * INTO v_gift FROM thuthimal_gifts WHERE gift_token = p_token AND claimed = false AND (expires_at IS NULL OR expires_at > now()) FOR UPDATE;
@@ -558,7 +558,7 @@ END; $$;
 
 -- Daily Content delivery
 CREATE OR REPLACE FUNCTION get_daily_content_for_today(content_type text) RETURNS SETOF daily_content
-LANGUAGE sql SECURITY DEFINER AS $$
+LANGUAGE sql SECURITY DEFINER SET search_path = public, pg_temp AS $$
   SELECT * FROM daily_content WHERE type = content_type AND active = true AND date <= CURRENT_DATE ORDER BY date DESC LIMIT 1;
 $$;
 

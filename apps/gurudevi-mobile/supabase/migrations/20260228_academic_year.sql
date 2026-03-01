@@ -118,6 +118,15 @@ CREATE POLICY "sar_staff_update"
               AND u.school_id = student_academic_records.school_id
               AND u.role IN ('teacher', 'grade_head', 'section_head', 'principal', 'founder', 'admin')
         )
+    )
+    WITH CHECK (
+        -- Prevent moving the record to a different school
+        EXISTS (
+            SELECT 1 FROM public.users u
+            WHERE u.id = auth.uid()
+              AND u.school_id = student_academic_records.school_id
+              AND u.role IN ('teacher', 'grade_head', 'section_head', 'principal', 'founder', 'admin')
+        )
     );
 
 -- ── 4. Helper view: current-year classrooms ───────────────

@@ -54,7 +54,6 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
             }
 
             // Navigate to Main screen on success (or if no session for demo)
-            console.log('Successfully joined:', role, 'at', schoolName);
             navigation.navigate('Main');
         } catch (error) {
             console.error('Error joining sanctuary:', error);

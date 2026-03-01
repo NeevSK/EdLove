@@ -67,7 +67,8 @@ CREATE POLICY "classroom_notes_insert"
 -- Authors can update their own notes
 CREATE POLICY "classroom_notes_update"
     ON public.classroom_notes FOR UPDATE
-    USING (author_id = auth.uid());
+    USING (author_id = auth.uid())
+    WITH CHECK (author_id = auth.uid());
 
 -- Only the author can delete (hard-delete; old notes are removed when explicitly requested)
 CREATE POLICY "classroom_notes_delete"

@@ -2,7 +2,7 @@
 CREATE OR REPLACE FUNCTION get_daily_content_for_today(content_type text)
 RETURNS SETOF daily_content
 LANGUAGE sql
-SECURITY DEFINER
+SECURITY DEFINER SET search_path = public, pg_temp
 AS $$
   SELECT *
   FROM daily_content

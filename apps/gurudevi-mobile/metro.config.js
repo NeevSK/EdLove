@@ -61,6 +61,8 @@ config.resolver.extraNodeModules = {
 const WEB_SHIMS = {
     '@sentry/react-native': path.resolve(projectRoot, 'src/shims/sentry-web.js'),
     'posthog-react-native': path.resolve(projectRoot, 'src/shims/posthog-web.js'),
+    'react-native-get-random-values': path.resolve(projectRoot, 'src/shims/get-random-values-web.js'),
+    'react-native-url-polyfill/auto': path.resolve(projectRoot, 'src/shims/url-polyfill-web.js'),
 };
 
 const defaultResolveRequest = config.resolver.resolveRequest;

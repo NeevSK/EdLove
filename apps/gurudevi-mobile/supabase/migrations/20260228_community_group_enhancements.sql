@@ -166,6 +166,17 @@ BEGIN
             AND a.role = 'admin'
             AND a.status = 'active'
         )
+      )
+      WITH CHECK (
+        -- Updated row must remain within the same group
+        group_id = (SELECT cgm0.group_id FROM public.community_group_members cgm0 WHERE cgm0.id = community_group_members.id)
+        AND EXISTS (
+          SELECT 1 FROM public.community_group_members a
+          WHERE a.group_id = community_group_members.group_id
+            AND a.user_id = auth.uid()
+            AND a.role = 'admin'
+            AND a.status = 'active'
+        )
       );
   END IF;
 END $$;
