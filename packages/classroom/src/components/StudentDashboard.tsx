@@ -35,6 +35,8 @@ interface StudentDashboardProps {
     userId?: string;
 }
 
+const MS_PER_DAY = 86_400_000;
+
 export default function StudentDashboard({ onRefresh, schoolId, userId }: StudentDashboardProps) {
     const { t } = useTranslation();
     const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
@@ -49,11 +51,44 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
         unlockedRewards: 0
     });
 
+    // Fetch pending (unsubmitted, not-yet-due or overdue) assignments for this student
+    const fetchPendingAssignments = async (classroomIds: string[]) => {
+        if (!userId || !classroomIds.length) return;
+        try {
+            // Get all assignments for enrolled classrooms not past due by more than 7 days
+            const { data: assignments } = await supabase
+                .from('assignments')
+                .select('id')
+                .in('classroom_id', classroomIds)
+                .gte('due_date', new Date(Date.now() - 7 * MS_PER_DAY).toISOString().split('T')[0]);
+
+            if (!assignments?.length) return;
+
+            // Find which ones this student has already submitted
+            const { data: submitted } = await supabase
+                .from('submissions')
+                .select('assignment_id')
+                .eq('student_id', userId)
+                .in('assignment_id', (assignments as { id: string }[]).map(a => a.id));
+
+            const submittedIds = new Set(
+                ((submitted ?? []) as { assignment_id: string }[]).map(s => s.assignment_id)
+            );
+            const pending = (assignments as { id: string }[]).filter(a => !submittedIds.has(a.id)).length;
+
+            setStats(prev => ({ ...prev, pendingAssignments: pending }));
+        } catch {
+            // Non-fatal — stat stays at 0
+        }
+    };
+
     const handleClassroomsLoaded = (loadedClassrooms: any[]) => {
+        const classroomIds = loadedClassrooms.map((c: any) => c.id);
         setStats(prev => ({
             ...prev,
             enrolledClasses: loadedClassrooms.length
         }));
+        fetchPendingAssignments(classroomIds);
         setIsLoading(false);
     };
 

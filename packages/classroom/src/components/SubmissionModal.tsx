@@ -25,7 +25,8 @@ import {
     Spinner,
     useTheme,
 } from '@repo/ui';
-import { Alert, Image, Platform } from 'react-native';
+import { Alert, Image, Platform, Pressable } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { handleAPIError } from '@repo/core';
@@ -52,12 +53,46 @@ export default function SubmissionModal({
 
     const handlePickImage = async (useCamera: boolean = false) => {
         try {
-            // TODO: implement expo-image-picker; on web this is already supported
-            Alert.alert(
-                t('submission.photoPlaceholder') || 'Photo Feature',
-                t('submission.photoPlaceholderDesc') ||
-                'Image picker would be implemented here using expo-image-picker'
-            );
+            // Request permissions
+            if (useCamera) {
+                const { status } = await ImagePicker.requestCameraPermissionsAsync();
+                if (status !== 'granted') {
+                    if (Platform.OS !== 'web') {
+                        Alert.alert(
+                            t('submission.permissionTitle') || 'Camera Access',
+                            t('submission.permissionDesc') || 'Camera permission is needed to attach a photo.'
+                        );
+                    }
+                    return;
+                }
+            } else {
+                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                if (status !== 'granted') {
+                    if (Platform.OS !== 'web') {
+                        Alert.alert(
+                            t('submission.permissionTitle') || 'Gallery Access',
+                            t('submission.permissionDesc') || 'Gallery permission is needed to attach a photo.'
+                        );
+                    }
+                    return;
+                }
+            }
+
+            const result = useCamera
+                ? await ImagePicker.launchCameraAsync({
+                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                    allowsEditing: true,
+                    quality: 0.7,
+                })
+                : await ImagePicker.launchImageLibraryAsync({
+                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                    allowsEditing: true,
+                    quality: 0.7,
+                });
+
+            if (!result.canceled && result.assets?.[0]?.uri) {
+                setPhotoUri(result.assets[0].uri);
+            }
         } catch (error) {
             handleAPIError(error);
         }
