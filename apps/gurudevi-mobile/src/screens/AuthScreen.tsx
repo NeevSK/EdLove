@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     Box,
     VStack,
@@ -24,7 +24,7 @@ import {
     GuestDataSyncModal,
 } from '@repo/ui';
 import { Mail } from 'lucide-react-native';
-import { Platform } from 'react-native';
+import { Platform, type TextInput } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { supabase, UserRole, handleAPIError, GuestDataSync } from '@repo/core';
 import { Theme } from '@repo/ui';
@@ -72,6 +72,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
     const [showSyncModal, setShowSyncModal] = useState(false);
     const [newUserId, setNewUserId] = useState<string>('');
     const toast = useToast();
+    const passwordRef = useRef<TextInput>(null);
 
     React.useEffect(() => {
         supabase.auth.getUser().then(({ data: { user } }) => {
@@ -328,15 +329,21 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                                     value={email}
                                     onChangeText={setEmail}
                                     keyboardType="email-address"
+                                    returnKeyType="next"
+                                    onSubmitEditing={() => passwordRef.current?.focus()}
+                                    blurOnSubmit={false}
                                 />
                             </Input>
 
                             <Input variant="outline" size="lg" sx={{ borderRadius: Theme.corners.comfortable, backgroundColor: colors.secondary }}>
                                 <InputField
+                                    ref={passwordRef}
                                     placeholder={t('auth.password')}
                                     value={password}
                                     onChangeText={setPassword}
                                     secureTextEntry
+                                    returnKeyType="go"
+                                    onSubmitEditing={handleAuth}
                                 />
                             </Input>
 

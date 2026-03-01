@@ -12,7 +12,7 @@ import { Home, School, Users, Library, User, Sparkles } from 'lucide-react-nativ
 import { Session } from '@supabase/supabase-js';
 import * as Font from 'expo-font';
 import { supabase, useStore, UserRole, SchoolType, initSentry, initPostHog, trackEvent, identifyUser } from '@repo/core';
-import { Platform } from 'react-native';
+import { Platform, type LinkingOptions } from 'react-native';
 import { PostHogProvider } from 'posthog-react-native';
 import * as Sentry from '@sentry/react-native';
 import { Theme } from '@repo/ui';
@@ -309,7 +309,23 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
       <SafeAreaProvider>
         <ToastProvider>
           <ErrorBoundary name="App Root">
-            <NavigationContainer ref={navigationRef}>
+            <NavigationContainer
+              ref={navigationRef}
+              linking={Platform.OS === 'web' ? ({
+                prefixes: ['https://app.gurudevi.edlove.org', 'http://localhost:4000'],
+                config: {
+                  screens: {
+                    Welcome: '',
+                    Onboarding: 'onboarding',
+                    Main: 'app',
+                    Auth: 'auth',
+                    AIAssistant: 'ai',
+                    QRHandler: 'qr',
+                    ThuthimalClaim: 'thuthimal',
+                  },
+                },
+              } as LinkingOptions<any>) : undefined}
+            >
               <PostHogProvider
                 apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
                 options={{
