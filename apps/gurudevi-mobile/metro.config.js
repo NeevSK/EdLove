@@ -63,6 +63,14 @@ const WEB_SHIMS = {
     'posthog-react-native': path.resolve(projectRoot, 'src/shims/posthog-web.js'),
     'react-native-get-random-values': path.resolve(projectRoot, 'src/shims/get-random-values-web.js'),
     'react-native-url-polyfill/auto': path.resolve(projectRoot, 'src/shims/url-polyfill-web.js'),
+    // @react-native-ml-kit packages are native JSI modules. Their TypeScript-compiled
+    // output uses Object.defineProperty(exports, 'default', { get: () => X }) which
+    // Metro's web factory wrapper cannot overwrite, causing:
+    //   "Cannot set property default of #<object> which has only a getter"
+    // ScannerModal.web.tsx provides a manual-entry fallback, so these are never
+    // called in a browser context.
+    '@react-native-ml-kit/text-recognition': path.resolve(projectRoot, 'src/shims/ml-kit-text-recognition-web.js'),
+    '@react-native-ml-kit/barcode-scanning': path.resolve(projectRoot, 'src/shims/ml-kit-barcode-scanning-web.js'),
 };
 
 const defaultResolveRequest = config.resolver.resolveRequest;
