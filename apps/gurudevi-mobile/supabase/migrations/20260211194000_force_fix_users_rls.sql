@@ -71,8 +71,7 @@ BEGIN
   ON CONFLICT (user_id) DO NOTHING;
   RETURN new;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 DROP TRIGGER IF EXISTS on_auth_user_created_preferences ON public.users;
 CREATE TRIGGER on_auth_user_created_preferences
 AFTER INSERT ON public.users

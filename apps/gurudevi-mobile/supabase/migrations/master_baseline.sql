@@ -607,7 +607,7 @@ ALTER TABLE public.student_academic_records ENABLE ROW LEVEL SECURITY;
 -- 1. Foundation & Users
 CREATE POLICY "Schools are viewable by authenticated users" ON public.schools FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Users can create schools" ON public.schools FOR INSERT TO authenticated WITH CHECK (true);
-CREATE POLICY "Principals manage their own schools" ON public.schools FOR ALL TO authenticated USING (created_by = auth.uid());
+CREATE POLICY "Principals manage their own schools" ON public.schools FOR ALL TO authenticated USING (created_by = auth.uid()) WITH CHECK (created_by = auth.uid());
 
 CREATE POLICY "Users can select own and school members" ON public.users FOR SELECT TO authenticated USING (id = auth.uid() OR school_id = get_auth_user_school_id());
 CREATE POLICY "Users can insert own profile" ON public.users FOR INSERT TO authenticated WITH CHECK (id = auth.uid());
@@ -655,7 +655,7 @@ CREATE POLICY "Users can insert own usage logs" ON public.feature_usage_log FOR 
 CREATE POLICY "Users can view own usage logs" ON public.feature_usage_log FOR SELECT USING (user_id = auth.uid());
 CREATE POLICY "Users can view own rewards" ON public.user_rewards FOR SELECT USING (user_id = auth.uid());
 CREATE POLICY "Users can insert own rewards" ON public.user_rewards FOR INSERT WITH CHECK (user_id = auth.uid());
-CREATE POLICY "Users can update own rewards" ON public.user_rewards FOR UPDATE USING (user_id = auth.uid());
+CREATE POLICY "Users can update own rewards" ON public.user_rewards FOR UPDATE USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
 CREATE POLICY "Service role manages rewards" ON public.user_rewards FOR ALL TO service_role USING (true);
 
 

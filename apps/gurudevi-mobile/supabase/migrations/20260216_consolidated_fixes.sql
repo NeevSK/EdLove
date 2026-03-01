@@ -33,7 +33,8 @@ USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can update their own mood logs"
 ON mood_logs FOR UPDATE TO authenticated
-USING (auth.uid() = user_id);
+USING (auth.uid() = user_id)
+WITH CHECK (auth.uid() = user_id);
 
 -- Grant privileges to authenticated role
 -- SECURITY: Anon role should only have SELECT on daily_content, not ALL

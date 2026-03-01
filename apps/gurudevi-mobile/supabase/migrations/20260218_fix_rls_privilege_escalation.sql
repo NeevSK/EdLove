@@ -110,7 +110,7 @@ BEGIN
     now()
   );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 -- Grant execute permission to authenticated users (authorization checked inside function)
 GRANT EXECUTE ON FUNCTION assign_user_role TO authenticated;

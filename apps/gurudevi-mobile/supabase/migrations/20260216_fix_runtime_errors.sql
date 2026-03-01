@@ -45,7 +45,8 @@ CREATE POLICY "Users can update their own mood logs"
 ON mood_logs
 FOR UPDATE
 TO authenticated
-USING (auth.uid() = user_id);
+USING (auth.uid() = user_id)
+WITH CHECK (auth.uid() = user_id);
 
 -- Grant privileges to authenticated role
 GRANT ALL ON TABLE mood_logs TO authenticated;

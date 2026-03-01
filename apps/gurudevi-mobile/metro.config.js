@@ -81,4 +81,19 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     return context.resolveRequest(context, moduleName, platform);
 };
 
+// 7. ESM package exports resolution
+//
+// Packages like i18next v23+, react-i18next v14+, and @tanstack/react-query v5
+// are "ESM-first": they ship pre-compiled ESM that uses TypeScript's
+// `Object.defineProperty(exports, 'default', { get: () => X })` pattern.
+// When Metro's CJS wrapper then tries to write exports.default = interop(Y)
+// it throws: "Cannot set property default of #<object> which has only a getter".
+//
+// Fix: enable package.json `exports` field resolution and prefer the `require`
+// (CJS) condition over `import` (ESM) on every platform.  This makes Metro
+// pick e.g. `i18next/dist/cjs/i18next.js` instead of the ESM entry, which is
+// a plain CJS file that Metro can wrap without hitting the getter conflict.
+config.resolver.unstable_enablePackageExports = true;
+config.resolver.unstable_conditionNames = ['browser', 'require', 'default'];
+
 module.exports = config;
