@@ -19,6 +19,8 @@ interface ScreenWrapperProps {
 
 export function useBottomTabPadding() {
     const insets = useSafeAreaInsets();
+    // On web, the sidebar navigation has no bottom tab bar, so no padding is needed.
+    if (Platform.OS === 'web') return 0;
     return 80 + insets.bottom;
 }
 
