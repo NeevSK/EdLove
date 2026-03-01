@@ -107,29 +107,14 @@ jobs:
           # 1. Ensure pnpm allows the Sentry CLI to run
           pnpm config set side-effects-cache false
           
-          # 2. Approve pnpm build scripts (important for isolated eas local build)
+          # 2. Approve pnpm build scripts
           pnpm approve-builds --yes || true
           
           cd apps/gurudevi-mobile
           
-          # 3. Run prebuild (this clears/reinitializes the android folder)
-          echo "🚀 Starting Expo Prebuild..."
-          npx expo prebuild --platform android --no-install
-          
-          # 4. Sentry Linking Guard: Ensure plugin is present in build.gradle
-          if ! grep -q "sentry.gradle" android/app/build.gradle; then
-            echo "⚠️ Sentry plugin missing from build.gradle, injecting manually..."
-            echo 'apply from: new File(["node", "--print", "require('\''path'\'').dirname(require.resolve('\''@sentry/react-native/package.json'\''))"].execute().text.trim(), "sentry.gradle")' >> android/app/build.gradle
-          else
-            echo "✅ Sentry plugin confirmed in build.gradle"
-          fi
-
-          # 5. Export Sentry credentials for potential CLI usage
-          export SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
-          export SENTRY_ORG=$SENTRY_ORG
-          export SENTRY_PROJECT=$SENTRY_PROJECT
-
-          # 6. Trigger Build (Source maps will be generated but not uploaded by Gradle)
+          # 3. Trigger Build
+          # The custom Sentry plugin will handle property injection during prebuild.
+          # Ensure you have run: eas secret:create --scope project --name sentry-auth-token --value <token>
           if [ "${{ github.event.inputs.build_method }}" == "local" ]; then
             echo "🏗️ Starting LOCAL EAS Build..."
             eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive --local --output=app.${{ matrix.type }}
@@ -137,23 +122,6 @@ jobs:
             echo "☁️ Triggering REMOTE EAS Build..."
             eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive --no-wait
           fi
-
-      - name: 📡 Upload Sentry Source Maps
-        if: github.event.inputs.build_method == 'local'
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: 'intuitui-labs'
-          SENTRY_PROJECT: 'gurudevi-mobile'
-        run: |
-          echo "📡 Manually uploading source maps to Sentry..."
-          cd apps/gurudevi-mobile
-          
-          # Uploading for version 1.0.0 (matches app.json)
-          npx @sentry/cli react-native gradle \
-            --bundle android/app/build/generated/assets/react/release/index.android.bundle \
-            --sourcemap android/app/build/generated/sourcemaps/react/release/index.android.bundle.map \
-            --release org.edlove.gurudevi@1.0.0 \
-            --dist 19
 
       - name: 📤 Upload Artifact
         if: github.event.inputs.build_method == 'local'

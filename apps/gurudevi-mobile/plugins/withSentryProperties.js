@@ -1,0 +1,33 @@
+const { withDangerousMods } = require('@expo/config-plugins');
+const fs = require('fs');
+const path = require('path');
+
+module.exports = function withSentryProperties(config) {
+    return withDangerousMods(config, [
+        'android',
+        async (config) => {
+            const sentryPropsPath = path.join(
+                config.modRequest.platformProjectRoot,
+                'sentry.properties'
+            );
+
+            const token = process.env.SENTRY_AUTH_TOKEN || '';
+            const org = process.env.SENTRY_ORG || 'intuitui-labs';
+            const project = process.env.SENTRY_PROJECT || 'gurudevi-mobile';
+
+            console.log(`[withSentryProperties] Injecting properties into ${sentryPropsPath}`);
+            console.log(`[withSentryProperties] Org: ${org}, Project: ${project}, Token present: ${!!token}`);
+
+            const content = [
+                `auth.token=${token}`,
+                `defaults.org=${org}`,
+                `defaults.project=${project}`,
+                ''
+            ].join('\n');
+
+            fs.writeFileSync(sentryPropsPath, content);
+
+            return config;
+        },
+    ]);
+};

@@ -78,6 +78,7 @@
       "expo-font",
       "./plugins/withAndroidCruncherDisabled",
       "./plugins/withGradleProperties",
+      "./plugins/withSentryProperties",
       "expo-localization",
       "expo-asset",
       "expo-audio",
