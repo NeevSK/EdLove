@@ -75,7 +75,6 @@ function App() {
 
   // Extract user profile fetching logic
   const fetchAndSetUserProfile = async (userId: string) => {
-    console.log(`🚀 Profile: Fetching for user ${userId}...`);
     try {
       const { data: userProfile, error } = await supabase
         .from('users')
@@ -89,7 +88,6 @@ function App() {
       }
 
       if (userProfile) {
-        console.log('✅ Profile: Data received', userProfile);
         const { setUserRole, setOnboardingCompleted } = useStore.getState();
         setUserRole(userProfile.role as UserRole | null);
         setOnboardingCompleted(!!userProfile.onboarding_completed);
@@ -118,10 +116,8 @@ function App() {
   // Load custom fonts
   useEffect(() => {
     async function loadFonts() {
-      console.log('🚀 Startup: Loading fonts...');
       try {
         await Font.loadAsync(fontAssets);
-        console.log('✅ Startup: Fonts loaded');
         setFontsLoaded(true);
       } catch (error) {
         console.warn('⚠️ Startup: Font loading failed:', error);
@@ -132,8 +128,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log('🚀 Startup: Initializing Auth session...');
-
     const checkSession = async () => {
       try {
         // Initial session check - non-blocking for fonts/UI
@@ -142,7 +136,6 @@ function App() {
 
         setSession(session);
         if (session) {
-          console.log('🔄 App: Session detected during init, hiding WelcomeScreen');
           setShowWelcome(false);
         }
         if (session?.user) {
@@ -159,7 +152,6 @@ function App() {
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('🔄 Auth Change:', event, !!session ? '(Session exists)' : '(No session)');
       setSession(session);
 
       if (session?.user) {
@@ -211,13 +203,13 @@ function App() {
       case 'classroom':
         return [
           {
-            label: 'Create Lesson',
-            onPress: () => navigationRef.isReady() && navigationRef.navigate('CreateLesson'),
+            label: 'My Classrooms',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Classroom' }),
             icon: School
           },
           {
-            label: 'Add Assignment',
-            onPress: () => navigationRef.isReady() && navigationRef.navigate('CreateAssignment'),
+            label: 'Mark Attendance',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Classroom' }),
             icon: School
           },
         ];
@@ -225,12 +217,12 @@ function App() {
         return [
           {
             label: 'New Post',
-            onPress: () => navigationRef.isReady() && navigationRef.navigate('CreatePost'),
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Community' }),
             icon: Users
           },
           {
-            label: 'Share Resource',
-            onPress: () => navigationRef.isReady() && navigationRef.navigate('CreatePost'),
+            label: 'Find Groups',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Community' }),
             icon: Users
           },
         ];
@@ -238,12 +230,12 @@ function App() {
         return [
           {
             label: 'Add Resource',
-            onPress: () => navigationRef.isReady() && navigationRef.navigate('AddLibraryResource'),
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Library' }),
             icon: Library
           },
           {
-            label: 'Add Bookmark',
-            onPress: () => navigationRef.isReady() && navigationRef.navigate('AddLibraryResource'),
+            label: 'Browse Library',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Library' }),
             icon: Library
           },
         ];
@@ -251,7 +243,7 @@ function App() {
         return [
           {
             label: 'Edit Profile',
-            onPress: () => navigationRef.isReady() && navigationRef.navigate('EditProfile'),
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Profile' }),
             icon: User
           },
         ];
@@ -279,8 +271,6 @@ function App() {
 
   const isNewUser = !onboardingCompleted;
   const needsWelcome = showWelcome && isNewUser;
-
-  console.log('App: Loading finished, rendering main tree');
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -348,7 +338,6 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                           <WelcomeScreen
                             initialShowAuth={onboardingCompleted}
                             onNext={() => {
-                              console.log('➡️ App: onNext called from WelcomeScreen');
                               setShowWelcome(false);
                             }}
                           />
@@ -362,7 +351,6 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                           <OnboardingScreen
                             isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
                             onComplete={(name: string, role: any, wantsAccount?: boolean) => {
-                              console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
                               const store = useStore.getState();
                               if (name) store.setTeacherName(name);
                               if (role) store.setUserRole(role);

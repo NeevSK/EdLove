@@ -64,14 +64,14 @@ const PHASE_ACCENT: Record<string, string> = {
 
 // Role → display name + accent colour
 const ROLE_META: Record<string, { label: string; color: string }> = {
-    teacher: { label: 'Teacher', color: '#D4843A' },
-    student: { label: 'Student', color: '#8BBF7A' },
-    principal: { label: 'Principal', color: '#6B6480' },
-    founder: { label: 'Founder', color: '#D4843A' },
-    section_head: { label: 'Sec. Head', color: '#D4843A' },
-    grade_head: { label: 'Grade Head', color: '#D4843A' },
-    admin: { label: 'Admin', color: '#6B6480' },
-    guest: { label: 'Guest', color: '#8C8273' },
+    teacher:      { label: 'Teacher',    color: Theme.colors.sanctuarySaffron },
+    student:      { label: 'Student',    color: Theme.colors.sageGreen },
+    principal:    { label: 'Principal',  color: Theme.colors.shadowViolet },
+    founder:      { label: 'Founder',    color: Theme.colors.sanctuarySaffron },
+    section_head: { label: 'Sec. Head',  color: Theme.colors.sanctuarySaffron },
+    grade_head:   { label: 'Grade Head', color: Theme.colors.sanctuarySaffron },
+    admin:        { label: 'Admin',      color: Theme.colors.shadowViolet },
+    guest:        { label: 'Guest',      color: Theme.colors.starlightGray },
 };
 
 // ─── Keyboard shortcut label per tab (matches Cmd+1-5) ────────────────────────

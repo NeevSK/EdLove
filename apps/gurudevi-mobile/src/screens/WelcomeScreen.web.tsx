@@ -59,16 +59,16 @@ const PILLARS = [
     { name: 'Profile',   emoji: '🪪', color: Theme.colors.sanctuarySaffron },
 ];
 
-// Phase → gradient stop colours
+// Phase → gradient stop colours — mapped to Theme tokens (circadian identity, no raw hex)
 const PHASE_GRADIENT: Record<string, [string, string]> = {
-    predawn: ['#1A1610', '#2A2318'],
-    dawn: ['#FAF3E0', '#F5EDD6'],
-    morning: ['#F5EDD6', '#FAF7ED'],
-    midday: ['#FAF7ED', '#F0EBD8'],
-    afternoon: ['#F5EDD6', '#FAF3E0'],
-    evening: ['#F0E8D0', '#E8DFC8'],
-    dusk: ['#2A2318', '#3D3528'],
-    night: ['#1A1610', '#2A2318'],
+    predawn:   [Theme.colors.obsidian,    Theme.colors.ink],
+    dawn:      [Theme.colors.dawnWhite,   Theme.colors.vellum],
+    morning:   [Theme.colors.vellum,      Theme.colors.silk],
+    midday:    [Theme.colors.silk,        Theme.colors.linen],
+    afternoon: [Theme.colors.vellum,      Theme.colors.dawnWhite],
+    evening:   [Theme.colors.eveningWarm, Theme.colors.linen],
+    dusk:      [Theme.colors.ink,         Theme.colors.shroud],
+    night:     [Theme.colors.obsidian,    Theme.colors.ink],
 };
 
 // ─────────────────────────────────────────────

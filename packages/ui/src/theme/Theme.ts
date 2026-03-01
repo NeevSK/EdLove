@@ -37,6 +37,9 @@ export const colors = {
     vellum: '#F5EDD6',              // The Ground (Base)
     silk: '#FAF7ED',                // The Surface (Secondary)
     linen: '#E8E2CF',               // The Depth (Tertiary)
+    // Circadian gradient intermediates (dawn warm-white & evening warm-beige)
+    dawnWhite: '#FAF3E0',           // Dawn transition — between silk and vellum
+    eveningWarm: '#F0E8D0',         // Evening transition — between vellum and linen
 
     // Backgrounds - The Dark World (Bioluminescence)
     ink: '#2A2318',                 // Midnight Ink (Deep Base)
