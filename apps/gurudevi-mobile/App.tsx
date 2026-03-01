@@ -36,6 +36,8 @@ import { ErrorBoundary, NetworkStatusBanner } from '@repo/ui';
 import { SyncManager } from '@repo/core';
 import { LanguageUtils } from './src/utils/LanguageUtils';
 import CommandPalette from './src/components/web/CommandPalette';
+import { useWebPageTitle } from './src/utils/useWebPageTitle';
+import { PWAInstallBanner } from './src/components/web/PWAInstallBanner';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -306,19 +308,8 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
   const { phase } = useTheme();
   const isWarmPhase = ['morning', 'afternoon', 'evening'].includes(phase);
 
-  // Update document.title based on the active tab/screen (web only)
-  useEffect(() => {
-    if (Platform.OS !== 'web') return;
-    const TITLES: Record<string, string> = {
-      self: 'Self',
-      classroom: 'Classroom',
-      community: 'Community',
-      library: 'Library',
-      profile: 'Profile',
-    };
-    const label = TITLES[currentTab] ?? 'Gurudevi';
-    (document as Document).title = `${label} | Gurudevi 🪷`;
-  }, [currentTab]);
+  // Reactive document.title tied to actual navigation state (replaces tab-only version)
+  useWebPageTitle();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -435,6 +426,9 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                 onOpenAI={() => navigationRef.navigate('AIAssistant' as never)}
               />
             )}
+
+            {/* PWA Install Banner — web-only; hook guards against native/installed/dismissed */}
+            <PWAInstallBanner />
 
             {toast.visible && (
               <SanctuaryToast
