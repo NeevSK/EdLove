@@ -85,7 +85,7 @@ export default function StudentSelfView() {
             return (
                 <PositiveInvitation
                     type="guest"
-                    onAction={() => { }} // TODO: Navigate to Auth
+                    onAction={() => navigation.navigate('Auth' as never)}
                 />
             );
         }

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
 import { Box, Text, VStack } from '../gluestack';
 import { Theme } from '../theme/Theme';
 import { useThemedColors } from '../hooks/useThemedColors';
@@ -21,16 +21,26 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [toast, setToast] = useState<ToastOptions | null>(null);
     const colors = useThemedColors();
+    // Track the active timer so rapid showToast calls don't leave orphaned timers
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const showToast = useCallback(({ message, type = 'sanctuary', duration = 3000 }: ToastOptions) => {
+        // Clear any in-flight dismiss timer before starting a fresh one
+        if (timerRef.current !== null) {
+            clearTimeout(timerRef.current);
+        }
         setToast({ message, type, duration });
-        setTimeout(() => setToast(null), duration);
+        timerRef.current = setTimeout(() => {
+            setToast(null);
+            timerRef.current = null;
+        }, duration);
     }, []);
 
     const getToastStyles = (type: ToastType) => {
         switch (type) {
-            case 'success': return { bg: '#10B981', icon: '✨' };
-            case 'error': return { bg: '#EF4444', icon: '⚠️' };
+            // Use semantic theme tokens (Zero Fallback Rule — no raw hex values)
+            case 'success': return { bg: colors.success, icon: '✨' };
+            case 'error': return { bg: colors.error, icon: '⚠️' };
             case 'sanctuary': return { bg: Theme.colors.sanctuarySaffron, icon: '🙏' };
             default: return { bg: colors.tertiary, icon: 'ℹ️' };
         }

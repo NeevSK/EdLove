@@ -17,7 +17,8 @@ import {
     SanctuaryButton,
     useThemedColors,
     LivingGlow,
-    FadeInDown
+    FadeInDown,
+    openExternalURL,
 } from '@repo/ui';
 import {
     Phone,
@@ -95,12 +96,21 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile }: ContactL
         if (!config) return;
 
         const uri = config.getUri(value);
-        const supported = await Linking.canOpenURL(uri);
 
+        if (Platform.OS === 'web') {
+            // On web, always open in a new tab — never replace the running app
+            const webUrl = uri.startsWith('http') ? uri
+                : uri.startsWith('whatsapp://') ? `https://wa.me/${value.replace(/\D/g, '')}`
+                : null;
+            if (webUrl) { openExternalURL(webUrl); }
+            return;
+        }
+
+        const supported = await Linking.canOpenURL(uri);
         if (supported) {
             await Linking.openURL(uri);
         } else {
-            // Fallback for web or if app not installed
+            // Fallback if app not installed
             if (uri.startsWith('whatsapp://')) {
                 await Linking.openURL(`https://wa.me/${value.replace(/\D/g, '')}`);
             } else if (!uri.startsWith('http')) {

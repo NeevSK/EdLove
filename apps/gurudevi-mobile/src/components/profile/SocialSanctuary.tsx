@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Linking, Share, Platform } from 'react-native';
-import { Text, GlassCard, useThemedColors, Icon, SanctuaryCard, Theme } from '@repo/ui';
+import { Text, GlassCard, useThemedColors, Icon, SanctuaryCard, Theme, openExternalURL } from '@repo/ui';
 import { useSocialLinks } from '@repo/profile';
 import { SocialLink, SocialPlatform } from '@repo/core';
 import * as Clipboard from 'expo-clipboard';
@@ -57,10 +57,7 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
         }
 
         try {
-            const supported = await Linking.canOpenURL(url);
-            if (supported) {
-                await Linking.openURL(url);
-            }
+            await openExternalURL(url);
         } catch (error) {
             console.error('Failed to open URL:', error);
         }

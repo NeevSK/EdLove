@@ -36,10 +36,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
-import { hapticLight, hapticSuccess } from '@repo/ui';
+import { hapticLight, hapticSuccess, openExternalURL } from '@repo/ui';
 import { useResources } from '../hooks/useResources';
 import { api, ClassroomResource, useStore, useSafeMutation } from '@repo/core';
-import * as Linking from 'expo-linking';
 
 interface ResourcesViewProps {
     classroomId: string;
@@ -121,7 +120,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
 
     const handleOpenResource = (resource: ClassroomResource) => {
         if (resource.url) {
-            Linking.openURL(resource.url).catch(err => {
+            openExternalURL(resource.url).catch(err => {
                 showToast('Could not open link', 'error');
                 console.error("Couldn't open page", err);
             });

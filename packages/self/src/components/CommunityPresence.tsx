@@ -105,12 +105,11 @@ export default function CommunityPresence({
                 setOnlineCount(presences.length);
                 setIsOffline(false);
             })
-            .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-                console.log('User joined sanctuary:', key, newPresences);
+            .on('presence', { event: 'join' }, () => {
                 setIsOffline(false);
             })
-            .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-                console.log('User left sanctuary:', key, leftPresences);
+            .on('presence', { event: 'leave' }, () => {
+                // Presence count updates via 'sync' event; no action needed on individual leave
             })
             .subscribe(async (status) => {
                 if (status === 'SUBSCRIBED') {
