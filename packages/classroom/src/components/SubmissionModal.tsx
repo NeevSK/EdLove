@@ -51,32 +51,22 @@ export default function SubmissionModal({
     const [showSuccess, setShowSuccess] = useState(false);
     const { text, accent, glass, isDark } = useTheme();
 
+    const requestPermission = async (useCamera: boolean): Promise<boolean> => {
+        const { status } = useCamera
+            ? await ImagePicker.requestCameraPermissionsAsync()
+            : await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted' && Platform.OS !== 'web') {
+            Alert.alert(
+                t('submission.permissionTitle') || (useCamera ? 'Camera Access' : 'Gallery Access'),
+                t('submission.permissionDesc') || 'Permission is needed to attach a photo.'
+            );
+        }
+        return status === 'granted';
+    };
+
     const handlePickImage = async (useCamera: boolean = false) => {
         try {
-            // Request permissions
-            if (useCamera) {
-                const { status } = await ImagePicker.requestCameraPermissionsAsync();
-                if (status !== 'granted') {
-                    if (Platform.OS !== 'web') {
-                        Alert.alert(
-                            t('submission.permissionTitle') || 'Camera Access',
-                            t('submission.permissionDesc') || 'Camera permission is needed to attach a photo.'
-                        );
-                    }
-                    return;
-                }
-            } else {
-                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-                if (status !== 'granted') {
-                    if (Platform.OS !== 'web') {
-                        Alert.alert(
-                            t('submission.permissionTitle') || 'Gallery Access',
-                            t('submission.permissionDesc') || 'Gallery permission is needed to attach a photo.'
-                        );
-                    }
-                    return;
-                }
-            }
+            if (!(await requestPermission(useCamera))) return;
 
             const result = useCamera
                 ? await ImagePicker.launchCameraAsync({

@@ -60,7 +60,7 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
                 .from('assignments')
                 .select('id')
                 .in('classroom_id', classroomIds)
-                .gte('due_date', new Date(Date.now() - 7 * MS_PER_DAY).toISOString().split('T')[0]);
+                .gte('due_date', new Date(Date.now() - 7 * MS_PER_DAY).toISOString().slice(0, 10));
 
             if (!assignments?.length) return;
 

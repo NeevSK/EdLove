@@ -34,7 +34,7 @@ export function useSchoolPulse(schoolId?: string) {
     }, [schoolId]);
 
     const fetchPulse = async () => {
-        if (!schoolId) return;
+        if (!schoolId) { setLoading(false); return; }
         setLoading(true);
         try {
             const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString();
@@ -65,10 +65,12 @@ export function useSchoolPulse(schoolId?: string) {
             const weeklyPosts = postsThisWeek ?? 0;
 
             // Derive resonance score from real activity signals (0-100)
-            const activityScore = Math.min(100, Math.round((totalVolume / RESONANCE_ACTIVITY_ANCHOR) * 100));
+            // Guard against accidental zero anchor (defensive — constant is 50)
+            const anchor = RESONANCE_ACTIVITY_ANCHOR > 0 ? RESONANCE_ACTIVITY_ANCHOR : 50;
+            const activityScore = Math.min(100, Math.round((totalVolume / anchor) * 100));
 
-            // Trend: compare last-day posts vs weekly average
-            const weeklyAvgPerDay = weeklyPosts / 7;
+            // Trend: compare last-day posts vs weekly average (explicit null guard)
+            const weeklyAvgPerDay = (weeklyPosts ?? 0) / 7;
             const trend: 'rising' | 'stable' | 'failing' =
                 dailyPosts > weeklyAvgPerDay * RISING_THRESHOLD ? 'rising' :
                 dailyPosts < weeklyAvgPerDay * FAILING_THRESHOLD ? 'failing' : 'stable';
