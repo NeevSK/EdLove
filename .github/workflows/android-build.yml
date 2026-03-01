@@ -113,7 +113,7 @@ jobs:
           # Ensure you have run: eas secret:create --scope project --name sentry-auth-token --value <token>
           if [ "${{ github.event.inputs.build_method }}" == "local" ]; then
             echo "🏗️ Starting LOCAL EAS Build..."
-            eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive --local --output=app.${{ matrix.type }}
+            eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive --local --output=app.${{ matrix.type }} | tee ../../eas_build_log.txt
           else
             echo "☁️ Triggering REMOTE EAS Build..."
             eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive --no-wait
@@ -141,21 +141,37 @@ jobs:
           
           cd apps/gurudevi-mobile
           
-          # Extract versioning from app.json
+          # 1. Try extracting versionCode from EAS build log
+          # Look for "Incrementing versionCode from X to Y" (remote source)
+          # OR "Using versionCode X"
+          VERSION_CODE=$(grep -o 'Incrementing versionCode from .* to [0-9]*' ../../eas_build_log.txt | grep -o 'to [0-9]*' | awk '{print $2}' || true)
+          
+          # 2. Fallback: Extract from merged AndroidManifest.xml if build log failed
+          if [ -z "$VERSION_CODE" ]; then
+            MANIFEST_PATH="./android/app/build/intermediates/merged_manifests/release/AndroidManifest.xml"
+            if [ -f "$MANIFEST_PATH" ]; then
+              VERSION_CODE=$(grep 'android:versionCode' "$MANIFEST_PATH" | grep -o 'android:versionCode="[0-9]*"' | grep -o '[0-9]*' | head -n 1 || true)
+            fi
+          fi
+          
+          # 3. Last fallback: Read from app.json (might be one behind, but better than nothing)
+          if [ -z "$VERSION_CODE" ]; then
+            VERSION_CODE=$(node -p "require('./app.json').expo.android.versionCode" || echo "1")
+          fi
+          
           VERSION=$(node -p "require('./app.json').expo.version")
-          VERSION_CODE=$(node -p "require('./app.json').expo.android.versionCode")
           
           BUNDLE_PATH="./android/app/build/generated/assets/react/release/index.android.bundle"
           MAP_PATH="./android/app/build/generated/sourcemaps/react/release/index.android.bundle.map"
           
           if [ -f "$BUNDLE_PATH" ] && [ -f "$MAP_PATH" ]; then
-            echo "📦 Uploading sourcemaps for Release: org.edlove.gurudevi@$VERSION+$VERSION_CODE"
+            echo "📦 Uploading sourcemaps for Release: org.edlove.gurudevi@$VERSION+$VERSION_CODE (dist: $VERSION_CODE)"
             
             pnpm exec sentry-cli sourcemaps upload \
               --release "org.edlove.gurudevi@$VERSION+$VERSION_CODE" \
               --dist "$VERSION_CODE" \
               "$BUNDLE_PATH" "$MAP_PATH"
           else
-            echo "⚠️ Bundle or sourcemap not found. Skipping Sentry sourcemap upload."
+            echo "⚠️ Bundle or sourcemap not found at standard paths. Skipping Sentry upload."
           fi
 
