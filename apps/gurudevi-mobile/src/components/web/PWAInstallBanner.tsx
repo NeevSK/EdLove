@@ -48,7 +48,7 @@ export function PWAInstallBanner() {
                     </Text>
                     <Text style={[styles.sub, { color: colors.textSecondary }]}>
                         {isIOS
-                            ? 'Tap Share ↑ then "Add to Home Screen"'
+                            ? 'Tap the Share icon, then "Add to Home Screen"'
                             : 'Your Sanctuary, one tap away'}
                     </Text>
                 </View>

@@ -55,8 +55,9 @@ function getLeafRouteName(state: NavState): string | undefined {
 export function useWebPageTitle() {
     // useNavigationState is called unconditionally — hooks must not be conditional.
     // The Platform check happens inside useEffect so the hook is always called.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const routeName = useNavigationState((state: any) => getLeafRouteName(state));
+    // Cast to NavState: useNavigationState's generic expects ParamListBase, but we only
+    // need the routes/index shape, so we cast at the boundary rather than fight the type.
+    const routeName = useNavigationState((state: NavState) => getLeafRouteName(state));
 
     useEffect(() => {
         if (Platform.OS !== 'web') return;

@@ -115,15 +115,22 @@ const PostCard = React.memo(function PostCard({
     const hasResonated = false;
 
     const handleShare = async () => {
-        const shareUrl = `https://app.gurudevi.edlove.org/app`;
+        // Include the post ID so the share link is post-specific (deep link ready)
+        const shareUrl = `https://app.gurudevi.edlove.org/app?post=${id}`;
         if (Platform.OS === 'web') {
             if (typeof navigator !== 'undefined' && navigator.share) {
-                await navigator.share({ title: 'Gurudevi post', url: shareUrl });
+                await navigator.share({ title: `Post by ${is_anonymous ? 'Anonymous' : author_name}`, url: shareUrl });
             } else {
                 await Clipboard.setStringAsync(shareUrl);
+                // Toast feedback is handled by callers; clipboard copy is silent here
+                // because PostCard doesn't have access to the toast store
             }
         } else {
-            onShare?.() ?? Share.share({ message: shareUrl });
+            if (onShare) {
+                onShare();
+            } else {
+                Share.share({ message: shareUrl });
+            }
         }
     };
 
