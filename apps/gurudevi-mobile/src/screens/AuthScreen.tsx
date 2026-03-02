@@ -83,9 +83,43 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
     const isRealUser = currentUser && currentUser.email && !currentUser.email.includes('anonymous');
     const shouldHideGeneralAuth = onboardingData && isRealUser;
 
+    const getRedirectUrl = () => {
+        if (Platform.OS === 'web') {
+            return window.location.origin + window.location.pathname;
+        }
+        return 'gurudevi://auth/callback';
+    };
+
     async function handleOAuthSignIn(provider: 'google') {
         setLoading(true);
         hapticLight();
+
+        const { data: { session } } = await supabase.auth.getSession();
+        const isAnon = session?.user?.is_anonymous || !session?.user?.email;
+
+        console.log('🚀 Auth: handleOAuthSignIn', { provider, isAnon });
+
+        if (isAnon && session?.user) {
+            console.log('🔗 Auth: Linking identity for guest user...');
+            const { error } = await supabase.auth.linkIdentity({
+                provider,
+                options: {
+                    redirectTo: getRedirectUrl()
+                }
+            });
+
+            if (error) {
+                if (error.message.includes('already linked')) {
+                    showToast(t('auth.alreadyLinked') || "This Google account is already linked to another sanctuary soul. Please login instead.", "error");
+                } else {
+                    handleAPIError(error);
+                }
+                setLoading(false);
+            }
+            // linkIdentity will redirect just like signInWithOAuth
+            return;
+        }
+
         const { error } = await supabase.auth.signInWithOAuth({
             provider,
             options: {
@@ -154,7 +188,15 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                             }
                         }
                     });
-                    if (error) throw error;
+                    if (error) {
+                        if (error.message.includes('already registered')) {
+                            showToast(t('auth.alreadyRegistered') || "You already have a sanctuary soul! Switching to login...", "success");
+                            setIsSignUp(false);
+                            setLoading(false);
+                            return;
+                        }
+                        throw error;
+                    }
                     hapticSuccess();
                     showToast(t('auth.checkEmail'), "success");
 

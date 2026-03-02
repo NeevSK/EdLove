@@ -18,6 +18,9 @@ import {
     CollectionFilters,
     CreateResourceInput,
     CreateCollectionInput,
+    KnowledgeTopology,
+    KnowledgeNode,
+    KnowledgeLink,
 } from '../types';
 
 // ============================================================================
@@ -205,7 +208,7 @@ export const libraryAPI = {
         void growthSignalsAPI.emitSignal(creatorId, 'resource_uploaded', {
             resource_id: data.id,
             resource_type: input.type,
-        }).catch(() => {});
+        }).catch(() => { });
 
         return {
             ...data,
@@ -283,7 +286,7 @@ export const libraryAPI = {
             // Growth signal: user explored a resource (Witnessing dimension — absorbing, growing inward)
             void growthSignalsAPI.emitSignal(userId, 'resource_read', {
                 resource_id: resourceId,
-            }).catch(() => {});
+            }).catch(() => { });
         }
     },
 
@@ -415,7 +418,7 @@ export const libraryAPI = {
                     rippleType: 'resource_saved',
                     sourceEntityType: 'resource',
                     sourceEntityId: resourceId,
-                }).catch(() => {});
+                }).catch(() => { });
             }
         }
     },
@@ -741,5 +744,58 @@ resource: library_resources!resource_engagements_resource_id_fkey(
         if (error) {
             throw new APIError('Failed to delete collection', error.code, error);
         }
+    },
+
+    /**
+     * Get the epistemic map topology (nodes and links)
+     */
+    async getMapTopology(): Promise<KnowledgeTopology> {
+        const { data: resources, error } = await supabase
+            .from('library_resources')
+            .select('id, title, type, subject, topics, tags, thumbnail_url');
+
+        if (error) throw new APIError('Failed to fetch resource topology', error.code, error);
+
+        const nodes: KnowledgeNode[] = [];
+        const links: KnowledgeLink[] = [];
+        const topicNodes = new Set<string>();
+
+        resources.forEach(res => {
+            // Add Resource Node
+            nodes.push({
+                id: res.id,
+                label: res.title,
+                type: 'resource',
+                group: res.type || 'unknown',
+                metadata: {
+                    subject: res.subject,
+                    thumbnail: res.thumbnail_url
+                }
+            });
+
+            // Process Topics
+            const itemTopics = res.topics || [];
+            itemTopics.forEach((topic: string) => {
+                const topicId = `topic:${topic}`;
+                if (!topicNodes.has(topicId)) {
+                    nodes.push({
+                        id: topicId,
+                        label: topic,
+                        type: 'topic',
+                        group: 'curiosity'
+                    });
+                    topicNodes.add(topicId);
+                }
+
+                // Link Resource to Topic
+                links.push({
+                    source: res.id,
+                    target: topicId,
+                    value: 1
+                });
+            });
+        });
+
+        return { nodes, links };
     },
 };

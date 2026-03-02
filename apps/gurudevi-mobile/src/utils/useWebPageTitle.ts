@@ -17,25 +17,25 @@ const APP_NAME = 'Gurudevi';
 
 /** Maps internal route names to human-friendly tab titles. */
 const ROUTE_LABELS: Record<string, string> = {
-    Home:               'Sanctuary',
-    Self:               'Your Inner Compass',
-    Community:          'The Circle',
-    Classroom:          'Classroom',
-    Profile:            'Profile',
-    Auth:               'Sign In',
-    Welcome:            'Welcome',
-    Onboarding:         'Getting Started',
-    FullProfile:        'Profile',
-    AIAssistant:        'Gurudevi AI',
-    QRHandler:          'QR Scan',
-    ThuthimalClaim:     'Thuthimal Badge',
-    InvitationWelcome:  'Invitation',
-    AppSettings:        'Settings',
-    Gradebook:          'Gradebook',
-    PulseDashboard:     'Pulse',
-    Scanner:            'Scanner',
-    ContentLibrary:     'Content Library',
-    VideoPlayer:        'Video Player',
+    Home: 'Sanctuary',
+    Self: 'Your Inner Compass',
+    Community: 'The Circle',
+    Classroom: 'Classroom',
+    Profile: 'Profile',
+    Auth: 'Sign In',
+    Welcome: 'Welcome',
+    Onboarding: 'Getting Started',
+    FullProfile: 'Profile',
+    AIAssistant: 'Gurudevi AI',
+    QRHandler: 'QR Scan',
+    ThuthimalClaim: 'Thuthimal Badge',
+    InvitationWelcome: 'Invitation',
+    AppSettings: 'Settings',
+    Gradebook: 'Gradebook',
+    PulseDashboard: 'Pulse',
+    Scanner: 'Scanner',
+    ContentLibrary: 'Content Library',
+    VideoPlayer: 'Video Player',
 };
 
 type NavState = { routes: Array<{ name: string; state?: NavState }>; index?: number } | undefined;
@@ -53,10 +53,10 @@ function getLeafRouteName(state: NavState): string | undefined {
 }
 
 export function useWebPageTitle() {
-    // useNavigationState is called unconditionally — hooks must not be conditional.
-    // The Platform check happens inside useEffect so the hook is always called.
-    // Cast to NavState: useNavigationState's generic expects ParamListBase, but we only
-    // need the routes/index shape, so we cast at the boundary rather than fight the type.
+    // If not on web, this hook should do absolutely nothing.
+    // We return early before calling useNavigationState to avoid context errors on native.
+    if (Platform.OS !== 'web') return;
+
     const routeName = useNavigationState((state: NavState) => getLeafRouteName(state));
 
     useEffect(() => {

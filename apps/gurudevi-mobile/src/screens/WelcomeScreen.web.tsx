@@ -29,12 +29,13 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '@repo/ui';
+import { Theme, VStack } from '@repo/ui';
 import { useTheme } from '@repo/ui';
 import { authAPI, handleAPIError } from '@repo/core';
 import { hapticLight, hapticSuccess, hapticError, openExternalURL } from '@repo/ui';
 import { LanguageUtils } from '../utils/LanguageUtils';
 import AuthScreen from './AuthScreen';
+import { RedirectToApp } from '../components/RedirectToApp';
 
 // ─────────────────────────────────────────────
 // Constants
@@ -400,6 +401,7 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
                     showsVerticalScrollIndicator={false}
                 >
                     <LeftPanel isDark={isDark} isNarrow={isNarrow} />
+                    <RedirectToApp />
                     <RightPanel
                         isDark={isDark}
                         i18nLanguage={i18n.language}
@@ -422,23 +424,26 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
                 // ── Desktop web: two-column layout ────────────────────────
                 <View style={styles.twoCol}>
                     <LeftPanel isDark={isDark} isNarrow={false} />
-                    <RightPanel
-                        isDark={isDark}
-                        i18nLanguage={i18n.language}
-                        acceptedTerms={acceptedTerms}
-                        isConnecting={isConnecting}
-                        langHover={langHover}
-                        btnHover={btnHover}
-                        onChangeLanguage={changeLanguage}
-                        onStartExploring={handleStartExploring}
-                        onLogin={handleLogin}
-                        onToggleTerms={() => setAcceptedTerms((v) => !v)}
-                        onLangHoverIn={setLangHover}
-                        onLangHoverOut={() => setLangHover(null)}
-                        onBtnHoverIn={setBtnHover}
-                        onBtnHoverOut={() => setBtnHover(null)}
-                        footer={footer}
-                    />
+                    <VStack sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <RedirectToApp />
+                        <RightPanel
+                            isDark={isDark}
+                            i18nLanguage={i18n.language}
+                            acceptedTerms={acceptedTerms}
+                            isConnecting={isConnecting}
+                            langHover={langHover}
+                            btnHover={btnHover}
+                            onChangeLanguage={changeLanguage}
+                            onStartExploring={handleStartExploring}
+                            onLogin={handleLogin}
+                            onToggleTerms={() => setAcceptedTerms((v) => !v)}
+                            onLangHoverIn={setLangHover}
+                            onLangHoverOut={() => setLangHover(null)}
+                            onBtnHoverIn={setBtnHover}
+                            onBtnHoverOut={() => setBtnHover(null)}
+                            footer={footer}
+                        />
+                    </VStack>
                 </View>
             )}
         </View>

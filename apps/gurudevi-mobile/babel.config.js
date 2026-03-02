@@ -17,6 +17,7 @@ module.exports = function (api) {
           // sets up before the app boots.  This keeps the classic-script bundle
           // compatible without changing the output format.
           unstable_transformImportMeta: true,
+          reactCompiler: true,
         },
       ],
     ],

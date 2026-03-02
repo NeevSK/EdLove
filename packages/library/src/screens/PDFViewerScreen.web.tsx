@@ -129,5 +129,5 @@ const styles = StyleSheet.create({
         height: '100%',
         border: 'none',
         display: 'block',
-    },
+    } as any,
 });

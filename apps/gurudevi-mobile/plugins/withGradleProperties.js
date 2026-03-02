@@ -49,8 +49,32 @@ const withLintOptionsDisabled = (config) => {
     });
 };
 
+const withBridgelessEnabled = (config) => {
+    // 3. Ensure Bridgeless Mode is ENABLED (Default in RN 0.83+).
+    // We are fixing JSI issues proactively by refactoring JS code, 
+    // NOT by disabling the modern architecture.
+    return withAppBuildGradle(config, (config) => {
+        if (config.modResults.language === 'groovy') {
+            // Remove any legacy 'bridgeless = false' if we added it before.
+            // RN 0.83.2 defaults to true, so we just ensure we don't force it to false.
+            if (config.modResults.contents.includes('bridgeless = false')) {
+                config.modResults.contents = config.modResults.contents.replace(
+                    /bridgeless = false/g,
+                    'bridgeless = true'
+                );
+            }
+        }
+        return config;
+    });
+};
+
 const withCombinedFixes = (config) => {
-    return withCustomGradleProperties(withLintOptionsDisabled(config));
+    // Chain all fixes: memory limits, lint skipping, AND ensuring bridgeless is enabled.
+    return withBridgelessEnabled(
+        withCustomGradleProperties(
+            withLintOptionsDisabled(config)
+        )
+    );
 };
 
 module.exports = createRunOncePlugin(withCombinedFixes, 'withCustomGradleProperties', '1.0.0');

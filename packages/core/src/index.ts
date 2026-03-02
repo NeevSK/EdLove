@@ -13,6 +13,7 @@ export * from './lib/sync';
 export * from './lib/grading';
 export * from './lib/monitoring/sentry';
 export * from './lib/monitoring/posthog';
+export * from './lib/runtime';
 export * from './lib/storage';
 export * from './lib/storageWrapper';
 export * from './lib/guestDataManager';

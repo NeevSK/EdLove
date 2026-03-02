@@ -14,6 +14,7 @@ import { Session } from '@supabase/supabase-js';
 import * as Font from 'expo-font';
 import { supabase, useStore, UserRole, SchoolType, initSentry, initPostHog, trackEvent, identifyUser } from '@repo/core';
 import { Platform } from 'react-native';
+import * as Linking from 'expo-linking';
 import { PostHogProvider } from 'posthog-react-native';
 import * as Sentry from '@sentry/react-native';
 import { Theme } from '@repo/ui';
@@ -170,6 +171,50 @@ function App() {
     };
   }, []);
 
+  // Handle native deep links (especially for Supabase Auth callback)
+  useEffect(() => {
+    const handleDeepLink = async (url: string) => {
+      console.log('🔗 Deep Link received:', url);
+
+      // Supabase OAuth/Linking callback usually contains access_token in a fragment (#) or query (?)
+      if (url.includes('auth/callback')) {
+        // Simple parser for access_token and refresh_token
+        const getParam = (name: string) => {
+          const match = url.match(new RegExp(`[#?&]${name}=([^&]*)`));
+          return match ? match[1] : null;
+        };
+
+        const access_token = getParam('access_token');
+        const refresh_token = getParam('refresh_token');
+
+        if (access_token && refresh_token) {
+          console.log('🔄 App: Recovering session from deep link...');
+          const { error } = await supabase.auth.setSession({
+            access_token,
+            refresh_token,
+          });
+          if (error) {
+            console.error('❌ App: Failed to set session from deep link:', error.message);
+          } else {
+            console.log('✅ App: Session recovered from deep link');
+          }
+        }
+      }
+    };
+
+    const subscription = Linking.addEventListener('url', (event) => {
+      handleDeepLink(event.url);
+    });
+
+    Linking.getInitialURL().then((url) => {
+      if (url) handleDeepLink(url);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
   // Monitor network connectivity - REMOVED redundant listener (Centralized in EnvironmentContext)
 
   // QR deep link listener — routes incoming gurudevi://qr?... links to QRHandlerScreen
@@ -222,6 +267,11 @@ function App() {
           },
           {
             label: 'Find Groups',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Community' }),
+            icon: Users
+          },
+          {
+            label: 'Share Resource',
             onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Community' }),
             icon: Users
           },
@@ -308,8 +358,8 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
           <ErrorBoundary name="App Root">
             <NavigationContainer
               ref={navigationRef}
-              linking={Platform.OS === 'web' ? ({
-                prefixes: ['https://app.gurudevi.edlove.org', 'http://localhost:4000'],
+              linking={{
+                prefixes: ['gurudevi://', 'https://app.gurudevi.edlove.org', 'http://localhost:4000'],
                 config: {
                   screens: {
                     Welcome: '',
@@ -357,7 +407,7 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                     },
                   },
                 },
-              } as LinkingOptions<any>) : undefined}
+              }}
             >
               <PostHogProvider
                 apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
@@ -374,6 +424,7 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                           <WelcomeScreen
                             initialShowAuth={onboardingCompleted}
                             onNext={() => {
+                              console.log('➡️ App: onNext called from WelcomeScreen');
                               setShowWelcome(false);
                             }}
                           />
@@ -387,6 +438,7 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                           <OnboardingScreen
                             isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
                             onComplete={(name: string, role: any, wantsAccount?: boolean) => {
+                              console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
                               const store = useStore.getState();
                               if (name) store.setTeacherName(name);
                               if (role) store.setUserRole(role);
@@ -406,6 +458,7 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                           </ErrorBoundary>
                         )}
                       </RootStack.Screen>
+
                       <RootStack.Screen
                         name="AIAssistant"
                         component={AIAssistantScreen}

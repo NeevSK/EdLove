@@ -212,7 +212,8 @@ export const userGrowthStateAPI = {
                 console.warn('[UserGrowthState] Failed to increment dimension:', fallbackError?.message);
                 return;
             }
-            const nextStageFallback = meetsTransitionCriteria(fallbackRow.bhumi_stage as BhumiStage, fallbackRow as UserGrowthState);
+            const row = fallbackRow as UserGrowthState;
+            const nextStageFallback = meetsTransitionCriteria(row.bhumi_stage, row);
             if (nextStageFallback) {
                 try {
                     await supabase
@@ -227,7 +228,8 @@ export const userGrowthStateAPI = {
         }
 
         // Check if the user has graduated to the next Bhumi stage (using DB-authoritative value)
-        const nextStage = meetsTransitionCriteria(updatedRow.bhumi_stage as BhumiStage, updatedRow as UserGrowthState);
+        const row = updatedRow as UserGrowthState;
+        const nextStage = meetsTransitionCriteria(row.bhumi_stage, row);
         if (nextStage) {
             try {
                 await supabase

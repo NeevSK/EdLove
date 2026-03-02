@@ -24,6 +24,7 @@ import {
 import ClassroomStackNavigator from './ClassroomStackNavigator';
 import ProfileStackNavigator from './ProfileStackNavigator';
 import CommunityStackNavigator from './CommunityStackNavigator';
+import LibraryStackNavigator from './LibraryStackNavigator';
 import { useThemedColors } from '@repo/ui';
 import { useUserRole, useRewards, useTracking } from '@repo/core';
 
@@ -221,8 +222,8 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           }}
         >
           {() => (
-            <ErrorBoundary name="Library Screen">
-              <LibraryScreen />
+            <ErrorBoundary name="Library Stack">
+              <LibraryStackNavigator />
             </ErrorBoundary>
           )}
         </Tab.Screen>

@@ -15,3 +15,4 @@ export const LIBRARY_UI_CATEGORIES = [
     { id: 'text', en: 'Articles' },
     { id: 'note', en: 'Personal Notes' }
 ];
+export { default as MapScreen } from './screens/MapScreen';

@@ -70,7 +70,7 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
                 .limit(20);
 
             // Filter rows with a numeric grade (Supabase returns null-grade rows despite the filter in some edge cases)
-            const rows = (data ?? []).filter(
+            const rows = (data as any[] ?? []).filter(
                 (r): r is GradeRow => r !== null && typeof r.grade === 'number'
             );
             setGrades(rows);
