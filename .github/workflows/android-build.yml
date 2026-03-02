@@ -93,26 +93,111 @@ jobs:
       - name: 📦 Install dependencies
         run: pnpm install --fetch-timeout 100000
 
-      - name: 🏗️ Prebuild
-        run: |
-          cd apps/gurudevi-mobile
-          npx expo prebuild --platform android --no-install
-
       - name: 🚀 Build App
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          EXPO_PUBLIC_POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+          EXPO_PUBLIC_POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
         run: |
+          # 1. Ensure pnpm allows the Sentry CLI to run
+          pnpm config set side-effects-cache false
+          
+          # 2. Approve pnpm build scripts
+          pnpm approve-builds --yes || true
+          
           cd apps/gurudevi-mobile
+          
+          # 3. Trigger Build
+          # The custom Sentry plugin will handle property injection during prebuild.
+          # Ensure you have run: eas secret:create --scope project --name sentry-auth-token --value <token>
           if [ "${{ github.event.inputs.build_method }}" == "local" ]; then
-            # Build locally on the runner
-            eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive --local --output=app.${{ matrix.type }}
+            echo "🏗️ Starting LOCAL EAS Build..."
+            eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive --local --output=app.${{ matrix.type }} | tee ../../eas_build_log.txt
+            
+            # Save sourcemaps before temp dir is cleaned
+            echo "📂 Preserving Sentry debug artifacts..."
+            mkdir -p /tmp/sentry-artifacts
+            find /tmp/runner/eas-build-local-nodejs -name "index.android.bundle" \
+              -path "*/generated/assets/react/release/*" \
+              -exec cp {} /tmp/sentry-artifacts/ \; 2>/dev/null || true
+            find /tmp/runner/eas-build-local-nodejs -name "index.android.bundle.map" \
+              -path "*/generated/sourcemaps/react/release/*" \
+              -exec cp {} /tmp/sentry-artifacts/ \; 2>/dev/null || true
+            
+            # Also save the versionCode from AndroidManifest before cleanup
+            find /tmp/runner/eas-build-local-nodejs -name "AndroidManifest.xml" \
+              -path "*/merged_manifests/release/*" \
+              -exec grep -o 'android:versionCode="[0-9]*"' {} \; 2>/dev/null \
+              | grep -o '[0-9]*' | head -n 1 > /tmp/sentry-artifacts/versionCode.txt || true
           else
-            # Trigger remote EAS build
+            echo "☁️ Triggering REMOTE EAS Build..."
             eas build --platform android --profile ${{ github.event.inputs.profile }} --non-interactive --no-wait
           fi
 
-      - name: 📤 Upload Artifact
+      - name: 📤 Upload Build Artifact
         if: github.event.inputs.build_method == 'local'
         uses: actions/upload-artifact@v4
         with:
           name: android-build-${{ matrix.type }}
           path: apps/gurudevi-mobile/app.${{ matrix.type }}
+
+      - name: 📤 Upload Sentry Debug Artifacts
+        if: github.event.inputs.build_method == 'local'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentry-artifacts-${{ matrix.type }}
+          path: /tmp/sentry-artifacts/
+          retention-days: 1
+
+      - name: 📥 Download Sentry Artifacts
+        if: github.event.inputs.build_method == 'local'
+        uses: actions/download-artifact@v4
+        with:
+          name: sentry-artifacts-${{ matrix.type }}
+          path: /tmp/sentry-artifacts
+      
+      - name: 🚀 Sentry Sourcemap Upload (Execute)
+        if: github.event.inputs.build_method == 'local'
+        continue-on-error: true
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: intuitui-labs
+          SENTRY_PROJECT: gurudevi-mobile
+        run: |
+          # SENTRY_AUTH_TOKEN must be added to GitHub repo secrets:
+          # Settings → Secrets and variables → Actions → New repository secret
+          # Name: SENTRY_AUTH_TOKEN
+          # EAS secrets do NOT work for local builds — use GitHub secrets here.
+          
+          # Download artifacts manually if needed, but here we can just use the path if in same job
+          # However, for safety and following the plan:
+          echo "📥 Reading preserved Sentry artifacts..."
+          
+          VERSION_CODE=$(cat /tmp/sentry-artifacts/versionCode.txt || true)
+          if [ -z "$VERSION_CODE" ]; then
+             echo "⚠️ versionCode.txt not found, falling back to build log..."
+             VERSION_CODE=$(grep -o 'Incrementing versionCode from .* to [0-9]*' ../../eas_build_log.txt | grep -o 'to [0-9]*' | awk '{print $2}' || true)
+          fi
+          
+          if [ -z "$VERSION_CODE" ]; then
+            VERSION_CODE=$(node -p "require('./apps/gurudevi-mobile/app.json').expo.android.versionCode" || echo "1")
+          fi
+          
+          cd apps/gurudevi-mobile
+          VERSION=$(node -p "require('./app.json').expo.version")
+          
+          BUNDLE_PATH="/tmp/sentry-artifacts/index.android.bundle"
+          MAP_PATH="/tmp/sentry-artifacts/index.android.bundle.map"
+          
+          if [ -f "$BUNDLE_PATH" ] && [ -f "$MAP_PATH" ]; then
+            echo "📦 Uploading sourcemaps for Release: org.edlove.gurudevi@$VERSION+$VERSION_CODE (dist: $VERSION_CODE)"
+            
+            pnpm exec sentry-cli sourcemaps upload \
+              --release "org.edlove.gurudevi@$VERSION+$VERSION_CODE" \
+              --dist "$VERSION_CODE" \
+              "$BUNDLE_PATH" "$MAP_PATH"
+          else
+            echo "⚠️ Saved bundle or sourcemap not found. Skipping Sentry upload."
+          fi
 

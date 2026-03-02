@@ -19,12 +19,14 @@ import { supabase, useSafeMutation } from '@repo/core';
 import { GratitudeEntry } from '@repo/self';
 import { hapticLight, hapticSuccess, SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useGratitude } from '@repo/self';
+import { useNavigation } from '@react-navigation/native';
 
 interface GratitudeGlimmersProps {
   userId?: string;
 }
 
 export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
+  const navigation = useNavigation<any>();
   const { t } = useTranslation();
   // Resilient Data Hook
   const { entries, refreshData, isLoading } = useGratitude(userId);
@@ -88,7 +90,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
     return (
       <PositiveInvitation
         type="guest"
-        onAction={() => { }} // TODO: Navigate to Auth
+        onAction={() => navigation.navigate('Auth' as never)}
       />
     );
   }

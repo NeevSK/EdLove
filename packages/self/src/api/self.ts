@@ -1,4 +1,4 @@
-import { supabase, APIError, requireAuth } from '@repo/core';
+import { supabase, APIError, requireAuth, growthSignalsAPI } from '@repo/core';
 import { MoodLog, FireJournalEntry } from '../types';
 
 // ============================================================================
@@ -36,6 +36,12 @@ export const selfAPI = {
         if (error) {
             throw new APIError('Failed to log mood', error.code, error);
         }
+
+        // Growth signal: teacher chose to check in with themselves (Presence — Tier 2 Care Signal)
+        // Also contributes to the 'still_water' Whispered Moment check after 5 mood check-ins
+        void growthSignalsAPI.emitSignal(userId, 'mood_checkin', {
+            mood_score: score,
+        }).catch(() => {});
 
         return data;
     },
@@ -91,6 +97,10 @@ export const selfAPI = {
         if (error) {
             throw new APIError('Failed to burn journal entry', error.code, error);
         }
+
+        // Growth signal: teacher processed difficult emotions (Presence — Tier 2 Care Signal)
+        // Also triggers the 'storm_holder' Whispered Moment check after 3+ entries in a week
+        void growthSignalsAPI.emitSignal(userId, 'fire_journal_entry', {}).catch(() => {});
 
         return data;
     },

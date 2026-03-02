@@ -68,7 +68,8 @@ type NoteGroup = { label: string; data: PrincipalNote[] };
 
 // ── Helpers ──────────────────────────────────────────────────
 
-function getRelativeDateLabel(dateStr: string): string {
+function getRelativeDateLabel(dateStr: string | undefined): string {
+    if (!dateStr) return 'Unknown Date';
     const now = new Date();
     const date = new Date(dateStr);
     const diffDays = Math.floor((now.getTime() - date.getTime()) / 86400000);
@@ -80,22 +81,30 @@ function getRelativeDateLabel(dateStr: string): string {
 }
 
 function groupNotes(notes: PrincipalNote[]): NoteGroup[] {
-    const pinned = notes.filter((n) => n.is_pinned && !n.is_done);
-    const active = notes.filter((n) => !n.is_pinned && !n.is_done);
-    const done = notes.filter((n) => n.is_done);
+    const safeNotes = notes || [];
+    const pinned = safeNotes.filter((n) => n && n.is_pinned && !n.is_done);
+    const active = safeNotes.filter((n) => n && !n.is_pinned && !n.is_done);
+    const done = safeNotes.filter((n) => n && n.is_done);
 
     const grouped: Record<string, PrincipalNote[]> = {};
     for (const note of active) {
+        if (!note) continue;
         const label = getRelativeDateLabel(note.created_at);
         if (!grouped[label]) grouped[label] = [];
-        grouped[label].push(note);
+        grouped[label]?.push(note);
     }
 
     const result: NoteGroup[] = [];
     if (pinned.length > 0) result.push({ label: '📌 Pinned', data: pinned });
+
+    // Explicitly handle noUncheckedIndexedAccess: true from base.json
     for (const label of Object.keys(grouped)) {
-        result.push({ label, data: grouped[label] });
+        const groupData = grouped[label];
+        if (groupData) {
+            result.push({ label, data: groupData });
+        }
     }
+
     if (done.length > 0) result.push({ label: '✅ Completed', data: done });
     return result;
 }
@@ -153,7 +162,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
     const fetchNotes = useCallback(async () => {
         try {
             const data = await api.principalNotes.getAll(schoolId);
-            setNotes(data);
+            setNotes(data || []);
         } catch (err) {
             console.error('PrincipalNotes: fetch error', err);
         } finally {
@@ -221,7 +230,8 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
         const meta = NOTE_TYPE_META[note.note_type];
         const NoteIcon = meta.icon;
         const isTodo = note.note_type === 'todo';
-        const time = new Date(note.created_at).toLocaleTimeString([], {
+        const createdAt = note.created_at || new Date().toISOString();
+        const time = new Date(createdAt).toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit',
         });
@@ -309,7 +319,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                     <HStack sx={{ gap: 6, marginTop: Theme.spacing.xs, alignItems: 'center' }}>
                         <BookMarked size={11} color={colors.textTertiary} />
                         <Text sx={{ fontSize: 11, color: colors.textTertiary }}>
-                            {note.context_teacher?.full_name || note.context_classroom?.name}
+                            {note.context_teacher?.full_name || (note.context_classroom as any)?.name}
                         </Text>
                     </HStack>
                 )}

@@ -182,8 +182,16 @@ function getStorage(): StorageInterface {
  * This avoids NitroModules JSI timing issues during app startup.
  */
 export const storage: StorageInterface = new Proxy({} as StorageInterface, {
-    get(_target, prop: string) {
-        return (getStorage() as any)[prop];
+    get(_target, prop: string | symbol) {
+        const instance = getStorage() as any;
+        if (typeof prop === 'symbol') {
+            return Reflect.get(instance, prop);
+        }
+        const value = instance[prop as keyof typeof instance];
+        if (typeof value === 'function') {
+            return value.bind(instance);
+        }
+        return value;
     },
 });
 

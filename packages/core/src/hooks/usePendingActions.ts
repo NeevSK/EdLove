@@ -21,6 +21,7 @@ export interface PendingAttendanceItem {
 export interface PendingGradingItem {
   assignmentId: string;
   assignmentTitle: string;
+  classroomId: string;
   classroomName: string;
   ungradedCount: number;
 }
@@ -122,6 +123,7 @@ export function usePendingActions(teacherId: string | null | undefined): Pending
         .map((a) => ({
           assignmentId: a.id,
           assignmentTitle: a.title,
+          classroomId: a.classroom_id,
           classroomName: clsMap[a.classroom_id] ?? '',
           ungradedCount: countMap[a.id] ?? 0,
         }));

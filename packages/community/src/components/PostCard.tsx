@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, Platform, Share } from 'react-native';
 import { Box, HStack, VStack, Text, Avatar, AvatarFallbackText, AvatarImage } from '@repo/ui';
-import { MoreHorizontal, Heart, MessageCircle, Sparkles, Globe } from 'lucide-react-native';
+import { MoreHorizontal, Heart, MessageCircle, Sparkles, Globe, Share2 } from 'lucide-react-native';
 import { SanctuaryCard, Theme, useThemedColors, LivingGlow } from '@repo/ui';
 import { formatDistanceToNow } from 'date-fns';
 import { MediaAsset } from '@repo/core';
+import * as Clipboard from 'expo-clipboard';
 
 export type PostType = 'post' | 'text' | 'announcement' | 'poll';
 
@@ -19,6 +20,8 @@ interface PostCardProps {
     onReport?: () => void;
     /** Called when the author avatar/name is tapped — use to navigate to the author's public profile */
     onAuthorPress?: () => void;
+    /** Called when the share button is tapped on native. On web, the post link is copied to clipboard automatically. */
+    onShare?: () => void;
     isSample?: boolean;
     currentUserId?: string;
 }
@@ -33,6 +36,7 @@ const PostCard = React.memo(function PostCard({
     onComment,
     onReport,
     onAuthorPress,
+    onShare,
     isSample,
     currentUserId
 }: PostCardProps) {
@@ -83,19 +87,55 @@ const PostCard = React.memo(function PostCard({
         return null;
     };
 
-    // Optimistic local like state
+    // Optimistic local like state — re-sync when post data changes (e.g. feed refresh)
     const [liked, setLiked] = React.useState(false);
     const [localLikeCount, setLocalLikeCount] = React.useState(reactions['❤️'] || 0);
 
-    const handleLike = () => {
+    React.useEffect(() => {
+        setLocalLikeCount(reactions['❤️'] || 0);
+        setLiked(false);
+    }, [id, reactions['❤️']]);
+
+    const handleLike = async () => {
+        const prevLiked = liked;
+        const prevCount = localLikeCount;
         const nowLiked = !liked;
         setLiked(nowLiked);
-        setLocalLikeCount(prev => Math.max(0, prev + (nowLiked ? 1 : -1)));
-        onLike?.();
+        setLocalLikeCount((prev) => Math.max(0, prev + (nowLiked ? 1 : -1)));
+        try {
+            await onLike?.();
+        } catch {
+            // Revert optimistic update on failure
+            setLiked(prevLiked);
+            setLocalLikeCount(prevCount);
+        }
     };
 
     const isLiked = liked;
     const hasResonated = false;
+
+    const handleShare = async () => {
+        // Include the post ID so the share link is post-specific (deep link ready)
+        const shareUrl = `https://app.gurudevi.edlove.org/app?post=${id}`;
+        if (Platform.OS === 'web') {
+            if (typeof navigator !== 'undefined' && navigator.share) {
+                try {
+                    await navigator.share({ title: `Post by ${is_anonymous ? 'Anonymous' : author_name}`, url: shareUrl });
+                } catch {
+                    // User cancelled or share unavailable — fall back to clipboard silently
+                    try { await Clipboard.setStringAsync(shareUrl); } catch { /* ignore */ }
+                }
+            } else {
+                await Clipboard.setStringAsync(shareUrl);
+            }
+        } else {
+            if (onShare) {
+                onShare();
+            } else {
+                Share.share({ message: shareUrl });
+            }
+        }
+    };
 
     return (
         <SanctuaryCard onPress={onPress} elevated={isAnnouncement}>
@@ -172,6 +212,11 @@ const PostCard = React.memo(function PostCard({
                             <Text color={colors.textTertiary} size="sm" sx={{ marginLeft: 4 }}>
                                 {comment_count}
                             </Text>
+                        </TouchableOpacity>
+
+                        {/* Share button — clipboard on web, native share sheet otherwise */}
+                        <TouchableOpacity onPress={handleShare} style={styles.actionButton} accessibilityLabel="Share post">
+                            <Share2 size={18} color={colors.textTertiary} />
                         </TouchableOpacity>
                     </HStack>
 

@@ -1,0 +1,111 @@
+﻿[
+  {
+    "name": "polymath-platform",
+    "version": "1.0.0",
+    "path": "C:\\Users\\Naween\\projects\\polymath-platform",
+    "private": true,
+    "dependencies": {
+      "@types/react-native": {
+        "from": "@types/react-native",
+        "version": "link:packages/types-shim",
+        "path": "C:\\Users\\Naween\\projects\\polymath-platform\\packages\\types-shim"
+      }
+    }
+  },
+  {
+    "name": "apps-edlove-web",
+    "version": "0.0.1",
+    "path": "C:\\Users\\Naween\\projects\\polymath-platform\\apps\\edlove-web",
+    "private": false
+  },
+  {
+    "name": "gurudevi-mobile",
+    "version": "1.0.0",
+    "path": "C:\\Users\\Naween\\projects\\polymath-platform\\apps\\gurudevi-mobile",
+    "private": true
+  },
+  {
+    "name": "apps-gurudevi-web",
+    "version": "0.0.1",
+    "path": "C:\\Users\\Naween\\projects\\polymath-platform\\apps\\gurudevi-web",
+    "private": false
+  },
+  {
+    "name": "apps-intuitui-web",
+    "version": "0.0.1",
+    "path": "C:\\Users\\Naween\\projects\\polymath-platform\\apps\\intuitui-web",
+    "private": false
+  },
+  {
+    "name": "apps-neevsk-web",
+    "version": "0.0.1",
+    "path": "C:\\Users\\Naween\\projects\\polymath-platform\\apps\\neevsk-web",
+    "private": false
+  },
+  {
+    "name": "@repo/classroom",
+    "version": "0.0.1",
+    "path": "C:\\Users\\Naween\\projects\\polymath-platform\\packages\\classroom",
+    "private": false
+  },
+  {
+    "name": "@repo/community",
+    "version": "0.0.1",
+    "path": "C:\\Users\\Naween\\projects\\polymath-platform\\packages\\community",
+    "private": false
+  },
+  {
+    "name": "@repo/core",
+    "version": "0.0.1",
+    "path": "C:\\Users\\Naween\\projects\\polymath-platform\\packages\\core",
+    "private": false
+  },
+  {
+    "name": "@repo/eslint-config",
+    "version": "0.0.0",
+    "path": "C:\\Users\\Naween\\projects\\polymath-platform\\packages\\eslint-config",
+    "private": true
+  },
+  {
+    "name": "@repo/library",
+    "version": "0.0.1",
+    "path": "C:\\Users\\Naween\\projects\\polymath-platform\\packages\\library",
+    "private": false
+  },
+  {
+    "name": "@repo/profile",
+    "version": "0.0.1",
+    "path": "C:\\Users\\Naween\\projects\\polymath-platform\\packages\\profile",
+    "private": false
+  },
+  {
+    "name": "@repo/scanner-kit",
+    "version": "0.0.0",
+    "path": "C:\\Users\\Naween\\projects\\polymath-platform\\packages\\scanner-kit",
+    "private": true
+  },
+  {
+    "name": "@repo/self",
+    "version": "0.0.1",
+    "path": "C:\\Users\\Naween\\projects\\polymath-platform\\packages\\self",
+    "private": false
+  },
+  {
+    "name": "@repo/types-shim",
+    "version": "0.0.1",
+    "path": "C:\\Users\\Naween\\projects\\polymath-platform\\packages\\types-shim",
+    "private": true
+  },
+  {
+    "name": "@repo/typescript-config",
+    "version": "0.0.0",
+    "path": "C:\\Users\\Naween\\projects\\polymath-platform\\packages\\typescript-config",
+    "private": true
+  },
+  {
+    "name": "@repo/ui",
+    "version": "1.0.0",
+    "path": "C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui",
+    "private": false
+  }
+]

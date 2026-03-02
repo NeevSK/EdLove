@@ -130,8 +130,10 @@ let FileSystem = Platform.OS !== 'web' ? require('expo-file-system/legacy') : nu
 | `expo-device` | ✅ Returns null safely | `Device.totalMemory ?? 0` guard already in DeviceUtils |
 | `expo-clipboard` | ✅ Works on web | No change needed |
 | `@react-native-community/netinfo` | ✅ Works on web | No change needed |
-| `expo-audio` | ⚠ Playback OK; recording limited | Guard `AudioModule.requestRecordingPermissionsAsync` with `Platform.OS !== 'web'` |
+| `expo-audio` | ⚠ Playback OK; recording limited | Guard `AudioModule.requestRecordingPermissionsAsync` + `setAudioModeAsync` with `Platform.OS !== 'web'` |
 | `@react-native-ml-kit/text-recognition` | ❌ No web | Scanner feature unavailable on web (camera-based OCR) |
+| `expo-camera` | ❌ No web | `ScannerModal.web.tsx` fallback (Pattern A) |
+| **`zustand@5`** | ⚠ Uses `import.meta.env.MODE` | `unstable_transformImportMeta: true` in `babel.config.js` rewrites `import.meta` → `globalThis.__ExpoImportMetaRegistry`; without this the web bundle throws `SyntaxError: Cannot use 'import.meta' outside a module` |
 
 ---
 

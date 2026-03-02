@@ -18,12 +18,14 @@ import { Theme } from '@repo/ui';
 import { hapticLight, hapticSuccess } from '@repo/ui';
 import { SkeletonCard } from '@repo/ui';
 import { PositiveInvitation } from '@repo/ui';
+import { useNavigation } from '@react-navigation/native';
 
 interface WindDownRitualProps {
   userId?: string;
 }
 
 export default function WindDownRitual({ userId }: WindDownRitualProps) {
+  const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
   const [completed, setCompleted] = useState(false);
@@ -203,7 +205,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
     return (
       <PositiveInvitation
         type="guest"
-        onAction={() => { }} // TODO: Navigate to Auth
+        onAction={() => navigation.navigate('Auth' as never)}
       />
     );
   }

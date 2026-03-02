@@ -39,6 +39,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase, useStore, useSafeMutation } from '@repo/core';
 import { useThemedColors, SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useMood } from '@repo/self';
+import { useNavigation } from '@react-navigation/native';
 
 interface MoodLotusProps {
     userId?: string;
@@ -49,6 +50,7 @@ const LOTUS_BUD = require('../../assets/images/lotus_bud.png');
 const LOTUS_BLOOM = require('../../assets/images/lotus_bloom.png');
 
 export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
+    const navigation = useNavigation<any>();
     const { t } = useTranslation();
     const colors = useThemedColors();
 
@@ -191,7 +193,7 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
         return (
             <PositiveInvitation
                 type="guest"
-                onAction={() => { }} // TODO: Navigate to Auth
+                onAction={() => navigation.navigate('Auth' as never)}
             />
         );
     }

@@ -134,12 +134,22 @@ export class FlowResolver {
             if (fetchError) throw fetchError;
 
             if (!classroom?.teacher_id) {
-                // Unclaimed classroom — safe to assign
-                const { error: updateError } = await supabase
+                // Unclaimed classroom — claim atomically, only if still null
+                const { data: claimed, error: updateError } = await supabase
                     .from('classrooms')
                     .update({ teacher_id: userId })
-                    .eq('id', classroomId);
+                    .eq('id', classroomId)
+                    .is('teacher_id', null)
+                    .select('id');
                 if (updateError) throw updateError;
+                // If 0 rows were updated another teacher claimed it first — navigate as a visitor
+                if (!claimed || claimed.length === 0) {
+                    return {
+                        outcome: 'success',
+                        message: 'Joined classroom. Ownership was already claimed by another teacher.',
+                        intent: 'GOTO_CLASSROOM'
+                    };
+                }
             }
             // If classroom already has a teacher, just navigate — no ownership change.
         }

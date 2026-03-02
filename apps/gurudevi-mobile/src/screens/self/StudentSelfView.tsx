@@ -27,6 +27,10 @@ import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
 import { MoodLotus, ShadowAgentDrawer } from '../../components/self';
 import ResonancePatternCard from '../../components/self/ResonancePatternCard';
+import FireJournal from '../../components/self/FireJournal';
+import ProgressTree from '../../components/self/ProgressTree';
+import MyGradesView from '../../components/self/MyGradesView';
+import DailyRhythm from '../../components/self/DailyRhythm';
 import { supabase, useStore, useUserRole } from '@repo/core';
 import { useMoodLogs, useEnergyForecast } from '@repo/self';
 import { GlobalHeader } from '@repo/ui';
@@ -85,7 +89,7 @@ export default function StudentSelfView() {
             return (
                 <PositiveInvitation
                     type="guest"
-                    onAction={() => { }} // TODO: Navigate to Auth
+                    onAction={() => navigation.navigate('Auth' as never)}
                 />
             );
         }
@@ -123,12 +127,7 @@ export default function StudentSelfView() {
                                 {t('student.studyRhythmDesc')}
                             </Text>
                         </VStack>
-
-                        <PositiveInvitation
-                            context="self"
-                            title={t('student.studyComingSoon', 'Find Your Rhythm')}
-                            description={t('student.studyComingSoonDesc', 'A gentle study timer and focus tool are in production.')}
-                        />
+                        <DailyRhythm />
                     </VStack>
                 );
             case 'reflection':
@@ -142,12 +141,7 @@ export default function StudentSelfView() {
                                 {t('student.learningReflectionDesc')}
                             </Text>
                         </VStack>
-
-                        <PositiveInvitation
-                            context="self"
-                            title={t('student.reflectionComingSoon', 'Sacred Reflections')}
-                            description={t('student.reflectionComingSoonDesc', 'A quiet corner for your daily insights is being prepared.')}
-                        />
+                        <FireJournal userId={userId ?? undefined} />
                     </VStack>
                 );
             case 'progress':
@@ -161,12 +155,11 @@ export default function StudentSelfView() {
                                 {t('student.myProgressDesc')}
                             </Text>
                         </VStack>
-
-                        <PositiveInvitation
-                            context="self"
-                            title={t('student.progressComingSoon', 'Watch Yourself Bloom')}
-                            description={t('student.progressComingSoonDesc', 'Our growth visualization toolkit is on the way.')}
-                        />
+                        <ProgressTree userId={userId ?? undefined} />
+                        <Heading color={colors.textSecondary} size="sm" mt="$2">
+                            {t('student.myGrades', 'My Grades')}
+                        </Heading>
+                        <MyGradesView userId={userId ?? undefined} />
                     </VStack>
                 );
             default:

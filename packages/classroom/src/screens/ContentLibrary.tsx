@@ -31,7 +31,7 @@ import {
     SmartShelf,
     CollectionCard
 } from '@repo/ui';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import {
     FileText,
     Link as LinkIcon,
@@ -429,32 +429,36 @@ export default function ContentLibrary() {
                                     thumbnailUrl={item.thumbnailUrl}
                                     verified={true}
                                     onPress={() => {
-                                        Alert.alert(
-                                            t('library.importToClassroom') || 'Import to Classroom',
-                                            t('library.importConfirm') || `Would you like to import "${item.title}" from your desk into this classroom?`,
-                                            [
-                                                { text: t('common.cancel') || 'Cancel', style: 'cancel' },
-                                                {
-                                                    text: t('common.import') || 'Import',
-                                                    onPress: () => {
-                                                        if (!user?.id) {
-                                                            showToast('Please sign in to import resources', 'error');
-                                                            return;
-                                                        }
-                                                        addMutation.mutate({
-                                                            classroom_id: classroomId,
-                                                            teacher_id: user.id,
-                                                            title: item.title,
-                                                            description: `Imported from Personal Desk`,
-                                                            type: item.type,
-                                                            url: item.url,
-                                                            content: '',
-                                                            is_pinned: false
-                                                        });
-                                                    }
-                                                }
-                                            ]
-                                        );
+                                        const doImport = () => {
+                                            if (!user?.id) {
+                                                showToast('Please sign in to import resources', 'error');
+                                                return;
+                                            }
+                                            addMutation.mutate({
+                                                classroom_id: classroomId,
+                                                teacher_id: user.id,
+                                                title: item.title,
+                                                description: `Imported from Personal Desk`,
+                                                type: item.type,
+                                                url: item.url,
+                                                content: '',
+                                                is_pinned: false
+                                            });
+                                        };
+                                        if (Platform.OS === 'web') {
+                                            if (window.confirm(t('library.importConfirm') || `Import "${item.title}" into this classroom?`)) {
+                                                doImport();
+                                            }
+                                        } else {
+                                            Alert.alert(
+                                                t('library.importToClassroom') || 'Import to Classroom',
+                                                t('library.importConfirm') || `Would you like to import "${item.title}" from your desk into this classroom?`,
+                                                [
+                                                    { text: t('common.cancel') || 'Cancel', style: 'cancel' },
+                                                    { text: t('common.import') || 'Import', onPress: doImport }
+                                                ]
+                                            );
+                                        }
                                     }}
                                 />
                             ))}

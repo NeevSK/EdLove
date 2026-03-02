@@ -1,10 +1,18 @@
-const { getDefaultConfig } = require('expo/metro-config');
+const { getSentryExpoConfig } = require("@sentry/react-native/metro");
 const path = require('path');
 
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
 
-const config = getDefaultConfig(projectRoot, { isCSSEnabled: true });
+// Note: babel.config.js sets `unstable_transformImportMeta: true` in
+// babel-preset-expo.  This is required because zustand@5 (and similar
+// packages) ship pre-compiled code that uses `import.meta.env.MODE` for
+// dev/prod detection.  Metro serves the web bundle as a classic <script>
+// (no type="module"), so any bare `import.meta` reference causes:
+//   SyntaxError: Cannot use 'import.meta' outside a module
+// The babel option rewrites every `import.meta` → `globalThis.__ExpoImportMetaRegistry`,
+// which Expo's winter runtime initialises before the app boots.
+const config = getSentryExpoConfig(projectRoot, { isCSSEnabled: true });
 
 // 1. Watch all files in the monorepo
 config.watchFolders = [...(config.watchFolders || []), workspaceRoot];

@@ -43,12 +43,21 @@ export function useQRDeepLink(onQRAction?: QRDeepLinkHandler) {
   }, []);
 
   useEffect(() => {
-    // Handle cold-start URL (app opened from outside via QR link)
-    Linking.getInitialURL().then((url) => {
-      if (url) dispatchOrStore(url);
-    });
+    // Handle cold-start URL (app opened from outside via QR link).
+    // On web: Linking.getInitialURL() returns the current https:// URL.
+    // dispatchOrStore() will check `url.startsWith('gurudevi://qr')` which
+    // never matches an https URL — so this is a safe no-op on web.
+    // Web QR routes (/qr path) are handled by NavigationContainer linking instead.
+    Linking.getInitialURL()
+      .then((url) => {
+        if (url) dispatchOrStore(url);
+      })
+      .catch(() => {
+        // Linking.getInitialURL() can reject in some environments (e.g. tvOS);
+        // safe to ignore — the warm-resume listener below covers all other cases.
+      });
 
-    // Handle warm-resume URL (app already running, link received)
+    // Handle warm-resume URL (app already running, incoming deep link).
     const subscription = Linking.addEventListener('url', ({ url }) => {
       dispatchOrStore(url);
     });

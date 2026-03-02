@@ -19,9 +19,18 @@ import { thuthimalAPI } from './thuthimal';
 import { classroomNotesAPI } from './classroomNotes';
 import { principalNotesAPI } from './principalNotes';
 import { communityAPI } from './community';
+import { staffManagementAPI } from './staffManagement';
 import { ReliefCoordinator, TimetableScheduler } from './agents';
 import { sacredMissionsAPI } from './sacredMissions';
 import { isDemo, demoAPI } from './demo';
+import { growthSignalsAPI } from './growthSignals';
+import { userGrowthStateAPI } from './userGrowthState';
+import { impactRipplesAPI } from './impactRipples';
+import { warmMirrorAPI } from './warmMirror';
+import { naturePathsAPI } from './naturePaths';
+import { moonPhaseAPI } from './moonPhase';
+import { schoolForestAPI } from './schoolForest';
+import { contextualChallengesAPI } from './contextualChallenges';
 
 export * from './mockData';
 export * from './types';
@@ -32,6 +41,17 @@ export * from './resonantProxy';
 export * from './classroomNotes';
 export * from './principalNotes';
 export * from './community'; // Export community types/API
+export * from './staffManagement'; // Export staff management types
+// Growth Model v3.0 — Full Nature-Inspired Growth Ecosystem
+export * from './growthSignals';
+export * from './userGrowthState';
+export * from './impactRipples';
+export * from './warmMirror';
+export * from './naturePaths';
+export * from './moonPhase';
+export * from './schoolForest';
+export * from './contextualChallenges';
+// Staff management types/API only exported selectively or implicitly required
 
 // Simplified named exports for direct access
 export {
@@ -58,10 +78,19 @@ export {
     classroomNotesAPI,
     principalNotesAPI,
     communityAPI,
+    staffManagementAPI,
     ReliefCoordinator,
     TimetableScheduler,
     sacredMissionsAPI,
     demoAPI,
+    growthSignalsAPI,
+    userGrowthStateAPI,
+    impactRipplesAPI,
+    warmMirrorAPI,
+    naturePathsAPI,
+    moonPhaseAPI,
+    schoolForestAPI,
+    contextualChallengesAPI,
 };
 
 /**
@@ -94,10 +123,20 @@ export const api = {
     classroomNotes: classroomNotesAPI,
     principalNotes: principalNotesAPI,
     community: communityAPI,
+    staffManagement: staffManagementAPI,
     relief: ReliefCoordinator,
     scheduler: TimetableScheduler,
     missions: sacredMissionsAPI,
     demo: demoAPI,
+    // Growth Model v3.0 — Full Nature-Inspired Growth Ecosystem
+    growth: growthSignalsAPI,
+    growthState: userGrowthStateAPI,
+    ripples: impactRipplesAPI,
+    warmMirror: warmMirrorAPI,
+    naturePaths: naturePathsAPI,
+    moonPhase: moonPhaseAPI,
+    schoolForest: schoolForestAPI,
+    challenges: contextualChallengesAPI,
 };
 
 export default api;

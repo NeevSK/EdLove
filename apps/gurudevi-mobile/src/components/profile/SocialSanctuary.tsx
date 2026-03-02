@@ -1,9 +1,10 @@
 
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Linking, Share } from 'react-native';
-import { Text, GlassCard, useThemedColors, Icon, SanctuaryCard, Theme } from '@repo/ui';
+import { View, StyleSheet, TouchableOpacity, Linking, Share, Platform } from 'react-native';
+import { Text, GlassCard, useThemedColors, Icon, SanctuaryCard, Theme, openExternalURL } from '@repo/ui';
 import { useSocialLinks } from '@repo/profile';
 import { SocialLink, SocialPlatform } from '@repo/core';
+import * as Clipboard from 'expo-clipboard';
 import {
     Instagram,
     Linkedin,
@@ -56,20 +57,29 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
         }
 
         try {
-            const supported = await Linking.canOpenURL(url);
-            if (supported) {
-                await Linking.openURL(url);
-            }
+            await openExternalURL(url);
         } catch (error) {
             console.error('Failed to open URL:', error);
         }
     };
 
-    const shareProfile = () => {
-        Share.share({
-            message: `Connect with me on Gurudevi!`,
-            url: `https://gurudevi.app/profile/${userId}`, // Deep link placeholder
-        });
+    const shareProfile = async () => {
+        const profileUrl = `https://app.gurudevi.edlove.org/app`; // Deep link placeholder
+        if (Platform.OS === 'web') {
+            // Web Share API (modern browsers) or clipboard fallback
+            if (typeof navigator !== 'undefined' && navigator.share) {
+                try {
+                    await navigator.share({ title: 'Gurudevi Profile', url: profileUrl });
+                } catch {
+                    // Cancelled or unavailable — fall back to clipboard
+                    try { await Clipboard.setStringAsync(profileUrl); } catch { /* ignore */ }
+                }
+            } else {
+                await Clipboard.setStringAsync(profileUrl);
+            }
+        } else {
+            Share.share({ message: `Connect with me on Gurudevi!`, url: profileUrl });
+        }
     };
 
     if (loading) return null;

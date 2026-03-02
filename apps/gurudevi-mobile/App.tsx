@@ -3,7 +3,8 @@ import './src/i18n/config'; // Initialize i18n
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
+import { NavigationContainer, type LinkingOptions } from '@react-navigation/native';
+import { navigationRef } from './src/navigation/navigationRef';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GluestackUIProvider, Spinner, Center, VStack, Text } from '@repo/ui';
@@ -34,12 +35,15 @@ import type { ActionItem } from '@repo/ui';
 import { ErrorBoundary, NetworkStatusBanner } from '@repo/ui';
 import { SyncManager } from '@repo/core';
 import { LanguageUtils } from './src/utils/LanguageUtils';
+import CommandPalette from './src/components/web/CommandPalette';
+import { useWebPageTitle } from './src/utils/useWebPageTitle';
+import { PWAInstallBanner } from './src/components/web/PWAInstallBanner';
 
 // Create a client
 const queryClient = new QueryClient();
 
 // Navigation ref for imperative navigation outside React tree (deep links, auth callbacks)
-export const navigationRef = createNavigationContainerRef<any>();
+export { navigationRef } from './src/navigation/navigationRef';
 
 // Root Stack for Modals
 const RootStack = createNativeStackNavigator();
@@ -71,7 +75,6 @@ function App() {
 
   // Extract user profile fetching logic
   const fetchAndSetUserProfile = async (userId: string) => {
-    console.log(`🚀 Profile: Fetching for user ${userId}...`);
     try {
       const { data: userProfile, error } = await supabase
         .from('users')
@@ -85,7 +88,6 @@ function App() {
       }
 
       if (userProfile) {
-        console.log('✅ Profile: Data received', userProfile);
         const { setUserRole, setOnboardingCompleted } = useStore.getState();
         setUserRole(userProfile.role as UserRole | null);
         setOnboardingCompleted(!!userProfile.onboarding_completed);
@@ -114,10 +116,8 @@ function App() {
   // Load custom fonts
   useEffect(() => {
     async function loadFonts() {
-      console.log('🚀 Startup: Loading fonts...');
       try {
         await Font.loadAsync(fontAssets);
-        console.log('✅ Startup: Fonts loaded');
         setFontsLoaded(true);
       } catch (error) {
         console.warn('⚠️ Startup: Font loading failed:', error);
@@ -128,8 +128,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log('🚀 Startup: Initializing Auth session...');
-
     const checkSession = async () => {
       try {
         // Initial session check - non-blocking for fonts/UI
@@ -138,7 +136,6 @@ function App() {
 
         setSession(session);
         if (session) {
-          console.log('🔄 App: Session detected during init, hiding WelcomeScreen');
           setShowWelcome(false);
         }
         if (session?.user) {
@@ -155,7 +152,6 @@ function App() {
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('🔄 Auth Change:', event, !!session ? '(Session exists)' : '(No session)');
       setSession(session);
 
       if (session?.user) {
@@ -207,13 +203,13 @@ function App() {
       case 'classroom':
         return [
           {
-            label: 'Create Lesson',
-            onPress: () => navigationRef.isReady() && navigationRef.navigate('CreateLesson'),
+            label: 'My Classrooms',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Classroom' }),
             icon: School
           },
           {
-            label: 'Add Assignment',
-            onPress: () => navigationRef.isReady() && navigationRef.navigate('CreateAssignment'),
+            label: 'Mark Attendance',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Classroom' }),
             icon: School
           },
         ];
@@ -221,12 +217,12 @@ function App() {
         return [
           {
             label: 'New Post',
-            onPress: () => navigationRef.isReady() && navigationRef.navigate('CreatePost'),
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Community' }),
             icon: Users
           },
           {
-            label: 'Share Resource',
-            onPress: () => navigationRef.isReady() && navigationRef.navigate('CreatePost'),
+            label: 'Find Groups',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Community' }),
             icon: Users
           },
         ];
@@ -234,12 +230,12 @@ function App() {
         return [
           {
             label: 'Add Resource',
-            onPress: () => navigationRef.isReady() && navigationRef.navigate('AddLibraryResource'),
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Library' }),
             icon: Library
           },
           {
-            label: 'Add Bookmark',
-            onPress: () => navigationRef.isReady() && navigationRef.navigate('AddLibraryResource'),
+            label: 'Browse Library',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Library' }),
             icon: Library
           },
         ];
@@ -247,7 +243,7 @@ function App() {
         return [
           {
             label: 'Edit Profile',
-            onPress: () => navigationRef.isReady() && navigationRef.navigate('EditProfile'),
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Profile' }),
             icon: User
           },
         ];
@@ -276,8 +272,6 @@ function App() {
   const isNewUser = !onboardingCompleted;
   const needsWelcome = showWelcome && isNewUser;
 
-  console.log('App: Loading finished, rendering main tree');
-
   return (
     <QueryClientProvider client={queryClient}>
       <EnvironmentProvider>
@@ -304,12 +298,67 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
   const { phase } = useTheme();
   const isWarmPhase = ['morning', 'afternoon', 'evening'].includes(phase);
 
+  // Reactive document.title tied to actual navigation state (replaces tab-only version)
+  useWebPageTitle();
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <ToastProvider>
           <ErrorBoundary name="App Root">
-            <NavigationContainer ref={navigationRef}>
+            <NavigationContainer
+              ref={navigationRef}
+              linking={Platform.OS === 'web' ? ({
+                prefixes: ['https://app.gurudevi.edlove.org', 'http://localhost:4000'],
+                config: {
+                  screens: {
+                    Welcome: '',
+                    Onboarding: 'onboarding',
+                    Auth: 'auth',
+                    AIAssistant: 'ai',
+                    QRHandler: 'qr',
+                    ThuthimalClaim: 'thuthimal',
+                    Main: {
+                      path: 'app',
+                      screens: {
+                        Self: 'self',
+                        Profile: {
+                          path: 'profile',
+                          screens: {
+                            ProfileMain: '',
+                            FullProfile: 'full',
+                          },
+                        },
+                        Classroom: {
+                          path: 'classroom',
+                          screens: {
+                            ClassroomList: '',
+                            SchoolCreation: 'new',
+                            ClassroomDetails: {
+                              path: ':classroomId',
+                              screens: {
+                                Attendance: 'attendance',
+                                Gradebook: 'gradebook',
+                              },
+                            },
+                          },
+                        },
+                        Community: {
+                          path: 'community',
+                          screens: {
+                            CommunityMain: '',
+                            GroupDetails: 'group/:groupId',
+                            GroupChat: 'group/:groupId/chat',
+                            UserProfile: 'user/:userId',
+                          },
+                        },
+                        Library: 'library',
+                      },
+                    },
+                  },
+                },
+              } as LinkingOptions<any>) : undefined}
+            >
               <PostHogProvider
                 apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
                 options={{
@@ -325,7 +374,6 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                           <WelcomeScreen
                             initialShowAuth={onboardingCompleted}
                             onNext={() => {
-                              console.log('➡️ App: onNext called from WelcomeScreen');
                               setShowWelcome(false);
                             }}
                           />
@@ -339,7 +387,6 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                           <OnboardingScreen
                             isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
                             onComplete={(name: string, role: any, wantsAccount?: boolean) => {
-                              console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
                               const store = useStore.getState();
                               if (name) store.setTeacherName(name);
                               if (role) store.setUserRole(role);
@@ -396,6 +443,16 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
 
             <SyncManager />
             <NetworkStatusBanner />
+
+            {/* Command Palette — web-only power feature (Cmd+K) */}
+            {Platform.OS === 'web' && (
+              <CommandPalette
+                onOpenAI={() => navigationRef.navigate('AIAssistant' as never)}
+              />
+            )}
+
+            {/* PWA Install Banner — web-only; hook guards against native/installed/dismissed */}
+            <PWAInstallBanner />
 
             {toast.visible && (
               <SanctuaryToast

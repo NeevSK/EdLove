@@ -74,6 +74,8 @@ export function AvatarDisplay({
     if (!cachePath) return;
     FileSystem.getInfoAsync(cachePath).then(info => {
       if (info.exists) setLocalCachePath(cachePath);
+    }).catch(() => {
+      // Cache read failure is non-fatal; avatar will fall back to remote URL
     });
   }, [userId]);
 

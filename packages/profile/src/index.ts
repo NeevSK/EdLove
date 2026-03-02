@@ -13,3 +13,4 @@ export * from './config/profileSections';
 export * from './hooks/useProfileCompletion';
 export { AvatarDisplay } from './components/AvatarDisplay';
 export { ContactLinktree } from './components/ContactLinktree';
+export { GiveThuthimalModal } from './components/GiveThuthimalModal';

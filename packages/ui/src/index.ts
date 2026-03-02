@@ -14,6 +14,7 @@ export * from './components';
 export * from './utils/DeviceUtils';
 export * from './utils/haptics';
 export * from './utils/themeColors';
+export * from './utils/linking';
 export * from './hooks/useAccessibility';
 export * from './hooks/useDemoBridge';
 export * from './hooks/useQRDeepLink';

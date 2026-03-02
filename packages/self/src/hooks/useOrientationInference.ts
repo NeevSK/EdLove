@@ -81,20 +81,20 @@ interface RoleDefaults {
 }
 
 const ROLE_DEFAULTS: Record<string, RoleDefaults> = {
-    student:      { depth_breadth: 60, reflect_act: 65, solo_social: 65, steady_surge: 60 },
-    teacher:      { depth_breadth: 35, reflect_act: 35, solo_social: 55, steady_surge: 40 },
-    grade_head:   { depth_breadth: 30, reflect_act: 30, solo_social: 55, steady_surge: 35 },
+    student: { depth_breadth: 60, reflect_act: 65, solo_social: 65, steady_surge: 60 },
+    teacher: { depth_breadth: 35, reflect_act: 35, solo_social: 55, steady_surge: 40 },
+    grade_head: { depth_breadth: 30, reflect_act: 30, solo_social: 55, steady_surge: 35 },
     section_head: { depth_breadth: 30, reflect_act: 30, solo_social: 55, steady_surge: 35 },
-    principal:    { depth_breadth: 25, reflect_act: 25, solo_social: 60, steady_surge: 30 },
-    founder:      { depth_breadth: 65, reflect_act: 60, solo_social: 70, steady_surge: 65 },
-    admin:        { depth_breadth: 50, reflect_act: 50, solo_social: 55, steady_surge: 50 },
+    principal: { depth_breadth: 25, reflect_act: 25, solo_social: 60, steady_surge: 30 },
+    founder: { depth_breadth: 65, reflect_act: 60, solo_social: 70, steady_surge: 65 },
+    admin: { depth_breadth: 50, reflect_act: 50, solo_social: 55, steady_surge: 50 },
 };
 
 function studentGradeAdjustment(gradeNumber: number | null | undefined): Partial<RoleDefaults> {
     if (!gradeNumber) return {};
-    if (gradeNumber <= 5)  return { solo_social: 75, reflect_act: 72, depth_breadth: 68 };
-    if (gradeNumber <= 9)  return { solo_social: 65, reflect_act: 60, depth_breadth: 58 };
-    return                         { solo_social: 55, reflect_act: 50, depth_breadth: 48 };
+    if (gradeNumber <= 5) return { solo_social: 75, reflect_act: 72, depth_breadth: 68 };
+    if (gradeNumber <= 9) return { solo_social: 65, reflect_act: 60, depth_breadth: 58 };
+    return { solo_social: 55, reflect_act: 50, depth_breadth: 48 };
 }
 
 // ============================================================================
@@ -128,9 +128,13 @@ function recentWeightedAvg(
     let weightedSum = 0;
     let totalWeight = 0;
     for (let i = 0; i < values.length; i++) {
-        const w = recencyWeight(timestamps[i], now);
-        weightedSum += values[i] * w;
-        totalWeight += w;
+        const ts = timestamps[i];
+        const val = values[i];
+        if (ts !== undefined && val !== undefined) {
+            const w = recencyWeight(ts, now);
+            weightedSum += val * w;
+            totalWeight += w;
+        }
     }
     if (totalWeight < 0.01) return null; // all data too stale to be meaningful
     return weightedSum / totalWeight;
@@ -160,7 +164,7 @@ function signalConsistency(values: number[]): number {
     const cv = sd / mean; // coefficient of variation
 
     // Tent function: peak at cv=0.20
-    if (cv < 0.05)  return cv / 0.05 * 0.3;          // flat → low but not zero
+    if (cv < 0.05) return cv / 0.05 * 0.3;          // flat → low but not zero
     if (cv <= 0.30) return 0.3 + (cv - 0.05) / 0.25 * 0.7; // rising to 1.0
     if (cv <= 0.55) return 1.0 - (cv - 0.30) / 0.25 * 0.7; // falling
     return Math.max(0, 1.0 - (cv - 0.55) / 0.45);          // noise floor
@@ -177,8 +181,8 @@ interface DimSignal {
 }
 
 interface QualifiedSignals {
-    reflect_act?:  DimSignal;
-    solo_social?:  DimSignal;
+    reflect_act?: DimSignal;
+    solo_social?: DimSignal;
     steady_surge?: DimSignal;
 }
 
@@ -198,14 +202,14 @@ function deriveFromBehavior(
     let qualityDivisor = 0;
 
     // ── MOOD signals ──────────────────────────────────────────────────────────
-    const moodDays  = uniqueDays(moodLogs.map(l => l.created_at));
+    const moodDays = uniqueDays(moodLogs.map(l => l.created_at));
     const moodReady = moodLogs.length >= MOOD_MIN_SAMPLES && moodDays >= MIN_UNIQUE_DAYS;
 
     if (moodReady) {
-        const scores     = moodLogs.map(l => l.mood_score);
+        const scores = moodLogs.map(l => l.mood_score);
         const timestamps = moodLogs.map(l => l.created_at);
         const consistency = signalConsistency(scores);
-        const recentAvg   = recentWeightedAvg(scores, timestamps, now);
+        const recentAvg = recentWeightedAvg(scores, timestamps, now);
 
         // Only proceed if recent data exists and signal is meaningful
         if (recentAvg !== null && consistency > 0.15) {
@@ -233,14 +237,14 @@ function deriveFromBehavior(
     }
 
     // ── ENERGY signals ────────────────────────────────────────────────────────
-    const energyDays  = uniqueDays(energyForecasts.map(f => f.forecast_date));
+    const energyDays = uniqueDays(energyForecasts.map(f => f.forecast_date));
     const energyReady = energyForecasts.length >= ENERGY_MIN_SAMPLES && energyDays >= MIN_UNIQUE_DAYS;
 
     if (energyReady) {
-        const levels     = energyForecasts.map(f => f.energy_level);
+        const levels = energyForecasts.map(f => f.energy_level);
         const timestamps = energyForecasts.map(f => f.forecast_date);
         const consistency = signalConsistency(levels);
-        const recentAvg   = recentWeightedAvg(levels, timestamps, now);
+        const recentAvg = recentWeightedAvg(levels, timestamps, now);
 
         if (recentAvg !== null && consistency > 0.15) {
             const energyWeight = Math.min(1, consistency *
@@ -268,12 +272,12 @@ function deriveFromBehavior(
     // If mood and energy point in opposite directions on reflect_act,
     // we have a contradiction — dampen both to avoid miscalibration.
     if (moodReady && energyReady && signals.reflect_act) {
-        const moodScores    = moodLogs.map(l => l.mood_score);
-        const energyLevels  = energyForecasts.map(f => f.energy_level);
-        const moodRecentAvg    = recentWeightedAvg(moodScores,    moodLogs.map(l => l.created_at),          now) ?? 3;
-        const energyRecentAvg  = recentWeightedAvg(energyLevels,  energyForecasts.map(f => f.forecast_date), now) ?? 3;
+        const moodScores = moodLogs.map(l => l.mood_score);
+        const energyLevels = energyForecasts.map(f => f.energy_level);
+        const moodRecentAvg = recentWeightedAvg(moodScores, moodLogs.map(l => l.created_at), now) ?? 3;
+        const energyRecentAvg = recentWeightedAvg(energyLevels, energyForecasts.map(f => f.forecast_date), now) ?? 3;
 
-        const moodDirection   = moodRecentAvg   >= 3.5 ? 1 : moodRecentAvg   <= 2.5 ? -1 : 0;
+        const moodDirection = moodRecentAvg >= 3.5 ? 1 : moodRecentAvg <= 2.5 ? -1 : 0;
         const energyDirection = energyRecentAvg >= 3.5 ? 1 : energyRecentAvg <= 2.5 ? -1 : 0;
 
         if (moodDirection !== 0 && energyDirection !== 0 && moodDirection !== energyDirection) {
@@ -323,19 +327,21 @@ function mergeLayers(
 
     for (const dim of DIMS) {
         const roleDef = roleDefaults[dim];
-        const sig = signals[dim as keyof QualifiedSignals] as DimSignal | undefined;
+        const sig = signals[dim as keyof QualifiedSignals];
 
         if (explicit) {
-            // Explicit seed — trust it; allow tiny behavioral drift only if quality is high
+            const explicitValue = explicit[dim as keyof OrientationSeeds] as number | undefined;
+            const hasExplicit = explicitValue !== undefined && explicitValue !== null;
+
             if (sig && overallBehavioralQuality > 0.4) {
                 const drift = sig.weight * overallBehavioralQuality * 0.1; // max 10% drift
-                merged[dim] = clamp(explicit[dim] * (1 - drift) + sig.value * drift);
+                const baseVal = hasExplicit ? (explicitValue as number) : roleDef;
+                merged[dim] = clamp(baseVal * (1 - drift) + sig.value * drift);
             } else {
-                merged[dim] = explicit[dim];
+                merged[dim] = hasExplicit ? (explicitValue as number) : roleDef;
             }
         } else if (sig) {
             // Behavioral signal present — blend proportionally to quality
-            // Low quality → stays close to role default; high quality → moves toward signal
             const blendRatio = sig.weight * overallBehavioralQuality; // 0–1
             merged[dim] = clamp(roleDef * (1 - blendRatio) + sig.value * blendRatio);
         } else {
@@ -344,18 +350,23 @@ function mergeLayers(
         }
     }
 
+    const db = merged['depth_breadth'] ?? roleDefaults.depth_breadth;
+    const ra = merged['reflect_act'] ?? roleDefaults.reflect_act;
+    const ss = merged['solo_social'] ?? roleDefaults.solo_social;
+    const sz = merged['steady_surge'] ?? roleDefaults.steady_surge;
+
     const source: OrientationSeeds['source'] = explicit
         ? (Object.keys(signals).length > 0 ? 'mixed' : 'seeded')
         : 'inferred';
 
     return {
-        depth_breadth: merged.depth_breadth,
-        reflect_act:   merged.reflect_act,
-        solo_social:   merged.solo_social,
-        steady_surge:  merged.steady_surge,
+        depth_breadth: db,
+        reflect_act: ra,
+        solo_social: ss,
+        steady_surge: sz,
         source,
-        seeded_at:     explicit?.seeded_at,
-        last_updated:  new Date().toISOString(),
+        seeded_at: explicit?.seeded_at,
+        last_updated: new Date().toISOString(),
     };
 }
 
@@ -428,7 +439,7 @@ export function useOrientationInference(
         const seeds = mergeLayers(explicitSeeds ?? null, signals, roleDefaults, behavioralQuality);
 
         // 4. Metadata
-        const hasExplicit   = !!explicitSeeds;
+        const hasExplicit = !!explicitSeeds;
         const hasBehavioral = Object.keys(signals).length > 0;
 
         const confidence = hasExplicit

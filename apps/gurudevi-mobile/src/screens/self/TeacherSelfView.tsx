@@ -22,7 +22,7 @@ import {
     Button,
     ButtonText
 } from '@repo/ui';
-import { Mic, Send, MessageCircle, Repeat, Flower, Flame, Sparkles, Heart, Lightbulb, Calendar, Battery, Moon, Bell } from 'lucide-react-native';
+import { Mic, Send, MessageCircle, Repeat, Flower, Flame, Sparkles, Heart, Lightbulb, Calendar, Battery, Moon, Bell, BookOpen } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
@@ -41,13 +41,13 @@ import {
 import SleepTracker from '../../components/self/SleepTracker';
 import RemindersManager from '../../components/self/RemindersManager';
 import VoiceJournaling from '../../components/self/VoiceJournaling';
-import { supabase, useStore } from '@repo/core';
+import { supabase, useStore, useSafeMutation } from '@repo/core';
 import { GlobalHeader } from '@repo/ui';
 import DailyContentCard from '../../components/self/DailyContentCard';
 import ResonancePatternCard from '../../components/self/ResonancePatternCard';
-import { useMoodLogs, useEnergyForecast } from '@repo/self';
+import { useMoodLogs, useEnergyForecast, useDecisionJournal } from '@repo/self';
 import ThuthimalBadge from '../../components/profile/ThuthimalBadge';
-import { SkeletonCard } from '@repo/ui';
+import { SkeletonCard, PositiveInvitation } from '@repo/ui';
 import WelcomeModal from '../../components/self/WelcomeModal';
 import { useThemedColors, useBottomTabPadding } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
@@ -70,6 +70,7 @@ const MORE_TOOLS_FEATURES = [
     { id: 'sleep', icon: Moon, category: 'contextual', eroi: 9 },
     { id: 'reminders', icon: Bell, category: 'contextual', eroi: 8 },
     { id: 'voiceJournal', icon: Mic, category: 'discover', eroi: 10 },
+    { id: 'decisions', icon: BookOpen, category: 'discover', eroi: 9 },
 ];
 
 export default function TeacherSelfView() {
@@ -157,6 +158,8 @@ export default function TeacherSelfView() {
                 return <RemindersManager userId={userId ?? undefined} />;
             case 'voiceJournal':
                 return <VoiceJournaling userId={userId ?? undefined} />;
+            case 'decisions':
+                return <DecisionJournalSection userId={userId} colors={colors} t={t} />;
             case 'venting':
                 return (
                     <VStack space="lg" sx={{ flex: 1 }}>
@@ -389,5 +392,103 @@ export default function TeacherSelfView() {
                 onClose={() => setJustFinishedOnboarding(false)}
             />
         </ScreenWrapper>
+    );
+}
+
+function DecisionJournalSection({ userId, colors, t }: { userId: string | null, colors: any, t: any }) {
+    const navigation = useNavigation<any>();
+    const [decisionText, setDecisionText] = useState('');
+    const { decisions, refreshData } = useDecisionJournal(userId ?? undefined);
+
+    const { mutate, isLoading: isSaving } = useSafeMutation(
+        async (text: string) => {
+            const { error } = await supabase
+                .from('decision_journals')
+                .insert({ user_id: userId, decision_text: text, is_reviewed: false });
+            if (error) {
+                if (error.code === '42P01') {
+                    console.warn('[DecisionJournal] Table not yet migrated — entry saved to local cache only.', error.message);
+                    return;
+                }
+                throw error;
+            }
+        },
+        {
+            onSuccess: () => { hapticLight(); setDecisionText(''); refreshData(); },
+            retryCount: 3,
+        }
+    );
+
+    if (!userId) {
+        return <PositiveInvitation type="guest" onAction={() => navigation.navigate('Auth' as never)} />;
+    }
+
+    return (
+        <VStack space="md" sx={{ flex: 1 }}>
+            <Box
+                p={Theme.spacing.md}
+                sx={{ backgroundColor: colors.tertiary, borderRadius: Theme.corners.comfortable, minHeight: 120 }}
+            >
+                <Input variant="outline" size="md" sx={{ borderWidth: 0, flex: 1 }}>
+                    <InputField
+                        placeholder={t('self.decisionPlaceholder', 'What decision is weighing on you today?')}
+                        multiline
+                        color={colors.text}
+                        placeholderTextColor={colors.textTertiary}
+                        sx={{ textAlignVertical: 'top', minHeight: 100 }}
+                        value={decisionText}
+                        onChangeText={setDecisionText}
+                    />
+                </Input>
+                <Box alignItems="flex-end" mt="$2">
+                    <Pressable
+                        onPress={() => mutate(decisionText.trim())}
+                        disabled={!decisionText.trim() || isSaving}
+                        sx={{
+                            backgroundColor: decisionText.trim() ? colors.action : colors.border,
+                            paddingHorizontal: Theme.spacing.md,
+                            paddingVertical: Theme.spacing.xs,
+                            borderRadius: Theme.corners.comfortable,
+                            opacity: isSaving ? 0.7 : 1,
+                        }}
+                    >
+                        <Text color={Theme.colors.white} size="sm" bold>
+                            {isSaving ? t('common.saving', 'Saving…') : t('common.save')}
+                        </Text>
+                    </Pressable>
+                </Box>
+            </Box>
+
+            <Heading size="sm" color={colors.textSecondary} mt="$4">
+                {t('self.recentDecisions', 'Recent Decisions')}
+            </Heading>
+
+            <ScrollView sx={{ maxHeight: 300 }} nestedScrollEnabled>
+                <VStack space="sm">
+                    {decisions.map((decision) => (
+                        <Box
+                            key={decision.id}
+                            p={Theme.spacing.md}
+                            sx={{
+                                backgroundColor: colors.secondary,
+                                borderRadius: Theme.corners.comfortable,
+                                borderLeftWidth: 3,
+                                borderLeftColor: colors.action,
+                            }}
+                        >
+                            <Text color={colors.text} size="sm" numberOfLines={3}>{decision.decision_text}</Text>
+                            <Text color={colors.textTertiary} size="xs" mt="$1">
+                                {new Date(decision.created_at).toLocaleDateString()}
+                            </Text>
+                        </Box>
+                    ))}
+                    {decisions.length === 0 && (
+                        <Text color={colors.textTertiary} size="sm" fontStyle="italic">
+                            {t('self.noDecisionsYet', 'No decisions logged yet.')}
+                        </Text>
+                    )}
+                </VStack>
+            </ScrollView>
+        </VStack>
     );
 }

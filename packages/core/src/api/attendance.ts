@@ -8,6 +8,7 @@ import { supabase } from '../lib/supabase';
 import { APIError } from './types';
 import type { AttendanceRecord } from './types';
 import { requireClassroomAccess } from '../lib/authorization';
+import { growthSignalsAPI } from './growthSignals';
 
 export const attendanceAPI = {
     /**
@@ -62,6 +63,18 @@ export const attendanceAPI = {
             throw new APIError('Failed to record attendance', error.code, error);
         }
 
+        // Growth signal: teacher was in school, actively managing their classroom
+        // (Tier 1 Work Signal — the act of taking attendance IS presence)
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            console.warn('[GrowthSignals] Auth unavailable for attendance signal:', authError?.message);
+        } else {
+            void growthSignalsAPI.emitSignal(user.id, 'attendance_recorded', {
+                classroom_id: classroomId,
+                date,
+            }).catch(() => {});
+        }
+
         return data;
     },
 
@@ -103,6 +116,19 @@ export const attendanceAPI = {
 
         if (error) {
             throw new APIError('Failed to batch record attendance', error.code, error);
+        }
+
+        // Growth signal: teacher was in school, taking attendance for their full class
+        // Batch record represents more deliberate presence than a single record
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            console.warn('[GrowthSignals] Auth unavailable for batch attendance signal:', authError?.message);
+        } else {
+            void growthSignalsAPI.emitSignal(user.id, 'attendance_recorded', {
+                classroom_id: classroomId,
+                record_count: records.length,
+                date: records[0]?.date,
+            }).catch(() => {});
         }
 
         return data || [];

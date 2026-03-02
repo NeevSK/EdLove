@@ -1,0 +1,190 @@
+# Gurudevi Web — The Full Mastery Plan
+
+## Part 1: The One Real Bug  
+
+**Single cause of white screen:** `expo-camera` is imported *unconditionally at the top* of [packages/scanner-kit/src/ScannerModal.tsx](file:///c:/Users/Naween/projects/polymath-platform/packages/scanner-kit/src/ScannerModal.tsx). This throws before React mounts.
+
+**Fix:** `ScannerModal.web.tsx` — Pattern A (platform file pair, no shim, no metro change).
+
+> Everything else (reanimated, haptics, mmkv, skia, flash-list, gesture-handler) is already handled.
+
+---
+
+## Part 2: Web-Excellence Additions  
+*Where web beats mobile — and we should lean in.*
+
+### 2a — PWA: Make it Installable
+
+**What:** Teachers on Chromebook/desktop can "install" the app without an app store.  
+**How:** Extend `app.json → web` section.
+
+#### [MODIFY] [app.json](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/app.json)
+```json
+"web": {
+  "favicon": "./assets/favicon.png",
+  "bundler": "metro",
+  "baseUrl": "/",
+  "name": "Gurudevi",
+  "shortName": "Gurudevi",
+  "lang": "en",
+  "display": "standalone",
+  "themeColor": "#D4843A",
+  "backgroundColor": "#F5EDD6",
+  "description": "A sacred space for teachers — wellbeing, classroom, and community."
+}
+```
+
+> This generates a `manifest.json` that makes the app installable as a PWA. Zero dependencies.
+
+---
+
+### 2b — Hover States (Desktop UX)
+
+**What:** `Pressable` on mobile has no concept of hover. On web, teachers using a mouse get no feedback. We can add this to any `Pressable`-based button in `@repo/ui` components.  
+**How:** `Pressable` exposes `onHoverIn`/`onHoverOut` on web (via react-native-web). Wire them with a local state flag → adjust opacity or shadow.
+
+This is a **Pattern C** (inline `Platform.select`) change to `SanctuaryCard`, `LotusPetalFAB`, and key action buttons.
+
+#### [MODIFY] [packages/ui/src/components/SanctuaryCard.tsx](file:///c:/Users/Naween/projects/polymath-platform/packages/ui/src/components/SanctuaryCard.tsx)
+
+```tsx
+// Add web hover state via Pressable
+const [hovered, setHovered] = useState(false);
+
+<Pressable
+  onHoverIn={() => Platform.OS === 'web' && setHovered(true)}
+  onHoverOut={() => Platform.OS === 'web' && setHovered(false)}
+  style={[styles.card, hovered && styles.cardHovered]}
+/>
+
+// cardHovered: { opacity: 0.92, transform: [{ scale: 1.01 }] }
+```
+
+---
+
+### 2c — Keyboard Navigation (Desktop Power)
+
+**What:** No RN app expects keyboard navigation. On web, teachers can tab through dashboard cards, press Enter on actions.  
+**How:** Wrap key interactive areas with `onKeyDown` handlers (Pattern C).
+
+Priority targets (highest ROI):
+- **Auth screen** — Enter key on password field to submit login
+- **AI Assistant** — Enter to send message  
+- **QR Code input** (in ScannerModal.web.tsx) — Enter to submit pasted code
+
+These go directly into the [.web.tsx](file:///c:/Users/Naween/projects/polymath-platform/packages/ui/src/components-native/LivingCard.web.tsx) files, no cross-platform leakage.
+
+---
+
+### 2d — URL-Based Deep Linking (Web Superpower)
+
+**What:** Mobile deep links need app installed. Web gets this *free* — a URL is a shareable artifact.  
+**How:** React Navigation already maps screen names to paths on web. We need to configure `linking` in `NavigationContainer`.
+
+#### [MODIFY] [App.tsx](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/App.tsx)
+
+```tsx
+const linking = Platform.OS === 'web' ? {
+  prefixes: ['https://app.gurudevi.edlove.org'],
+  config: {
+    screens: {
+      Main: '',
+      Auth: 'auth',
+      AIAssistant: 'ai',
+    }
+  }
+} : undefined;
+
+<NavigationContainer linking={linking} ref={navigationRef}>
+```
+
+Teachers can now bookmark `app.gurudevi.edlove.org/ai` to jump directly to the AI assistant.
+
+---
+
+### 2e — Rich Clipboard Sharing (Web Only)
+
+**What:** On mobile, "Share" opens native share sheet. On web, we can copy a rich-text link directly to clipboard (clipboard API supports HTML).  
+**How:** `expo-clipboard` works on web. In community post share actions and profile linktree, add a web-specific "Copy Link" that generates a proper URL.
+
+#### [MODIFY] community share handler — Pattern C
+
+```ts
+import * as Clipboard from 'expo-clipboard';
+
+const sharePost = async (postId: string) => {
+  if (Platform.OS === 'web') {
+    await Clipboard.setStringAsync(`${window.location.origin}/community/${postId}`);
+    showToast('Link copied to clipboard');
+  } else {
+    // existing native Share.share(...)
+  }
+};
+```
+
+---
+
+### 2f — Better Auth URL Flow (Web-Specific)
+
+**What:** Supabase OAuth on web lands on a callback URL with tokens in the fragment. Mobile uses deep links. Web browsers handle this differently.  
+**How:** In Supabase project settings:
+1. Set **Site URL** = `https://app.gurudevi.edlove.org`
+2. Add it to **Redirect URLs** allowlist  
+3. For Google OAuth — add origin to Google Cloud Console
+
+> [!IMPORTANT]
+> This is a **config change in Supabase dashboard**, not code. Without it, OAuth sign-in redirects to localhost or fails in production.
+
+---
+
+## Execution Order (Minimal → Maximal Value)
+
+| # | Task | Pattern | Effort | Impact |
+|---|---|---|---|---|
+| 1 | `ScannerModal.web.tsx` | A | 1h | 🔴 **Critical** — fixes white screen |
+| 2 | [app.json](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/app.json) PWA fields | config | 10m | 🟠 High — installable PWA |
+| 3 | Supabase URL config | dashboard | 5m | 🟠 High — OAuth works |
+| 4 | Auth screen Enter key | C in .web | 30m | 🟡 Medium — desktop polish |
+| 5 | `NavigationContainer` linking | C inline | 30m | 🟡 Medium — deep links |
+| 6 | Hover states in SanctuaryCard | C inline | 1h | 🟢 Nice — desktop feel |
+| 7 | Clipboard share in community | C inline | 30m | 🟢 Nice — web-native UX |
+
+---
+
+## ScannerModal.web.tsx — The Design
+
+**Sanctuary aesthetic + web-superior UX:**
+
+```
+┌─────────────────────────────────────┐  ← Modal, Vellum bg (#F5EDD6)
+│  [✕]                    Scan QR     │  ← Ink header
+│                                     │
+│         📱                          │  ← Saffron icon
+│    Camera scanning                  │
+│    is available in                  │
+│    the Gurudevi app                 │  ← Elegant message
+│                                     │
+│  ┌─────────────────────────────┐    │
+│  │  Paste QR code value here   │    │  ← Text input, Ink border
+│  └─────────────────────────────┘    │
+│                                     │
+│        [ Submit Code ]              │  ← Saffron button
+└─────────────────────────────────────┘
+```
+
+Web users who receive a Gurudevi QR link via email or screenshot can paste the value directly. This is *better* than camera scanning in many school admin scenarios.
+
+---
+
+## Verification Plan
+
+```powershell
+cd apps/gurudevi-mobile
+pnpm build:web 2>&1 | Out-File -Encoding utf8 build.log
+npx -y serve dist -l 4000
+# ✓ WelcomeScreen renders (no blank)
+# ✓ DevTools → Console → zero uncaught TypeErrors  
+# ✓ dist/CNAME contains app.gurudevi.edlove.org
+# ✓ App can be "installed" from Chrome address bar (PWA)
+# ✓ Login form responds to Enter key  
+```

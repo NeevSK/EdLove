@@ -18,15 +18,17 @@ export function useAttendance(initialStudents: StudentAttendance[] = []) {
     const filteredStudents = useMemo(() => {
         return students.filter(s =>
             s.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            s.roll_number?.toLowerCase().includes(searchQuery.toLowerCase())
+            s.roll_number?.toString().toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [students, searchQuery]);
 
     const stats = useMemo(() => {
         return students.reduce((acc, curr) => {
-            acc[curr.status]++;
+            if (curr.status in acc) {
+                acc[curr.status]++;
+            }
             return acc;
-        }, { present: 0, absent: 0, late: 0 });
+        }, { present: 0, absent: 0, late: 0, total: students.length } as Record<AttendanceStatus | 'total', number>);
     }, [students]);
 
     return {

@@ -1,6 +1,6 @@
 ## UI
 ### profile section
-- [ ] logout and delete account modal aligned with theme and content should be modern and premium, Modal shape also should be modern and premium. texts are too long and seems over explainig.
+- [ ] logout and delete account modal aligned with theme and content should be modern and premium, Modal shape also should be modern and premium. texts are too long and seems over explaining.
 - [ ] 
 
 ### Gobal header

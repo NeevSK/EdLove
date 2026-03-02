@@ -19,6 +19,7 @@
     },
     "android": {
       "package": "org.edlove.gurudevi",
+      "versionCode": 21,
       "newArchEnabled": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -59,7 +60,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png",
-      "bundler": "metro"
+      "bundler": "metro",
+      "baseUrl": "/",
+      "name": "Gurudevi",
+      "shortName": "Gurudevi",
+      "lang": "en",
+      "display": "standalone",
+      "themeColor": "#D4843A",
+      "backgroundColor": "#F5EDD6"
     },
     "extra": {
       "eas": {
@@ -70,11 +78,24 @@
       "expo-font",
       "./plugins/withAndroidCruncherDisabled",
       "./plugins/withGradleProperties",
+      "./plugins/withSentryGradleDisabled",
+      "./plugins/withSentryProperties",
       "expo-localization",
       "expo-asset",
       "expo-audio",
       "expo-secure-store",
-      "@sentry/react-native"
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "gurudevi-mobile",
+          "organization": "intuitui-labs",
+          "uploadNativeSymbols": false,
+          "autoUploadNativeSymbols": false,
+          "autoUpload": false,
+          "uploadSourceMaps": false
+        }
+      ]
     ],
     "owner": "neevsk",
     "runtimeVersion": {

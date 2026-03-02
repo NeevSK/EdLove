@@ -1,4 +1,6 @@
 ﻿import { supabase } from '../lib/supabase';
+import { growthSignalsAPI } from './growthSignals';
+import { impactRipplesAPI } from './impactRipples';
 // types are defined below
 export type ManifestoVibe = 'visionary' | 'supportive' | 'academic' | 'wellbeing';
 export type ManifestoStatus = 'active' | 'archived' | 'fulfilled';
@@ -81,6 +83,13 @@ export const sacredMissionsAPI = {
      * Endorse a manifesto
      */
     async endorseManifesto(manifestoId: string, userId: string, commitmentText?: string) {
+        // Fetch the manifesto's creator_id for the Impact Ripple
+        const { data: manifesto } = await supabase
+            .from('sanctuary_manifestos')
+            .select('creator_id')
+            .eq('id', manifestoId)
+            .maybeSingle();
+
         const { error } = await supabase
             .from('manifesto_endorsements')
             .upsert({
@@ -90,6 +99,23 @@ export const sacredMissionsAPI = {
             });
 
         if (error) throw error;
+
+        // Growth signal: teacher actively participated in community alignment (Weaving dimension)
+        void growthSignalsAPI.emitSignal(userId, 'manifesto_endorsed', {
+            manifesto_id: manifestoId,
+        }).catch(() => {});
+
+        // Impact Ripple for the manifesto creator — "a fellow teacher endorsed your vision"
+        if (manifesto?.creator_id && manifesto.creator_id !== userId) {
+            void impactRipplesAPI.createRipple({
+                recipientUserId: manifesto.creator_id,
+                actorUserId: userId,
+                rippleType: 'manifesto_endorsed',
+                sourceEntityType: 'manifesto',
+                sourceEntityId: manifestoId,
+            }).catch(() => {});
+        }
+
         return true;
     },
 

@@ -12,6 +12,7 @@ import {
     ButtonText,
     Theme,
     useThemedColors,
+    useTheme,
     Select,
     SelectTrigger,
     SelectInput,
@@ -66,6 +67,7 @@ const PRIVACY_LEVELS: { value: PrivacyLevel; icon: any; labelKey: string; descKe
 export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible, onClose, userId }) => {
     const { links, addLink, deleteLink } = useSocialLinks(userId);
     const colors = useThemedColors();
+    const { text, isDark } = useTheme();
     const { t } = useTranslation();
     const [platform, setPlatform] = useState<SocialPlatform>('whatsapp');
     const [url, setUrl] = useState('');
@@ -95,7 +97,8 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
             <Box style={styles.overlay}>
                 <Box sx={{
                     flex: 1,
-                    backgroundColor: 'rgba(0,0,0,0.4)',
+                    // Backdrop: Shadow Violet — NEVER black rgba(0,0,0,x)
+                    backgroundColor: isDark ? 'rgba(107,100,128,0.65)' : 'rgba(107,100,128,0.45)',
                     width: '100%',
                 }}>
                     <TouchableOpacity style={{ flex: 1 }} onPress={onClose} />
@@ -225,8 +228,8 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                     }}
                                 >
                                     <HStack space="xs" alignItems="center">
-                                        <Plus size={20} color="white" />
-                                        <ButtonText color="white" bold>{t('addSocialLink.addButton')}</ButtonText>
+                                        <Plus size={20} color={text.inverse} />
+                                        <ButtonText {...({ color: text.inverse, bold: true } as any)}>{t('addSocialLink.addButton')}</ButtonText>
                                     </HStack>
                                 </Button>
                             </VStack>

@@ -216,6 +216,23 @@ export default function GroupChatScreen() {
                         {time}
                     </Text>
                 </VStack>
+
+                {isOwn && (
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('UserProfile', {
+                            userId: item.author_id,
+                            userName: item.author?.full_name || user?.full_name || 'Me',
+                        })}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    >
+                        <Avatar size="xs" sx={{ marginLeft: 8, marginTop: 4, backgroundColor: Theme.colors.sanctuarySaffron }}>
+                            {(item.author?.avatar_url || user?.avatar_url)
+                                ? <AvatarImage source={{ uri: item.author?.avatar_url || user?.avatar_url }} alt={authorName} />
+                                : <AvatarFallbackText>{initials}</AvatarFallbackText>
+                            }
+                        </Avatar>
+                    </TouchableOpacity>
+                )}
             </HStack>
         );
     };

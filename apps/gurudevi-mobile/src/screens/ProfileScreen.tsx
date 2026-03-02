@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect, useMemo } from 'react';
-import { ScrollView, RefreshControl, Alert, Dimensions, Modal, TouchableOpacity } from 'react-native';
+import { ScrollView, RefreshControl, Alert, Dimensions, Modal, TouchableOpacity, Platform, useWindowDimensions } from 'react-native';
 import {
     Box,
     VStack,
@@ -19,13 +19,12 @@ import {
     useEnvironment
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { useAccountDeletion, useTracking } from '@repo/core';
+import { useAccountDeletion, useTracking, useStore } from '@repo/core';
 import { hapticSuccess, hapticLight, hapticError } from '@repo/ui';
-import AchievementGallery from '../components/profile/AchievementGallery';
 import ProfileSkeleton from '../components/profile/ProfileSkeleton';
+import LivingJourneyPanel from '../components/profile/LivingJourneyPanel';
 import { Edit3, UserPlus, ChevronRight, Settings, LogOut, Trash2, HelpCircle, MessageSquare, Info, Heart, X } from 'lucide-react-native';
 import IdentityCard from '../components/profile/IdentityCard';
-import UserStatsCard from '../components/profile/UserStatsCard';
 import ThuthimalBadge from '../components/profile/ThuthimalBadge';
 import AppSettingsScreen from './AppSettingsScreen';
 import ProfileListItem from '../components/profile/ProfileListItem';
@@ -36,12 +35,16 @@ import { useProfile, useProfileCompletion } from '@repo/profile';
 import { SanctuaryProgressBar } from '@repo/ui';
 
 // --- Constants ---
+// SCREEN_WIDTH is kept for native (doesn't change); on web, cardWidth is computed
+// reactively inside ProfileScreen via useWindowDimensions.
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const CARD_WIDTH = SCREEN_WIDTH - Theme.spacing.xl;
+// CARD_WIDTH is a fallback used by sub-components before the parent can inject cardWidth.
+// Sub-components that receive cardWidth as a prop override this value.
+const CARD_WIDTH = Math.min(SCREEN_WIDTH, 600) - Theme.spacing.xl;
 
 // --- Internal Sub-Components ---
 
-const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, completionResult }: any) => {
+const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, completionResult, cardWidth = CARD_WIDTH }: any) => {
     const isGuest = !profile || profile?.is_anonymous === true;
 
     return (
@@ -64,7 +67,7 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
                     percentage={completionResult.percentage}
                     isComplete={completionResult.isComplete}
                     nextHint={completionResult.nextHint}
-                    style={{ width: CARD_WIDTH, marginTop: Theme.spacing.md }}
+                    style={{ width: cardWidth, marginTop: Theme.spacing.md }}
                 />
             )}
 
@@ -83,7 +86,7 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
                 accessibilityLabel={isGuest ? t('auth.createAccount', 'Create Account') : t('profile.viewEditProfile', 'View or Edit Profile')}
                 style={{
                     marginTop: Theme.spacing.lg,
-                    width: CARD_WIDTH,
+                    width: cardWidth,
                     height: 52,
                     backgroundColor: colors.secondary,
                     borderRadius: Theme.corners.comfortable,
@@ -116,35 +119,24 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
     );
 };
 
-const StatsSection = ({ profile, rewards }: any) => (
-    <VStack space="2xl">
-        <Center>
-            <Box sx={{ width: CARD_WIDTH }}>
-                <UserStatsCard
-                    role={profile?.role || 'student'}
-                    stats={{
-                        classesTaught: profile?.classes_taught || 0,
-                        studentsCount: profile?.students_count || 0,
-                        guruPoints: rewards?.points || 0,
-                        attendanceStreak: profile?.attendance_streak || 0,
-                        assignmentsCompleted: profile?.assignments_count || 0
-                    }}
-                />
-            </Box>
-        </Center>
-        <Center>
-            <Box sx={{ width: CARD_WIDTH, mb: '$8' }}>
-                <AchievementGallery unlockedBadges={rewards?.badges || []} />
-            </Box>
-        </Center>
-    </VStack>
-);
+const StatsSection = ({ profile, role }: any) => {
+    if (!profile?.id) {
+        return null;
+    }
 
-const SupportSection = ({ t, colors }: any) => (
+    return (
+        <LivingJourneyPanel
+            userId={profile.id}
+            role={role ?? 'student'}
+        />
+    );
+};
+
+const SupportSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => (
     <Center>
         <VStack
             sx={{
-                width: CARD_WIDTH,
+                width: cardWidth,
                 p: Theme.spacing.md,
                 backgroundColor: `${colors.secondary}${Math.round(Theme.opacity.strong * 255).toString(16).padStart(2, '0')}`,
                 borderRadius: Theme.corners.generous,
@@ -185,11 +177,13 @@ const SupportSection = ({ t, colors }: any) => (
     </Center>
 );
 
-const AppExperienceSection = ({ t, colors }: any) => (
+const AppExperienceSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => {
+    const showToast = useStore((state) => state.showToast);
+    return (
     <Center>
         <VStack
             sx={{
-                width: CARD_WIDTH,
+                width: cardWidth,
                 p: Theme.spacing.md,
                 backgroundColor: colors.secondary,
                 borderRadius: Theme.corners.generous,
@@ -216,11 +210,15 @@ const AppExperienceSection = ({ t, colors }: any) => (
                 label={t('profile.loveApp', 'I love this app')}
                 onPress={() => {
                     hapticSuccess();
-                    Alert.alert(
-                        t('profile.loveTitle', 'Radiant Energy'),
-                        t('profile.loveMessage', 'Your love for the Sanctuary fuels our mission. We are grateful for your presence in our community!'),
-                        [{ text: t('common.ok', 'OK'), style: 'default' }]
-                    );
+                    if (Platform.OS === 'web') {
+                        showToast(t('profile.loveTitle', 'Radiant Energy'), 'success');
+                    } else {
+                        Alert.alert(
+                            t('profile.loveTitle', 'Radiant Energy'),
+                            t('profile.loveMessage', 'Your love for the Sanctuary fuels our mission. We are grateful for your presence in our community!'),
+                            [{ text: t('common.ok', 'OK'), style: 'default' }]
+                        );
+                    }
                 }}
             />
             <ProfileListItem
@@ -228,22 +226,27 @@ const AppExperienceSection = ({ t, colors }: any) => (
                 label={t('profile.helpSupportApp', 'I want to support this app')}
                 onPress={() => {
                     hapticSuccess();
-                    Alert.alert(
-                        t('profile.thankYouTitle', 'Radiant Gratitude'),
-                        t('profile.thankYouMessage', 'Your desire to support the Sanctuary is deeply appreciated. We are currently preparing premium patronage options for our most dedicated explorers.'),
-                        [{ text: t('common.ok', 'OK'), style: 'default' }]
-                    );
+                    if (Platform.OS === 'web') {
+                        showToast(t('profile.thankYouTitle', 'Radiant Gratitude'), 'success');
+                    } else {
+                        Alert.alert(
+                            t('profile.thankYouTitle', 'Radiant Gratitude'),
+                            t('profile.thankYouMessage', 'Your desire to support the Sanctuary is deeply appreciated. We are currently preparing premium patronage options for our most dedicated explorers.'),
+                            [{ text: t('common.ok', 'OK'), style: 'default' }]
+                        );
+                    }
                 }}
             />
         </VStack>
     </Center>
-);
+    );
+};
 
-const AccountActions = ({ t, colors, isGuest, navigation }: any) => {
+const AccountActions = ({ t, colors, isGuest, navigation, cardWidth = CARD_WIDTH }: any) => {
     if (isGuest) return null;
 
     return (
-        <VStack space="md" sx={{ width: CARD_WIDTH }}>
+        <VStack space="md" sx={{ width: cardWidth }}>
             <Heading
                 size="sm"
                 color={colors.textSecondary as any}
@@ -337,12 +340,16 @@ export default function ProfileScreen() {
     const completionResult = useProfileCompletion(profile, role ?? null);
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
+    // Reactive width — responds to browser resize on web, device rotation on native
+    const { width: windowWidth } = useWindowDimensions();
+    const cardWidth = Math.min(windowWidth, 600) - Theme.spacing.xl;
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
     const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
     const [isLoggingOut, setLoggingOut] = useState(false);
     const [isSettingsVisible, setSettingsVisible] = useState(false);
     const { deleteAccount, isDeleting } = useAccountDeletion();
     const { discoverFeature } = useTracking();
+    const showToast = useStore((state) => state.showToast);
 
     // --- Shake Animation Logic ---
     const bannerShake = useSharedValue(0);
@@ -392,11 +399,15 @@ export default function ProfileScreen() {
             setDeleteModalVisible(false);
         } catch (error) {
             hapticError();
-            Alert.alert(
-                t('profile.deleteFailedTitle', 'Deletion Failed'),
-                t('profile.deleteFailedMessage', 'We could not delete your account. Please try again later.'),
-                [{ text: 'OK' }]
-            );
+            if (Platform.OS === 'web') {
+                showToast(t('profile.deleteFailedTitle', 'Deletion Failed'), 'error');
+            } else {
+                Alert.alert(
+                    t('profile.deleteFailedTitle', 'Deletion Failed'),
+                    t('profile.deleteFailedMessage', 'We could not delete your account. Please try again later.'),
+                    [{ text: 'OK' }]
+                );
+            }
         }
     };
 
@@ -454,7 +465,7 @@ export default function ProfileScreen() {
                         {/* Animated Modular Profile Sections */}
                         {profile?.is_anonymous && (
                             <Center>
-                                <Animated.View style={[{ width: CARD_WIDTH }, animatedBannerStyle]}>
+                                <Animated.View style={[{ width: cardWidth }, animatedBannerStyle]}>
                                     <Box sx={{
                                         p: Theme.spacing.md,
                                         bg: colors.action,
@@ -494,13 +505,14 @@ export default function ProfileScreen() {
                                 t={t}
                                 onGuestAction={triggerBannerShake}
                                 completionResult={completionResult}
+                                cardWidth={cardWidth}
                             />
                         </Animated.View>
 
                         {profile?.is_thuthimal && (
                             <Animated.View entering={FadeInDown.delay(200).duration(500)}>
                                 <Center>
-                                    <Box sx={{ width: CARD_WIDTH }}>
+                                    <Box sx={{ width: cardWidth }}>
                                         <ThuthimalBadge
                                             gifterName={profile.thuthimal_gifter}
                                             giftedAt={profile.thuthimal_gifted_at}
@@ -512,12 +524,12 @@ export default function ProfileScreen() {
                         )}
 
                         <Animated.View entering={FadeInDown.delay(300).duration(500)}>
-                            <StatsSection profile={profile} rewards={rewards} />
+                            <StatsSection profile={profile} rewards={rewards} role={profile?.role} />
                         </Animated.View>
 
                         <Animated.View entering={FadeInDown.delay(400).duration(500)}>
                             <Center>
-                                <Box sx={{ width: CARD_WIDTH }}>
+                                <Box sx={{ width: cardWidth }}>
                                     <ProfileListItem
                                         icon={Settings}
                                         label={t('settings.title', 'App Settings')}
@@ -528,21 +540,22 @@ export default function ProfileScreen() {
                         </Animated.View>
 
                         <Animated.View entering={FadeInDown.delay(500).duration(500)}>
-                            <SupportSection t={t} colors={colors} />
+                            <SupportSection t={t} colors={colors} cardWidth={cardWidth} />
                         </Animated.View>
 
                         <Animated.View entering={FadeInDown.delay(600).duration(500)}>
-                            <AppExperienceSection t={t} colors={colors} />
+                            <AppExperienceSection t={t} colors={colors} cardWidth={cardWidth} />
                         </Animated.View>
 
                         <Animated.View entering={FadeInDown.delay(700).duration(500)}>
                             <Center>
-                                <Box sx={{ width: CARD_WIDTH, mt: Theme.spacing.md }}>
+                                <Box sx={{ width: cardWidth, mt: Theme.spacing.md }}>
                                     <AccountActions
                                         t={t}
                                         colors={colors}
                                         navigation={navigation}
                                         isGuest={profile?.is_anonymous}
+                                        cardWidth={cardWidth}
                                     />
                                 </Box>
                             </Center>
@@ -551,7 +564,7 @@ export default function ProfileScreen() {
                         <Animated.View entering={FadeInDown.delay(750).duration(500)}>
                             {/* Account Actions Box */}
                             <Center>
-                                <Box sx={{ width: CARD_WIDTH, mb: Theme.spacing.xl, mt: Theme.spacing.md }}>
+                                <Box sx={{ width: cardWidth, mb: Theme.spacing.xl, mt: Theme.spacing.md }}>
                                     <VStack space="md" sx={{
                                         p: Theme.spacing.md,
                                         bg: colors.tertiary,
