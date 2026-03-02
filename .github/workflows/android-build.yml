@@ -121,8 +121,8 @@ jobs:
             find /tmp/runner/eas-build-local-nodejs -name "index.android.bundle" \
               -path "*/generated/assets/react/release/*" \
               -exec cp {} /tmp/sentry-artifacts/ \; 2>/dev/null || true
-            find /tmp/runner/eas-build-local-nodejs -name "index.android.bundle.map" \
-              -path "*/generated/sourcemaps/react/release/*" \
+            find /tmp/runner/eas-build-local-nodejs -name "index.android.bundle.packager.map" \
+              -path "*/intermediates/sourcemaps/react/release/*" \
               -exec cp {} /tmp/sentry-artifacts/ \; 2>/dev/null || true
             
             # Also save the versionCode from AndroidManifest before cleanup
@@ -188,7 +188,7 @@ jobs:
           VERSION=$(node -p "require('./app.json').expo.version")
           
           BUNDLE_PATH="/tmp/sentry-artifacts/index.android.bundle"
-          MAP_PATH="/tmp/sentry-artifacts/index.android.bundle.map"
+          MAP_PATH="/tmp/sentry-artifacts/index.android.bundle.packager.map"
           
           if [ -f "$BUNDLE_PATH" ] && [ -f "$MAP_PATH" ]; then
             echo "📦 Uploading sourcemaps for Release: org.edlove.gurudevi@$VERSION+$VERSION_CODE (dist: $VERSION_CODE)"
