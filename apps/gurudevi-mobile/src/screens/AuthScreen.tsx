@@ -106,7 +106,6 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
     }
 
     async function handleAuth() {
-        console.log('🚀 Auth: handleAuth triggered', { isSignUp, email });
         const { isValid, errors: valErrors } = validateForm({ email, password }, {
             email: validators.email,
             password: (val: string) => validators.nonEmpty(val, 'Password')
@@ -118,7 +117,6 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
         }
 
         setLoading(true);
-        console.log('🚀 Auth: Starting handleAuth...', { isSignUp, email });
         try {
             if (isSignUp) {
                 const { data: { session: currentSession } } = await supabase.auth.getSession();
@@ -167,13 +165,11 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                 const { error } = await supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
                 hapticSuccess();
-                console.log('✅ Auth: Login success, calling onSuccess');
                 if (onSuccess) onSuccess();
             }
         } catch (error: any) {
             handleAPIError(error);
         } finally {
-            console.log('🏁 Auth: handleAuth completed');
             setLoading(false);
         }
     }
@@ -374,7 +370,6 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                             <Button
                                 variant="solid"
                                 onPress={() => {
-                                    console.log('👋 Auth: Continuing as guest...');
                                     hapticLight();
                                     if (onContinueAsGuest) onContinueAsGuest();
                                 }}

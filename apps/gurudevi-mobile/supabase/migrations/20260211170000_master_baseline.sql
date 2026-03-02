@@ -254,7 +254,7 @@ CREATE TABLE public.daily_content (
 CREATE OR REPLACE FUNCTION get_daily_content_for_today(content_type text)
 RETURNS SETOF daily_content
 LANGUAGE sql
-SECURITY DEFINER
+SECURITY DEFINER SET search_path = public, pg_temp
 AS $$
   SELECT *
   FROM daily_content
@@ -360,7 +360,7 @@ CREATE TRIGGER update_classrooms_updated_at BEFORE UPDATE ON public.classrooms F
 CREATE TRIGGER update_subscriptions_updated_at BEFORE UPDATE ON public.subscriptions FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Auto-create preferences on user creation
-CREATE OR REPLACE FUNCTION public.handle_new_user_preferences() RETURNS trigger AS $$ BEGIN INSERT INTO public.user_preferences (user_id) VALUES (new.id) ON CONFLICT (user_id) DO NOTHING; RETURN new; END; $$ LANGUAGE plpgsql SECURITY DEFINER;
+CREATE OR REPLACE FUNCTION public.handle_new_user_preferences() RETURNS trigger AS $$ BEGIN INSERT INTO public.user_preferences (user_id) VALUES (new.id) ON CONFLICT (user_id) DO NOTHING; RETURN new; END; $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 CREATE TRIGGER on_auth_user_created_preferences AFTER INSERT ON public.users FOR EACH ROW EXECUTE FUNCTION public.handle_new_user_preferences();
 
 -- 7.2 User Sync (Extends auth.users to public.users)

@@ -4,7 +4,7 @@ this file is for issues i saw while doing manual testing and should complement/i
 6.00 pm 28/02/2026
 1. learning journey banner which should only for students appear in teacherclassrom
 
-2. need fix colors,and font accouring to colors in global header
+2. need fix colors,and font according to colors in global header
 
 3. there are lot of different modals in app. i think loads of them for every section. all of them are ugly not aligned with theme and loaded with lot of text. i need to either some general shared modal to import everything accoring to all fix all. but first look at code and check whether there is issue or not. (implementing)
 

@@ -49,7 +49,8 @@ CREATE POLICY "principal_notes_insert"
 -- Only the author can update
 CREATE POLICY "principal_notes_update"
     ON public.principal_notes FOR UPDATE
-    USING (author_id = auth.uid());
+    USING (author_id = auth.uid())
+    WITH CHECK (author_id = auth.uid());
 
 -- Only the author can delete
 CREATE POLICY "principal_notes_delete"

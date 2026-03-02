@@ -47,9 +47,23 @@ CREATE POLICY "staff_leaves_read" ON public.staff_leaves FOR SELECT USING (
   )
 );
 CREATE POLICY "staff_leaves_self_insert" ON public.staff_leaves FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "staff_leaves_principal_update" ON public.staff_leaves FOR UPDATE USING (
-  EXISTS(SELECT 1 FROM public.users u WHERE u.id = auth.uid() AND u.school_id = staff_leaves.school_id AND u.role IN ('principal','founder'))
-);
+CREATE POLICY "staff_leaves_principal_update" ON public.staff_leaves FOR UPDATE
+  USING (
+    EXISTS(SELECT 1 FROM public.users u WHERE u.id = auth.uid() AND u.school_id = staff_leaves.school_id AND u.role IN ('principal','founder'))
+  )
+  WITH CHECK (
+    -- Ensure the updated row stays within the principal's school
+    EXISTS(
+      SELECT 1 FROM public.users u
+      WHERE u.id = auth.uid()
+        AND u.school_id = staff_leaves.school_id
+        AND u.role IN ('principal','founder')
+    )
+    -- Prevent changing scoping/identity fields on update
+    AND (staff_leaves.school_id, staff_leaves.user_id) = (
+      SELECT sl0.school_id, sl0.user_id FROM public.staff_leaves sl0 WHERE sl0.id = staff_leaves.id
+    )
+  );
 
 -- principal_observations
 CREATE TABLE IF NOT EXISTS public.principal_observations (
@@ -104,12 +118,11 @@ CREATE POLICY "calendar_principal_insert" ON public.institutional_calendar FOR I
     created_by = auth.uid()
     AND EXISTS(SELECT 1 FROM public.users u WHERE u.id = auth.uid() AND u.school_id = institutional_calendar.school_id AND u.role IN ('principal','founder'))
   );
--- Updates must stay within the same school and preserve created_by.
+-- Updates must stay within the same school.
 CREATE POLICY "calendar_principal_update" ON public.institutional_calendar FOR UPDATE
   USING (
     EXISTS(SELECT 1 FROM public.users u WHERE u.id = auth.uid() AND u.school_id = institutional_calendar.school_id AND u.role IN ('principal','founder'))
   )
   WITH CHECK (
-    created_by = auth.uid()
-    AND EXISTS(SELECT 1 FROM public.users u WHERE u.id = auth.uid() AND u.school_id = institutional_calendar.school_id AND u.role IN ('principal','founder'))
+    EXISTS(SELECT 1 FROM public.users u WHERE u.id = auth.uid() AND u.school_id = institutional_calendar.school_id AND u.role IN ('principal','founder'))
   );

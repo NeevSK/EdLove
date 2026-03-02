@@ -533,10 +533,10 @@ CREATE TABLE IF NOT EXISTS public.principal_notes (
 -- Helper to get school id
 CREATE OR REPLACE FUNCTION get_auth_user_school_id() RETURNS uuid AS $$
   SELECT school_id FROM public.users WHERE id = auth.uid();
-$$ LANGUAGE sql SECURITY DEFINER;
+$$ LANGUAGE sql SECURITY DEFINER SET search_path = public, pg_temp;
 
 -- New User lifecycle
-CREATE OR REPLACE FUNCTION public.handle_new_user() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER AS $$
+CREATE OR REPLACE FUNCTION public.handle_new_user() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$
 BEGIN
   INSERT INTO public.users (id, email, full_name, role)
   VALUES (new.id, new.email, COALESCE(new.raw_user_meta_data->>'full_name', 'Sanctuary User'), 'teacher')
@@ -546,7 +546,7 @@ END; $$;
 
 -- Thuthimal Claim
 CREATE OR REPLACE FUNCTION claim_thuthimal_gift(p_token UUID, p_recipient UUID) RETURNS JSONB
-LANGUAGE plpgsql SECURITY DEFINER AS $$
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$
 DECLARE v_gift thuthimal_gifts;
 BEGIN
   SELECT * INTO v_gift FROM thuthimal_gifts WHERE gift_token = p_token AND claimed = false AND (expires_at IS NULL OR expires_at > now()) FOR UPDATE;
@@ -558,7 +558,7 @@ END; $$;
 
 -- Daily Content delivery
 CREATE OR REPLACE FUNCTION get_daily_content_for_today(content_type text) RETURNS SETOF daily_content
-LANGUAGE sql SECURITY DEFINER AS $$
+LANGUAGE sql SECURITY DEFINER SET search_path = public, pg_temp AS $$
   SELECT * FROM daily_content WHERE type = content_type AND active = true AND date <= CURRENT_DATE ORDER BY date DESC LIMIT 1;
 $$;
 
@@ -607,7 +607,7 @@ ALTER TABLE public.student_academic_records ENABLE ROW LEVEL SECURITY;
 -- 1. Foundation & Users
 CREATE POLICY "Schools are viewable by authenticated users" ON public.schools FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Users can create schools" ON public.schools FOR INSERT TO authenticated WITH CHECK (true);
-CREATE POLICY "Principals manage their own schools" ON public.schools FOR ALL TO authenticated USING (created_by = auth.uid());
+CREATE POLICY "Principals manage their own schools" ON public.schools FOR ALL TO authenticated USING (created_by = auth.uid()) WITH CHECK (created_by = auth.uid());
 
 CREATE POLICY "Users can select own and school members" ON public.users FOR SELECT TO authenticated USING (id = auth.uid() OR school_id = get_auth_user_school_id());
 CREATE POLICY "Users can insert own profile" ON public.users FOR INSERT TO authenticated WITH CHECK (id = auth.uid());
@@ -655,7 +655,7 @@ CREATE POLICY "Users can insert own usage logs" ON public.feature_usage_log FOR 
 CREATE POLICY "Users can view own usage logs" ON public.feature_usage_log FOR SELECT USING (user_id = auth.uid());
 CREATE POLICY "Users can view own rewards" ON public.user_rewards FOR SELECT USING (user_id = auth.uid());
 CREATE POLICY "Users can insert own rewards" ON public.user_rewards FOR INSERT WITH CHECK (user_id = auth.uid());
-CREATE POLICY "Users can update own rewards" ON public.user_rewards FOR UPDATE USING (user_id = auth.uid());
+CREATE POLICY "Users can update own rewards" ON public.user_rewards FOR UPDATE USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
 CREATE POLICY "Service role manages rewards" ON public.user_rewards FOR ALL TO service_role USING (true);
 
 
@@ -663,11 +663,15 @@ CREATE POLICY "Service role manages rewards" ON public.user_rewards FOR ALL TO s
 -- GRANTS & PERMISSIONS (For specific tables where required)
 -- ========================================================
 GRANT ALL ON TABLE public.feature_usage_log TO authenticated;
-GRANT ALL ON TABLE public.feature_usage_log TO anon;
+-- anon users must NOT have write access to feature_usage_log; RLS restricts by user_id = auth.uid()
+-- but GRANT ALL to anon is overly permissive at the privilege level — restrict to INSERT only
+-- so anonymous sessions can still log feature usage, but cannot SELECT/UPDATE/DELETE others' rows.
+GRANT INSERT ON TABLE public.feature_usage_log TO anon;
 GRANT ALL ON TABLE public.feature_usage_log TO service_role;
 
 GRANT ALL ON TABLE public.user_rewards TO authenticated;
-GRANT ALL ON TABLE public.user_rewards TO anon;
+-- anon users have no legitimate reason to touch reward rows at any privilege level.
+-- RLS blocks them anyway, but removing GRANT ALL to anon removes the unnecessary privilege.
 GRANT ALL ON TABLE public.user_rewards TO service_role;
 
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO authenticated;

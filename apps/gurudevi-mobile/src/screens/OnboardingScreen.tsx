@@ -85,11 +85,9 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
         setCurrentStep(8); // Jump to Auth
     };
     const handleCompleteOnboarding = async () => {
-        console.log('🚀 Onboarding: Completing...', { name, role, isAnonymous });
         setIsCompleting(true);
         try {
             const { data: { user } } = await supabase.auth.getUser();
-            console.log('👤 Onboarding: Auth user lookup', { userId: user?.id });
             if (!user) throw new Error('No user found');
 
             hapticSuccess();

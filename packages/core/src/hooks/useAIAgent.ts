@@ -102,13 +102,28 @@ export function useAIAgent() {
                     .limit(5);
 
                 if (overdue?.length) {
-                    for (const a of overdue as any[]) {
-                        const { count } = await supabase
-                            .from('submissions')
-                            .select('id', { count: 'exact', head: true })
-                            .eq('assignment_id', a.id)
-                            .is('grade', null);
-                        if (count && count > 0) {
+                    const overdueAssignments = overdue as any[];
+                    const overdueIds = overdueAssignments.map((a: any) => a.id);
+
+                    // Fetch all ungraded submissions for overdue assignments in a single query
+                    const { data: ungradedSubmissions } = await supabase
+                        .from('submissions')
+                        .select('assignment_id')
+                        .in('assignment_id', overdueIds)
+                        .is('grade', null);
+
+                    const ungradedCounts = new Map<string, number>();
+                    for (const s of (ungradedSubmissions ?? []) as any[]) {
+                        const assignmentId = s.assignment_id as string;
+                        ungradedCounts.set(
+                            assignmentId,
+                            (ungradedCounts.get(assignmentId) ?? 0) + 1
+                        );
+                    }
+
+                    for (const a of overdueAssignments) {
+                        const count = ungradedCounts.get(a.id as string) ?? 0;
+                        if (count > 0) {
                             gaps.push({
                                 id: `grading-${a.id}`,
                                 type: 'resource',

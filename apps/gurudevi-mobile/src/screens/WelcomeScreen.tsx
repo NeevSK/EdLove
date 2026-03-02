@@ -78,10 +78,8 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
 
         hapticSuccess();
         setIsConnecting(true);
-        console.log('🚀 Welcome: Starting anonymous sign in...');
         try {
             await authAPI.signInAnonymously();
-            console.log('✅ Welcome: Guest sign in success, calling onNext');
             if (onNext) onNext();
         } catch (error) {
             handleAPIError(error);
@@ -105,7 +103,6 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
                 isAnonymous={true}
                 onContinueAsGuest={handleStartExploring}
                 onSuccess={() => {
-                    console.log('✅ Welcome: Auth Success');
                     onNext?.();
                 }}
             />

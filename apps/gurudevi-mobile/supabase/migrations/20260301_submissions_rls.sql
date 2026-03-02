@@ -18,11 +18,22 @@ CREATE POLICY "Students can create submissions"
     TO authenticated
     WITH CHECK (student_id = auth.uid());
 
--- 2. Teachers can read and update (grade/feedback) submissions for their classrooms
---    Uses the school's helper function to avoid per-row subquery overhead.
-CREATE POLICY "Teachers can manage submissions in their classrooms"
+-- 2. Teachers can read submissions for their classrooms (SELECT only — no INSERT/DELETE)
+CREATE POLICY "Teachers can read submissions in their classrooms"
     ON public.submissions
-    FOR ALL
+    FOR SELECT
+    TO authenticated
+    USING (
+        EXISTS (
+            SELECT 1 FROM public.classrooms
+            WHERE id = classroom_id AND teacher_id = auth.uid()
+        )
+    );
+
+-- 3. Teachers can update (grade/feedback) submissions for their classrooms (no INSERT/DELETE)
+CREATE POLICY "Teachers can grade submissions in their classrooms"
+    ON public.submissions
+    FOR UPDATE
     TO authenticated
     USING (
         EXISTS (

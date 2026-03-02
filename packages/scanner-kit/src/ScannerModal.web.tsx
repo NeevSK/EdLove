@@ -10,7 +10,9 @@
  * email or screenshot. Pasting the code value is faster and more reliable
  * than pointing a webcam at a printed page.
  *
- * Design tokens: Vellum (#F5EDD6) bg · Ink (#2A2318) text · Saffron (#D4843A) accent
+ * Design tokens: colors below are intentionally hardcoded to match the
+ * Vellum (#F5EDD6) · Ink (#2A2318) · Saffron (#D4843A) palette for this
+ * isolated web fallback, keeping it free of any native theme/token utilities.
  */
 
 import React, { useState, useEffect, useRef } from 'react';

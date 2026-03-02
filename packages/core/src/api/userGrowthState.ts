@@ -184,21 +184,14 @@ export const userGrowthStateAPI = {
     async incrementDimension(userId: string, dimension: GrowthDimension): Promise<void> {
         const column = DIMENSION_COLUMN[dimension];
 
-        // Atomic DB-side increment: update returns the new row so counters are accurate
-        // under concurrent signals (avoids the read-then-write race condition).
+        // Atomic DB-side increment via dedicated RPC (avoids read-then-write race condition).
+        // The RPC does UPDATE ... SET col = COALESCE(col,0)+1 in a single round-trip.
         const { data: updatedRow, error } = await supabase
-            .from('user_growth_state')
-            .update({
-                [column]: supabase.rpc('coalesce_increment', { col: column }) as any,
-                last_seen_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-            })
-            .eq('user_id', userId)
-            .select('*')
+            .rpc('increment_growth_dimension', { p_user_id: userId, p_column: column })
             .maybeSingle();
 
         if (error || !updatedRow) {
-            // Fallback to read-then-write if RPC is unavailable
+            // Fallback to read-then-write when the RPC is unavailable (e.g. migration not yet run)
             const state = await this.getOrCreate(userId).catch(() => null);
             if (!state) {
                 console.warn('[UserGrowthState] Failed to increment dimension:', error?.message ?? 'no row returned');
