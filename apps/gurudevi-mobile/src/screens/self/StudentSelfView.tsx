@@ -26,7 +26,6 @@ import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
 import { MoodLotus, ShadowAgentDrawer } from '../../components/self';
-import ResonancePatternCard from '../../components/self/ResonancePatternCard';
 import FireJournal from '../../components/self/FireJournal';
 import ProgressTree from '../../components/self/ProgressTree';
 import MyGradesView from '../../components/self/MyGradesView';
@@ -61,10 +60,6 @@ export default function StudentSelfView() {
     const user = useStore(state => state.user);
     const [activeFeature, setActiveFeature] = useState('pulse');
     const [showMoreTools, setShowMoreTools] = useState(false);
-
-    // Behavioral signal hooks — feed into ResonancePatternCard inference
-    const { logs: moodLogs } = useMoodLogs();
-    const { forecasts: energyForecasts } = useEnergyForecast(userId ?? undefined);
 
     // We rely mostly on the offline store now for fast render
     const userProfile = user ? {
@@ -193,17 +188,6 @@ export default function StudentSelfView() {
                     <DailyContentCard type="motivation" />
                     <DailyContentCard type="did_you_know" />
                 </Box>
-
-                {/* Resonance Pattern — shows only when there's something to show */}
-                {userProfile && (
-                    <Box sx={{ paddingHorizontal: Theme.spacing.md, marginBottom: Theme.spacing.md }}>
-                        <ResonancePatternCard
-                            orientationSeeds={userProfile.orientation_seeds}
-                            moodLogs={moodLogs}
-                            energyForecasts={energyForecasts}
-                        />
-                    </Box>
-                )}
 
                 {/* Feature Carousel */}
                 <Box sx={{ height: 100 }}>

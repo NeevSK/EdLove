@@ -182,10 +182,10 @@ function PulseActionItem({ title, time, status, onPress }: any) {
         <HStack
             sx={{
                 p: Theme.spacing.md,
-                backgroundColor: Theme.colors.glass.dark.highlight,
+                backgroundColor: colors.tertiary,
                 borderRadius: Theme.corners.comfortable,
                 borderWidth: 1,
-                borderColor: Theme.colors.glass.dark.border
+                borderColor: colors.border
             }}
             justifyContent="space-between"
             alignItems="center"
@@ -204,7 +204,7 @@ function PulseActionItem({ title, time, status, onPress }: any) {
                     borderRadius: Theme.corners.full,
                     backgroundColor: status === 'pending'
                         ? `${Theme.colors.sanctuarySaffron}26`
-                        : Theme.colors.glass.dark.highlight
+                        : Theme.colors.skyBlue
                 }}
             >
                 <Text sx={{

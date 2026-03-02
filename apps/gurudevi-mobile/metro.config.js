@@ -14,6 +14,9 @@ const workspaceRoot = path.resolve(projectRoot, '../..');
 // which Expo's winter runtime initialises before the app boots.
 const config = getSentryExpoConfig(projectRoot, { isCSSEnabled: true });
 
+// Add support for WASM files (required by expo-sqlite on web)
+config.resolver.assetExts.push('wasm');
+
 // 1. Watch all files in the monorepo
 config.watchFolders = [...(config.watchFolders || []), workspaceRoot];
 
@@ -77,6 +80,7 @@ const WEB_SHIMS = {
     // while walking the dependency graph.
     'expo-file-system': path.resolve(projectRoot, 'src/shims/expo-file-system-web.js'),
     'expo-sharing': path.resolve(projectRoot, 'src/shims/expo-sharing-web.js'),
+    'expo-sqlite': path.resolve(projectRoot, 'src/shims/expo-sqlite-web.js'),
 };
 
 const defaultResolveRequest = config.resolver.resolveRequest;

@@ -45,8 +45,7 @@ import VoiceJournaling from '../../components/self/VoiceJournaling';
 import { supabase, useStore, useSafeMutation } from '@repo/core';
 import { GlobalHeader } from '@repo/ui';
 import DailyContentCard from '../../components/self/DailyContentCard';
-import ResonancePatternCard from '../../components/self/ResonancePatternCard';
-import { useMoodLogs, useEnergyForecast, useDecisionJournal } from '@repo/self';
+import { useDecisionJournal } from '@repo/self';
 import ThuthimalBadge from '../../components/profile/ThuthimalBadge';
 import { SkeletonCard, PositiveInvitation } from '@repo/ui';
 import WelcomeModal from '../../components/self/WelcomeModal';
@@ -88,10 +87,6 @@ export default function TeacherSelfView() {
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
-
-    // Behavioral signal hooks — feed into ResonancePatternCard inference
-    const { logs: moodLogs } = useMoodLogs();
-    const { forecasts: energyForecasts } = useEnergyForecast(userId ?? undefined);
 
     // Get current user and profile on mount
     React.useEffect(() => {
@@ -265,17 +260,6 @@ export default function TeacherSelfView() {
                         <DailyContentCard type="motivation" />
                         <DailyContentCard type="did_you_know" />
                     </Box>
-
-                    {/* Resonance Pattern */}
-                    {userProfile && (
-                        <Box sx={{ paddingHorizontal: Theme.spacing.md, marginBottom: Theme.spacing.md }}>
-                            <ResonancePatternCard
-                                orientationSeeds={userProfile?.orientation_seeds}
-                                moodLogs={moodLogs}
-                                energyForecasts={energyForecasts}
-                            />
-                        </Box>
-                    )}
 
                     {/* Sub-Feature Carousel */}
                     <Box sx={{ height: 100 }}>

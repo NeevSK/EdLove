@@ -12,15 +12,14 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "org.edlove.gurudevi",
-      "newArchEnabled": true
+      "bundleIdentifier": "org.edlove.gurudevi"
     },
     "android": {
       "package": "org.edlove.gurudevi",
       "versionCode": 21,
-      "newArchEnabled": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -95,7 +94,8 @@
           "autoUpload": false,
           "uploadSourceMaps": false
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "owner": "neevsk",
     "runtimeVersion": {

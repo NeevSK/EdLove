@@ -791,11 +791,6 @@
   "settings": {
     "title": "App Settings",
     "hint": "Open app settings",
-    "sync": {
-      "title": "Sync Data",
-      "description": "Synchronize your offline data with the server.",
-      "syncButton": "Sync Now"
-    },
     "appearance": {
       "title": "Appearance",
       "description": "Personalize how Gurudevi looks and feels"
@@ -867,239 +862,248 @@
     "communityEmptyTitle": "Join the circle of wisdom",
     "communityEmptyDesc": "Engage with fellow educators and share your experiences.",
     "communityEmptyAction": "Join Discussion",
-    "libraryEmptyTitle": "Your personal library awaits",
-    "libraryEmptyDesc": "Save resources, books, and insights to build your knowledge treasury.",
+    "libraryEmptyTitle": "A Public Space for Knowledge",
+    "libraryEmptyDesc": "Explore library to find resources, books, and insights.",
     "libraryEmptyAction": "Explore Library"
   },
-      "accessibility": {
-        "appLogo": "Gurudevi App Logo",
-        "switchLanguage": "Switch to {{lang}}",
-        "currentLanguage": "Current language: {{lang}}",
-        "voiceInput": "Record voice note",
-        "loading": "Loading, please wait"
+  "accessibility": {
+    "appLogo": "Gurudevi App Logo",
+    "switchLanguage": "Switch to {{lang}}",
+    "currentLanguage": "Current language: {{lang}}",
+    "voiceInput": "Record voice note",
+    "loading": "Loading, please wait"
+  },
+  "thuthimalClaim": {
+    "loading": "Receiving the flower of gratitude...",
+    "alreadyBloomedTitle": "This flower has already bloomed",
+    "alreadyBloomedDesc": "This Thuthimal gift has already been received by someone.\nEach flower of gratitude blooms only once.",
+    "errorTitle": "Something went wrong",
+    "errorDesc": "We couldn't process this gift. Please try again or contact support.",
+    "flowerTitle": "තුතිමල්",
+    "giftHeading": "A Flower of Gratitude",
+    "giftFrom": "Your Pro subscription is a gift of gratitude from",
+    "giftRecognition": "A recognition of your sacred work as an educator.",
+    "proActive": "Pro is now active on your account",
+    "enterSanctuary": "Enter the Sanctuary ✦",
+    "goBack": "Go Back"
+  },
+  "qrHandler": {
+    "processing": "Processing QR",
+    "done": "Done!",
+    "error": "Error",
+    "processingMessage": "Processing QR action...",
+    "actionSuccess": "Action completed successfully.",
+    "somethingWrong": "Something went wrong. Please try again."
+  },
+  "invitationWelcome": {
+    "invited": "You have been invited",
+    "welcomeTo": "Welcome to {{schoolName}}",
+    "role": "Role",
+    "joinButton": "Join the Sanctuary",
+    "joinFailed": "Failed to join",
+    "joinFailedDesc": "Unable to update your profile. Please try again.",
+    "errorTitle": "Error",
+    "errorDesc": "An unexpected error occurred. Please try again."
+  },
+  "aiAssistant": {
+    "title": "Mr. AI Agent",
+    "subtitle": "Reflection & Guidance",
+    "thinking": "Mr. Agent is reflecting...",
+    "placeholder": "Share your thoughts...",
+    "loginPrompt": "Log in to save your reflections and receive personalized guidance.",
+    "continueLogin": "Continue to Login"
+  },
+  "fireJournal": {
+    "title": "Fire Journal",
+    "subtitle": "Write what weighs on you, then let it go",
+    "placeholder": "Write what you need to release...",
+    "burn": "Burn",
+    "burning": "Burning...",
+    "released": "✨ Released into the fire",
+    "privacy": "🔥 What you burn is transformed, not stored",
+    "guidance": "Sometimes the act of naming is enough to release it"
+  },
+  "sleepTracker": {
+    "title": "How did you sleep?",
+    "subtitle": "A gentle morning check-in",
+    "restless": "Restless",
+    "poor": "Poor",
+    "okay": "Okay",
+    "good": "Good",
+    "excellent": "Excellent",
+    "restlessDesc": "Barely slept",
+    "poorDesc": "Tossed and turned",
+    "okayDesc": "Got some rest",
+    "goodDesc": "Slept well",
+    "excellentDesc": "Deeply rested",
+    "logButton": "Save Sleep Log",
+    "alreadyLogged": "Sleep logged for today",
+    "qualityLabel": "Sleep Quality"
+  },
+  "reminders": {
+    "title": "Reminders",
+    "addReminder": "Add Reminder",
+    "noReminders": "No reminders set",
+    "drinkWater": "Drink water intermittently while teaching",
+    "reminderAdded": "Reminder added",
+    "reminderRemoved": "Reminder removed"
+  },
+  "shadowAgent": {
+    "title": "Shadow Assistant",
+    "subtitle": "Your private thinking space",
+    "placeholder": "What's on your mind...",
+    "prompts": {
+      "heavy": "What is heavy today?",
+      "peace": "What brought you peace this morning?",
+      "holding": "What are you holding onto?",
+      "release": "What would you like to release?",
+      "joy": "What small joy found you today?",
+      "yourself": "Where did you feel most yourself?",
+      "attention": "What needs your gentle attention?",
+      "truth": "What truth are you avoiding?",
+      "forgiveness": "What deserves your forgiveness?",
+      "grateful": "What are you grateful for in this moment?"
     },
-    "thuthimalClaim": {
-        "loading": "Receiving the flower of gratitude...",
-        "alreadyBloomedTitle": "This flower has already bloomed",
-        "alreadyBloomedDesc": "This Thuthimal gift has already been received by someone.\nEach flower of gratitude blooms only once.",
-        "errorTitle": "Something went wrong",
-        "errorDesc": "We couldn't process this gift. Please try again or contact support.",
-        "flowerTitle": "තුතිමල්",
-        "giftHeading": "A Flower of Gratitude",
-        "giftFrom": "Your Pro subscription is a gift of gratitude from",
-        "giftRecognition": "A recognition of your sacred work as an educator.",
-        "proActive": "Pro is now active on your account",
-        "enterSanctuary": "Enter the Sanctuary ✦",
-        "goBack": "Go Back"
-    },
-    "qrHandler": {
-        "processing": "Processing QR",
-        "done": "Done!",
-        "error": "Error",
-        "processingMessage": "Processing QR action...",
-        "actionSuccess": "Action completed successfully.",
-        "somethingWrong": "Something went wrong. Please try again."
-    },
-    "invitationWelcome": {
-        "invited": "You have been invited",
-        "welcomeTo": "Welcome to {{schoolName}}",
-        "role": "Role",
-        "joinButton": "Join the Sanctuary",
-        "joinFailed": "Failed to join",
-        "joinFailedDesc": "Unable to update your profile. Please try again.",
-        "errorTitle": "Error",
-        "errorDesc": "An unexpected error occurred. Please try again."
-    },
-    "aiAssistant": {
-        "title": "Mr. AI Agent",
-        "subtitle": "Reflection & Guidance",
-        "thinking": "Mr. Agent is reflecting...",
-        "placeholder": "Share your thoughts...",
-        "loginPrompt": "Log in to save your reflections and receive personalized guidance.",
-        "continueLogin": "Continue to Login"
-    },
-    "fireJournal": {
-        "title": "Fire Journal",
-        "subtitle": "Write what weighs on you, then let it go",
-        "placeholder": "Write what you need to release...",
-        "burn": "Burn",
-        "burning": "Burning...",
-        "released": "✨ Released into the fire",
-        "privacy": "🔥 What you burn is transformed, not stored",
-        "guidance": "Sometimes the act of naming is enough to release it"
-    },
-    "sleepTracker": {
-        "title": "How did you sleep?",
-        "subtitle": "A gentle morning check-in",
-        "restless": "Restless",
-        "poor": "Poor",
-        "okay": "Okay",
-        "good": "Good",
-        "excellent": "Excellent",
-        "restlessDesc": "Barely slept",
-        "poorDesc": "Tossed and turned",
-        "okayDesc": "Got some rest",
-        "goodDesc": "Slept well",
-        "excellentDesc": "Deeply rested",
-        "logButton": "Save Sleep Log",
-        "alreadyLogged": "Sleep logged for today",
-        "qualityLabel": "Sleep Quality"
-    },
-    "reminders": {
-        "title": "Reminders",
-        "addReminder": "Add Reminder",
-        "noReminders": "No reminders set",
-        "drinkWater": "Drink water intermittently while teaching",
-        "reminderAdded": "Reminder added",
-        "reminderRemoved": "Reminder removed"
-    },
-    "shadowAgent": {
-        "title": "Shadow Assistant",
-        "subtitle": "Your private thinking space",
-        "placeholder": "What's on your mind...",
-        "prompts": {
-            "heavy": "What is heavy today?",
-            "peace": "What brought you peace this morning?",
-            "holding": "What are you holding onto?",
-            "release": "What would you like to release?",
-            "joy": "What small joy found you today?",
-            "yourself": "Where did you feel most yourself?",
-            "attention": "What needs your gentle attention?",
-            "truth": "What truth are you avoiding?",
-            "forgiveness": "What deserves your forgiveness?",
-            "grateful": "What are you grateful for in this moment?"
-        },
-        "nudges": {
-            "longWork": "You've been working for a while. Time to rest?",
-            "lateNight": "It's getting late. Your rest matters too.",
-            "earlyStart": "Early start today. Remember to breathe.",
-            "lowEnergy": "How's your energy? A pause can help."
-        }
-    },
-    "voiceJournaling": {
-        "title": "Voice Journal",
-        "subtitle": "Speak your thoughts freely",
-        "startRecording": "Start Recording",
-        "stopRecording": "Stop Recording",
-        "recording": "Recording...",
-        "play": "Play",
-        "delete": "Delete",
-        "noEntries": "No voice entries yet",
-        "playing": "Playing..."
-    },
-    "progressTree": {
-        "title": "Progress Tree",
-        "subtitle": "Watch your growth unfold",
-        "level": "Level {{level}}",
-        "xpToNext": "{{xp}} XP to next level",
-        "achievements": "Achievements",
-        "keepGoing": "Keep growing!"
-    },
-    "thuthimalBadge": {
-        "title": "Thuthimal",
-        "sinhala": "තුතිමල්",
-        "giftedBy": "Your Pro subscription is a gift of gratitude from:",
-        "meaning": "තුතිමල් (Thuthimal) means \"Flower of Gratitude\" — honoring the sacred work of teaching",
-        "giftedOn": "Gifted on {{date}}"
-    },
-    "socialSanctuary": {
-        "title": "Social Sanctuary",
-        "empty": "No social links added yet. Add your WhatsApp, Instagram or LinkedIn to help others connect with you."
-    },
-    "staffPresence": {
-        "title": "Professional Pulse",
-        "attendanceStatus": "Attendance Status",
-        "checkedIn": "CHECKED IN",
-        "checkedOut": "CHECKED OUT",
-        "checkedInAt": "Checked In At",
-        "checkedOutAt": "Checked Out At",
-        "checkOutButton": "Check Out for Today",
-        "checkInButton": "Begin Your Sanctuary Day",
-        "requestLeave": "Request Leave",
-        "viewHistory": "View History"
-    },
-    "addSocialLink": {
-        "title": "Social Hub",
-        "subtitle": "Manage your elective connections",
-        "selectPlatform": "Select Platform",
-        "platforms": {
-            "whatsapp": "WhatsApp",
-            "linkedin": "LinkedIn",
-            "instagram": "Instagram",
-            "portfolio": "Portfolio",
-            "email": "Email"
-        },
-        "handleOrLink": "Handle or Link",
-        "phoneOrLink": "+94...",
-        "usernameOrLink": "Username or link",
-        "privacyLevel": "Privacy Level",
-        "publicLabel": "Public",
-        "publicDesc": "Everyone can see this",
-        "particularsLabel": "Particulars",
-        "particularsDesc": "Only your direct contacts",
-        "privateLabel": "Private",
-        "privateDesc": "Only visible to you",
-        "addButton": "Add Social Presence"
-    },
-    "support": {
-        "title": "Help & Support",
-        "contactSupport": "Contact Support",
-        "contactSupportDesc": "Get help with your account",
-        "faqs": "FAQs",
-        "faqsDesc": "Common questions & answers",
-        "reportIssue": "Report Issue",
-        "reportIssueDesc": "Found a bug? Let us know",
-        "about": "About",
-        "aboutDesc": "Mission, Version & Legal",
-        "rateUs": "Rate Us",
-        "rateUsDesc": "Support our mission with a review"
-    },
-    "schoolSetup": {
-        "schoolName": "School Name",
-        "schoolNamePlaceholder": "e.g. Royal College, Colombo",
-        "contactEmail": "Contact Email",
-        "contactEmailPlaceholder": "school@email.com",
-        "contactPhone": "Contact Phone",
-        "contactPhonePlaceholder": "+94 7x xxx xxxx",
-        "website": "Website (Optional)",
-        "websitePlaceholder": "www.school.lk",
-        "studentBodyType": "Student Body Type",
-        "studentCount": "Approximate Student Count",
-        "studentCountPlaceholder": "e.g. 1500",
-        "religiousContext": "Primary Religious Context",
-        "academicLevels": "Academic Levels",
-        "academicLevelsDesc": "Select the grades/levels your school covers.",
-        "levels": {
-            "primary": "Primary (1-5)",
-            "juniorSecondary": "Junior Secondary (6-9)",
-            "secondary": "Secondary (10-11)",
-            "advancedLevel": "Advanced Level (12-13)"
-        },
-        "orgSections": "Organizational Sections",
-        "orgSectionsDesc": "Defining sections helps in building the administrative hierarchy later.",
-        "addCustomSection": "Add custom section (Coming Soon)",
-        "province": "Province",
-        "selectProvince": "Select Province",
-        "district": "District",
-        "selectDistrict": "Select District",
-        "selectProvinceFirst": "Select Province first",
-        "city": "City",
-        "cityPlaceholder": "e.g. Kandy",
-        "postalAddress": "Postal Address",
-        "postalAddressPlaceholder": "No. 123, School Lane..."
-    },
-    "teacher": {
-        "actions": {
-            "principalEcho": "Principal Echo"
-        },
-        "feedback": {
-            "title": "Principal Echo",
-            "subtitle": "Send a reflection or request to administration",
-            "category": "Category",
-            "priority": "Urgency",
-            "content": "Your Reflection",
-            "placeholder": "Share your thoughts, resource needs, or concerns...",
-            "note": "This reflection will be surfaced on the Principal's Dashboard 'Echo' vistas."
-        }
+    "nudges": {
+      "longWork": "You've been working for a while. Time to rest?",
+      "lateNight": "It's getting late. Your rest matters too.",
+      "earlyStart": "Early start today. Remember to breathe.",
+      "lowEnergy": "How's your energy? A pause can help."
     }
+  },
+  "voiceJournaling": {
+    "title": "Voice Journal",
+    "subtitle": "Speak your thoughts freely",
+    "startRecording": "Start Recording",
+    "stopRecording": "Stop Recording",
+    "recording": "Recording...",
+    "play": "Play",
+    "delete": "Delete",
+    "noEntries": "No voice entries yet",
+    "playing": "Playing..."
+  },
+  "progressTree": {
+    "title": "Progress Tree",
+    "subtitle": "Watch your growth unfold",
+    "level": "Level {{level}}",
+    "xpToNext": "{{xp}} XP to next level",
+    "achievements": "Achievements",
+    "keepGoing": "Keep growing!"
+  },
+  "thuthimalBadge": {
+    "title": "Thuthimal",
+    "sinhala": "තුතිමල්",
+    "giftedBy": "Your Pro subscription is a gift of gratitude from:",
+    "meaning": "තුතිමල් (Thuthimal) means \"Flower of Gratitude\" — honoring the sacred work of teaching",
+    "giftedOn": "Gifted on {{date}}"
+  },
+  "socialSanctuary": {
+    "title": "Social Sanctuary",
+    "empty": "No social links added yet. Add your WhatsApp, Instagram or LinkedIn to help others connect with you."
+  },
+  "staffPresence": {
+    "title": "Professional Pulse",
+    "attendanceStatus": "Attendance Status",
+    "checkedIn": "CHECKED IN",
+    "checkedOut": "CHECKED OUT",
+    "checkedInAt": "Checked In At",
+    "checkedOutAt": "Checked Out At",
+    "checkOutButton": "Check Out for Today",
+    "checkInButton": "Begin Your Sanctuary Day",
+    "requestLeave": "Request Leave",
+    "viewHistory": "View History"
+  },
+  "addSocialLink": {
+    "title": "Social Hub",
+    "subtitle": "Manage your elective connections",
+    "selectPlatform": "Select Platform",
+    "platforms": {
+      "whatsapp": "WhatsApp",
+      "linkedin": "LinkedIn",
+      "instagram": "Instagram",
+      "portfolio": "Portfolio",
+      "email": "Email"
+    },
+    "handleOrLink": "Handle or Link",
+    "phoneOrLink": "+94...",
+    "usernameOrLink": "Username or link",
+    "privacyLevel": "Privacy Level",
+    "publicLabel": "Public",
+    "publicDesc": "Everyone can see this",
+    "particularsLabel": "Particulars",
+    "particularsDesc": "Only your direct contacts",
+    "privateLabel": "Private",
+    "privateDesc": "Only visible to you",
+    "addButton": "Add Social Presence"
+  },
+  "support": {
+    "title": "Help & Support",
+    "contactSupport": "Contact Support",
+    "contactSupportDesc": "Get help with your account",
+    "faqs": "FAQs",
+    "faqsDesc": "Common questions & answers",
+    "reportIssue": "Report Issue",
+    "reportIssueDesc": "Found a bug? Let us know",
+    "about": "About",
+    "aboutDesc": "Mission, Version & Legal",
+    "rateUs": "Rate Us",
+    "rateUsDesc": "Support our mission with a review"
+  },
+  "schoolSetup": {
+    "schoolName": "School Name",
+    "schoolNamePlaceholder": "e.g. Royal College, Colombo",
+    "contactEmail": "Contact Email",
+    "contactEmailPlaceholder": "school@email.com",
+    "contactPhone": "Contact Phone",
+    "contactPhonePlaceholder": "+94 7x xxx xxxx",
+    "website": "Website (Optional)",
+    "websitePlaceholder": "www.school.lk",
+    "studentBodyType": "Student Body Type",
+    "studentCount": "Approximate Student Count",
+    "studentCountPlaceholder": "e.g. 1500",
+    "religiousContext": "Primary Religious Context",
+    "academicLevels": "Academic Levels",
+    "academicLevelsDesc": "Select the grades/levels your school covers.",
+    "levels": {
+      "primary": "Primary (1-5)",
+      "juniorSecondary": "Junior Secondary (6-9)",
+      "secondary": "Secondary (10-11)",
+      "advancedLevel": "Advanced Level (12-13)"
+    },
+    "orgSections": "Organizational Sections",
+    "orgSectionsDesc": "Defining sections helps in building the administrative hierarchy later.",
+    "addCustomSection": "Add custom section (Coming Soon)",
+    "province": "Province",
+    "selectProvince": "Select Province",
+    "district": "District",
+    "selectDistrict": "Select District",
+    "selectProvinceFirst": "Select Province first",
+    "city": "City",
+    "cityPlaceholder": "e.g. Kandy",
+    "postalAddress": "Postal Address",
+    "postalAddressPlaceholder": "No. 123, School Lane..."
+  },
+  "teacher": {
+    "actions": {
+      "principalEcho": "Principal Echo"
+    },
+    "feedback": {
+      "title": "Principal Echo",
+      "subtitle": "Send a reflection or request to administration",
+      "category": "Category",
+      "priority": "Urgency",
+      "content": "Your Reflection",
+      "placeholder": "Share your thoughts, resource needs, or concerns...",
+      "note": "This reflection will be surfaced on the Principal's Dashboard 'Echo' vistas."
+    }
+  },
+  "sync": {
+    "title": "Sync Your Data",
+    "description": "We found data from your guest session. Would you like to sync it to your new account?",
+    "syncButton": "Sync Data",
+    "syncing": "Syncing...",
+    "completeTitle": "Sync Complete!",
+    "successMessage": "All your data has been synced successfully!",
+    "successDescription": "You can now access your data from any device."
+  }
 }

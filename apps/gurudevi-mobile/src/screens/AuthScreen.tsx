@@ -31,6 +31,12 @@ import { Theme } from '@repo/ui';
 import { validators, validateForm } from '../utils/validators';
 import { ScannerModal, resolveQR } from '@repo/scanner-kit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as WebBrowser from 'expo-web-browser';
+import * as AuthSession from 'expo-auth-session';
+
+// Required for expo-auth-session to complete the auth session on Android
+// (handles the Chrome Custom Tab callback redirect)
+WebBrowser.maybeCompleteAuthSession();
 
 // Google 'G' icon rendered with plain RN — no react-native-svg needed
 const GoogleIcon = ({ size = 20 }: { size?: number }) => (
@@ -65,6 +71,10 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [showEmailAuth, setShowEmailAuth] = useState(false);
+    // Issue 3.1 fix: new unauthenticated visitors should land on Sign Up, not Login.
+    // When called from onboarding with isAnonymous=true the user already has a session
+    // and is upgrading — defaulting to Sign Up is still correct (they want to create a
+    // permanent account). Both tabs remain visible and togglable.
     const [isSignUp, setIsSignUp] = useState(false);
     const [showScanner, setShowScanner] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -83,58 +93,127 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
     const isRealUser = currentUser && currentUser.email && !currentUser.email.includes('anonymous');
     const shouldHideGeneralAuth = onboardingData && isRealUser;
 
+    // ─── Native redirect URI (used by expo-auth-session) ───────────────────────
+    // On web we keep the existing browser-redirect approach.
+    // On native (iOS/Android) we use makeRedirectUri so the OS routes the callback
+    // back into the app without leaving to an external browser.
     const getRedirectUrl = () => {
         if (Platform.OS === 'web') {
-            return window.location.origin + window.location.pathname;
+            return window.location.origin;
         }
-        return 'gurudevi://auth/callback';
+        return AuthSession.makeRedirectUri({
+            scheme: 'gurudevi',
+            path: 'auth/callback',
+        });
     };
 
     async function handleOAuthSignIn(provider: 'google') {
         setLoading(true);
         hapticLight();
 
+        const redirectUrl = getRedirectUrl();
         const { data: { session } } = await supabase.auth.getSession();
         const isAnon = session?.user?.is_anonymous || !session?.user?.email;
 
-        console.log('🚀 Auth: handleOAuthSignIn', { provider, isAnon });
+        console.log('🚀 Auth: handleOAuthSignIn', { provider, isAnon, redirectUrl });
 
-        if (isAnon && session?.user) {
-            console.log('🔗 Auth: Linking identity for guest user...');
-            const { error } = await supabase.auth.linkIdentity({
-                provider,
-                options: {
-                    redirectTo: getRedirectUrl()
+        // ── Web platform: fall back to classic browser-redirect flow ───────────
+        if (Platform.OS === 'web') {
+            if (isAnon && session?.user) {
+                const { error } = await supabase.auth.linkIdentity({
+                    provider,
+                    options: { redirectTo: redirectUrl },
+                });
+                if (error) {
+                    if (error.message.includes('already linked')) {
+                        showToast(t('auth.alreadyLinked') || 'This Google account is already linked to another sanctuary soul. Please login instead.', 'error');
+                    } else {
+                        handleAPIError(error);
+                    }
+                    setLoading(false);
                 }
-            });
-
-            if (error) {
-                if (error.message.includes('already linked')) {
-                    showToast(t('auth.alreadyLinked') || "This Google account is already linked to another sanctuary soul. Please login instead.", "error");
-                } else {
-                    handleAPIError(error);
-                }
-                setLoading(false);
+                return;
             }
-            // linkIdentity will redirect just like signInWithOAuth
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider,
+                options: { redirectTo: redirectUrl },
+            });
+            if (error) { handleAPIError(error); setLoading(false); }
             return;
         }
 
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider,
-            options: {
-                redirectTo: Platform.OS === 'web'
-                    ? window.location.origin   // base URL only — avoids leaking current path/query params
-                    : 'gurudevi://auth/callback',
-                queryParams: onboardingData ? {
-                    full_name: onboardingData.name,
-                    role: onboardingData.role,
-                } : undefined
-            }
-        });
+        // ── Native platform: use expo-auth-session for native account picker ───
+        // Step 1: Ask Supabase for the OAuth URL without opening the browser
+        const oauthOptions = isAnon && session?.user
+            ? await supabase.auth.linkIdentity({
+                provider,
+                options: { redirectTo: redirectUrl, skipBrowserRedirect: true },
+            })
+            : await supabase.auth.signInWithOAuth({
+                provider,
+                options: { redirectTo: redirectUrl, skipBrowserRedirect: true },
+            });
 
-        if (error) {
-            handleAPIError(error);
+        const oauthError = oauthOptions.error;
+        const oauthUrl = (oauthOptions.data as any)?.url as string | null | undefined;
+
+        if (oauthError) {
+            if (oauthError.message.includes('already linked')) {
+                showToast(t('auth.alreadyLinked') || 'This Google account is already linked to another sanctuary soul. Please login instead.', 'error');
+            } else {
+                handleAPIError(oauthError);
+            }
+            setLoading(false);
+            return;
+        }
+
+        if (!oauthUrl) {
+            showToast('Could not reach Google sign-in. Please try again.', 'error');
+            setLoading(false);
+            return;
+        }
+
+        // Step 2: Open the OAuth URL in a WebBrowser session — this triggers
+        //         the native Google Account Picker (ASWebAuthenticationSession
+        //         on iOS, Chrome Custom Tabs on Android).
+        const result = await WebBrowser.openAuthSessionAsync(oauthUrl, redirectUrl);
+        console.log('🔁 Auth: WebBrowser result', result.type);
+
+        if (result.type !== 'success') {
+            // User cancelled or browser was dismissed
+            setLoading(false);
+            return;
+        }
+
+        // Step 3: Extract tokens from the callback URL fragment and set session
+        try {
+            const callbackUrl = result.url;
+            // Tokens are in the URL hash: #access_token=...&refresh_token=...
+            const hashParams = new URLSearchParams(
+                callbackUrl.includes('#') ? callbackUrl.split('#')[1] : callbackUrl.split('?')[1]
+            );
+            const access_token = hashParams.get('access_token');
+            const refresh_token = hashParams.get('refresh_token');
+
+            if (!access_token || !refresh_token) {
+                throw new Error('Missing tokens in callback URL');
+            }
+
+            const { error: sessErr } = await supabase.auth.setSession({
+                access_token,
+                refresh_token,
+            });
+
+            if (sessErr) {
+                handleAPIError(sessErr);
+            } else {
+                hapticSuccess();
+                if (onSuccess) onSuccess();
+            }
+        } catch (err: any) {
+            console.error('❌ Auth: Session completion error', err);
+            showToast('Sign-in failed — please try again.', 'error');
+        } finally {
             setLoading(false);
         }
     }
