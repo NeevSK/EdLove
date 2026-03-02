@@ -1,12 +1,27 @@
 this file is for issues i saw while doing manual testing and should complement/integrate with the tasks do in future and update the progress as well
+(changes we do need to apply both webfiles and mobile files if neccessary)
 
-
-12.40pm 02/03/2026
+## 12.40pm 02/03/2026
 1. bottom nav bar should fixed where it had some rectangle  need to reduce blur or the transparency now its ugly.
 2. in teacher and students self views i think we have planned default home as pulse dashboard than moodcheck and moodcheck will be just one component in both teacherself and student self view. seems there can be code duplications as well. lets check that too. 
 3. community hearth - presece thing doesnt work. check why it isnt working. need to make it working for students and teachers and principls as well. students will see student count while teachers + principals will see cumulative count. 
+4. check whether all signin/signuo/create accoun buttons navigate to auth screen and then whether google auth works
+5. Scope: all 17 workspace projects
+ ERR_PNPM_OUTDATED_LOCKFILE  Cannot install with "frozen-lockfile" because pnpm-lock.yaml is not up to date with <ROOT>/packages/library/package.json
 
-6.00 pm 28/02/2026
+Note that in CI environments this setting is true by default. If you still need to run install in such cases, use "pnpm install --no-frozen-lockfile"
+
+  Failure reason:
+  specifiers in the lockfile don't match specifiers in package.json:
+* 1 dependencies were added: expo-sqlite@*
+6. given we have dms and group msgs in community sections can we abstract screens related both and then import? is that how we do things now?  DRY rule
+7. need to check whether we have wired all related things to creating groups in discoverscetion and then within groups. 
+8. if we did absration as per 6 seems DMs also easily functionable than waiting. but i dont knw. any thoughts?
+
+
+
+
+## 6.00 pm 28/02/2026
 1. learning journey banner which should only for students appear in teacherclassrom
 
 2. need fix colors,and font according to colors in global header
