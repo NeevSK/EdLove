@@ -130,6 +130,7 @@ export default function LibraryScreen() {
     const [selectedSort, setSelectedSort] = useState<'recent' | 'popular' | 'most_endorsed' | 'most_bookmarked'>('recent');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
 
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
@@ -137,6 +138,12 @@ export default function LibraryScreen() {
 
     React.useEffect(() => {
         discoverFeature('section_library');
+
+        // Trigger knowledge index sync (Whispered Moment)
+        setIsSyncing(true);
+        syncLibrary()
+            .catch(err => console.error('Library sync failed in background:', err))
+            .finally(() => setIsSyncing(false));
     }, []);
 
     const isSearchMode = searchQuery.trim().length > 0 || selectedCategoryId !== 'All';
@@ -154,6 +161,7 @@ export default function LibraryScreen() {
         fetchNextResources,
         hasNextResources,
         isFetchingNextResources,
+        syncLibrary,
     } = useLibrary(
         isSearchMode
             ? { type: resourceTypeFilter, search: searchQuery || undefined, sort_by: selectedSort }
@@ -285,6 +293,11 @@ export default function LibraryScreen() {
                 }}
                 rightAction={
                     <HStack sx={{ gap: 8, alignItems: 'center' }}>
+                        {isSyncing && (
+                            <Animated.View entering={FadeInDown}>
+                                <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} />
+                            </Animated.View>
+                        )}
                         <TouchableOpacity
                             onPress={() => navigation.navigate('LibraryMap' as any)}
                             style={styles.mapToggleButton}

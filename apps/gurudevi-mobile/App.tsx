@@ -37,7 +37,7 @@ import { ErrorBoundary, NetworkStatusBanner } from '@repo/ui';
 import { SyncManager } from '@repo/core';
 import { LanguageUtils } from './src/utils/LanguageUtils';
 import CommandPalette from './src/components/web/CommandPalette';
-import { useWebPageTitle } from './src/utils/useWebPageTitle';
+import { updateWebPageTitle } from './src/utils/useWebPageTitle';
 import { PWAInstallBanner } from './src/components/web/PWAInstallBanner';
 
 // Create a client
@@ -345,187 +345,190 @@ function App() {
 
 // Main Content Component to access Theme/Context
 function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardingCompleted, showWelcome, setShowWelcome, toast, hideToast }: any) {
-  const { phase } = useTheme();
   const isWarmPhase = ['morning', 'afternoon', 'evening'].includes(phase);
 
-  // Reactive document.title tied to actual navigation state (replaces tab-only version)
-  useWebPageTitle();
 
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <ToastProvider>
-          <ErrorBoundary name="App Root">
-            <NavigationContainer
-              ref={navigationRef}
-              linking={{
-                prefixes: ['gurudevi://', 'https://app.gurudevi.edlove.org', 'http://localhost:4000'],
-                config: {
+  <SafeAreaProvider>
+    <ToastProvider>
+      <ErrorBoundary name="App Root">
+        <NavigationContainer
+          ref={navigationRef}
+          onReady={() => {
+            if (navigationRef.isReady()) {
+              updateWebPageTitle(navigationRef.current?.getRootState());
+            }
+          }}
+          onStateChange={(state) => {
+            updateWebPageTitle(state);
+          }}
+          linking={{
+            prefixes: ['gurudevi://', 'https://app.gurudevi.edlove.org', 'http://localhost:4000'],
+            config: {
+              screens: {
+                Welcome: '',
+                Onboarding: 'onboarding',
+                Auth: 'auth',
+                AIAssistant: 'ai',
+                QRHandler: 'qr',
+                ThuthimalClaim: 'thuthimal',
+                Main: {
+                  path: 'app',
                   screens: {
-                    Welcome: '',
-                    Onboarding: 'onboarding',
-                    Auth: 'auth',
-                    AIAssistant: 'ai',
-                    QRHandler: 'qr',
-                    ThuthimalClaim: 'thuthimal',
-                    Main: {
-                      path: 'app',
+                    Self: 'self',
+                    Profile: {
+                      path: 'profile',
                       screens: {
-                        Self: 'self',
-                        Profile: {
-                          path: 'profile',
-                          screens: {
-                            ProfileMain: '',
-                            FullProfile: 'full',
-                          },
-                        },
-                        Classroom: {
-                          path: 'classroom',
-                          screens: {
-                            ClassroomList: '',
-                            SchoolCreation: 'new',
-                            ClassroomDetails: {
-                              path: ':classroomId',
-                              screens: {
-                                Attendance: 'attendance',
-                                Gradebook: 'gradebook',
-                              },
-                            },
-                          },
-                        },
-                        Community: {
-                          path: 'community',
-                          screens: {
-                            CommunityMain: '',
-                            GroupDetails: 'group/:groupId',
-                            GroupChat: 'group/:groupId/chat',
-                            UserProfile: 'user/:userId',
-                          },
-                        },
-                        Library: 'library',
+                        ProfileMain: '',
+                        FullProfile: 'full',
                       },
                     },
+                    Classroom: {
+                      path: 'classroom',
+                      screens: {
+                        ClassroomList: '',
+                        SchoolCreation: 'new',
+                        ClassroomDetails: {
+                          path: ':classroomId',
+                          screens: {
+                            Attendance: 'attendance',
+                            Gradebook: 'gradebook',
+                          },
+                        },
+                      },
+                    },
+                    Community: {
+                      path: 'community',
+                      screens: {
+                        CommunityMain: '',
+                        GroupDetails: 'group/:groupId',
+                        GroupChat: 'group/:groupId/chat',
+                        UserProfile: 'user/:userId',
+                      },
+                    },
+                    Library: 'library',
                   },
                 },
-              }}
-            >
-              <PostHogProvider
-                apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
-                options={{
-                  host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
-                }}
-                autocapture={false}
-              >
-                <RootStack.Navigator screenOptions={{ headerShown: false }}>
-                  {(!session || needsWelcome) ? (
-                    <RootStack.Screen name="Welcome">
-                      {() => (
-                        <ErrorBoundary name="Welcome Screen">
-                          <WelcomeScreen
-                            initialShowAuth={onboardingCompleted}
-                            onNext={() => {
-                              console.log('➡️ App: onNext called from WelcomeScreen');
-                              setShowWelcome(false);
-                            }}
-                          />
-                        </ErrorBoundary>
-                      )}
-                    </RootStack.Screen>
-                  ) : !onboardingCompleted ? (
-                    <RootStack.Screen name="Onboarding">
-                      {() => (
-                        <ErrorBoundary name="Onboarding Screen">
-                          <OnboardingScreen
-                            isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
-                            onComplete={(name: string, role: any, wantsAccount?: boolean) => {
-                              console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
-                              const store = useStore.getState();
-                              if (name) store.setTeacherName(name);
-                              if (role) store.setUserRole(role);
-                              store.setOnboardingCompleted(true);
-                              store.setJustFinishedOnboarding(true);
-                            }}
-                          />
-                        </ErrorBoundary>
-                      )}
-                    </RootStack.Screen>
-                  ) : (
-                    <>
-                      <RootStack.Screen name="Main">
-                        {() => (
-                          <ErrorBoundary name="Main Tabs">
-                            <TabNavigator onTabChange={(tab: any) => setCurrentTab(tab)} />
-                          </ErrorBoundary>
-                        )}
-                      </RootStack.Screen>
-
-                      <RootStack.Screen
-                        name="AIAssistant"
-                        component={AIAssistantScreen}
-                        options={{
-                          presentation: 'modal',
-                          animation: 'slide_from_bottom'
+              },
+            },
+          }}
+        >
+          <PostHogProvider
+            apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
+            options={{
+              host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
+            }}
+            autocapture={false}
+          >
+            <RootStack.Navigator screenOptions={{ headerShown: false }}>
+              {(!session || needsWelcome) ? (
+                <RootStack.Screen name="Welcome">
+                  {() => (
+                    <ErrorBoundary name="Welcome Screen">
+                      <WelcomeScreen
+                        initialShowAuth={onboardingCompleted}
+                        onNext={() => {
+                          console.log('➡️ App: onNext called from WelcomeScreen');
+                          setShowWelcome(false);
                         }}
                       />
-                      <RootStack.Screen
-                        name="Auth"
-                        component={AuthScreen}
-                        options={{ presentation: 'modal' }}
-                      />
-                      <RootStack.Screen
-                        name="QRHandler"
-                        component={QRHandlerScreen}
-                        options={{
-                          presentation: 'modal',
-                          animation: 'fade_from_bottom',
-                        }}
-                      />
-                      <RootStack.Screen
-                        name="ThuthimalClaim"
-                        component={ThuthimalClaimScreen}
-                        options={{
-                          presentation: 'modal',
-                          animation: 'fade_from_bottom',
-                        }}
-                      />
-                    </>
+                    </ErrorBoundary>
                   )}
-                </RootStack.Navigator>
-              </PostHogProvider>
-            </NavigationContainer>
+                </RootStack.Screen>
+              ) : !onboardingCompleted ? (
+                <RootStack.Screen name="Onboarding">
+                  {() => (
+                    <ErrorBoundary name="Onboarding Screen">
+                      <OnboardingScreen
+                        isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
+                        onComplete={(name: string, role: any, wantsAccount?: boolean) => {
+                          console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
+                          const store = useStore.getState();
+                          if (name) store.setTeacherName(name);
+                          if (role) store.setUserRole(role);
+                          store.setOnboardingCompleted(true);
+                          store.setJustFinishedOnboarding(true);
+                        }}
+                      />
+                    </ErrorBoundary>
+                  )}
+                </RootStack.Screen>
+              ) : (
+                <>
+                  <RootStack.Screen name="Main">
+                    {() => (
+                      <ErrorBoundary name="Main Tabs">
+                        <TabNavigator onTabChange={(tab: any) => setCurrentTab(tab)} />
+                      </ErrorBoundary>
+                    )}
+                  </RootStack.Screen>
 
-            <SyncManager />
-            <NetworkStatusBanner />
+                  <RootStack.Screen
+                    name="AIAssistant"
+                    component={AIAssistantScreen}
+                    options={{
+                      presentation: 'modal',
+                      animation: 'slide_from_bottom'
+                    }}
+                  />
+                  <RootStack.Screen
+                    name="Auth"
+                    component={AuthScreen}
+                    options={{ presentation: 'modal' }}
+                  />
+                  <RootStack.Screen
+                    name="QRHandler"
+                    component={QRHandlerScreen}
+                    options={{
+                      presentation: 'modal',
+                      animation: 'fade_from_bottom',
+                    }}
+                  />
+                  <RootStack.Screen
+                    name="ThuthimalClaim"
+                    component={ThuthimalClaimScreen}
+                    options={{
+                      presentation: 'modal',
+                      animation: 'fade_from_bottom',
+                    }}
+                  />
+                </>
+              )}
+            </RootStack.Navigator>
+          </PostHogProvider>
+        </NavigationContainer>
 
-            {/* Command Palette — web-only power feature (Cmd+K) */}
-            {Platform.OS === 'web' && (
-              <CommandPalette
-                onOpenAI={() => navigationRef.navigate('AIAssistant' as never)}
-              />
-            )}
+        <SyncManager />
+        <NetworkStatusBanner />
 
-            {/* PWA Install Banner — web-only; hook guards against native/installed/dismissed */}
-            <PWAInstallBanner />
+        {/* Command Palette — web-only power feature (Cmd+K) */}
+        {Platform.OS === 'web' && (
+          <CommandPalette
+            onOpenAI={() => navigationRef.navigate('AIAssistant' as never)}
+          />
+        )}
 
-            {toast.visible && (
-              <SanctuaryToast
-                message={toast.message}
-                type={toast.type}
-                visible={toast.visible}
-                onHide={hideToast}
-              />
-            )}
+        {/* PWA Install Banner — web-only; hook guards against native/installed/dismissed */}
+        <PWAInstallBanner />
 
-            {/* Skia Grain Overlay (Temporarily disabled due to Android black screen issue)
+        {toast.visible && (
+          <SanctuaryToast
+            message={toast.message}
+            type={toast.type}
+            visible={toast.visible}
+            onHide={hideToast}
+          />
+        )}
+
+        {/* Skia Grain Overlay (Temporarily disabled due to Android black screen issue)
             <NoiseOverlay
               opacity={0.03}
               warm={isWarmPhase}
               frequency={phase === 'night' ? 0.45 : 0.65}
             />
             */}
-          </ErrorBoundary>
-        </ToastProvider>
-      </SafeAreaProvider>
+      </ErrorBoundary>
+    </ToastProvider>
+  </SafeAreaProvider>
     </GestureHandlerRootView >
   );
 }

@@ -52,18 +52,12 @@ function getLeafRouteName(state: NavState): string | undefined {
     return route.name;
 }
 
-export function useWebPageTitle() {
-    // If not on web, this hook should do absolutely nothing.
-    // We return early before calling useNavigationState to avoid context errors on native.
+export function updateWebPageTitle(state: NavState | undefined) {
     if (Platform.OS !== 'web') return;
+    if (typeof document === 'undefined') return;
 
-    const routeName = useNavigationState((state: NavState) => getLeafRouteName(state));
-
-    useEffect(() => {
-        if (Platform.OS !== 'web') return;
-        if (typeof document === 'undefined') return;
-
-        const label = routeName ? (ROUTE_LABELS[routeName] ?? routeName) : null;
-        document.title = label ? `${APP_NAME} · ${label}` : APP_NAME;
-    }, [routeName]);
+    if (!state) return;
+    const routeName = getLeafRouteName(state);
+    const label = routeName ? (ROUTE_LABELS[routeName] ?? routeName) : null;
+    document.title = label ? `${APP_NAME} · ${label}` : APP_NAME;
 }

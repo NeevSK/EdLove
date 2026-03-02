@@ -33,6 +33,7 @@
         "@repo/ui": "*",
         "expo-av": "*",
         "expo-file-system": "*",
+        "expo-sqlite": "*",
         "expo-linking": "*",
         "expo-sharing": "*",
         "lucide-react-native": "*",

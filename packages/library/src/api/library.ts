@@ -10,6 +10,7 @@ import {
     growthSignalsAPI,
     impactRipplesAPI,
 } from '@repo/core';
+import { Platform } from 'react-native';
 
 import {
     LibraryResource,
@@ -22,6 +23,8 @@ import {
     KnowledgeNode,
     KnowledgeLink,
 } from '../types';
+import { knowledgeDB } from './database';
+import { knowledgeSync } from './sync';
 
 // ============================================================================
 // LIBRARY API - Resource Management for Educational Ecology
@@ -128,6 +131,48 @@ export const libraryAPI = {
             creator_name: resource.creator?.full_name || 'Unknown',
             verified_by_name: resource.verified_by_user?.full_name,
         }));
+    },
+
+    /**
+     * Search resources locally using SQLite FTS5 index.
+     */
+    async searchResourcesLocal(query: string, limit: number = 20): Promise<LibraryResource[]> {
+        if (Platform.OS === 'web') return [];
+
+        try {
+            const ids = await knowledgeDB.search(query, limit);
+            if (ids.length === 0) return [];
+
+            // Fetch full resource details from Supabase (or eventually from local full-cache)
+            // For now, we fetch from Supabase by IDs to get the full objects
+            const { data, error } = await supabase
+                .from('library_resources')
+                .select(`
+                    *,
+                    creator: users!library_resources_creator_id_fkey(full_name),
+                    verified_by_user: users!library_resources_verified_by_fkey(full_name)
+                `)
+                .in('id', ids);
+
+            if (error) throw error;
+
+            // Sort results by the order returned from SQLite
+            const idMap = new Map((data || []).map((r: any) => [r.id, r]));
+            return ids
+                .map(id => idMap.get(id))
+                .filter(r => !!r)
+                .map(resource => ({
+                    ...resource,
+                    creator_name: resource.creator?.full_name || 'Unknown',
+                    verified_by_name: resource.verified_by_user?.full_name,
+                    // These fields would ideally be tracked locally too
+                    has_endorsed: false,
+                    has_bookmarked: false,
+                }));
+        } catch (error) {
+            console.error('Local search integration failed:', error);
+            return [];
+        }
     },
 
     /**

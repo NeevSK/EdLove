@@ -1,6 +1,11 @@
 this file is for issues i saw while doing manual testing and should complement/integrate with the tasks do in future and update the progress as well
 
 
+12.40pm 02/03/2026
+1. bottom nav bar should fixed where it had some rectangle  need to reduce blur or the transparency now its ugly.
+2. in teacher and students self views i think we have planned default home as pulse dashboard than moodcheck and moodcheck will be just one component in both teacherself and student self view. seems there can be code duplications as well. lets check that too. 
+3. community hearth - presece thing doesnt work. check why it isnt working. need to make it working for students and teachers and principls as well. students will see student count while teachers + principals will see cumulative count. 
+
 6.00 pm 28/02/2026
 1. learning journey banner which should only for students appear in teacherclassrom
 
@@ -12,7 +17,7 @@ this file is for issues i saw while doing manual testing and should complement/i
 
 5. there are lot of components should be in principalschool view now in principalself view
 
-6. there are the empty despricpion for library is wrong it says priate library etc etc
+6. there are the empty despricpion for library is wrong it says priate library etc etc where its public space for knowledge
 
 7. created pulsedashboard for everyones selfscreens as defaults seems not appearing, still seems defaulted to mood checking. 
 
