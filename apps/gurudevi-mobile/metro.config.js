@@ -71,6 +71,12 @@ const WEB_SHIMS = {
     // called in a browser context.
     '@react-native-ml-kit/text-recognition': path.resolve(projectRoot, 'src/shims/ml-kit-text-recognition-web.js'),
     '@react-native-ml-kit/barcode-scanning': path.resolve(projectRoot, 'src/shims/ml-kit-barcode-scanning-web.js'),
+    // expo-file-system and expo-sharing are native-only. PDFViewerScreen.web.tsx
+    // replaces the native screen entirely, so these modules are never called on web.
+    // The shims prevent build errors from any transitive import that Metro encounters
+    // while walking the dependency graph.
+    'expo-file-system': path.resolve(projectRoot, 'src/shims/expo-file-system-web.js'),
+    'expo-sharing': path.resolve(projectRoot, 'src/shims/expo-sharing-web.js'),
 };
 
 const defaultResolveRequest = config.resolver.resolveRequest;
