@@ -130,7 +130,7 @@ export default function ClassroomScreen() {
                         type="guest"
                         onAction={() => {
                             hapticLight();
-                            // TODO: Add auth navigation
+                            navigation.navigate('Auth' as never);
                         }}
                     />
                 )}

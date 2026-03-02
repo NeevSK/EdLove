@@ -41,9 +41,9 @@ const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
         switch (context) {
             case 'library':
                 return {
-                    title: t('invitation.libraryEmptyTitle', 'Your personal library awaits'),
-                    desc: t('invitation.libraryEmptyDesc', 'Save resources, books, and insights to build your knowledge treasury.'),
-                    action: t('invitation.libraryEmptyAction', 'Explore Library'),
+                    title: t('invitation.libraryEmptyTitle', 'A Public Space for Knowledge'),
+                    desc: t('invitation.libraryEmptyDesc', 'This is a shared commons — explore, endorse, and contribute resources that elevate everyone.'),
+                    action: t('invitation.libraryEmptyAction', 'Explore Knowledge'),
                     icon: Plus
                 };
             case 'classroom':

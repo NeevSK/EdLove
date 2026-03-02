@@ -34,14 +34,16 @@ import DailyRhythm from '../../components/self/DailyRhythm';
 import { supabase, useStore, useUserRole } from '@repo/core';
 import { useMoodLogs, useEnergyForecast } from '@repo/self';
 import { GlobalHeader } from '@repo/ui';
+import PulseDashboard from '../self/PulseDashboard';
 import DailyContentCard from '../../components/self/DailyContentCard';
 import WelcomeModal from '../../components/self/WelcomeModal';
 import { SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useThemedColors, useBottomTabPadding } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
 
-// Student-specific core features
+// Student-specific core features — Pulse is the Entry Hall
 const STUDENT_CORE_FEATURES = [
+    { id: 'pulse', icon: TrendingUp, category: 'core' },
     { id: 'mood', icon: Flower, category: 'core' },
     { id: 'goals', icon: Target, category: 'core' },
     { id: 'study', icon: BookOpen, category: 'core' },
@@ -57,7 +59,7 @@ export default function StudentSelfView() {
     const navigation = useNavigation<any>();
     const { userId, role, isGuest } = useUserRole();
     const user = useStore(state => state.user);
-    const [activeFeature, setActiveFeature] = useState('mood');
+    const [activeFeature, setActiveFeature] = useState('pulse');
     const [showMoreTools, setShowMoreTools] = useState(false);
 
     // Behavioral signal hooks — feed into ResonancePatternCard inference
@@ -85,7 +87,7 @@ export default function StudentSelfView() {
 
 
     const renderFeature = () => {
-        if (!userId) {
+        if (!userId && activeFeature !== 'pulse') {
             return (
                 <PositiveInvitation
                     type="guest"
@@ -95,6 +97,12 @@ export default function StudentSelfView() {
         }
 
         switch (activeFeature) {
+            case 'pulse':
+                return (
+                    <PulseDashboard
+                        onEnterDetails={() => setActiveFeature('mood')}
+                    />
+                );
             case 'mood':
                 return <MoodLotus userId={userId} />;
             case 'goals':
@@ -187,15 +195,15 @@ export default function StudentSelfView() {
                 </Box>
 
                 {/* Resonance Pattern — shows only when there's something to show */}
-                    {userProfile && (
-                        <Box sx={{ paddingHorizontal: Theme.spacing.md, marginBottom: Theme.spacing.md }}>
-                            <ResonancePatternCard
-                                orientationSeeds={userProfile.orientation_seeds}
-                                moodLogs={moodLogs}
-                                energyForecasts={energyForecasts}
-                            />
-                        </Box>
-                    )}
+                {userProfile && (
+                    <Box sx={{ paddingHorizontal: Theme.spacing.md, marginBottom: Theme.spacing.md }}>
+                        <ResonancePatternCard
+                            orientationSeeds={userProfile.orientation_seeds}
+                            moodLogs={moodLogs}
+                            energyForecasts={energyForecasts}
+                        />
+                    </Box>
+                )}
 
                 {/* Feature Carousel */}
                 <Box sx={{ height: 100 }}>

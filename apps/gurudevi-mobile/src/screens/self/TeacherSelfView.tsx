@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
 import DailyRhythm from '../../components/self/DailyRhythm';
+import PulseDashboard from '../self/PulseDashboard';
 import {
     MoodLotus,
     ShadowAgentDrawer,
@@ -52,8 +53,10 @@ import WelcomeModal from '../../components/self/WelcomeModal';
 import { useThemedColors, useBottomTabPadding } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
 
-// Progressive Architecture: Core features always visible, others in "More Tools"
+// Progressive Architecture: PulseDashboard is the Entry Hall.
+// Core features are revealed after the user taps "Enter Full Sanctuary".
 const CORE_FEATURES = [
+    { id: 'pulse', icon: Sparkles, category: 'core' },
     { id: 'mood', icon: Flower, category: 'core' },
     { id: 'fire', icon: Flame, category: 'core' },
     { id: 'rhythm', icon: Repeat, category: 'core' },
@@ -76,7 +79,7 @@ const MORE_TOOLS_FEATURES = [
 export default function TeacherSelfView() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const [activeFeature, setActiveFeature] = useState('mood');
+    const [activeFeature, setActiveFeature] = useState('pulse');
     const [userId, setUserId] = useState<string | null>(null);
     const [loadingUser, setLoadingUser] = useState(true);
     const [showMoreTools, setShowMoreTools] = useState(false);
@@ -134,6 +137,12 @@ export default function TeacherSelfView() {
 
     const renderFeature = () => {
         switch (activeFeature) {
+            case 'pulse':
+                return (
+                    <PulseDashboard
+                        onEnterDetails={() => setActiveFeature('mood')}
+                    />
+                );
             case 'mood':
                 return <MoodLotus userId={userId ?? undefined} />;
             case 'fire':

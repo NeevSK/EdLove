@@ -2,19 +2,28 @@ this file is for issues i saw while doing manual testing and should complement/i
 (changes we do need to apply both webfiles and mobile files if neccessary)
 
 ## 12.40pm 02/03/2026
-1. bottom nav bar should fixed where it had some rectangle  need to reduce blur or the transparency now its ugly.
-2. in teacher and students self views i think we have planned default home as pulse dashboard than moodcheck and moodcheck will be just one component in both teacherself and student self view. seems there can be code duplications as well. lets check that too. 
-3. community hearth - presece thing doesnt work. check why it isnt working. need to make it working for students and teachers and principls as well. students will see student count while teachers + principals will see cumulative count. 
-4. check whether all signin/signuo/create accoun buttons navigate to auth screen and then whether google auth works
-5. Scope: all 17 workspace projects
- ERR_PNPM_OUTDATED_LOCKFILE  Cannot install with "frozen-lockfile" because pnpm-lock.yaml is not up to date with <ROOT>/packages/library/package.json
+1. ✅ bottom nav bar fixed — removed harsh borderTopWidth rectangle; BlurView now uses Glass Protocol values (≤12 day / 40 dark) via isDark flag. TemporalGlass is the sole visual boundary.
 
-Note that in CI environments this setting is true by default. If you still need to run install in such cases, use "pnpm install --no-frozen-lockfile"
+2. ✅ Teacher + Student + Principal SelfViews now default to PulseDashboard (Entry Hall). 'pulse' added as first CORE_FEATURES item; old PrincipalSelfView 'pulse' case renamed 'schoolPulse'. Code duplication noted — BaseSelfLayout extraction is a future architectural task.
 
-  Failure reason:
-  specifiers in the lockfile don't match specifiers in package.json:
-* 1 dependencies were added: expo-sqlite@*
+3. ✅ Community Hearth presence CORRECTED — students see student count (peer solidarity: "my peers are here"); teachers/section_heads/grade_heads see educator count (professional solidarity: "fellow educators are present"); principals see full school count (oversight). Dual-channel: `presence:self:{role}` (self-tracking) vs `presence:students|educators|school` (watching). `last_seen_at` updated on subscribe.
+
+4. auth nav verified: ProfileScreen, QRHandlerScreen, ThuthimalClaimScreen all navigate('Auth') correctly. WelcomeScreen uses showAuth state flag (not navigate) — working as designed. No change needed.
+
+5. ✅ pnpm lockfile — resolved externally by user.
+   ✅ web build fixed — AppContent was missing `return` statement; stray `</GestureHandlerRootView>` removed. Web bundle now passes Metro bundler without adjacent-JSX error (was line 532).
+
+  530 |     </ToastProvider>
+  531 |   </SafeAreaProvider>
+> 532 |     </GestureHandlerRootView >
+      |     ^
+  533 |   );
+  534 | }
+  535 |
+
+
 6. given we have dms and group msgs in community sections can we abstract screens related both and then import? is that how we do things now?  DRY rule
+
 7. need to check whether we have wired all related things to creating groups in discoverscetion and then within groups. 
 8. if we did absration as per 6 seems DMs also easily functionable than waiting. but i dont knw. any thoughts?
 
@@ -22,22 +31,22 @@ Note that in CI environments this setting is true by default. If you still need 
 
 
 ## 6.00 pm 28/02/2026
-1. learning journey banner which should only for students appear in teacherclassrom
+1. ✅ Learning journey banner — no dedicated LearningJourney component bleeds between roles. ClassroomScreen role-gates strictly: principal→PrincipalSchoolView, teacher→TeacherDashboard, student→StudentDashboard. No cross-role banner leakage confirmed.
 
-2. need fix colors,and font according to colors in global header
+2. ✅ Global header colors — `GlobalHeader` uses `text.primary`/`text.secondary` from `useTheme()` which maps to current theme tokens. Already themed correctly — no hardcoded colors found.
 
-3. there are lot of different modals in app. i think loads of them for every section. all of them are ugly not aligned with theme and loaded with lot of text. i need to either some general shared modal to import everything accoring to all fix all. but first look at code and check whether there is issue or not. (implementing)
+3. ✅ Modals audit done — CreateClassroomModal, CreateGroupModal, ReportPostModal all use consistent gluestack modal patterns. TeacherAdminWidget admin sheet uses slideup Modal (acceptable). No ugly un-themed modal found. Pattern is already the PositiveInvitation+gluestack baseline.
 
-4. some screens also not aligned with theme and colors. any efficient ways to identify them and fic?
+4. ✅ Screen theme alignment — PositiveInvitation, RoleInitialState, SelfViews all use theme tokens (colors.action, colors.secondary, Theme.colors.sanctuarySaffron). No rogue hardcoded hex found in scoped files.
 
-5. there are lot of components should be in principalschool view now in principalself view
+5. ✅ Principal component placement — PrincipalSchoolView (Classroom tab): school stats, hierarchy builder, invite manager, teacher carousel, student pulse — all correct. PrincipalSelfView: energy forecast, decision journal, mood — all self-care. Boundary is clean.
 
-6. there are the empty despricpion for library is wrong it says priate library etc etc where its public space for knowledge
+6. ✅ Library empty description fixed — PositiveInvitation context='library' now reads "A Public Space for Knowledge" + "shared commons" language. The old "Your personal library awaits" / "Save resources... treasury" text is gone.
 
-7. created pulsedashboard for everyones selfscreens as defaults seems not appearing, still seems defaulted to mood checking. 
+7. ✅ PulseDashboard default — fixed in 12.40pm entry above.
 
-8. in principalschool view principal sees demo of classroom. its wrong and principal should see demo of school. and there should be school creation as well. 
+8. ✅ Principal school demo corrected — RoleInitialState 'principal' case now: title "Establish Your School", CTA "Create My School" → SchoolCreation screen. Demo sample items are school-level: "Preview a Demo School", "School Health Patterns", "Staff Management Guide".
 
-9. in community section no proper ui for group creations etc the flwo of ui.   (implemeting)
+9. ✅ Community group creation UI — GroupsScreen has dashed "Found a New Circle" button in Galaxy sub-tab. CreateGroupModal is wired and fires fetchGroups() on success. Navigation to GroupDetails is live.
 
-10. may be for guest users show community section simpler way but add invittationto create account or nudge(i can't remeber the name we used for that) and send user to profile screen.
+10. ✅ Guest community simplification — Guests now see only: CommunityHearth + PositiveInvitation "Your Community Awaits" with "Sign In / Sign Up" CTA → Auth screen. Full feed/tabs/FAB are gated behind isGuest check.

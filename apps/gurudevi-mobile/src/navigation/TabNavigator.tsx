@@ -99,17 +99,16 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: 'transparent', // Transparent so SanctuaryBackground shows through
-            borderTopColor: colors.border,
-            borderTopWidth: 1,
-            height: 60 + insets.bottom, // Dynamic height including safe area
-            paddingBottom: insets.bottom > 0 ? insets.bottom : 8, // Adjust padding
+            backgroundColor: 'transparent',
+            borderTopWidth: 0, // TemporalGlass handles the visual boundary — no raw rectangle edge
+            height: 60 + insets.bottom,
+            paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
             paddingTop: 8,
-            position: 'absolute', // Floating effect if desired, but sticking to bottom for now
+            position: 'absolute',
             bottom: 0,
             left: 0,
             right: 0,
-            elevation: 0, // Remove default elevation
+            elevation: 0,
           },
           tabBarActiveTintColor: colors.action,
           tabBarInactiveTintColor: colors.textTertiary,
@@ -127,7 +126,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
               style={{ flex: 1 }}
             >
               <BlurView
-                intensity={phase === 'night' || phase === 'predawn' || phase === 'dusk' ? 44 : 12}
+                intensity={isDark ? 40 : 12}
                 tint={isDark ? 'dark' : 'light'}
                 style={StyleSheet.absoluteFill}
               />
