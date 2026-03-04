@@ -34,7 +34,7 @@ import {
     Upload,
     Edit
 } from 'lucide-react-native';
-import { Theme } from './theme/Theme';
+import { Theme } from '../theme/Theme';
 import { useAccessibility } from '../hooks/useAccessibility';
 
 // ============================================================================
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
     },
     actionBubble: {
-        backgroundColor: Theme.colors.voidIndigo,
+        backgroundColor: Theme.colors.ink,
         borderRadius: 24,
         marginBottom: ACTION_BUBBLE_SPACING,
         paddingHorizontal: 16,

@@ -71,7 +71,7 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
 
     // Get last saved time from cache/history
     const lastSaved = useMemo(() => {
-        if (moodHistory.length > 0) {
+        if (moodHistory && moodHistory.length > 0) {
             return new Date(moodHistory[0].created_at);
         }
         return null;
@@ -97,7 +97,7 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
         },
     }), []);
 
-    const currentMood = MOOD_STATES[Math.floor(moodValue) - 1];
+    const currentMood = MOOD_STATES[Math.floor(moodValue) - 1] || MOOD_STATES[0];
 
     // Breathing animation for lotus
     useEffect(() => {
@@ -155,7 +155,8 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
 
     const { mutate, isLoading: isSaving } = useSafeMutation(
         async (mood: number) => {
-            const moodLabel = MOOD_STATES[mood - 1].label as any;
+            const moodIndex = Math.max(0, Math.min(MOOD_STATES.length - 1, mood - 1));
+            const moodLabel = MOOD_STATES[moodIndex].label as any;
             await addMoodLog(moodLabel);
         },
         {
