@@ -24,7 +24,7 @@ export default function PrincipalSelfViewWeb() {
     ];
 
     return (
-        <div className="sub-view-container" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 360px', gap: '40px', height: '100%' }}>
+        <div className="sub-view-container">
             {/* 1. LEADERSHIP COMMAND (Left) */}
             <div className="content-scroll-area">
                 <div style={{ marginBottom: '40px' }}>

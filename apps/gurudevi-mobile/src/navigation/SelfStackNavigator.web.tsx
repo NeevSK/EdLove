@@ -16,7 +16,11 @@ export default function SelfStackNavigatorWeb() {
             id="SelfStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: gradientNodes[0] },
+                contentStyle: {
+                    backgroundColor: gradientNodes[0],
+                    overflow: 'visible',
+                    minHeight: '100%',
+                },
             }}
         >
             <Stack.Screen name="SelfMain" component={SelfScreenWeb} />

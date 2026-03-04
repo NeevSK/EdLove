@@ -18,7 +18,7 @@ export default function TeacherSelfViewWeb() {
     const { user } = useStore();
 
     return (
-        <div className="sub-view-container" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 340px', gap: '32px', height: '100%' }}>
+        <div className="sub-view-container">
             {/* 1. TEACHER SANCTUARY (Left) */}
             <div className="content-scroll-area">
                 <div style={{ marginBottom: '40px' }}>

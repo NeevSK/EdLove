@@ -30,8 +30,10 @@ export default function SelfScreenWeb() {
     };
 
     return (
-        <div className="sanctuary-screen" style={{ padding: '0 40px 40px' }}>
-            {renderRoleView()}
+        <div className="sanctuary-screen">
+            <div className="sanctuary-container">
+                {renderRoleView()}
+            </div>
             <LotusPetalFAB />
         </div>
     );

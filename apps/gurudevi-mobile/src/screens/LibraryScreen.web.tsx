@@ -76,108 +76,112 @@ export default function LibraryScreen() {
 
     return (
         <div className="sanctuary-screen">
-            {/* 1. GREETING */}
-            <div className="greeting">
-                <div className="greeting-time">Curated Wisdom</div>
-                <h1 className="greeting-main">The Sanctuary</h1>
-                <p className="greeting-note">Gurudevi Knowledge Hub</p>
-            </div>
-
-            {/* 2. FILTERS & SEARCH */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '48px' }}>
-                <div style={{
-                    display: 'flex',
-                    gap: '16px',
-                    alignItems: 'center',
-                    background: 'rgba(255,255,255,0.5)',
-                    padding: '8px 16px',
-                    borderRadius: '12px',
-                    border: '1px solid var(--border)'
-                }}>
-                    <Search size={18} color="var(--ink-ghost)" />
-                    <input
-                        className="search-input"
-                        style={{
-                            flex: 1,
-                            border: 'none',
-                            background: 'transparent',
-                            fontSize: '14px',
-                            padding: '8px 0',
-                            color: 'var(--ink)',
-                            outline: 'none'
-                        }}
-                        placeholder="Explore the sanctuary..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
+            <div className="sanctuary-container">
+                {/* 1. GREETING */}
+                <div className="greeting">
+                    <div className="greeting-time">Curated Wisdom</div>
+                    <h1 className="greeting-main">The Sanctuary</h1>
+                    <p className="greeting-note">Gurudevi Knowledge Hub</p>
                 </div>
 
-                <div className="filter-scroll" style={{
-                    display: 'flex',
-                    gap: '8px',
-                    overflowX: 'auto',
-                    paddingBottom: '8px',
-                    scrollbarWidth: 'none'
-                }}>
-                    {['All', 'trending', 'bookmarks', 'activity'].map(id => (
-                        <button
-                            key={id}
-                            className={`top-tab ${selectedCategoryId === id ? 'active' : ''}`}
-                            onClick={() => setSelectedCategoryId(id)}
-                            style={{ whiteSpace: 'nowrap' }}
-                        >
-                            {id === 'All' ? 'All Resources' : id.charAt(0).toUpperCase() + id.slice(1)}
-                        </button>
-                    ))}
-                    <div style={{ width: '1px', background: 'var(--border)', margin: '0 8px' }} />
-                    {LIBRARY_UI_CATEGORIES.map(cat => (
-                        <button
-                            key={cat.id}
-                            className={`top-tab ${selectedCategoryId === cat.id ? 'active' : ''}`}
-                            onClick={() => setSelectedCategoryId(cat.id)}
-                            style={{ whiteSpace: 'nowrap' }}
-                        >
-                            {cat.en}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* 3. CONTENT GRID */}
-            {loading && resources.length === 0 ? (
-                <div style={{ padding: '80px 0', textAlign: 'center' }}>
-                    <p style={{ color: 'var(--ink-ghost)' }}>Assembling knowledge base...</p>
-                </div>
-            ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '32px' }}>
-                        {resources.map(res => (
-                            <div key={res.id} className="sanctuary-card" onClick={() => handleOpenResource(res)}>
-                                <LibraryThumbnailCard
-                                    title={res.title}
-                                    type={res.type}
-                                    subject={res.subject}
-                                    thumbnailUrl={res.media?.url as string | undefined}
-                                    endorsements={res.endorsements}
-                                    verified={res.verified}
-                                    onPress={() => handleOpenResource(res)}
-                                />
-                            </div>
-                        ))}
+                {/* 2. FILTERS & SEARCH */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '48px' }}>
+                    <div style={{
+                        display: 'flex',
+                        gap: '16px',
+                        alignItems: 'center',
+                        background: 'rgba(255,255,255,0.5)',
+                        padding: '8px 16px',
+                        borderRadius: '12px',
+                        border: '1px solid var(--border)'
+                    }}>
+                        <Search size={18} color="var(--ink-ghost)" />
+                        <input
+                            className="search-input"
+                            style={{
+                                flex: 1,
+                                border: 'none',
+                                background: 'transparent',
+                                fontSize: '14px',
+                                padding: '8px 0',
+                                color: 'var(--ink)',
+                                outline: 'none'
+                            }}
+                            placeholder="Explore the sanctuary..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
                     </div>
 
-                    {hasNextResources && (
-                        <button
-                            className="top-tab"
-                            style={{ alignSelf: 'center', padding: '12px 32px' }}
-                            onClick={() => fetchNextResources()}
-                            disabled={isFetchingNextResources}
-                        >
-                            {isFetchingNextResources ? 'Loading...' : 'Load More Findings'}
-                        </button>
-                    )}
+                    <div className="filter-scroll" style={{
+                        display: 'flex',
+                        gap: '8px',
+                        overflowX: 'auto',
+                        paddingBottom: '8px',
+                        scrollbarWidth: 'none'
+                    }}>
+                        {['All', 'trending', 'bookmarks', 'activity'].map(id => (
+                            <button
+                                key={id}
+                                className={`top-tab ${selectedCategoryId === id ? 'active' : ''}`}
+                                onClick={() => setSelectedCategoryId(id)}
+                                style={{ whiteSpace: 'nowrap' }}
+                            >
+                                {id === 'All' ? 'All Resources' : id.charAt(0).toUpperCase() + id.slice(1)}
+                            </button>
+                        ))}
+                        <div style={{ width: '1px', background: 'var(--border)', margin: '0 8px' }} />
+                        {LIBRARY_UI_CATEGORIES.map(cat => (
+                            <button
+                                key={cat.id}
+                                className={`top-tab ${selectedCategoryId === cat.id ? 'active' : ''}`}
+                                onClick={() => setSelectedCategoryId(cat.id)}
+                                style={{ whiteSpace: 'nowrap' }}
+                            >
+                                {cat.en}
+                            </button>
+                        ))}
+                    </div>
                 </div>
-            )}
+
+                {/* 3. CONTENT GRID */}
+                {loading && resources.length === 0 ? (
+                    <div style={{ padding: '80px 0', textAlign: 'center' }}>
+                        <p style={{ color: 'var(--ink-ghost)' }}>Assembling knowledge base...</p>
+                    </div>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '32px' }}>
+                            {resources.map(res => (
+                                <div key={res.id} className="sanctuary-card" onClick={() => handleOpenResource(res)}>
+                                    <LibraryThumbnailCard
+                                        title={res.title}
+                                        type={res.type}
+                                        subject={res.subject}
+                                        thumbnailUrl={res.media?.url as string | undefined}
+                                        endorsements={res.endorsements}
+                                        verified={res.verified}
+                                        onPress={() => handleOpenResource(res)}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+
+                        {hasNextResources && (
+                            <button
+                                className="top-tab"
+                                style={{ alignSelf: 'center', padding: '12px 32px' }}
+                                onClick={() => fetchNextResources()}
+                                disabled={isFetchingNextResources}
+                            >
+                                {isFetchingNextResources ? 'Loading...' : 'Load More Findings'}
+                            </button>
+                        )}
+                    </div>
+                )}
+            </div>
+
+            <LotusPetalFAB />
         </div>
     );
 }
