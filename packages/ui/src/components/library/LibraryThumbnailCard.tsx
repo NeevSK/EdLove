@@ -236,9 +236,11 @@ export function LibraryThumbnailCard({
                 styles.pressable,
                 Platform.OS === 'web' && hovered && { opacity: 0.9, cursor: 'pointer' }
             ]}
-            // @ts-ignore - web-only props
+            // @ts-ignore
             accessibilityRole={href ? 'link' : 'button'}
+            // @ts-ignore
             href={href}
+            // @ts-ignore
             hrefAttrs={{
                 target: target,
                 rel: target === '_blank' ? 'noopener noreferrer' : undefined,

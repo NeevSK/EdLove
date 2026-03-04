@@ -8,6 +8,7 @@
 
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { useUserRole, useStore } from '@repo/core';
 import {
     Box,
     VStack,
@@ -33,15 +34,14 @@ import {
     MyGradesView,
     DailyRhythm,
     DailyContentCard,
-    WelcomeModal
-} from '@repo/self';
-import { supabase, useStore, useUserRole } from '@repo/core';
-import { useMoodLogs, useEnergyForecast } from '@repo/self';
-import { GlobalHeader } from '@repo/ui';
-import PulseDashboard from '../self/PulseDashboard';
+    WelcomeModal,
+    useMoodLogs,
+    useEnergyForecast,
+    PulseDashboard
+} from '../../index';
 import { SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useThemedColors, useBottomTabPadding } from '@repo/ui';
-import { ScreenWrapper } from '@repo/ui';
+import { ScreenWrapper, GlobalHeader } from '@repo/ui';
 
 // Student-specific core features — Pulse is the Entry Hall
 const STUDENT_CORE_FEATURES = [
@@ -102,7 +102,7 @@ export default function StudentSelfView() {
                     />
                 );
             case 'mood':
-                return <MoodLotus userId={userId} />;
+                return <MoodLotus userId={userId ?? undefined} />;
             case 'goals':
                 return (
                     <VStack space="lg" sx={{ flex: 1 }}>
@@ -169,7 +169,7 @@ export default function StudentSelfView() {
                     </VStack>
                 );
             default:
-                return <MoodLotus userId={userId} />;
+                return <MoodLotus userId={userId ?? undefined} />;
         }
     };
 

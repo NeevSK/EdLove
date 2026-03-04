@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   VStack,
@@ -12,9 +12,9 @@ import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 import { supabase, useSafeMutation } from '@repo/core';
-import { EnergyForecast as EnergyForecastType } from '@repo/self';
+import type { EnergyForecast as EnergyForecastType } from '../types/Wellbeing';
 import { hapticLight, hapticSuccess, SkeletonCard, PositiveInvitation } from '@repo/ui';
-import { useEnergyForecast } from '@repo/self';
+import { useEnergyForecast } from '../hooks/useEnergyForecast';
 import { useNavigation } from '@react-navigation/native';
 
 interface EnergyForecastProps {
@@ -104,7 +104,7 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
       <VStack space="xs">
         <HStack space="sm" alignItems="center">
           <Battery
-            color={selectedLevel ? energyLevels[selectedLevel - 1].color : colors.action}
+            color={(selectedLevel !== null && selectedLevel >= 1 && selectedLevel <= 5) ? energyLevels[selectedLevel - 1]?.color : colors.action}
             size={24}
           />
           <Heading color={colors.text} size="lg">

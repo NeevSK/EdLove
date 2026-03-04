@@ -146,8 +146,9 @@ export interface Period {
     user_id: string;
     day_of_week: number;
     period_number: number;
-    subject: string;
-    class_name: string;
+    subject?: string;
+    activity?: string;
+    class_name?: string;
     type: 'subject' | 'relief' | 'interval';
     start_time: string;
     end_time: string;

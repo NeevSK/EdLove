@@ -217,9 +217,11 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
                 onHoverIn={Platform.OS === 'web' ? () => setHovered(true) : undefined}
                 onHoverOut={Platform.OS === 'web' ? () => setHovered(false) : undefined}
                 style={Platform.OS === 'web' && hovered ? hoverStyle : undefined}
-                // @ts-ignore - web-only props
+                // @ts-ignore
                 accessibilityRole={href ? 'link' : 'button'}
+                // @ts-ignore
                 href={href}
+                // @ts-ignore
                 hrefAttrs={{
                     target: target,
                     rel: target === '_blank' ? 'noopener noreferrer' : undefined,

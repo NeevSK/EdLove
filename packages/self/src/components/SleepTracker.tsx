@@ -37,7 +37,7 @@ import { Moon, Sun, Cloud, Stars } from 'lucide-react-native';
 import { Theme, typography } from '@repo/ui';
 import { hapticLight, hapticSuccess } from '@repo/ui';
 import { useSafeMutation } from '@repo/core';
-import { useSleepTracker } from '@repo/self';
+import { useSleepTracker } from '../hooks/useSleepTracker';
 import { useTranslation } from 'react-i18next';
 
 interface SleepTrackerProps {

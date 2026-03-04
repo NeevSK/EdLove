@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Linking, Share, Platform } from 'react-native';
 import { Text, GlassCard, useThemedColors, Icon, SanctuaryCard, Theme, openExternalURL } from '@repo/ui';
-import { useSocialLinks } from '@repo/profile';
+import { useSocialLinks } from '../hooks/useSocialLinks';
 import { SocialLink, SocialPlatform } from '@repo/core';
 import * as Clipboard from 'expo-clipboard';
 import {

@@ -243,16 +243,16 @@ export const OrientationCaptureStep = ({
                         color={colors.text}
                         style={{ lineHeight: 28 }}
                     >
-                        {question.situation}
+                        {question?.situation}
                     </Heading>
                     <Text color={colors.textSecondary} size="sm">
-                        {question.prompt}
+                        {question?.prompt}
                     </Text>
                 </VStack>
 
                 {/* Options */}
                 <VStack space="sm">
-                    {question.options.map((opt, i) => {
+                    {question?.options.map((opt, i) => {
                         const isSelected = selected === i;
                         return (
                             <Pressable
@@ -363,20 +363,21 @@ export function computeSeeds(selections: number[]): OrientationSeeds {
     };
 
     selections.forEach((optIdx, qIdx) => {
-        if (optIdx < 0 || optIdx >= QUESTIONS[qIdx].options.length) return;
-        const delta = QUESTIONS[qIdx].options[optIdx].delta;
+        const question = QUESTIONS[qIdx];
+        if (!question || optIdx < 0 || optIdx >= question.options.length) return;
+        const delta = question.options[optIdx].delta;
         for (const [key, val] of Object.entries(delta)) {
             if (val !== undefined && key in acc) {
-                acc[key] = Math.max(0, Math.min(100, acc[key] + val));
+                acc[key] = Math.max(0, Math.min(100, (acc[key] || 0) + (val as number)));
             }
         }
     });
 
     return {
-        depth_breadth: acc.depth_breadth,
-        reflect_act: acc.reflect_act,
-        solo_social: acc.solo_social,
-        steady_surge: acc.steady_surge,
+        depth_breadth: acc.depth_breadth || 50,
+        reflect_act: acc.reflect_act || 50,
+        solo_social: acc.solo_social || 50,
+        steady_surge: acc.steady_surge || 50,
         source: 'seeded',
         seeded_at: new Date().toISOString(),
         last_updated: new Date().toISOString(),

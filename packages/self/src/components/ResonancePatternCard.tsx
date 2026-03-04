@@ -34,8 +34,9 @@ import {
 } from '@repo/ui';
 import { Sparkles } from 'lucide-react-native';
 import type { OrientationSeeds } from '@repo/profile';
-import type { MoodLog, EnergyForecast } from '@repo/self';
-import { useOrientationInference, type DataQuality } from '@repo/self';
+import type { MoodLog, EnergyForecast } from '../types/Wellbeing';
+import { useOrientationInference } from '../hooks/useOrientationInference';
+import type { DataQuality } from '../types';
 import { useUserRole } from '@repo/core';
 
 // ============================================================================
@@ -63,10 +64,10 @@ const CENTER = CHART_SIZE / 2;
 const MAX_RADIUS = 54;
 
 const AXES = [
-    { key: 'depth_breadth',  lo: 'Deep',    hi: 'Wide',    angle: -90  },
-    { key: 'reflect_act',    lo: 'Reflect', hi: 'Act',     angle: 0    },
-    { key: 'solo_social',    lo: 'Solo',    hi: 'Social',  angle: 90   },
-    { key: 'steady_surge',   lo: 'Steady',  hi: 'Surge',   angle: 180  },
+    { key: 'depth_breadth', lo: 'Deep', hi: 'Wide', angle: -90 },
+    { key: 'reflect_act', lo: 'Reflect', hi: 'Act', angle: 0 },
+    { key: 'solo_social', lo: 'Solo', hi: 'Social', angle: 90 },
+    { key: 'steady_surge', lo: 'Steady', hi: 'Surge', angle: 180 },
 ] as const;
 
 // ============================================================================
@@ -206,9 +207,9 @@ export function ResonancePatternCard({
 
     const seeds: Record<string, number> = {
         depth_breadth: inferredSeeds.depth_breadth,
-        reflect_act:   inferredSeeds.reflect_act,
-        solo_social:   inferredSeeds.solo_social,
-        steady_surge:  inferredSeeds.steady_surge,
+        reflect_act: inferredSeeds.reflect_act,
+        solo_social: inferredSeeds.solo_social,
+        steady_surge: inferredSeeds.steady_surge,
     };
 
     // "Still forming" only when role-only defaults AND very low confidence

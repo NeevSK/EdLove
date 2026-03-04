@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   VStack,
@@ -19,9 +19,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { Theme } from '@repo/ui';
 import { supabase, useSafeMutation } from '@repo/core';
-import { DailyPrepItem } from '@repo/self';
 import { hapticLight, hapticSuccess, SkeletonCard, PositiveInvitation } from '@repo/ui';
-import { useTomorrowPrep } from '@repo/self';
+import { useTomorrowPrep } from '../hooks/useTomorrowPrep';
+import type { DailyPrepItem } from '../types';
 
 interface TomorrowPrepProps {
   userId?: string;

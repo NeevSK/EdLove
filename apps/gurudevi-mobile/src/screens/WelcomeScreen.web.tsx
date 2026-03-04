@@ -176,7 +176,6 @@ function RightPanel({
                 {
                     backgroundColor: glass.modal.bg,
                     borderColor: glass.modal.border,
-                    shadowColor: Theme.colors.shadowViolet,
                 },
             ]}>
                 {/* Language selector */}
@@ -295,19 +294,19 @@ function RightPanel({
                     </View>
                     <Text style={[styles.termsText, { color: text.secondary }]}>
                         I agree to the{' '}
+                        <Pressable
+                            onPress={(e) => {
+                                e.stopPropagation();
+                                openExternalURL('https://neevsk.org/privacy');
+                            }}
+                            accessibilityRole="link"
+                            accessibilityLabel="Read Privacy Pact"
+                        >
+                            <Text style={{ color: accent.action, fontWeight: '600', textDecorationLine: 'underline', fontSize: 13 }}>
+                                Privacy Pact
+                            </Text>
+                        </Pressable>
                     </Text>
-                    <Pressable
-                        onPress={(e) => {
-                            e.stopPropagation();
-                            openExternalURL('https://neevsk.org/privacy');
-                        }}
-                        accessibilityRole="link"
-                        accessibilityLabel="Read Privacy Pact"
-                    >
-                        <Text style={{ color: accent.action, fontWeight: '600', textDecorationLine: 'underline', fontSize: 13 }}>
-                            Privacy Pact
-                        </Text>
-                    </Pressable>
                 </Pressable>
 
                 {/* Footer note */}
@@ -333,7 +332,7 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
     const { width } = useWindowDimensions();
 
     const [showAuth, setShowAuth] = useState(initialShowAuth);
-    const [acceptedTerms, setAcceptedTerms] = useState(false);
+    const [acceptedTerms, setAcceptedTerms] = useState(true);
     const [isConnecting, setIsConnecting] = useState(false);
     const [langHover, setLangHover] = useState<string | null>(null);
     const [btnHover, setBtnHover] = useState<'explore' | 'login' | null>(null);
@@ -593,9 +592,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         padding: 32,
         gap: 14,
-        shadowOpacity: 0.16,
-        shadowRadius: 28,
-        shadowOffset: { width: 0, height: 8 },
+        boxShadow: '0 8px 28px rgba(107, 100, 128, 0.16)',
         elevation: 12,
     },
     langRow: {
@@ -629,10 +626,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: 54,
-        shadowColor: 'rgba(107,100,128,1)',
-        shadowOpacity: 0.20,
-        shadowRadius: 14,
-        shadowOffset: { width: 0, height: 4 },
+        boxShadow: '0 4px 14px rgba(107, 100, 128, 0.20)',
     },
     primaryBtnText: {
         fontSize: 16,
