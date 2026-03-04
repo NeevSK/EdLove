@@ -101,15 +101,25 @@ serve(async (req: Request) => {
       return json({ error: 'provider and imageBase64 are required' }, 400);
     }
 
+    // Guard against oversized payloads — base64 of a 5 MB image ≈ 6.7 MB of characters.
+    // Anything larger risks extremely high API costs and Deno memory pressure.
+    const MAX_BASE64_CHARS = 7_000_000; // ~5 MB raw image
+    if (typeof imageBase64 !== 'string' || imageBase64.length > MAX_BASE64_CHARS) {
+      return json({ error: 'imageBase64 exceeds maximum allowed size (5 MB)' }, 413);
+    }
+
+    // Validate provider is one of the two known values (type-cast alone is not runtime-safe)
+    if (provider !== 'google_vision' && provider !== 'openai_vision') {
+      return json({ error: `Unknown provider: ${provider}` }, 400);
+    }
+
     // ── Route to provider ───────────────────────────────────────────────
     let result: OCRRawResult;
 
     if (provider === 'google_vision') {
       result = await callGoogleVision(imageBase64);
-    } else if (provider === 'openai_vision') {
-      result = await callOpenAIVision(imageBase64);
     } else {
-      return json({ error: `Unknown provider: ${provider}` }, 400);
+      result = await callOpenAIVision(imageBase64);
     }
 
     return json(result, 200);

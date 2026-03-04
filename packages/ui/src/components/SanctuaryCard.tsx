@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SANCTUARY CARD - Reusable Card Component
  * 
  * A versatile card component that follows sanctuary design principles:
@@ -30,6 +30,8 @@ interface SanctuaryCardProps {
     children: any;
     footer?: any;
     onPress?: () => void;
+    href?: string;
+    target?: '_blank' | '_self';
     elevated?: boolean;
     variant?: 'glass' | 'solid'; // New variant prop
     style?: any;
@@ -51,20 +53,22 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
     children,
     footer,
     onPress,
+    href,
+    target = '_self',
     elevated = false,
     variant = 'glass', // Default to glass
     style
 }) => {
     const { isDark, glass, glow, blurEnabled } = useTheme();
 
-    // Hover state — only meaningful on web (desktop pointer devices)
+    // Hover state â€” only meaningful on web (desktop pointer devices)
     const [hovered, setHovered] = useState(false);
 
     // Check if we should use glass (blur enabled + glass variant)
     const useGlass = blurEnabled && variant === 'glass';
     // Note: blurEnabled accounts for device tier and fidelity settings.
 
-    // Hover style — memoized so the object reference is stable between renders
+    // Hover style â€” memoized so the object reference is stable between renders
     // `cursor` is a web-only CSS property; typed via ViewStyle intersection to avoid `as any`
     const hoverStyle = useMemo(
         () => ({ opacity: 0.93, transform: [{ scale: 1.012 }], cursor: 'pointer' } as ViewStyle & { cursor?: string }),
@@ -95,6 +99,9 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
                 shadowRadius: 16,
                 shadowOffset: { width: 0, height: 8 },
                 elevation: 8,
+                ...(Platform.OS === 'web' && {
+                    boxShadow: `0 8px 16px ${Theme.colors.shadowViolet}3D`, // 3D is ~24% opacity
+                }),
             },
             contentPadding: {
                 padding: Theme.spacing.lg,
@@ -201,7 +208,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
         </Animated.View>
     );
 
-    if (onPress) {
+    if (onPress || href) {
         return (
             <Pressable
                 onPress={onPress}
@@ -210,6 +217,13 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
                 onHoverIn={Platform.OS === 'web' ? () => setHovered(true) : undefined}
                 onHoverOut={Platform.OS === 'web' ? () => setHovered(false) : undefined}
                 style={Platform.OS === 'web' && hovered ? hoverStyle : undefined}
+                // @ts-ignore - web-only props
+                accessibilityRole={href ? 'link' : 'button'}
+                href={href}
+                hrefAttrs={{
+                    target: target,
+                    rel: target === '_blank' ? 'noopener noreferrer' : undefined,
+                }}
             >
                 {renderCard()}
             </Pressable>
@@ -220,3 +234,4 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
 };
 
 export default SanctuaryCard;
+

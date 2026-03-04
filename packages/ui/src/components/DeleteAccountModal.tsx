@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Text, VStack, HStack, Box } from '../gluestack';
 import SanctuaryButton from './SanctuaryButton';
 import SanctuaryModal from './SanctuaryModal';
@@ -16,7 +16,7 @@ interface DeleteAccountModalProps {
 /**
  * A destructive confirmation modal for account deletion.
  * Uses SanctuaryModal for phase-aware glass styling (light + dark world).
- * Danger accent follows design-token danger color — never pure red on white.
+ * Danger accent follows design-token danger color â€” never pure red on white.
  */
 export default function DeleteAccountModal({ isOpen, onClose, onDelete, isLoading }: DeleteAccountModalProps) {
     const { text, accent, glass } = useTheme();
@@ -78,11 +78,12 @@ export default function DeleteAccountModal({ isOpen, onClose, onDelete, isLoadin
                     borderColor: `${dangerColor}33`,
                 }}>
                     <Text {...({ color: dangerColor, bold: true, size: "sm" } as any)}>
-                        Just need a break? You can sign out instead — your sanctuary will be waiting for you.
+                        Just need a break? You can sign out instead â€” your sanctuary will be waiting for you.
                     </Text>
                 </Box>
             </VStack>
         </SanctuaryModal>
     );
 }
+
 

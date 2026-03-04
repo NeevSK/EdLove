@@ -15,6 +15,7 @@ interface LibraryResourceCardProps {
     type: ResourceType;
     isPublic?: boolean;
     onPress: () => void;
+    href?: string;
     onaddToDesk?: () => void;
     onLike?: () => void;
     isLiked?: boolean;
@@ -35,6 +36,7 @@ export function LibraryResourceCard({
     type,
     isPublic,
     onPress,
+    href,
     onaddToDesk,
     onLike,
     isLiked
@@ -101,6 +103,7 @@ export function LibraryResourceCard({
     return (
         <SanctuaryCard
             onPress={onPress}
+            href={href}
             footer={renderFooter()}
             elevated
         >

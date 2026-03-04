@@ -25,6 +25,7 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCommunity } from '../hooks/useCommunity';
+import { useCommunityGroups } from '../hooks/useCommunityGroups';
 import { Group, Post } from '../types';
 import GroupMemberManagement from '../components/GroupMemberManagement';
 import { PinnedResourcesShelf } from '../components/PinnedResourcesShelf';

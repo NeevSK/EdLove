@@ -1,34 +1,5 @@
-/**
- * LibraryScreen — Netflix-Style Holistic Digital Library
- *
- * Structure (like Netflix, not a playlist):
- * ┌─────────────────────────────────────────────────┐
- * │  GlobalHeader  (search bar)                     │
- * ├─────────────────────────────────────────────────┤
- * │  Hero Banner  (featured / trending resource)    │
- * ├─────────────────────────────────────────────────┤
- * │  Category chips (scroll left/right)             │
- * ├─────────────────────────────────────────────────┤
- * │  SmartShelf row: Inspiring Films                │
- * │  SmartShelf row: Maps & Visuals                 │
- * │  SmartShelf row: Stories                        │
- * │  SmartShelf row: Edu Circulars                  │
- * │  SmartShelf row: Teacher Guides                 │
- * │  SmartShelf row: Tech Guides                    │
- * │  SmartShelf row: Videos                         │
- * │  SmartShelf row: Documents                      │
- * │  SmartShelf row: Trending (most endorsed)       │
- * │  SmartShelf row: New Arrivals                   │
- * ├─────────────────────────────────────────────────┤
- * │  LotusPetalFAB (add resource)                   │
- * └─────────────────────────────────────────────────┘
- *
- * Search mode: category chips + ResourceList (vertical dense rows)
- * No-search mode: full Netflix shelf layout
- *
- * Copyright policy: externally-sourced content (trailers, circulars, maps)
- * always display a copyright_notice badge.  Contributors are shown the
- * copyright reminder in AddResourceModal when these types are selected.
+﻿/**
+ * LibraryScreen â€” Netflix-Style Holistic Digital Library
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
@@ -40,6 +11,8 @@ import {
     ImageBackground,
     StyleSheet,
     Pressable,
+    TouchableOpacity,
+    Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
@@ -66,8 +39,8 @@ import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
 import AddResourceModal from '../components/AddResourceModal';
 import { ResourceList } from '../components/ResourceList';
+import { Map as MapIcon, Play, Plus, FileText } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Play, Plus } from 'lucide-react-native';
 import { useLibrary } from '../hooks/useLibrary';
 import { LibraryResource } from '../types';
 import {
@@ -78,24 +51,116 @@ import {
     useStore,
 } from '@repo/core';
 import { LIBRARY_UI_CATEGORIES } from '../constants/categories';
+import CuratorReviewScreen from './CuratorReviewScreen'; // Added for completeness if needed in exports
 
-// Shelf definitions — each defines which resource types appear in that row
-// and the sort order used when the full list is grouped.
+// Shelf definitions
 const SHELF_DEFS = [
-    { id: 'movie_trailer', label: '🎬 Inspiring Films', types: ['movie_trailer'] },
-    { id: 'map', label: '🗺️ Maps & Visuals', types: ['map', 'infographic'] },
-    { id: 'story', label: '📖 Stories', types: ['story'] },
-    { id: 'circular', label: '📋 Edu Circulars', types: ['circular'] },
-    { id: 'guide', label: '👩‍🏫 Teacher Guides', types: ['guide'] },
-    { id: 'tech_guide', label: '💡 Tech Guides', types: ['tech_guide'] },
-    { id: 'video', label: '🎥 Videos', types: ['video'] },
-    { id: 'doc', label: '📄 Documents', types: ['pdf', 'doc', 'lesson', 'worksheet', 'reading', 'pedagogy'] },
-    { id: 'link', label: '🌐 Web Resources', types: ['link'] },
+    { id: 'movie_trailer', label: 'ðŸŽ¬ Inspiring Films', types: ['movie_trailer'] },
+    { id: 'map', label: 'ðŸ—ºï¸ Maps & Visuals', types: ['map', 'infographic'] },
+    { id: 'story', label: 'ðŸ“– Stories', types: ['story'] },
+    { id: 'circular', label: 'ðŸ“‹ Edu Circulars', types: ['circular'] },
+    { id: 'guide', label: 'ðŸ‘©â€ðŸ« Teacher Guides', types: ['guide'] },
+    { id: 'tech_guide', label: 'ðŸ’¡ Tech Guides', types: ['tech_guide'] },
+    { id: 'video', label: 'ðŸŽ¥ Videos', types: ['video'] },
+    { id: 'doc', label: 'ðŸ“„ Documents', types: ['pdf', 'doc', 'lesson', 'worksheet', 'reading', 'pedagogy'] },
+    { id: 'link', label: 'ðŸŒ Web Resources', types: ['link'] },
 ] as const;
 
-// ============================================================================
-// MAIN SCREEN
-// ============================================================================
+
+function MapInvitation({ onPress }: { onPress: () => void }) {
+    const colors = useThemedColors();
+
+    return (
+        <Animated.View entering={FadeInDown.delay(200).springify()}>
+            <Pressable onPress={onPress}>
+                <Box sx={{
+                    margin: Theme.spacing.md,
+                    borderRadius: 24,
+                    overflow: 'hidden',
+                    backgroundColor: colors.secondary,
+                    borderWidth: 1,
+                    borderColor: 'rgba(255, 255, 255, 0.05)',
+                }}>
+                    <LinearGradient
+                        colors={['rgba(138, 43, 226, 0.2)', 'rgba(0, 0, 0, 0)']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={StyleSheet.absoluteFill}
+                    />
+                    <HStack sx={{ p: 20, gap: 16, alignItems: 'center' }}>
+                        <Box sx={{
+                            width: 60,
+                            height: 60,
+                            borderRadius: 30,
+                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}>
+                            <MapIcon size={32} color={Theme.colors.sanctuarySaffron} />
+                        </Box>
+                        <VStack sx={{ flex: 1, gap: 4 }}>
+                            <Text sx={{ fontSize: 18, fontWeight: '800', color: colors.textPrimary }}>
+                                Enter the Cosmos
+                            </Text>
+                            <Text sx={{ fontSize: 13, color: colors.textSecondary, lineHeight: 18 }}>
+                                Explore the hidden connections between knowledge and shared wisdom.
+                            </Text>
+                        </VStack>
+                        <Box sx={{
+                            padding: 10,
+                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                            borderRadius: 12
+                        }}>
+                            <Play size={16} color={colors.textPrimary} fill={colors.textPrimary} />
+                        </Box>
+                    </HStack>
+                </Box>
+            </Pressable>
+        </Animated.View>
+    );
+}
+
+function CuratorInvitation({ onPress }: { onPress: () => void }) {
+    const colors = useThemedColors();
+
+    return (
+        <Animated.View entering={FadeInDown.delay(300).springify()}>
+            <Pressable onPress={onPress}>
+                <Box sx={{
+                    margin: Theme.spacing.md,
+                    marginTop: 0,
+                    borderRadius: 24,
+                    overflow: 'hidden',
+                    backgroundColor: colors.secondary,
+                    borderWidth: 1,
+                    borderColor: Theme.colors.sanctuarySaffron + '33',
+                }}>
+                    <HStack sx={{ p: 16, gap: 16, alignItems: 'center' }}>
+                        <Box sx={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: 24,
+                            backgroundColor: Theme.colors.sanctuarySaffron + '11',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}>
+                            <FileText size={24} color={Theme.colors.sanctuarySaffron} />
+                        </Box>
+                        <VStack sx={{ flex: 1, gap: 2 }}>
+                            <Text sx={{ fontSize: 16, fontWeight: '800', color: colors.textPrimary }}>
+                                Curator Dashboard
+                            </Text>
+                            <Text sx={{ fontSize: 12, color: colors.textSecondary }}>
+                                Review {'&'} publish new knowledge streams.
+                            </Text>
+                        </VStack>
+                        <Plus size={16} color={colors.textSecondary} />
+                    </HStack>
+                </Box>
+            </Pressable>
+        </Animated.View>
+    );
+}
 
 export default function LibraryScreen() {
     const { t } = useTranslation();
@@ -108,6 +173,7 @@ export default function LibraryScreen() {
     const [selectedSort, setSelectedSort] = useState<'recent' | 'popular' | 'most_endorsed' | 'most_bookmarked'>('recent');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
 
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
@@ -115,10 +181,14 @@ export default function LibraryScreen() {
 
     React.useEffect(() => {
         discoverFeature('section_library');
+
+        // Trigger knowledge index sync (Whispered Moment)
+        setIsSyncing(true);
+        syncLibrary()
+            .catch(err => console.error('Library sync failed in background:', err))
+            .finally(() => setIsSyncing(false));
     }, []);
 
-    // In Netflix mode we fetch everything (up to 60 items) and group client-side.
-    // In search/filter mode we pass the filter down to the API.
     const isSearchMode = searchQuery.trim().length > 0 || selectedCategoryId !== 'All';
 
     const resourceTypeFilter = useMemo(() => {
@@ -134,13 +204,13 @@ export default function LibraryScreen() {
         fetchNextResources,
         hasNextResources,
         isFetchingNextResources,
+        syncLibrary,
     } = useLibrary(
         isSearchMode
             ? { type: resourceTypeFilter, search: searchQuery || undefined, sort_by: selectedSort }
-            : { limit: 60 }   // fetch wide for Netflix shelf grouping
+            : { limit: 60 }
     );
 
-    // Group resources by type for the shelf layout
     const shelfData = useMemo(() => {
         const byType: Record<string, LibraryResource[]> = {};
         for (const res of resources) {
@@ -152,35 +222,20 @@ export default function LibraryScreen() {
         return byType;
     }, [resources]);
 
-    // Trending = most endorsed across all types
     const trending = useMemo(() =>
         [...resources].sort((a, b) => (b.endorsements ?? 0) - (a.endorsements ?? 0)).slice(0, 10),
         [resources]);
 
-    // New arrivals = most recent
     const newArrivals = useMemo(() =>
         [...resources].sort((a, b) =>
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         ).slice(0, 10),
         [resources]);
 
-    // Hero = first trending item (most endorsed)
     const heroResource = trending[0] ?? newArrivals[0] ?? null;
 
     const { deskItems, removeFromDeskLocal, user } = useStore();
 
-    /**
-     * Orientation-aware shelf ordering.
-     * If the user has orientation_seeds, we re-order shelves to match their
-     * tendencies WITHOUT ever telling them why the order changed.
-     *
-     * depth_breadth < 50  → deep content (guides, docs) rises
-     * depth_breadth > 50  → visual/exploratory content (maps, stories) rises
-     * solo_social   < 50  → individual reflection content (stories, guides) rises
-     * solo_social   > 50  → community-adjacent content (films, links) rises
-     * reflect_act   < 50  → reading/reflection content rises
-     * reflect_act   > 50  → how-to/tech content rises
-     */
     const orientationSeeds = user?.orientation_seeds ?? null;
     const orderedShelfDefs = useMemo(() => {
         if (!orientationSeeds) return [...SHELF_DEFS];
@@ -237,15 +292,16 @@ export default function LibraryScreen() {
     })), []);
 
     const sortChips = useMemo(() => [
-        { label: '🕐 Recent', value: 'recent' },
-        { label: '🔥 Popular', value: 'popular' },
-        { label: '⭐ Endorsed', value: 'most_endorsed' },
-        { label: '🔖 Saved', value: 'most_bookmarked' },
+        { label: 'ðŸ• Recent', value: 'recent' },
+        { label: 'ðŸ”¥ Popular', value: 'popular' },
+        { label: 'â­ Endorsed', value: 'most_endorsed' },
+        { label: 'ðŸ”– Saved', value: 'most_bookmarked' },
     ], []);
 
     const handleEndReached = useCallback(() => {
         if (hasNextResources && !isFetchingNextResources) fetchNextResources();
     }, [hasNextResources, isFetchingNextResources, fetchNextResources]);
+
     const renderShelf = useCallback((label: string, items: LibraryResource[], onSeeAll?: () => void) => {
         if (items.length === 0) return null;
         return (
@@ -267,18 +323,32 @@ export default function LibraryScreen() {
         );
     }, [handleOpenResource]);
 
-    // ── Render ────────────────────────────────────────────────
-
     return (
-        <ScreenWrapper scroll={false}>
+        <ScreenWrapper scroll={!isSearchMode}>
             <GlobalHeader
                 title={t('tabs.library') || 'Library'}
                 subtitle={t('library.knowledgeSanctuary')}
+                showSearch
                 searchProps={{
                     value: searchQuery,
                     onChangeText: setSearchQuery,
-                    placeholder: t('library.searchPlaceholder'),
+                    placeholder: t('library.searchPlaceholder')
                 }}
+                rightAction={
+                    <HStack sx={{ gap: 8, alignItems: 'center' }}>
+                        {isSyncing && (
+                            <Animated.View entering={FadeInDown}>
+                                <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} />
+                            </Animated.View>
+                        )}
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('LibraryMap' as any)}
+                            style={styles.mapToggleButton}
+                        >
+                            <MapIcon size={20} color={colors.textPrimary} />
+                        </TouchableOpacity>
+                    </HStack>
+                }
             />
 
             {loading && !refreshing ? (
@@ -288,7 +358,6 @@ export default function LibraryScreen() {
                     <SkeletonCard height={160} />
                 </VStack>
             ) : isSearchMode ? (
-                /* ── Search / filter mode: vertical list ────────────── */
                 <Box sx={{ flex: 1, backgroundColor: colors.secondary }}>
                     <Animated.View entering={FadeInDown.delay(100).springify()}>
                         <HorizontalChipRow
@@ -319,21 +388,22 @@ export default function LibraryScreen() {
                     />
                 </Box>
             ) : (
-                /* ── Netflix mode: horizontal shelves ───────────────── */
                 <ScrollView
                     style={{ flex: 1, backgroundColor: colors.primary }}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}
-                    onScroll={undefined}
-                    scrollEventThrottle={0}
                 >
-                    {/* ── Hero Banner ── */}
                     {heroResource && (
                         <HeroBanner resource={heroResource} onPress={() => handleOpenResource(heroResource)} />
                     )}
 
+                    <MapInvitation onPress={() => navigation.navigate('LibraryMap' as any)} />
+
+                    {(role === 'founder' || role === 'admin' || role === 'developer') && (
+                        <CuratorInvitation onPress={() => navigation.navigate('CuratorReview' as any)} />
+                    )}
+
                     <Box sx={{ paddingTop: Theme.spacing.md }}>
-                        {/* Category chips for quick access */}
                         <Animated.View entering={FadeInDown.delay(100).springify()}>
                             <HorizontalChipRow
                                 chips={chipData}
@@ -343,9 +413,8 @@ export default function LibraryScreen() {
                             />
                         </Animated.View>
 
-                        {/* Continue Learning */}
                         {deskItems && deskItems.filter((r: any) => r.type === 'resource').length > 0 && (
-                            <SmartShelf title="▶ Continue Learning">
+                            <SmartShelf title="â–¶ Continue Learning">
                                 {deskItems.filter((r: any) => r.type === 'resource').map((res: any) => (
                                     <LibraryThumbnailCard
                                         key={res.id}
@@ -358,9 +427,8 @@ export default function LibraryScreen() {
                             </SmartShelf>
                         )}
 
-                        {/* Featured Collections */}
                         {collections.length > 0 && (
-                            <SmartShelf title="📚 Featured Collections">
+                            <SmartShelf title="ðŸ“š Featured Collections">
                                 {collections.map((col: any) => (
                                     <CollectionCard
                                         key={col.id}
@@ -374,19 +442,14 @@ export default function LibraryScreen() {
                             </SmartShelf>
                         )}
 
-                        {/* Typed shelves */}
                         {orderedShelfDefs.map(shelf => {
                             const items = resources.filter(r => (shelf.types as readonly string[]).includes(r.type));
                             return renderShelf(shelf.label, items);
                         })}
 
-                        {/* Trending shelf */}
-                        {trending.length > 0 && renderShelf('⭐ Trending', trending)}
+                        {trending.length > 0 && renderShelf('â­ Trending', trending)}
+                        {newArrivals.length > 0 && renderShelf('âœ¨ New Arrivals', newArrivals)}
 
-                        {/* New arrivals shelf */}
-                        {newArrivals.length > 0 && renderShelf('✨ New Arrivals', newArrivals)}
-
-                        {/* Empty state */}
                         {resources.length === 0 && (
                             <PositiveInvitation
                                 context="library"
@@ -409,15 +472,6 @@ export default function LibraryScreen() {
             />
         </ScreenWrapper>
     );
-}
-
-// ============================================================================
-// HERO BANNER
-// ============================================================================
-
-interface HeroBannerProps {
-    resource: LibraryResource;
-    onPress: () => void;
 }
 
 const HERO_HEIGHT = 220;
@@ -455,9 +509,8 @@ function HeroOverlay({ resource, colors }: { resource: LibraryResource; colors: 
 
     return (
         <LinearGradient colors={gradientColors} style={heroBannerStyles.gradient}>
-            {/* Featured badge */}
             <View style={heroBannerStyles.featuredBadge}>
-                <RNText style={heroBannerStyles.featuredText}>✦ FEATURED</RNText>
+                <RNText style={heroBannerStyles.featuredText}>âœ¦ FEATURED</RNText>
             </View>
             <RNText style={[heroBannerStyles.heroTitle, { color: colors.text }]} numberOfLines={2}>
                 {resource.title}
@@ -475,13 +528,18 @@ function HeroOverlay({ resource, colors }: { resource: LibraryResource; colors: 
                 {resource.copyright_notice && (
                     <View style={heroBannerStyles.copyrightBadge}>
                         <RNText style={heroBannerStyles.copyrightText} numberOfLines={1}>
-                            © {resource.copyright_notice}
+                            Â© {resource.copyright_notice}
                         </RNText>
                     </View>
                 )}
             </View>
         </LinearGradient>
     );
+}
+
+interface HeroBannerProps {
+    resource: LibraryResource;
+    onPress: () => void;
 }
 
 const heroBannerStyles = StyleSheet.create({
@@ -529,3 +587,15 @@ const heroBannerStyles = StyleSheet.create({
     },
     copyrightText: { fontSize: 10, color: 'rgba(255,255,255,0.7)' },
 });
+
+const styles = StyleSheet.create({
+    mapToggleButton: {
+        padding: 8,
+        borderRadius: 12,
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        marginRight: 4,
+    },
+});
+

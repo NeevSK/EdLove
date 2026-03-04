@@ -260,15 +260,17 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
                                 />
                             }
                         />
-
                         {isGuest && (
-                            <PositiveInvitation
-                                type="guest"
-                                onAction={() => {
-                                    hapticLight();
-                                    // TODO: Conversion navigation
-                                }}
-                            />
+                            <Animated.View entering={FadeInDown.delay(75)}>
+                                <PositiveInvitation
+                                    type="guest"
+                                    context="classroom"
+                                    onAction={() => {
+                                        hapticLight();
+                                        navigation.navigate('Auth' as any);
+                                    }}
+                                />
+                            </Animated.View>
                         )}
                     </VStack>
                 </Animated.View>

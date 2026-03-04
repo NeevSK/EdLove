@@ -26,7 +26,6 @@ import { Mic, Send, MessageCircle, Repeat, Flower, Flame, Sparkles, Heart, Light
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
-import DailyRhythm from '../../components/self/DailyRhythm';
 import {
     MoodLotus,
     ShadowAgentDrawer,
@@ -36,24 +35,31 @@ import {
     WisdomSeeds,
     TomorrowPrep,
     EnergyForecast,
-    WindDownRitual
-} from '../../components/self';
-import SleepTracker from '../../components/self/SleepTracker';
-import RemindersManager from '../../components/self/RemindersManager';
-import VoiceJournaling from '../../components/self/VoiceJournaling';
+    WindDownRitual,
+    SleepTracker,
+    RemindersManager,
+    VoiceJournaling,
+    DailyContentCard,
+    DailyRhythm,
+    WelcomeModal
+} from '@repo/self';
+import PulseDashboard from '../self/PulseDashboard';
 import { supabase, useStore, useSafeMutation } from '@repo/core';
 import { GlobalHeader } from '@repo/ui';
-import DailyContentCard from '../../components/self/DailyContentCard';
-import ResonancePatternCard from '../../components/self/ResonancePatternCard';
-import { useMoodLogs, useEnergyForecast, useDecisionJournal } from '@repo/self';
-import ThuthimalBadge from '../../components/profile/ThuthimalBadge';
-import { SkeletonCard, PositiveInvitation } from '@repo/ui';
-import WelcomeModal from '../../components/self/WelcomeModal';
-import { useThemedColors, useBottomTabPadding } from '@repo/ui';
+import { useDecisionJournal } from '@repo/self';
+import { ThuthimalBadge } from '@repo/profile';
+import {
+    SkeletonCard,
+    PositiveInvitation,
+    useThemedColors,
+    useBottomTabPadding
+} from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
 
-// Progressive Architecture: Core features always visible, others in "More Tools"
+// Progressive Architecture: PulseDashboard is the Entry Hall.
+// Core features are revealed after the user taps "Enter Full Sanctuary".
 const CORE_FEATURES = [
+    { id: 'pulse', icon: Sparkles, category: 'core' },
     { id: 'mood', icon: Flower, category: 'core' },
     { id: 'fire', icon: Flame, category: 'core' },
     { id: 'rhythm', icon: Repeat, category: 'core' },
@@ -76,7 +82,7 @@ const MORE_TOOLS_FEATURES = [
 export default function TeacherSelfView() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const [activeFeature, setActiveFeature] = useState('mood');
+    const [activeFeature, setActiveFeature] = useState('pulse');
     const [userId, setUserId] = useState<string | null>(null);
     const [loadingUser, setLoadingUser] = useState(true);
     const [showMoreTools, setShowMoreTools] = useState(false);
@@ -85,10 +91,6 @@ export default function TeacherSelfView() {
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
-
-    // Behavioral signal hooks — feed into ResonancePatternCard inference
-    const { logs: moodLogs } = useMoodLogs();
-    const { forecasts: energyForecasts } = useEnergyForecast(userId ?? undefined);
 
     // Get current user and profile on mount
     React.useEffect(() => {
@@ -134,6 +136,12 @@ export default function TeacherSelfView() {
 
     const renderFeature = () => {
         switch (activeFeature) {
+            case 'pulse':
+                return (
+                    <PulseDashboard
+                        onEnterDetails={() => setActiveFeature('mood')}
+                    />
+                );
             case 'mood':
                 return <MoodLotus userId={userId ?? undefined} />;
             case 'fire':
@@ -256,17 +264,6 @@ export default function TeacherSelfView() {
                         <DailyContentCard type="motivation" />
                         <DailyContentCard type="did_you_know" />
                     </Box>
-
-                    {/* Resonance Pattern */}
-                    {userProfile && (
-                        <Box sx={{ paddingHorizontal: Theme.spacing.md, marginBottom: Theme.spacing.md }}>
-                            <ResonancePatternCard
-                                orientationSeeds={userProfile?.orientation_seeds}
-                                moodLogs={moodLogs}
-                                energyForecasts={energyForecasts}
-                            />
-                        </Box>
-                    )}
 
                     {/* Sub-Feature Carousel */}
                     <Box sx={{ height: 100 }}>

@@ -14,7 +14,7 @@
 
 ```json
 {
-  "expo": "~54.0.32",
+  "expo": "~54.0.32", expo updated need to update these against theall latest package details
   "react": "19.1.0",
   "react-native": "0.81.5",
   "typescript": "~5.9.2",

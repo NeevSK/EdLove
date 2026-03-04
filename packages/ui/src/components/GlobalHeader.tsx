@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { HStack, VStack, Text, Box, Input, InputField, InputIcon, Pressable } from '../gluestack';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../theme/Theme';
@@ -85,15 +85,23 @@ export default function GlobalHeader({
     // Determine greeting based on time of day
     const getGreetingDetails = () => {
         const hour = new Date().getHours();
-        if (hour < 12) return { text: t('goodMorning', 'Good Morning'), emoji: '🌅' };
-        if (hour < 18) return { text: t('goodAfternoon', 'Good Afternoon'), emoji: '☀️' };
-        return { text: t('goodEvening', 'Good Evening'), emoji: '🏮' };
+        if (hour < 12) return { text: t('goodMorning', 'Good Morning'), emoji: 'ðŸŒ…' };
+        if (hour < 18) return { text: t('goodAfternoon', 'Good Afternoon'), emoji: 'â˜€ï¸' };
+        return { text: t('goodEvening', 'Good Evening'), emoji: 'ðŸ®' };
     };
 
     const { text: greetingText, emoji } = getGreetingDetails();
 
     return (
-        <VStack sx={{ gap: '$md' as any, marginBottom: '$4' as any, paddingHorizontal: '$4' as any }}>
+        <VStack sx={{
+            gap: '$md' as any,
+            marginBottom: '$4' as any,
+            paddingHorizontal: '$4' as any,
+            paddingBottom: '$4' as any,
+            backgroundColor: glass.surface.bg,
+            borderBottomWidth: 1,
+            borderBottomColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'
+        }}>
             <HStack sx={{ gap: '$sm' as any, alignItems: 'center', justifyContent: 'space-between' }}>
                 {/* LEFT: Greeting or Title */}
                 <HStack sx={{ gap: '$sm' as any, alignItems: 'center' }}>
@@ -101,7 +109,7 @@ export default function GlobalHeader({
                     {showBack ? (
                         <Pressable onPress={onBack || (() => navigation.goBack())}>
                             <Box sx={{
-                                backgroundColor: colors.secondary,
+                                backgroundColor: glass.interact.bg,
                                 padding: 8,
                                 borderRadius: 12,
                             }}>
@@ -169,7 +177,7 @@ export default function GlobalHeader({
                             <Box sx={{
                                 padding: 8,
                                 borderRadius: 20,
-                                backgroundColor: isSearchActive ? colors.tertiary : 'transparent'
+                                backgroundColor: isSearchActive ? glass.interact.bg : 'transparent'
                             }}>
                                 {isSearchActive ? (
                                     <X size={22} color={text.primary} />
@@ -196,8 +204,8 @@ export default function GlobalHeader({
                                     height: 8,
                                     borderRadius: 4,
                                     backgroundColor: accent.action,
-                                    borderWidth: 1,
-                                    borderColor: colors.primary
+                                    borderWidth: 1.5,
+                                    borderColor: glass.surface.bg // Matches the Porcelain header background
                                 }} />
                             </Box>
                         </TouchableOpacity>
@@ -232,3 +240,4 @@ export default function GlobalHeader({
         </VStack>
     );
 }
+

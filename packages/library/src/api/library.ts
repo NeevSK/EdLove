@@ -10,6 +10,7 @@ import {
     growthSignalsAPI,
     impactRipplesAPI,
 } from '@repo/core';
+import { Platform } from 'react-native';
 
 import {
     LibraryResource,
@@ -18,7 +19,12 @@ import {
     CollectionFilters,
     CreateResourceInput,
     CreateCollectionInput,
+    KnowledgeTopology,
+    KnowledgeNode,
+    KnowledgeLink,
 } from '../types';
+import { knowledgeDB } from './database';
+import { knowledgeSync } from './sync';
 
 // ============================================================================
 // LIBRARY API - Resource Management for Educational Ecology
@@ -128,6 +134,90 @@ export const libraryAPI = {
     },
 
     /**
+     * Search resources locally using SQLite FTS5 index.
+     */
+    /**
+     * Unified Map & Layer Search
+     */
+    async searchMapUniverse(query: string, limit: number = 10): Promise<any[]> {
+        const { data, error } = await supabase.rpc('search_map_universe', {
+            query_text: query,
+            match_count: limit
+        });
+
+        if (error) {
+            console.error('Map search error:', error);
+            throw new APIError('Failed to search map universe', error.code, error);
+        }
+
+        return data || [];
+    },
+
+    async searchResourcesLocal(query: string, limit: number = 20): Promise<LibraryResource[]> {
+        try {
+            const ids = await knowledgeDB.search(query, limit);
+            if (ids.length === 0) return [];
+
+            // Fetch full resource details from Supabase (or eventually from local full-cache)
+            const { data, error } = await supabase
+                .from('library_resources')
+                .select(`
+                    *,
+                    creator: users!library_resources_creator_id_fkey(full_name),
+                    verified_by_user: users!library_resources_verified_by_fkey(full_name)
+                `)
+                .in('id', ids);
+
+            if (error) throw error;
+
+            // Sort results by the order returned from SQLite
+            const idMap = new Map((data || []).map((r: any) => [r.id, r]));
+            return ids
+                .map(id => idMap.get(id))
+                .filter(r => !!r)
+                .map(resource => ({
+                    ...resource,
+                    creator_name: resource.creator?.full_name || 'Unknown',
+                    verified_by_name: resource.verified_by_user?.full_name,
+                    has_endorsed: false,
+                    has_bookmarked: false,
+                }));
+        } catch (error) {
+            console.error('Local search integration failed:', error);
+            return [];
+        }
+    },
+
+    /**
+     * Versatile Server-Side Search (Keyword + Vector)
+     */
+    async searchLibrary(params: {
+        query: string,
+        embedding?: number[],
+        type?: string,
+        subject?: string,
+        limit?: number
+    }): Promise<LibraryResource[]> {
+        const { data, error } = await supabase.rpc('search_library', {
+            query_text: params.query,
+            query_embedding: params.embedding,
+            filter_type: params.type === 'All' ? null : params.type,
+            filter_subject: params.subject,
+            match_count: params.limit ?? 20
+        });
+
+        if (error) {
+            console.error('Search RPC error:', error);
+            throw new APIError('Failed to search knowledge universe', error.code, error);
+        }
+
+        return (data || []).map((resource: any) => ({
+            ...resource,
+            creator_name: resource.creator_name || 'System',
+        }));
+    },
+
+    /**
      * Get a single resource by ID
      */
     async getResourceById(id: string, userId?: string): Promise<LibraryResource> {
@@ -205,7 +295,7 @@ export const libraryAPI = {
         void growthSignalsAPI.emitSignal(creatorId, 'resource_uploaded', {
             resource_id: data.id,
             resource_type: input.type,
-        }).catch(() => {});
+        }).catch(() => { });
 
         return {
             ...data,
@@ -283,7 +373,7 @@ export const libraryAPI = {
             // Growth signal: user explored a resource (Witnessing dimension — absorbing, growing inward)
             void growthSignalsAPI.emitSignal(userId, 'resource_read', {
                 resource_id: resourceId,
-            }).catch(() => {});
+            }).catch(() => { });
         }
     },
 
@@ -415,7 +505,7 @@ export const libraryAPI = {
                     rippleType: 'resource_saved',
                     sourceEntityType: 'resource',
                     sourceEntityId: resourceId,
-                }).catch(() => {});
+                }).catch(() => { });
             }
         }
     },
@@ -740,6 +830,102 @@ resource: library_resources!resource_engagements_resource_id_fkey(
 
         if (error) {
             throw new APIError('Failed to delete collection', error.code, error);
+        }
+    },
+
+    /**
+     * Get the epistemic map topology (nodes and links)
+     */
+    async getMapTopology(): Promise<KnowledgeTopology> {
+        const { data: resources, error } = await supabase
+            .from('library_resources')
+            .select('id, title, type, subject, topics, tags, thumbnail_url');
+
+        if (error) throw new APIError('Failed to fetch resource topology', error.code, error);
+
+        const nodes: KnowledgeNode[] = [];
+        const links: KnowledgeLink[] = [];
+        const topicNodes = new Set<string>();
+
+        resources.forEach(res => {
+            // Add Resource Node
+            nodes.push({
+                id: res.id,
+                label: res.title,
+                type: 'resource',
+                group: res.type || 'unknown',
+                metadata: {
+                    subject: res.subject,
+                    thumbnail: res.thumbnail_url
+                }
+            });
+
+            // Process Topics
+            const itemTopics = res.topics || [];
+            itemTopics.forEach((topic: string) => {
+                const topicId = `topic:${topic}`;
+                if (!topicNodes.has(topicId)) {
+                    nodes.push({
+                        id: topicId,
+                        label: topic,
+                        type: 'topic',
+                        group: 'curiosity'
+                    });
+                    topicNodes.add(topicId);
+                }
+
+                // Link Resource to Topic
+                links.push({
+                    source: res.id,
+                    target: topicId,
+                    value: 1
+                });
+            });
+        });
+
+        return { nodes, links };
+    },
+
+    /**
+     * Report a broken link for a resource.
+     * Triggers database failure count increment and status update.
+     */
+    async reportBrokenLink(resourceId: string): Promise<void> {
+        const { error } = await supabase.rpc('report_broken_link', {
+            resource_id: resourceId
+        });
+
+        if (error) {
+            console.error('Failed to report broken link:', error);
+            throw new APIError('Failed to report broken link', error.code, error);
+        }
+    },
+
+    /**
+     * The Resonance Engine: Finds related "Knowledge Islands" (Map Layers) 
+     * for a given resource based on semantic similarity.
+     */
+    async getResonantKnowledge(resourceId: string): Promise<any[]> {
+        try {
+            // First fetch the resource to get subject/tags
+            const { data: resource, error: fetchError } = await supabase
+                .from('library_resources')
+                .select('subject, tags')
+                .eq('id', resourceId)
+                .single();
+
+            if (fetchError || !resource) return [];
+
+            const query = `${resource.subject} ${resource.tags?.join(' ') || ''}`;
+            const { data, error } = await supabase.rpc('search_map_universe', {
+                query_text: query,
+                match_count: 3
+            });
+
+            return data || [];
+        } catch (error) {
+            console.error('Resonance Engine failed:', error);
+            return [];
         }
     },
 };

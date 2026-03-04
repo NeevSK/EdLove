@@ -83,8 +83,8 @@ export default function SchoolCreationScreen() {
                 created_by: user.id,
             });
 
-            // 2. Create Community Group — creator is auto-added as admin
-            const group = await communityAPI.createGroupWithAdmin({
+            // 2. Create Community Group — creator is auto-added as owner
+            const group = await communityAPI.createGroupWithOwner({
                 name: `${school.name} HQ`,
                 description: `Official community portal for ${school.name}`,
                 group_type: 'general',

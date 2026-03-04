@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Box, VStack, Heading, Text, Button, ButtonText, Center } from '../gluestack';
 import { Plus, Sparkles, LogIn } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -41,9 +41,9 @@ const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
         switch (context) {
             case 'library':
                 return {
-                    title: t('invitation.libraryEmptyTitle', 'Your personal library awaits'),
-                    desc: t('invitation.libraryEmptyDesc', 'Save resources, books, and insights to build your knowledge treasury.'),
-                    action: t('invitation.libraryEmptyAction', 'Explore Library'),
+                    title: t('invitation.libraryEmptyTitle', 'A Public Space for Knowledge'),
+                    desc: t('invitation.libraryEmptyDesc', 'This is a shared commons â€” explore, endorse, and contribute resources that elevate everyone.'),
+                    action: t('invitation.libraryEmptyAction', 'Explore Knowledge'),
                     icon: Plus
                 };
             case 'classroom':
@@ -130,3 +130,4 @@ const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
 };
 
 export default PositiveInvitation;
+

@@ -20,8 +20,10 @@ import {
     Spinner,
 } from '@repo/ui';
 import { Theme } from '@repo/ui';
+import { useClassroomRoleData } from '../hooks/useClassroomRoleData';
+import { useSchoolStats } from '../hooks/useSchoolStats';
+import { useEcosystemStats } from '../hooks/useEcosystemStats';
 import { useTranslation } from 'react-i18next';
-import { useSchoolStats } from '../hooks/classroom/useSchoolStats';
 import { GlobalHeader } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 import RoleInitialState from '../components/RoleInitialState';

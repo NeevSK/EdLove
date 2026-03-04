@@ -1,11 +1,11 @@
-/**
- * SanctuaryModal — Phase-aware base modal for the Gurudevi ecosystem.
+﻿/**
+ * SanctuaryModal â€” Phase-aware base modal for the Gurudevi ecosystem.
  *
  * Design laws enforced here:
- * - Backdrop uses Shadow Violet rgba(107,100,128,x) — NEVER black
+ * - Backdrop uses Shadow Violet rgba(107,100,128,x) â€” NEVER black
  * - Background resolves from glass.modal tokens (phase + world aware)
- * - All text uses token-resolved colors — no hardcoded hex
- * - Border radius: Theme.corners.generous (24) — organic, never sharp
+ * - All text uses token-resolved colors â€” no hardcoded hex
+ * - Border radius: Theme.corners.generous (24) â€” organic, never sharp
  * - Shadow: Shadow Violet only
  *
  * Usage:
@@ -38,7 +38,7 @@ export interface SanctuaryModalProps {
     isOpen: boolean;
     /** Called when the modal requests to close */
     onClose: () => void;
-    /** Modal title — shown in header */
+    /** Modal title â€” shown in header */
     title: string;
     /** Optional subtitle below the title */
     subtitle?: string;
@@ -73,7 +73,7 @@ export default function SanctuaryModal({
             onClose={onClose}
             {...({ size } as any)}
         >
-            {/* Backdrop: Shadow Violet — NEVER black */}
+            {/* Backdrop: Shadow Violet â€” NEVER black */}
             <ModalBackdrop
                 sx={{
                     backgroundColor: isDark
@@ -90,7 +90,7 @@ export default function SanctuaryModal({
                     borderColor: glass.modal.border,
                     borderWidth: 1,
                     borderRadius: Theme.corners.generous,
-                    // Shadow Violet only — never black
+                    // Shadow Violet only â€” never black
                     shadowColor: Theme.colors.shadowViolet,
                     shadowOffset: { width: 0, height: isDark ? 0 : 4 },
                     shadowOpacity: isDark ? 0.28 : 0.10,
@@ -137,3 +137,4 @@ export default function SanctuaryModal({
         </Modal>
     );
 }
+

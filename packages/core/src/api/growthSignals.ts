@@ -411,34 +411,41 @@ async function checkWhisperedMoments(
     );
     if (relevantMoments.length === 0) return;
 
-    for (const moment of relevantMoments) {
-        // Skip if already experienced (UNIQUE constraint on user_id + moment_key)
-        const { data: existing } = await supabase
-            .from('whispered_moments')
-            .select('id')
-            .eq('user_id', userId)
-            .eq('moment_key', moment.key)
-            .maybeSingle();
+    // Batch-fetch already-experienced moments so we avoid one SELECT per moment key
+    const momentKeys = relevantMoments.map(m => m.key);
+    const { data: existingRows } = await supabase
+        .from('whispered_moments')
+        .select('moment_key')
+        .eq('user_id', userId)
+        .in('moment_key', momentKeys);
 
-        if (existing) continue;
+    const alreadyExperienced = new Set((existingRows ?? []).map((r: any) => r.moment_key as string));
 
-        const conditionMet = await evaluateMomentCondition(userId, moment.key);
-        if (!conditionMet) continue;
+    // Evaluate conditions for all not-yet-experienced moments in parallel
+    const candidateMoments = relevantMoments.filter(m => !alreadyExperienced.has(m.key));
+    const results = await Promise.all(
+        candidateMoments.map(async m => ({
+            moment: m,
+            met: await evaluateMomentCondition(userId, m.key).catch(() => false),
+        }))
+    );
 
-        // Award the whispered moment — silently ignore duplicate-key errors
-        try {
-            await supabase
-                .from('whispered_moments')
-                .insert({
-                    user_id: userId,
-                    moment_key: moment.key,
-                    moment_name_si: moment.name_si,
-                    moment_name_en: moment.name_en,
-                });
-        } catch (e) {
-            // ignore
-        }
-    }
+    const metMoments = results.filter(r => r.met).map(r => r.moment);
+    if (metMoments.length === 0) return;
+
+    // Batch-insert all newly earned whispered moments in a single round-trip.
+    // ON CONFLICT DO NOTHING guards against duplicate-key races.
+    await supabase
+        .from('whispered_moments')
+        .upsert(
+            metMoments.map(m => ({
+                user_id: userId,
+                moment_key: m.key,
+                moment_name_si: m.name_si,
+                moment_name_en: m.name_en,
+            })),
+            { onConflict: 'user_id,moment_key', ignoreDuplicates: true }
+        );
 }
 
 async function evaluateMomentCondition(

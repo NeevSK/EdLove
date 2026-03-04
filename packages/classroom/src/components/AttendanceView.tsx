@@ -26,7 +26,7 @@ export default function AttendanceView({ classroomId }: AttendanceViewProps) {
             // Load student roster and any already-saved attendance for today in parallel
             const [roster, todayRecords] = await Promise.all([
                 api.classroomStudents.getAll(classroomId),
-                api.attendance.getByDate(classroomId, today)
+                api.attendance.getByDate(classroomId, today || '')
                     .catch(() => [] as { student_id: string; status: AttendanceStatus }[]),
             ]);
 

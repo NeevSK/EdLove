@@ -2,7 +2,7 @@
   "expo": {
     "name": "gurudevi-mobile",
     "slug": "gurudevi-mobile",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -12,15 +12,14 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "org.edlove.gurudevi",
-      "newArchEnabled": true
+      "bundleIdentifier": "org.edlove.gurudevi"
     },
     "android": {
       "package": "org.edlove.gurudevi",
-      "versionCode": 21,
-      "newArchEnabled": true,
+      "versionCode": 22,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -78,8 +77,6 @@
       "expo-font",
       "./plugins/withAndroidCruncherDisabled",
       "./plugins/withGradleProperties",
-      "./plugins/withSentryGradleDisabled",
-      "./plugins/withSentryProperties",
       "expo-localization",
       "expo-asset",
       "expo-audio",
@@ -92,10 +89,11 @@
           "organization": "intuitui-labs",
           "uploadNativeSymbols": false,
           "autoUploadNativeSymbols": false,
-          "autoUpload": false,
-          "uploadSourceMaps": false
+          "autoUpload": true,
+          "uploadSourceMaps": true
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "owner": "neevsk",
     "runtimeVersion": {

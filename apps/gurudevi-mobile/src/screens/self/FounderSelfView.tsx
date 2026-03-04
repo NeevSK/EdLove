@@ -1,4 +1,4 @@
-﻿/**
+/**
  * FounderSelfView Component
  * 
  * Sanctuary for the Founder - focus on Vision, Philosophy, and Legacy
@@ -13,16 +13,21 @@ import {
     Text,
     Heading,
     ScrollView,
-    Pressable
+    Pressable,
+    GlobalHeader
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { Sparkles, Compass, Zap, Lightbulb, Globe, Heart } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
-import { MoodLotus, ShadowAgentDrawer, EnergyForecast, WisdomSeeds } from '../../components/self';
-import { GlobalHeader } from '@repo/ui';
-import DailyContentCard from '../../components/self/DailyContentCard';
-import WelcomeModal from '../../components/self/WelcomeModal';
+import {
+    MoodLotus,
+    ShadowAgentDrawer,
+    EnergyForecast,
+    WisdomSeeds,
+    DailyContentCard,
+    WelcomeModal
+} from '@repo/self';
 import { SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useThemedColors, useBottomTabPadding, ScreenWrapper } from '@repo/ui';
 
@@ -171,7 +176,7 @@ export default function FounderSelfView() {
                         ))}
                         <Pressable onPress={() => { hapticLight(); setShowMoreTools(!showMoreTools); }}>
                             <VStack alignItems="center" justifyContent="center" space="xs" sx={{ width: 100, height: 80, borderRadius: Theme.corners.generous, backgroundColor: colors.secondary, borderWidth: 1, borderColor: colors.border, borderStyle: 'dashed' }}>
-                                <Text fontSize="$2xl" color={colors.text}>{showMoreTools ? '−' : '+'}</Text>
+                                <Text fontSize="$2xl" color={colors.text}>{showMoreTools ? '-' : '+'}</Text>
                                 <Text size="xs" color={colors.textSecondary}>{showMoreTools ? t('self.lessTools') : t('self.moreTools')}</Text>
                             </VStack>
                         </Pressable>

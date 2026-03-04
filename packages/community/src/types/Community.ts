@@ -391,6 +391,29 @@ export interface GroupMessage {
 }
 
 // ============================================================================
+// DIRECT MESSAGING TYPES
+// ============================================================================
+
+export interface DirectConversation {
+    id: string;
+    user1_id: string;
+    user2_id: string;
+    created_at: string;
+    updated_at: string;
+    other_user_name: string;
+    other_user_avatar?: string;
+}
+
+export interface DirectMessage {
+    id: string;
+    conversation_id: string;
+    author_id: string;
+    content: string;
+    created_at: string;
+    author?: { full_name: string; avatar_url?: string };
+}
+
+// ============================================================================
 // REPORTING & SAFETY TYPES
 // ============================================================================
 

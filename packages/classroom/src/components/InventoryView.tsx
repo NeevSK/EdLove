@@ -37,7 +37,7 @@ import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 import { hapticLight, hapticSuccess } from '@repo/ui';
-import { useInventory } from '../hooks/classroom/useInventory';
+import { useInventory } from '../hooks/useInventory';
 import {
     InventoryCategory,
     InventoryCondition,

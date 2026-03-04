@@ -1,4 +1,4 @@
-﻿import { Alert, Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { useStore, api } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import { hapticSuccess, hapticWarning } from '../utils/haptics';
@@ -24,7 +24,7 @@ export function useDemoBridge() {
         hapticWarning();
 
         if (Platform.OS === 'web') {
-            // Two-action demo bridge — window.confirm is acceptable for this destructive choice on web
+            // Two-action demo bridge � window.confirm is acceptable for this destructive choice on web
             const save = window.confirm(
                 t('demoMode.bridgeMessage', { count: demoLogs.length, firstName: firstItemName })
             );

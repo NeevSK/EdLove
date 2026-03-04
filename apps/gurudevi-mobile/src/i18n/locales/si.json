@@ -937,5 +937,14 @@
         "cityPlaceholder": "උදා: මහනුවර",
         "postalAddress": "තැපැල් ලිපිනය",
         "postalAddressPlaceholder": "අංක 123, පාසල් වීදිය..."
+    },
+    "sync": {
+        "title": "දත්ත සමමුහුර්ත කරන්න",
+        "description": "ඔබේ අමුත්තන්ගේ සැසියේ දත්ත අපට හමු විය. ඒවා ඔබේ නව ගිණුමට එක් කිරීමට ඔබ කැමතිද?",
+        "syncButton": "දත්ත එක් කරන්න",
+        "syncing": "එක් වෙමින් පවතී...",
+        "completeTitle": "සාර්ථකයි!",
+        "successMessage": "ඔබේ සියලු දත්ත සාර්ථකව ලැබුණා!",
+        "successDescription": "දැන් ඔබට ඕනෑම තැනක සිට වැඩ කළ හැකිය."
     }
 }

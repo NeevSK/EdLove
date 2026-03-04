@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import {
     Box,
     VStack,
@@ -110,3 +110,4 @@ export default function SanctuaryStatsCard({
         </Box>
     );
 }
+

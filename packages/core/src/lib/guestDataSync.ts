@@ -75,107 +75,83 @@ export class GuestDataSync {
                 }
             };
 
-            // 1. Sync Timetable
+            // 1. Sync Timetable — batch insert for all periods
             updateProgress('Syncing timetable periods...');
-            for (const period of guestData.timetable) {
-                try {
-                    const { error } = await supabase
-                        .from('timetable')
-                        .insert({
-                            user_id: userId,
-                            day_of_week: period.day_of_week,
-                            period_number: period.period_number,
-                            subject: period.subject,
-                            class_name: period.class_name,
-                            type: period.type,
-                            start_time: period.start_time,
-                            end_time: period.end_time
-                        });
-
-                    if (!error) {
-                        synced.timetable++;
-                    } else {
-                        errors.push(`Timetable period: ${error.message}`);
-                    }
-                } catch (err: any) {
-                    errors.push(`Timetable period: ${err.message}`);
+            if (guestData.timetable.length > 0) {
+                const timetableRows = guestData.timetable.map(period => ({
+                    user_id: userId,
+                    day_of_week: period.day_of_week,
+                    period_number: period.period_number,
+                    subject: period.subject,
+                    class_name: period.class_name,
+                    type: period.type,
+                    start_time: period.start_time,
+                    end_time: period.end_time,
+                }));
+                const { error } = await supabase.from('timetable').insert(timetableRows);
+                if (!error) {
+                    synced.timetable = timetableRows.length;
+                } else {
+                    errors.push(`Timetable: ${error.message}`);
                 }
-                completed++;
+                completed += guestData.timetable.length;
                 updateProgress('Syncing timetable periods...');
             }
 
-            // 2. Sync Mood Logs
+            // 2. Sync Mood Logs — batch insert
             updateProgress('Syncing mood logs...');
             const moodMap = ['joyful', 'calm', 'curious', 'anxious', 'frustrated', 'sad'];
-            for (const log of guestData.moodLogs) {
-                try {
-                    const { error } = await supabase
-                        .from('mood_logs')
-                        .insert({
-                            user_id: userId,
-                            mood: moodMap[log.mood],
-                            note: log.note,
-                            created_at: log.timestamp
-                        });
-
-                    if (!error) {
-                        synced.moodLogs++;
-                    } else {
-                        errors.push(`Mood log: ${error.message}`);
-                    }
-                } catch (err: any) {
-                    errors.push(`Mood log: ${err.message}`);
+            if (guestData.moodLogs.length > 0) {
+                const moodRows = guestData.moodLogs.map(log => ({
+                    user_id: userId,
+                    mood: moodMap[log.mood],
+                    note: log.note,
+                    created_at: log.timestamp,
+                }));
+                const { error } = await supabase.from('mood_logs').insert(moodRows);
+                if (!error) {
+                    synced.moodLogs = moodRows.length;
+                } else {
+                    errors.push(`Mood logs: ${error.message}`);
                 }
-                completed++;
+                completed += guestData.moodLogs.length;
                 updateProgress('Syncing mood logs...');
             }
 
-            // 3. Sync Journal Entries
+            // 3. Sync Journal Entries — batch insert
             updateProgress('Syncing journal entries...');
-            for (const entry of guestData.journalEntries) {
-                try {
-                    const { error } = await supabase
-                        .from('journal_entries')
-                        .insert({
-                            user_id: userId,
-                            content: entry.content,
-                            created_at: entry.timestamp
-                        });
-
-                    if (!error) {
-                        synced.journalEntries++;
-                    } else {
-                        errors.push(`Journal entry: ${error.message}`);
-                    }
-                } catch (err: any) {
-                    errors.push(`Journal entry: ${err.message}`);
+            if (guestData.journalEntries.length > 0) {
+                const journalRows = guestData.journalEntries.map(entry => ({
+                    user_id: userId,
+                    content: entry.content,
+                    created_at: entry.timestamp,
+                }));
+                const { error } = await supabase.from('journal_entries').insert(journalRows);
+                if (!error) {
+                    synced.journalEntries = journalRows.length;
+                } else {
+                    errors.push(`Journal entries: ${error.message}`);
                 }
-                completed++;
+                completed += guestData.journalEntries.length;
                 updateProgress('Syncing journal entries...');
             }
 
-            // 4. Sync Students (if applicable - for teachers)
+            // 4. Sync Students — batch insert (teachers only)
             updateProgress('Syncing students...');
-            for (const student of guestData.students) {
-                try {
-                    const { error } = await supabase
-                        .from('students')
-                        .insert({
-                            full_name: student.name,
-                            index_number: student.index_number,
-                            notes: student.notes,
-                            // Note: class_id would need to be set separately if creating a classroom
-                        });
-
-                    if (!error) {
-                        synced.students++;
-                    } else {
-                        errors.push(`Student: ${error.message}`);
-                    }
-                } catch (err: any) {
-                    errors.push(`Student: ${err.message}`);
+            if (guestData.students.length > 0) {
+                const studentRows = guestData.students.map(student => ({
+                    full_name: student.name,
+                    index_number: student.index_number,
+                    notes: student.notes,
+                    // Note: class_id would need to be set separately if creating a classroom
+                }));
+                const { error } = await supabase.from('students').insert(studentRows);
+                if (!error) {
+                    synced.students = studentRows.length;
+                } else {
+                    errors.push(`Students: ${error.message}`);
                 }
-                completed++;
+                completed += guestData.students.length;
                 updateProgress('Syncing students...');
             }
 

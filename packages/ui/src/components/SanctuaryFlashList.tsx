@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+﻿import React, { useCallback } from 'react';
 import { RefreshControl, StyleProp, ViewStyle } from 'react-native';
 import { FlashList, FlashListProps } from '@shopify/flash-list';
 import { Theme } from '../theme/Theme';
@@ -92,3 +92,4 @@ export function SanctuaryFlashList<T>({
 }
 
 export default SanctuaryFlashList;
+

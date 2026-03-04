@@ -14,6 +14,9 @@ const workspaceRoot = path.resolve(projectRoot, '../..');
 // which Expo's winter runtime initialises before the app boots.
 const config = getSentryExpoConfig(projectRoot, { isCSSEnabled: true });
 
+// Add support for WASM files (required by expo-sqlite on web)
+config.resolver.assetExts.push('wasm');
+
 // 1. Watch all files in the monorepo
 config.watchFolders = [...(config.watchFolders || []), workspaceRoot];
 
@@ -61,6 +64,23 @@ config.resolver.extraNodeModules = {
 const WEB_SHIMS = {
     '@sentry/react-native': path.resolve(projectRoot, 'src/shims/sentry-web.js'),
     'posthog-react-native': path.resolve(projectRoot, 'src/shims/posthog-web.js'),
+    'react-native-get-random-values': path.resolve(projectRoot, 'src/shims/get-random-values-web.js'),
+    'react-native-url-polyfill/auto': path.resolve(projectRoot, 'src/shims/url-polyfill-web.js'),
+    // @react-native-ml-kit packages are native JSI modules. Their TypeScript-compiled
+    // output uses Object.defineProperty(exports, 'default', { get: () => X }) which
+    // Metro's web factory wrapper cannot overwrite, causing:
+    //   "Cannot set property default of #<object> which has only a getter"
+    // ScannerModal.web.tsx provides a manual-entry fallback, so these are never
+    // called in a browser context.
+    '@react-native-ml-kit/text-recognition': path.resolve(projectRoot, 'src/shims/ml-kit-text-recognition-web.js'),
+    '@react-native-ml-kit/barcode-scanning': path.resolve(projectRoot, 'src/shims/ml-kit-barcode-scanning-web.js'),
+    // expo-file-system and expo-sharing are native-only. PDFViewerScreen.web.tsx
+    // replaces the native screen entirely, so these modules are never called on web.
+    // The shims prevent build errors from any transitive import that Metro encounters
+    // while walking the dependency graph.
+    'expo-file-system': path.resolve(projectRoot, 'src/shims/expo-file-system-web.js'),
+    'expo-sharing': path.resolve(projectRoot, 'src/shims/expo-sharing-web.js'),
+    'expo-sqlite': path.resolve(projectRoot, 'src/shims/expo-sqlite-web.js'),
 };
 
 const defaultResolveRequest = config.resolver.resolveRequest;
@@ -78,5 +98,20 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     }
     return context.resolveRequest(context, moduleName, platform);
 };
+
+// 7. ESM package exports resolution
+//
+// Packages like i18next v23+, react-i18next v14+, and @tanstack/react-query v5
+// are "ESM-first": they ship pre-compiled ESM that uses TypeScript's
+// `Object.defineProperty(exports, 'default', { get: () => X })` pattern.
+// When Metro's CJS wrapper then tries to write exports.default = interop(Y)
+// it throws: "Cannot set property default of #<object> which has only a getter".
+//
+// Fix: enable package.json `exports` field resolution and prefer the `require`
+// (CJS) condition over `import` (ESM) on every platform.  This makes Metro
+// pick e.g. `i18next/dist/cjs/i18next.js` instead of the ESM entry, which is
+// a plain CJS file that Metro can wrap without hitting the getter conflict.
+config.resolver.unstable_enablePackageExports = true;
+config.resolver.unstable_conditionNames = ['browser', 'require', 'default'];
 
 module.exports = config;

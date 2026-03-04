@@ -6,6 +6,8 @@ import Animated, {
     withTiming,
     Easing
 } from 'react-native-reanimated';
+import { View } from 'react-native';
+import { Runtime } from '@repo/core';
 
 interface BreathAnimationProps {
     children: React.ReactNode;
@@ -24,18 +26,34 @@ export const BreathAnimation = ({
     duration = 500,
     direction = 'up'
 }: BreathAnimationProps) => {
-    const opacity = useSharedValue(0);
-    const translateY = useSharedValue(direction === 'up' ? 20 : direction === 'down' ? -20 : 0);
+    const [isReady, setIsReady] = React.useState(Runtime.isReady());
 
     useEffect(() => {
-        opacity.value = withDelay(delay, withTiming(1, { duration, easing: Easing.out(Easing.quad) }));
-        translateY.value = withDelay(delay, withTiming(0, { duration, easing: Easing.out(Easing.quad) }));
-    }, [delay, duration]);
+        if (!isReady) {
+            return Runtime.onReady(() => setIsReady(true));
+        }
+    }, [isReady]);
+
+    // Defer JSI-heavy hooks until the runtime is confirmed ready.
+    // In Bridgeless mode, calling these too early can cause a crash.
+    const opacity = useSharedValue(isReady ? 0 : 1);
+    const translateY = useSharedValue(isReady ? (direction === 'up' ? 20 : direction === 'down' ? -20 : 0) : 0);
+
+    useEffect(() => {
+        if (isReady) {
+            opacity.value = withDelay(delay, withTiming(1, { duration, easing: Easing.out(Easing.quad) }));
+            translateY.value = withDelay(delay, withTiming(0, { duration, easing: Easing.out(Easing.quad) }));
+        }
+    }, [isReady, delay, duration]);
 
     const animatedStyle = useAnimatedStyle(() => ({
         opacity: opacity.value,
         transform: [{ translateY: translateY.value }],
     }));
+
+    if (!isReady) {
+        return <View>{children}</View>;
+    }
 
     return (
         <Animated.View style={animatedStyle}>

@@ -29,18 +29,23 @@ import {
 } from '@repo/ui';
 import { Battery, Activity, BookOpen, Users, Lightbulb, Calendar } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { ShadowAgentDrawer, EnergyForecast } from '../../components/self';
+import {
+    ShadowAgentDrawer,
+    EnergyForecast,
+    DailyContentCard,
+    ResonancePatternCard,
+    WelcomeModal
+} from '@repo/self';
 import { useDecisionJournal } from '@repo/self';
 import { GlobalHeader } from '@repo/ui';
-import DailyContentCard from '../../components/self/DailyContentCard';
-import ResonancePatternCard from '../../components/self/ResonancePatternCard';
-import WelcomeModal from '../../components/self/WelcomeModal';
+import PulseDashboard from '../self/PulseDashboard';
 import { useMoodLogs, useEnergyForecast } from '@repo/self';
 
-// Principal-specific core features
+// Principal-specific core features — PulseDashboard is the Entry Hall
 const PRINCIPAL_CORE_FEATURES = [
-    { id: 'energy', icon: Battery, category: 'core' },
     { id: 'pulse', icon: Activity, category: 'core' },
+    { id: 'energy', icon: Battery, category: 'core' },
+    { id: 'schoolPulse', icon: Users, category: 'core' },
     { id: 'decisions', icon: BookOpen, category: 'core' },
 ];
 
@@ -55,7 +60,7 @@ export default function PrincipalSelfView() {
     const navigation = useNavigation<any>();
     const { userId, role, isGuest } = useUserRole();
     const user = useStore(state => state.user);
-    const [activeFeature, setActiveFeature] = useState('energy');
+    const [activeFeature, setActiveFeature] = useState('pulse');
     const [showMoreTools, setShowMoreTools] = useState(false);
 
     // We rely mostly on the offline store now for fast render
@@ -83,14 +88,20 @@ export default function PrincipalSelfView() {
 
 
     const renderFeature = () => {
-        if (!userId && activeFeature !== 'energy') {
+        if (!userId && activeFeature !== 'pulse') {
             return <PositiveInvitation type="guest" onAction={() => navigation.navigate('Auth' as never)} />;
         }
 
         switch (activeFeature) {
+            case 'pulse':
+                return (
+                    <PulseDashboard
+                        onEnterDetails={() => setActiveFeature('energy')}
+                    />
+                );
             case 'energy':
                 return <EnergyForecast userId={userId ?? undefined} />;
-            case 'pulse':
+            case 'schoolPulse':
                 return (
                     <VStack space="lg" sx={{ flex: 1 }}>
                         <VStack space="xs">

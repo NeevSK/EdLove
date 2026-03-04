@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { VStack, HStack, Text, Button, Theme, useThemedColors, ScreenWrapper, LoadingOverlay, hapticLight, Box, Pressable, useLotusToast } from '@repo/ui';
 import { UserCheck, UserX, Shield, Settings, Info } from 'lucide-react-native';
-import { UserRole } from '@repo/core';
+import { UserRole, useUserRole } from '@repo/core';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { CommunityStackParamList } from '@repo/core';
 import { communityAPI } from '../api/community';
 import { CommunityGroup } from '../types';
 
@@ -10,12 +13,16 @@ interface GroupMemberManagementProps {
 }
 
 export default function GroupMemberManagement({ groupId }: GroupMemberManagementProps) {
+    const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
     const colors = useThemedColors();
     const { showToast } = useLotusToast();
     const [group, setGroup] = useState<CommunityGroup | null>(null);
     const [pendingMembers, setPendingMembers] = useState<any[]>([]);
+    const [activeMembers, setActiveMembers] = useState<any[]>([]);
+    const [currentUserMemberRecord, setCurrentUserMemberRecord] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [policy, setPolicy] = useState<string>('restricted');
+    const { userId } = useUserRole();
 
     useEffect(() => {
         loadData();
@@ -24,11 +31,19 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
     const loadData = async () => {
         setLoading(true);
         try {
-            const groupData = await communityAPI.getGroupById(groupId);
-            const pending = await communityAPI.getPendingMembers(groupId);
+            const [groupData, pending, active] = await Promise.all([
+                communityAPI.getGroupById(groupId),
+                communityAPI.getPendingMembers(groupId),
+                communityAPI.getActiveMembers(groupId)
+            ]);
+
             setGroup(groupData);
             setPendingMembers(pending);
+            setActiveMembers(active);
             setPolicy(groupData.join_policy);
+
+            const myRecord = active.find((m: any) => m.user_id === userId);
+            setCurrentUserMemberRecord(myRecord);
         } catch (error) {
             console.error(error);
         } finally {
@@ -124,7 +139,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                     {pendingMembers.length === 0 ? (
                         <Text sx={{ textAlign: 'center', color: colors.textSecondary, py: 20 }}>No pending requests at the moment.</Text>
                     ) : (
-                        pendingMembers.map((request) => (
+                        pendingMembers.map((request: any) => (
                             <Box
                                 key={request.user_id}
                                 sx={{
@@ -176,8 +191,89 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                         ))
                     )}
                 </VStack>
+
+                {/* Active Members & Role Management */}
+                <VStack sx={{ gap: Theme.spacing.md }}>
+                    <Text sx={{ fontWeight: '700' }}>Active Members ({activeMembers.length})</Text>
+                    {activeMembers.map((member) => {
+                        const isOwner = member.role === 'owner';
+                        const isAdmin = member.role === 'admin';
+                        const isMe = member.user_id === userId;
+                        const canManage = currentUserMemberRecord?.role === 'owner' && !isMe && !isOwner;
+
+                        return (
+                            <Pressable
+                                key={member.user_id}
+                                onPress={() => navigation.navigate('UserProfile', {
+                                    userId: member.user_id,
+                                    userName: member.user?.full_name || 'Member'
+                                })}
+                            >
+                                <Box
+                                    sx={{
+                                        padding: Theme.spacing.md,
+                                        borderRadius: Theme.corners.comfortable,
+                                        backgroundColor: colors.tertiary,
+                                        borderWidth: 1,
+                                        borderColor: isOwner ? Theme.colors.sanctuarySaffron : colors.border
+                                    }}
+                                >
+                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
+                                            <Box sx={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.secondary, alignItems: 'center', justifyContent: 'center' }}>
+                                                <Text sx={{ fontWeight: '700' }}>{member.user?.full_name?.charAt(0) || '?'}</Text>
+                                            </Box>
+                                            <VStack sx={{ gap: 2 }}>
+                                                <Text sx={{ fontWeight: '600' }}>{member.user?.full_name} {isMe ? '(You)' : ''}</Text>
+                                                <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
+                                                    <Shield size={12} color={isOwner ? Theme.colors.sanctuarySaffron : (isAdmin ? colors.textPrimary : colors.textSecondary)} />
+                                                    <Text sx={{
+                                                        fontSize: 12,
+                                                        fontWeight: (isOwner || isAdmin) ? '700' : '400',
+                                                        color: isOwner ? Theme.colors.sanctuarySaffron : (isAdmin ? colors.textPrimary : colors.textSecondary)
+                                                    }}>
+                                                        {member.role.toUpperCase()}
+                                                    </Text>
+                                                </HStack>
+                                            </VStack>
+                                        </HStack>
+
+                                        {canManage && (
+                                            <HStack sx={{ gap: Theme.spacing.sm }}>
+                                                <Button
+                                                    label={isAdmin ? "Demote" : "Promote"}
+                                                    onPress={() => handleRoleChange(member.user_id, isAdmin ? 'member' : 'admin')}
+                                                    variant="outline"
+                                                    sx={{ height: 32, paddingHorizontal: 12 }}
+                                                />
+                                            </HStack>
+                                        )}
+                                    </HStack>
+                                </Box>
+                            </Pressable>
+                        );
+                    })}
+                </VStack>
             </VStack>
             <LoadingOverlay visible={loading} />
         </ScreenWrapper>
     );
+
+    async function handleRoleChange(targetUserId: string, newRole: 'admin' | 'member') {
+        try {
+            setLoading(true);
+            await communityAPI.updateMemberRole(groupId, targetUserId, newRole);
+            hapticLight();
+            showToast({
+                message: newRole === 'admin' ? "Guardian mantle bestowed." : "Relieved of administrative duties.",
+                type: 'success'
+            });
+            await loadData();
+        } catch (error) {
+            console.error(error);
+            showToast({ message: "Higher authority required for this shift.", type: 'error' });
+        } finally {
+            setLoading(false);
+        }
+    }
 }

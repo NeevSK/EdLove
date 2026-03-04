@@ -1,4 +1,4 @@
-/**
+﻿/**
  * LOTUS PETAL FAB - Floating Action Button (Sanctuary Version)
  * 
  * A living UI component that represents the Agentic presence.
@@ -24,9 +24,9 @@ import { useThemedColors } from '../hooks/useThemedColors';
 import { useTheme } from '../hooks/useTheme';
 import { hapticLight } from '../utils/haptics';
 import { useAccessibility } from '../hooks/useAccessibility';
-import { Modal } from 'react-native';
 import { X } from 'lucide-react-native';
 import { Box, VStack, HStack, Text } from '../gluestack';
+import { UniversalModal } from './UniversalModal';
 
 // ============================================================================
 // TYPES
@@ -62,14 +62,14 @@ const ACTION_DRAWER_HEIGHT = Dimensions.get('window').height * 0.4;
 type IconComponentType = React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
 
 const fabConfig: Record<TabType, { emoji: string; label: string }> = {
-    self: { emoji: '🪷', label: 'Reflection' },
-    classroom: { emoji: '➕', label: 'Add' },
-    community: { emoji: '💬', label: 'Community' },
-    library: { emoji: '📚', label: 'Library' },
-    profile: { emoji: '👤', label: 'Profile' },
-    section: { emoji: '🏢', label: 'Section' },
-    grade: { emoji: '🏫', label: 'Grade' },
-    principal: { emoji: '👑', label: 'Management' }
+    self: { emoji: 'ðŸª·', label: 'Reflection' },
+    classroom: { emoji: 'âž•', label: 'Add' },
+    community: { emoji: 'ðŸ’¬', label: 'Community' },
+    library: { emoji: 'ðŸ“š', label: 'Library' },
+    profile: { emoji: 'ðŸ‘¤', label: 'Profile' },
+    section: { emoji: 'ðŸ¢', label: 'Section' },
+    grade: { emoji: 'ðŸ«', label: 'Grade' },
+    principal: { emoji: 'ðŸ‘‘', label: 'Management' }
 };
 
 // ============================================================================
@@ -175,17 +175,15 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                             elevation: 10,
                         }}
                     >
-                        <Text style={styles.emojiText}>{hasActiveGaps ? '❗' : config.emoji}</Text>
+                        <Text style={styles.emojiText}>{hasActiveGaps ? 'â—' : config.emoji}</Text>
                     </Box>
                 </Animated.View>
             </Pressable>
 
             {/* Simple Action Drawer Integration */}
-            <Modal
-                visible={isDrawerVisible}
-                transparent
-                animationType="slide"
-                onRequestClose={() => setIsDrawerVisible(false)}
+            <UniversalModal
+                isOpen={isDrawerVisible}
+                onClose={() => setIsDrawerVisible(false)}
             >
                 <Pressable
                     style={styles.modalOverlay}
@@ -240,7 +238,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                         </VStack>
                     </Box>
                 </Pressable>
-            </Modal>
+            </UniversalModal>
         </>
     );
 };
@@ -285,3 +283,4 @@ const styles = StyleSheet.create({
 });
 
 export default LotusPetalFAB;
+

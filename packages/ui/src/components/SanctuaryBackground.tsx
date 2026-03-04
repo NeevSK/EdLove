@@ -1,11 +1,11 @@
-/**
+﻿/**
  * SanctuaryBackground
  *
  * The living backdrop of the app. Rendered ONCE at TabNavigator level,
  * behind all tab screens (which are transparent over it).
  *
- * High/Mid: Animated gradient mesh — 2 LinearGradient layers crossfading.
- * Low/Battery: Static LinearGradient snapshot — same palette, zero animation cost.
+ * High/Mid: Animated gradient mesh â€” 2 LinearGradient layers crossfading.
+ * Low/Battery: Static LinearGradient snapshot â€” same palette, zero animation cost.
  *
  * Phase transitions: 2s crossfade between palettes.
  */
@@ -15,7 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../hooks/useTheme';
 
 export function SanctuaryBackground() {
-    const { gradientNodes, animationsEnabled, phase } = useTheme();
+    const { gradientNodes, animationsEnabled, phase, isDark } = useTheme();
 
     // Two gradient layers for crossfade transition
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -24,7 +24,7 @@ export function SanctuaryBackground() {
 
     useEffect(() => {
         if (!animationsEnabled) {
-            // Static — just update immediately
+            // Static â€” just update immediately
             prevNodes.current = gradientNodes;
             currentNodes.current = gradientNodes;
             fadeAnim.setValue(1);
@@ -44,10 +44,9 @@ export function SanctuaryBackground() {
         animation.start();
 
         return () => animation.stop();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [phase]); // Re-run only when phase changes.
-    // Note: isDark theme-mode toggles do NOT trigger a crossfade here by design —
-    // they take effect at the next phase boundary.
+        // Note: isDark theme-mode toggles DO trigger a crossfade here to ensure immediate reactive update
+        // of the background gradient nodes.
+    }, [phase, isDark]); // Re-run when phase OR theme mode changes.
 
     return (
         <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
@@ -73,3 +72,4 @@ export function SanctuaryBackground() {
         </View>
     );
 }
+

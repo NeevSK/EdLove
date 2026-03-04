@@ -4,7 +4,7 @@
  * Refactored for Sanctuary Resonance.
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { FlatList, useColorScheme } from 'react-native';
 import {
     FileText,
@@ -21,6 +21,7 @@ import {
     BookMarked,
     Clapperboard,
     Cpu,
+    AlertTriangle,
 } from 'lucide-react-native';
 import {
     Actionsheet,
@@ -40,7 +41,9 @@ import {
     SanctuaryFlashList
 } from '@repo/ui';
 import { getMediaUrl, formatFileSize, formatDuration } from '@repo/core';
+import { libraryAPI } from '../api/library';
 import type { LibraryResource } from '../types';
+import { Alert } from 'react-native';
 
 // ============================================================================
 // CONSTANTS & CONFIG
@@ -54,18 +57,18 @@ const TYPE_CONFIG: Record<
     DisplayResourceType,
     { icon: React.ComponentType<any>; color: string; label: string }
 > = {
-    pdf:           { icon: File,        color: Theme.colors.emberRed,          label: 'PDF' },
-    video:         { icon: Video,       color: Theme.colors.skyBlue,           label: 'Video' },
-    link:          { icon: Link,        color: Theme.colors.sanctuarySaffron,  label: 'Link' },
-    doc:           { icon: FileText,    color: Theme.colors.ink,               label: 'Doc' },
-    note:          { icon: StickyNote,  color: Theme.colors.sageGreen,         label: 'Note' },
-    map:           { icon: Map,         color: '#10B981',                      label: 'Map' },
-    infographic:   { icon: BarChart2,   color: '#F59E0B',                      label: 'Visual' },
-    story:         { icon: BookMarked,  color: Theme.colors.gurudeviViolet,    label: 'Story' },
-    circular:      { icon: FileText,    color: '#EF4444',                      label: 'Circular' },
-    movie_trailer: { icon: Clapperboard,color: '#EC4899',                      label: 'Film' },
-    tech_guide:    { icon: Cpu,         color: Theme.colors.gurudeviBlue,      label: 'Tech' },
-    other:         { icon: BookOpen,    color: Theme.colors.starlightGray,     label: 'File' },
+    pdf: { icon: File, color: Theme.colors.emberRed, label: 'PDF' },
+    video: { icon: Video, color: Theme.colors.skyBlue, label: 'Video' },
+    link: { icon: Link, color: Theme.colors.sanctuarySaffron, label: 'Link' },
+    doc: { icon: FileText, color: Theme.colors.ink, label: 'Doc' },
+    note: { icon: StickyNote, color: Theme.colors.sageGreen, label: 'Note' },
+    map: { icon: Map, color: '#10B981', label: 'Map' },
+    infographic: { icon: BarChart2, color: '#F59E0B', label: 'Visual' },
+    story: { icon: BookMarked, color: Theme.colors.gurudeviViolet, label: 'Story' },
+    circular: { icon: FileText, color: '#EF4444', label: 'Circular' },
+    movie_trailer: { icon: Clapperboard, color: '#EC4899', label: 'Film' },
+    tech_guide: { icon: Cpu, color: Theme.colors.gurudeviBlue, label: 'Tech' },
+    other: { icon: BookOpen, color: Theme.colors.starlightGray, label: 'File' },
 };
 
 function resolveDisplayType(type: string): DisplayResourceType {
@@ -114,6 +117,16 @@ export function ResourceList({
         />
     ), [onOpenResource, handleFlashPlay, onPullToDesk]);
 
+    const handleReportBroken = useCallback(async (resourceId: string) => {
+        try {
+            await libraryAPI.reportBrokenLink(resourceId);
+            Alert.alert('Reported', 'Thank you. Our curators will check this link.');
+            if (onRefresh) onRefresh();
+        } catch (err: any) {
+            Alert.alert('Error', 'Failed to report link.');
+        }
+    }, [onRefresh]);
+
     return (
         <Box sx={{ flex: 1 }}>
             <SanctuaryFlashList
@@ -134,6 +147,7 @@ export function ResourceList({
             <FlashPlaySheet
                 resource={flashPlayResource}
                 onClose={handleCloseFlashPlay}
+                onReportBroken={handleReportBroken}
                 onOpenFull={() => {
                     if (flashPlayResource) onOpenResource?.(flashPlayResource);
                     handleCloseFlashPlay();
@@ -206,6 +220,11 @@ function ResourceRow({ resource, onOpen, onFlashPlay, onPullToDesk }: ResourceRo
                                 <Box sx={{ backgroundColor: Theme.colors.sageGreen, borderRadius: 4, paddingHorizontal: 4 }}>
                                     <Text size="2xs" color="white" bold>VERIFIED</Text>
                                 </Box>
+                                {resource.link_status === 'broken' && (
+                                    <Box sx={{ backgroundColor: Theme.colors.emberRed, borderRadius: 4, paddingHorizontal: 4 }}>
+                                        <Text size="2xs" color="white" bold>BROKEN LINK</Text>
+                                    </Box>
+                                )}
                             </HStack>
                         )}
                     </VStack>
@@ -247,10 +266,20 @@ interface FlashPlaySheetProps {
     resource: LibraryResource | null;
     onClose: () => void;
     onOpenFull: () => void;
+    onReportBroken: (id: string) => void;
 }
 
-function FlashPlaySheet({ resource, onClose, onOpenFull }: FlashPlaySheetProps) {
+function FlashPlaySheet({ resource, onClose, onOpenFull, onReportBroken }: FlashPlaySheetProps) {
     const colors = useThemedColors();
+    const [resonantIslands, setResonantIslands] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (resource) {
+            libraryAPI.getResonantKnowledge(resource.id).then(setResonantIslands);
+        } else {
+            setResonantIslands([]);
+        }
+    }, [resource]);
 
     if (!resource) return null;
 
@@ -306,16 +335,50 @@ function FlashPlaySheet({ resource, onClose, onOpenFull }: FlashPlaySheetProps) 
                         </Box>
                     ) : null}
 
+                    {resonantIslands.length > 0 && (
+                        <VStack space="xs">
+                            <Text color={Theme.colors.shroud} size="xs" bold uppercase>Resonant Islands</Text>
+                            <HStack space="xs" sx={{ flexWrap: 'wrap' }}>
+                                {resonantIslands.map((island) => (
+                                    <Box
+                                        key={island.id}
+                                        sx={{
+                                            px: 8,
+                                            py: 4,
+                                            borderRadius: 8,
+                                            backgroundColor: 'rgba(255,255,255,0.05)',
+                                            borderWidth: 1,
+                                            borderColor: 'rgba(255,255,255,0.1)'
+                                        }}
+                                    >
+                                        <Text color="#fff" size="2xs">{island.name}</Text>
+                                    </Box>
+                                ))}
+                            </HStack>
+                        </VStack>
+                    )}
+
                     <HStack space="md">
                         <Box sx={{ flex: 1 }}>
                             <SanctuaryButton
                                 onPress={onOpenFull}
                                 action="primary"
                                 leftIcon={Play}
+                                isDisabled={resource.link_status === 'broken'}
                             >
-                                Open Resonance
+                                {resource.link_status === 'broken' ? 'Broken Link' : 'Open Resonance'}
                             </SanctuaryButton>
                         </Box>
+                        {resource.link_status !== 'broken' && (
+                            <SanctuaryButton
+                                onPress={() => onReportBroken(resource.id)}
+                                variant="outline"
+                                action="negative"
+                                leftIcon={AlertTriangle}
+                            >
+                                {''}
+                            </SanctuaryButton>
+                        )}
                         <SanctuaryButton
                             onPress={onClose}
                             variant="outline"

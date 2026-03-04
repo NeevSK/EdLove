@@ -44,37 +44,57 @@ export const TemporalGlass: React.FC<TemporalGlassProps> = ({
         <View style={[{ width, height }, style]}>
             {/* Skia luminous border — phase-aware color */}
             <Canvas style={StyleSheet.absoluteFill} pointerEvents="none">
-                {/* Outer luminous edge */}
-                <RoundedRect
-                    x={0.5}
-                    y={0.5}
-                    width={width - 1}
-                    height={height - 1}
-                    r={cornerRadius}
-                    style="stroke"
-                    strokeWidth={1}
-                >
-                    <LinearGradient
-                        start={vec(width / 2, 0)}
-                        end={vec(width / 2, height)}
-                        colors={[edges.top, edges.bottom]}
-                    />
-                </RoundedRect>
+                {cornerRadius > 0 ? (
+                    <>
+                        {/* Outer luminous edge — only for rounded cards */}
+                        <RoundedRect
+                            x={0.5}
+                            y={0.5}
+                            width={width - 1}
+                            height={height - 1}
+                            r={cornerRadius}
+                            style="stroke"
+                            strokeWidth={1}
+                        >
+                            <LinearGradient
+                                start={vec(width / 2, 0)}
+                                end={vec(width / 2, height)}
+                                colors={[edges.top, edges.bottom]}
+                            />
+                        </RoundedRect>
 
-                {/* Inner top highlight — light hitting top edge of glass */}
-                <RoundedRect
-                    x={2}
-                    y={2}
-                    width={width - 4}
-                    height={height * 0.3}
-                    r={cornerRadius - 2}
-                    style="stroke"
-                    strokeWidth={0.5}
-                >
-                    <Paint color={edges.top} opacity={0.6}>
-                        <BlurMask blur={2} style="normal" />
-                    </Paint>
-                </RoundedRect>
+                        {/* Inner top highlight */}
+                        <RoundedRect
+                            x={2}
+                            y={2}
+                            width={width - 4}
+                            height={height * 0.3}
+                            r={cornerRadius - 2}
+                            style="stroke"
+                            strokeWidth={0.5}
+                        >
+                            <Paint color={edges.top} opacity={0.6}>
+                                <BlurMask blur={4} style="normal" />
+                            </Paint>
+                        </RoundedRect>
+                    </>
+                ) : (
+                    // Flat bar mode (tab bar) — only a 1px top edge gradient, no rect border
+                    <RoundedRect
+                        x={0}
+                        y={0}
+                        width={width}
+                        height={1}
+                        r={0}
+                        style="fill"
+                    >
+                        <LinearGradient
+                            start={vec(0, 0)}
+                            end={vec(width, 0)}
+                            colors={[edges.bottom, edges.top, edges.bottom]}
+                        />
+                    </RoundedRect>
+                )}
             </Canvas>
 
             {/* Existing BlurView children — completely unchanged */}

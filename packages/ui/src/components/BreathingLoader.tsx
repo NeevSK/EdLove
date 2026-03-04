@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BREATHING LOADER - Pulsing Circle Animation
  *
  * A simple loader component with a breathing animation:
@@ -94,3 +94,4 @@ const styles = StyleSheet.create({
 });
 
 export default BreathingLoader;
+

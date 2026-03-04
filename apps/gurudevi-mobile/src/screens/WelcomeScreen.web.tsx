@@ -29,12 +29,13 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '@repo/ui';
+import { Theme, VStack } from '@repo/ui';
 import { useTheme } from '@repo/ui';
 import { authAPI, handleAPIError } from '@repo/core';
 import { hapticLight, hapticSuccess, hapticError, openExternalURL } from '@repo/ui';
 import { LanguageUtils } from '../utils/LanguageUtils';
 import AuthScreen from './AuthScreen';
+import { RedirectToApp } from '../components/RedirectToApp';
 
 // ─────────────────────────────────────────────
 // Constants
@@ -52,24 +53,16 @@ const STATS = [
 ];
 
 const PILLARS = [
-    { name: 'Self',      emoji: '♥',  color: Theme.colors.sanctuarySaffron },
+    { name: 'Self', emoji: '♥', color: Theme.colors.sanctuarySaffron },
     { name: 'Classroom', emoji: '🏫', color: Theme.colors.sageGreen },
     { name: 'Community', emoji: '🤝', color: Theme.colors.shadowViolet },
-    { name: 'Library',   emoji: '📚', color: Theme.colors.skyBlue },
-    { name: 'Profile',   emoji: '🪪', color: Theme.colors.sanctuarySaffron },
+    { name: 'Library', emoji: '📚', color: Theme.colors.skyBlue },
+    { name: 'Profile', emoji: '🪪', color: Theme.colors.sanctuarySaffron },
 ];
 
-// Phase → gradient stop colours — mapped to Theme tokens (circadian identity, no raw hex)
-const PHASE_GRADIENT: Record<string, [string, string]> = {
-    predawn:   [Theme.colors.obsidian,    Theme.colors.ink],
-    dawn:      [Theme.colors.dawnWhite,   Theme.colors.vellum],
-    morning:   [Theme.colors.vellum,      Theme.colors.silk],
-    midday:    [Theme.colors.silk,        Theme.colors.linen],
-    afternoon: [Theme.colors.vellum,      Theme.colors.dawnWhite],
-    evening:   [Theme.colors.eveningWarm, Theme.colors.linen],
-    dusk:      [Theme.colors.ink,         Theme.colors.shroud],
-    night:     [Theme.colors.obsidian,    Theme.colors.ink],
-};
+// ─────────────────────────────────────────────
+// Constants
+// ─────────────────────────────────────────────
 
 // ─────────────────────────────────────────────
 // LeftPanel — standalone component (must NOT be defined inside render)
@@ -79,7 +72,8 @@ interface LeftPanelProps {
     isNarrow: boolean;
 }
 
-function LeftPanel({ isDark, isNarrow }: LeftPanelProps) {
+function LeftPanel({ isNarrow }: { isNarrow: boolean }) {
+    const { text, accent, isDark } = useTheme();
     return (
         <View style={[styles.leftPanel, isNarrow && styles.leftPanelNarrow]}>
             {/* Logo */}
@@ -87,13 +81,13 @@ function LeftPanel({ isDark, isNarrow }: LeftPanelProps) {
                 <View style={styles.logoCircle}>
                     <Text style={styles.logoGlyph}>🪷</Text>
                 </View>
-                <Text style={[styles.logoName, { color: isDark ? Theme.colors.sacredWhite : Theme.colors.inkTruth }]}>
+                <Text style={[styles.logoName, { color: text.primary }]}>
                     Gurudevi
                 </Text>
             </View>
 
             {/* Headline */}
-            <Text style={[styles.headline, { color: isDark ? Theme.colors.sacredWhite : Theme.colors.inkTruth }]}>
+            <Text style={[styles.headline, { color: text.primary }]}>
                 A Sanctuary{'\n'}for Teachers
             </Text>
 
@@ -105,11 +99,11 @@ function LeftPanel({ isDark, isNarrow }: LeftPanelProps) {
             {/* Stats */}
             <View style={styles.statsRow}>
                 {STATS.map((s) => (
-                    <View key={s.label} style={[styles.statPill, { borderColor: Theme.colors.sanctuarySaffron + '30' }]}>
-                        <Text style={[styles.statValue, { color: Theme.colors.sanctuarySaffron }]}>
+                    <View key={s.label} style={[styles.statPill, { borderColor: accent.action + '30' }]}>
+                        <Text style={[styles.statValue, { color: accent.action }]}>
                             {s.value}
                         </Text>
-                        <Text style={[styles.statLabel, { color: isDark ? Theme.colors.starlightGray : Theme.colors.bark }]}>
+                        <Text style={[styles.statLabel, { color: text.secondary }]}>
                             {s.label}
                         </Text>
                     </View>
@@ -127,8 +121,8 @@ function LeftPanel({ isDark, isNarrow }: LeftPanelProps) {
             </View>
 
             {/* Quote */}
-            <View style={[styles.quoteBox, { borderLeftColor: Theme.colors.sanctuarySaffron, backgroundColor: Theme.colors.sanctuarySaffron + '0A' }]}>
-                <Text style={[styles.quoteText, { color: isDark ? Theme.colors.starlightGray : Theme.colors.bark }]}>
+            <View style={[styles.quoteBox, { borderLeftColor: accent.action, backgroundColor: accent.action + '0A' }]}>
+                <Text style={[styles.quoteText, { color: text.secondary }]}>
                     "Education is a living ecology,{'\n'}not a linear process."
                 </Text>
             </View>
@@ -158,7 +152,6 @@ interface RightPanelProps {
 }
 
 function RightPanel({
-    isDark,
     i18nLanguage,
     acceptedTerms,
     isConnecting,
@@ -173,14 +166,16 @@ function RightPanel({
     onBtnHoverIn,
     onBtnHoverOut,
     footer,
-}: RightPanelProps) {
+}: Omit<RightPanelProps, 'isDark'>) {
+    const { text, isDark, glass, accent } = useTheme();
+
     return (
         <View style={styles.rightPanel}>
             <View style={[
                 styles.authCard,
                 {
-                    backgroundColor: isDark ? Theme.colors.shroud : '#FFFDF7',
-                    borderColor: isDark ? 'rgba(252,249,242,0.08)' : 'rgba(42,35,24,0.07)',
+                    backgroundColor: glass.modal.bg,
+                    borderColor: glass.modal.border,
                     shadowColor: Theme.colors.shadowViolet,
                 },
             ]}>
@@ -199,9 +194,9 @@ function RightPanel({
                                     styles.langPill,
                                     {
                                         backgroundColor: isActive
-                                            ? Theme.colors.sanctuarySaffron
+                                            ? accent.action
                                             : isHov
-                                                ? (isDark ? 'rgba(252,249,242,0.08)' : 'rgba(42,35,24,0.05)')
+                                                ? glass.interact.bg
                                                 : 'transparent',
                                     },
                                 ]}
@@ -210,8 +205,8 @@ function RightPanel({
                                     styles.langText,
                                     {
                                         color: isActive
-                                            ? '#FFFDF7'
-                                            : isDark ? Theme.colors.starlightGray : Theme.colors.bark,
+                                            ? Theme.colors.sacredWhite
+                                            : text.secondary,
                                         fontWeight: isActive ? '700' : '500',
                                     },
                                 ]}>
@@ -223,10 +218,10 @@ function RightPanel({
                 </View>
 
                 {/* Greeting */}
-                <Text style={[styles.cardTitle, { color: isDark ? Theme.colors.sacredWhite : Theme.colors.inkTruth }]}>
+                <Text style={[styles.cardTitle, { color: text.primary }]}>
                     Welcome to the Sanctuary
                 </Text>
-                <Text style={[styles.cardSubtitle, { color: isDark ? Theme.colors.starlightGray : Theme.colors.bark }]}>
+                <Text style={[styles.cardSubtitle, { color: text.secondary }]}>
                     Choose how you'd like to begin your journey.
                 </Text>
 
@@ -241,7 +236,7 @@ function RightPanel({
                         styles.primaryBtn,
                         {
                             backgroundColor: acceptedTerms
-                                ? Theme.colors.sanctuarySaffron
+                                ? accent.action
                                 : Theme.colors.willow,
                             opacity: btnHover === 'explore' ? 0.88 : 1,
                             transform: btnHover === 'explore' ? [{ scale: 1.015 }] : [{ scale: 1 }],
@@ -249,7 +244,7 @@ function RightPanel({
                     ]}
                 >
                     {isConnecting ? (
-                        <ActivityIndicator color="#FFFDF7" size="small" />
+                        <ActivityIndicator color={Theme.colors.sacredWhite} size="small" />
                     ) : (
                         <Text style={styles.primaryBtnText}>
                             Explore as Guest
@@ -266,16 +261,16 @@ function RightPanel({
                     style={[
                         styles.secondaryBtn,
                         {
-                            borderColor: isDark ? 'rgba(252,249,242,0.15)' : 'rgba(42,35,24,0.15)',
+                            borderColor: glass.interact.border,
                             backgroundColor: btnHover === 'login'
-                                ? (isDark ? 'rgba(252,249,242,0.05)' : 'rgba(42,35,24,0.03)')
+                                ? glass.interact.bg
                                 : 'transparent',
                         },
                     ]}
                 >
                     <Text style={[
                         styles.secondaryBtnText,
-                        { color: isDark ? Theme.colors.starlightGray : Theme.colors.bark },
+                        { color: text.secondary },
                     ]}>
                         I have an account
                     </Text>
@@ -292,13 +287,13 @@ function RightPanel({
                     <View style={[
                         styles.checkbox,
                         {
-                            backgroundColor: acceptedTerms ? Theme.colors.sanctuarySaffron : 'transparent',
-                            borderColor: acceptedTerms ? Theme.colors.sanctuarySaffron : (isDark ? Theme.colors.starlightGray : Theme.colors.willow),
+                            backgroundColor: acceptedTerms ? accent.action : 'transparent',
+                            borderColor: acceptedTerms ? accent.action : text.muted,
                         },
                     ]}>
                         {acceptedTerms && <Text style={styles.checkmark}>✓</Text>}
                     </View>
-                    <Text style={[styles.termsText, { color: isDark ? Theme.colors.starlightGray : Theme.colors.bark }]}>
+                    <Text style={[styles.termsText, { color: text.secondary }]}>
                         I agree to the{' '}
                     </Text>
                     <Pressable
@@ -309,14 +304,14 @@ function RightPanel({
                         accessibilityRole="link"
                         accessibilityLabel="Read Privacy Pact"
                     >
-                        <Text style={{ color: Theme.colors.sanctuarySaffron, fontWeight: '600', textDecorationLine: 'underline', fontSize: 13 }}>
+                        <Text style={{ color: accent.action, fontWeight: '600', textDecorationLine: 'underline', fontSize: 13 }}>
                             Privacy Pact
                         </Text>
                     </Pressable>
                 </Pressable>
 
                 {/* Footer note */}
-                <Text style={[styles.cardFooter, { color: isDark ? Theme.colors.mistGray : Theme.colors.willow }]}>
+                <Text style={[styles.cardFooter, { color: text.muted }]}>
                     {footer}
                 </Text>
             </View>
@@ -334,7 +329,7 @@ interface WelcomeScreenProps {
 
 export default function WelcomeScreen({ onNext, initialShowAuth = false }: WelcomeScreenProps) {
     const { t, i18n } = useTranslation();
-    const { phase, isDark } = useTheme();
+    const { phase, isDark, gradientNodes, text: themeText } = useTheme();
     const { width } = useWindowDimensions();
 
     const [showAuth, setShowAuth] = useState(initialShowAuth);
@@ -345,7 +340,7 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
 
     const isNarrow = width < 768;
 
-    const [bgFrom] = PHASE_GRADIENT[phase] ?? PHASE_GRADIENT.morning;
+    const bgFrom = gradientNodes[0];
 
     const changeLanguage = async (code: string) => {
         hapticLight();
@@ -399,9 +394,9 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
                     contentContainerStyle={styles.narrowContent}
                     showsVerticalScrollIndicator={false}
                 >
-                    <LeftPanel isDark={isDark} isNarrow={isNarrow} />
+                    <LeftPanel isNarrow={isNarrow} />
+                    <RedirectToApp />
                     <RightPanel
-                        isDark={isDark}
                         i18nLanguage={i18n.language}
                         acceptedTerms={acceptedTerms}
                         isConnecting={isConnecting}
@@ -421,24 +416,26 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
             ) : (
                 // ── Desktop web: two-column layout ────────────────────────
                 <View style={styles.twoCol}>
-                    <LeftPanel isDark={isDark} isNarrow={false} />
-                    <RightPanel
-                        isDark={isDark}
-                        i18nLanguage={i18n.language}
-                        acceptedTerms={acceptedTerms}
-                        isConnecting={isConnecting}
-                        langHover={langHover}
-                        btnHover={btnHover}
-                        onChangeLanguage={changeLanguage}
-                        onStartExploring={handleStartExploring}
-                        onLogin={handleLogin}
-                        onToggleTerms={() => setAcceptedTerms((v) => !v)}
-                        onLangHoverIn={setLangHover}
-                        onLangHoverOut={() => setLangHover(null)}
-                        onBtnHoverIn={setBtnHover}
-                        onBtnHoverOut={() => setBtnHover(null)}
-                        footer={footer}
-                    />
+                    <LeftPanel isNarrow={false} />
+                    <VStack sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <RedirectToApp />
+                        <RightPanel
+                            i18nLanguage={i18n.language}
+                            acceptedTerms={acceptedTerms}
+                            isConnecting={isConnecting}
+                            langHover={langHover}
+                            btnHover={btnHover}
+                            onChangeLanguage={changeLanguage}
+                            onStartExploring={handleStartExploring}
+                            onLogin={handleLogin}
+                            onToggleTerms={() => setAcceptedTerms((v) => !v)}
+                            onLangHoverIn={setLangHover}
+                            onLangHoverOut={() => setLangHover(null)}
+                            onBtnHoverIn={setBtnHover}
+                            onBtnHoverOut={() => setBtnHover(null)}
+                            footer={footer}
+                        />
+                    </VStack>
                 </View>
             )}
         </View>
@@ -640,7 +637,7 @@ const styles = StyleSheet.create({
     primaryBtnText: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#FFFDF7',
+        color: Theme.colors.sacredWhite,
         letterSpacing: 0.2,
     },
     secondaryBtn: {

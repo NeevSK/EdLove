@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import {
     FormControl,
     FormControlLabel,
@@ -145,3 +145,4 @@ export default function SanctuaryInput({
         </FormControl>
     );
 }
+

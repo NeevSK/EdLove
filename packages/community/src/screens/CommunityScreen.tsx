@@ -1,5 +1,5 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
-import { RefreshControl, FlatList, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect, useMemo } from 'react';
+import { RefreshControl, FlatList, ActivityIndicator, ScrollView } from 'react-native';
 import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, Theme, useBottomTabPadding, LotusPetalFAB, FadeInDown, HorizontalChipRow, SanctuaryFlashList } from '@repo/ui';
 import Animated from 'react-native-reanimated';
 import PostCard from '../components/PostCard';
@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { MessageSquare, Users, PenTool } from 'lucide-react-native';
 import { useCommunity } from '../hooks/useCommunity';
 import { useCommunityFilters } from '../hooks/useCommunityFilters';
+import { useCommunityGroups } from '../hooks/useCommunityGroups';
 import { Post, Group } from '../types';
 import { useUserRole, useTracking, supabase, isDemo } from '@repo/core';
 import { CommunityPresence } from '@repo/self';
@@ -22,6 +23,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CommunityStackParamList } from '@repo/core';
 import { Mail } from 'lucide-react-native';
+import DirectMessagesListScreen from './DirectMessagesListScreen';
 
 type TabType = 'feed' | 'groups' | 'dms';
 
@@ -120,180 +122,187 @@ export default function CommunityScreen() {
             <Box sx={{ flex: 1, backgroundColor: colors.secondary }}>
                 <GlobalHeader title={t('community.title', 'Heal & Bloom')} />
 
-                {/* Sub-Tabs */}
-                <Animated.View entering={FadeInDown.delay(150).springify()}>
-                    <HStack
-                        sx={{
-                            paddingHorizontal: Theme.spacing.md,
-                            paddingVertical: Theme.spacing.sm,
-                            gap: Theme.spacing.md,
-                        }}
-                    >
-                        <Pressable
-                            onPress={() => setActiveTab('feed')}
-                            sx={{
-                                borderBottomWidth: activeTab === 'feed' ? 2 : 0,
-                                borderBottomColor: Theme.colors.sanctuarySaffron,
-                                paddingBottom: 4,
-                            }}
-                        >
-                            <HStack space="xs" alignItems="center">
-                                <MessageSquare
-                                    size={18}
-                                    color={activeTab === 'feed' ? Theme.colors.sanctuarySaffron : colors.textTertiary}
-                                />
-                                <Text
-                                    bold={activeTab === 'feed'}
-                                    color={activeTab === 'feed' ? colors.textPrimary : colors.textTertiary}
-                                >
-                                    {t('community.tabs.resonantFeed', 'Resonant Feed')}
-                                </Text>
-                            </HStack>
-                        </Pressable>
-
-                        <Pressable
-                            onPress={() => setActiveTab('groups')}
-                            sx={{
-                                borderBottomWidth: activeTab === 'groups' ? 2 : 0,
-                                borderBottomColor: Theme.colors.gurudeviViolet,
-                                paddingBottom: 4,
-                            }}
-                        >
-                            <HStack space="xs" alignItems="center">
-                                <Users
-                                    size={18}
-                                    color={activeTab === 'groups' ? Theme.colors.gurudeviViolet : colors.textTertiary}
-                                />
-                                <Text
-                                    bold={activeTab === 'groups'}
-                                    color={activeTab === 'groups' ? colors.textPrimary : colors.textTertiary}
-                                >
-                                    {t('community.tabs.infiniteGalaxy', 'Infinite Galaxy')}
-                                </Text>
-                            </HStack>
-                        </Pressable>
-
-                        <Pressable
-                            onPress={() => setActiveTab('dms')}
-                            sx={{
-                                borderBottomWidth: activeTab === 'dms' ? 2 : 0,
-                                borderBottomColor: colors.action,
-                                paddingBottom: 4,
-                            }}
-                        >
-                            <HStack space="xs" alignItems="center">
-                                <Mail
-                                    size={18}
-                                    color={activeTab === 'dms' ? colors.action : colors.textTertiary}
-                                />
-                                <Text
-                                    bold={activeTab === 'dms'}
-                                    color={activeTab === 'dms' ? colors.textPrimary : colors.textTertiary}
-                                >
-                                    {t('community.tabs.dms', 'Messages')}
-                                </Text>
-                            </HStack>
-                        </Pressable>
-                    </HStack>
-                </Animated.View>
-
-                {activeTab === 'feed' ? (
-                    <SanctuaryFlashList
-                        data={listData}
-                        keyExtractor={(item) => item.id}
-                        estimatedItemSize={Theme.listSizes.communityCard}
-                        renderItem={({ item, index }) => (
-                            <Animated.View entering={FadeInDown.duration(400).delay(index * 150).springify()}>
-                                <PostCard
-                                    post={item}
-                                    onPress={() => { }}
-                                    onLike={() => {
-                                        if (userId) communityAPI.togglePostReaction(item.id, userId).catch(console.error);
-                                    }}
-                                    onReport={() => {
-                                        setReportPostId(item.id);
-                                        setShowReportModal(true);
-                                    }}
-                                    onAuthorPress={() => {
-                                        if (item.author_id && !item.is_anonymous) {
-                                            navigation.navigate('UserProfile', {
-                                                userId: item.author_id,
-                                                userName: item.author_name ?? 'Member',
-                                            });
-                                        }
-                                    }}
-                                    isSample={item.id.startsWith('stub-') || item.id.startsWith('mock-')}
-                                    currentUserId={userId ?? undefined}
-                                />
-                            </Animated.View>
-                        )}
-                        ListHeaderComponent={
-                            <VStack space="md" sx={{ paddingVertical: Theme.spacing.md }}>
-                                {renderCommunityHearth()}
-                                {renderFeedFilterChips()}
-                            </VStack>
-                        }
-                        onRefresh={onRefresh}
-                        refreshing={refreshing}
-                        onEndReached={() => hasNextPosts && fetchNextPosts()}
-                        onEndReachedThreshold={0.5}
-                        ListFooterComponent={
-                            isFetchingNextPosts ? (
-                                <ActivityIndicator style={{ marginVertical: Theme.spacing.md }} color={Theme.colors.sanctuarySaffron} />
-                            ) : null
-                        }
-                        contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}
-                    />
-                ) : activeTab === 'groups' ? (
-                    <GroupsScreen
-                        userId={userId ?? undefined}
-                        schoolId={schoolId}
-                        onCreatePost={handleOpenCreatePost}
-                        onCreateGroup={() => setShowCreateGroupModal(true)}
-                        onNavigateToGroup={(groupId: string) => {
-                            navigation.navigate('GroupDetails', { groupId });
-                        }}
-                    />
-                ) : (
-                    /* DMs — Coming Soon */
-                    <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: Theme.spacing.xl }}>
+                {/* GUEST GATE: Simplified view for non-authenticated users */}
+                {isGuest ? (
+                    <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg, gap: Theme.spacing.lg }}>
+                        {renderCommunityHearth()}
                         <PositiveInvitation
-                            context="community"
-                            title={t('community.dms.comingSoon', 'Direct Messages Coming Soon')}
-                            description={t('community.dms.comingSoonDesc', 'Private 1-on-1 conversations are being thoughtfully built. For now, use Group Chat inside any group to connect with members.')}
+                            type="guest"
+                            title={t('community.guestTitle', 'Your Community Awaits')}
+                            description={t('community.guestDesc', 'Connect with educators, share wisdom, and feel the pulse of your school. Create a free account to join the circle.')}
+                            onAction={() => navigation.navigate('Auth' as never)}
                         />
-                    </Box>
-                )}
+                    </ScrollView>
+                ) : (<>
+                    {/* Sub-Tabs */}
+                    <Animated.View entering={FadeInDown.delay(150).springify()}>
+                        <HStack
+                            sx={{
+                                paddingHorizontal: Theme.spacing.md,
+                                paddingVertical: Theme.spacing.sm,
+                                gap: Theme.spacing.md,
+                            }}
+                        >
+                            <Pressable
+                                onPress={() => setActiveTab('feed')}
+                                sx={{
+                                    borderBottomWidth: activeTab === 'feed' ? 2 : 0,
+                                    borderBottomColor: Theme.colors.sanctuarySaffron,
+                                    paddingBottom: 4,
+                                }}
+                            >
+                                <HStack space="xs" alignItems="center">
+                                    <MessageSquare
+                                        size={18}
+                                        color={activeTab === 'feed' ? Theme.colors.sanctuarySaffron : colors.textTertiary}
+                                    />
+                                    <Text
+                                        bold={activeTab === 'feed'}
+                                        color={activeTab === 'feed' ? colors.textPrimary : colors.textTertiary}
+                                    >
+                                        {t('community.tabs.resonantFeed', 'Resonant Feed')}
+                                    </Text>
+                                </HStack>
+                            </Pressable>
 
-                {userId && (
-                    <LotusPetalFAB
-                        currentTab="community"
-                        onPress={() => handleOpenCreatePost()}
+                            <Pressable
+                                onPress={() => setActiveTab('groups')}
+                                sx={{
+                                    borderBottomWidth: activeTab === 'groups' ? 2 : 0,
+                                    borderBottomColor: Theme.colors.gurudeviViolet,
+                                    paddingBottom: 4,
+                                }}
+                            >
+                                <HStack space="xs" alignItems="center">
+                                    <Users
+                                        size={18}
+                                        color={activeTab === 'groups' ? Theme.colors.gurudeviViolet : colors.textTertiary}
+                                    />
+                                    <Text
+                                        bold={activeTab === 'groups'}
+                                        color={activeTab === 'groups' ? colors.textPrimary : colors.textTertiary}
+                                    >
+                                        {t('community.tabs.infiniteGalaxy', 'Infinite Galaxy')}
+                                    </Text>
+                                </HStack>
+                            </Pressable>
+
+                            <Pressable
+                                onPress={() => setActiveTab('dms')}
+                                sx={{
+                                    borderBottomWidth: activeTab === 'dms' ? 2 : 0,
+                                    borderBottomColor: colors.action,
+                                    paddingBottom: 4,
+                                }}
+                            >
+                                <HStack space="xs" alignItems="center">
+                                    <Mail
+                                        size={18}
+                                        color={activeTab === 'dms' ? colors.action : colors.textTertiary}
+                                    />
+                                    <Text
+                                        bold={activeTab === 'dms'}
+                                        color={activeTab === 'dms' ? colors.textPrimary : colors.textTertiary}
+                                    >
+                                        {t('community.tabs.dms', 'Messages')}
+                                    </Text>
+                                </HStack>
+                            </Pressable>
+                        </HStack>
+                    </Animated.View>
+
+                    {activeTab === 'feed' ? (
+                        <SanctuaryFlashList
+                            data={listData}
+                            keyExtractor={(item) => item.id}
+                            estimatedItemSize={Theme.listSizes.communityCard}
+                            renderItem={({ item, index }) => (
+                                <Animated.View entering={FadeInDown.duration(400).delay(index * 150).springify()}>
+                                    <PostCard
+                                        post={item}
+                                        onPress={() => { }}
+                                        onLike={() => {
+                                            if (userId) communityAPI.togglePostReaction(item.id, userId).catch(console.error);
+                                        }}
+                                        onReport={() => {
+                                            setReportPostId(item.id);
+                                            setShowReportModal(true);
+                                        }}
+                                        onAuthorPress={() => {
+                                            if (item.author_id && !item.is_anonymous) {
+                                                navigation.navigate('UserProfile', {
+                                                    userId: item.author_id,
+                                                    userName: item.author_name ?? 'Member',
+                                                });
+                                            }
+                                        }}
+                                        isSample={item.id.startsWith('stub-') || item.id.startsWith('mock-')}
+                                        currentUserId={userId ?? undefined}
+                                    />
+                                </Animated.View>
+                            )}
+                            ListHeaderComponent={
+                                <VStack space="md" sx={{ paddingVertical: Theme.spacing.md }}>
+                                    {renderCommunityHearth()}
+                                    {renderFeedFilterChips()}
+                                </VStack>
+                            }
+                            onRefresh={onRefresh}
+                            refreshing={refreshing}
+                            onEndReached={() => hasNextPosts && fetchNextPosts()}
+                            onEndReachedThreshold={0.5}
+                            ListFooterComponent={
+                                isFetchingNextPosts ? (
+                                    <ActivityIndicator style={{ marginVertical: Theme.spacing.md }} color={Theme.colors.sanctuarySaffron} />
+                                ) : null
+                            }
+                            contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}
+                        />
+                    ) : activeTab === 'groups' ? (
+                        <GroupsScreen
+                            userId={userId ?? undefined}
+                            schoolId={schoolId}
+                            onCreatePost={handleOpenCreatePost}
+                            onCreateGroup={() => setShowCreateGroupModal(true)}
+                            onNavigateToGroup={(groupId: string) => {
+                                navigation.navigate('GroupDetails', { groupId });
+                            }}
+                        />
+                    ) : (
+                        <DirectMessagesListScreen />
+                    )}
+
+                    {userId && (
+                        <LotusPetalFAB
+                            currentTab="community"
+                            onPress={() => handleOpenCreatePost()}
+                        />
+                    )}
+
+                    <CreatePostModal
+                        isOpen={showCreateModal}
+                        onClose={() => { setShowCreateModal(false); setCreatePostGroupId(undefined); }}
+                        groupId={createPostGroupId}
                     />
-                )}
 
-                <CreatePostModal
-                    isOpen={showCreateModal}
-                    onClose={() => { setShowCreateModal(false); setCreatePostGroupId(undefined); }}
-                    groupId={createPostGroupId}
-                />
+                    <CreateGroupModal
+                        isOpen={showCreateGroupModal}
+                        onClose={() => setShowCreateGroupModal(false)}
+                        onCreated={(groupId) => {
+                            // Refresh groups list after creation
+                            fetchGroups();
+                        }}
+                    />
 
-                <CreateGroupModal
-                    isOpen={showCreateGroupModal}
-                    onClose={() => setShowCreateGroupModal(false)}
-                    onCreated={(groupId) => {
-                        // Refresh groups list after creation
-                        fetchGroups();
-                    }}
-                />
+                    <ReportPostModal
+                        isOpen={showReportModal}
+                        onClose={() => { setShowReportModal(false); setReportPostId(undefined); }}
+                        postId={reportPostId}
+                        reporterId={userId || ''}
+                    />
 
-                <ReportPostModal
-                    isOpen={showReportModal}
-                    onClose={() => { setShowReportModal(false); setReportPostId(undefined); }}
-                    postId={reportPostId}
-                    reporterId={userId || ''}
-                />
-            </Box >
-        </ScreenWrapper >
+                </>)}
+            </Box>
+        </ScreenWrapper>
     );
 }

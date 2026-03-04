@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
+import { Platform } from 'react-native';
 import { libraryAPI } from '../api/library';
 import { ResourceFilters, CollectionFilters } from '../types';
 
@@ -8,7 +9,11 @@ export const LIBRARY_KEYS = {
     resources: (filters: ResourceFilters = {}) => [...LIBRARY_KEYS.all, 'resources', filters] as const,
     collections: (filters: CollectionFilters = {}) => [...LIBRARY_KEYS.all, 'collections', filters] as const,
     resource: (id: string) => [...LIBRARY_KEYS.all, 'resource', id] as const,
+    sync: () => [...LIBRARY_KEYS.all, 'sync'] as const,
 };
+import { knowledgeSync } from '../api/sync';
+import { knowledgeDB } from '../api/database';
+import { useEffect } from 'react';
 
 export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilters: CollectionFilters = {}) => {
     const queryClient = useQueryClient();
@@ -17,10 +22,26 @@ export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilt
     const resourcesInfiniteQuery = useInfiniteQuery({
         queryKey: LIBRARY_KEYS.resources(resourceFilters),
         queryFn: async ({ pageParam = 0 }) => {
+            // High-Performance Sync Search — enabled for web via IndexedDB resonance
+            if (resourceFilters.search) {
+                return libraryAPI.searchResourcesLocal(resourceFilters.search, 20);
+            }
+
+            // Versatile Server-Side Search
+            if (resourceFilters.search || resourceFilters.type) {
+                return libraryAPI.searchLibrary({
+                    query: resourceFilters.search || '',
+                    type: resourceFilters.type,
+                    limit: 20
+                });
+            }
+
             return libraryAPI.getResources({ ...resourceFilters, limit: 10, offset: pageParam });
         },
         initialPageParam: 0,
         getNextPageParam: (lastPage, allPages) => {
+            // For local search, we don't handle pagination yet in the same way (simple limit for now)
+            if (resourceFilters.search) return undefined;
             return lastPage.length === 10 ? allPages.length * 10 : undefined;
         }
     });
@@ -77,6 +98,11 @@ export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilt
         isCreatingResource: createResourceMutation.isPending,
 
         endorseResource: endorseMutation.mutateAsync,
+
+        syncLibrary: async () => {
+            await knowledgeSync.performSync();
+            resourcesInfiniteQuery.refetch();
+        },
 
         loading: resourcesInfiniteQuery.isLoading || collectionsInfiniteQuery.isLoading,
         error: (resourcesInfiniteQuery.error || collectionsInfiniteQuery.error)

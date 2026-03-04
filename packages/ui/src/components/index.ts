@@ -50,3 +50,6 @@ export type { UserAvatarProps } from './UserAvatar';
 export { SanctuaryNudge } from './SanctuaryNudge';
 export { default as SanctuaryModal } from './SanctuaryModal';
 export type { SanctuaryModalProps } from './SanctuaryModal';
+export { SanctuaryGlobalStyles } from './SanctuaryGlobalStyles';
+export { UniversalModal } from './UniversalModal';
+export type { UniversalModalProps } from './UniversalModal';

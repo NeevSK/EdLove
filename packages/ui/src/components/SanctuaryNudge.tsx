@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Theme } from '../theme/Theme';
@@ -19,7 +19,7 @@ export const SanctuaryNudge: React.FC<SanctuaryNudgeProps> = ({
     description,
     actionLabel,
     onAction,
-    icon = '✨'
+    icon = 'âœ¨'
 }) => {
     const colors = useThemedColors();
 
@@ -93,3 +93,4 @@ const styles = StyleSheet.create({
         opacity: 0.9,
     },
 });
+

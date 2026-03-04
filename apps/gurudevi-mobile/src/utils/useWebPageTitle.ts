@@ -17,25 +17,25 @@ const APP_NAME = 'Gurudevi';
 
 /** Maps internal route names to human-friendly tab titles. */
 const ROUTE_LABELS: Record<string, string> = {
-    Home:               'Sanctuary',
-    Self:               'Your Inner Compass',
-    Community:          'The Circle',
-    Classroom:          'Classroom',
-    Profile:            'Profile',
-    Auth:               'Sign In',
-    Welcome:            'Welcome',
-    Onboarding:         'Getting Started',
-    FullProfile:        'Profile',
-    AIAssistant:        'Gurudevi AI',
-    QRHandler:          'QR Scan',
-    ThuthimalClaim:     'Thuthimal Badge',
-    InvitationWelcome:  'Invitation',
-    AppSettings:        'Settings',
-    Gradebook:          'Gradebook',
-    PulseDashboard:     'Pulse',
-    Scanner:            'Scanner',
-    ContentLibrary:     'Content Library',
-    VideoPlayer:        'Video Player',
+    Home: 'Sanctuary',
+    Self: 'Your Inner Compass',
+    Community: 'The Circle',
+    Classroom: 'Classroom',
+    Profile: 'Profile',
+    Auth: 'Sign In',
+    Welcome: 'Welcome',
+    Onboarding: 'Getting Started',
+    FullProfile: 'Profile',
+    AIAssistant: 'Gurudevi AI',
+    QRHandler: 'QR Scan',
+    ThuthimalClaim: 'Thuthimal Badge',
+    InvitationWelcome: 'Invitation',
+    AppSettings: 'Settings',
+    Gradebook: 'Gradebook',
+    PulseDashboard: 'Pulse',
+    Scanner: 'Scanner',
+    ContentLibrary: 'Content Library',
+    VideoPlayer: 'Video Player',
 };
 
 type NavState = { routes: Array<{ name: string; state?: NavState }>; index?: number } | undefined;
@@ -52,18 +52,12 @@ function getLeafRouteName(state: NavState): string | undefined {
     return route.name;
 }
 
-export function useWebPageTitle() {
-    // useNavigationState is called unconditionally — hooks must not be conditional.
-    // The Platform check happens inside useEffect so the hook is always called.
-    // Cast to NavState: useNavigationState's generic expects ParamListBase, but we only
-    // need the routes/index shape, so we cast at the boundary rather than fight the type.
-    const routeName = useNavigationState((state: NavState) => getLeafRouteName(state));
+export function updateWebPageTitle(state: NavState | undefined) {
+    if (Platform.OS !== 'web') return;
+    if (typeof document === 'undefined') return;
 
-    useEffect(() => {
-        if (Platform.OS !== 'web') return;
-        if (typeof document === 'undefined') return;
-
-        const label = routeName ? (ROUTE_LABELS[routeName] ?? routeName) : null;
-        document.title = label ? `${APP_NAME} · ${label}` : APP_NAME;
-    }, [routeName]);
+    if (!state) return;
+    const routeName = getLeafRouteName(state);
+    const label = routeName ? (ROUTE_LABELS[routeName] ?? routeName) : null;
+    document.title = label ? `${APP_NAME} · ${label}` : APP_NAME;
 }

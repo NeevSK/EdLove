@@ -113,16 +113,20 @@ import { Platform } from 'react-native';
  *      Running `expo start --dev-client` against an OLD APK that predates
  *      MMKV being added will silently fall back to AsyncStorage.
  */
+import { Runtime } from './runtime';
+
 let _storageInstance: StorageInterface | null = null;
 
 function createStorage(): StorageInterface {
     const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
     // MMKV is a JSI native module - unavailable in Expo Go (JS-only runtime) and on web.
-    const shouldUseAsyncStorage = isExpoGo || Platform.OS === 'web';
+    // ALSO: Defer MMKV init until the runtime is marked ready to avoid Bridgeless context race.
+    const shouldUseAsyncStorage = isExpoGo || Platform.OS === 'web' || !Runtime.isReady();
 
     if (shouldUseAsyncStorage) {
         if (__DEV__) {
-            console.log(`📦 Storage: ${isExpoGo ? 'Expo Go' : 'Web'} detected - using AsyncStorage fallback`);
+            const reason = isExpoGo ? 'Expo Go' : Platform.OS === 'web' ? 'Web' : 'Early Init (Deferring to AsyncStorage)';
+            console.log(`📦 Storage: ${reason} - using AsyncStorage fallback`);
         }
         return new RobustAsyncStorage();
     }
@@ -168,10 +172,25 @@ function createStorage(): StorageInterface {
 }
 
 function getStorage(): StorageInterface {
-    if (!_storageInstance) {
-        _storageInstance = createStorage();
+    const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+    const isPermanentFallback = isExpoGo || Platform.OS === 'web';
+
+    // If we have a cached instance, use it.
+    if (_storageInstance) return _storageInstance;
+
+    // If we are NOT ready and it's not a permanent fallback, return a TEMPORARY 
+    // RobustAsyncStorage but do NOT cache it. This forces the Proxy to keep 
+    // checking until Runtime.isReady() enters the MMKV branch.
+    if (!Runtime.isReady() && !isPermanentFallback) {
+        if (__DEV__) console.log('📦 Storage: Early access - providing temporary AsyncStorage');
+        return new RobustAsyncStorage();
     }
-    return _storageInstance;
+
+    const instance = createStorage();
+
+    // Cache the instance permanently now that we are ready or it's a permanent fallback.
+    _storageInstance = instance;
+    return instance;
 }
 
 /**

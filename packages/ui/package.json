@@ -28,6 +28,7 @@
     "expo-blur": "~55.0.8",
     "expo-haptics": "~55.0.8",
     "expo-linear-gradient": "~55.0.8",
+    "expo-location": "*",
     "i18next": "*",
     "react": "*",
     "react-i18next": "*",

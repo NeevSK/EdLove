@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { VStack, Text, Center, Box } from '../gluestack';
 import { Theme } from '../theme/Theme';
 import { useThemedColors } from '../hooks/useThemedColors';
@@ -73,3 +73,4 @@ export default function EmptyState({
         </Center>
     );
 }
+

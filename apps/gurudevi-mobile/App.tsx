@@ -7,13 +7,14 @@ import { NavigationContainer, type LinkingOptions } from '@react-navigation/nati
 import { navigationRef } from './src/navigation/navigationRef';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GluestackUIProvider, Spinner, Center, VStack, Text } from '@repo/ui';
+import { GluestackUIProvider, Spinner, Center, VStack, Text, SanctuaryGlobalStyles } from '@repo/ui';
 import { config } from "./gluestack-ui.config";
 import { Home, School, Users, Library, User, Sparkles } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
 import * as Font from 'expo-font';
 import { supabase, useStore, UserRole, SchoolType, initSentry, initPostHog, trackEvent, identifyUser } from '@repo/core';
 import { Platform } from 'react-native';
+import * as Linking from 'expo-linking';
 import { PostHogProvider } from 'posthog-react-native';
 import * as Sentry from '@sentry/react-native';
 import { Theme } from '@repo/ui';
@@ -36,7 +37,7 @@ import { ErrorBoundary, NetworkStatusBanner } from '@repo/ui';
 import { SyncManager } from '@repo/core';
 import { LanguageUtils } from './src/utils/LanguageUtils';
 import CommandPalette from './src/components/web/CommandPalette';
-import { useWebPageTitle } from './src/utils/useWebPageTitle';
+import { updateWebPageTitle } from './src/utils/useWebPageTitle';
 import { PWAInstallBanner } from './src/components/web/PWAInstallBanner';
 
 // Create a client
@@ -132,14 +133,24 @@ function App() {
       try {
         // Initial session check - non-blocking for fonts/UI
         const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
 
-        setSession(session);
-        if (session) {
-          setShowWelcome(false);
-        }
-        if (session?.user) {
-          fetchAndSetUserProfile(session.user.id); // Fire and forget background sync
+        if (error) {
+          // Gracefully handle Invalid Refresh Token (prevents infinite reload loops)
+          if (error.message?.includes('Refresh Token') || (error as any).status === 400) {
+            console.warn('🔄 App: Stale session detected, clearing local storage...');
+            await supabase.auth.signOut({ scope: 'local' });
+            setSession(null);
+          } else {
+            throw error;
+          }
+        } else {
+          setSession(session);
+          if (session) {
+            setShowWelcome(false);
+            if (session.user) {
+              fetchAndSetUserProfile(session.user.id);
+            }
+          }
         }
       } catch (error) {
         console.warn('❌ Startup: Auth session check failed:', error);
@@ -167,6 +178,50 @@ function App() {
 
     return () => {
       subscription.unsubscribe();
+    };
+  }, []);
+
+  // Handle native deep links (especially for Supabase Auth callback)
+  useEffect(() => {
+    const handleDeepLink = async (url: string) => {
+      console.log('🔗 Deep Link received:', url);
+
+      // Supabase OAuth/Linking callback usually contains access_token in a fragment (#) or query (?)
+      if (url.includes('auth/callback')) {
+        // Simple parser for access_token and refresh_token
+        const getParam = (name: string) => {
+          const match = url.match(new RegExp(`[#?&]${name}=([^&]*)`));
+          return match ? match[1] : null;
+        };
+
+        const access_token = getParam('access_token');
+        const refresh_token = getParam('refresh_token');
+
+        if (access_token && refresh_token) {
+          console.log('🔄 App: Recovering session from deep link...');
+          const { error } = await supabase.auth.setSession({
+            access_token,
+            refresh_token,
+          });
+          if (error) {
+            console.error('❌ App: Failed to set session from deep link:', error.message);
+          } else {
+            console.log('✅ App: Session recovered from deep link');
+          }
+        }
+      }
+    };
+
+    const subscription = Linking.addEventListener('url', (event) => {
+      handleDeepLink(event.url);
+    });
+
+    Linking.getInitialURL().then((url) => {
+      if (url) handleDeepLink(url);
+    });
+
+    return () => {
+      subscription.remove();
     };
   }, []);
 
@@ -225,6 +280,11 @@ function App() {
             onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Community' }),
             icon: Users
           },
+          {
+            label: 'Share Resource',
+            onPress: () => navigationRef.isReady() && navigationRef.navigate('Main', { screen: 'Community' }),
+            icon: Users
+          },
         ];
       case 'library':
         return [
@@ -276,6 +336,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <EnvironmentProvider>
         <GluestackUIProvider config={config}>
+          <SanctuaryGlobalStyles />
           <AppContent
             currentTab={currentTab}
             setCurrentTab={setCurrentTab}
@@ -295,98 +356,113 @@ function App() {
 
 // Main Content Component to access Theme/Context
 function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardingCompleted, showWelcome, setShowWelcome, toast, hideToast }: any) {
-  const { phase } = useTheme();
-  const isWarmPhase = ['morning', 'afternoon', 'evening'].includes(phase);
-
-  // Reactive document.title tied to actual navigation state (replaces tab-only version)
-  useWebPageTitle();
-
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <ToastProvider>
-          <ErrorBoundary name="App Root">
-            <NavigationContainer
-              ref={navigationRef}
-              linking={Platform.OS === 'web' ? ({
-                prefixes: ['https://app.gurudevi.edlove.org', 'http://localhost:4000'],
-                config: {
-                  screens: {
-                    Welcome: '',
-                    Onboarding: 'onboarding',
-                    Auth: 'auth',
-                    AIAssistant: 'ai',
-                    QRHandler: 'qr',
-                    ThuthimalClaim: 'thuthimal',
-                    Main: {
-                      path: 'app',
-                      screens: {
-                        Self: 'self',
-                        Profile: {
-                          path: 'profile',
-                          screens: {
-                            ProfileMain: '',
-                            FullProfile: 'full',
-                          },
+
+    <SafeAreaProvider>
+      <ToastProvider>
+        <ErrorBoundary name="App Root">
+          <NavigationContainer
+            ref={navigationRef}
+            onReady={() => {
+              if (navigationRef.isReady()) {
+                updateWebPageTitle(navigationRef.current?.getRootState());
+              }
+            }}
+            onStateChange={(state) => {
+              updateWebPageTitle(state);
+            }}
+            linking={{
+              prefixes: ['gurudevi://', 'https://app.gurudevi.edlove.org', 'http://localhost:4000'],
+              config: {
+                screens: {
+                  Welcome: '',
+                  Onboarding: 'onboarding',
+                  Auth: 'auth',
+                  AIAssistant: 'ai',
+                  QRHandler: 'qr',
+                  ThuthimalClaim: 'thuthimal',
+                  Main: {
+                    path: 'app',
+                    screens: {
+                      Self: 'self',
+                      Profile: {
+                        path: 'profile',
+                        screens: {
+                          ProfileMain: '',
+                          FullProfile: 'full',
                         },
-                        Classroom: {
-                          path: 'classroom',
-                          screens: {
-                            ClassroomList: '',
-                            SchoolCreation: 'new',
-                            ClassroomDetails: {
-                              path: ':classroomId',
-                              screens: {
-                                Attendance: 'attendance',
-                                Gradebook: 'gradebook',
-                              },
+                      },
+                      Classroom: {
+                        path: 'classroom',
+                        screens: {
+                          ClassroomList: '',
+                          SchoolCreation: 'new',
+                          ClassroomDetails: {
+                            path: ':classroomId',
+                            screens: {
+                              Attendance: 'attendance',
+                              Gradebook: 'gradebook',
                             },
                           },
                         },
-                        Community: {
-                          path: 'community',
-                          screens: {
-                            CommunityMain: '',
-                            GroupDetails: 'group/:groupId',
-                            GroupChat: 'group/:groupId/chat',
-                            UserProfile: 'user/:userId',
-                          },
+                      },
+                      Community: {
+                        path: 'community',
+                        screens: {
+                          CommunityMain: '',
+                          GroupDetails: 'group/:groupId',
+                          GroupChat: 'group/:groupId/chat',
+                          UserProfile: 'user/:userId',
                         },
-                        Library: 'library',
+                      },
+                      Library: {
+                        path: 'library',
+                        screens: {
+                          LibraryHome: '',
+                          PDFViewer: 'pdf/:resourceId',
+                          VideoPlayer: 'video/:resourceId',
+                          LibraryMap: 'map',
+                        }
                       },
                     },
                   },
                 },
-              } as LinkingOptions<any>) : undefined}
+              },
+            }}
+          >
+            <PostHogProvider
+              apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
+              options={{
+                host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
+              }}
+              autocapture={false}
             >
-              <PostHogProvider
-                apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
-                options={{
-                  host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
-                }}
-                autocapture={false}
-              >
-                <RootStack.Navigator screenOptions={{ headerShown: false }}>
-                  {(!session || needsWelcome) ? (
+              <RootStack.Navigator screenOptions={{ headerShown: false }}>
+                {!onboardingCompleted ? (
+                  <>
                     <RootStack.Screen name="Welcome">
                       {() => (
                         <ErrorBoundary name="Welcome Screen">
                           <WelcomeScreen
                             initialShowAuth={onboardingCompleted}
                             onNext={() => {
+                              console.log('➡️ App: onNext called from WelcomeScreen');
                               setShowWelcome(false);
+                              if (navigationRef.isReady()) {
+                                navigationRef.navigate('Onboarding' as never);
+                              }
                             }}
                           />
                         </ErrorBoundary>
                       )}
                     </RootStack.Screen>
-                  ) : !onboardingCompleted ? (
                     <RootStack.Screen name="Onboarding">
                       {() => (
                         <ErrorBoundary name="Onboarding Screen">
                           <OnboardingScreen
                             isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
                             onComplete={(name: string, role: any, wantsAccount?: boolean) => {
+                              console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
                               const store = useStore.getState();
                               if (name) store.setTeacherName(name);
                               if (role) store.setUserRole(role);
@@ -397,83 +473,84 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                         </ErrorBoundary>
                       )}
                     </RootStack.Screen>
-                  ) : (
-                    <>
-                      <RootStack.Screen name="Main">
-                        {() => (
-                          <ErrorBoundary name="Main Tabs">
-                            <TabNavigator onTabChange={(tab: any) => setCurrentTab(tab)} />
-                          </ErrorBoundary>
-                        )}
-                      </RootStack.Screen>
-                      <RootStack.Screen
-                        name="AIAssistant"
-                        component={AIAssistantScreen}
-                        options={{
-                          presentation: 'modal',
-                          animation: 'slide_from_bottom'
-                        }}
-                      />
-                      <RootStack.Screen
-                        name="Auth"
-                        component={AuthScreen}
-                        options={{ presentation: 'modal' }}
-                      />
-                      <RootStack.Screen
-                        name="QRHandler"
-                        component={QRHandlerScreen}
-                        options={{
-                          presentation: 'modal',
-                          animation: 'fade_from_bottom',
-                        }}
-                      />
-                      <RootStack.Screen
-                        name="ThuthimalClaim"
-                        component={ThuthimalClaimScreen}
-                        options={{
-                          presentation: 'modal',
-                          animation: 'fade_from_bottom',
-                        }}
-                      />
-                    </>
-                  )}
-                </RootStack.Navigator>
-              </PostHogProvider>
-            </NavigationContainer>
+                  </>
+                ) : (
+                  <>
+                    <RootStack.Screen name="Main">
+                      {() => (
+                        <ErrorBoundary name="Main Tabs">
+                          <TabNavigator onTabChange={(tab: any) => setCurrentTab(tab)} />
+                        </ErrorBoundary>
+                      )}
+                    </RootStack.Screen>
 
-            <SyncManager />
-            <NetworkStatusBanner />
+                    <RootStack.Screen
+                      name="AIAssistant"
+                      component={AIAssistantScreen}
+                      options={{
+                        presentation: 'modal',
+                        animation: 'slide_from_bottom'
+                      }}
+                    />
+                    <RootStack.Screen
+                      name="Auth"
+                      component={AuthScreen}
+                      options={{ presentation: 'modal' }}
+                    />
+                    <RootStack.Screen
+                      name="QRHandler"
+                      component={QRHandlerScreen}
+                      options={{
+                        presentation: 'modal',
+                        animation: 'fade_from_bottom',
+                      }}
+                    />
+                    <RootStack.Screen
+                      name="ThuthimalClaim"
+                      component={ThuthimalClaimScreen}
+                      options={{
+                        presentation: 'modal',
+                        animation: 'fade_from_bottom',
+                      }}
+                    />
+                  </>
+                )}
+              </RootStack.Navigator>
+            </PostHogProvider>
+          </NavigationContainer>
 
-            {/* Command Palette — web-only power feature (Cmd+K) */}
-            {Platform.OS === 'web' && (
-              <CommandPalette
-                onOpenAI={() => navigationRef.navigate('AIAssistant' as never)}
-              />
-            )}
+          <SyncManager />
+          <NetworkStatusBanner />
 
-            {/* PWA Install Banner — web-only; hook guards against native/installed/dismissed */}
-            <PWAInstallBanner />
+          {/* Command Palette — web-only power feature (Cmd+K) */}
+          {Platform.OS === 'web' && (
+            <CommandPalette
+              onOpenAI={() => navigationRef.navigate('AIAssistant' as never)}
+            />
+          )}
 
-            {toast.visible && (
-              <SanctuaryToast
-                message={toast.message}
-                type={toast.type}
-                visible={toast.visible}
-                onHide={hideToast}
-              />
-            )}
+          {/* PWA Install Banner — web-only; hook guards against native/installed/dismissed */}
+          <PWAInstallBanner />
 
-            {/* Skia Grain Overlay (Temporarily disabled due to Android black screen issue)
+          {toast.visible && (
+            <SanctuaryToast
+              message={toast.message}
+              type={toast.type}
+              visible={toast.visible}
+              onHide={hideToast}
+            />
+          )}
+
+          {/* Skia Grain Overlay (Temporarily disabled due to Android black screen issue)
             <NoiseOverlay
               opacity={0.03}
               warm={isWarmPhase}
               frequency={phase === 'night' ? 0.45 : 0.65}
             />
             */}
-          </ErrorBoundary>
-        </ToastProvider>
-      </SafeAreaProvider>
-    </GestureHandlerRootView >
+        </ErrorBoundary>
+      </ToastProvider>
+    </SafeAreaProvider>
   );
 }
 

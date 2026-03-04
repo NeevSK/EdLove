@@ -11,7 +11,8 @@ import {
     DailyResonanceCard,
     useThemedColors,
     BreathAnimation,
-    SkeletonCard
+    SkeletonCard,
+    useTheme
 } from '@repo/ui';
 import { useUserRole, useStore, dailyContentAPI, usePendingActions, ClassroomStackParamList } from '@repo/core';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +29,7 @@ export default function PulseDashboard({ onEnterDetails }: { onEnterDetails: () 
     const { role } = useUserRole();
     const user = useStore((state) => state.user);
     const teacherName = useStore((state) => state.teacherName);
+    const { isDark, accent, glass, glow, text, gradientNodes } = useTheme();
     const colors = useThemedColors();
     const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
     const [refreshing, setRefreshing] = React.useState(false);
@@ -132,6 +134,7 @@ export default function PulseDashboard({ onEnterDetails }: { onEnterDetails: () 
                                             title={`${t('pulse.markAttendance') || 'Mark Attendance'}: ${item.classroomName}`}
                                             time={t('pulse.beforeNine') || 'Before 9:00 AM'}
                                             status="pending"
+                                            isDark={isDark}
                                             onPress={() => navigation.navigate('Attendance', {
                                                 classroomId: item.classroomId,
                                                 classroomName: item.classroomName,
@@ -144,6 +147,7 @@ export default function PulseDashboard({ onEnterDetails }: { onEnterDetails: () 
                                             title={`${t('pulse.grade') || 'Grade'}: ${item.assignmentTitle}`}
                                             time={`${item.ungradedCount} ${t('pulse.submissions') || 'submission(s)'} · ${item.classroomName}`}
                                             status="upcoming"
+                                            isDark={isDark}
                                             onPress={() => navigation.navigate('Gradebook', {
                                                 classroomId: item.classroomId,
                                                 classroomName: item.classroomName,
@@ -176,16 +180,16 @@ export default function PulseDashboard({ onEnterDetails }: { onEnterDetails: () 
     );
 }
 
-function PulseActionItem({ title, time, status, onPress }: any) {
+function PulseActionItem({ title, time, status, onPress, isDark }: any) {
     const colors = useThemedColors();
     return (
         <HStack
             sx={{
                 p: Theme.spacing.md,
-                backgroundColor: Theme.colors.glass.dark.highlight,
+                backgroundColor: isDark ? colors.tertiary : '#FAF7ED', // Silk for light mode
                 borderRadius: Theme.corners.comfortable,
                 borderWidth: 1,
-                borderColor: Theme.colors.glass.dark.border
+                borderColor: colors.border
             }}
             justifyContent="space-between"
             alignItems="center"
@@ -204,7 +208,7 @@ function PulseActionItem({ title, time, status, onPress }: any) {
                     borderRadius: Theme.corners.full,
                     backgroundColor: status === 'pending'
                         ? `${Theme.colors.sanctuarySaffron}26`
-                        : Theme.colors.glass.dark.highlight
+                        : Theme.colors.skyBlue
                 }}
             >
                 <Text sx={{

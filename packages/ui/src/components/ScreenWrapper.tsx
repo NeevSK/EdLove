@@ -60,7 +60,7 @@ export default function ScreenWrapper({
                 backgroundColor={colors.primary}
             />
 
-            <View style={[styles.container, safeAreaStyle, { backgroundColor: 'transparent' }]}>
+            <View style={[styles.container, safeAreaStyle, { backgroundColor: backgroundColor || colors.primary }]}>
                 {(scroll ?? scrollable) ? (
                     <ScrollView
                         style={{ flex: 1 }}

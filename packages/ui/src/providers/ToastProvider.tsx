@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
+﻿import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { Box, Text, VStack } from '../gluestack';
 import { Theme } from '../theme/Theme';
 import { useThemedColors } from '../hooks/useThemedColors';
@@ -45,11 +45,11 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const getToastStyles = (type: ToastType) => {
         switch (type) {
-            // Use semantic theme tokens (Zero Fallback Rule — no raw hex values)
-            case 'success': return { bg: colors.success, icon: '✨' };
-            case 'error': return { bg: colors.error, icon: '⚠️' };
-            case 'sanctuary': return { bg: Theme.colors.sanctuarySaffron, icon: '🙏' };
-            default: return { bg: colors.tertiary, icon: 'ℹ️' };
+            // Use semantic theme tokens (Zero Fallback Rule â€” no raw hex values)
+            case 'success': return { bg: colors.success, icon: 'âœ¨' };
+            case 'error': return { bg: colors.error, icon: 'âš ï¸' };
+            case 'sanctuary': return { bg: Theme.colors.sanctuarySaffron, icon: 'ðŸ™' };
+            default: return { bg: colors.tertiary, icon: 'â„¹ï¸' };
         }
     };
 
@@ -91,3 +91,4 @@ export const useLotusToast = () => {
     if (!context) throw new Error('useLotusToast must be used within ToastProvider');
     return context;
 };
+

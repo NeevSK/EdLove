@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+﻿import React, { useMemo } from 'react';
 import { StyleSheet, Dimensions, Pressable, ScrollView, Modal, ActivityIndicator } from 'react-native';
 import { Box, VStack, HStack, Text, Heading } from '../gluestack';
 import { X, Bell, Info, CheckCircle, AlertCircle, Users, BookOpen, Check } from 'lucide-react-native';
@@ -157,7 +157,7 @@ export default function NotificationDrawer({
                                 <VStack sx={{ alignItems: 'center', paddingVertical: Theme.spacing.xl, gap: 8 }}>
                                     <Bell size={40} color={colors.textTertiary} />
                                     <Text color={colors.textTertiary} sx={{ textAlign: 'center', fontSize: '$sm' as any }}>
-                                        You're all caught up 🙏
+                                        You're all caught up ðŸ™
                                     </Text>
                                 </VStack>
                             ) : (
@@ -238,3 +238,4 @@ const styles = StyleSheet.create({
         elevation: 10,
     }
 });
+

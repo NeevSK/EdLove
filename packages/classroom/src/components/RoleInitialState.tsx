@@ -74,15 +74,15 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
                 };
             case 'principal':
                 return {
-                    title: t('classroom.principalInitialTitle') || "School Dashboard",
-                    description: t('classroom.principalInitialDesc') || "Initialize your school hierarchy to see institutional patterns.",
+                    title: t('classroom.principalInitialTitle') || "Establish Your School",
+                    description: t('classroom.principalInitialDesc') || "Create your school on Gurudevi to unlock institutional dashboards, teacher management, and wellbeing analytics.",
                     icon: Compass,
-                    primaryAction: t('principal.setupHierarchy') || "Setup School Hierarchy",
+                    primaryAction: t('principal.createSchool') || "Create My School",
                     actionType: 'setup',
                     samples: [
-                        { id: 'demo', title: t('classroom.exploreSampleSchool') || "Explore Sample Sanctuary", subtitle: t('classroom.seeFullFeatureDemo') || "See a full school in action", icon: Zap, color: Theme.colors.sanctuarySaffron },
-                        { id: 's1', title: "Health Pattern Sample", subtitle: "Attendance Trends", icon: Zap, color: Theme.colors.amberGlow },
-                        { id: 's2', title: "Staff Directory Guide", subtitle: "Managing Invites", icon: Globe },
+                        { id: 'demo', title: t('classroom.exploreSampleSchool') || "Preview a Demo School", subtitle: t('classroom.seeFullSchoolDemo') || "See a full school dashboard in action", icon: Zap, color: Theme.colors.sanctuarySaffron },
+                        { id: 's1', title: "School Health Patterns", subtitle: "Attendance & Wellbeing Trends", icon: Activity, color: Theme.colors.amberGlow },
+                        { id: 's2', title: "Staff Management Guide", subtitle: "Inviting Teachers & Section Heads", icon: Users, color: Theme.colors.sageGreen },
                     ]
                 };
             case 'section_head':
