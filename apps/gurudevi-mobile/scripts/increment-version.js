@@ -20,15 +20,29 @@ fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
 const appJson = JSON.parse(fs.readFileSync(appJsonPath, 'utf8'));
 appJson.expo.version = newVersion;
 
-// Increment android versionCode if it exists
-if (appJson.expo.android && appJson.expo.android.versionCode) {
-    appJson.expo.android.versionCode += 1;
+// Ensure android object exists
+if (!appJson.expo.android) {
+    appJson.expo.android = {};
 }
 
-// Increment ios buildNumber if it exists (assuming it's a string representing a number)
-if (appJson.expo.ios && appJson.expo.ios.buildNumber) {
+// Increment or initialize android versionCode
+if (appJson.expo.android.versionCode) {
+    appJson.expo.android.versionCode += 1;
+} else {
+    appJson.expo.android.versionCode = 1;
+}
+
+// Ensure ios object exists
+if (!appJson.expo.ios) {
+    appJson.expo.ios = {};
+}
+
+// Increment or initialize ios buildNumber
+if (appJson.expo.ios.buildNumber) {
     const buildNum = parseInt(appJson.expo.ios.buildNumber, 10);
     appJson.expo.ios.buildNumber = (buildNum + 1).toString();
+} else {
+    appJson.expo.ios.buildNumber = "1";
 }
 
 fs.writeFileSync(appJsonPath, JSON.stringify(appJson, null, 2) + '\n');
