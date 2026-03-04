@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Box, VStack, HStack, Text, Spinner } from '../gluestack';
 import { Theme } from '../theme/Theme';
 import { useTheme } from '../hooks/useTheme';
@@ -88,7 +88,7 @@ export default function GuestDataSyncModal({
                 onPress={handleSync}
                 isLoading={syncing}
             >
-                {syncing ? (t('sync.syncing') || 'Syncing…') : (t('sync.syncButton') || 'Sync Data')}
+                {syncing ? (t('sync.syncing') || 'Syncingâ€¦') : (t('sync.syncButton') || 'Sync Data')}
             </SanctuaryButton>
         </HStack>
     ) : undefined;
@@ -97,7 +97,7 @@ export default function GuestDataSyncModal({
         <SanctuaryModal
             isOpen={isOpen}
             onClose={handleSkip}
-            title={completed ? '✨ ' + (t('sync.completeTitle') || 'Sync Complete!') : '☁️ ' + (t('sync.title') || 'Sync Your Data')}
+            title={completed ? 'âœ¨ ' + (t('sync.completeTitle') || 'Sync Complete!') : 'â˜ï¸ ' + (t('sync.title') || 'Sync Your Data')}
             footer={footer}
         >
             <VStack {...({ space: "lg" } as any)}>
@@ -229,3 +229,4 @@ export default function GuestDataSyncModal({
         </SanctuaryModal>
     );
 }
+

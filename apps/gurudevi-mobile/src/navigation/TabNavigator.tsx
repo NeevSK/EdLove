@@ -118,19 +118,17 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             marginBottom: insets.bottom > 0 ? 0 : 4,
           },
           tabBarBackground: () => (
-            <TemporalGlass
-              width={width}
-              height={60 + insets.bottom}
-              phase={phase}
-              cornerRadius={0}
-              style={{ flex: 1 }}
-            >
-              <BlurView
-                intensity={isDark ? 40 : 12}
-                tint={isDark ? 'dark' : 'light'}
-                style={StyleSheet.absoluteFill}
-              />
-            </TemporalGlass>
+            <BlurView
+              intensity={isDark ? 40 : 12}
+              tint={isDark ? 'dark' : 'light'}
+              style={[
+                StyleSheet.absoluteFill,
+                {
+                  borderTopWidth: 1,
+                  borderTopColor: isDark ? 'rgba(253, 217, 37, 0.1)' : 'rgba(230, 126, 34, 0.1)',
+                }
+              ]}
+            />
           ),
         }}
       >

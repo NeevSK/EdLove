@@ -21,13 +21,15 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useAccountDeletion, useTracking, useStore } from '@repo/core';
 import { hapticSuccess, hapticLight, hapticError } from '@repo/ui';
-import ProfileSkeleton from '../components/profile/ProfileSkeleton';
-import LivingJourneyPanel from '../components/profile/LivingJourneyPanel';
+import {
+    ProfileSkeleton,
+    LivingJourneyPanel,
+    IdentityCard,
+    ThuthimalBadge,
+    ProfileListItem
+} from '@repo/profile';
 import { Edit3, UserPlus, ChevronRight, Settings, LogOut, Trash2, HelpCircle, MessageSquare, Info, Heart, X } from 'lucide-react-native';
-import IdentityCard from '../components/profile/IdentityCard';
-import ThuthimalBadge from '../components/profile/ThuthimalBadge';
 import AppSettingsScreen from './AppSettingsScreen';
-import ProfileListItem from '../components/profile/ProfileListItem';
 
 import Animated, { FadeInDown, useSharedValue, useAnimatedStyle, withSequence, withTiming, withRepeat } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
@@ -180,65 +182,65 @@ const SupportSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => (
 const AppExperienceSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => {
     const showToast = useStore((state) => state.showToast);
     return (
-    <Center>
-        <VStack
-            sx={{
-                width: cardWidth,
-                p: Theme.spacing.md,
-                backgroundColor: colors.secondary,
-                borderRadius: Theme.corners.generous,
-                borderWidth: 1,
-                borderColor: colors.border,
-                shadowColor: colors.glow,
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.6,
-                shadowRadius: 20,
-                elevation: 5,
-            }}
-            space="sm"
-        >
-            <Heading
-                size="sm"
-                color={colors.textSecondary as any}
-                mt={Theme.spacing.sm}
-                mb={Theme.spacing.md}
+        <Center>
+            <VStack
+                sx={{
+                    width: cardWidth,
+                    p: Theme.spacing.md,
+                    backgroundColor: colors.secondary,
+                    borderRadius: Theme.corners.generous,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    shadowColor: colors.glow,
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.6,
+                    shadowRadius: 20,
+                    elevation: 5,
+                }}
+                space="sm"
             >
-                {t('profile.account.support_app', 'Support this app')}
-            </Heading>
-            <ProfileListItem
-                icon={Heart}
-                label={t('profile.loveApp', 'I love this app')}
-                onPress={() => {
-                    hapticSuccess();
-                    if (Platform.OS === 'web') {
-                        showToast(t('profile.loveTitle', 'Radiant Energy'), 'success');
-                    } else {
-                        Alert.alert(
-                            t('profile.loveTitle', 'Radiant Energy'),
-                            t('profile.loveMessage', 'Your love for the Sanctuary fuels our mission. We are grateful for your presence in our community!'),
-                            [{ text: t('common.ok', 'OK'), style: 'default' }]
-                        );
-                    }
-                }}
-            />
-            <ProfileListItem
-                icon={Heart}
-                label={t('profile.helpSupportApp', 'I want to support this app')}
-                onPress={() => {
-                    hapticSuccess();
-                    if (Platform.OS === 'web') {
-                        showToast(t('profile.thankYouTitle', 'Radiant Gratitude'), 'success');
-                    } else {
-                        Alert.alert(
-                            t('profile.thankYouTitle', 'Radiant Gratitude'),
-                            t('profile.thankYouMessage', 'Your desire to support the Sanctuary is deeply appreciated. We are currently preparing premium patronage options for our most dedicated explorers.'),
-                            [{ text: t('common.ok', 'OK'), style: 'default' }]
-                        );
-                    }
-                }}
-            />
-        </VStack>
-    </Center>
+                <Heading
+                    size="sm"
+                    color={colors.textSecondary as any}
+                    mt={Theme.spacing.sm}
+                    mb={Theme.spacing.md}
+                >
+                    {t('profile.account.support_app', 'Support this app')}
+                </Heading>
+                <ProfileListItem
+                    icon={Heart}
+                    label={t('profile.loveApp', 'I love this app')}
+                    onPress={() => {
+                        hapticSuccess();
+                        if (Platform.OS === 'web') {
+                            showToast(t('profile.loveTitle', 'Radiant Energy'), 'success');
+                        } else {
+                            Alert.alert(
+                                t('profile.loveTitle', 'Radiant Energy'),
+                                t('profile.loveMessage', 'Your love for the Sanctuary fuels our mission. We are grateful for your presence in our community!'),
+                                [{ text: t('common.ok', 'OK'), style: 'default' }]
+                            );
+                        }
+                    }}
+                />
+                <ProfileListItem
+                    icon={Heart}
+                    label={t('profile.helpSupportApp', 'I want to support this app')}
+                    onPress={() => {
+                        hapticSuccess();
+                        if (Platform.OS === 'web') {
+                            showToast(t('profile.thankYouTitle', 'Radiant Gratitude'), 'success');
+                        } else {
+                            Alert.alert(
+                                t('profile.thankYouTitle', 'Radiant Gratitude'),
+                                t('profile.thankYouMessage', 'Your desire to support the Sanctuary is deeply appreciated. We are currently preparing premium patronage options for our most dedicated explorers.'),
+                                [{ text: t('common.ok', 'OK'), style: 'default' }]
+                            );
+                        }
+                    }}
+                />
+            </VStack>
+        </Center>
     );
 };
 

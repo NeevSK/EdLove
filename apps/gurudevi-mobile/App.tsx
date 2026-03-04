@@ -7,7 +7,7 @@ import { NavigationContainer, type LinkingOptions } from '@react-navigation/nati
 import { navigationRef } from './src/navigation/navigationRef';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GluestackUIProvider, Spinner, Center, VStack, Text } from '@repo/ui';
+import { GluestackUIProvider, Spinner, Center, VStack, Text, SanctuaryGlobalStyles } from '@repo/ui';
 import { config } from "./gluestack-ui.config";
 import { Home, School, Users, Library, User, Sparkles } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
@@ -133,14 +133,24 @@ function App() {
       try {
         // Initial session check - non-blocking for fonts/UI
         const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
 
-        setSession(session);
-        if (session) {
-          setShowWelcome(false);
-        }
-        if (session?.user) {
-          fetchAndSetUserProfile(session.user.id); // Fire and forget background sync
+        if (error) {
+          // Gracefully handle Invalid Refresh Token (prevents infinite reload loops)
+          if (error.message?.includes('Refresh Token') || (error as any).status === 400) {
+            console.warn('🔄 App: Stale session detected, clearing local storage...');
+            await supabase.auth.signOut({ scope: 'local' });
+            setSession(null);
+          } else {
+            throw error;
+          }
+        } else {
+          setSession(session);
+          if (session) {
+            setShowWelcome(false);
+            if (session.user) {
+              fetchAndSetUserProfile(session.user.id);
+            }
+          }
         }
       } catch (error) {
         console.warn('❌ Startup: Auth session check failed:', error);
@@ -326,6 +336,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <EnvironmentProvider>
         <GluestackUIProvider config={config}>
+          <SanctuaryGlobalStyles />
           <AppContent
             currentTab={currentTab}
             setCurrentTab={setCurrentTab}
@@ -404,7 +415,15 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                           UserProfile: 'user/:userId',
                         },
                       },
-                      Library: 'library',
+                      Library: {
+                        path: 'library',
+                        screens: {
+                          LibraryHome: '',
+                          PDFViewer: 'pdf/:resourceId',
+                          VideoPlayer: 'video/:resourceId',
+                          LibraryMap: 'map',
+                        }
+                      },
                     },
                   },
                 },
@@ -419,38 +438,42 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
               autocapture={false}
             >
               <RootStack.Navigator screenOptions={{ headerShown: false }}>
-                {(!session || needsWelcome) ? (
-                  <RootStack.Screen name="Welcome">
-                    {() => (
-                      <ErrorBoundary name="Welcome Screen">
-                        <WelcomeScreen
-                          initialShowAuth={onboardingCompleted}
-                          onNext={() => {
-                            console.log('➡️ App: onNext called from WelcomeScreen');
-                            setShowWelcome(false);
-                          }}
-                        />
-                      </ErrorBoundary>
-                    )}
-                  </RootStack.Screen>
-                ) : !onboardingCompleted ? (
-                  <RootStack.Screen name="Onboarding">
-                    {() => (
-                      <ErrorBoundary name="Onboarding Screen">
-                        <OnboardingScreen
-                          isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
-                          onComplete={(name: string, role: any, wantsAccount?: boolean) => {
-                            console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
-                            const store = useStore.getState();
-                            if (name) store.setTeacherName(name);
-                            if (role) store.setUserRole(role);
-                            store.setOnboardingCompleted(true);
-                            store.setJustFinishedOnboarding(true);
-                          }}
-                        />
-                      </ErrorBoundary>
-                    )}
-                  </RootStack.Screen>
+                {!onboardingCompleted ? (
+                  <>
+                    <RootStack.Screen name="Welcome">
+                      {() => (
+                        <ErrorBoundary name="Welcome Screen">
+                          <WelcomeScreen
+                            initialShowAuth={onboardingCompleted}
+                            onNext={() => {
+                              console.log('➡️ App: onNext called from WelcomeScreen');
+                              setShowWelcome(false);
+                              if (navigationRef.isReady()) {
+                                navigationRef.navigate('Onboarding' as never);
+                              }
+                            }}
+                          />
+                        </ErrorBoundary>
+                      )}
+                    </RootStack.Screen>
+                    <RootStack.Screen name="Onboarding">
+                      {() => (
+                        <ErrorBoundary name="Onboarding Screen">
+                          <OnboardingScreen
+                            isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
+                            onComplete={(name: string, role: any, wantsAccount?: boolean) => {
+                              console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
+                              const store = useStore.getState();
+                              if (name) store.setTeacherName(name);
+                              if (role) store.setUserRole(role);
+                              store.setOnboardingCompleted(true);
+                              store.setJustFinishedOnboarding(true);
+                            }}
+                          />
+                        </ErrorBoundary>
+                      )}
+                    </RootStack.Screen>
+                  </>
                 ) : (
                   <>
                     <RootStack.Screen name="Main">

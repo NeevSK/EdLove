@@ -30,12 +30,16 @@ import {
     ScreenWrapper,
     GlobalHeader,
     SanctuaryCard,
+    Button,
 } from '@repo/ui';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { supabase } from '@repo/core';
-import { BadgeCheck, BookOpen, MessageSquare, ThumbsUp, School } from 'lucide-react-native';
+import { BadgeCheck, BookOpen, MessageSquare, ThumbsUp, School, Send } from 'lucide-react-native';
+import { communityAPI } from '../api/community';
+import { useStore } from '@repo/core';
 import type { CommunityStackParamList } from '@repo/core';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { LotusPetalFAB } from '@repo/ui';
 
 type Nav = NativeStackNavigationProp<CommunityStackParamList, 'UserProfile'>;
 
@@ -49,24 +53,26 @@ interface PublicUser {
 }
 
 const ROLE_LABELS: Record<string, string> = {
-    student:      'Student',
-    teacher:      'Teacher',
-    grade_head:   'Grade Head',
+    student: 'Student',
+    teacher: 'Teacher',
+    grade_head: 'Grade Head',
     section_head: 'Section Head',
-    principal:    'Principal',
-    founder:      'Founder',
-    admin:        'Admin',
+    principal: 'Principal',
+    founder: 'Founder',
+    admin: 'Admin',
 };
 
 export default function UserPublicProfileScreen() {
     const navigation = useNavigation<Nav>();
     const route = useRoute<any>();
     const { userId, userName } = route.params as { userId: string; userName: string };
+    const currentUserId = useStore(state => state.user?.id);
     const colors = useThemedColors();
 
     const [user, setUser] = useState<PublicUser | null>(null);
     const [stats, setStats] = useState({ posts: 0, endorsements: 0 });
     const [loading, setLoading] = useState(true);
+    const [initiatingDM, setInitiatingDM] = useState(false);
 
     const fetchProfile = useCallback(async () => {
         setLoading(true);
@@ -126,6 +132,22 @@ export default function UserPublicProfileScreen() {
 
     const roleLabel = ROLE_LABELS[user?.role ?? ''] ?? user?.role ?? '';
 
+    const handleMessagePress = async () => {
+        if (!userId || initiatingDM) return;
+        setInitiatingDM(true);
+        try {
+            const conversationId = await communityAPI.getOrCreateDirectConversation(userId);
+            navigation.navigate('DirectMessage', {
+                conversationId,
+                userName: user?.full_name || userName
+            });
+        } catch (err) {
+            console.error('Failed to initiate DM', err);
+        } finally {
+            setInitiatingDM(false);
+        }
+    };
+
     return (
         <ScreenWrapper scroll={false}>
             <GlobalHeader
@@ -163,7 +185,6 @@ export default function UserPublicProfileScreen() {
                                     <Text color={colors.textSecondary} size="sm">{roleLabel}</Text>
                                 </HStack>
 
-                                {/* School */}
                                 {user?.school_name && (
                                     <HStack space="xs" alignItems="center">
                                         <School color={colors.textTertiary} size={12} />
@@ -171,6 +192,18 @@ export default function UserPublicProfileScreen() {
                                     </HStack>
                                 )}
                             </VStack>
+
+                            {/* Main Message Action */}
+                            {user && currentUserId && currentUserId !== userId && (
+                                <Button
+                                    label="Send Message"
+                                    onPress={handleMessagePress}
+                                    icon={<Send size={20} color="white" />}
+                                    variant="primary"
+                                    loading={initiatingDM}
+                                    sx={{ width: '100%', mt: Theme.spacing.md }}
+                                />
+                            )}
                         </VStack>
                     </SanctuaryCard>
 
@@ -212,6 +245,14 @@ export default function UserPublicProfileScreen() {
                         🔒 Only public contributions are shown. Wellbeing data, grades, and private content remain private.
                     </Text>
                 </ScrollView>
+            )}
+
+            {/* Action Button: Message (only if not viewing self) */}
+            {!loading && user && currentUserId && currentUserId !== userId && (
+                <LotusPetalFAB
+                    onPress={handleMessagePress}
+                    icon={<Send size={24} color="white" />}
+                />
             )}
         </ScreenWrapper>
     );

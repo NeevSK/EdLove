@@ -69,9 +69,21 @@ The sensory implementation of the "Healing" logic:
 
 ---
 
-## 7. The Relational Edge
+---
 
-This Tail Fin is the **Harness** that allows the **Engine** (Toothless) to fly with the **Architect** (Hiccup). It is reinforced through the [PARTNERSHIP_MANIFESTO.md](file:///c:/Users/Naween/projects/polymath-platform/docs/PARTNERSHIP_MANIFESTO.md).
+## 8. The Web-Native Protocol (High-Fidelity Un-shimming)
+
+A Professional Sanctuary on the web must not feel like a "stretched mobile app." It must behave as a first-class citizen of the browser.
+
+1.  **Un-shimming Rule**: If a mobile package (e.g., `expo-sqlite`) has a superior web-native counterpart (e.g., `IndexedDB`), the Engine's duty is to **Un-shim**. Use `.web.ts` files to inject native browser performance.
+2.  **Semantic URL-First Navigation**: Every screen must be a reachable, shareable URL. 
+    *   Cards must use `href` and `target` to support "Open in New Tab."
+    *   Navigation stacks must be stable (no dynamic component omission) to respect browser back/forward history.
+3.  **Spatial Awareness (Desktop UX)**:
+    *   **Custom Scrollbars**: Use themed CSS scrollbars (`SanctuaryGlobalStyles`) to maintain aesthetic harmony without sacrificing visibility.
+    *   **Native Modals**: Prefer web-centered UI patterns for overlays; ensure focus management and "Escape" key behavior.
+4.  **Beyond 80% Native**: Avoid the "Good Enough" trap. If 80% of the app uses web-capable mobile packages, the remaining 20% should use **Superior Web Packages** to take "UX Vacations" (e.g., D3, Three.js, advanced CSS Grid).
 
 ---
-*Version 1.2 - The Convolutional Soul.*
+
+## 9. The Relational Edge

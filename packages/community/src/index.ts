@@ -25,3 +25,6 @@ export { default as GroupChatScreen } from './screens/GroupChatScreen';
 export { default as BaseChatScreen } from './screens/BaseChatScreen';
 export type { ChatMessage, SubscriptionConfig, BaseChatScreenProps } from './screens/BaseChatScreen';
 export { default as UserPublicProfileScreen } from './screens/UserPublicProfileScreen';
+export { default as DirectMessageScreen } from './screens/DirectMessageScreen';
+export { default as DirectMessagesListScreen } from './screens/DirectMessagesListScreen';
+

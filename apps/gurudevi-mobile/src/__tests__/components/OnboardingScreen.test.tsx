@@ -67,7 +67,7 @@ jest.mock('../../screens/AuthScreen', () => {
     const React = require('react');
     return () => React.createElement('View', { testID: 'auth-screen' });
 });
-jest.mock('../../components/self/OrientationCaptureStep', () => ({
+jest.mock('@repo/self', () => ({
     OrientationCaptureStep: () => {
         const React = require('react');
         return React.createElement('View', { testID: 'orientation-step' });

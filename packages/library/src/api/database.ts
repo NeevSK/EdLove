@@ -13,6 +13,10 @@ export interface KnowledgeNodeIndex {
     tags: string | null;
     map_x: number | null;
     map_y: number | null;
+    latitude: number | null;
+    longitude: number | null;
+    parent_id: string | null;
+    island_id: string | null;
     updated_at: number;
 }
 
@@ -49,6 +53,10 @@ export const knowledgeDB = {
                     tags TEXT,
                     map_x REAL,
                     map_y REAL,
+                    latitude REAL,
+                    longitude REAL,
+                    parent_id TEXT,
+                    island_id TEXT,
                     updated_at INTEGER,
                     is_favourite INTEGER DEFAULT 0
                 );
@@ -64,6 +72,17 @@ export const knowledgeDB = {
                     tags,
                     content='knowledge_index',
                     content_rowid='rowid'
+                );
+            `);
+
+            // Create Map Layers Index Table
+            await this.db.execAsync(`
+                CREATE TABLE IF NOT EXISTS map_layers_index (
+                    id TEXT PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    category TEXT,
+                    is_geographic INTEGER,
+                    updated_at INTEGER
                 );
             `);
 
@@ -136,8 +155,8 @@ export const knowledgeDB = {
             await this.db.withTransactionAsync(async () => {
                 const statement = await this.db!.prepareAsync(
                     `INSERT OR REPLACE INTO knowledge_index 
-                    (id, type, content_type, title_si, title_ta, title_en, tags, map_x, map_y, updated_at) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+                    (id, type, content_type, title_si, title_ta, title_en, tags, map_x, map_y, latitude, longitude, parent_id, island_id, updated_at) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
                 );
 
                 try {
@@ -152,6 +171,10 @@ export const knowledgeDB = {
                             node.tags,
                             node.map_x,
                             node.map_y,
+                            node.latitude,
+                            node.longitude,
+                            node.parent_id,
+                            node.island_id,
                             node.updated_at
                         ]);
                     }
@@ -180,6 +203,39 @@ export const knowledgeDB = {
         } catch (error) {
             console.error('Failed to get nodes by IDs:', error);
             return [];
+        }
+    },
+
+    /**
+     * Bulk upsert layers into the index.
+     */
+    async upsertLayers(layers: { id: string, name: string, category: string | null, is_geographic: boolean, updated_at: number }[]) {
+        if (Platform.OS === 'web' || !this.db) return;
+
+        try {
+            await this.db.withTransactionAsync(async () => {
+                const statement = await this.db!.prepareAsync(
+                    `INSERT OR REPLACE INTO map_layers_index 
+                    (id, name, category, is_geographic, updated_at) 
+                    VALUES (?, ?, ?, ?, ?)`
+                );
+
+                try {
+                    for (const layer of layers) {
+                        await statement.executeAsync([
+                            layer.id,
+                            layer.name,
+                            layer.category,
+                            layer.is_geographic ? 1 : 0,
+                            layer.updated_at
+                        ]);
+                    }
+                } finally {
+                    await statement.finalizeAsync();
+                }
+            });
+        } catch (error) {
+            console.error('Failed to upsert layers:', error);
         }
     }
 };

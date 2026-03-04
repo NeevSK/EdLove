@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { ViewProps } from 'react-native';
 import Animated, {
     useAnimatedStyle,
@@ -68,3 +68,4 @@ export function LivingGlow({
         </Animated.View>
     );
 }
+

@@ -16,6 +16,7 @@ import {
     Text,
     StyleSheet,
     ImageBackground,
+    Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
@@ -49,23 +50,23 @@ type ThumbnailType =
     | 'map' | 'infographic' | 'story' | 'circular' | 'movie_trailer' | 'tech_guide';
 
 const TYPE_CONFIG: Record<ThumbnailType, { icon: React.ComponentType<any>; color: string; label: string }> = {
-    lesson:        { icon: BookOpen,    color: Theme.colors.sanctuarySaffron,  label: 'Lesson' },
-    worksheet:     { icon: FileText,    color: Theme.colors.templeGold,         label: 'Worksheet' },
-    guide:         { icon: BookMarked,  color: Theme.colors.gurudeviBlue,       label: 'Guide' },
-    reading:       { icon: BookOpen,    color: Theme.colors.sageGreen,          label: 'Reading' },
-    pedagogy:      { icon: BarChart2,   color: Theme.colors.gurudeviViolet,     label: 'Pedagogy' },
-    video:         { icon: Video,       color: Theme.colors.skyBlue,            label: 'Video' },
-    link:          { icon: Link,        color: Theme.colors.sanctuarySaffron,   label: 'Link' },
-    pdf:           { icon: File,        color: Theme.colors.emberRed,           label: 'PDF' },
-    doc:           { icon: FileText,    color: Theme.colors.starlightGray,     label: 'Doc' },
-    note:          { icon: StickyNote,  color: Theme.colors.sageGreen,          label: 'Note' },
-    map:           { icon: Map,         color: Theme.colors.sageGreen,          label: 'Map' },
-    infographic:   { icon: BarChart2,   color: Theme.colors.amberGlow,          label: 'Visual' },
-    story:         { icon: BookOpen,    color: Theme.colors.gurudeviViolet,     label: 'Story' },
-    circular:      { icon: FileText,    color: Theme.colors.emberRed,           label: 'Circular' },
-    movie_trailer: { icon: Clapperboard,color: Theme.colors.lotusDeepPink,      label: 'Film' },
-    tech_guide:    { icon: Cpu,         color: Theme.colors.gurudeviBlue,       label: 'Tech' },
-    other:         { icon: BookOpen,    color: Theme.colors.starlightGray,      label: 'File' },
+    lesson: { icon: BookOpen, color: Theme.colors.sanctuarySaffron, label: 'Lesson' },
+    worksheet: { icon: FileText, color: Theme.colors.templeGold, label: 'Worksheet' },
+    guide: { icon: BookMarked, color: Theme.colors.gurudeviBlue, label: 'Guide' },
+    reading: { icon: BookOpen, color: Theme.colors.sageGreen, label: 'Reading' },
+    pedagogy: { icon: BarChart2, color: Theme.colors.gurudeviViolet, label: 'Pedagogy' },
+    video: { icon: Video, color: Theme.colors.skyBlue, label: 'Video' },
+    link: { icon: Link, color: Theme.colors.sanctuarySaffron, label: 'Link' },
+    pdf: { icon: File, color: Theme.colors.emberRed, label: 'PDF' },
+    doc: { icon: FileText, color: Theme.colors.starlightGray, label: 'Doc' },
+    note: { icon: StickyNote, color: Theme.colors.sageGreen, label: 'Note' },
+    map: { icon: Map, color: Theme.colors.sageGreen, label: 'Map' },
+    infographic: { icon: BarChart2, color: Theme.colors.amberGlow, label: 'Visual' },
+    story: { icon: BookOpen, color: Theme.colors.gurudeviViolet, label: 'Story' },
+    circular: { icon: FileText, color: Theme.colors.emberRed, label: 'Circular' },
+    movie_trailer: { icon: Clapperboard, color: Theme.colors.lotusDeepPink, label: 'Film' },
+    tech_guide: { icon: Cpu, color: Theme.colors.gurudeviBlue, label: 'Tech' },
+    other: { icon: BookOpen, color: Theme.colors.starlightGray, label: 'File' },
 };
 
 function resolveType(type: string): ThumbnailType {
@@ -87,6 +88,8 @@ export interface LibraryThumbnailCardProps {
     /** Copyright/usage notice — shown as a subtle footer badge on externally-sourced content */
     copyrightNotice?: string;
     onPress: () => void;
+    href?: string;
+    target?: '_blank' | '_self';
 }
 
 // ============================================================================
@@ -102,6 +105,8 @@ export function LibraryThumbnailCard({
     verified = false,
     copyrightNotice,
     onPress,
+    href,
+    target = '_self',
 }: LibraryThumbnailCardProps) {
     const colors = useThemedColors();
     const cfg = TYPE_CONFIG[resolveType(type)];
@@ -225,7 +230,20 @@ export function LibraryThumbnailCard({
     );
 
     return (
-        <Pressable onPress={onPress} style={styles.pressable}>
+        <Pressable
+            onPress={onPress}
+            style={({ hovered }: any) => [
+                styles.pressable,
+                Platform.OS === 'web' && hovered && { opacity: 0.9, cursor: 'pointer' }
+            ]}
+            // @ts-ignore - web-only props
+            accessibilityRole={href ? 'link' : 'button'}
+            href={href}
+            hrefAttrs={{
+                target: target,
+                rel: target === '_blank' ? 'noopener noreferrer' : undefined,
+            }}
+        >
             <View style={styles.card}>
                 {thumbnailUrl ? (
                     <ImageBackground source={{ uri: thumbnailUrl }} style={styles.image} resizeMode="cover">

@@ -74,7 +74,7 @@ export const TemporalGlass: React.FC<TemporalGlassProps> = ({
                             strokeWidth={0.5}
                         >
                             <Paint color={edges.top} opacity={0.6}>
-                                <BlurMask blur={2} style="normal" />
+                                <BlurMask blur={4} style="normal" />
                             </Paint>
                         </RoundedRect>
                     </>

@@ -79,6 +79,11 @@ export interface LibraryResource {
     created_at: string;
     updated_at: string;
     media?: import('@repo/core').MediaAsset; // Abstracted Media Asset
+
+    // Link Reliability
+    link_status?: 'working' | 'broken' | 'unknown';
+    last_checked_at?: string;
+    fail_count?: number;
 }
 
 export interface ResourceCollection {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { View, ViewProps, LayoutChangeEvent, StyleSheet } from 'react-native';
 import { Theme } from '../theme/Theme';
 import { useTheme } from '../hooks/useTheme';
@@ -53,3 +53,4 @@ export const GlassCard = ({ children, style, onLayout, ...props }: GlassCardProp
         </View>
     );
 };
+

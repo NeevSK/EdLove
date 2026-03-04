@@ -1,16 +1,79 @@
-this file is for issues i saw while doing manual testing and should complement/integrate with the tasks do in future and update the progress as well
-(changes we do need to apply both webfiles and mobile files if neccessary)
-## i just checked 5.23 pm 02/03/2026
+this file is for issues i saw while doing manual testing and should complement/integrate with the tasks do in future and update the progress as well)
+(other than not mentioned specifically all changes should apply both mobile and web - web related docs @ "/../docs/web")
+
+
+## 7.36 pm 03/03/2026 (latest - [n])  
+
+1. version number increase in abb
+
+2. old issues
+
+3. web and moble. horizontal vs vertialr dissonance 
+
+4. all ui in web
+
+5. colors in mobile UI
+
+6. school community and library dont work for real signed up users.
+
+7. founder capabilities (in classrooom need to have both school and platform capabilities), 
+
+8. glass is fucking bad when its transparent or it shoule blur whats in z -1 screen
+
+9. notifications should have tag about where or what kind it is. may be sorting? or small emoji?
+
+10. self screen wiring. 
+
+11. profile screen improvemets
+
+12. UI menu different ways for library in web
+
+13. web side panel close icon and when side bar open and close 
+other parts UI should be responsive
+
+14. side bar innovations, notifications in web
+
+15. founder, admin, developer should have functional library content managemt view in library screen.
+
+16. Web only vs mobile only
+
+17. senty source map still not uploading even not catching.
+
+18.Agent Assigning strategy specially for UI tasks where there are lot of files so they might miss either what i said to do or how i said to do or verification. any effective, productive ways.
+
+19. discerning cqpabilities for me - seens somthing i lacks about tech capability, intellegent need to specific tasks. then difference between taks, doing task by task while front loading. 
+
+20. db uuid package - uuid ossd vs gen4 uuid
+
+21. about black in light theme no any bakcgrounds or something can have black or simialr dark colors 
+
+22. google sign in worked in web but name not get synced and profile not get updated in db and still see guest user banner in lot of cases. in every section.
+
+23. in web if user goes to different link it throws 404  saying no index. now it seems only one way to get to any page is through home page.
+
+
+
+## i just checked 5.23 pm 02/03/2026 (latest [n-1] 
+
 1. notification issue seems okay but i dont know whether db exists or just notification drawer hardcoded
+
 2. some old fixes aren't there such as teacher sees learning pattern thing in app thats should be gone fore every self veiw.
+
 3. in pulse dahsboard the background of cards are blackish or shomething harsh which is bad and not align with design
+
 4. in community screen now can't see previouly had chips as feed, groups and DMs and under groups it had my groups and discover group - in relevant names
+
 5. there is rectangle in bottom nav bar which is ugly need to remove it. though it said fixed earlier but it same. 
+
 6. global header in teacherclassroom/student classm is lack not aligned with others
+
 7. colors in principleschoolview and demo screens are blackish need to align with design @design retina
+
 8. there are repeated positive intivations in student classrom and need to add only one at lower. remove other one
-9. 
-## 2.10 pm 02/03/2026 (latest -1 - ignore older ones. )
+
+
+
+## 2.10 pm 02/03/2026 (latest [n-2] - ignore older ones yet they are persistent thoguh they marked as closed. )
 
 1. Brought this up from old ones. 
  1.1 given we have dms and group msgs in group-community section can we abstract screens related both and then import? is that how we do things now?  DRY rule (if we do this seems DMs also easily functionable than waiting. but i dont knw. any thoughts? whats best)

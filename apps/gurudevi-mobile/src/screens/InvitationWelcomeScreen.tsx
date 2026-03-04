@@ -1,4 +1,4 @@
-﻿import { VStack, Heading, Text, Button, ButtonText, Box, useToast, Toast, ToastTitle, ToastDescription } from '@repo/ui';
+import { VStack, Heading, Text, Button, ButtonText, Box, useToast, Toast, ToastTitle, ToastDescription } from '@repo/ui';
 import { useThemedColors, Theme } from '@repo/ui';
 import { supabase } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';

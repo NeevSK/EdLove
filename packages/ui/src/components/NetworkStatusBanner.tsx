@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Box, Text, HStack, Spinner } from '../gluestack';
 import { Theme } from '../theme/Theme';
 import { WifiOff, RefreshCw } from 'lucide-react-native';

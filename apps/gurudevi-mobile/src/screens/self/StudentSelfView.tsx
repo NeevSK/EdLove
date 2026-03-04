@@ -25,17 +25,20 @@ import { Target, BookOpen, Flower, TrendingUp, Brain } from 'lucide-react-native
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
-import { MoodLotus, ShadowAgentDrawer } from '../../components/self';
-import FireJournal from '../../components/self/FireJournal';
-import ProgressTree from '../../components/self/ProgressTree';
-import MyGradesView from '../../components/self/MyGradesView';
-import DailyRhythm from '../../components/self/DailyRhythm';
+import {
+    MoodLotus,
+    ShadowAgentDrawer,
+    FireJournal,
+    ProgressTree,
+    MyGradesView,
+    DailyRhythm,
+    DailyContentCard,
+    WelcomeModal
+} from '@repo/self';
 import { supabase, useStore, useUserRole } from '@repo/core';
 import { useMoodLogs, useEnergyForecast } from '@repo/self';
 import { GlobalHeader } from '@repo/ui';
 import PulseDashboard from '../self/PulseDashboard';
-import DailyContentCard from '../../components/self/DailyContentCard';
-import WelcomeModal from '../../components/self/WelcomeModal';
 import { SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useThemedColors, useBottomTabPadding } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';

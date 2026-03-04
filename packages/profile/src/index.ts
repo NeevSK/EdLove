@@ -7,10 +7,25 @@ export * from './hooks/useSocialLinks';
 export * from './hooks/useStaffPresence';
 export * from './hooks/useSchoolPulse';
 export * from './lib/validator';
-export * from './components/EditableItem';
 export { isFieldFilled } from './lib/isFieldFilled';
 export * from './config/profileSections';
 export * from './hooks/useProfileCompletion';
+
+// Components
+export * from './components/EditableItem';
 export { AvatarDisplay } from './components/AvatarDisplay';
 export { ContactLinktree } from './components/ContactLinktree';
 export { GiveThuthimalModal } from './components/GiveThuthimalModal';
+export { default as AchievementGallery } from './components/AchievementGallery';
+export { AddSocialLinkModal } from './components/AddSocialLinkModal';
+export { default as ControlScroll } from './components/ControlScroll';
+export { default as EditProfileModal } from './components/EditProfileModal';
+export { default as IdentityCard } from './components/IdentityCard';
+export { default as LivingJourneyPanel } from './components/LivingJourneyPanel';
+export { default as ProfileListItem } from './components/ProfileListItem';
+export { default as ProfileSkeleton } from './components/ProfileSkeleton';
+export { SocialSanctuary } from './components/SocialSanctuary';
+export { StaffPresencePulse } from './components/StaffPresencePulse';
+export { default as SupportSection } from './components/SupportSection';
+export { default as ThuthimalBadge } from './components/ThuthimalBadge';
+export { default as UserStatsCard } from './components/UserStatsCard';

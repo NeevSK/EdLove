@@ -15,6 +15,7 @@ import PrincipalSchoolView from './PrincipalSchoolView';
 import SectionHeadView from './SectionHeadView';
 import GradeHeadView from './GradeHeadView';
 import FounderSchoolView from './FounderSchoolView';
+import FounderDashboard from './FounderDashboard';
 import { ClassroomList, TeacherDashboard, StudentDashboard, NoSchoolOnboarding } from '../components';
 import { useClassroomRoleData } from '../hooks';
 import { useTranslation } from 'react-i18next';
@@ -65,7 +66,7 @@ export default function ClassroomScreen() {
 
     // 2. Role-based routing
     if (classroomData) {
-        if (role === 'founder') return <FounderSchoolView schoolId={classroomData.schoolId || ''} userId={classroomData.userId} onRefresh={fetchRoleData} />;
+        if (role === 'founder') return <FounderDashboard />;
         if (role === 'principal' || role === 'developer') return <PrincipalSchoolView schoolId={classroomData.schoolId || ''} userId={classroomData.userId} onRefresh={fetchRoleData} />;
     }
 

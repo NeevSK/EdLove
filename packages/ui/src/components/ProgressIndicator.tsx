@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Text, HStack, VStack, Box } from '../gluestack';
 import { Theme } from '../theme/Theme';
 import { useThemedColors } from '../hooks/useThemedColors';
@@ -72,3 +72,4 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
         </VStack>
     );
 };
+

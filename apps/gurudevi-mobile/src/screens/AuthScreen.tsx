@@ -72,10 +72,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
     const [loading, setLoading] = useState(false);
     const [showEmailAuth, setShowEmailAuth] = useState(false);
     // Issue 3.1 fix: new unauthenticated visitors should land on Sign Up, not Login.
-    // When called from onboarding with isAnonymous=true the user already has a session
-    // and is upgrading — defaulting to Sign Up is still correct (they want to create a
-    // permanent account). Both tabs remain visible and togglable.
-    const [isSignUp, setIsSignUp] = useState(false);
+    const [isSignUp, setIsSignUp] = useState(true);
     const [showScanner, setShowScanner] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [currentUser, setCurrentUser] = useState<any>(null);
@@ -136,7 +133,10 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
             }
             const { error } = await supabase.auth.signInWithOAuth({
                 provider,
-                options: { redirectTo: redirectUrl },
+                options: {
+                    redirectTo: redirectUrl,
+                    queryParams: { prompt: 'select_account' }
+                },
             });
             if (error) { handleAPIError(error); setLoading(false); }
             return;
@@ -147,11 +147,19 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
         const oauthOptions = isAnon && session?.user
             ? await supabase.auth.linkIdentity({
                 provider,
-                options: { redirectTo: redirectUrl, skipBrowserRedirect: true },
+                options: {
+                    redirectTo: redirectUrl,
+                    skipBrowserRedirect: true,
+                    queryParams: { prompt: 'select_account' }
+                },
             })
             : await supabase.auth.signInWithOAuth({
                 provider,
-                options: { redirectTo: redirectUrl, skipBrowserRedirect: true },
+                options: {
+                    redirectTo: redirectUrl,
+                    skipBrowserRedirect: true,
+                    queryParams: { prompt: 'select_account' }
+                },
             });
 
         const oauthError = oauthOptions.error;
@@ -208,6 +216,35 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                 handleAPIError(sessErr);
             } else {
                 hapticSuccess();
+                // Proactively check for pending invitations or onboarding data
+                const user = (await supabase.auth.getUser()).data.user;
+                if (user) {
+                    const pendingInvite = await AsyncStorage.getItem('pending_invite');
+                    if (pendingInvite) {
+                        try {
+                            const invite = JSON.parse(pendingInvite);
+                            if (invite.school_id) {
+                                await supabase.from('users').update({ school_id: invite.school_id, role: invite.role || 'teacher' }).eq('id', user.id);
+                                await AsyncStorage.removeItem('pending_invite');
+                                showToast('Welcome to your new school sanctuary!', 'success');
+                            }
+                        } catch (e) {
+                            console.error('Failed to apply pending invite', e);
+                        }
+                    }
+
+                    if (onboardingData) {
+                        try {
+                            await supabase.from('users').update({
+                                full_name: onboardingData.name,
+                                role: onboardingData.role,
+                                profile_completed: true
+                            }).eq('id', user.id);
+                        } catch (e) {
+                            console.error('Failed to apply onboarding data', e);
+                        }
+                    }
+                }
                 if (onSuccess) onSuccess();
             }
         } catch (err: any) {
@@ -283,8 +320,27 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                     // You may want to trigger sync in the email confirmation callback
                 }
             } else {
-                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
+
+                // Proactively check for pending invitations
+                const user = data.user;
+                if (user) {
+                    const pendingInvite = await AsyncStorage.getItem('pending_invite');
+                    if (pendingInvite) {
+                        try {
+                            const invite = JSON.parse(pendingInvite);
+                            if (invite.school_id) {
+                                await supabase.from('users').update({ school_id: invite.school_id, role: invite.role || 'teacher' }).eq('id', user.id);
+                                await AsyncStorage.removeItem('pending_invite');
+                                showToast('Reconnected to your school sanctuary!', 'success');
+                            }
+                        } catch (e) {
+                            console.error('Failed to apply pending invite', e);
+                        }
+                    }
+                }
+
                 hapticSuccess();
                 if (onSuccess) onSuccess();
             }

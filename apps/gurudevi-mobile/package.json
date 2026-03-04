@@ -1,6 +1,6 @@
 {
   "name": "gurudevi-mobile",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
@@ -18,7 +18,8 @@
     "build:preview:ios": "eas build --profile preview --platform ios",
     "build:prod": "eas build --profile production --platform all",
     "submit:android": "eas submit --platform android",
-    "submit:ios": "eas submit --platform ios"
+    "submit:ios": "eas submit --platform ios",
+    "version:inc": "node scripts/increment-version.js"
   },
   "dependencies": {
     "@expo/metro-runtime": "~55.0.6",
@@ -70,6 +71,7 @@
     "expo-linear-gradient": "^55.0.8",
     "expo-linking": "~55.0.7",
     "expo-localization": "~55.0.8",
+    "expo-location": "~55.1.2",
     "expo-router": "~55.0.3",
     "expo-secure-store": "^55.0.8",
     "expo-sharing": "~55.0.11",

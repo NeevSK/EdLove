@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Button, ButtonText, ButtonSpinner, ButtonIcon } from '../gluestack';
 import { Theme } from '../theme/Theme';
 import { useTheme } from '../hooks/useTheme';
@@ -124,3 +124,4 @@ export default function SanctuaryButton({
         </Button>
     );
 }
+

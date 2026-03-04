@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { LibraryScreen, PDFViewerScreen, VideoPlayerScreen, MapScreen } from '@repo/library';
+import { LibraryScreen, PDFViewerScreen, VideoPlayerScreen, MapScreen, CuratorReviewScreen } from '@repo/library';
 import { useThemedColors, Theme } from '@repo/ui';
 
 const Stack = createNativeStackNavigator();
@@ -18,6 +18,7 @@ export default function LibraryStackNavigator() {
         >
             <Stack.Screen name="LibraryHome" component={LibraryScreen} />
             <Stack.Screen name="LibraryMap" component={MapScreen} />
+            <Stack.Screen name="CuratorReview" component={CuratorReviewScreen} />
             <Stack.Screen
                 name="PDFViewer"
                 component={PDFViewerScreen}

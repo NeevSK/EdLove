@@ -127,11 +127,11 @@ export const communityAPI = {
     },
 
     /**
-     * Create a group and immediately add the creator as admin.
+     * Create a group and immediately add the creator as Owner.
      * This is the canonical group-creation entry point — always use this
-     * instead of createGroup() to ensure the creator has admin rights.
+     * instead of createGroup() to ensure the creator has supreme authority.
      */
-    async createGroupWithAdmin(group: any, userId: string): Promise<CommunityGroup> {
+    async createGroupWithOwner(group: any, userId: string): Promise<CommunityGroup> {
         // 1. Create the group
         const { data: created, error: groupErr } = await supabase
             .from('community_groups')
@@ -150,18 +150,18 @@ export const communityAPI = {
 
         if (groupErr) throw groupErr;
 
-        // 2. Add creator as admin member (status = 'active', role = 'admin')
+        // 2. Add creator as supreme owner (status = 'active', role = 'owner')
         const { error: memberErr } = await supabase
             .from('community_group_members')
             .insert([{
                 group_id: created.id,
                 user_id: userId,
-                role: 'admin',
+                role: 'owner',
                 status: 'active',
             }]);
 
         // Non-fatal: if this fails (e.g. duplicate), the group still exists.
-        if (memberErr) console.warn('createGroupWithAdmin: member insert warning', memberErr);
+        if (memberErr) console.warn('createGroupWithOwner: member insert warning', memberErr);
 
         return created as CommunityGroup;
     },
@@ -302,6 +302,46 @@ export const communityAPI = {
     },
 
     /**
+     * Get all active members for a group
+     */
+    async getActiveMembers(groupId: string) {
+        const { data, error } = await supabase
+            .from('community_group_members')
+            .select(`
+                *,
+                user:users!community_group_members_user_id_fkey(
+                    full_name,
+                    role,
+                    avatar_url,
+                    index_number,
+                    nic_number
+                )
+            `)
+            .eq('group_id', groupId)
+            .eq('status', 'active')
+            .order('role', { ascending: true }); // Manual sort might be needed for owner priority
+
+        if (error) throw error;
+        return data;
+    },
+
+    /**
+     * Update a member's role (only owner can do this via RLS)
+     */
+    async updateMemberRole(groupId: string, userId: string, newRole: 'admin' | 'member') {
+        const { data, error } = await supabase
+            .from('community_group_members')
+            .update({ role: newRole })
+            .eq('group_id', groupId)
+            .eq('user_id', userId)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    },
+
+    /**
      * Update joining policy for a group
      */
     async updateJoiningPolicy(groupId: string, newPolicy: string) {
@@ -362,5 +402,86 @@ export const communityAPI = {
 
         if (error) throw error;
         return data as CommunityGroup;
+    },
+
+    // ── Direct Messaging ──────────────────────────────────────
+
+    /**
+     * Get all active direct conversations for the current user.
+     */
+    async getDirectConversations() {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('Not authenticated');
+
+        const { data, error } = await supabase
+            .from('direct_conversations')
+            .select(`
+                *,
+                user1:users!direct_conversations_user1_id_fkey(full_name, avatar_url),
+                user2:users!direct_conversations_user2_id_fkey(full_name, avatar_url)
+            `)
+            .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
+            .order('updated_at', { ascending: false });
+
+        if (error) throw error;
+
+        // Transform to return the "other" participant's info easily
+        return (data || []).map((conv: any) => {
+            const otherUser = conv.user1_id === user.id ? conv.user2 : conv.user1;
+            return {
+                ...conv,
+                other_user_name: otherUser?.full_name || 'Anonymous User',
+                other_user_avatar: otherUser?.avatar_url,
+            };
+        });
+    },
+
+    /**
+     * Get or create a 1:1 conversation with another user.
+     */
+    async getOrCreateDirectConversation(targetUserId: string): Promise<string> {
+        const { data, error } = await supabase.rpc('get_or_create_direct_conversation', {
+            target_user_id: targetUserId
+        });
+
+        if (error) throw error;
+        return data;
+    },
+
+    /**
+     * Fetch the most recent direct messages for a conversation.
+     */
+    async getDirectMessages(conversationId: string, limit = 60) {
+        const { data, error } = await supabase
+            .from('direct_messages')
+            .select('*, author:users!direct_messages_author_id_fkey(full_name, avatar_url)')
+            .eq('conversation_id', conversationId)
+            .order('created_at', { ascending: false })
+            .limit(limit);
+
+        if (error) throw error;
+        // Reverse so oldest is at top
+        return (data || []).reverse();
+    },
+
+    /**
+     * Send a direct message.
+     */
+    async sendDirectMessage(conversationId: string, content: string) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('Not authenticated');
+
+        const { data, error } = await supabase
+            .from('direct_messages')
+            .insert([{
+                conversation_id: conversationId,
+                author_id: user.id,
+                content: content.trim()
+            }])
+            .select('*, author:users!direct_messages_author_id_fkey(full_name, avatar_url)')
+            .single();
+
+        if (error) throw error;
+        return data;
     }
 };

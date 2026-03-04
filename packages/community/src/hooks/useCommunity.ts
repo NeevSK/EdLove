@@ -86,11 +86,11 @@ export const useCommunity = () => {
         },
     });
 
-    // Create Group Mutation — always uses createGroupWithAdmin so creator gets admin rights
+    // Create Group Mutation — always uses createGroupWithOwner so creator gets owner rights
     const createGroupMutation = useMutation({
         mutationFn: async (input: any) => {
             const user = await requireAuth();
-            return communityAPI.createGroupWithAdmin(input, user.id);
+            return communityAPI.createGroupWithOwner(input, user.id);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.groups() });

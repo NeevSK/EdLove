@@ -16,7 +16,8 @@ import {
     Theme,
     useThemedColors,
     hapticLight,
-    ScreenWrapper
+    ScreenWrapper,
+    useTheme,
 } from '@repo/ui';
 import { Send, ChevronLeft, Sparkles, MessageSquare } from 'lucide-react-native';
 import { useAIAgent, Message } from '@repo/core';
@@ -27,7 +28,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function AIAssistantScreen() {
     const navigation = useNavigation();
-    const colors = useThemedColors();
+    const { gradientNodes, accent, glass, text, isDark } = useTheme();
     const { t } = useTranslation();
     const { messages, isThinking, sendMessage } = useAIAgent();
     const userRole = useStore(state => state.userRole);
@@ -58,10 +59,10 @@ export default function AIAssistantScreen() {
                 style={[
                     styles.messageBubble,
                     isUser ? styles.userBubble : styles.assistantBubble,
-                    { backgroundColor: isUser ? colors.action : colors.tertiary }
+                    { backgroundColor: isUser ? accent.action : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)') }
                 ]}
             >
-                <Text color={colors.text} sx={{ fontSize: '$md' as any }}>
+                <Text color={isUser ? gradientNodes[0] : text.primary} sx={{ fontSize: '$md' as any }}>
                     {item.content}
                 </Text>
             </Animated.View>
@@ -70,16 +71,16 @@ export default function AIAssistantScreen() {
 
     return (
         <ScreenWrapper
-            backgroundColor={Theme.colors.ink}
+            backgroundColor={gradientNodes[0]}
         >
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                 style={styles.container}
             >
                 {/* Header */}
-                <HStack style={styles.header}>
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                        <ChevronLeft color={colors.text} size={24} />
+                <HStack style={[styles.header, { borderBottomColor: glass.surface.border }]}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backButton, { backgroundColor: glass.surface.bg }]}>
+                        <ChevronLeft color={text.primary} size={24} />
                     </TouchableOpacity>
                     <VStack>
                         <HStack space="xs" alignItems="center">
@@ -87,12 +88,12 @@ export default function AIAssistantScreen() {
                             <Text sx={{
                                 fontWeight: '700',
                                 fontSize: '$lg' as any,
-                                color: Theme.colors.sacredWhite
+                                color: text.primary
                             }}>
                                 {t('aiAssistant.title')}
                             </Text>
                         </HStack>
-                        <Text color={colors.textSecondary} size="xs">
+                        <Text color={text.secondary} size="xs">
                             {t('aiAssistant.subtitle')}
                         </Text>
                     </VStack>
@@ -108,7 +109,7 @@ export default function AIAssistantScreen() {
                     ListFooterComponent={
                         isThinking ? (
                             <Box sx={{ padding: '$md' as any, opacity: 0.6 }}>
-                                <Text color={colors.textSecondary} italic size="sm">
+                                <Text color={text.secondary} italic size="sm">
                                     {t('aiAssistant.thinking')}
                                 </Text>
                             </Box>
@@ -120,19 +121,19 @@ export default function AIAssistantScreen() {
                 <Box style={styles.inputContainer}>
                     {!userRole ? (
                         <VStack space="xs" alignItems="center" p="$4">
-                            <Text color={colors.textSecondary} size="sm" textAlign="center">
+                            <Text color={text.secondary} size="sm" textAlign="center">
                                 {t('aiAssistant.loginPrompt')}
                             </Text>
                             <TouchableOpacity onPress={() => (navigation as any).navigate('Welcome')}>
-                                <Text color={colors.action} bold size="sm">{t('aiAssistant.continueLogin')}</Text>
+                                <Text color={accent.action} bold size="sm">{t('aiAssistant.continueLogin')}</Text>
                             </TouchableOpacity>
                         </VStack>
                     ) : (
-                        <HStack style={styles.inputWrapper} space="sm">
+                        <HStack style={[styles.inputWrapper, { backgroundColor: glass.surface.bg, borderColor: glass.surface.border, borderWidth: 1 }]} space="sm">
                             <TextInput
-                                style={[styles.input, { color: colors.text }]}
+                                style={[styles.input, { color: text.primary }]}
                                 placeholder={t('aiAssistant.placeholder')}
-                                placeholderTextColor={colors.textSecondary}
+                                placeholderTextColor={text.secondary}
                                 value={inputText}
                                 onChangeText={setInputText}
                                 multiline
@@ -143,10 +144,10 @@ export default function AIAssistantScreen() {
                                 disabled={!inputText.trim()}
                                 style={[
                                     styles.sendButton,
-                                    { opacity: inputText.trim() ? 1 : 0.5 }
+                                    { backgroundColor: accent.action, opacity: inputText.trim() ? 1 : 0.5 }
                                 ]}
                             >
-                                <Send color={Theme.colors.sacredWhite} size={20} />
+                                <Send color={gradientNodes[0]} size={20} />
                             </TouchableOpacity>
                         </HStack>
                     )}
@@ -164,14 +165,12 @@ const styles = StyleSheet.create({
         padding: Theme.spacing.lg,
         alignItems: 'center',
         borderBottomWidth: 1,
-        borderBottomColor: 'rgba(255,255,255,0.05)',
         gap: Theme.spacing.md,
     },
     backButton: {
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: 'rgba(255,255,255,0.05)',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -200,7 +199,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     inputWrapper: {
-        backgroundColor: 'rgba(255,255,255,0.05)',
         borderRadius: 24,
         paddingHorizontal: Theme.spacing.md,
         paddingVertical: 8,
@@ -217,7 +215,6 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: Theme.colors.gurudeviViolet,
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 2,

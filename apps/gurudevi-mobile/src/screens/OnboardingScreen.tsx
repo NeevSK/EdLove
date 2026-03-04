@@ -10,7 +10,7 @@ import { ScreenWrapper } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 import AuthScreen from './AuthScreen';
 import { ProgressIndicator } from '@repo/ui';
-import { OrientationCaptureStep } from '../components/self/OrientationCaptureStep';
+import { OrientationCaptureStep } from '@repo/self';
 import type { OrientationSeeds } from '@repo/profile';
 
 interface OnboardingScreenProps {

@@ -1,5 +1,5 @@
-/**
- * LibraryScreen — Netflix-Style Holistic Digital Library
+﻿/**
+ * LibraryScreen â€” Netflix-Style Holistic Digital Library
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
@@ -39,7 +39,7 @@ import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
 import AddResourceModal from '../components/AddResourceModal';
 import { ResourceList } from '../components/ResourceList';
-import { Map as MapIcon, Play, Plus } from 'lucide-react-native';
+import { Map as MapIcon, Play, Plus, FileText } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useLibrary } from '../hooks/useLibrary';
 import { LibraryResource } from '../types';
@@ -51,18 +51,19 @@ import {
     useStore,
 } from '@repo/core';
 import { LIBRARY_UI_CATEGORIES } from '../constants/categories';
+import CuratorReviewScreen from './CuratorReviewScreen'; // Added for completeness if needed in exports
 
 // Shelf definitions
 const SHELF_DEFS = [
-    { id: 'movie_trailer', label: '🎬 Inspiring Films', types: ['movie_trailer'] },
-    { id: 'map', label: '🗺️ Maps & Visuals', types: ['map', 'infographic'] },
-    { id: 'story', label: '📖 Stories', types: ['story'] },
-    { id: 'circular', label: '📋 Edu Circulars', types: ['circular'] },
-    { id: 'guide', label: '👩‍🏫 Teacher Guides', types: ['guide'] },
-    { id: 'tech_guide', label: '💡 Tech Guides', types: ['tech_guide'] },
-    { id: 'video', label: '🎥 Videos', types: ['video'] },
-    { id: 'doc', label: '📄 Documents', types: ['pdf', 'doc', 'lesson', 'worksheet', 'reading', 'pedagogy'] },
-    { id: 'link', label: '🌐 Web Resources', types: ['link'] },
+    { id: 'movie_trailer', label: 'ðŸŽ¬ Inspiring Films', types: ['movie_trailer'] },
+    { id: 'map', label: 'ðŸ—ºï¸ Maps & Visuals', types: ['map', 'infographic'] },
+    { id: 'story', label: 'ðŸ“– Stories', types: ['story'] },
+    { id: 'circular', label: 'ðŸ“‹ Edu Circulars', types: ['circular'] },
+    { id: 'guide', label: 'ðŸ‘©â€ðŸ« Teacher Guides', types: ['guide'] },
+    { id: 'tech_guide', label: 'ðŸ’¡ Tech Guides', types: ['tech_guide'] },
+    { id: 'video', label: 'ðŸŽ¥ Videos', types: ['video'] },
+    { id: 'doc', label: 'ðŸ“„ Documents', types: ['pdf', 'doc', 'lesson', 'worksheet', 'reading', 'pedagogy'] },
+    { id: 'link', label: 'ðŸŒ Web Resources', types: ['link'] },
 ] as const;
 
 
@@ -112,6 +113,48 @@ function MapInvitation({ onPress }: { onPress: () => void }) {
                         }}>
                             <Play size={16} color={colors.textPrimary} fill={colors.textPrimary} />
                         </Box>
+                    </HStack>
+                </Box>
+            </Pressable>
+        </Animated.View>
+    );
+}
+
+function CuratorInvitation({ onPress }: { onPress: () => void }) {
+    const colors = useThemedColors();
+
+    return (
+        <Animated.View entering={FadeInDown.delay(300).springify()}>
+            <Pressable onPress={onPress}>
+                <Box sx={{
+                    margin: Theme.spacing.md,
+                    marginTop: 0,
+                    borderRadius: 24,
+                    overflow: 'hidden',
+                    backgroundColor: colors.secondary,
+                    borderWidth: 1,
+                    borderColor: Theme.colors.sanctuarySaffron + '33',
+                }}>
+                    <HStack sx={{ p: 16, gap: 16, alignItems: 'center' }}>
+                        <Box sx={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: 24,
+                            backgroundColor: Theme.colors.sanctuarySaffron + '11',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}>
+                            <FileText size={24} color={Theme.colors.sanctuarySaffron} />
+                        </Box>
+                        <VStack sx={{ flex: 1, gap: 2 }}>
+                            <Text sx={{ fontSize: 16, fontWeight: '800', color: colors.textPrimary }}>
+                                Curator Dashboard
+                            </Text>
+                            <Text sx={{ fontSize: 12, color: colors.textSecondary }}>
+                                Review {'&'} publish new knowledge streams.
+                            </Text>
+                        </VStack>
+                        <Plus size={16} color={colors.textSecondary} />
                     </HStack>
                 </Box>
             </Pressable>
@@ -249,10 +292,10 @@ export default function LibraryScreen() {
     })), []);
 
     const sortChips = useMemo(() => [
-        { label: '🕐 Recent', value: 'recent' },
-        { label: '🔥 Popular', value: 'popular' },
-        { label: '⭐ Endorsed', value: 'most_endorsed' },
-        { label: '🔖 Saved', value: 'most_bookmarked' },
+        { label: 'ðŸ• Recent', value: 'recent' },
+        { label: 'ðŸ”¥ Popular', value: 'popular' },
+        { label: 'â­ Endorsed', value: 'most_endorsed' },
+        { label: 'ðŸ”– Saved', value: 'most_bookmarked' },
     ], []);
 
     const handleEndReached = useCallback(() => {
@@ -356,6 +399,10 @@ export default function LibraryScreen() {
 
                     <MapInvitation onPress={() => navigation.navigate('LibraryMap' as any)} />
 
+                    {(role === 'founder' || role === 'admin' || role === 'developer') && (
+                        <CuratorInvitation onPress={() => navigation.navigate('CuratorReview' as any)} />
+                    )}
+
                     <Box sx={{ paddingTop: Theme.spacing.md }}>
                         <Animated.View entering={FadeInDown.delay(100).springify()}>
                             <HorizontalChipRow
@@ -367,7 +414,7 @@ export default function LibraryScreen() {
                         </Animated.View>
 
                         {deskItems && deskItems.filter((r: any) => r.type === 'resource').length > 0 && (
-                            <SmartShelf title="▶ Continue Learning">
+                            <SmartShelf title="â–¶ Continue Learning">
                                 {deskItems.filter((r: any) => r.type === 'resource').map((res: any) => (
                                     <LibraryThumbnailCard
                                         key={res.id}
@@ -381,7 +428,7 @@ export default function LibraryScreen() {
                         )}
 
                         {collections.length > 0 && (
-                            <SmartShelf title="📚 Featured Collections">
+                            <SmartShelf title="ðŸ“š Featured Collections">
                                 {collections.map((col: any) => (
                                     <CollectionCard
                                         key={col.id}
@@ -400,8 +447,8 @@ export default function LibraryScreen() {
                             return renderShelf(shelf.label, items);
                         })}
 
-                        {trending.length > 0 && renderShelf('⭐ Trending', trending)}
-                        {newArrivals.length > 0 && renderShelf('✨ New Arrivals', newArrivals)}
+                        {trending.length > 0 && renderShelf('â­ Trending', trending)}
+                        {newArrivals.length > 0 && renderShelf('âœ¨ New Arrivals', newArrivals)}
 
                         {resources.length === 0 && (
                             <PositiveInvitation
@@ -463,7 +510,7 @@ function HeroOverlay({ resource, colors }: { resource: LibraryResource; colors: 
     return (
         <LinearGradient colors={gradientColors} style={heroBannerStyles.gradient}>
             <View style={heroBannerStyles.featuredBadge}>
-                <RNText style={heroBannerStyles.featuredText}>✦ FEATURED</RNText>
+                <RNText style={heroBannerStyles.featuredText}>âœ¦ FEATURED</RNText>
             </View>
             <RNText style={[heroBannerStyles.heroTitle, { color: colors.text }]} numberOfLines={2}>
                 {resource.title}
@@ -481,7 +528,7 @@ function HeroOverlay({ resource, colors }: { resource: LibraryResource; colors: 
                 {resource.copyright_notice && (
                     <View style={heroBannerStyles.copyrightBadge}>
                         <RNText style={heroBannerStyles.copyrightText} numberOfLines={1}>
-                            © {resource.copyright_notice}
+                            Â© {resource.copyright_notice}
                         </RNText>
                     </View>
                 )}
@@ -551,3 +598,4 @@ const styles = StyleSheet.create({
         marginRight: 4,
     },
 });
+

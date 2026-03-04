@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Theme } from '../theme/Theme';
 import { useTheme } from '../hooks/useTheme';
@@ -14,7 +14,7 @@ export interface SanctuaryChipProps {
 }
 
 /**
- * SanctuaryChip — canonical chip/pill component for filters, tags, and categories.
+ * SanctuaryChip â€” canonical chip/pill component for filters, tags, and categories.
  * Uses living theme tokens. No hardcoded hex values.
  */
 export const SanctuaryChip: React.FC<SanctuaryChipProps> = ({
@@ -79,3 +79,4 @@ const styles = StyleSheet.create({
         fontSize: Theme.typography.fontSize.xs,
     },
 });
+

@@ -71,10 +71,10 @@ interface CreateGroupModalProps {
 // ── Static data ───────────────────────────────────────────────────────────────
 
 const GROUP_TYPES: TypeOption[] = [
-    { value: 'general',  label: 'General',       emoji: '💬', description: 'Open discussion and sharing' },
-    { value: 'club',     label: 'Club',           emoji: '🏆', description: 'Activity or interest club' },
+    { value: 'general', label: 'General', emoji: '💬', description: 'Open discussion and sharing' },
+    { value: 'club', label: 'Club', emoji: '🏆', description: 'Activity or interest club' },
     { value: 'interest', label: 'Interest Group', emoji: '✨', description: 'Shared hobby or passion' },
-    { value: 'subject',  label: 'Subject Group',  emoji: '📚', description: 'Academic subject focus' },
+    { value: 'subject', label: 'Subject Group', emoji: '📚', description: 'Academic subject focus' },
 ];
 
 const JOIN_POLICIES: PolicyOption[] = [
@@ -174,7 +174,7 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
                 setIsUploadingAvatar(false);
             }
 
-            const group = await communityAPI.createGroupWithAdmin(
+            const group = await communityAPI.createGroupWithOwner(
                 {
                     name: name.trim(),
                     description: description.trim() || null,
@@ -183,7 +183,7 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
                     school_id: schoolId ?? null,
                     image_url: imageUrl ?? null,
                 },
-                userId,
+                userId
             );
             hapticSuccess();
             setCreatedGroupId(group.id);
@@ -275,7 +275,7 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
                                 <HStack space="sm" alignItems="flex-start">
                                     <QrCode size={16} color={Theme.colors.sanctuarySaffron} style={{ marginTop: 2 }} />
                                     <Text sx={{ flex: 1, fontSize: Theme.typography.fontSize.xs, color: colors.textSecondary, lineHeight: 18 }}>
-                                        You are the admin of this circle. Manage members, set join policy, and post announcements from the group settings.
+                                        You are the owner of this circle. Manage members, set join policy, and post announcements from the group settings.
                                     </Text>
                                 </HStack>
                             </Box>

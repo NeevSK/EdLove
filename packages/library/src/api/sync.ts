@@ -14,7 +14,7 @@ export const knowledgeSync = {
      * Perform a delta sync from Supabase.
      */
     async performSync() {
-        if (Platform.OS === 'web') return;
+        // High-fidelity un-shimming: enabled for all platforms including web (IndexedDB)
 
         console.log('Starting Knowledge Sync...');
 
@@ -29,27 +29,33 @@ export const knowledgeSync = {
             );
 
             const lastSync = syncState?.last_sync_timestamp || 0;
+            const lastSyncIso = new Date(lastSync).toISOString();
 
-            // 3. Fetch changes from Supabase
-            // We fetch any resource updated since the last sync
-            const { data, error } = await supabase
+            // 3. Fetch resources from Supabase
+            const { data: resourceData, error: resourceError } = await supabase
                 .from('library_resources')
-                .select('id, title, type, subject, topics, tags, language, updated_at')
-                .gt('updated_at', new Date(lastSync).toISOString())
+                .select('id, title, type, subject, topics, tags, language, map_x, map_y, latitude, longitude, parent_id, island_id, updated_at')
+                .gt('updated_at', lastSyncIso)
                 .order('updated_at', { ascending: true });
 
-            if (error) throw error;
+            if (resourceError) throw resourceError;
 
-            if (!data || data.length === 0) {
-                console.log('Knowledge Index is already up-to-date.');
-                return;
-            }
+            // 4. Fetch map layers from Supabase
+            const { data: layerData, error: layerError } = await supabase
+                .from('map_layers')
+                .select('id, name, category, is_geographic, updated_at')
+                .gt('updated_at', lastSyncIso)
+                .order('updated_at', { ascending: true });
 
-            console.log(`Received ${data.length} updates from server.`);
+            if (layerError) throw layerError;
 
-            // 4. Map and Upsert
-            const nodesToUpsert: KnowledgeNodeIndex[] = data.map(res => {
-                const node: KnowledgeNodeIndex = {
+            console.log(`Sync status: ${resourceData?.length || 0} resources, ${layerData?.length || 0} layers.`);
+
+            let latestTimestamp = lastSync;
+
+            // 5. Upsert Resources
+            if (resourceData && resourceData.length > 0) {
+                const nodesToUpsert: KnowledgeNodeIndex[] = resourceData.map(res => ({
                     id: res.id,
                     type: 'resource',
                     content_type: res.type,
@@ -57,27 +63,39 @@ export const knowledgeSync = {
                     title_ta: res.language === 'tamil' ? res.title : null,
                     title_en: res.language === 'english' ? res.title : null,
                     tags: Array.isArray(res.tags) ? res.tags.join(', ') : (res.tags || ''),
-                    map_x: 0, // In the future, these can come from the server or be computed
-                    map_y: 0,
+                    map_x: res.map_x || 0,
+                    map_y: res.map_y || 0,
+                    latitude: res.latitude,
+                    longitude: res.longitude,
+                    parent_id: res.parent_id,
+                    island_id: res.island_id,
                     updated_at: new Date(res.updated_at).getTime()
-                };
-                return node;
-            });
+                }));
+                await knowledgeDB.upsertNodes(nodesToUpsert);
+                latestTimestamp = Math.max(latestTimestamp, nodesToUpsert[nodesToUpsert.length - 1]!.updated_at);
+            }
 
-            await knowledgeDB.upsertNodes(nodesToUpsert);
+            // 6. Upsert Layers
+            if (layerData && layerData.length > 0) {
+                const layersToUpsert = layerData.map(l => ({
+                    ...l,
+                    updated_at: new Date(l.updated_at).getTime()
+                }));
+                await knowledgeDB.upsertLayers(layersToUpsert);
+                latestTimestamp = Math.max(latestTimestamp, layersToUpsert[layersToUpsert.length - 1]!.updated_at);
+            }
 
-            // 5. Update sync state
-            const latestTimestamp = nodesToUpsert[nodesToUpsert.length - 1]!.updated_at;
-
-            await knowledgeDB.db?.runAsync(
-                'INSERT OR REPLACE INTO sync_state (key, last_sync_timestamp, sync_status) VALUES (?, ?, ?)',
-                [SYNC_KEY, latestTimestamp, 'idle']
-            );
+            // 7. Update sync state
+            if (latestTimestamp > lastSync) {
+                await knowledgeDB.db?.runAsync(
+                    'INSERT OR REPLACE INTO sync_state (key, last_sync_timestamp, sync_status) VALUES (?, ?, ?)',
+                    [SYNC_KEY, latestTimestamp, 'idle']
+                );
+            }
 
             console.log('Knowledge Sync Completed Successfully');
         } catch (error) {
             console.error('Knowledge Sync Failed:', error);
-
             await knowledgeDB.db?.runAsync(
                 'INSERT OR REPLACE INTO sync_state (key, sync_status) VALUES (?, ?)',
                 [SYNC_KEY, 'error']

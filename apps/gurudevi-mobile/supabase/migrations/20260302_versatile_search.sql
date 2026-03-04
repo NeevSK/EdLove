@@ -1,0 +1,76 @@
+-- 1. Create a search vector column for FTS
+ALTER TABLE public.library_resources 
+ADD COLUMN IF NOT EXISTS search_vector tsvector;
+
+-- 2. Create a function to update the search vector
+CREATE OR REPLACE FUNCTION library_resource_search_trigger() RETURNS trigger AS $$
+BEGIN
+  new.search_vector :=
+    setweight(to_tsvector('english', coalesce(new.title, '')), 'A') ||
+    setweight(to_tsvector('english', coalesce(new.description, '')), 'B') ||
+    setweight(to_tsvector('english', coalesce(new.subject, '')), 'C');
+  return new;
+END
+$$ LANGUAGE plpgsql;
+
+-- 3. Create the trigger
+DROP TRIGGER IF EXISTS tr_library_resource_search ON public.library_resources;
+CREATE TRIGGER tr_library_resource_search
+BEFORE INSERT OR UPDATE ON public.library_resources
+FOR EACH ROW EXECUTE FUNCTION library_resource_search_trigger();
+
+-- 4. Initial update for existing rows
+UPDATE public.library_resources SET search_vector = 
+  setweight(to_tsvector('english', coalesce(title, '')), 'A') ||
+  setweight(to_tsvector('english', coalesce(description, '')), 'B') ||
+  setweight(to_tsvector('english', coalesce(subject, '')), 'C');
+
+-- 5. Create the GIN index
+CREATE INDEX IF NOT EXISTS idx_library_resources_search ON public.library_resources USING gin(search_vector);
+
+-- 6. Consolidated Search RPC (FTS + Vector + Filters)
+CREATE OR REPLACE FUNCTION search_library(
+  query_text TEXT,
+  query_embedding vector(1536) DEFAULT NULL,
+  filter_type TEXT DEFAULT NULL,
+  filter_subject TEXT DEFAULT NULL,
+  match_threshold FLOAT DEFAULT 0.5,
+  match_count INT DEFAULT 20
+)
+RETURNS TABLE (
+  id UUID,
+  title TEXT,
+  description TEXT,
+  url TEXT,
+  type TEXT,
+  subject TEXT,
+  similarity FLOAT,
+  search_rank REAL
+)
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    lr.id,
+    lr.title,
+    lr.description,
+    lr.url,
+    lr.type,
+    lr.subject,
+    CASE 
+      WHEN query_embedding IS NOT NULL THEN (1 - (lr.embedding <=> query_embedding))
+      ELSE 0
+    END as similarity,
+    ts_rank_cd(lr.search_vector, websearch_to_tsquery('english', query_text)) as search_rank
+  FROM public.library_resources lr
+  WHERE
+    (query_text IS NULL OR lr.search_vector @@ websearch_to_tsquery('english', query_text))
+    AND (filter_type IS NULL OR lr.type = filter_type)
+    AND (filter_subject IS NULL OR lr.subject = filter_subject)
+    AND (query_embedding IS NULL OR (1 - (lr.embedding <=> query_embedding)) > match_threshold)
+  ORDER BY
+    search_rank DESC,
+    similarity DESC
+  LIMIT match_count;
+END;
+$$ LANGUAGE plpgsql;

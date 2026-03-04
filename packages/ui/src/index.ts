@@ -15,7 +15,9 @@ export * from './utils/DeviceUtils';
 export * from './utils/haptics';
 export * from './utils/themeColors';
 export * from './utils/linking';
+export * from './utils/SanctuaryLocation';
 export * from './hooks/useAccessibility';
 export * from './hooks/useDemoBridge';
 export * from './hooks/useQRDeepLink';
 export * from './providers/ToastProvider';
+

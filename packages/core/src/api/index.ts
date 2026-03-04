@@ -31,6 +31,7 @@ import { naturePathsAPI } from './naturePaths';
 import { moonPhaseAPI } from './moonPhase';
 import { schoolForestAPI } from './schoolForest';
 import { contextualChallengesAPI } from './contextualChallenges';
+import { founderAPI } from './founder';
 
 export * from './mockData';
 export * from './types';
@@ -91,6 +92,7 @@ export {
     moonPhaseAPI,
     schoolForestAPI,
     contextualChallengesAPI,
+    founderAPI,
 };
 
 /**
@@ -137,6 +139,7 @@ export const api = {
     moonPhase: moonPhaseAPI,
     schoolForest: schoolForestAPI,
     challenges: contextualChallengesAPI,
+    founder: founderAPI,
 };
 
 export default api;

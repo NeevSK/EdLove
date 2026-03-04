@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Box, HStack, Text, Pressable } from '../gluestack';
 import { Theme } from '../theme/Theme';
 import { useThemedColors } from '../hooks/useThemedColors';
@@ -62,3 +62,4 @@ const SandboxBanner: React.FC<SandboxBannerProps> = ({ onExit }) => {
 };
 
 export default SandboxBanner;
+

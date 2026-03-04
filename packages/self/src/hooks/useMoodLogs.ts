@@ -1,101 +1,174 @@
-import { useState, useEffect, useCallback } from 'react';
-import { supabase, GuestDataManager, authAPI } from '@repo/core';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { supabase, GuestDataManager, authAPI, SafeZustandStorage, useStore } from '@repo/core';
 import { MoodLog } from '../types';
 
-export const useMoodLogs = () => {
-    const [logs, setLogs] = useState<MoodLog[]>([]);
-    const [loading, setLoading] = useState(true);
+const MOOD_CACHE_KEY = 'gurudevi-mood-cache';
+
+/**
+ * useMoodLogs Hook
+ * 
+ * Manages mood tracking with "Local-First" resonance.
+ * - Loads recent history instantly from cache.
+ * - Supports both Authenticated (Supabase) and Guest (Local Storage) modes.
+ * - Syncs with Supabase in background for authenticated users.
+ */
+export const useMoodLogs = (userId?: string) => {
+    const isOnline = useStore(state => state.isOnline);
+    const [moodHistory, setMoodHistory] = useState<MoodLog[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [isAnonymous, setIsAnonymous] = useState(false);
 
-    // Check anonymous status
+    // Initial check for anonymous status
     useEffect(() => {
-        const checkAnonymous = async () => {
+        const checkStatus = async () => {
             const anon = await authAPI.isAnonymous();
             setIsAnonymous(anon);
         };
-        checkAnonymous();
+        checkStatus();
     }, []);
 
-    // Load mood logs
+    // Load from cache or guest storage
     useEffect(() => {
-        const loadLogs = async () => {
+        const loadInitial = async () => {
             try {
                 if (isAnonymous) {
-                    // Load from guest storage
+                    // Guest Mode: Direct from Storage
                     const guestLogs = await GuestDataManager.getMoodLogs();
                     const mappedLogs = guestLogs.map(gl => ({
                         id: gl.localId,
                         user_id: 'guest',
-                        mood_score: gl.mood, // Assuming guest Log mood index matches score
+                        mood_score: gl.mood,
                         mood: ['joyful', 'calm', 'curious', 'anxious', 'frustrated', 'sad'][gl.mood] as MoodLog['mood'],
                         note: gl.note,
                         created_at: gl.timestamp
                     }));
-                    setLogs(mappedLogs as MoodLog[]);
-                } else {
-                    // Load from Supabase
-                    const { data, error } = await supabase
-                        .from('mood_logs')
-                        .select('*')
-                        .order('created_at', { ascending: false })
-                        .limit(30);
-
-                    if (!error && data) {
-                        setLogs(data);
+                    setMoodHistory(mappedLogs as MoodLog[]);
+                } else if (userId) {
+                    // Authenticated Mode: Load from Cache first
+                    const cached = await SafeZustandStorage.getItem(`${MOOD_CACHE_KEY}-${userId}`);
+                    if (cached) {
+                        setMoodHistory(JSON.parse(cached));
                     }
                 }
-            } catch (error) {
-                console.error('Failed to load mood logs:', error);
+            } catch (e) {
+                console.warn('Failed to load initial mood logs', e);
             } finally {
-                setLoading(false);
+                setIsLoading(false);
             }
         };
 
-        loadLogs();
-    }, [isAnonymous]);
+        loadInitial();
+    }, [isAnonymous, userId]);
+
+    // Refresh from API or Storage
+    const refreshData = useCallback(async () => {
+        if (isAnonymous) {
+            const guestLogs = await GuestDataManager.getMoodLogs();
+            const mappedLogs = guestLogs.map(gl => ({
+                id: gl.localId,
+                user_id: 'guest',
+                mood_score: gl.mood,
+                mood: ['joyful', 'calm', 'curious', 'anxious', 'frustrated', 'sad'][gl.mood] as MoodLog['mood'],
+                note: gl.note,
+                created_at: gl.timestamp
+            }));
+            setMoodHistory(mappedLogs as MoodLog[]);
+            return;
+        }
+
+        if (!userId || !isOnline) return;
+
+        try {
+            const { data, error } = await supabase
+                .from('mood_logs')
+                .select('*')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false })
+                .limit(30);
+
+            if (error) throw error;
+
+            if (data) {
+                setMoodHistory(data);
+                // Sync to cache
+                await SafeZustandStorage.setItem(
+                    `${MOOD_CACHE_KEY}-${userId}`,
+                    JSON.stringify(data)
+                );
+            }
+        } catch (e) {
+            console.error('Failed to refresh mood logs', e);
+        }
+    }, [userId, isOnline, isAnonymous]);
+
+    // Sync from API in background on state change
+    useEffect(() => {
+        refreshData();
+    }, [refreshData, isOnline]);
 
     const addMoodLog = useCallback(async (mood: MoodLog['mood'], note?: string) => {
         try {
+            const moodIndex = ['joyful', 'calm', 'curious', 'anxious', 'frustrated', 'sad'].indexOf(mood);
+            const score = moodIndex !== -1 ? moodIndex : 3;
+
             if (isAnonymous) {
-                // Guest mode: Save to local storage
-                const moodIndex = mood ? ['joyful', 'calm', 'curious', 'anxious', 'frustrated', 'sad'].indexOf(mood) : 3;
-                const guestLog = await GuestDataManager.addMoodLog(moodIndex, note);
+                // Save locally only
+                const guestLog = await GuestDataManager.addMoodLog(score, note);
                 const newLog: MoodLog = {
                     id: guestLog.localId,
                     user_id: 'guest',
-                    mood_score: moodIndex,
+                    mood_score: score,
                     mood,
                     note,
                     created_at: guestLog.timestamp
                 };
-                setLogs(prev => [newLog, ...prev]);
+                setMoodHistory(prev => [newLog, ...prev]);
                 return newLog;
             } else {
-                // Authenticated mode: Save to Supabase
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) throw new Error("Not authenticated");
-
-                const moodIndex = mood ? ['joyful', 'calm', 'curious', 'anxious', 'frustrated', 'sad'].indexOf(mood) : 3; // Default to calm/middle if somehow undefined
+                // Save to Supabase
                 const { data, error } = await supabase
                     .from('mood_logs')
-                    .insert([{ mood, mood_score: moodIndex, note, user_id: user.id }])
+                    .insert([{
+                        mood,
+                        mood_score: score,
+                        note,
+                        user_id: userId,
+                        created_at: new Date().toISOString()
+                    }])
                     .select()
                     .single();
 
                 if (error) throw error;
-                setLogs(prev => [data, ...prev]);
+                setMoodHistory(prev => [data, ...prev]);
+
+                // Update cache
+                if (userId) {
+                    const currentHistory = [data, ...moodHistory].slice(0, 30);
+                    await SafeZustandStorage.setItem(
+                        `${MOOD_CACHE_KEY}-${userId}`,
+                        JSON.stringify(currentHistory)
+                    );
+                }
+
                 return data;
             }
         } catch (error) {
             console.error('Failed to add mood log:', error);
             throw error;
         }
-    }, [isAnonymous]);
+    }, [isAnonymous, userId, moodHistory]);
 
     return {
-        logs,
-        loading,
+        // Properties
+        moodHistory,
+        logs: moodHistory, // Compatibility alias
+        isLoading,
+        loading: isLoading, // Compatibility alias
         isAnonymous,
-        addMoodLog
+
+        // Methods
+        refreshData,
+        addMoodLog,
+        setMoodHistory
     };
 };

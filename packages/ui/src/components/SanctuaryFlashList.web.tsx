@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Web fallback for SanctuaryFlashList.
  *
  * @shopify/flash-list is optimised for native recycler views and does not have
@@ -21,7 +21,7 @@ function SanctuaryFlashListWeb<T>({
     data,
     renderItem,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    estimatedItemSize: _estimatedItemSize, // API compatibility only — FlatList doesn't require it
+    estimatedItemSize: _estimatedItemSize, // API compatibility only â€” FlatList doesn't require it
     refreshing = false,
     onRefresh,
     emptyComponent,
@@ -75,3 +75,4 @@ function SanctuaryFlashListWeb<T>({
 }
 
 export default SanctuaryFlashListWeb;
+

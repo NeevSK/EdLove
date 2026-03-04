@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Animated, {
     useAnimatedStyle,
@@ -93,3 +93,4 @@ const styles = StyleSheet.create({
 
 export { SkeletonLoader };
 export default SkeletonLoader;
+

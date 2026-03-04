@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+﻿import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet, ViewStyle } from 'react-native';
 import Reanimated, {
   useSharedValue,
@@ -11,8 +11,8 @@ import { useTheme } from '../hooks/useTheme';
 import { Theme } from '../theme/Theme';
 
 export interface SanctuaryProgressBarProps {
-  percentage: number;        // 0–100
-  isComplete?: boolean;      // true → gold/reward state
+  percentage: number;        // 0â€“100
+  isComplete?: boolean;      // true â†’ gold/reward state
   nextHint?: string;         // text shown below bar
   showPercentage?: boolean;  // default true
   compact?: boolean;         // 4px bar instead of 8px
@@ -29,7 +29,7 @@ export function SanctuaryProgressBar({
 }: SanctuaryProgressBarProps) {
   const { accent, glow, glass, text } = useTheme();
 
-  // Animated.Value for fill width — useNativeDriver must be false (width interpolation)
+  // Animated.Value for fill width â€” useNativeDriver must be false (width interpolation)
   const fillAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -118,7 +118,7 @@ export function SanctuaryProgressBar({
         </Text>
       ) : isComplete ? (
         <Text style={[styles.hint, { color: accent.reward }]}>
-          🎉 Profile complete!
+          ðŸŽ‰ Profile complete!
         </Text>
       ) : null}
     </View>
@@ -154,3 +154,4 @@ const styles = StyleSheet.create({
     marginTop: Theme.spacing.xs,
   },
 });
+

@@ -22,16 +22,26 @@ export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilt
     const resourcesInfiniteQuery = useInfiniteQuery({
         queryKey: LIBRARY_KEYS.resources(resourceFilters),
         queryFn: async ({ pageParam = 0 }) => {
-            // High-Performance Sync Search
-            if (resourceFilters.search && Platform.OS !== 'web') {
+            // High-Performance Sync Search — enabled for web via IndexedDB resonance
+            if (resourceFilters.search) {
                 return libraryAPI.searchResourcesLocal(resourceFilters.search, 20);
             }
+
+            // Versatile Server-Side Search
+            if (resourceFilters.search || resourceFilters.type) {
+                return libraryAPI.searchLibrary({
+                    query: resourceFilters.search || '',
+                    type: resourceFilters.type,
+                    limit: 20
+                });
+            }
+
             return libraryAPI.getResources({ ...resourceFilters, limit: 10, offset: pageParam });
         },
         initialPageParam: 0,
         getNextPageParam: (lastPage, allPages) => {
             // For local search, we don't handle pagination yet in the same way (simple limit for now)
-            if (resourceFilters.search && Platform.OS !== 'web') return undefined;
+            if (resourceFilters.search) return undefined;
             return lastPage.length === 10 ? allPages.length * 10 : undefined;
         }
     });
@@ -90,7 +100,6 @@ export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilt
         endorseResource: endorseMutation.mutateAsync,
 
         syncLibrary: async () => {
-            if (Platform.OS === 'web') return;
             await knowledgeSync.performSync();
             resourcesInfiniteQuery.refetch();
         },

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Text, VStack, HStack, Box } from '../gluestack';
 import SanctuaryButton from './SanctuaryButton';
 import SanctuaryModal from './SanctuaryModal';
@@ -14,7 +14,7 @@ interface LogoutModalProps {
 }
 
 /**
- * LogoutModal — sanctuary-themed logout confirmation.
+ * LogoutModal â€” sanctuary-themed logout confirmation.
  * Uses SanctuaryModal for phase-aware glass styling (light + dark world).
  */
 export default function LogoutModal({ isOpen, onClose, onLogout, isLoading = false }: LogoutModalProps) {
@@ -38,7 +38,7 @@ export default function LogoutModal({ isOpen, onClose, onLogout, isLoading = fal
                     onPress={onLogout}
                     isLoading={isLoading}
                 >
-                    {isLoading ? "Signing out…" : "Sign Out"}
+                    {isLoading ? "Signing outâ€¦" : "Sign Out"}
                 </SanctuaryButton>
             </Box>
         </HStack>
@@ -72,3 +72,4 @@ export default function LogoutModal({ isOpen, onClose, onLogout, isLoading = fal
         </SanctuaryModal>
     );
 }
+

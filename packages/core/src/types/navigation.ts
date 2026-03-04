@@ -4,6 +4,8 @@ export type ClassroomStackParamList = {
     Attendance: { classroomId: string; classroomName?: string; date?: string };
     Gradebook: { classroomId: string; classroomName?: string };
     SchoolCreation: undefined;
+    FounderDashboard: undefined;
+    FounderSchoolView: { schoolId: string; userId: string };
 };
 
 export type ProfileStackParamList = {
@@ -17,4 +19,7 @@ export type CommunityStackParamList = {
     Announcements: undefined;
     /** Public profile viewer — tapping any user avatar in community navigates here */
     UserProfile: { userId: string; userName: string };
+    /** 1:1 Direct Messaging */
+    DirectMessagesList: undefined;
+    DirectMessage: { conversationId: string; userName: string };
 };

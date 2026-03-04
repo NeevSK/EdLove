@@ -13,17 +13,20 @@ import {
     Text,
     Heading,
     ScrollView,
-    Pressable
+    Pressable,
+    GlobalHeader
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { Shield, Settings, Activity, Database, Layout, Heart } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
-import { MoodLotus, ShadowAgentDrawer } from '../../components/self';
-import { GlobalHeader } from '@repo/ui';
-import DailyContentCard from '../../components/self/DailyContentCard';
-import ResonancePatternCard from '../../components/self/ResonancePatternCard';
-import WelcomeModal from '../../components/self/WelcomeModal';
+import {
+    MoodLotus,
+    ShadowAgentDrawer,
+    DailyContentCard,
+    ResonancePatternCard,
+    WelcomeModal
+} from '@repo/self';
 import { useMoodLogs, useEnergyForecast } from '@repo/self';
 import { SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useThemedColors, useBottomTabPadding, ScreenWrapper } from '@repo/ui';

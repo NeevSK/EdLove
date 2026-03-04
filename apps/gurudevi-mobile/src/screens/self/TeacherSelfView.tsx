@@ -26,8 +26,6 @@ import { Mic, Send, MessageCircle, Repeat, Flower, Flame, Sparkles, Heart, Light
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
-import DailyRhythm from '../../components/self/DailyRhythm';
-import PulseDashboard from '../self/PulseDashboard';
 import {
     MoodLotus,
     ShadowAgentDrawer,
@@ -37,19 +35,25 @@ import {
     WisdomSeeds,
     TomorrowPrep,
     EnergyForecast,
-    WindDownRitual
-} from '../../components/self';
-import SleepTracker from '../../components/self/SleepTracker';
-import RemindersManager from '../../components/self/RemindersManager';
-import VoiceJournaling from '../../components/self/VoiceJournaling';
+    WindDownRitual,
+    SleepTracker,
+    RemindersManager,
+    VoiceJournaling,
+    DailyContentCard,
+    DailyRhythm,
+    WelcomeModal
+} from '@repo/self';
+import PulseDashboard from '../self/PulseDashboard';
 import { supabase, useStore, useSafeMutation } from '@repo/core';
 import { GlobalHeader } from '@repo/ui';
-import DailyContentCard from '../../components/self/DailyContentCard';
 import { useDecisionJournal } from '@repo/self';
-import ThuthimalBadge from '../../components/profile/ThuthimalBadge';
-import { SkeletonCard, PositiveInvitation } from '@repo/ui';
-import WelcomeModal from '../../components/self/WelcomeModal';
-import { useThemedColors, useBottomTabPadding } from '@repo/ui';
+import { ThuthimalBadge } from '@repo/profile';
+import {
+    SkeletonCard,
+    PositiveInvitation,
+    useThemedColors,
+    useBottomTabPadding
+} from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
 
 // Progressive Architecture: PulseDashboard is the Entry Hall.

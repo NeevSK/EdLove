@@ -22,9 +22,11 @@ import { useTranslation } from 'react-i18next';
 import { MapPin, Mail, Phone, Shield, Edit3, Check, X, User as UserIcon, FileText, Fingerprint, Briefcase, GraduationCap, BookOpen, School } from 'lucide-react-native';
 import { hapticLight, hapticError } from '@repo/ui';
 import { supabase } from '@repo/core';
-import IdentityCard from '../../components/profile/IdentityCard';
-import { AddSocialLinkModal } from '../../components/profile/AddSocialLinkModal';
-import { StaffPresencePulse } from '../../components/profile/StaffPresencePulse';
+import {
+    IdentityCard,
+    AddSocialLinkModal,
+    StaffPresencePulse
+} from '@repo/profile';
 
 import Reanimated, {
     useSharedValue,
@@ -225,7 +227,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                     value={profile.full_name}
                                     field="full_name"
                                     placeholder="Enter full name"
-                                    onSave={isOtherProfile ? async () => {} : handleSave}
+                                    onSave={isOtherProfile ? async () => { } : handleSave}
                                 />
 
                                 <EditableItem
@@ -234,7 +236,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                     value={profile.phone}
                                     field="phone"
                                     placeholder="+94 XX XXX XXXX"
-                                    onSave={isOtherProfile ? async () => {} : handleSave}
+                                    onSave={isOtherProfile ? async () => { } : handleSave}
                                 />
 
                                 {profile.role === 'student' ? (
@@ -244,7 +246,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                         value={profile.index_number}
                                         field="index_number"
                                         placeholder="STU-XXXXX"
-                                        onSave={isOtherProfile ? async () => {} : handleSave}
+                                        onSave={isOtherProfile ? async () => { } : handleSave}
                                     />
                                 ) : (
                                     <EditableItem
@@ -253,7 +255,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                         value={profile.nic_number}
                                         field="nic_number"
                                         placeholder="19XXXXXXXXXX"
-                                        onSave={isOtherProfile ? async () => {} : handleSave}
+                                        onSave={isOtherProfile ? async () => { } : handleSave}
                                     />
                                 )}
                             </VStack>
@@ -294,7 +296,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                         value={profile.experience_years?.toString()}
                                         field="experience_years"
                                         placeholder="0"
-                                        onSave={isOtherProfile ? async () => {} : handleSave}
+                                        onSave={isOtherProfile ? async () => { } : handleSave}
                                     />
 
                                     <EditableItem
@@ -303,7 +305,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                         value={Array.isArray(profile.subjects_taught) ? profile.subjects_taught.join(', ') : profile.subjects_taught}
                                         field="subjects_taught"
                                         placeholder="Math, Physics..."
-                                        onSave={isOtherProfile ? async () => {} : handleSave}
+                                        onSave={isOtherProfile ? async () => { } : handleSave}
                                     />
 
                                     <EditableItem
@@ -312,7 +314,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                         value={Array.isArray(profile.qualifications) ? profile.qualifications.join(', ') : profile.qualifications}
                                         field="qualifications"
                                         placeholder="B.A, M.Sc, etc."
-                                        onSave={isOtherProfile ? async () => {} : handleSave}
+                                        onSave={isOtherProfile ? async () => { } : handleSave}
                                     />
                                 </VStack>
                             </Box>
@@ -341,7 +343,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                 value={profile.bio}
                                 icon={FileText}
                                 placeholder={t('profile.tellUsAboutYourself', 'Tell us about yourself...')}
-                                onSave={isOtherProfile ? async () => {} : handleSave}
+                                onSave={isOtherProfile ? async () => { } : handleSave}
                                 multiline={true}
                             />
                         </Box>
