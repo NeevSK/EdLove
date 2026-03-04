@@ -42,7 +42,8 @@ import {
 } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { useSchoolStats } from '../hooks/classroom/useSchoolStats';
+import { useGradebook } from '../hooks/useGradebook';
+import { useSchoolStats } from '../hooks/useSchoolStats';
 import {
     HierarchyBuilder,
     InviteManager,

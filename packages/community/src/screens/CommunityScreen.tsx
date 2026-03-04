@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { RefreshControl, FlatList, ActivityIndicator, ScrollView } from 'react-native';
 import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, Theme, useBottomTabPadding, LotusPetalFAB, FadeInDown, HorizontalChipRow, SanctuaryFlashList } from '@repo/ui';
 import Animated from 'react-native-reanimated';
@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { MessageSquare, Users, PenTool } from 'lucide-react-native';
 import { useCommunity } from '../hooks/useCommunity';
 import { useCommunityFilters } from '../hooks/useCommunityFilters';
+import { useCommunityGroups } from '../hooks/useCommunityGroups';
 import { Post, Group } from '../types';
 import { useUserRole, useTracking, supabase, isDemo } from '@repo/core';
 import { CommunityPresence } from '@repo/self';
@@ -22,6 +23,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CommunityStackParamList } from '@repo/core';
 import { Mail } from 'lucide-react-native';
+import DirectMessagesListScreen from './DirectMessagesListScreen';
 
 type TabType = 'feed' | 'groups' | 'dms';
 
@@ -267,14 +269,7 @@ export default function CommunityScreen() {
                             }}
                         />
                     ) : (
-                        /* DMs — Coming Soon */
-                        <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: Theme.spacing.xl }}>
-                            <PositiveInvitation
-                                context="community"
-                                title={t('community.dms.comingSoon', 'Direct Messages Coming Soon')}
-                                description={t('community.dms.comingSoonDesc', 'Private 1-on-1 conversations are being thoughtfully built. For now, use Group Chat inside any group to connect with members.')}
-                            />
-                        </Box>
+                        <DirectMessagesListScreen />
                     )}
 
                     {userId && (

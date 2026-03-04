@@ -1,4 +1,4 @@
-/**
+﻿/**
  * LOTUS PETAL FAB - Floating Action Button
  * 
  * A petal-shaped floating action button with:
@@ -455,3 +455,4 @@ const styles = StyleSheet.create({
 });
 
 export default LotusPetalFAB;
+
