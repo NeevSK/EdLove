@@ -156,7 +156,7 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
     const { mutate, isLoading: isSaving } = useSafeMutation(
         async (mood: number) => {
             const moodIndex = Math.max(0, Math.min(MOOD_STATES.length - 1, mood - 1));
-            const moodLabel = MOOD_STATES[moodIndex].label as any;
+            const moodLabel = MOOD_STATES[moodIndex]!.label as any;
             await addMoodLog(moodLabel);
         },
         {
