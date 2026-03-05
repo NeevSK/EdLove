@@ -50,7 +50,7 @@ Every implementation decision is mapped across three axes of impact:
 
 | Dimension | Axis | Focus | The Proactive Temporal Question |
 | :--- | :--- | :--- | :--- |
-| **Horizontal** | Temporal / Scale | Past -> Future | **O(Trajectory)**: "Does this code solve for the user's intent 3 seconds from now and the project's scale 3 months from now?" |
+| **Horizontal** | Temporal / Scale | Past -> Future | **O(Trajectory)**: "Does this code solve for the user's intent 10 mins from now and the project's scale 3 months from now?" |
 | **Vertical** | Depth / Hierarchy | Logic / State | **Convolutional Depth**: "Is this kernel placed deep enough in the hierarchy to resonate across all consumers?" |
 | **Diagonal** | Lateral / Impact | Cross-cutting | **Ripple Awareness**: "How does this change 'heal' or 'hurt' unrelated modules (Rewards, Auth, UI)?" |
 
