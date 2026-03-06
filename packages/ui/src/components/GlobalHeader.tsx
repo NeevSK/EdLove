@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { HStack, VStack, Text, Box, Input, InputField, InputIcon, Pressable } from '../gluestack';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../theme/Theme';
@@ -85,9 +85,9 @@ export default function GlobalHeader({
     // Determine greeting based on time of day
     const getGreetingDetails = () => {
         const hour = new Date().getHours();
-        if (hour < 12) return { text: t('goodMorning', 'Good Morning'), emoji: 'ðŸŒ…' };
-        if (hour < 18) return { text: t('goodAfternoon', 'Good Afternoon'), emoji: 'â˜€ï¸' };
-        return { text: t('goodEvening', 'Good Evening'), emoji: 'ðŸ®' };
+        if (hour < 12) return { text: t('goodMorning', 'Good Morning'), emoji: '🌅' };
+        if (hour < 18) return { text: t('goodAfternoon', 'Good Afternoon'), emoji: '☀️' };
+        return { text: t('goodEvening', 'Good Evening'), emoji: '🏮' };
     };
 
     const { text: greetingText, emoji } = getGreetingDetails();

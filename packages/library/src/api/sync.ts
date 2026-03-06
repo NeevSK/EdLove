@@ -23,7 +23,7 @@ export const knowledgeSync = {
             await knowledgeDB.init();
 
             // 2. Get last sync timestamp
-            const syncState = await knowledgeDB.db?.getFirstAsync<{ last_sync_timestamp: number }>(
+            const syncState = await knowledgeDB.getFirstAsync<{ last_sync_timestamp: number }>(
                 'SELECT last_sync_timestamp FROM sync_state WHERE key = ?',
                 [SYNC_KEY]
             );
@@ -87,7 +87,7 @@ export const knowledgeSync = {
 
             // 7. Update sync state
             if (latestTimestamp > lastSync) {
-                await knowledgeDB.db?.runAsync(
+                await knowledgeDB.runAsync(
                     'INSERT OR REPLACE INTO sync_state (key, last_sync_timestamp, sync_status) VALUES (?, ?, ?)',
                     [SYNC_KEY, latestTimestamp, 'idle']
                 );
@@ -96,7 +96,7 @@ export const knowledgeSync = {
             console.log('Knowledge Sync Completed Successfully');
         } catch (error) {
             console.error('Knowledge Sync Failed:', error);
-            await knowledgeDB.db?.runAsync(
+            await knowledgeDB.runAsync(
                 'INSERT OR REPLACE INTO sync_state (key, sync_status) VALUES (?, ?)',
                 [SYNC_KEY, 'error']
             ).catch(() => { });

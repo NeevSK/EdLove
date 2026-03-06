@@ -87,21 +87,17 @@ BEGIN
         uid2 := auth.uid();
     END IF;
 
-    -- Try to find existing
-    SELECT id INTO conv_id
-    FROM public.direct_conversations
-    WHERE user1_id = uid1 AND user2_id = uid2;
-
-    -- Create if not found
-    IF conv_id IS NULL THEN
-        INSERT INTO public.direct_conversations (user1_id, user2_id)
-        VALUES (uid1, uid2)
-        RETURNING id INTO conv_id;
-    END IF;
+    -- Try to find existing conversation or create a new one atomically.
+    -- Using INSERT ... ON CONFLICT handles concurrent requests safely,
+    -- preventing race conditions from the SELECT-then-INSERT pattern.
+    INSERT INTO public.direct_conversations (user1_id, user2_id)
+    VALUES (uid1, uid2)
+    ON CONFLICT (user1_id, user2_id) DO UPDATE SET updated_at = now()
+    RETURNING id INTO conv_id;
 
     RETURN conv_id;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 -- ── Update Trigger ──────────────────────────────────────────
 
