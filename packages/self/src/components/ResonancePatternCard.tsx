@@ -35,8 +35,7 @@ import {
 import { Sparkles } from 'lucide-react-native';
 import type { OrientationSeeds } from '@repo/profile';
 import type { MoodLog, EnergyForecast } from '../types/Wellbeing';
-import { useOrientationInference } from '../hooks/useOrientationInference';
-import type { DataQuality } from '../types';
+import { useOrientationInference, type DataQuality } from '../hooks/useOrientationInference';
 import { useUserRole } from '@repo/core';
 
 // ============================================================================

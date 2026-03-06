@@ -32,6 +32,9 @@ import { moonPhaseAPI } from './moonPhase';
 import { schoolForestAPI } from './schoolForest';
 import { contextualChallengesAPI } from './contextualChallenges';
 import { founderAPI } from './founder';
+import { academicCyclesAPI } from './academicCycles';
+import { studentObservationsAPI } from './studentObservations';
+import { privacyAPI } from './privacy';
 
 export * from './mockData';
 export * from './types';
@@ -41,6 +44,7 @@ export * from './agents'; // Export agent types
 export * from './resonantProxy';
 export * from './classroomNotes';
 export * from './principalNotes';
+export * from './studentObservations';
 export * from './community'; // Export community types/API
 export * from './staffManagement'; // Export staff management types
 // Growth Model v3.0 — Full Nature-Inspired Growth Ecosystem
@@ -52,6 +56,7 @@ export * from './naturePaths';
 export * from './moonPhase';
 export * from './schoolForest';
 export * from './contextualChallenges';
+export * from './privacy';
 // Staff management types/API only exported selectively or implicitly required
 
 // Simplified named exports for direct access
@@ -93,6 +98,9 @@ export {
     schoolForestAPI,
     contextualChallengesAPI,
     founderAPI,
+    academicCyclesAPI,
+    studentObservationsAPI,
+    privacyAPI,
 };
 
 /**
@@ -140,6 +148,9 @@ export const api = {
     schoolForest: schoolForestAPI,
     challenges: contextualChallengesAPI,
     founder: founderAPI,
+    academicCycles: academicCyclesAPI,
+    studentObservations: studentObservationsAPI,
+    privacy: privacyAPI,
 };
 
 export default api;

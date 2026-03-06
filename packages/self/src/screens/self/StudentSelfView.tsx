@@ -37,11 +37,13 @@ import {
     WelcomeModal,
     useMoodLogs,
     useEnergyForecast,
-    PulseDashboard
+    PulseDashboard,
+    WindDownRitual,
+    WisdomSeeds
 } from '../../index';
-import { SkeletonCard, PositiveInvitation } from '@repo/ui';
+import { SkeletonCard, PositiveInvitation, GlobalHeader } from '@repo/ui';
 import { useThemedColors, useBottomTabPadding } from '@repo/ui';
-import { ScreenWrapper, GlobalHeader } from '@repo/ui';
+import { ScreenWrapper } from '@repo/ui';
 
 // Student-specific core features — Pulse is the Entry Hall
 const STUDENT_CORE_FEATURES = [

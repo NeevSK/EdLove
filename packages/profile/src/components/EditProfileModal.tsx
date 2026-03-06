@@ -165,7 +165,10 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                 <Heading {...({ color: text.primary, size: "lg" } as any)}>
                                     {t('profile.settings')}
                                 </Heading>
-                                <Pressable onPress={onClose} p={Theme.spacing.xs}>
+                                <Pressable
+                                    onPress={onClose}
+                                    sx={{ padding: Theme.spacing.xs }}
+                                >
                                     <X color={text.muted} size={24} />
                                 </Pressable>
                             </HStack>
@@ -316,7 +319,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                     <Text {...({ color: text.secondary, size: "sm", mb: "$1" } as any)}>{t('profile.role')} (Developer Access)</Text>
                                     <Select
                                         selectedValue={selectedRole || 'student'}
-                                        onValueChange={(value) => setSelectedRole(value as UserRole)}
+                                        onValueChange={(value: string | null) => setSelectedRole(value as UserRole)}
                                     >
                                         <SelectTrigger
                                             variant="outline"

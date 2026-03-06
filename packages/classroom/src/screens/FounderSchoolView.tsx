@@ -32,8 +32,9 @@ import { Compass, Zap, Globe, Heart, Plus } from 'lucide-react-native';
 import { SandboxBanner } from '@repo/ui';
 import { CreateSchoolModal } from '../components';
 import { TouchableOpacity } from 'react-native';
-import { SkeletonCard, PositiveInvitation } from '@repo/ui';
-import { hapticLight } from '@repo/ui';
+import { SkeletonCard, PositiveInvitation, hapticLight } from '@repo/ui';
+import { useNavigation } from '@react-navigation/native';
+
 
 interface FounderSchoolViewProps {
     schoolId: string;
@@ -45,6 +46,8 @@ export default function FounderSchoolView({ schoolId, userId }: FounderSchoolVie
     const { t } = useTranslation();
     const colors = useThemedColors();
     const { isGuest } = useFeatureAccess();
+    const navigation = useNavigation<any>();
+
 
     // Resilient Hook
     const { school, stats, isLoading, refreshData } = useSchoolStats(schoolId);
@@ -129,7 +132,7 @@ export default function FounderSchoolView({ schoolId, userId }: FounderSchoolVie
                             </VStack>
 
                             {/* Ecology Health (Simulated Cross-School/Platform Trends) */}
-                            <VStack sx={{ gap: Theme.spacing.md, marginTop: Theme.spacing.md }}>
+                            <VStack sx={{ gap: Theme.spacing.md }}>
                                 <Heading color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>{t('founder.visionaryInsights')}</Heading>
                                 <Box sx={{ padding: Theme.spacing.md, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, borderWidth: 1, borderColor: colors.border }}>
                                     <HStack justifyContent="space-between" alignItems="center">
@@ -141,6 +144,45 @@ export default function FounderSchoolView({ schoolId, userId }: FounderSchoolVie
                                     </HStack>
                                 </Box>
                             </VStack>
+
+                            {/* Operational Shortcut for Founders */}
+                            <TouchableOpacity
+                                onPress={() => {
+                                    hapticLight();
+                                    navigation.navigate('PrincipalSchoolView', {
+                                        schoolId: schoolId,
+                                        userId: userId
+                                    });
+                                }}
+                            >
+                                <Box sx={{
+                                    padding: Theme.spacing.md,
+                                    backgroundColor: colors.secondary,
+                                    borderRadius: Theme.corners.comfortable,
+                                    borderWidth: 1,
+                                    borderColor: colors.action,
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    gap: Theme.spacing.md
+                                }}>
+                                    <Box sx={{
+                                        width: 40,
+                                        height: 40,
+                                        borderRadius: 20,
+                                        backgroundColor: colors.action + '11',
+                                        justifyContent: 'center',
+                                        alignItems: 'center'
+                                    }}>
+                                        <Zap color={colors.action} size={20} />
+                                    </Box>
+                                    <VStack sx={{ flex: 1 }}>
+                                        <Text color={colors.text} sx={{ fontWeight: '700' }}>{t('founder.principalsOffice') || "Principal's Office"}</Text>
+                                        <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>{t('founder.manageOperations') || "Manage staff, students, and operations"}</Text>
+                                    </VStack>
+                                    <Compass color={colors.textSecondary} size={20} />
+                                </Box>
+                            </TouchableOpacity>
+
 
                             {isGuest && (
                                 <PositiveInvitation

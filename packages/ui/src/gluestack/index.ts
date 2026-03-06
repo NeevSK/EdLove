@@ -141,6 +141,27 @@ export const AvatarFallbackText = BaseAvatarFallbackText as any;
 export const AvatarImage = BaseAvatarImage as any;
 
 // ============================================================================
+// Navigation & Organization
+// ============================================================================
+import {
+    Tabs as BaseTabs,
+    TabsTabList as BaseTabsTabList,
+    TabsTab as BaseTabsTab,
+    TabsTabTitle as BaseTabsTabTitle,
+    TabsTabPanel as BaseTabsTabPanel,
+} from '@gluestack-ui/themed/build/components/Tabs';
+
+export const Tabs = BaseTabs as any;
+export const TabList = BaseTabsTabList as any;
+export const TabTrigger = BaseTabsTab as any;
+export const TabTitle = BaseTabsTabTitle as any;
+export const TabContent = BaseTabsTabPanel as any;
+
+export {
+    Card
+} from '@gluestack-ui/themed/build/components/Card';
+
+// ============================================================================
 // Modal Components
 // ============================================================================
 import {
@@ -164,6 +185,7 @@ export const ModalCloseButton = BaseModalCloseButton as any;
 import { Icon as BaseIcon, CloseIcon as BaseCloseIcon } from '@gluestack-ui/themed/build/components/Icons';
 export const Icon = BaseIcon as any;
 export const CloseIcon = BaseCloseIcon as any;
+export { ChevronLeftIcon, ChevronRightIcon, ArrowLeftIcon } from '@gluestack-ui/themed/build/components/Icons';
 
 // Link with relaxed types
 import { Link as BaseLink, LinkText as BaseLinkText } from '@gluestack-ui/themed/build/components/Link';

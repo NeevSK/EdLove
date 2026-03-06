@@ -68,7 +68,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
     }
   ];
 
-  const currentStepData = steps[currentStep];
+  const currentStepData = (steps[currentStep] || steps[0]) as typeof steps[number];
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   const handleNext = () => {
@@ -234,7 +234,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
             {Math.round(progress)}%
           </Text>
         </HStack>
-        <Progress value={progress} size="sm">
+        <Progress value={progress}>
           <ProgressFilledTrack
             sx={{ backgroundColor: Theme.colors.sanctuarySaffron }}
           />
@@ -283,8 +283,8 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
               >
                 <InputField
                   placeholder={currentStepData.placeholder}
-                  value={currentStepData.value}
-                  onChangeText={currentStepData.setValue}
+                  value={currentStepData.value || ''}
+                  onChangeText={currentStepData.setValue || (() => { })}
                   multiline
                   color={Theme.colors.sacredWhite}
                   placeholderTextColor={Theme.colors.dimGray}
@@ -338,7 +338,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
           action="primary"
           onPress={handleNext}
           isDisabled={
-            currentStepData.input && !currentStepData.value?.trim()
+            currentStepData.input && !(currentStepData.value as string)?.trim()
           }
           sx={{
             backgroundColor: Theme.colors.sanctuarySaffron,

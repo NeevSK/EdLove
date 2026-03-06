@@ -87,7 +87,6 @@ export function useProfile() {
     };
 
     const logout = useCallback(async () => {
-        const { supabase } = await import('@repo/core');
         await supabase.auth.signOut();
     }, []);
 

@@ -33,10 +33,12 @@ import { Theme, useThemedColors } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 
 // Extended role type to include principal (and other staff roles that see cumulative counts)
-type PresenceRole = 'teacher' | 'student' | 'admin' | 'principal' | 'section_head' | 'grade_head' | 'founder';
+type PresenceRole = 'teacher' | 'student' | 'admin' | 'principal' | 'section_head' | 'grade_head' | 'founder' | 'developer';
+
 
 interface CommunityPresenceProps {
     compact?: boolean;
+    hidePadding?: boolean;
     userVibe?: string;
     userId: string;
     userRole: PresenceRole;
@@ -60,13 +62,14 @@ function getWatcherConfig(role: PresenceRole): {
             isCumulative: false,
         };
     }
-    if (role === 'principal' || role === 'founder') {
+    if (role === 'principal' || role === 'founder' || role === 'developer') {
         return {
-            targetRoles: ['teacher', 'student', 'section_head', 'grade_head', 'principal'],
+            targetRoles: ['teacher', 'student', 'section_head', 'grade_head', 'principal', 'developer'],
             channelName: 'presence:school',
             isCumulative: true,
         };
     }
+
     // teacher, section_head, grade_head, admin → see other educators
     return {
         targetRoles: ['teacher', 'section_head', 'grade_head', 'principal'],
@@ -77,6 +80,7 @@ function getWatcherConfig(role: PresenceRole): {
 
 export default function CommunityPresence({
     compact = false,
+    hidePadding = false,
     userVibe = 'active',
     userId,
     userRole = 'teacher'
@@ -109,8 +113,8 @@ export default function CommunityPresence({
             if (!isCumulative) {
                 // Filter to just the target role(s)
                 query = query.in('role', targetRoles);
-            } else {
-                // Cumulative: exclude own userId to avoid self-count skew, but keep all others
+            } else if (userId && userId !== 'guest') {
+                // Cumulative: exclude own userId if it's a valid ID
                 query = query.neq('id', userId);
             }
 
@@ -223,20 +227,20 @@ export default function CommunityPresence({
     // Role-aware label: who am I seeing?
     const roleLabel = useMemo(() => {
         if (userRole === 'student') return t('community.students', 'Students');
-        if (userRole === 'principal' || userRole === 'founder') return t('community.members', 'Members');
+        if (userRole === 'principal' || userRole === 'founder' || userRole === 'developer') return t('community.members', 'Members');
         return t('community.educators', 'Educators'); // teachers see other educators
     }, [userRole, t]);
 
     // Motivational message based on role
     const motivationText = useMemo(() => {
         if (userRole === 'student') return t('community.studentMotivation', 'Your peers are thriving. You are not alone on this path.');
-        if (userRole === 'principal' || userRole === 'founder') return t('community.principalMotivation', 'Your school community is alive. Keep the current flowing.');
+        if (userRole === 'principal' || userRole === 'founder' || userRole === 'developer') return t('community.principalMotivation', 'Your school community is alive. Keep the current flowing.');
         return t('community.teacherMotivation', 'Fellow educators are present. Share wisdom, not just content.');
     }, [userRole, t]);
 
     if (isLoading) {
         return (
-            <HStack space="md" alignItems="center" p={compact ? 0 : "$4"} opacity={0.6}>
+            <HStack space="md" alignItems="center" p={hidePadding || compact ? 0 : "$4"} opacity={0.6}>
                 <Spinner size="small" color={colors.action} />
                 <Text color={colors.textSecondary} sx={{ fontSize: '$sm' }}>Locating Sanctuary Presence...</Text>
             </HStack>
@@ -262,7 +266,7 @@ export default function CommunityPresence({
     }
 
     return (
-        <VStack space="md" p={compact ? 0 : "$4"}>
+        <VStack space="md" p={hidePadding || compact ? 0 : "$4"}>
             <HStack space="md" alignItems="center">
                 <Box sx={{ position: 'relative' }}>
                     {isOffline ? (

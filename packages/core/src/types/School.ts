@@ -48,3 +48,13 @@ export interface SchoolStats {
     total_classrooms: number;
     total_sections: number;
 }
+
+export interface AcademicCycle {
+    id: string;
+    school_id: string;
+    name: string;
+    start_date: string;
+    end_date: string;
+    is_current: boolean;
+    created_at: string;
+}

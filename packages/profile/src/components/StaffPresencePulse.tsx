@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, GlassCard, useTheme, SanctuaryCard, Button, ButtonText, HStack, VStack, Center, useThemedColors, Box } from '@repo/ui';
-import { useStaffPresence } from '@repo/profile';
+import { useStaffPresence } from '../hooks/useStaffPresence';
 import {
     Clock,
     Calendar,

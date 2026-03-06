@@ -83,6 +83,8 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
             .reverse()
             .find(s => interactionCount >= s.minInteractions) || GROWTH_STAGES[0];
 
+        if (!stage) return; // Extreme safety fallback
+
         // Check if we just reached a new stage
         const previousStage = currentStage;
         if (stage && previousStage && stage.stage !== previousStage.stage && stage.minInteractions > 0) {

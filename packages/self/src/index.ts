@@ -45,3 +45,4 @@ export { default as PulseDashboard } from './components/PulseDashboard';
 
 // Screens
 export { default as SelfScreen } from './screens/SelfScreen';
+export { default as PrivacyLedgerScreen } from './screens/PrivacyLedgerScreen';

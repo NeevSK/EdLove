@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
+import { ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import {
     Box,
     VStack,
@@ -11,12 +11,12 @@ import {
     FadeInDown,
     SanctuaryCard,
     SanctuaryButton,
+    SanctuaryFlashList,
     useLotusToast
 } from '@repo/ui';
 import {
     ChevronLeft,
     Users,
-    Shield,
     Settings,
     MoreVertical,
     UserPlus,
@@ -35,7 +35,7 @@ import { isDemo } from '@repo/core';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import PostCard from '../components/PostCard';
-import ReportPostModal from '../components/ReportPostModal';
+import SocialShieldModal from '../components/SocialShieldModal';
 
 type GroupDetailsRouteProp = {
     key: string;
@@ -129,7 +129,7 @@ export default function GroupDetailsScreen() {
     }
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper scroll={false}>
             <Box sx={{ flex: 1 }}>
                 {/* Custom Header */}
                 <HStack
@@ -160,9 +160,23 @@ export default function GroupDetailsScreen() {
                     </HStack>
                 </HStack>
 
-                <FlatList
-                    data={[]}
-                    renderItem={() => null}
+                <SanctuaryFlashList
+                    data={posts}
+                    estimatedItemSize={Theme.listSizes.communityCard}
+                    renderItem={({ item, index }) => (
+                        <Animated.View entering={FadeInDown.duration(400).delay(index * 150).springify()}>
+                            <Box px="$4" pb="$4">
+                                <PostCard
+                                    post={item}
+                                    onPress={() => console.log('OPEN_POST', item.id)}
+                                    onReport={() => {
+                                        setReportPostId(item.id);
+                                        setShowReportModal(true);
+                                    }}
+                                />
+                            </Box>
+                        </Animated.View>
+                    )}
                     ListHeaderComponent={
                         <VStack space="xl" p="$4">
                             {/* Hero Card */}
@@ -254,20 +268,6 @@ export default function GroupDetailsScreen() {
                                     {t('community.groups.feed', 'Resonant Feed')}
                                 </Text>
                             </HStack>
-
-                            <VStack space="md" mt="$2">
-                                {posts.map((post: Post) => (
-                                    <PostCard
-                                        key={post.id}
-                                        post={post}
-                                        onPress={() => console.log('OPEN_POST', post.id)}
-                                        onReport={() => {
-                                            setReportPostId(post.id);
-                                            setShowReportModal(true);
-                                        }}
-                                    />
-                                ))}
-                            </VStack>
                         </VStack>
                     }
                     ListEmptyComponent={
@@ -284,7 +284,7 @@ export default function GroupDetailsScreen() {
                     }
                 />
 
-                <ReportPostModal
+                <SocialShieldModal
                     isOpen={showReportModal}
                     onClose={() => {
                         setShowReportModal(false);
@@ -292,7 +292,6 @@ export default function GroupDetailsScreen() {
                     }}
                     postId={reportPostId}
                     groupId={groupId}
-                    reporterId={user?.id || ''}
                 />
             </Box>
         </ScreenWrapper>

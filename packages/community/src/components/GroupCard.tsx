@@ -48,7 +48,7 @@ const GroupCard = React.memo(function GroupCard({
                     }}
                 >
                     <Text size="xl" bold color={type === 'public' ? Theme.colors.gurudeviViolet : Theme.colors.sanctuarySaffron}>
-                        {name.charAt(0).toUpperCase()}
+                        {(name || 'G').charAt(0).toUpperCase()}
                     </Text>
                 </Box>
 
@@ -67,7 +67,7 @@ const GroupCard = React.memo(function GroupCard({
                     <HStack space="xs" alignItems="center" mt="$1">
                         <Users size={12} color={Theme.colors.dimGray} />
                         <Text color={Theme.colors.dimGray} size="xs">
-                            {memberCount} • {type.charAt(0).toUpperCase() + type.slice(1)}
+                            {memberCount} • {(type || 'General').charAt(0).toUpperCase() + (type || 'General').slice(1)}
                         </Text>
                     </HStack>
                 </VStack>

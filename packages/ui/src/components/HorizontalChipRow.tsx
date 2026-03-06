@@ -16,6 +16,8 @@ export interface HorizontalChipRowProps {
     variant?: SanctuaryChipProps['variant'];
     /** Override the horizontal padding of the list container */
     paddingHorizontal?: number;
+    /** Whether to center the items if they don't overflow */
+    center?: boolean;
 }
 
 /**
@@ -29,6 +31,7 @@ export const HorizontalChipRow: React.FC<HorizontalChipRowProps> = ({
     size = 'md',
     variant = 'filter',
     paddingHorizontal = Theme.spacing.md,
+    center,
 }) => (
     <FlatList
         horizontal
@@ -47,6 +50,7 @@ export const HorizontalChipRow: React.FC<HorizontalChipRowProps> = ({
         contentContainerStyle={[
             styles.container,
             { paddingHorizontal },
+            center && styles.centeredContent
         ]}
     />
 );
@@ -54,5 +58,9 @@ export const HorizontalChipRow: React.FC<HorizontalChipRowProps> = ({
 const styles = StyleSheet.create({
     container: {
         paddingVertical: Theme.spacing.sm,
+    },
+    centeredContent: {
+        flexGrow: 1,
+        justifyContent: 'center',
     },
 });

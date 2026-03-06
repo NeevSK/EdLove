@@ -288,6 +288,7 @@ export interface CommunityGroup {
     name: string;
     description: string;
     type: GroupType;
+    group_type?: GroupType; // Included for DB compatibility
     join_policy: GroupJoinPolicy;
 
     // Visibility & Access

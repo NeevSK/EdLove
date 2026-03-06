@@ -72,7 +72,7 @@ export const attendanceAPI = {
             void growthSignalsAPI.emitSignal(user.id, 'attendance_recorded', {
                 classroom_id: classroomId,
                 date,
-            }).catch(() => {});
+            }).catch(() => { });
         }
 
         return data;
@@ -128,7 +128,29 @@ export const attendanceAPI = {
                 classroom_id: classroomId,
                 record_count: records.length,
                 date: records[0]?.date,
-            }).catch(() => {});
+            }).catch(() => { });
+        }
+
+        return data || [];
+    },
+
+    /**
+     * Get attendance history for a specific student in a classroom
+     */
+    async getForStudent(studentId: string, classroomId?: string): Promise<AttendanceRecord[]> {
+        let query = supabase
+            .from('attendance')
+            .select('*')
+            .eq('student_id', studentId);
+
+        if (classroomId) {
+            query = query.eq('classroom_id', classroomId);
+        }
+
+        const { data, error } = await query.order('date', { ascending: false });
+
+        if (error) {
+            throw new APIError('Failed to fetch student attendance history', error.code, error);
         }
 
         return data || [];

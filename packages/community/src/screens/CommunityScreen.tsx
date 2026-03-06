@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { RefreshControl, FlatList, ActivityIndicator, ScrollView } from 'react-native';
-import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, Theme, useBottomTabPadding, LotusPetalFAB, FadeInDown, HorizontalChipRow, SanctuaryFlashList } from '@repo/ui';
+import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, Theme, useBottomTabPadding, LotusPetalFAB, FadeInDown, HorizontalChipRow, SanctuaryFlashList, Heading, SanctuaryButton } from '@repo/ui';
 import Animated from 'react-native-reanimated';
 import PostCard from '../components/PostCard';
 import CreatePostModal from '../components/CreatePostModal';
 import CreateGroupModal from '../components/CreateGroupModal';
-import ReportPostModal from '../components/ReportPostModal';
+import SocialShieldModal from '../components/SocialShieldModal';
 import GroupsScreen from './GroupsScreen';
 import { useTranslation } from 'react-i18next';
 import { MessageSquare, Users, PenTool } from 'lucide-react-native';
@@ -51,6 +51,8 @@ export default function CommunityScreen() {
     const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
     const [createPostGroupId, setCreatePostGroupId] = useState<string | undefined>(undefined);
     const [reportPostId, setReportPostId] = useState<string | undefined>(undefined);
+    const [reportTargetUserId, setReportTargetUserId] = useState<string | undefined>(undefined);
+    const [reportTargetUserName, setReportTargetUserName] = useState<string | undefined>(undefined);
     const [showReportModal, setShowReportModal] = useState(false);
     const colors = useThemedColors();
     const { discoverFeature } = useTracking();
@@ -64,6 +66,9 @@ export default function CommunityScreen() {
 
     // Filtered data for FlatList
     const listData = useMemo(() => posts, [posts]);
+
+    // Derived gating
+    const hasJoinedGroups = useMemo(() => (groups || []).some(g => g.is_member), [groups]);
 
     // Derived feed filter chips via shared hook
     const feedFilterChips = useCommunityFilters(groups, t('community.filters.allUpdates', 'All Updates'));
@@ -84,6 +89,12 @@ export default function CommunityScreen() {
     };
 
     const handleOpenCreatePost = (groupId?: string) => {
+        if (!hasJoinedGroups && !groupId) {
+            // If they haven't joined anything, they can't post to 'general' yet (user rule)
+            // Instead, we guide them to the groups tab
+            setActiveTab('groups');
+            return;
+        }
         setCreatePostGroupId(groupId);
         setShowCreateModal(true);
     };
@@ -122,96 +133,38 @@ export default function CommunityScreen() {
             <Box sx={{ flex: 1, backgroundColor: colors.secondary }}>
                 <GlobalHeader title={t('community.title', 'Heal & Bloom')} />
 
-                {/* GUEST GATE: Simplified view for non-authenticated users */}
-                {isGuest ? (
-                    <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg, gap: Theme.spacing.lg }}>
-                        {renderCommunityHearth()}
-                        <PositiveInvitation
-                            type="guest"
-                            title={t('community.guestTitle', 'Your Community Awaits')}
-                            description={t('community.guestDesc', 'Connect with educators, share wisdom, and feel the pulse of your school. Create a free account to join the circle.')}
-                            onAction={() => navigation.navigate('Auth' as never)}
-                        />
-                    </ScrollView>
-                ) : (<>
-                    {/* Sub-Tabs */}
-                    <Animated.View entering={FadeInDown.delay(150).springify()}>
-                        <HStack
-                            sx={{
-                                paddingHorizontal: Theme.spacing.md,
-                                paddingVertical: Theme.spacing.sm,
-                                gap: Theme.spacing.md,
-                            }}
-                        >
-                            <Pressable
-                                onPress={() => setActiveTab('feed')}
-                                sx={{
-                                    borderBottomWidth: activeTab === 'feed' ? 2 : 0,
-                                    borderBottomColor: Theme.colors.sanctuarySaffron,
-                                    paddingBottom: 4,
-                                }}
-                            >
-                                <HStack space="xs" alignItems="center">
-                                    <MessageSquare
-                                        size={18}
-                                        color={activeTab === 'feed' ? Theme.colors.sanctuarySaffron : colors.textTertiary}
-                                    />
-                                    <Text
-                                        bold={activeTab === 'feed'}
-                                        color={activeTab === 'feed' ? colors.textPrimary : colors.textTertiary}
-                                    >
-                                        {t('community.tabs.resonantFeed', 'Resonant Feed')}
-                                    </Text>
-                                </HStack>
-                            </Pressable>
+                {/* Sub-Tabs via Chips - ALWAYS VISIBLE for navigation awareness */}
+                <Animated.View entering={FadeInDown.delay(150).springify()}>
+                    <HorizontalChipRow
+                        chips={[
+                            { label: t('community.tabs.resonantFeed', 'Resonant Feed'), value: 'feed' },
+                            { label: t('community.tabs.infiniteGalaxy', 'Infinite Galaxy'), value: 'groups' },
+                            { label: t('community.tabs.dms', 'Messages'), value: 'dms' }
+                        ]}
+                        selectedValue={activeTab}
+                        onSelect={(value) => setActiveTab(value as TabType)}
+                        paddingHorizontal={Theme.spacing.md}
+                        center={true}
+                    />
+                </Animated.View>
 
-                            <Pressable
-                                onPress={() => setActiveTab('groups')}
-                                sx={{
-                                    borderBottomWidth: activeTab === 'groups' ? 2 : 0,
-                                    borderBottomColor: Theme.colors.gurudeviViolet,
-                                    paddingBottom: 4,
-                                }}
-                            >
-                                <HStack space="xs" alignItems="center">
-                                    <Users
-                                        size={18}
-                                        color={activeTab === 'groups' ? Theme.colors.gurudeviViolet : colors.textTertiary}
+                {/* Main Content Area with Guest Gating */}
+                {activeTab === 'feed' ? (
+                    isGuest ? (
+                        <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}>
+                            <VStack space="md" sx={{ paddingVertical: Theme.spacing.md }}>
+                                {renderCommunityHearth()}
+                                <Box px="$4">
+                                    <PositiveInvitation
+                                        type="guest"
+                                        title={t('community.guestTitle', 'Your Community Awaits')}
+                                        description={t('community.guestDesc', 'Connect with educators, share wisdom, and feel the pulse of your school. Create a free account to join the circle.')}
+                                        onAction={() => navigation.navigate('Auth' as never)}
                                     />
-                                    <Text
-                                        bold={activeTab === 'groups'}
-                                        color={activeTab === 'groups' ? colors.textPrimary : colors.textTertiary}
-                                    >
-                                        {t('community.tabs.infiniteGalaxy', 'Infinite Galaxy')}
-                                    </Text>
-                                </HStack>
-                            </Pressable>
-
-                            <Pressable
-                                onPress={() => setActiveTab('dms')}
-                                sx={{
-                                    borderBottomWidth: activeTab === 'dms' ? 2 : 0,
-                                    borderBottomColor: colors.action,
-                                    paddingBottom: 4,
-                                }}
-                            >
-                                <HStack space="xs" alignItems="center">
-                                    <Mail
-                                        size={18}
-                                        color={activeTab === 'dms' ? colors.action : colors.textTertiary}
-                                    />
-                                    <Text
-                                        bold={activeTab === 'dms'}
-                                        color={activeTab === 'dms' ? colors.textPrimary : colors.textTertiary}
-                                    >
-                                        {t('community.tabs.dms', 'Messages')}
-                                    </Text>
-                                </HStack>
-                            </Pressable>
-                        </HStack>
-                    </Animated.View>
-
-                    {activeTab === 'feed' ? (
+                                </Box>
+                            </VStack>
+                        </ScrollView>
+                    ) : (
                         <SanctuaryFlashList
                             data={listData}
                             keyExtractor={(item) => item.id}
@@ -226,6 +179,8 @@ export default function CommunityScreen() {
                                         }}
                                         onReport={() => {
                                             setReportPostId(item.id);
+                                            setReportTargetUserId(item.author_id);
+                                            setReportTargetUserName(item.author_name ?? undefined);
                                             setShowReportModal(true);
                                         }}
                                         onAuthorPress={() => {
@@ -241,6 +196,36 @@ export default function CommunityScreen() {
                                     />
                                 </Animated.View>
                             )}
+                            ListEmptyComponent={
+                                !loading ? (
+                                    <VStack space="xl" alignItems="center" sx={{ padding: Theme.spacing['2xl'], marginTop: Theme.spacing['2xl'] }}>
+                                        <Box sx={{
+                                            padding: Theme.spacing.xl,
+                                            backgroundColor: Theme.colors.gurudeviViolet + '11',
+                                            borderRadius: Theme.corners.full
+                                        }}>
+                                            <PenTool size={48} color={Theme.colors.gurudeviViolet} />
+                                        </Box>
+                                        <VStack space="sm" alignItems="center">
+                                            <Heading size="md" textAlign="center" color={Theme.colors.gurudeviViolet}>
+                                                {t('community.empty.title') || 'Your Sanctuary is Waiting for its First Spark'}
+                                            </Heading>
+                                            <Text textAlign="center" color={colors.textSecondary}>
+                                                {t('community.empty.desc') || 'Share a thought, a lesson, or a moment of grace to seed your school\'s collective wisdom.'}
+                                            </Text>
+                                        </VStack>
+                                        <SanctuaryButton
+                                            onPress={() => hasJoinedGroups ? handleOpenCreatePost() : setActiveTab('groups')}
+                                            action="primary"
+                                            size="lg"
+                                        >
+                                            {hasJoinedGroups
+                                                ? (t('community.empty.button') || 'Seed Your First Post')
+                                                : (t('community.empty.joinFirst') || 'Join your first Circle')}
+                                        </SanctuaryButton>
+                                    </VStack>
+                                ) : null
+                            }
                             ListHeaderComponent={
                                 <VStack space="md" sx={{ paddingVertical: Theme.spacing.md }}>
                                     {renderCommunityHearth()}
@@ -258,7 +243,7 @@ export default function CommunityScreen() {
                             }
                             contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}
                         />
-                    ) : activeTab === 'groups' ? (
+                    )) : activeTab === 'groups' ? (
                         <GroupsScreen
                             userId={userId ?? undefined}
                             schoolId={schoolId}
@@ -269,40 +254,61 @@ export default function CommunityScreen() {
                             }}
                         />
                     ) : (
+                    isGuest ? (
+                        <VStack sx={{ flex: 1, justifyContent: 'center', padding: Theme.spacing.xl }}>
+                            <PositiveInvitation
+                                type="guest"
+                                title={t('community.dms.guestTitle', 'Private Resonance')}
+                                description={t('community.dms.guestDesc', 'Sign in to connect directly with fellow educators and share private reflections.')}
+                                onAction={() => navigation.navigate('Auth' as never)}
+                            />
+                        </VStack>
+                    ) : (
                         <DirectMessagesListScreen />
-                    )}
+                    )
+                )}
 
-                    {userId && (
-                        <LotusPetalFAB
-                            currentTab="community"
-                            onPress={() => handleOpenCreatePost()}
-                        />
-                    )}
-
-                    <CreatePostModal
-                        isOpen={showCreateModal}
-                        onClose={() => { setShowCreateModal(false); setCreatePostGroupId(undefined); }}
-                        groupId={createPostGroupId}
-                    />
-
-                    <CreateGroupModal
-                        isOpen={showCreateGroupModal}
-                        onClose={() => setShowCreateGroupModal(false)}
-                        onCreated={(groupId) => {
-                            // Refresh groups list after creation
-                            fetchGroups();
+                {userId && (
+                    <LotusPetalFAB
+                        currentTab="community"
+                        onPress={() => {
+                            if (activeTab === 'dms') {
+                                setActiveTab('groups');
+                            } else {
+                                handleOpenCreatePost();
+                            }
                         }}
+                        icon={activeTab === 'dms' ? <Mail size={24} color="white" /> : undefined}
                     />
+                )}
 
-                    <ReportPostModal
-                        isOpen={showReportModal}
-                        onClose={() => { setShowReportModal(false); setReportPostId(undefined); }}
-                        postId={reportPostId}
-                        reporterId={userId || ''}
-                    />
+                <CreatePostModal
+                    isOpen={showCreateModal}
+                    onClose={() => { setShowCreateModal(false); setCreatePostGroupId(undefined); }}
+                    groupId={createPostGroupId}
+                />
 
-                </>)}
-            </Box>
-        </ScreenWrapper>
+                <CreateGroupModal
+                    isOpen={showCreateGroupModal}
+                    onClose={() => setShowCreateGroupModal(false)}
+                    onCreated={(groupId) => {
+                        fetchGroups();
+                    }}
+                />
+
+                <SocialShieldModal
+                    isOpen={showReportModal}
+                    onClose={() => {
+                        setShowReportModal(false);
+                        setReportPostId(undefined);
+                        setReportTargetUserId(undefined);
+                        setReportTargetUserName(undefined);
+                    }}
+                    postId={reportPostId}
+                    targetUserId={reportTargetUserId}
+                    targetUserName={reportTargetUserName}
+                />
+            </Box >
+        </ScreenWrapper >
     );
 }

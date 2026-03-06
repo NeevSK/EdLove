@@ -65,6 +65,7 @@ export interface BaseChatScreenProps {
     sendMessage: (content: string) => Promise<ChatMessage>;
     subscription: SubscriptionConfig;
     onPressAuthor?: (userId: string, userName: string) => void;
+    headerRight?: React.ReactNode;
 }
 
 export default function BaseChatScreen({
@@ -75,6 +76,7 @@ export default function BaseChatScreen({
     sendMessage,
     subscription,
     onPressAuthor,
+    headerRight,
 }: BaseChatScreenProps) {
     const navigation = useNavigation<any>();
     const user = useStore(state => state.user);
@@ -219,6 +221,7 @@ export default function BaseChatScreen({
                     <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: '700', color: colors.text }} numberOfLines={1}>{title}</Text>
                     {subtitle && <Text sx={{ fontSize: 11, color: colors.textTertiary }}>{subtitle}</Text>}
                 </VStack>
+                {headerRight}
             </HStack>
 
             <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>

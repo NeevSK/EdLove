@@ -38,7 +38,7 @@ import BreathGuide from './BreathGuide';
 import { useTranslation } from 'react-i18next';
 import { supabase, useStore, useSafeMutation } from '@repo/core';
 import { useThemedColors, SkeletonCard, PositiveInvitation } from '@repo/ui';
-import { useMoodLogs } from '@repo/self';
+import { useMoodLogs } from '../hooks/useMoodLogs';
 import { useNavigation } from '@react-navigation/native';
 
 interface MoodLotusProps {

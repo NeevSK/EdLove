@@ -33,4 +33,7 @@ export { default as PrincipalObservationsSection } from './principal/PrincipalOb
 export { default as LeaveApprovalSection } from './principal/LeaveApprovalSection';
 export { default as TeacherAdminWidget } from './TeacherAdminWidget';
 export { default as PrincipalAdminWidget } from './PrincipalAdminWidget';
+export { default as ManagementStation } from './principal/ManagementStation';
 export { default as NoSchoolOnboarding } from './NoSchoolOnboarding';
+export { default as ClassroomHolisticInsights } from './ClassroomHolisticInsights';
+

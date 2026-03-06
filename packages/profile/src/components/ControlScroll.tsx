@@ -129,7 +129,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                 </Text>
 
                 <Box style={styles.sectionContainer}>
-                    <HStack p={Theme.spacing.md} space="md" alignItems="center">
+                    <HStack sx={{ p: Theme.spacing.md }} space="md" alignItems="center">
                         <Box style={styles.iconBox}>
                             <Globe size={20} color={Theme.colors.sanctuarySaffron} />
                         </Box>
@@ -145,7 +145,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
 
                     <Divider bg={Theme.colors.ink} />
 
-                    <VStack p={Theme.spacing.xs}>
+                    <VStack sx={{ p: Theme.spacing.xs }}>
                         {renderLanguageItem('si', 'සිංහල')}
                         {renderLanguageItem('ta', 'தமிழ்')}
                         {renderLanguageItem('en', 'English')}
@@ -165,7 +165,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                         hapticLight();
                         setShowThemeModal(true);
                     }}>
-                        <HStack p={Theme.spacing.md} justifyContent="space-between" alignItems="center">
+                        <HStack sx={{ p: Theme.spacing.md }} justifyContent="space-between" alignItems="center">
                             <HStack space="md" alignItems="center">
                                 <Box style={[styles.iconBox, { backgroundColor: 'rgba(142, 68, 173, 0.1)' }]}>
                                     <Moon size={20} color="#9B59B6" />
@@ -183,7 +183,7 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
 
                     {/* Data Saver (Placeholder) */}
                     <Pressable onPress={hapticLight}>
-                        <HStack p={Theme.spacing.md} justifyContent="space-between" alignItems="center">
+                        <HStack sx={{ p: Theme.spacing.md }} justifyContent="space-between" alignItems="center">
                             <HStack space="md" alignItems="center">
                                 <Box style={[styles.iconBox, { backgroundColor: 'rgba(46, 204, 113, 0.1)' }]}>
                                     <Database size={20} color="#2ECC71" />
@@ -222,7 +222,10 @@ export default function ControlScroll({ currentLanguage, onLanguageChange }: Con
                             <Heading color={Theme.colors.sacredWhite} size="lg">
                                 Choose Theme
                             </Heading>
-                            <Pressable onPress={() => setShowThemeModal(false)} p={Theme.spacing.xs}>
+                            <Pressable
+                                onPress={() => setShowThemeModal(false)}
+                                sx={{ padding: Theme.spacing.xs }}
+                            >
                                 <X color={Theme.colors.mistGray} size={24} />
                             </Pressable>
                         </HStack>

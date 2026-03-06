@@ -23,6 +23,8 @@ export const GlassCard = ({ children, style, onLayout, ...props }: GlassCardProp
         if (onLayout) onLayout(event);
     };
 
+    const LivingCardAny = LivingCard as any;
+
     return (
         <View
             style={[
@@ -39,18 +41,17 @@ export const GlassCard = ({ children, style, onLayout, ...props }: GlassCardProp
         >
             {dimensions.width > 0 && (
                 <View style={StyleSheet.absoluteFill}>
-                    <LivingCard
+                    <LivingCardAny
                         width={dimensions.width}
                         height={dimensions.height}
                         {...({ phase } as any)}
                         cornerRadius={Theme.corners.generous}
                     >
                         {null}
-                    </LivingCard>
+                    </LivingCardAny>
                 </View>
             )}
             {children}
         </View>
     );
 };
-

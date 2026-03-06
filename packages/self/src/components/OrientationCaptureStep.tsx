@@ -160,6 +160,8 @@ export const OrientationCaptureStep = ({
     const [selectedPerQuestion, setSelectedPerQuestion] = useState<number[]>([]);
 
     const question = QUESTIONS[questionIndex];
+    if (!question) return null; // Safety guard
+
     const isLast = questionIndex === QUESTIONS.length - 1;
 
     const handleSelect = useCallback((optionIndex: number) => {
@@ -355,7 +357,7 @@ export const OrientationCaptureStep = ({
  * Clamps to [0, 100].
  */
 export function computeSeeds(selections: number[]): OrientationSeeds {
-    const acc: Record<string, number> = {
+    const acc: { [K in keyof Omit<OrientationSeeds, 'source' | 'seeded_at' | 'last_updated'>]: number } = {
         depth_breadth: 50,
         reflect_act: 50,
         solo_social: 50,
@@ -363,12 +365,17 @@ export function computeSeeds(selections: number[]): OrientationSeeds {
     };
 
     selections.forEach((optIdx, qIdx) => {
-        const question = QUESTIONS[qIdx];
-        if (!question || optIdx < 0 || optIdx >= question.options.length) return;
-        const delta = question.options[optIdx].delta;
+        const currentQuestion = QUESTIONS[qIdx];
+        if (!currentQuestion) return;
+
+        const option = currentQuestion.options[optIdx];
+        if (!option) return;
+
+        const delta = option.delta;
         for (const [key, val] of Object.entries(delta)) {
             if (val !== undefined && key in acc) {
-                acc[key] = Math.max(0, Math.min(100, (acc[key] || 0) + (val as number)));
+                const k = key as keyof typeof acc;
+                acc[k] = Math.max(0, Math.min(100, acc[k] + (val as number)));
             }
         }
     });

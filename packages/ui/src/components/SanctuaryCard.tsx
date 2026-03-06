@@ -61,14 +61,14 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
 }) => {
     const { isDark, glass, glow, blurEnabled } = useTheme();
 
-    // Hover state â€” only meaningful on web (desktop pointer devices)
+    // Hover state — only meaningful on web (desktop pointer devices)
     const [hovered, setHovered] = useState(false);
 
     // Check if we should use glass (blur enabled + glass variant)
     const useGlass = blurEnabled && variant === 'glass';
     // Note: blurEnabled accounts for device tier and fidelity settings.
 
-    // Hover style â€” memoized so the object reference is stable between renders
+    // Hover style — memoized so the object reference is stable between renders
     // `cursor` is a web-only CSS property; typed via ViewStyle intersection to avoid `as any`
     const hoverStyle = useMemo(
         () => ({ opacity: 0.93, transform: [{ scale: 1.012 }], cursor: 'pointer' } as ViewStyle & { cursor?: string }),
@@ -194,23 +194,21 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
                 style
             ]}
         >
-            {useGlass ? (
+            {useGlass && (
                 <BlurView
                     intensity={36} // Retina Protocol: 36 is the magic number
                     tint={isDark ? 'dark' : 'light'}
                     style={StyleSheet.absoluteFill}
-                >
-                    <InnerContent />
-                </BlurView>
-            ) : (
-                <InnerContent />
+                />
             )}
+            <InnerContent />
         </Animated.View>
     );
 
     if (onPress || href) {
+        const PressableAny = Pressable as any;
         return (
-            <Pressable
+            <PressableAny
                 onPress={onPress}
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
@@ -228,7 +226,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
                 }}
             >
                 {renderCard()}
-            </Pressable>
+            </PressableAny>
         );
     }
 
@@ -236,4 +234,3 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
 };
 
 export default SanctuaryCard;
-

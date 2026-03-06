@@ -229,8 +229,9 @@ export function LibraryThumbnailCard({
         </View>
     );
 
+    const PressableAny = Pressable as any;
     return (
-        <Pressable
+        <PressableAny
             onPress={onPress}
             style={({ hovered }: any) => [
                 styles.pressable,
@@ -260,7 +261,7 @@ export function LibraryThumbnailCard({
                     </>
                 )}
             </View>
-        </Pressable>
+        </PressableAny>
     );
 }
 

@@ -13,7 +13,7 @@ import { SchoolType } from '../constants/SriLankanSchools';
 interface UseUserRoleReturn {
     role: UserRole | null;
     schoolType: SchoolType | null;
-    schoolId: string;
+    schoolId: string | null;
     userId: string | null;
     isAuthenticated: boolean;
     isGuest: boolean;
@@ -28,8 +28,9 @@ export function useUserRole(): UseUserRoleReturn & { refresh: () => Promise<void
     const setSchoolType = useStore(state => state.setSchoolType);
 
     // Offline-first identity logic
-    const schoolId = user?.school_id || 'mock-school';
+    const schoolId = user?.school_id || (user ? null : 'mock-school');
     const isGuest = !user || schoolId === 'mock-school';
+
 
     const refresh = async () => {
         if (!user?.id) return;

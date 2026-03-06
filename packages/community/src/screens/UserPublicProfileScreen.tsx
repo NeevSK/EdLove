@@ -40,6 +40,9 @@ import { useStore } from '@repo/core';
 import type { CommunityStackParamList } from '@repo/core';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LotusPetalFAB } from '@repo/ui';
+import SocialShieldModal from '../components/SocialShieldModal';
+import { ShieldAlert } from 'lucide-react-native';
+import { useLotusToast } from '@repo/ui';
 
 type Nav = NativeStackNavigationProp<CommunityStackParamList, 'UserProfile'>;
 
@@ -73,6 +76,7 @@ export default function UserPublicProfileScreen() {
     const [stats, setStats] = useState({ posts: 0, endorsements: 0 });
     const [loading, setLoading] = useState(true);
     const [initiatingDM, setInitiatingDM] = useState(false);
+    const [showShieldModal, setShowShieldModal] = useState(false);
 
     const fetchProfile = useCallback(async () => {
         setLoading(true);
@@ -195,14 +199,23 @@ export default function UserPublicProfileScreen() {
 
                             {/* Main Message Action */}
                             {user && currentUserId && currentUserId !== userId && (
-                                <Button
-                                    label="Send Message"
-                                    onPress={handleMessagePress}
-                                    icon={<Send size={20} color="white" />}
-                                    variant="primary"
-                                    loading={initiatingDM}
-                                    sx={{ width: '100%', mt: Theme.spacing.md }}
-                                />
+                                <VStack space="sm" sx={{ width: '100%', mt: Theme.spacing.md }}>
+                                    <Button
+                                        label="Send Message"
+                                        onPress={handleMessagePress}
+                                        icon={<Send size={20} color="white" />}
+                                        variant="primary"
+                                        loading={initiatingDM}
+                                        sx={{ width: '100%' }}
+                                    />
+                                    <Button
+                                        label="Report Account"
+                                        onPress={() => setShowShieldModal(true)}
+                                        icon={<ShieldAlert size={18} color={colors.textSecondary} />}
+                                        variant="outline"
+                                        sx={{ width: '100%' }}
+                                    />
+                                </VStack>
                             )}
                         </VStack>
                     </SanctuaryCard>
@@ -254,6 +267,13 @@ export default function UserPublicProfileScreen() {
                     icon={<Send size={24} color="white" />}
                 />
             )}
+            {/* Social Shield Modal */}
+            <SocialShieldModal
+                isOpen={showShieldModal}
+                onClose={() => setShowShieldModal(false)}
+                targetUserId={userId}
+                targetUserName={user?.full_name ?? userName}
+            />
         </ScreenWrapper>
     );
 }

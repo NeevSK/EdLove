@@ -22,23 +22,25 @@ export default function SupportSection() {
         });
     };
 
-    const SupportItem = ({ icon: Icon, title, subtitle, onPress }: any) => (
+    const SupportItem = ({ icon: Icon, title, subtitle, onPress }: { icon: any, title: string, subtitle: string, onPress: () => void }) => (
         <TouchableOpacity onPress={onPress}>
             <HStack
                 alignItems="center"
                 justifyContent="space-between"
-                p={Theme.spacing.md}
-                bg={colors.secondary as any}
-                borderRadius={Theme.corners.comfortable}
-                mb={Theme.spacing.sm}
+                sx={{
+                    p: Theme.spacing.md,
+                    bg: colors.secondary,
+                    borderRadius: Theme.corners.comfortable,
+                    mb: Theme.spacing.sm
+                }}
             >
                 <HStack space="md" alignItems="center">
-                    <Box p={8} bg={`${colors.action}20` as any} borderRadius={8}>
+                    <Box sx={{ p: 8, bg: `${colors.action}20`, borderRadius: 8 }}>
                         <Icon size={20} color={colors.action} />
                     </Box>
                     <VStack>
-                        <Text color={colors.text as any} bold>{title}</Text>
-                        <Text color={colors.textSecondary as any} size="xs">{subtitle}</Text>
+                        <Text color={colors.text} bold>{title}</Text>
+                        <Text color={colors.textSecondary} size="xs">{subtitle}</Text>
                     </VStack>
                 </HStack>
                 <ChevronRight size={20} color={colors.textTertiary} />

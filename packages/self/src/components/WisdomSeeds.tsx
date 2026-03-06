@@ -17,7 +17,7 @@ import { Theme } from '@repo/ui';
 import { supabase, useSafeMutation } from '@repo/core';
 import { hapticLight, hapticSuccess, SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useWisdom } from '../hooks/useWisdom';
-import type { WisdomNote } from '../types';
+import { WisdomNote } from '../types';
 import { useNavigation } from '@react-navigation/native';
 
 interface WisdomSeedsProps {

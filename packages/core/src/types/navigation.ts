@@ -3,6 +3,7 @@ export type ClassroomStackParamList = {
     ClassroomDetails: { classroomId: string; classroomName?: string };
     Attendance: { classroomId: string; classroomName?: string; date?: string };
     Gradebook: { classroomId: string; classroomName?: string };
+    StudentProfile: { studentId: string; classroomId: string; studentName?: string; classroomStudentId: string };
     SchoolCreation: undefined;
     FounderDashboard: undefined;
     FounderSchoolView: { schoolId: string; userId: string };

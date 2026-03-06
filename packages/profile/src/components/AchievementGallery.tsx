@@ -114,7 +114,7 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
     };
 
     return (
-        <VStack mt={Theme.spacing.lg} px={Theme.spacing.md}>
+        <VStack sx={{ mt: Theme.spacing.lg, px: Theme.spacing.md }}>
             <Box
                 sx={{
                     backgroundColor: colors.secondary,

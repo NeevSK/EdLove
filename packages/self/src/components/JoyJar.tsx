@@ -18,7 +18,7 @@ import { Theme } from '@repo/ui';
 import { supabase, useSafeMutation } from '@repo/core';
 import { hapticLight, hapticSuccess, SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useJoyJar } from '../hooks/useJoyJar';
-import type { JoyMoment } from '../types';
+import { JoyMoment } from '../types';
 import { useNavigation } from '@react-navigation/native';
 
 interface JoyJarProps {

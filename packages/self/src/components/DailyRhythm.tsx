@@ -36,7 +36,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Maximize2, Plus, Edit2, Clock, Trash, ChevronDown, Cloud } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
-import { useTimetable, Period } from '../hooks/useTimetable';
+import { useTimetable } from '../hooks/useTimetable';
+import { Period } from '../types';
 import { EmptyState, ErrorBoundary } from '@repo/ui';
 import { useFeatureAccess } from '@repo/core';
 import { useThemedColors } from '@repo/ui';

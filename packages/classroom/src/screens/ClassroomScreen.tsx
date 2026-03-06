@@ -8,7 +8,8 @@
  * - Teacher/Student: Classroom list (assigned classes)
  */
 
-import { supabase, useUserRole, hasRole, ADMIN_ROLES, MANAGEMENT_ROLES, useRoleFeatures } from '@repo/core';
+import { supabase, useUserRole, hasRole, ADMIN_ROLES, MANAGEMENT_ROLES, useRoleFeatures, useStore } from '@repo/core';
+
 import React, { useEffect, useState } from 'react';
 import { Box, VStack, Theme, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, hapticLight } from '@repo/ui';
 import PrincipalSchoolView from './PrincipalSchoolView';
@@ -67,8 +68,17 @@ export default function ClassroomScreen() {
     // 2. Role-based routing
     if (classroomData) {
         if (role === 'founder') return <FounderDashboard />;
-        if (role === 'principal' || role === 'developer') return <PrincipalSchoolView schoolId={classroomData.schoolId || ''} userId={classroomData.userId} onRefresh={fetchRoleData} />;
+        if (role === 'principal' || role === 'developer' || role === 'admin') {
+            return (
+                <PrincipalSchoolView
+                    schoolId={classroomData.schoolId || useStore.getState().user?.school_id || ''}
+                    userId={classroomData.userId}
+                    onRefresh={fetchRoleData}
+                />
+            );
+        }
     }
+
 
     if (role === 'section_head') return <SectionHeadView schoolId={classroomData?.schoolId || undefined} userId={classroomData?.userId} />;
     if (role === 'grade_head') return <GradeHeadView schoolId={classroomData?.schoolId || undefined} userId={classroomData?.userId} />;
