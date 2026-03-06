@@ -152,5 +152,35 @@ export const knowledgeDB = {
             });
         }
         return null;
+    },
+
+    async upsertLayers(layers: { id: string, name: string, category: string | null, is_geographic: boolean, updated_at: number }[]) {
+        if (!this.db) await this.init();
+        if (!this.db) return;
+
+        return new Promise<void>((resolve, reject) => {
+            const transaction = this.db!.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+
+            layers.forEach(layer => store.put({
+                id: layer.id,
+                type: 'layer',
+                content_type: layer.category,
+                title_en: layer.name,
+                title_si: null,
+                title_ta: null,
+                tags: null,
+                map_x: null,
+                map_y: null,
+                latitude: null,
+                longitude: null,
+                parent_id: null,
+                island_id: null,
+                updated_at: layer.updated_at,
+            }));
+
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = () => reject(transaction.error);
+        });
     }
 };
