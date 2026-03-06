@@ -16,9 +16,43 @@ interface BreathAnimationProps {
     direction?: 'up' | 'down' | 'none';
 }
 
+interface AnimatedContentProps {
+    children: React.ReactNode;
+    delay: number;
+    duration: number;
+    direction: 'up' | 'down' | 'none';
+}
+
+/**
+ * AnimatedContent - Internal component that owns the Reanimated shared values.
+ * Only mounted when the JSI runtime is confirmed ready, preventing Bridgeless crashes.
+ */
+const AnimatedContent = ({ children, delay, duration, direction }: AnimatedContentProps) => {
+    const opacity = useSharedValue(0);
+    const translateY = useSharedValue(direction === 'up' ? 20 : direction === 'down' ? -20 : 0);
+
+    useEffect(() => {
+        opacity.value = withDelay(delay, withTiming(1, { duration, easing: Easing.out(Easing.quad) }));
+        translateY.value = withDelay(delay, withTiming(0, { duration, easing: Easing.out(Easing.quad) }));
+    }, [delay, duration]);
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        opacity: opacity.value,
+        transform: [{ translateY: translateY.value }],
+    }));
+
+    return (
+        <Animated.View style={animatedStyle}>
+            {children}
+        </Animated.View>
+    );
+};
+
 /**
  * BreathAnimation - Implements the "Breath-like Motion" from TAIL_FIN.md
  * Provides a staggered, smooth entry for UI elements.
+ * Defers JSI-heavy Reanimated hooks into a child component that is only
+ * rendered once the runtime is ready, preventing Bridgeless-mode crashes.
  */
 export const BreathAnimation = ({
     children,
@@ -34,30 +68,13 @@ export const BreathAnimation = ({
         }
     }, [isReady]);
 
-    // Defer JSI-heavy hooks until the runtime is confirmed ready.
-    // In Bridgeless mode, calling these too early can cause a crash.
-    const opacity = useSharedValue(isReady ? 0 : 1);
-    const translateY = useSharedValue(isReady ? (direction === 'up' ? 20 : direction === 'down' ? -20 : 0) : 0);
-
-    useEffect(() => {
-        if (isReady) {
-            opacity.value = withDelay(delay, withTiming(1, { duration, easing: Easing.out(Easing.quad) }));
-            translateY.value = withDelay(delay, withTiming(0, { duration, easing: Easing.out(Easing.quad) }));
-        }
-    }, [isReady, delay, duration]);
-
-    const animatedStyle = useAnimatedStyle(() => ({
-        opacity: opacity.value,
-        transform: [{ translateY: translateY.value }],
-    }));
-
     if (!isReady) {
         return <View>{children}</View>;
     }
 
     return (
-        <Animated.View style={animatedStyle}>
+        <AnimatedContent delay={delay} duration={duration} direction={direction}>
             {children}
-        </Animated.View>
+        </AnimatedContent>
     );
 };

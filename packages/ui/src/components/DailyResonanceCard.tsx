@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import { VStack, HStack, Text, Heading } from '../gluestack';
 import { useThemedColors } from '../hooks/useThemedColors';
@@ -79,7 +79,7 @@ export const DailyResonanceCard = ({
                                 marginTop: Theme.spacing.small
                             }}
                         >
-                            â€” {author}
+                            — {author}
                         </Text>
                     )}
                 </VStack>

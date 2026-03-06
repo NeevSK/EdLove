@@ -237,5 +237,32 @@ export const knowledgeDB = {
         } catch (error) {
             console.error('Failed to upsert layers:', error);
         }
+    },
+
+    /**
+     * Convenience wrapper: get the first row from a SQL query.
+     * Delegates to the underlying SQLite database instance.
+     */
+    async getFirstAsync<T>(query: string, params: (string | number | null)[]): Promise<T | null> {
+        if (!this.db) return null;
+        try {
+            return await this.db.getFirstAsync<T>(query, params);
+        } catch (error) {
+            console.error('getFirstAsync failed:', error);
+            return null;
+        }
+    },
+
+    /**
+     * Convenience wrapper: execute a SQL statement.
+     * Delegates to the underlying SQLite database instance.
+     */
+    async runAsync(query: string, params: (string | number | null)[]): Promise<void> {
+        if (!this.db) return;
+        try {
+            await this.db.runAsync(query, params);
+        } catch (error) {
+            console.error('runAsync failed:', error);
+        }
     }
 };

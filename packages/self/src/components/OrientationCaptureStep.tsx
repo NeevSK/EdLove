@@ -384,4 +384,5 @@ export function computeSeeds(selections: number[]): OrientationSeeds {
     };
 }
 
-// export default OrientationCaptureStep;
+// No default export — use the named export: import { OrientationCaptureStep } from './OrientationCaptureStep'
+
