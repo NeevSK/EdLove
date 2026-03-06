@@ -23,3 +23,15 @@ export type CommunityStackParamList = {
     DirectMessagesList: undefined;
     DirectMessage: { conversationId: string; userName: string };
 };
+
+export type SelfStackParamList = {
+    SelfMain: undefined;
+};
+
+export type LibraryStackParamList = {
+    LibraryHome: undefined;
+    LibraryMap: undefined;
+    CuratorReview: undefined;
+    PDFViewer: undefined;
+    VideoPlayer: undefined;
+};

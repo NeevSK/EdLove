@@ -55,17 +55,23 @@ import { Text as BaseText } from '@gluestack-ui/themed/build/components/Text';
 export const Text = BaseText as any;
 import { Heading as BaseHeading } from '@gluestack-ui/themed/build/components/Heading';
 export const Heading = BaseHeading as any;
-export { Divider } from '@gluestack-ui/themed/build/components/Divider';
+import { Divider as BaseDivider } from '@gluestack-ui/themed/build/components/Divider';
+export const Divider = BaseDivider as any;
 
 // ============================================================================
 // Form Components
 // ============================================================================
-export {
-    Input,
-    InputField,
-    InputSlot,
-    InputIcon
+import {
+    Input as BaseInput,
+    InputField as BaseInputField,
+    InputSlot as BaseInputSlot,
+    InputIcon as BaseInputIcon
 } from '@gluestack-ui/themed/build/components/Input';
+
+export const Input = BaseInput as any;
+export const InputField = BaseInputField as any;
+export const InputSlot = BaseInputSlot as any;
+export const InputIcon = BaseInputIcon as any;
 
 import {
     Button as BaseButton,
@@ -137,15 +143,23 @@ export const AvatarImage = BaseAvatarImage as any;
 // ============================================================================
 // Modal Components
 // ============================================================================
-export {
-    Modal,
-    ModalBackdrop,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    ModalCloseButton
+import {
+    Modal as BaseModal,
+    ModalBackdrop as BaseModalBackdrop,
+    ModalContent as BaseModalContent,
+    ModalHeader as BaseModalHeader,
+    ModalBody as BaseModalBody,
+    ModalFooter as BaseModalFooter,
+    ModalCloseButton as BaseModalCloseButton
 } from '@gluestack-ui/themed/build/components/Modal';
+
+export const Modal = BaseModal as any;
+export const ModalBackdrop = BaseModalBackdrop as any;
+export const ModalContent = BaseModalContent as any;
+export const ModalHeader = BaseModalHeader as any;
+export const ModalBody = BaseModalBody as any;
+export const ModalFooter = BaseModalFooter as any;
+export const ModalCloseButton = BaseModalCloseButton as any;
 
 import { Icon as BaseIcon, CloseIcon as BaseCloseIcon } from '@gluestack-ui/themed/build/components/Icons';
 export const Icon = BaseIcon as any;
@@ -211,10 +225,13 @@ export const Fab = BaseFab as any;
 export const FabLabel = BaseFabLabel as any;
 export const FabIcon = BaseFabIcon as any;
 
-export {
-    Progress,
-    ProgressFilledTrack,
+import {
+    Progress as BaseProgress,
+    ProgressFilledTrack as BaseProgressFilledTrack,
 } from '@gluestack-ui/themed/build/components/Progress';
+
+export const Progress = BaseProgress as any;
+export const ProgressFilledTrack = BaseProgressFilledTrack as any;
 
 // Slider with relaxed types
 import {

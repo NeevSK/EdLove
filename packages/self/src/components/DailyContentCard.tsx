@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { dailyContentAPI, DailyContent } from '@repo/self';
+import { dailyContentAPI } from '../api/dailyContent';
+import { DailyContent } from '../types';
 import { useThemedColors } from '@repo/ui';
 import { Theme } from '@repo/ui';
 import { Box, VStack, HStack, Text, Heading, Pressable } from '@repo/ui';

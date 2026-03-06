@@ -27,6 +27,7 @@ import { useTheme } from '@repo/ui';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import TabNavigator from './src/navigation/TabNavigator';
+import TabNavigatorWeb from './src/navigation/TabNavigator.web';
 import { AIAssistantScreen, AuthScreen } from './src/screens';
 import QRHandlerScreen from './src/screens/QRHandlerScreen';
 import ThuthimalClaimScreen from './src/screens/ThuthimalClaimScreen';
@@ -204,7 +205,13 @@ function App() {
             refresh_token,
           });
           if (error) {
-            console.error('❌ App: Failed to set session from deep link:', error.message);
+            // Gracefully handle Invalid Refresh Token errors
+            if (error.message?.includes('Refresh Token') || (error as any).status === 400) {
+              console.warn('🔄 App: Stale session from deep link, clearing local storage...');
+              await supabase.auth.signOut({ scope: 'local' });
+            } else {
+              console.error('❌ App: Failed to set session from deep link:', error.message);
+            }
           } else {
             console.log('✅ App: Session recovered from deep link');
           }
@@ -356,6 +363,27 @@ function App() {
 
 // Main Content Component to access Theme/Context
 function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardingCompleted, showWelcome, setShowWelcome, toast, hideToast }: any) {
+  // Web Auth Guard: Prevent direct URL access to /app/* if not onboarded
+  useEffect(() => {
+    if (Platform.OS === 'web' && navigationRef.isReady()) {
+      const state = navigationRef.current?.getRootState();
+      const currentRoute = state?.routes[state.index]?.name;
+
+      // If web and not onboarded/session, and trying to hit anything other than Welcome/Auth/QR
+      // Allow access for authenticated users (including anonymous guests) and specific routes
+      const allowedRoutes = ['Welcome', 'Auth', 'QRHandler'];
+      const hasValidSession = !!session;
+      
+      if (!hasValidSession && !onboardingCompleted && !allowedRoutes.includes(currentRoute || '')) {
+        console.log('🛡️ WebAuthGuard: Redirecting to Welcome...');
+        navigationRef.current?.reset({
+          index: 0,
+          routes: [{ name: 'Welcome' }],
+        });
+      }
+    }
+  }, [onboardingCompleted, session]);
+
   return (
 
     <SafeAreaProvider>
@@ -479,7 +507,11 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                     <RootStack.Screen name="Main">
                       {() => (
                         <ErrorBoundary name="Main Tabs">
-                          <TabNavigator onTabChange={(tab: any) => setCurrentTab(tab)} />
+                          {Platform.OS === 'web' ? (
+                            <TabNavigatorWeb onTabChange={(tab: any) => setCurrentTab(tab)} />
+                          ) : (
+                            <TabNavigator onTabChange={(tab: any) => setCurrentTab(tab)} />
+                          )}
                         </ErrorBoundary>
                       )}
                     </RootStack.Screen>

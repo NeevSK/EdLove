@@ -1,6 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { CommunityScreen, GroupDetailsScreen, GroupChatScreen, UserPublicProfileScreen } from '@repo/community';
+import { GroupDetailsScreen, GroupChatScreen, UserPublicProfileScreen } from '@repo/community';
+import { CommunityScreen } from '../screens';
 import { useThemedColors } from '@repo/ui';
 
 import { CommunityStackParamList } from '@repo/core';

@@ -36,7 +36,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Maximize2, Plus, Edit2, Clock, Trash, ChevronDown, Cloud } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
-import { useTimetable, Period } from '@repo/self';
+import { useTimetable, Period } from '../hooks/useTimetable';
 import { EmptyState, ErrorBoundary } from '@repo/ui';
 import { useFeatureAccess } from '@repo/core';
 import { useThemedColors } from '@repo/ui';
@@ -116,8 +116,13 @@ function DailyRhythmContent() {
     };
 
     const isPeriodActive = (start: string, end: string) => {
-        const [startH, startM] = start.split(':').map(Number);
-        const [endH, endM] = end.split(':').map(Number);
+        const startParts = (start || '').split(':');
+        const endParts = (end || '').split(':');
+
+        const startH = startParts[0] ? Number(startParts[0]) : 0;
+        const startM = startParts[1] ? Number(startParts[1]) : 0;
+        const endH = endParts[0] ? Number(endParts[0]) : 0;
+        const endM = endParts[1] ? Number(endParts[1]) : 0;
         const startD = new Date(); startD.setHours(startH, startM, 0);
         const endD = new Date(); endD.setHours(endH, endM, 0);
         return currentTime >= startD && currentTime < endD;
@@ -207,8 +212,9 @@ function DailyRhythmContent() {
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <VStack space="md">
                         {periods.map((period) => {
-                            const active = isPeriodActive(period.start_time, period.end_time);
-                            const passed = !active && new Date().getHours() > parseInt(period.end_time.split(':')[0]);
+                            const active = isPeriodActive(period.start_time || '', period.end_time || '');
+                            const endHour = (period.end_time || '00:00').split(':')[0];
+                            const passed = !active && new Date().getHours() > parseInt(endHour || '0', 10);
 
                             let bgColor: string = Theme.colors.obsidian;
                             let borderColor: string = 'transparent';
@@ -248,7 +254,7 @@ function DailyRhythmContent() {
                                             <VStack sx={{ flex: 1 }}>
                                                 <HStack justifyContent="space-between" alignItems="center">
                                                     <Heading size="sm" color={active ? Theme.colors.sanctuarySaffron : Theme.colors.sacredWhite}>
-                                                        {period.subject}
+                                                        {period.subject || period.activity}
                                                     </Heading>
                                                     {active && (
                                                         <Box px="$2" py="$0.5" sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: '$full' }}>
@@ -286,36 +292,36 @@ function DailyRhythmContent() {
                     </ModalHeader>
                     <ModalBody>
                         <VStack space="lg" pb="$6">
-                            <Input variant="outline" size="md">
+                            <Input>
                                 <InputField
                                     placeholder={t('self.subjectPlaceholder')}
-                                    value={editingPeriod?.subject}
+                                    value={editingPeriod?.subject || ''}
                                     onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, subject: val })}
                                     color={Theme.colors.sacredWhite}
                                 />
                             </Input>
-                            <Input variant="outline" size="md">
+                            <Input>
                                 <InputField
                                     placeholder={t('self.classPlaceholder')}
-                                    value={editingPeriod?.class_name}
+                                    value={editingPeriod?.class_name || ''}
                                     onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, class_name: val })}
                                     color={Theme.colors.sacredWhite}
                                 />
                             </Input>
 
                             <HStack space="md">
-                                <Input variant="outline" size="md" style={{ flex: 1 }}>
+                                <Input style={{ flex: 1 }}>
                                     <InputField
                                         placeholder={t('self.startPlaceholder')}
-                                        value={editingPeriod?.start_time}
+                                        value={editingPeriod?.start_time || ''}
                                         onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, start_time: val })}
                                         color={Theme.colors.sacredWhite}
                                     />
                                 </Input>
-                                <Input variant="outline" size="md" style={{ flex: 1 }}>
+                                <Input style={{ flex: 1 }}>
                                     <InputField
                                         placeholder={t('self.endPlaceholder')}
-                                        value={editingPeriod?.end_time}
+                                        value={editingPeriod?.end_time || ''}
                                         onChangeText={(val: string) => setEditingPeriod({ ...editingPeriod, end_time: val })}
                                         color={Theme.colors.sacredWhite}
                                     />
@@ -364,7 +370,7 @@ function DailyRhythmContent() {
                     </ModalBody>
                 </ModalContent>
             </Modal>
-        </VStack>
+        </VStack >
     );
 }
 

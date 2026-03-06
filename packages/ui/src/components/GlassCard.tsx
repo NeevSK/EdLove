@@ -42,7 +42,7 @@ export const GlassCard = ({ children, style, onLayout, ...props }: GlassCardProp
                     <LivingCard
                         width={dimensions.width}
                         height={dimensions.height}
-                        phase={phase}
+                        {...({ phase } as any)}
                         cornerRadius={Theme.corners.generous}
                     >
                         {null}
