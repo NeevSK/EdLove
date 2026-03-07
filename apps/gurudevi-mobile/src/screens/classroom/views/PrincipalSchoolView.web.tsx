@@ -10,18 +10,14 @@ import {
     TrendingUp,
     Plus,
     CheckCircle2,
-    Clock,
     GraduationCap,
-    ChevronRight,
     AlertTriangle,
     UserCheck,
     CalendarOff,
     BookOpen,
     Zap,
     Building,
-    BarChart3,
-    Activity,
-    RefreshCw
+    Activity
 } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
 

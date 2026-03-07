@@ -1,9 +1,14 @@
 ﻿/**
  * PrincipalSelfView Component
- * 
- * Principal-focused wellbeing features emphasizing leadership wellness
- * Core: Leadership energy, School pulse, Decision journal
- * More Tools: Staff wellbeing overview (aggregated), Leadership wisdom, Monthly reflection
+ *
+ * Personal wellbeing sanctuary for principals.
+ * Scope: Individual wellness only — mood, energy, personal decisions, leadership wisdom.
+ *
+ * Institutional features (school pulse, staff wellbeing aggregates) deliberately
+ * live in PrincipalSchoolView so Self stays a genuine personal sanctuary.
+ *
+ * Core:    Personal Pulse (mood/energy overview), Energy Forecast, Decision Journal
+ * Discover: Leadership Wisdom, Monthly Reflection
  */
 
 import { supabase, useStore, useSafeMutation, useUserRole } from '@repo/core';
@@ -27,7 +32,7 @@ import {
     ScreenWrapper,
     useBottomTabPadding
 } from '@repo/ui';
-import { Battery, Activity, BookOpen, Users, Lightbulb, Calendar } from 'lucide-react-native';
+import { Battery, Activity, BookOpen, Lightbulb, Calendar } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import ShadowAgentDrawer from '../../components/ShadowAgentDrawer';
 import EnergyForecast from '../../components/EnergyForecast';
@@ -40,16 +45,15 @@ import { useEnergyForecast } from '../../hooks/useEnergyForecast';
 import PulseDashboard from '../../components/PulseDashboard';
 import { GlobalHeader } from '@repo/ui';
 
-// Principal-specific core features — PulseDashboard is the Entry Hall
+// Principal core features — personal wellbeing only
 const PRINCIPAL_CORE_FEATURES = [
     { id: 'pulse', icon: Activity, category: 'core' },
     { id: 'energy', icon: Battery, category: 'core' },
-    { id: 'schoolPulse', icon: Users, category: 'core' },
     { id: 'decisions', icon: BookOpen, category: 'core' },
 ];
 
+// Discover tools — personal growth, not school management
 const PRINCIPAL_MORE_TOOLS = [
-    { id: 'staffWellbeing', icon: Users, category: 'discover' },
     { id: 'wisdom', icon: Lightbulb, category: 'discover' },
     { id: 'monthly', icon: Calendar, category: 'discover' },
 ];
@@ -100,25 +104,6 @@ export default function PrincipalSelfView() {
                 );
             case 'energy':
                 return <EnergyForecast userId={userId ?? undefined} />;
-            case 'schoolPulse':
-                return (
-                    <VStack space="lg" sx={{ flex: 1 }}>
-                        <VStack space="xs">
-                            <Heading color={colors.text} size="lg">
-                                {t('principal.schoolPulse')}
-                            </Heading>
-                            <Text color={colors.textSecondary} size="sm">
-                                {t('principal.schoolPulseDesc')}
-                            </Text>
-                        </VStack>
-
-                        <PositiveInvitation
-                            context="self"
-                            title={t('principal.pulseComingSoon', 'Synchronizing Hearts')}
-                            description={t('principal.pulseComingSoonDesc', 'A bird\'s eye view of your school\'s collective wellbeing is being tuned.')}
-                        />
-                    </VStack>
-                );
             case 'decisions':
                 return (
                     <VStack space="lg" sx={{ flex: 1 }}>
@@ -132,25 +117,6 @@ export default function PrincipalSelfView() {
                         </VStack>
 
                         <DecisionJournalSection userId={userId} colors={colors} t={t} />
-                    </VStack>
-                );
-            case 'staffWellbeing':
-                return (
-                    <VStack space="lg" sx={{ flex: 1 }}>
-                        <VStack space="xs">
-                            <Heading color={colors.text} size="lg">
-                                {t('principal.staffWellbeing')}
-                            </Heading>
-                            <Text color={colors.textSecondary} size="sm">
-                                {t('principal.staffWellbeingDesc')}
-                            </Text>
-                        </VStack>
-
-                        <PositiveInvitation
-                            context="community"
-                            title={t('principal.staffComingSoon', 'Supporting the Pillars')}
-                            description={t('principal.staffComingSoonDesc', 'Advanced tools for staff support and appreciation are in development.')}
-                        />
                     </VStack>
                 );
             case 'wisdom':
