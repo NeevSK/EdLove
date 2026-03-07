@@ -16,7 +16,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useStore, ClassroomStackParamList, School } from '@repo/core';
 import { SkeletonCard } from '@repo/ui';
 import { useEcosystemStats } from '../hooks/useEcosystemStats';
-import GlobalCreateModal from '../components/GlobalCreateModal';
+import GlobalCreateModal from '../components/GlobalCreateModal.web';
 import { Activity, Building, LayoutGrid, Users, ArrowUpRight, Plus, Globe, Zap } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -161,9 +161,14 @@ export default function FounderDashboard() {
 
 function SchoolCard({ school, onPress }: { school: School; onPress: () => void }) {
     return (
-        <div
+        <button
             onClick={onPress}
-            style={{ padding: '24px', borderRadius: '20px', background: 'var(--surface, white)', border: '1px solid var(--border)', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
+            style={{
+                width: '100%', textAlign: 'left', font: 'inherit',
+                padding: '24px', borderRadius: '20px',
+                background: 'var(--surface, white)', border: '1px solid var(--border)',
+                cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
         >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                 <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: 'rgba(255,166,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -177,6 +182,6 @@ function SchoolCard({ school, onPress }: { school: School; onPress: () => void }
                     {school.type}
                 </span>
             )}
-        </div>
+        </button>
     );
 }

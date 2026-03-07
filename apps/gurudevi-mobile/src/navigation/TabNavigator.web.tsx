@@ -354,10 +354,13 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
             </div>
 
             {/* ── MOBILE BOTTOM NAV (< 1024px) ── */}
-            {isMobileView && activeSubView === 'none' && (
+            {/* Always visible on mobile — even in notifications/settings subviews so
+                users always have a path back. Tab buttons return to 'none' subview
+                first; Alerts button toggles notifications. */}
+            {isMobileView && (
                 <nav className="mobile-bottom-nav" aria-label="Tab navigation">
                     {TAB_CONFIG.map((conf) => {
-                        const isActive = activeTab === conf.name;
+                        const isActive = activeTab === conf.name && activeSubView === 'none';
                         const Icon = conf.icon;
                         return (
                             <button
@@ -382,6 +385,7 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
                     <button
                         className={`mobile-nav-item ${activeSubView === 'notifications' ? 'active' : ''}`}
                         onClick={() => setActiveSubView(activeSubView === 'notifications' ? 'none' : 'notifications')}
+                        aria-current={activeSubView === 'notifications' ? 'page' : undefined}
                     >
                         <div style={{ position: 'relative' }}>
                             <Bell size={22} color={activeSubView === 'notifications' ? 'var(--water)' : 'var(--ink-ghost)'} />

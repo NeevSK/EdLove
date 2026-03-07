@@ -54,7 +54,7 @@ export default function StudentDashboardWeb() {
             }
         };
         fetchClassrooms();
-    }, [userId]);
+    }, [userId, user?.school_id]);
 
     const stats = [
         {

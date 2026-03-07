@@ -167,17 +167,30 @@ export function isWcagAAA(fgHex: string, bgHex: string): boolean {
 
 /**
  * Produce a "soft tint" of a hex color suitable for card backgrounds:
- * mixes the color with the current surface (light: white, dark: near-black)
- * at a low ratio so it tints without overwhelming.
+ * mixes the accent color with the current surface — white in light mode,
+ * near-black (#111218) in dark mode — at a low ratio so it tints without
+ * overwhelming.
+ *
+ * In light mode this returns the accent with `alpha` opacity (visually blends
+ * against a white surface). In dark mode the same alpha would look far more
+ * saturated, so we blend toward the dark surface color instead.
  *
  * @param accentHex  — the dominant accent color
  * @param isDark     — whether we're in dark mode
- * @param alpha      — opacity of the tint layer (default 0.08 for subtle tint)
+ * @param alpha      — opacity / blend weight (default 0.08 for subtle tint)
  */
 export function accentSoftTint(
   accentHex: string,
   isDark: boolean,
   alpha = 0.08,
 ): string {
-  return hexToRgba(accentHex, alpha);
+  if (!isDark) {
+    // Light mode: transparent accent over white surface
+    return hexToRgba(accentHex, alpha);
+  }
+  // Dark mode: blend accent toward near-black surface at the same weight.
+  // We mix the accent color with #111218 (the dark background) so the tint
+  // stays legible without over-saturating.
+  const darkSurface = '#111218';
+  return mixColors(accentHex, darkSurface, alpha);
 }

@@ -10,6 +10,7 @@
  */
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 import { useStore } from '@repo/core';
 import { School } from '@repo/core';
 import { SkeletonCard } from '@repo/ui';
@@ -19,17 +20,16 @@ import {
     Building,
     LayoutGrid,
     Users,
-    Layers,
     ArrowUpRight,
     Plus,
     Globe,
-    TrendingUp,
     Zap
 } from 'lucide-react-native';
 
 export default function FounderDashboardWeb() {
     const { t } = useTranslation();
     const { user } = useStore();
+    const navigation = useNavigation<any>();
 
     const { stats, schools, isLoading, error, refreshData } = useEcosystemStats();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -174,7 +174,14 @@ export default function FounderDashboardWeb() {
                 ) : (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: '24px' }}>
                         {filteredSchools.map(school => (
-                            <SchoolCard key={school.id} school={school} />
+                            <SchoolCard
+                                key={school.id}
+                                school={school}
+                                onPress={() => navigation.navigate('FounderSchoolView', {
+                                    schoolId: String(school.id),
+                                    userId: user?.id ?? '',
+                                })}
+                            />
                         ))}
                     </div>
                 )}
@@ -239,12 +246,16 @@ export default function FounderDashboardWeb() {
 
 // ── School Card Component ────────────────────────────────────────────────────
 
-function SchoolCard({ school }: { school: School }) {
+function SchoolCard({ school, onPress }: { school: School; onPress: () => void }) {
     return (
-        <div
+        <button
             className="sanctuary-card interactive"
-            style={{ cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
-            onClick={() => console.log('Navigate to school:', school.id)}
+            style={{
+                cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s',
+                width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: 0,
+                font: 'inherit',
+            }}
+            onClick={onPress}
         >
             <div className="card-body-inner">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
@@ -275,7 +286,7 @@ function SchoolCard({ school }: { school: School }) {
                     </div>
                 </div>
             </div>
-        </div>
+        </button>
     );
 }
 

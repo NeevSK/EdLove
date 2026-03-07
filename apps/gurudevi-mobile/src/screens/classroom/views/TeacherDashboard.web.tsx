@@ -52,10 +52,14 @@ export default function TeacherDashboardWeb() {
                 if (!error && data) {
                     // Fetch student counts in a separate query for accuracy
                     const classroomIds = data.map((c: Classroom) => c.id);
-                    const { data: countData } = await supabase
-                        .from('classroom_students')
-                        .select('classroom_id')
-                        .in('classroom_id', classroomIds);
+
+                    // Guard: Supabase .in('col', []) with empty array returns all rows unexpectedly
+                    const countData = classroomIds.length > 0
+                        ? (await supabase
+                            .from('classroom_students')
+                            .select('classroom_id')
+                            .in('classroom_id', classroomIds)).data
+                        : [];
 
                     const countMap: Record<string, number> = {};
                     (countData ?? []).forEach((row: { classroom_id: string }) => {
