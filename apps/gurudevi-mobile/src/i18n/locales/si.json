@@ -390,7 +390,69 @@
         "title": "ප්‍රජාව",
         "description": "ගුරු ප්‍රජාව සමඟ සම්බන්ධ වන්න",
         "announcements": "නිවේදන",
-        "postAnnouncement": "නිවේදනයක් පළ කරන්න"
+        "postAnnouncement": "නිවේදනයක් පළ කරන්න",
+        "createGroup": {
+            "title": "නව වටයක් ආරම්භ කරන්න",
+            "optional": "විකල්ප",
+            "typeLabel": "වර්ගය",
+            "joinPolicyLabel": "කවුද සම්බන්ධ විය හැක්කේ?",
+            "submit": "මෙම වටය ආරම්භ කරන්න",
+            "errors": {
+                "createFailed": "කණ්ඩායම සාදන්න බැරි වුණා. කරුණාකර නැවත උත්සාහ කරන්න."
+            },
+            "avatar": {
+                "label": "කණ්ඩායම් ප්‍රොෆයිල් ඡායාරූපය",
+                "change": "වෙනස් කිරීමට තට්ටු කරන්න",
+                "addOptional": "ඡායාරූපයක් එක් කරන්න (විකල්ප)"
+            },
+            "name": {
+                "label": "වටයේ නම",
+                "placeholder": "උදා: Science Explorers, Reading Circle…"
+            },
+            "description": {
+                "label": "විස්තරය",
+                "placeholder": "මෙම වටය ගැන කෙටියෙන් කියන්න"
+            },
+            "groupTypes": {
+                "general": {
+                    "label": "සාමාන්‍ය",
+                    "description": "විවෘත සංවාද සහ බෙදාගැනීම"
+                },
+                "club": {
+                    "label": "සමාජය",
+                    "description": "ක්‍රියාකාරකම් හෝ රුචි සමාජය"
+                },
+                "interest": {
+                    "label": "උනන්දු කණ්ඩායම",
+                    "description": "ඒකාබද්ධ හොබි හෝ ආශාව"
+                },
+                "subject": {
+                    "label": "විෂය කණ්ඩායම",
+                    "description": "අධ්‍යයන විෂය කේන්ද්‍රය"
+                }
+            },
+            "joinPolicies": {
+                "open": {
+                    "label": "විවෘත",
+                    "description": "ඕනෑම කෙනෙකුට වහාම එක්විය හැක"
+                },
+                "approval_required": {
+                    "label": "අනුමැතිය අවශ්‍යයි",
+                    "description": "සෑම ඉල්ලීමක්ම ඔබ අනුමත කරයි"
+                },
+                "invite_only": {
+                    "label": "ආරාධනා පමණයි",
+                    "description": "සාමාජිකයන් QR හෝ සබැඳියෙන් පමණක් එක්වේ"
+                }
+            },
+            "success": {
+                "title": "වටය ආරම්භ වුණා!",
+                "subtitle": "අනිත් අය ඔබේ වටයට වහාම එක්වීමට මෙම QR කේතය බෙදාගන්න.",
+                "ownerHint": "ඔබ මෙම වටයේ හිමිකරුය. සාමාජිකයන් පාලනය කිරීම, එකතුවීමේ ප්‍රතිපත්තිය සකස් කිරීම සහ නිවේදන පළ කිරීම සඳහා කණ්ඩායම් සැකසුම් භාවිතා කරන්න.",
+                "openGroup": "කණ්ඩායම විවෘත කරන්න →",
+                "done": "අවසන්"
+            }
+        }
     },
     "library": {
         "title": "පුස්තකාලය",
@@ -937,6 +999,29 @@
         "cityPlaceholder": "උදා: මහනුවර",
         "postalAddress": "තැපැල් ලිපිනය",
         "postalAddressPlaceholder": "අංක 123, පාසල් වීදිය..."
+    },
+    "scanner": {
+        "permission": {
+            "message": "කැමරාව පෙන්වීමට ඔබගේ අවසරය අවශ්‍යයි",
+            "grant": "අවසරය දෙන්න"
+        },
+        "status": {
+            "scanningWithMlKit": "ML Kit සමඟ ස්කෑන් කරමින්..."
+        },
+        "instructions": {
+            "pointOrSelect": "QR කේතය වෙත කැමරාව යොමු කරන්න\nහෝ ගැලරියෙන් තෝරන්න"
+        },
+        "actions": {
+            "dismiss": "වසන්න",
+            "gallery": "ගැලරිය",
+            "flip": "හරවන්න",
+            "cancel": "අවලංගු කරන්න"
+        },
+        "errors": {
+            "customDevBuildRequired": "ගැලරි ස්කෑන් කිරීම සඳහා custom dev build එකක් අවශ්‍යයි.\nRun: expo prebuild && expo run:android (or run:ios)",
+            "noQrFound": "ඡායාරූපයේ QR කේතයක් හමු නොවීය.\nQR කේතයට ළඟින් crop කර නැවත උත්සාහ කරන්න.",
+            "scanFailed": "ඡායාරූපය ස්කෑන් කළ නොහැකි විය. කරුණාකර නැවත උත්සාහ කරන්න."
+        }
     },
     "sync": {
         "title": "දත්ත සමමුහුර්ත කරන්න",

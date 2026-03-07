@@ -491,7 +491,69 @@
       "updates": "RECENT UPDATES"
     },
     "noGroups": "No circles found",
-    "noGroupsDesc": "Connect with others by joining a community group."
+    "noGroupsDesc": "Connect with others by joining a community group.",
+    "createGroup": {
+      "title": "Found a New Circle",
+      "optional": "optional",
+      "typeLabel": "Type",
+      "joinPolicyLabel": "Who Can Join?",
+      "submit": "Found this Circle",
+      "errors": {
+        "createFailed": "Failed to create group. Please try again."
+      },
+      "avatar": {
+        "label": "Group Profile Photo",
+        "change": "Tap to change",
+        "addOptional": "Add a photo (optional)"
+      },
+      "name": {
+        "label": "Circle Name",
+        "placeholder": "e.g. Science Explorers, Reading Circle…"
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "What is this circle about?"
+      },
+      "groupTypes": {
+        "general": {
+          "label": "General",
+          "description": "Open discussion and sharing"
+        },
+        "club": {
+          "label": "Club",
+          "description": "Activity or interest club"
+        },
+        "interest": {
+          "label": "Interest Group",
+          "description": "Shared hobby or passion"
+        },
+        "subject": {
+          "label": "Subject Group",
+          "description": "Academic subject focus"
+        }
+      },
+      "joinPolicies": {
+        "open": {
+          "label": "Open",
+          "description": "Anyone can join instantly"
+        },
+        "approval_required": {
+          "label": "Approval Required",
+          "description": "You approve each request"
+        },
+        "invite_only": {
+          "label": "Invite Only",
+          "description": "Members join via QR or link only"
+        }
+      },
+      "success": {
+        "title": "Circle Founded!",
+        "subtitle": "Share this QR code with others so they can instantly join your circle.",
+        "ownerHint": "You are the owner of this circle. Manage members, set join policy, and post announcements from the group settings.",
+        "openGroup": "Open Group →",
+        "done": "Done"
+      }
+    }
   },
   "library": {
     "title": "Library",
@@ -1095,6 +1157,29 @@
       "content": "Your Reflection",
       "placeholder": "Share your thoughts, resource needs, or concerns...",
       "note": "This reflection will be surfaced on the Principal's Dashboard 'Echo' vistas."
+    }
+  },
+  "scanner": {
+    "permission": {
+      "message": "We need your permission to show the camera",
+      "grant": "Grant Permission"
+    },
+    "status": {
+      "scanningWithMlKit": "Scanning with ML Kit..."
+    },
+    "instructions": {
+      "pointOrSelect": "Point camera at QR code\nor select from gallery"
+    },
+    "actions": {
+      "dismiss": "Dismiss",
+      "gallery": "Gallery",
+      "flip": "Flip",
+      "cancel": "Cancel"
+    },
+    "errors": {
+      "customDevBuildRequired": "Gallery scanning requires a custom dev build.\nRun: expo prebuild && expo run:android (or run:ios)",
+      "noQrFound": "No QR code found in image.\nTry cropping closer to the QR code.",
+      "scanFailed": "Could not scan image. Please try again."
     }
   },
   "sync": {

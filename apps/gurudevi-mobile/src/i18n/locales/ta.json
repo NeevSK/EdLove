@@ -369,7 +369,69 @@
         "title": "சமூகம்",
         "description": "ஆசிரியர் சமூகத்துடன் இணைக",
         "announcements": "அறிவிப்புகள்",
-        "postAnnouncement": "அறிவிப்பை இடுகையிடு"
+        "postAnnouncement": "அறிவிப்பை இடுகையிடு",
+        "createGroup": {
+            "title": "புதிய வட்டத்தை தொடங்குங்கள்",
+            "optional": "விருப்பம்",
+            "typeLabel": "வகை",
+            "joinPolicyLabel": "யார் சேரலாம்?",
+            "submit": "இந்த வட்டத்தை தொடங்குங்கள்",
+            "errors": {
+                "createFailed": "குழுவை உருவாக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்."
+            },
+            "avatar": {
+                "label": "குழு சுயவிவரப் படம்",
+                "change": "மாற்றத் தட்டவும்",
+                "addOptional": "ஒரு படத்தைச் சேர்க்கவும் (விருப்பம்)"
+            },
+            "name": {
+                "label": "வட்டத்தின் பெயர்",
+                "placeholder": "உதா: Science Explorers, Reading Circle…"
+            },
+            "description": {
+                "label": "விளக்கம்",
+                "placeholder": "இந்த வட்டம் எதைப் பற்றி?"
+            },
+            "groupTypes": {
+                "general": {
+                    "label": "பொது",
+                    "description": "திறந்த விவாதமும் பகிர்வும்"
+                },
+                "club": {
+                    "label": "கிளப்",
+                    "description": "செயல்பாடு அல்லது ஆர்வக் கிளப்"
+                },
+                "interest": {
+                    "label": "ஆர்வக் குழு",
+                    "description": "பகிரப்பட்ட பொழுதுபோக்கு அல்லது விருப்பம்"
+                },
+                "subject": {
+                    "label": "பாடக் குழு",
+                    "description": "கல்வி பாடத் திசை"
+                }
+            },
+            "joinPolicies": {
+                "open": {
+                    "label": "திறந்தது",
+                    "description": "யாரும் உடனடியாக சேரலாம்"
+                },
+                "approval_required": {
+                    "label": "அனுமதி தேவை",
+                    "description": "ஒவ்வொரு கோரிக்கையும் நீங்கள் அங்கீகரிக்கிறீர்கள்"
+                },
+                "invite_only": {
+                    "label": "அழைப்புக்கு மட்டும்",
+                    "description": "QR அல்லது இணைப்பின் மூலம் மட்டும் உறுப்பினர்கள் சேரலாம்"
+                }
+            },
+            "success": {
+                "title": "வட்டம் உருவாக்கப்பட்டது!",
+                "subtitle": "மற்றவர்கள் உடனே உங்கள் வட்டத்தில் சேர இந்த QR குறியீட்டை பகிருங்கள்.",
+                "ownerHint": "இந்த வட்டத்தின் உரிமையாளர் நீங்கள். உறுப்பினர்களை நிர்வகிக்கவும், சேர்க்கை கொள்கையை அமைக்கவும், குழு அமைப்புகளில் அறிவிப்புகளை வெளியிடவும்.",
+                "openGroup": "குழுவைத் திறக்கவும் →",
+                "done": "முடிந்தது"
+            }
+        }
     },
     "library": {
         "title": "நூலகம்",
@@ -908,6 +970,29 @@
         "cityPlaceholder": "எ.கா. கண்டி",
         "postalAddress": "அஞ்சல் முகவரி",
         "postalAddressPlaceholder": "எண் 123, பள்ளி தெரு..."
+    },
+    "scanner": {
+        "permission": {
+            "message": "கேமராவைக் காண உங்கள் அனுமதி தேவை",
+            "grant": "அனுமதி வழங்கவும்"
+        },
+        "status": {
+            "scanningWithMlKit": "ML Kit மூலம் ஸ்கேன் செய்கிறது..."
+        },
+        "instructions": {
+            "pointOrSelect": "QR குறியீட்டில் கேமராவை நோக்கவும்\nஅல்லது கேலரியில் இருந்து தேர்ந்தெடுக்கவும்"
+        },
+        "actions": {
+            "dismiss": "மூடு",
+            "gallery": "கேலரி",
+            "flip": "திருப்பு",
+            "cancel": "ரத்து"
+        },
+        "errors": {
+            "customDevBuildRequired": "கேலரி ஸ்கேனிங்கிற்கு custom dev build தேவை.\nRun: expo prebuild && expo run:android (or run:ios)",
+            "noQrFound": "படத்தில் QR குறியீடு இல்லை.\nQR குறியீட்டிற்கு நெருக்கமாக crop செய்து முயற்சிக்கவும்.",
+            "scanFailed": "படத்தை ஸ்கேன் செய்ய முடியவில்லை. மீண்டும் முயற்சிக்கவும்."
+        }
     },
     "sync": {
         "title": "தரவை ஒத்திசைக்கவும்",

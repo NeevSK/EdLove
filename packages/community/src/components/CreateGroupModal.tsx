@@ -36,6 +36,7 @@ import { TextInput } from 'react-native';
 import { X, Users, Globe, Lock, CheckCircle, QrCode, Camera } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { CommunityStackParamList } from '@repo/core';
 import { communityAPI } from '../api/community';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
@@ -70,30 +71,30 @@ interface CreateGroupModalProps {
 
 // ── Static data ───────────────────────────────────────────────────────────────
 
-const GROUP_TYPES: TypeOption[] = [
-    { value: 'general', label: 'General', emoji: '💬', description: 'Open discussion and sharing' },
-    { value: 'club', label: 'Club', emoji: '🏆', description: 'Activity or interest club' },
-    { value: 'interest', label: 'Interest Group', emoji: '✨', description: 'Shared hobby or passion' },
-    { value: 'subject', label: 'Subject Group', emoji: '📚', description: 'Academic subject focus' },
+const getGroupTypes = (t: (key: string, defaultValue?: string) => string): TypeOption[] => [
+    { value: 'general', label: t('community.createGroup.groupTypes.general.label', 'General'), emoji: '💬', description: t('community.createGroup.groupTypes.general.description', 'Open discussion and sharing') },
+    { value: 'club', label: t('community.createGroup.groupTypes.club.label', 'Club'), emoji: '🏆', description: t('community.createGroup.groupTypes.club.description', 'Activity or interest club') },
+    { value: 'interest', label: t('community.createGroup.groupTypes.interest.label', 'Interest Group'), emoji: '✨', description: t('community.createGroup.groupTypes.interest.description', 'Shared hobby or passion') },
+    { value: 'subject', label: t('community.createGroup.groupTypes.subject.label', 'Subject Group'), emoji: '📚', description: t('community.createGroup.groupTypes.subject.description', 'Academic subject focus') },
 ];
 
-const JOIN_POLICIES: PolicyOption[] = [
+const getJoinPolicies = (t: (key: string, defaultValue?: string) => string): PolicyOption[] => [
     {
         value: 'open',
-        label: 'Open',
-        description: 'Anyone can join instantly',
+        label: t('community.createGroup.joinPolicies.open.label', 'Open'),
+        description: t('community.createGroup.joinPolicies.open.description', 'Anyone can join instantly'),
         Icon: Globe,
     },
     {
         value: 'approval_required',
-        label: 'Approval Required',
-        description: 'You approve each request',
+        label: t('community.createGroup.joinPolicies.approval_required.label', 'Approval Required'),
+        description: t('community.createGroup.joinPolicies.approval_required.description', 'You approve each request'),
         Icon: Users,
     },
     {
         value: 'invite_only',
-        label: 'Invite Only',
-        description: 'Members join via QR or link only',
+        label: t('community.createGroup.joinPolicies.invite_only.label', 'Invite Only'),
+        description: t('community.createGroup.joinPolicies.invite_only.description', 'Members join via QR or link only'),
         Icon: Lock,
     },
 ];
@@ -101,6 +102,7 @@ const JOIN_POLICIES: PolicyOption[] = [
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateGroupModalProps) {
+    const { t } = useTranslation();
     const colors = useThemedColors();
     const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
     const { userId, schoolId } = useUserRole();
@@ -126,6 +128,8 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
     // ── Derived ────────────────────────────────────────────────────────────────
     const canSubmit = name.trim().length >= 2 && !isSubmitting && !isUploadingAvatar;
     const groupQRValue = createdGroupId ? QRBuilder.group(createdGroupId) : '';
+    const GROUP_TYPES = getGroupTypes(t);
+    const JOIN_POLICIES = getJoinPolicies(t);
 
     // ── Handlers ───────────────────────────────────────────────────────────────
 
@@ -191,7 +195,7 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
             setCreatedGroupAvatar(imageUrl ?? null);
             onCreated?.(group.id);
         } catch (err: any) {
-            setError(err?.message ?? 'Failed to create group. Please try again.');
+            setError(err?.message ?? t('community.createGroup.errors.createFailed', 'Failed to create group. Please try again.'));
         } finally {
             setIsSubmitting(false);
         }
@@ -214,7 +218,7 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
                         <HStack justifyContent="space-between" alignItems="center" w="$full">
                             <HStack space="sm" alignItems="center">
                                 <CheckCircle size={20} color={Theme.colors.sageGreen} />
-                                <Heading color={Theme.colors.sageGreen} size="md">Circle Founded!</Heading>
+                                <Heading color={Theme.colors.sageGreen} size="md">{t('community.createGroup.success.title', 'Circle Founded!')}</Heading>
                             </HStack>
                             <TouchableOpacity onPress={handleClose} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
                                 <X size={20} color={colors.textTertiary} />
@@ -238,7 +242,7 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
                                 {createdGroupName}
                             </Text>
                             <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm, textAlign: 'center' }}>
-                                Share this QR code with others so they can instantly join your circle.
+                                {t('community.createGroup.success.subtitle', 'Share this QR code with others so they can instantly join your circle.')}
                             </Text>
 
                             {/* QR Code */}
@@ -275,7 +279,7 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
                                 <HStack space="sm" alignItems="flex-start">
                                     <QrCode size={16} color={Theme.colors.sanctuarySaffron} style={{ marginTop: 2 }} />
                                     <Text sx={{ flex: 1, fontSize: Theme.typography.fontSize.xs, color: colors.textSecondary, lineHeight: 18 }}>
-                                        You are the owner of this circle. Manage members, set join policy, and post announcements from the group settings.
+                                        {t('community.createGroup.success.ownerHint', 'You are the owner of this circle. Manage members, set join policy, and post announcements from the group settings.')}
                                     </Text>
                                 </HStack>
                             </Box>
@@ -286,11 +290,11 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
                         <VStack space="sm" w="$full">
                             <TouchableOpacity onPress={handleOpenGroup} style={[styles.primaryBtn, { backgroundColor: Theme.colors.sanctuarySaffron }]}>
                                 <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '700', fontSize: Theme.typography.fontSize.md }}>
-                                    Open Group →
+                                    {t('community.createGroup.success.openGroup', 'Open Group →')}
                                 </Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={handleClose} style={styles.ghostBtn}>
-                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>Done</Text>
+                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.sm }}>{t('community.createGroup.success.done', 'Done')}</Text>
                             </TouchableOpacity>
                         </VStack>
                     </ModalFooter>
@@ -307,7 +311,7 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
             <ModalContent sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.generous, marginHorizontal: 16 }}>
                 <ModalHeader>
                     <HStack justifyContent="space-between" alignItems="center" w="$full">
-                        <Heading color={colors.text} size="lg">Found a New Circle</Heading>
+                        <Heading color={colors.text} size="lg">{t('community.createGroup.title', 'Found a New Circle')}</Heading>
                         <TouchableOpacity onPress={handleClose} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
                             <X size={20} color={colors.textTertiary} />
                         </TouchableOpacity>
@@ -329,10 +333,10 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
                                 </Box>
                                 <VStack sx={{ marginLeft: 12, flex: 1 }}>
                                     <Text sx={{ fontWeight: '600', fontSize: Theme.typography.fontSize.sm, color: colors.text }}>
-                                        Group Profile Photo
+                                        {t('community.createGroup.avatar.label', 'Group Profile Photo')}
                                     </Text>
                                     <Text sx={{ fontSize: 12, color: colors.textSecondary }}>
-                                        {avatarUri ? 'Tap to change' : 'Add a photo (optional)'}
+                                        {avatarUri ? t('community.createGroup.avatar.change', 'Tap to change') : t('community.createGroup.avatar.addOptional', 'Add a photo (optional)')}
                                     </Text>
                                 </VStack>
                             </TouchableOpacity>
@@ -340,12 +344,12 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
                             {/* Name */}
                             <VStack space="xs">
                                 <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600', color: colors.text }}>
-                                    Circle Name <Text sx={{ color: Theme.colors.emberRed }}>*</Text>
+                                    {t('community.createGroup.name.label', 'Circle Name')} <Text sx={{ color: Theme.colors.emberRed }}>*</Text>
                                 </Text>
                                 <TextInput
                                     value={name}
                                     onChangeText={setName}
-                                    placeholder="e.g. Science Explorers, Reading Circle…"
+                                    placeholder={t('community.createGroup.name.placeholder', 'e.g. Science Explorers, Reading Circle…')}
                                     placeholderTextColor={colors.textTertiary}
                                     maxLength={60}
                                     style={[styles.input, { color: colors.text, backgroundColor: colors.tertiary, borderColor: colors.border }]}
@@ -358,12 +362,12 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
                             {/* Description */}
                             <VStack space="xs">
                                 <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600', color: colors.text }}>
-                                    Description <Text sx={{ color: colors.textTertiary }}>(optional)</Text>
+                                    {t('community.createGroup.description.label', 'Description')} <Text sx={{ color: colors.textTertiary }}>({t('community.createGroup.optional', 'optional')})</Text>
                                 </Text>
                                 <TextInput
                                     value={description}
                                     onChangeText={setDescription}
-                                    placeholder="What is this circle about?"
+                                    placeholder={t('community.createGroup.description.placeholder', 'What is this circle about?')}
                                     placeholderTextColor={colors.textTertiary}
                                     multiline
                                     numberOfLines={3}
@@ -375,7 +379,7 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
                             {/* Group Type */}
                             <VStack space="xs">
                                 <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600', color: colors.text }}>
-                                    Type
+                                    {t('community.createGroup.typeLabel', 'Type')}
                                 </Text>
                                 <HStack flexWrap="wrap" sx={{ gap: 8 }}>
                                     {GROUP_TYPES.map((t) => {
@@ -405,7 +409,7 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
                             {/* Join Policy */}
                             <VStack space="xs">
                                 <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600', color: colors.text }}>
-                                    Who Can Join?
+                                    {t('community.createGroup.joinPolicyLabel', 'Who Can Join?')}
                                 </Text>
                                 <VStack space="sm">
                                     {JOIN_POLICIES.map((p) => {
@@ -483,7 +487,7 @@ export default function CreateGroupModal({ isOpen, onClose, onCreated }: CreateG
                             <ActivityIndicator size="small" color={Theme.colors.sacredWhite} />
                         ) : (
                             <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '700', fontSize: Theme.typography.fontSize.md }}>
-                                Found this Circle
+                                {t('community.createGroup.submit', 'Found this Circle')}
                             </Text>
                         )}
                     </TouchableOpacity>
