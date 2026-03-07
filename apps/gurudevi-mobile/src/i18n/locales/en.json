@@ -27,7 +27,9 @@
     "initialize": "Initialize",
     "start": "Start",
     "completeProfile": "Complete Profile",
-    "join": "Join"
+    "join": "Join",
+    "notifications": "Notifications",
+    "settings": "Settings"
   },
   "demoMode": {
     "realityCheckTitle": "Sandbox Simulation",
@@ -120,7 +122,10 @@
     "community": "Community",
     "library": "Library",
     "profile": "Profile",
-    "grade": "Grade"
+    "grade": "Grade",
+    "platform": "Platform",
+    "class": "Class",
+    "school": "School"
   },
   "self": {
     "goodMorning": "Good Morning!",
@@ -491,7 +496,75 @@
       "updates": "RECENT UPDATES"
     },
     "noGroups": "No circles found",
-    "noGroupsDesc": "Connect with others by joining a community group."
+    "noGroupsDesc": "Connect with others by joining a community group.",
+    "createGroup": {
+      "founded": "Circle Founded!",
+      "shareQr": "Share this QR code with others so they can instantly join your circle.",
+      "ownerHint": "You are the owner of this circle. Manage members, set join policy, and post announcements from the group settings.",
+      "title": "Found a New Circle",
+      "tapToChange": "Tap to change",
+      "addPhotoOptional": "Add a photo (optional)",
+      "groupName": "Circle Name",
+      "groupNamePlaceholder": "e.g. Science Explorers, Reading Circle…",
+      "description": "Description",
+      "optional": "optional",
+      "descriptionPlaceholder": "What is this circle about?",
+      "type": "Type",
+      "whoCanJoin": "Who Can Join?",
+      "submit": "Found this Circle",
+      "types": {
+        "general": {
+          "label": "General",
+          "description": "Open discussion and sharing"
+        },
+        "club": {
+          "label": "Club",
+          "description": "Activity or interest club"
+        },
+        "interest": {
+          "label": "Interest Group",
+          "description": "Shared hobby or passion"
+        },
+        "subject": {
+          "label": "Subject Group",
+          "description": "Academic subject focus"
+        }
+      },
+      "policies": {
+        "open": {
+          "label": "Open",
+          "description": "Anyone can join instantly"
+        },
+        "approval_required": {
+          "label": "Approval Required",
+          "description": "You approve each request"
+        },
+        "invite_only": {
+          "label": "Invite Only",
+          "description": "Members join via QR or link only"
+        }
+      }
+    },
+    "profile": {
+      "sendMessage": "Send Message",
+      "reportAccount": "Report Account",
+      "contributions": "Contributions",
+      "posts": "Posts",
+      "endorsements": "Endorsements",
+      "badgesComingSoon": "Badges\ncoming soon",
+      "privacyNote": "🔒 Only public contributions are shown. Wellbeing data, grades, and private content remain private.",
+      "aspiration": "Aspiration",
+      "recentReflections": "Recent Reflections",
+      "philosophyDeepDive": "PHILOSOPHY DEEP-DIVE",
+      "resonanceStats": "Resonance Stats",
+      "hearts": "Hearts",
+      "ties": "Ties",
+      "pulse": "Pulse",
+      "pulseHigh": "High",
+      "sanctuaryHonors": "Sanctuary Honors",
+      "earlyResonator": "Early Resonator",
+      "verifiedArchitect": "Verified Architect"
+    }
   },
   "library": {
     "title": "Library",
@@ -1105,5 +1178,57 @@
     "completeTitle": "Sync Complete!",
     "successMessage": "All your data has been synced successfully!",
     "successDescription": "You can now access your data from any device."
+  },
+  "webNav": {
+    "brandName": "Gurudevi Sanctuary",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "toggleNavigation": "Toggle navigation",
+    "navigate": "Navigate",
+    "tabNavigation": "Tab navigation",
+    "alerts": "Alerts"
+  },
+  "scanner": {
+    "errors": {
+      "customBuild": "Gallery scanning requires a custom dev build.\nRun: expo prebuild && expo run:android (or run:ios)",
+      "noQrFound": "No QR code found in image.\nTry cropping closer to the QR code.",
+      "scanFailed": "Could not scan image. Please try again."
+    },
+    "permission": {
+      "message": "We need your permission to show the camera",
+      "grant": "Grant Permission"
+    },
+    "status": {
+      "mlKit": "Scanning with ML Kit..."
+    },
+    "controls": {
+      "gallery": "Gallery",
+      "flip": "Flip"
+    },
+    "web": {
+      "emptyError": "Please paste or type a QR code value.",
+      "closeScanner": "Close scanner",
+      "cameraMessage": "Camera scanning is available in the\nGurudevi mobile app.",
+      "desktopHint": "On desktop, paste the QR code value below.",
+      "pasteCode": "Paste QR code value here…",
+      "submitCode": "Submit Code",
+      "title": "Enter QR Code"
+    },
+    "title": "Scan QR Code",
+    "dismiss": "Dismiss",
+    "instructions": "Point camera at QR code\nor select from gallery"
+  },
+  "ocr": {
+    "permission": {
+      "title": "Camera Permission",
+      "description": "We need camera permission to scan student registers."
+    },
+    "title": "Scan Student Register",
+    "captureDescription": "Take a photo of your student register. Works with Sinhala, Tamil, and English text.",
+    "takePhoto": "Take Photo",
+    "chooseFromGallery": "Choose from Gallery",
+    "tipsTitle": "Tips for best results:",
+    "scanning": "Scanning and analyzing text...",
+    "tryAgain": "Try Again"
   }
 }
