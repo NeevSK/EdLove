@@ -109,8 +109,8 @@ const STATIC_CSS = `
       overflow: hidden;
 
       background: var(--sidebar-bg);
-      backdrop-filter: blur(28px) saturate(1.8);
-      -webkit-backdrop-filter: blur(28px) saturate(1.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-right: 1px solid rgba(255, 255, 255, 0.2);
     }
     .sidebar.collapsed { width: 60px; }
@@ -248,10 +248,11 @@ const STATIC_CSS = `
         0 4px 24px rgba(0, 0, 0, 0.04),
         0 8px 32px rgba(90, 154, 186, 0.05);
       transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      will-change: transform;
     }
 
     .sanctuary-card:hover {
-      transform: translateY(-8px) scale(1.015);
+      transform: translateY(-6px);
       background: var(--card-bg-hover);
       box-shadow: 
         inset 0 1px 0 rgba(255, 255, 255, 0.6),

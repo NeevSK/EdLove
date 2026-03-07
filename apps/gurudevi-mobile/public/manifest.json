@@ -4,6 +4,7 @@
   "description": "A sacred space for teachers — wellbeing, classroom tools, and community. Built for educators in Sri Lanka and beyond.",
   "start_url": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
   "orientation": "portrait-primary",
   "background_color": "#F5EDD6",
   "theme_color": "#D4843A",

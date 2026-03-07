@@ -8,18 +8,15 @@ import { useUserRole, useRewards } from '@repo/core';
 import { User, School, Heart, Users, Library, Bell, ChevronLeft, Menu, Settings } from 'lucide-react-native';
 
 // Screens / stacks
-import ClassroomStackNavigator from './ClassroomStackNavigator';
-import ProfileStackNavigator from './ProfileStackNavigator';
-import CommunityStackNavigator from './CommunityStackNavigator';
-// Web-specific stack navigators
-import ClassroomStackNavigatorWeb from './ClassroomStackNavigator.web';
-import ProfileStackNavigatorWeb from './ProfileStackNavigator.web';
-import CommunityStackNavigatorWeb from './CommunityStackNavigator.web';
-import SelfStackNavigatorWeb from './SelfStackNavigator.web';
-import LibraryStackNavigatorWeb from './LibraryStackNavigator.web';
-// In-shell overlay screens (must stay inside sidebar+topbar)
-import NotificationsScreenWeb from '../screens/NotificationsScreen.web';
-import AppSettingsScreenWeb from '../screens/AppSettingsScreen.web';
+// Tab stacks — lazy loaded (major code split boundary)
+const ClassroomStackNavigatorWeb = React.lazy(() => import('./ClassroomStackNavigator.web'));
+const ProfileStackNavigatorWeb = React.lazy(() => import('./ProfileStackNavigator.web'));
+const CommunityStackNavigatorWeb = React.lazy(() => import('./CommunityStackNavigator.web'));
+const SelfStackNavigatorWeb = React.lazy(() => import('./SelfStackNavigator.web'));
+const LibraryStackNavigatorWeb = React.lazy(() => import('./LibraryStackNavigator.web'));
+// In-shell overlay screens — lazy loaded
+const NotificationsScreenWeb = React.lazy(() => import('../screens/NotificationsScreen.web'));
+const AppSettingsScreenWeb = React.lazy(() => import('../screens/AppSettingsScreen.web'));
 
 type SubView = 'none' | 'notifications' | 'settings';
 
@@ -308,8 +305,10 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
 
                 {/* ── MAIN CONTENT CANVAS ── */}
                 <main className="main-content-canvas">
-                    {activeSubView === 'notifications' && <NotificationsScreenWeb />}
-                    {activeSubView === 'settings' && <AppSettingsScreenWeb />}
+                    <React.Suspense fallback={<div style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-ghost)', fontStyle: 'italic', fontFamily: 'var(--font-body)' }}>Loading...</div>}>
+                        {activeSubView === 'notifications' && <NotificationsScreenWeb />}
+                        {activeSubView === 'settings' && <AppSettingsScreenWeb />}
+                    </React.Suspense>
                     <div style={{ display: activeSubView === 'none' ? 'contents' : 'none' }}>
                         <Tab.Navigator
                             id="MainTabs"
@@ -335,19 +334,19 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
                             screenOptions={{ headerShown: false }}
                         >
                             <Tab.Screen name="Self">
-                                {() => <ErrorBoundary name="Self"><SelfStackNavigatorWeb /></ErrorBoundary>}
+                                {() => <ErrorBoundary name="Self"><React.Suspense fallback={<div style={{ minHeight: '100vh' }} />}><SelfStackNavigatorWeb /></React.Suspense></ErrorBoundary>}
                             </Tab.Screen>
                             <Tab.Screen name="Community">
-                                {() => <ErrorBoundary name="Community"><CommunityStackNavigatorWeb /></ErrorBoundary>}
+                                {() => <ErrorBoundary name="Community"><React.Suspense fallback={<div style={{ minHeight: '100vh' }} />}><CommunityStackNavigatorWeb /></React.Suspense></ErrorBoundary>}
                             </Tab.Screen>
                             <Tab.Screen name="Classroom">
-                                {() => <ErrorBoundary name="Classroom"><ClassroomStackNavigatorWeb /></ErrorBoundary>}
+                                {() => <ErrorBoundary name="Classroom"><React.Suspense fallback={<div style={{ minHeight: '100vh' }} />}><ClassroomStackNavigatorWeb /></React.Suspense></ErrorBoundary>}
                             </Tab.Screen>
                             <Tab.Screen name="Library">
-                                {() => <ErrorBoundary name="Library"><LibraryStackNavigatorWeb /></ErrorBoundary>}
+                                {() => <ErrorBoundary name="Library"><React.Suspense fallback={<div style={{ minHeight: '100vh' }} />}><LibraryStackNavigatorWeb /></React.Suspense></ErrorBoundary>}
                             </Tab.Screen>
                             <Tab.Screen name="Profile">
-                                {() => <ErrorBoundary name="Profile"><ProfileStackNavigatorWeb /></ErrorBoundary>}
+                                {() => <ErrorBoundary name="Profile"><React.Suspense fallback={<div style={{ minHeight: '100vh' }} />}><ProfileStackNavigatorWeb /></React.Suspense></ErrorBoundary>}
                             </Tab.Screen>
                         </Tab.Navigator>
                     </div>

@@ -27,6 +27,51 @@ import {
     EyeOff
 } from 'lucide-react-native';
 
+function PWAInstallRow({ showToast }: { showToast: (msg: string, type: string) => void }) {
+    const [canInstall, setCanInstall] = React.useState(false);
+    const [installed, setInstalled] = React.useState(false);
+
+    React.useEffect(() => {
+        const onInstallable = () => setCanInstall(true);
+        const onInstalled = () => { setInstalled(true); setCanInstall(false); };
+        document.addEventListener('pwa-installable', onInstallable);
+        document.addEventListener('pwa-installed', onInstalled);
+        // Check if already captured
+        if ((window as any).__pwaInstallPrompt) setCanInstall(true);
+        return () => {
+            document.removeEventListener('pwa-installable', onInstallable);
+            document.removeEventListener('pwa-installed', onInstalled);
+        };
+    }, []);
+
+    if (installed) return null;
+    if (!canInstall) return null;
+
+    const handleInstall = async () => {
+        const prompt = (window as any).__pwaInstallPrompt;
+        if (!prompt) return;
+        prompt.prompt();
+        const { outcome } = await prompt.userChoice;
+        if (outcome === 'accepted') {
+            showToast('Gurudevi installed on your device!', 'success');
+            (window as any).__pwaInstallPrompt = null;
+            setCanInstall(false);
+        }
+    };
+
+    return (
+        <button className="settings-row" onClick={handleInstall} style={{ border: '1px solid var(--action-border)', background: 'var(--action-soft)' }}>
+            <div className="settings-row-info">
+                <span className="settings-row-title" style={{ color: 'var(--action)' }}>Install Gurudevi App</span>
+                <span className="settings-row-desc">Add to home screen for full experience</span>
+            </div>
+            <div className="settings-row-action">
+                <span style={{ fontSize: '18px' }}>📲</span>
+            </div>
+        </button>
+    );
+}
+
 export default function AppSettingsScreenWeb() {
     const { t, i18n } = useTranslation();
     const navigation = useNavigation<any>();
@@ -71,7 +116,7 @@ export default function AppSettingsScreenWeb() {
                         </h3>
 
                         <div className="settings-list">
-                            <div className="settings-row" onClick={() => setThemeMode(themeMode === 'dark' ? 'light' : 'dark')}>
+                            <button className="settings-row" onClick={() => setThemeMode(themeMode === 'dark' ? 'light' : 'dark')}>
                                 <div className="settings-row-info">
                                     <span className="settings-row-title">{t('settings.theme.title', 'Theme')}</span>
                                     <span className="settings-row-desc">{themeMode === 'dark' ? 'Dark' : 'Light'} Mode</span>
@@ -79,9 +124,9 @@ export default function AppSettingsScreenWeb() {
                                 <div className="settings-row-action">
                                     {themeMode === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
                                 </div>
-                            </div>
+                            </button>
 
-                            <div className="settings-row" onClick={() => setEnableLivingTheme(!enableLivingTheme)}>
+                            <button className="settings-row" onClick={() => setEnableLivingTheme(!enableLivingTheme)}>
                                 <div className="settings-row-info">
                                     <span className="settings-row-title">{t('settings.living_theme.title', 'Living Theme')}</span>
                                     <span className="settings-row-desc">{enableLivingTheme ? 'Phase-aware active' : 'Simple static color'}</span>
@@ -89,9 +134,9 @@ export default function AppSettingsScreenWeb() {
                                 <div className="settings-row-action">
                                     <div className={`web-toggle ${enableLivingTheme ? 'active' : ''}`} />
                                 </div>
-                            </div>
+                            </button>
 
-                            <div className="settings-row" onClick={() => setFidelityLevel(fidelityLevel === 'high' ? 'low' : 'high')}>
+                            <button className="settings-row" onClick={() => setFidelityLevel(fidelityLevel === 'high' ? 'low' : 'high')}>
                                 <div className="settings-row-info">
                                     <span className="settings-row-title">{t('settings.fidelity.title', 'Visual Quality')}</span>
                                     <span className="settings-row-desc">{fidelityLevel === 'high' ? 'Premium Resonance' : 'Performance Optimized'}</span>
@@ -99,7 +144,7 @@ export default function AppSettingsScreenWeb() {
                                 <div className="settings-row-action">
                                     <Smartphone size={20} />
                                 </div>
-                            </div>
+                            </button>
                         </div>
                     </div>
 
@@ -110,7 +155,7 @@ export default function AppSettingsScreenWeb() {
                         </h3>
 
                         <div className="settings-list">
-                            <div className="settings-row" onClick={() => handleLanguageChange('en')}>
+                            <button className="settings-row" onClick={() => handleLanguageChange('en')}>
                                 <div className="settings-row-info">
                                     <span className="settings-row-title">English</span>
                                     {language === 'en' && <span className="settings-row-tag">Active</span>}
@@ -118,8 +163,8 @@ export default function AppSettingsScreenWeb() {
                                 <div className="settings-row-action">
                                     {language === 'en' && <ChevronRight size={18} />}
                                 </div>
-                            </div>
-                            <div className="settings-row" onClick={() => handleLanguageChange('si')}>
+                            </button>
+                            <button className="settings-row" onClick={() => handleLanguageChange('si')}>
                                 <div className="settings-row-info">
                                     <span className="settings-row-title">සිංහල</span>
                                     {language === 'si' && <span className="settings-row-tag">සක්‍රීයයි</span>}
@@ -127,7 +172,7 @@ export default function AppSettingsScreenWeb() {
                                 <div className="settings-row-action">
                                     {language === 'si' && <ChevronRight size={18} />}
                                 </div>
-                            </div>
+                            </button>
                         </div>
                     </div>
 
@@ -138,7 +183,7 @@ export default function AppSettingsScreenWeb() {
                         </h3>
 
                         <div className="settings-list">
-                            <div className="settings-row" onClick={() => toggleVeil()}>
+                            <button className="settings-row" onClick={() => toggleVeil()}>
                                 <div className="settings-row-info">
                                     <span className="settings-row-title">{t('settings.veil.title', 'Privacy Veil')}</span>
                                     <span className="settings-row-desc">{isVeilActive ? 'Sensitive info hidden' : 'Quick-hide details'}</span>
@@ -146,7 +191,7 @@ export default function AppSettingsScreenWeb() {
                                 <div className="settings-row-action">
                                     {isVeilActive ? <EyeOff size={20} color="var(--water)" /> : <Eye size={20} />}
                                 </div>
-                            </div>
+                            </button>
                         </div>
                     </div>
 
@@ -157,7 +202,7 @@ export default function AppSettingsScreenWeb() {
                         </h3>
 
                         <div className="settings-list">
-                            <div className="settings-row" onClick={() => setLogoutModalVisible(true)}>
+                            <button className="settings-row" onClick={() => setLogoutModalVisible(true)}>
                                 <div className="settings-row-info">
                                     <span className="settings-row-title" style={{ color: colors.error }}>{t('profile.logout', 'Sign Out')}</span>
                                     <span className="settings-row-desc">Currently as {role?.split('_').join(' ')}</span>
@@ -165,16 +210,16 @@ export default function AppSettingsScreenWeb() {
                                 <div className="settings-row-action">
                                     <LogOut size={20} color={colors.error} />
                                 </div>
-                            </div>
+                            </button>
 
-                            <div className="settings-row" style={{ marginTop: '12px', borderTop: '1px dashed var(--border)', paddingTop: '12px' }} onClick={() => setDeleteModalVisible(true)}>
+                            <button className="settings-row" style={{ marginTop: '12px', borderTop: '1px dashed var(--border)', paddingTop: '12px' }} onClick={() => setDeleteModalVisible(true)}>
                                 <div className="settings-row-info">
                                     <span className="settings-row-title" style={{ color: colors.textTertiary, fontSize: '12px' }}>{t('profile.deleteAccount', 'Delete Account')}</span>
                                 </div>
                                 <div className="settings-row-action">
                                     <Trash2 size={16} color={colors.textTertiary} />
                                 </div>
-                            </div>
+                            </button>
                         </div>
                     </div>
 
@@ -185,7 +230,8 @@ export default function AppSettingsScreenWeb() {
                         </h3>
 
                         <div className="settings-list">
-                            <div className="settings-row" onClick={() => showToast('Help Center coming soon', 'info')}>
+                            <PWAInstallRow showToast={showToast} />
+                            <button className="settings-row" onClick={() => showToast('Help Center coming soon', 'info')}>
                                 <div className="settings-row-info">
                                     <span className="settings-row-title">Help Center</span>
                                     <span className="settings-row-desc">Guides, FAQs, and support</span>
@@ -193,9 +239,9 @@ export default function AppSettingsScreenWeb() {
                                 <div className="settings-row-action">
                                     <ChevronRight size={18} />
                                 </div>
-                            </div>
+                            </button>
 
-                            <div className="settings-row" onClick={() => showToast('About Ecosystem coming soon', 'info')}>
+                            <button className="settings-row" onClick={() => showToast('About Ecosystem coming soon', 'info')}>
                                 <div className="settings-row-info">
                                     <span className="settings-row-title">About Gurudevi</span>
                                     <span className="settings-row-desc">The vision and the architecture</span>
@@ -203,7 +249,7 @@ export default function AppSettingsScreenWeb() {
                                 <div className="settings-row-action">
                                     <Info size={18} />
                                 </div>
-                            </div>
+                            </button>
                         </div>
                     </div>
 
@@ -258,6 +304,9 @@ export default function AppSettingsScreenWeb() {
                     padding: 16px;
                     border-radius: 16px;
                     cursor: pointer;
+                    width: 100%;
+                    text-align: left;
+                    font-family: var(--font-body);
                     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
                     background: var(--glass-surface);
                     border: 1px solid transparent;
