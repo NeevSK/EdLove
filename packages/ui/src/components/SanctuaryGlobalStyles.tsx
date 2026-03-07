@@ -11,123 +11,7 @@ import { hexToRgba } from '../utils/colorUtils';
  * textOnReward — so that text colors automatically adapt whenever the
  * temporal phase changes the active accent (Saffron → Sage → Blue → Gold).
  */
-export function SanctuaryGlobalStyles() {
-  if (Platform.OS !== 'web') return null;
-
-  const {
-    accent, glass, text, isDark, gradientNodes,
-    textOnAccent, textOnReward,
-    accentRgb, rewardRgb, surfaceRgb,
-    phase,
-  } = useTheme();
-
-  const css = `
-    /* ── TOKENS ── */
-    :root {
-      /* Sanctuary Core Tokens (Dynamic) */
-      --color-background: ${gradientNodes[0]};
-      --color-text-primary: ${text.primary};
-      --color-text-secondary: ${text.secondary};
-      --color-accent: ${accent.action};
-      --color-glass-border: ${glass.surface.border};
-
-      /* High-Fidelity Design Palette (Vellum/Ink) */
-      --water:       #3a7a9a;
-      --water-glow:  rgba(90,154,186,0.25);
-      --water-soft:  rgba(90,154,186,0.09);
-      --moss:        #4a7a5a;
-      --moss-glow:   rgba(74,122,90,0.25);
-      --moss-soft:   rgba(74,122,90,0.09);
-      --lotus:       #c05878;
-      --lotus-glow:  rgba(192,88,120,0.2);
-      --lotus-soft:  rgba(192,88,120,0.08);
-      --gold:        #a07830;
-      --gold-glow:   rgba(160,120,48,0.2);
-      --ember:       #c04040;
-      --ember-soft:  rgba(192,64,64,0.08);
-      --amber-glow:  #c8803a;
-
-      /* Gurudevi Blue (alias for water) */
-      --gurudevi-blue: #3a7a9a;
-
-      /* Action (Saffron / phase-aware) */
-      --action:             ${accent.action};
-      --action-rgb:         ${accentRgb};
-      --action-soft:        ${hexToRgba(accent.action, 0.09)};
-      --action-medium:      ${hexToRgba(accent.action, 0.18)};
-      --action-glow:        ${hexToRgba(accent.action, 0.28)};
-      --action-border:      ${hexToRgba(accent.action, 0.40)};
-      /* Text that is WCAG-safe on top of --action backgrounds */
-      --text-on-action:     ${textOnAccent};
-      --sanctuary-saffron:  ${accent.action};
-      --sanctuary-saffron-soft: ${hexToRgba(accent.action, 0.09)};
-
-      /* Reward (achievement / celebration — phase-aware) */
-      --reward:             ${accent.reward};
-      --reward-rgb:         ${rewardRgb};
-      --reward-soft:        ${hexToRgba(accent.reward, 0.09)};
-      --reward-medium:      ${hexToRgba(accent.reward, 0.18)};
-      --reward-glow:        ${hexToRgba(accent.reward, 0.28)};
-      /* Text that is WCAG-safe on top of --reward backgrounds */
-      --text-on-reward:     ${textOnReward};
-
-      /* Danger */
-      --danger:             #FF6347;
-      --danger-soft:        rgba(255,99,71,0.09);
-      --text-on-danger:     #FCF9F2;
-
-      /* Phase surface gradient nodes (used for ambient tints) */
-      --surface-primary:   ${gradientNodes[0]};
-      --surface-secondary: ${gradientNodes[1]};
-      --surface-tertiary:  ${gradientNodes[2]};
-      --surface-rgb:        ${surfaceRgb};
-
-      /* Full text token set exposed as CSS variables */
-      --text-primary:   ${text.primary};
-      --text-secondary: ${text.secondary};
-      --text-inverse:   ${text.inverse};
-      --text-muted:     ${text.muted};
-
-      /* Phase identifier — useful for CSS [data-phase="morning"] overrides */
-      --phase: "${phase}";
-
-      /* Backgrounds */
-      --background:     ${isDark ? '#111218' : '#F5EDD6'};
-      --background-alt: ${isDark ? 'rgba(40,42,58,0.65)' : 'rgba(255,255,255,0.55)'};
-      --surface:        ${glass.surface.bg};
-      --glass-surface:  ${glass.surface.bg};
-      --glass-interact: ${isDark ? 'rgba(50,52,68,0.70)' : 'rgba(255,255,255,0.75)'};
-
-      /* Ink */
-      --ink:         ${isDark ? text.primary : '#2a2820'};
-      --ink-soft:    ${text.secondary};
-      --ink-ghost:   #7a7068;
-
-      /* Borders & Shadows */
-      --border:       ${glass.surface.border};
-      --border-light: rgba(255,255,255,0.7);
-      --shadow-sm:    0 2px 8px rgba(107,100,128,0.07);
-      --shadow-md:    0 8px 24px rgba(107,100,128,0.10);
-      --shadow-lg:    0 16px 48px rgba(107,100,128,0.14);
-
-      /* Typography */
-      --font-display:'IM Fell English', serif;
-      --font-body:   'DM Sans', sans-serif;
-
-      /* Layout */
-      --top-bar-h:   64px;
-      --sidebar-w:   240px;
-      --bp-mobile:   768px;
-      --bp-tablet:   768px;
-      --bp-desktop:  1024px;
-      
-      /* Legacy bridge tokens */
-      --sanctuary-primary: ${gradientNodes[0]};
-      --sanctuary-primary-rgb: ${isDark ? '26, 22, 16' : '245, 237, 214'};
-      --sanctuary-text-primary: ${text.primary};
-      --sanctuary-text-secondary: ${text.secondary};
-    }
-
+const STATIC_CSS = `
     /* ── RESET ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; outline: none !important; }
     body { 
@@ -164,9 +48,7 @@ export function SanctuaryGlobalStyles() {
       position: fixed;
       inset: 0;
       z-index: -1;
-      background: ${isDark
-      ? 'radial-gradient(circle at 50% 50%, #1a1b26 0%, #111218 100%)'
-      : 'linear-gradient(135deg, #f8f4eb 0%, #edf1f4 100%)'};
+      background: var(--world-bg);
     }
     
     /* Vellum Grain / Noise Overlay for World */
@@ -191,7 +73,7 @@ export function SanctuaryGlobalStyles() {
       flex-shrink: 0;
       z-index: 1100;
 
-      background: ${isDark ? 'rgba(26, 27, 38, 0.45)' : 'rgba(255, 255, 255, 0.45)'};
+      background: var(--topbar-bg);
       backdrop-filter: blur(28px) saturate(1.8);
       -webkit-backdrop-filter: blur(28px) saturate(1.8);
       border-bottom: 1px solid rgba(255, 255, 255, 0.2);
@@ -226,7 +108,7 @@ export function SanctuaryGlobalStyles() {
       transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       overflow: hidden;
 
-      background: ${isDark ? 'rgba(26, 27, 38, 0.45)' : 'rgba(255, 255, 255, 0.3)'};
+      background: var(--sidebar-bg);
       backdrop-filter: blur(28px) saturate(1.8);
       -webkit-backdrop-filter: blur(28px) saturate(1.8);
       border-right: 1px solid rgba(255, 255, 255, 0.2);
@@ -357,9 +239,7 @@ export function SanctuaryGlobalStyles() {
       position: relative;
       border-radius: 20px;
       overflow: hidden;
-      background: ${isDark
-      ? 'rgba(40, 42, 58, 0.45)'
-      : 'rgba(255, 255, 255, 0.5)'};
+      background: var(--card-bg);
       backdrop-filter: blur(20px) saturate(1.6);
       -webkit-backdrop-filter: blur(20px) saturate(1.6);
       border: 1px solid rgba(255, 255, 255, 0.4);
@@ -372,7 +252,7 @@ export function SanctuaryGlobalStyles() {
 
     .sanctuary-card:hover {
       transform: translateY(-8px) scale(1.015);
-      background: ${isDark ? 'rgba(50, 52, 68, 0.55)' : 'rgba(255, 255, 255, 0.65)'};
+      background: var(--card-bg-hover);
       box-shadow: 
         inset 0 1px 0 rgba(255, 255, 255, 0.6),
         0 24px 48px rgba(0, 0, 0, 0.08),
@@ -440,16 +320,16 @@ export function SanctuaryGlobalStyles() {
       font-family: var(--font-body);
       font-size: 14px;
       font-weight: 600;
-      background: ${isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.65)'};
+      background: var(--btn-secondary-bg);
       color: var(--ink);
-      border: 1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'};
+      border: 1px solid var(--btn-secondary-border);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
       white-space: nowrap;
     }
     .secondary-button:hover {
-      background: ${isDark ? 'rgba(255,255,255,0.13)' : 'rgba(255,255,255,0.90)'};
+      background: var(--btn-secondary-hover);
       transform: translateY(-1px);
       box-shadow: var(--shadow-sm);
     }
@@ -477,8 +357,8 @@ export function SanctuaryGlobalStyles() {
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      background: ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(58,122,154,0.12)'};
-      border: 1.5px solid ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(58,122,154,0.2)'};
+      background: var(--profile-gem-bg);
+      border: 1.5px solid var(--profile-gem-border);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -558,19 +438,18 @@ export function SanctuaryGlobalStyles() {
       font-weight: 600;
       letter-spacing: 0.01em;
       color: var(--ink-soft);
-      background: ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'};
+      background: var(--tab-bg);
       border: 1.5px solid transparent;
-      cursor: pointer;
       transition: all 0.18s ease;
       white-space: nowrap;
       font-family: var(--font-body);
     }
     .top-tab:hover {
-      background: ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.07)'};
+      background: var(--tab-bg-hover);
       color: var(--ink);
     }
     .top-tab.active {
-      background: ${isDark ? 'rgba(58,122,154,0.22)' : 'rgba(58,122,154,0.10)'};
+      background: var(--tab-active-bg);
       border-color: var(--water);
       color: var(--water);
     }
@@ -638,7 +517,7 @@ export function SanctuaryGlobalStyles() {
       border-color: rgba(255,99,71,0.35);
     }
     .glass-chip.neutral {
-      background: ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'};
+      background: var(--tab-bg);
       color: var(--ink-soft);
       border-color: var(--border);
     }
@@ -919,7 +798,7 @@ export function SanctuaryGlobalStyles() {
         align-items: center;
         justify-content: space-around;
         padding: 0 8px env(safe-area-inset-bottom, 0px) 8px;
-        background: ${isDark ? 'rgba(26,27,38,0.88)' : 'rgba(255,255,255,0.88)'};
+        background: var(--mobile-panel-bg);
         backdrop-filter: blur(28px) saturate(1.8);
         -webkit-backdrop-filter: blur(28px) saturate(1.8);
         border-top: 1px solid rgba(255,255,255,0.2);
@@ -963,10 +842,165 @@ export function SanctuaryGlobalStyles() {
         .sanctuary-screen { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
       }
     }
-    `;
+`;
 
-  return (
-    <style dangerouslySetInnerHTML={{ __html: css }} />
-  );
+export function SanctuaryGlobalStyles() {
+  if (Platform.OS !== 'web') return null;
+
+  const {
+    accent, glass, text, isDark, gradientNodes,
+    textOnAccent, textOnReward,
+    accentRgb, rewardRgb, surfaceRgb,
+    phase,
+  } = useTheme();
+
+  const dynamicCss = `
+    :root {
+      /* Sanctuary Core Tokens (Dynamic) */
+      --color-background: ${gradientNodes[0]};
+      --color-text-primary: ${text.primary};
+      --color-text-secondary: ${text.secondary};
+      --color-accent: ${accent.action};
+      --color-glass-border: ${glass.surface.border};
+
+      /* High-Fidelity Design Palette (Vellum/Ink) */
+      --water:       #3a7a9a;
+      --water-glow:  rgba(90,154,186,0.25);
+      --water-soft:  rgba(90,154,186,0.09);
+      --moss:        #4a7a5a;
+      --moss-glow:   rgba(74,122,90,0.25);
+      --moss-soft:   rgba(74,122,90,0.09);
+      --lotus:       #c05878;
+      --lotus-glow:  rgba(192,88,120,0.2);
+      --lotus-soft:  rgba(192,88,120,0.08);
+      --gold:        #a07830;
+      --gold-glow:   rgba(160,120,48,0.2);
+      --ember:       #c04040;
+      --ember-soft:  rgba(192,64,64,0.08);
+      --amber-glow:  #c8803a;
+
+      /* Gurudevi Blue (alias for water) */
+      --gurudevi-blue: #3a7a9a;
+
+      /* Action (Saffron / phase-aware) */
+      --action:             ${accent.action};
+      --action-rgb:         ${accentRgb};
+      --action-soft:        ${hexToRgba(accent.action, 0.09)};
+      --action-medium:      ${hexToRgba(accent.action, 0.18)};
+      --action-glow:        ${hexToRgba(accent.action, 0.28)};
+      --action-border:      ${hexToRgba(accent.action, 0.40)};
+      /* Text that is WCAG-safe on top of --action backgrounds */
+      --text-on-action:     ${textOnAccent};
+      --sanctuary-saffron:  ${accent.action};
+      --sanctuary-saffron-soft: ${hexToRgba(accent.action, 0.09)};
+
+      /* Reward (achievement / celebration — phase-aware) */
+      --reward:             ${accent.reward};
+      --reward-rgb:         ${rewardRgb};
+      --reward-soft:        ${hexToRgba(accent.reward, 0.09)};
+      --reward-medium:      ${hexToRgba(accent.reward, 0.18)};
+      --reward-glow:        ${hexToRgba(accent.reward, 0.28)};
+      /* Text that is WCAG-safe on top of --reward backgrounds */
+      --text-on-reward:     ${textOnReward};
+
+      /* Danger */
+      --danger:             #FF6347;
+      --danger-soft:        rgba(255,99,71,0.09);
+      --text-on-danger:     #FCF9F2;
+
+      /* Phase surface gradient nodes (used for ambient tints) */
+      --surface-primary:   ${gradientNodes[0]};
+      --surface-secondary: ${gradientNodes[1]};
+      --surface-tertiary:  ${gradientNodes[2]};
+      --surface-rgb:        ${surfaceRgb};
+
+      /* Full text token set exposed as CSS variables */
+      --text-primary:   ${text.primary};
+      --text-secondary: ${text.secondary};
+      --text-inverse:   ${text.inverse};
+      --text-muted:     ${text.muted};
+
+      /* Phase identifier — useful for CSS [data-phase="morning"] overrides */
+      --phase: "${phase}";
+
+      /* Backgrounds */
+      --background:     ${isDark ? '#111218' : '#F5EDD6'};
+      --background-alt: ${isDark ? 'rgba(40,42,58,0.65)' : 'rgba(255,255,255,0.55)'};
+      --surface:        ${glass.surface.bg};
+      --glass-surface:  ${glass.surface.bg};
+      --glass-interact: ${isDark ? 'rgba(50,52,68,0.70)' : 'rgba(255,255,255,0.75)'};
+
+      /* World/shell background layers */
+      --world-bg:           ${isDark ? 'radial-gradient(circle at 50% 50%, #1a1b26 0%, #111218 100%)' : 'linear-gradient(135deg, #f8f4eb 0%, #edf1f4 100%)'};
+      --topbar-bg:          ${isDark ? 'rgba(26,27,38,0.45)' : 'rgba(255,255,255,0.45)'};
+      --sidebar-bg:         ${isDark ? 'rgba(26,27,38,0.45)' : 'rgba(255,255,255,0.30)'};
+      --card-bg:            ${isDark ? 'rgba(40,42,58,0.45)' : 'rgba(255,255,255,0.50)'};
+      --card-bg-hover:      ${isDark ? 'rgba(50,52,68,0.55)' : 'rgba(255,255,255,0.65)'};
+      --btn-secondary-bg:   ${isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.65)'};
+      --btn-secondary-border: ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'};
+      --btn-secondary-hover: ${isDark ? 'rgba(255,255,255,0.13)' : 'rgba(255,255,255,0.90)'};
+      --profile-gem-bg:     ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(58,122,154,0.12)'};
+      --profile-gem-border: ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(58,122,154,0.20)'};
+      --tab-bg:             ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'};
+      --tab-bg-hover:       ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.07)'};
+      --tab-active-bg:      ${isDark ? 'rgba(58,122,154,0.22)' : 'rgba(58,122,154,0.10)'};
+      --mobile-panel-bg:    ${isDark ? 'rgba(26,27,38,0.88)' : 'rgba(255,255,255,0.88)'};
+
+      /* Ink */
+      --ink:         ${isDark ? text.primary : '#2a2820'};
+      --ink-soft:    ${text.secondary};
+      --ink-ghost:   #7a7068;
+
+      /* Borders & Shadows */
+      --border:       ${glass.surface.border};
+      --border-light: rgba(255,255,255,0.7);
+      --shadow-sm:    0 2px 8px rgba(107,100,128,0.07);
+      --shadow-md:    0 8px 24px rgba(107,100,128,0.10);
+      --shadow-lg:    0 16px 48px rgba(107,100,128,0.14);
+
+      /* Typography */
+      --font-display:'IM Fell English', serif;
+      --font-body:   'DM Sans', sans-serif;
+
+      /* Layout */
+      --top-bar-h:   64px;
+      --sidebar-w:   240px;
+      --bp-mobile:   768px;
+      --bp-tablet:   768px;
+      --bp-desktop:  1024px;
+      
+      /* Legacy bridge tokens */
+      --sanctuary-primary: ${gradientNodes[0]};
+      --sanctuary-primary-rgb: ${isDark ? '26, 22, 16' : '245, 237, 214'};
+      --sanctuary-text-primary: ${text.primary};
+      --sanctuary-text-secondary: ${text.secondary};
+    }
+  `;
+
+  // -- Static CSS: injected once on mount, never re-renders
+  const staticInjectedRef = React.useRef(false);
+  React.useInsertionEffect(() => {
+    if (staticInjectedRef.current) return;
+    staticInjectedRef.current = true;
+    let el = document.getElementById('sanctuary-static-css') as HTMLStyleElement | null;
+    if (!el) {
+      el = document.createElement('style');
+      el.id = 'sanctuary-static-css';
+      el.textContent = STATIC_CSS;
+      document.head.appendChild(el);
+    }
+  }, []);
+
+  // -- Dynamic CSS: only the :root variables block, re-runs on theme change
+  React.useInsertionEffect(() => {
+    let el = document.getElementById('sanctuary-dynamic-css') as HTMLStyleElement | null;
+    if (!el) {
+      el = document.createElement('style');
+      el.id = 'sanctuary-dynamic-css';
+      document.head.appendChild(el);
+    }
+    el.textContent = dynamicCss;
+  }, [dynamicCss]);
+
+  return null;
 }
-
