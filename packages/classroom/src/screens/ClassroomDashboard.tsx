@@ -81,6 +81,7 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
     const [showAddContentModal, setShowAddContentModal] = useState(false);
     const [contentType, setContentType] = useState<'material' | 'assignment'>('material');
     const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
+    const [activeView, setActiveView] = useState<'main' | 'attendance_report'>('main');
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     const [formTitle, setFormTitle] = useState('');
@@ -283,10 +284,8 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
         );
     }
 
-    // Local sub-views for analytics or other detailed screens
-    const [activeView, setActiveView] = useState<'main' | 'attendance_report'>('main');
-
     const schoolId = classroom?.school_id || '';
+
 
     if (activeView === 'attendance_report') {
         return (

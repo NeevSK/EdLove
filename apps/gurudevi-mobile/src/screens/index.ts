@@ -15,6 +15,8 @@ import WebCommunityScreen from './CommunityScreen.web';
 import WebSelfScreen from './SelfScreen.web';
 import WebProfileScreen from './ProfileScreen.web';
 import WebClassroomScreen from './ClassroomScreen.web';
+import WebAppSettingsScreen from './AppSettingsScreen.web';
+import WebNotificationsScreen from './NotificationsScreen.web';
 
 // Conditional Exports
 export const LibraryScreen = Platform.OS === 'web' ? WebLibraryScreen : NativeLibraryScreen;
@@ -28,3 +30,5 @@ export const ProfileScreen = Platform.OS === 'web' ? WebProfileScreen : (require
 export { default as SchoolCreationScreen } from './SchoolCreationScreen';
 export { default as AIAssistantScreen } from './AIAssistantScreen';
 export { default as WelcomeScreen } from './WelcomeScreen.web';
+export const AppSettingsScreen = WebAppSettingsScreen;
+export const NotificationsScreen = WebNotificationsScreen;

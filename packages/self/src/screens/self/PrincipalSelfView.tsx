@@ -29,17 +29,15 @@ import {
 } from '@repo/ui';
 import { Battery, Activity, BookOpen, Users, Lightbulb, Calendar } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import {
-    ShadowAgentDrawer,
-    EnergyForecast,
-    DailyContentCard,
-    ResonancePatternCard,
-    WelcomeModal,
-    DecisionJournalSection,
-    useMoodLogs,
-    useEnergyForecast,
-    PulseDashboard
-} from '../../index';
+import ShadowAgentDrawer from '../../components/ShadowAgentDrawer';
+import EnergyForecast from '../../components/EnergyForecast';
+import DailyContentCard from '../../components/DailyContentCard';
+import ResonancePatternCard from '../../components/ResonancePatternCard';
+import WelcomeModal from '../../components/WelcomeModal';
+import DecisionJournalSection from '../../components/DecisionJournalSection';
+import { useMoodLogs } from '../../hooks/useMoodLogs';
+import { useEnergyForecast } from '../../hooks/useEnergyForecast';
+import PulseDashboard from '../../components/PulseDashboard';
 import { GlobalHeader } from '@repo/ui';
 
 // Principal-specific core features — PulseDashboard is the Entry Hall

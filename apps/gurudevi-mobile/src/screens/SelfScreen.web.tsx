@@ -16,6 +16,8 @@ export default function SelfScreenWeb() {
             case 'student':
                 return <StudentSelfView />;
             case 'teacher':
+            case 'section_head':
+            case 'grade_head':
                 return <TeacherSelfView />;
             case 'principal':
                 return <PrincipalSelfView />;
@@ -24,8 +26,8 @@ export default function SelfScreenWeb() {
             case 'developer':
                 return <FounderSelfView />;
             default:
-                // Fallback to Student view as it's the most common/safe default
-                return <StudentSelfView />;
+                // Fallback to Teacher view as platform intended for teachers as default
+                return <TeacherSelfView />;
         }
     };
 

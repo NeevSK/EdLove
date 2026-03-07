@@ -26,21 +26,19 @@ import { Target, BookOpen, Flower, TrendingUp, Brain } from 'lucide-react-native
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
-import {
-    MoodLotus,
-    ShadowAgentDrawer,
-    FireJournal,
-    ProgressTree,
-    MyGradesView,
-    DailyRhythm,
-    DailyContentCard,
-    WelcomeModal,
-    useMoodLogs,
-    useEnergyForecast,
-    PulseDashboard,
-    WindDownRitual,
-    WisdomSeeds
-} from '../../index';
+import MoodLotus from '../../components/MoodLotus';
+import ShadowAgentDrawer from '../../components/ShadowAgentDrawer';
+import FireJournal from '../../components/FireJournal';
+import ProgressTree from '../../components/ProgressTree';
+import MyGradesView from '../../components/MyGradesView';
+import DailyRhythm from '../../components/DailyRhythm';
+import DailyContentCard from '../../components/DailyContentCard';
+import WelcomeModal from '../../components/WelcomeModal';
+import PulseDashboard from '../../components/PulseDashboard';
+import WindDownRitual from '../../components/WindDownRitual';
+import WisdomSeeds from '../../components/WisdomSeeds';
+import { useMoodLogs } from '../../hooks/useMoodLogs';
+import { useEnergyForecast } from '../../hooks/useEnergyForecast';
 import { SkeletonCard, PositiveInvitation, GlobalHeader } from '@repo/ui';
 import { useThemedColors, useBottomTabPadding } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';

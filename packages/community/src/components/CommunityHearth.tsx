@@ -13,15 +13,12 @@ import {
 import { uploadToCloudinary } from '@repo/core';
 import { SanctuaryManifesto } from '../api/sacredMissions';
 import { Star, Sparkles, Megaphone, Users } from 'lucide-react-native';
-import { ScrollView, Dimensions, NativeSyntheticEvent, NativeScrollEvent, Pressable } from 'react-native';
+import { ScrollView, useWindowDimensions, NativeSyntheticEvent, NativeScrollEvent, Pressable, Platform } from 'react-native';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 import { Post } from '../index';
 import { CommunityPresence } from '@repo/self';
 import { UserRole } from '@repo/core';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = SCREEN_WIDTH * 0.85; // Netflix-style: cards take 85% of width
-const SNAP_INTERVAL = CARD_WIDTH + Theme.spacing.md;
 const AUTO_SWIPE_INTERVAL = 8000;
 
 interface CommunityHearthProps {
@@ -44,6 +41,15 @@ export default function CommunityHearth({
     onPressSpotlight,
 }: CommunityHearthProps) {
     const colors = useThemedColors();
+    const { width: windowWidth } = useWindowDimensions();
+
+    // Responsive card width: 85% on mobile, max 700px on web/tablet
+    const CARD_WIDTH = Platform.OS === 'web'
+        ? Math.min(windowWidth - 120, 700)
+        : windowWidth * 0.85;
+
+    const SNAP_INTERVAL = CARD_WIDTH + Theme.spacing.md;
+
     const [activeIndex, setActiveIndex] = useState(0);
     const scrollRef = useRef<ScrollView>(null);
     const timerRef = useRef<NodeJS.Timeout | null>(null);

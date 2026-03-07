@@ -28,7 +28,7 @@ import WelcomeScreen from './src/screens/WelcomeScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import TabNavigator from './src/navigation/TabNavigator';
 import TabNavigatorWeb from './src/navigation/TabNavigator.web';
-import { AIAssistantScreen, AuthScreen } from './src/screens';
+import { AIAssistantScreen, AuthScreen, AppSettingsScreen, NotificationsScreen } from './src/screens';
 import QRHandlerScreen from './src/screens/QRHandlerScreen';
 import ThuthimalClaimScreen from './src/screens/ThuthimalClaimScreen';
 import { useQRDeepLink, redeemPendingQRAction } from '@repo/ui';
@@ -373,7 +373,7 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
       // Allow access for authenticated users (including anonymous guests) and specific routes
       const allowedRoutes = ['Welcome', 'Auth', 'QRHandler'];
       const hasValidSession = !!session;
-      
+
       if (!hasValidSession && !onboardingCompleted && !allowedRoutes.includes(currentRoute || '')) {
         console.log('🛡️ WebAuthGuard: Redirecting to Welcome...');
         navigationRef.current?.reset({
@@ -418,6 +418,7 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                         screens: {
                           ProfileMain: '',
                           FullProfile: 'full',
+                          PrivacyLedger: 'privacy-ledger',
                         },
                       },
                       Classroom: {
@@ -536,6 +537,16 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                         presentation: 'modal',
                         animation: 'fade_from_bottom',
                       }}
+                    />
+                    <RootStack.Screen
+                      name="AppSettings"
+                      component={AppSettingsScreen}
+                      options={{ presentation: 'modal' }}
+                    />
+                    <RootStack.Screen
+                      name="Notifications"
+                      component={NotificationsScreen}
+                      options={{ presentation: 'modal' }}
                     />
                     <RootStack.Screen
                       name="ThuthimalClaim"

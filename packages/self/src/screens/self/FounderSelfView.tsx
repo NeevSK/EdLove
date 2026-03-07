@@ -20,14 +20,12 @@ import { useTranslation } from 'react-i18next';
 import { Sparkles, Compass, Zap, Lightbulb, Globe, Heart } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
-import {
-    MoodLotus,
-    ShadowAgentDrawer,
-    EnergyForecast,
-    WisdomSeeds,
-    DailyContentCard,
-    WelcomeModal
-} from '@repo/self';
+import MoodLotus from '../../components/MoodLotus';
+import ShadowAgentDrawer from '../../components/ShadowAgentDrawer';
+import EnergyForecast from '../../components/EnergyForecast';
+import WisdomSeeds from '../../components/WisdomSeeds';
+import DailyContentCard from '../../components/DailyContentCard';
+import WelcomeModal from '../../components/WelcomeModal';
 import { SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useThemedColors, useBottomTabPadding, ScreenWrapper } from '@repo/ui';
 

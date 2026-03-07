@@ -1,8 +1,13 @@
 this file is for issues i saw while doing manual testing and should complement/integrate with the tasks do in future and update the progress as well)
 (other than not mentioned specifically all changes should apply both mobile and web - web related docs @ "/../docs/web")
 
+## 10.09 am 07/03/2026 (latest - [n])
+1. bottom nav bar should not be blurd or transparent. solid color. 
+2. if keyboard appears in any screen bottom nav bar should be collapsed down. (how to make sure it happen in universal way??)
+3. need to standardize global header in different screens for different roles seems it has different colors different naming or conventions, different hights
 
-## 7.36 pm 03/03/2026 (latest - [n])  
+
+## 7.36 pm 03/03/2026 (latest - [n -1])  
 
 1. version number increase in abb
 
@@ -53,7 +58,7 @@ other parts UI should be responsive
 
 
 
-## i just checked 5.23 pm 02/03/2026 (latest [n-1] 
+## i just checked 5.23 pm 02/03/2026 (latest [n-2] 
 
 1. notification issue seems okay but i dont know whether db exists or just notification drawer hardcoded
 
@@ -73,7 +78,7 @@ other parts UI should be responsive
 
 
 
-## 2.10 pm 02/03/2026 (latest [n-2] - ignore older ones yet they are persistent thoguh they marked as closed. )
+## 2.10 pm 02/03/2026 (latest [n-3] - ignore older ones yet they are persistent thoguh they marked as closed. )
 
 1. Brought this up from old ones. 
  1.1 given we have dms and group msgs in group-community section can we abstract screens related both and then import? is that how we do things now?  DRY rule (if we do this seems DMs also easily functionable than waiting. but i dont knw. any thoughts? whats best)

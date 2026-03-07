@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { ErrorBoundary, AchievementUnlockOverlay, useTheme } from '@repo/ui';
 import { useUserRole, useRewards } from '@repo/core';
-import { User, School, Heart, Users, Library, Bell, ChevronLeft, Menu } from 'lucide-react-native';
+import { User, School, Heart, Users, Library, Bell, ChevronLeft, Menu, Settings } from 'lucide-react-native';
 
 // Screens / stacks
 import ClassroomStackNavigator from './ClassroomStackNavigator';
@@ -23,11 +23,11 @@ const Tab = createBottomTabNavigator();
 // ─── NAV HELPERS ──────────────────────────────────────────────────────────
 
 const TAB_CONFIG = [
-    { name: 'Profile', icon: User, labelKey: 'tabs.profile' },
-    { name: 'Classroom', icon: School, labelKey: 'tabs.classroom' },
     { name: 'Self', icon: Heart, labelKey: 'tabs.self' },
     { name: 'Community', icon: Users, labelKey: 'tabs.community' },
+    { name: 'Classroom', icon: School, labelKey: 'tabs.classroom' },
     { name: 'Library', icon: Library, labelKey: 'tabs.library' },
+    { name: 'Profile', icon: User, labelKey: 'tabs.profile' },
 ];
 
 // ─── MAIN NAVIGATOR (Overlay Architecture) ─────────────────────────────────
@@ -88,9 +88,29 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
                 <div
                     className="top-bar-left"
                     style={{
-                        paddingLeft: 24, // Stabilized branding
+                        paddingLeft: 24,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '16px'
                     }}
                 >
+                    {isMobileView && (
+                        <button
+                            className="mobile-menu-toggle"
+                            onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+                            style={{
+                                background: 'transparent',
+                                border: 'none',
+                                cursor: 'pointer',
+                                color: 'var(--ink)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            <Menu size={24} />
+                        </button>
+                    )}
                     <span className="brand-lotus">🪷</span>
                     <span className="brand-name">Gurudevi Sanctuary</span>
                 </div>
@@ -99,8 +119,16 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
 
             <div className="shell-body-core">
                 {/* ── SIDEBAR (Inside Body Flex Row) ── */}
-                <aside className={`sidebar ${isSidebarExpanded ? 'expanded' : 'collapsed'} ${isMobileView ? 'mobile' : ''}`}>
-                    <div className="sidebar-header">
+                <aside className={`sidebar ${isSidebarExpanded ? 'expanded' : 'collapsed'} ${isMobileView ? 'mobile' : ''}`}
+                    style={{
+                        zIndex: isMobileView ? 1000 : 10,
+                        position: isMobileView ? 'fixed' : 'relative',
+                        height: isMobileView ? '100%' : 'auto',
+                        width: isMobileView ? (isSidebarExpanded ? '280px' : '0px') : (isSidebarExpanded ? '240px' : '60px'),
+                        boxShadow: isMobileView && isSidebarExpanded ? '0 0 50px rgba(0,0,0,0.5)' : 'none',
+                    }}
+                >
+                    <div className="sidebar-header" style={{ display: isMobileView ? 'none' : 'flex' }}>
                         <button
                             className="sidebar-toggle"
                             onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
@@ -135,7 +163,11 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
 
                     <div className="sidebar-footer">
                         <div className="sidebar-divider" />
-                        <button className="sidebar-item" title="Notifications">
+                        <button
+                            className="sidebar-item"
+                            title={t('common.notifications', 'Notifications')}
+                            onClick={() => (navigation.navigate as any)('Notifications')}
+                        >
                             <div style={{ position: 'relative' }}>
                                 <Bell size={20} color="var(--ink-ghost)" />
                                 <div className="bell-dot" />
@@ -143,14 +175,18 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
                             {isSidebarExpanded && <span className="sidebar-label">Notifications</span>}
                         </button>
 
-                        <button className="sidebar-profile-btn" title="Profile Settings">
+                        <button
+                            className="sidebar-profile-btn"
+                            title={t('common.settings', 'Settings')}
+                            onClick={() => (navigation.navigate as any)('AppSettings')}
+                        >
                             <div className="profile-gem">
-                                {role?.[0]?.toUpperCase() || 'G'}
+                                <Settings size={16} color="var(--ink-ghost)" />
                             </div>
                             {isSidebarExpanded && (
                                 <div className="profile-info">
                                     <span className="profile-nm">{role?.split('_').join(' ') || 'Guest'}</span>
-                                    <span className="profile-status">Online</span>
+                                    <span className="profile-status">{t('common.settings', 'Settings')}</span>
                                 </div>
                             )}
                         </button>
@@ -184,20 +220,20 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
                             headerShown: false,
                         }}
                     >
-                        <Tab.Screen name="Profile">
-                            {() => <ErrorBoundary name="Profile"><ProfileStackNavigatorWeb /></ErrorBoundary>}
-                        </Tab.Screen>
-                        <Tab.Screen name="Classroom">
-                            {() => <ErrorBoundary name="Classroom"><ClassroomStackNavigatorWeb /></ErrorBoundary>}
-                        </Tab.Screen>
                         <Tab.Screen name="Self">
                             {() => <ErrorBoundary name="Self"><SelfStackNavigatorWeb /></ErrorBoundary>}
                         </Tab.Screen>
                         <Tab.Screen name="Community">
                             {() => <ErrorBoundary name="Community"><CommunityStackNavigatorWeb /></ErrorBoundary>}
                         </Tab.Screen>
+                        <Tab.Screen name="Classroom">
+                            {() => <ErrorBoundary name="Classroom"><ClassroomStackNavigatorWeb /></ErrorBoundary>}
+                        </Tab.Screen>
                         <Tab.Screen name="Library">
                             {() => <ErrorBoundary name="Library"><LibraryStackNavigatorWeb /></ErrorBoundary>}
+                        </Tab.Screen>
+                        <Tab.Screen name="Profile">
+                            {() => <ErrorBoundary name="Profile"><ProfileStackNavigatorWeb /></ErrorBoundary>}
                         </Tab.Screen>
                     </Tab.Navigator>
                 </main>

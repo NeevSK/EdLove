@@ -26,25 +26,23 @@ import { Mic, Send, MessageCircle, Repeat, Flower, Flame, Sparkles, Heart, Light
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
-import {
-    MoodLotus,
-    ShadowAgentDrawer,
-    FireJournal,
-    JoyJar,
-    GratitudeGlimmers,
-    WisdomSeeds,
-    TomorrowPrep,
-    EnergyForecast,
-    WindDownRitual,
-    SleepTracker,
-    RemindersManager,
-    VoiceJournaling,
-    DailyContentCard,
-    DailyRhythm,
-    WelcomeModal,
-    DecisionJournalSection,
-    PulseDashboard
-} from '../../index';
+import MoodLotus from '../../components/MoodLotus';
+import ShadowAgentDrawer from '../../components/ShadowAgentDrawer';
+import FireJournal from '../../components/FireJournal';
+import JoyJar from '../../components/JoyJar';
+import GratitudeGlimmers from '../../components/GratitudeGlimmers';
+import WisdomSeeds from '../../components/WisdomSeeds';
+import TomorrowPrep from '../../components/TomorrowPrep';
+import EnergyForecast from '../../components/EnergyForecast';
+import WindDownRitual from '../../components/WindDownRitual';
+import SleepTracker from '../../components/SleepTracker';
+import RemindersManager from '../../components/RemindersManager';
+import VoiceJournaling from '../../components/VoiceJournaling';
+import DailyContentCard from '../../components/DailyContentCard';
+import DailyRhythm from '../../components/DailyRhythm';
+import WelcomeModal from '../../components/WelcomeModal';
+import DecisionJournalSection from '../../components/DecisionJournalSection';
+import PulseDashboard from '../../components/PulseDashboard';
 import { supabase, useStore, useSafeMutation } from '@repo/core';
 import { GlobalHeader } from '@repo/ui';
 import { ThuthimalBadge } from '@repo/profile';

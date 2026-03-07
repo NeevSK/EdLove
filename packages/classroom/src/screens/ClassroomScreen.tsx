@@ -39,7 +39,7 @@ export default function ClassroomScreen() {
     // 1. Loading state (only if no data at all)
     if (loading && !classroomData) {
         return (
-            <ScreenWrapper>
+            <ScreenWrapper scroll={false}>
                 <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.lg }}>
                     <SkeletonCard height={60} />
                     <SkeletonCard height={200} />
@@ -86,7 +86,7 @@ export default function ClassroomScreen() {
     // Teacher View
     if (role === 'teacher') {
         return (
-            <ScreenWrapper>
+            <ScreenWrapper scroll={false}>
                 <GlobalHeader title="Classroom 💛" subtitle={undefined} />
                 <Box sx={{ flex: 1 }}>
                     {renderNudge()}
@@ -103,7 +103,7 @@ export default function ClassroomScreen() {
     // Student View (Instant Routing)
     if ((role as any) === 'student' || (isGuest && (role as any) === 'student')) {
         return (
-            <ScreenWrapper>
+            <ScreenWrapper scroll={false}>
                 <GlobalHeader title={t('classroom.mySanctuaries') || 'My Sanctuaries'} subtitle={undefined} />
                 <Box sx={{ flex: 1 }}>
                     {renderNudge()}
@@ -122,7 +122,7 @@ export default function ClassroomScreen() {
     const headerSubtitle = isGuest ? (t('classroom.explore') || 'Explore Sample Sanctuaries') : (t('classroom.mySanctuary') || 'My Sanctuary');
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper scroll={false}>
             <GlobalHeader title={headerTitle} subtitle={isGuest ? undefined : headerSubtitle} />
             <Box sx={{ flex: 1, padding: Theme.spacing.lg }}>
                 {renderNudge()}

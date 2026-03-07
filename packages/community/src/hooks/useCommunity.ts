@@ -10,7 +10,7 @@ export const COMMUNITY_KEYS = {
     posts: (groupId?: string) => [...COMMUNITY_KEYS.all, 'posts', groupId || 'all'] as const,
 };
 
-export const useCommunity = () => {
+export const useCommunity = (groupId?: string) => {
     const queryClient = useQueryClient();
 
     // Fetch Groups with Infinite Scroll
@@ -27,9 +27,13 @@ export const useCommunity = () => {
 
     // Fetch Posts with Infinite Scroll
     const postsInfiniteQuery = useInfiniteQuery({
-        queryKey: COMMUNITY_KEYS.posts('all'),
+        queryKey: COMMUNITY_KEYS.posts(groupId || 'all'),
         queryFn: async ({ pageParam = 0 }) => {
-            return communityAPI.getPosts({ limit: 10, offset: pageParam });
+            return communityAPI.getPosts({
+                limit: 10,
+                offset: pageParam,
+                groupId: groupId
+            });
         },
         initialPageParam: 0,
         getNextPageParam: (lastPage, allPages) => {

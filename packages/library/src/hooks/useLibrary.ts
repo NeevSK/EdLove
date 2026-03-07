@@ -30,7 +30,7 @@ export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilt
             // Versatile Server-Side Search (for native, or web without local index)
             if (resourceFilters.search || resourceFilters.type) {
                 return libraryAPI.searchLibrary({
-                    query: resourceFilters.search || undefined,
+                    query: resourceFilters.search || '',
                     type: resourceFilters.type,
                     limit: 20
                 });

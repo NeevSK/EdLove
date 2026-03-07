@@ -5,6 +5,8 @@ import { ProfileStackParamList } from '@repo/core';
 
 // Web-specific screens
 import ProfileScreenWeb from '../screens/ProfileScreen.web';
+import AppSettingsScreenWeb from '../screens/AppSettingsScreen.web';
+import FullProfileScreen from '../screens/profile/FullProfileScreen';
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
@@ -20,6 +22,8 @@ export default function ProfileStackNavigatorWeb() {
             }}
         >
             <Stack.Screen name="ProfileMain" component={ProfileScreenWeb} />
+            <Stack.Screen name="AppSettings" component={AppSettingsScreenWeb} />
+            <Stack.Screen name="FullProfile" component={FullProfileScreen} />
         </Stack.Navigator>
     );
 }

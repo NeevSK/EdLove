@@ -62,7 +62,7 @@ export default function CommunityScreen() {
         discoverFeature('section_community');
     }, []);
 
-    const { manifestos, endorse, unendorse } = useManifestos(schoolId, userId ?? undefined);
+    const { manifestos, endorse, unendorse } = useManifestos(schoolId || 'default', userId ?? undefined);
 
     // Filtered data for FlatList
     const listData = useMemo(() => posts, [posts]);
@@ -246,7 +246,7 @@ export default function CommunityScreen() {
                     )) : activeTab === 'groups' ? (
                         <GroupsScreen
                             userId={userId ?? undefined}
-                            schoolId={schoolId}
+                            schoolId={schoolId || undefined}
                             onCreatePost={handleOpenCreatePost}
                             onCreateGroup={() => setShowCreateGroupModal(true)}
                             onNavigateToGroup={(groupId: string) => {

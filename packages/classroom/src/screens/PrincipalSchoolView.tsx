@@ -137,7 +137,7 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
     }
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper scroll={false}>
             {isDemoMode && <SandboxBanner />}
             <GlobalHeader
                 title={t('classroom.schoolManagement') || 'School Management'}

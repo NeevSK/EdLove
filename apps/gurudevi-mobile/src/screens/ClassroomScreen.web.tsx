@@ -20,6 +20,8 @@ export default function ClassroomScreenWeb() {
             case 'student':
                 return <StudentDashboard />;
             case 'teacher':
+            case 'section_head':
+            case 'grade_head':
                 return <TeacherDashboard />;
             case 'principal':
                 return <PrincipalSchoolView schoolId={schoolId} userId={userId || ''} />;

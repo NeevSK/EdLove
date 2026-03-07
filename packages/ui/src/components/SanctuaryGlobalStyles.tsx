@@ -421,6 +421,81 @@ export function SanctuaryGlobalStyles() {
     }
     ::-webkit-scrollbar-thumb:hover { background: rgba(160, 150, 130, 0.4); }
 
+    /* ── COMMUNITY LAYOUT ── */
+    .community-grid {
+      display: grid;
+      grid-template-columns: 200px 1fr 340px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    .community-sidebar {
+      position: sticky;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .community-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      min-width: 0;
+    }
+
+    .community-panel {
+      position: sticky;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    @media (max-width: 1200px) {
+      .community-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .community-sidebar,
+      .community-panel {
+        display: none;
+      }
+      .community-sub-nav {
+        display: flex !important;
+      }
+    }
+
+    /* ── SUB-NAV (Horizontal Tabs) ── */
+    .community-sub-nav {
+      display: none;
+      gap: 8px;
+      margin-bottom: 24px;
+      padding: 4px;
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .sub-nav-item {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-ghost);
+      transition: all 0.2s ease;
+    }
+    .sub-nav-item.active {
+      background: white;
+      color: var(--water);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 1023px) {
       .sidebar { transform: translateX(-100%); width: 0; padding: 0; }

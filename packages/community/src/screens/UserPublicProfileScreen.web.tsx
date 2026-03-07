@@ -201,7 +201,7 @@ export default function UserPublicProfileScreen() {
                                     <VStack sx={{ gap: 12 }}>
                                         <HStack sx={{ justifyContent: 'space-between' }}>
                                             <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron }}>PHILOSOPHY DEEP-DIVE</Text>
-                                            <Text sx={{ fontSize: 12, color: text.tertiary }}>2 days ago</Text>
+                                            <Text sx={{ fontSize: 12, color: text.secondary }}>2 days ago</Text>
                                         </HStack>
                                         <Text sx={{ fontSize: 15, lineHeight: 24, color: text.primary }}>
                                             The intersection of ancient mindfulness and modern algorithmic efficiency is where true wisdom resides.

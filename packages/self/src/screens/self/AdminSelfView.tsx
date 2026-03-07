@@ -20,14 +20,13 @@ import { useTranslation } from 'react-i18next';
 import { Shield, Settings, Activity, Database, Layout, Heart } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
-import {
-    MoodLotus,
-    ShadowAgentDrawer,
-    DailyContentCard,
-    ResonancePatternCard,
-    WelcomeModal
-} from '@repo/self';
-import { useMoodLogs, useEnergyForecast } from '@repo/self';
+import MoodLotus from '../../components/MoodLotus';
+import ShadowAgentDrawer from '../../components/ShadowAgentDrawer';
+import DailyContentCard from '../../components/DailyContentCard';
+import ResonancePatternCard from '../../components/ResonancePatternCard';
+import WelcomeModal from '../../components/WelcomeModal';
+import { useMoodLogs } from '../../hooks/useMoodLogs';
+import { useEnergyForecast } from '../../hooks/useEnergyForecast';
 import { SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useThemedColors, useBottomTabPadding, ScreenWrapper } from '@repo/ui';
 

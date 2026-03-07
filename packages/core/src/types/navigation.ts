@@ -12,6 +12,7 @@ export type ClassroomStackParamList = {
 export type ProfileStackParamList = {
     ProfileMain: undefined;
     FullProfile: { profile: any };
+    AppSettings: undefined;
 };
 export type CommunityStackParamList = {
     CommunityMain: undefined;
