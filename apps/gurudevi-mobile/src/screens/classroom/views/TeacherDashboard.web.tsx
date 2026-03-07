@@ -1,37 +1,94 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUserRole, useStore } from '@repo/core';
+import { useUserRole, useStore, supabase } from '@repo/core';
+import { Classroom } from '@repo/core';
+import { SkeletonCard } from '@repo/ui';
+import { useClassroomRoleData } from '@repo/classroom';
 import {
     Plus,
     Users,
     BookOpen,
     ScanLine,
     ShieldCheck,
-    MessageCircle,
     Search,
     Filter,
     MoreHorizontal,
     CheckCircle2,
     Clock,
     UserPlus,
-    BarChart3
+    BarChart3,
+    School,
+    Archive
 } from 'lucide-react-native';
+import { formatDistanceToNow } from 'date-fns';
 
 export default function TeacherDashboardWeb() {
     const { t } = useTranslation();
     const { user } = useStore();
+    const { role, userId } = useUserRole();
     const [searchQuery, setSearchQuery] = useState('');
+    const [classrooms, setClassrooms] = useState<(Classroom & { student_count?: number; last_activity?: string })[]>([]);
+    const [classroomsLoading, setClassroomsLoading] = useState(true);
+    const { data: roleData } = useClassroomRoleData();
 
-    const classrooms = [
-        { id: '1', name: 'Grade 10 - Mathematics', students: 32, lastActive: '2h ago', attendance: '94%' },
-        { id: '2', name: 'Grade 11 - Physics', students: 28, lastActive: 'Yesterday', attendance: '88%' },
-        { id: '3', name: 'Grade 9 - Advanced Algebra', students: 35, lastActive: '5m ago', attendance: '91%' },
-    ];
+    // Fetch real classrooms from Supabase
+    useEffect(() => {
+        const fetchClassrooms = async () => {
+            if (!userId) return;
+            setClassroomsLoading(true);
+            try {
+                let query = supabase
+                    .from('classrooms')
+                    .select('*')
+                    .eq('is_archived', false);
+
+                if (role === 'teacher') {
+                    query = query.eq('teacher_id', userId);
+                } else if (role === 'grade_head' || role === 'section_head') {
+                    query = query.eq('school_id', user?.school_id ?? '');
+                }
+
+                const { data, error } = await query.order('created_at', { ascending: false });
+                if (!error && data) {
+                    // Fetch student counts in a separate query for accuracy
+                    const classroomIds = data.map((c: Classroom) => c.id);
+                    const { data: countData } = await supabase
+                        .from('classroom_students')
+                        .select('classroom_id')
+                        .in('classroom_id', classroomIds);
+
+                    const countMap: Record<string, number> = {};
+                    (countData ?? []).forEach((row: { classroom_id: string }) => {
+                        countMap[row.classroom_id] = (countMap[row.classroom_id] ?? 0) + 1;
+                    });
+
+                    const enriched = data.map((cls: Classroom) => ({
+                        ...cls,
+                        student_count: countMap[cls.id] ?? 0,
+                    }));
+                    setClassrooms(enriched);
+                }
+            } catch (err) {
+                console.error('[TeacherDashboard] Error fetching classrooms:', err);
+            } finally {
+                setClassroomsLoading(false);
+            }
+        };
+
+        fetchClassrooms();
+    }, [userId, role, user?.school_id]);
+
+    const filtered = classrooms.filter(cls =>
+        cls.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (cls.subject?.toLowerCase() ?? '').includes(searchQuery.toLowerCase())
+    );
+
+    const totalStudents = classrooms.reduce((acc, cls) => acc + (cls.student_count ?? 0), 0);
 
     return (
         <div className="sub-view-container" style={{ display: 'flex', flexDirection: 'column', gap: '32px', height: '100%' }}>
             {/* Header & Quick Actions */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                         <div style={{ padding: '8px', background: 'var(--sanctuary-saffron-soft)', borderRadius: '8px', color: 'var(--sanctuary-saffron)' }}>
@@ -44,7 +101,7 @@ export default function TeacherDashboardWeb() {
                     <h1 style={{ fontSize: '36px', fontWeight: '800', margin: 0 }}>Registry & <span style={{ color: 'var(--sanctuary-saffron)' }}>Resonance</span>.</h1>
                 </div>
 
-                <div style={{ display: 'flex', gap: '12px' }}>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                     <button className="premium-button" style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Plus size={18} />
                         Create Classroom
@@ -53,23 +110,19 @@ export default function TeacherDashboardWeb() {
                         <ScanLine size={18} />
                         Scan QR
                     </button>
-                    <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <ShieldCheck size={18} />
-                        Admin Portal
-                    </button>
                 </div>
             </div>
 
             {/* Performance Stats */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '24px' }}>
                 {[
-                    { label: 'Active Classes', value: '3', icon: Users, color: 'var(--lotus)' },
-                    { label: 'Total Students', value: '95', icon: UserPlus, color: 'var(--water)' },
-                    { label: 'Avg. Attendance', value: '91%', icon: CheckCircle2, color: 'var(--moss)' },
-                    { label: 'Engagement', value: '8.4', icon: BarChart3, color: 'var(--sanctuary-saffron)' },
+                    { label: 'Active Classes', value: classroomsLoading ? '—' : String(classrooms.length), icon: School, color: 'var(--lotus)' },
+                    { label: 'Total Students', value: classroomsLoading ? '—' : String(totalStudents), icon: UserPlus, color: 'var(--water)' },
+                    { label: 'Avg. Attendance', value: '—', icon: CheckCircle2, color: 'var(--moss)' },
+                    { label: 'Engagement', value: '—', icon: BarChart3, color: 'var(--sanctuary-saffron)' },
                 ].map((stat, i) => (
                     <div key={i} className="sanctuary-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '20px' }}>
-                        <div style={{ padding: '12px', background: `${stat.color}-soft`, borderRadius: '12px', color: stat.color }}>
+                        <div style={{ padding: '12px', background: 'var(--background-alt)', borderRadius: '12px', color: stat.color }}>
                             <stat.icon size={24} />
                         </div>
                         <div>
@@ -82,12 +135,25 @@ export default function TeacherDashboardWeb() {
 
             {/* Classroom Registry Table */}
             <div className="sanctuary-card" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                <div style={{ padding: '24px', borderBottom: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>Your Classrooms</h3>
+                <div style={{ padding: '24px', borderBottom: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>
+                        Your Classrooms
+                        {!classroomsLoading && (
+                            <span style={{ marginLeft: '10px', padding: '4px 8px', background: 'var(--background-alt)', borderRadius: '6px', fontSize: '11px', color: 'var(--ink-ghost)', fontWeight: '700' }}>
+                                {classrooms.length} Total
+                            </span>
+                        )}
+                    </h3>
                     <div style={{ display: 'flex', gap: '16px' }}>
-                        <div className="search-box" style={{ width: '300px' }}>
+                        <div className="search-box" style={{ width: '280px' }}>
                             <Search size={16} />
-                            <input type="text" placeholder="Search classrooms..." style={{ background: 'transparent', border: 'none', color: 'var(--ink)', width: '100%' }} />
+                            <input
+                                type="text"
+                                placeholder="Search classrooms..."
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                                style={{ background: 'transparent', border: 'none', color: 'var(--ink)', width: '100%', outline: 'none', fontSize: '14px' }}
+                            />
                         </div>
                         <button className="secondary-button" style={{ padding: '8px 16px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <Filter size={14} />
@@ -96,50 +162,65 @@ export default function TeacherDashboardWeb() {
                     </div>
                 </div>
 
-                <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                        <thead style={{ background: 'var(--background-alt)', color: 'var(--ink-ghost)', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase' }}>
-                            <tr>
-                                <th style={{ padding: '16px 24px' }}>Classroom Name</th>
-                                <th style={{ padding: '16px 24px' }}>Students</th>
-                                <th style={{ padding: '16px 24px' }}>Attendance</th>
-                                <th style={{ padding: '16px 24px' }}>Last Activity</th>
-                                <th style={{ padding: '16px 24px' }}>Status</th>
-                                <th style={{ padding: '16px 24px' }}></th>
-                            </tr>
-                        </thead>
-                        <tbody style={{ fontSize: '14px' }}>
-                            {classrooms.map(cls => (
-                                <tr key={cls.id} style={{ borderBottom: '1px solid var(--border-light)', cursor: 'pointer' }} onMouseOver={e => e.currentTarget.style.background = 'var(--background-alt)'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
-                                    <td style={{ padding: '20px 24px', fontWeight: '700' }}>{cls.name}</td>
-                                    <td style={{ padding: '20px 24px' }}>{cls.students} Members</td>
-                                    <td style={{ padding: '20px 24px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <div style={{ width: '60px', height: '4px', background: 'var(--border-light)', borderRadius: '2px', overflow: 'hidden' }}>
-                                                <div style={{ width: cls.attendance, height: '100%', background: 'var(--moss)' }}></div>
-                                            </div>
-                                            <span style={{ fontSize: '12px', fontWeight: '600' }}>{cls.attendance}</span>
-                                        </div>
-                                    </td>
-                                    <td style={{ padding: '20px 24px', color: 'var(--ink-ghost)' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <Clock size={14} />
-                                            {cls.lastActive}
-                                        </div>
-                                    </td>
-                                    <td style={{ padding: '20px 24px' }}>
-                                        <span style={{ padding: '4px 8px', background: 'var(--moss-soft)', color: 'var(--moss)', borderRadius: '6px', fontSize: '11px', fontWeight: '800' }}>ACTIVE</span>
-                                    </td>
-                                    <td style={{ padding: '20px 24px', textAlign: 'right' }}>
-                                        <button style={{ background: 'transparent', border: 'none', color: 'var(--ink-ghost)', cursor: 'pointer' }}>
-                                            <MoreHorizontal size={20} />
-                                        </button>
-                                    </td>
+                {classroomsLoading ? (
+                    <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {[1, 2, 3].map(i => (
+                            <SkeletonCard key={i} />
+                        ))}
+                    </div>
+                ) : filtered.length === 0 ? (
+                    <div style={{ padding: '80px 24px', textAlign: 'center' }}>
+                        <Archive size={40} color="var(--ink-ghost)" style={{ marginBottom: '16px', opacity: 0.4 }} />
+                        <p style={{ color: 'var(--ink-ghost)', fontSize: '16px', fontWeight: '600', margin: 0 }}>
+                            {searchQuery ? 'No classrooms match your search.' : 'No classrooms yet — create your first one above.'}
+                        </p>
+                    </div>
+                ) : (
+                    <div style={{ overflowX: 'auto' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                            <thead style={{ background: 'var(--background-alt)', color: 'var(--ink-ghost)', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase' }}>
+                                <tr>
+                                    <th style={{ padding: '16px 24px' }}>Classroom Name</th>
+                                    <th style={{ padding: '16px 24px' }}>Subject</th>
+                                    <th style={{ padding: '16px 24px' }}>Students</th>
+                                    <th style={{ padding: '16px 24px' }}>Created</th>
+                                    <th style={{ padding: '16px 24px' }}>Status</th>
+                                    <th style={{ padding: '16px 24px' }}></th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody style={{ fontSize: '14px' }}>
+                                {filtered.map(cls => (
+                                    <tr
+                                        key={cls.id}
+                                        style={{ borderBottom: '1px solid var(--border-light)', cursor: 'pointer' }}
+                                        onMouseOver={e => (e.currentTarget.style.background = 'var(--background-alt)')}
+                                        onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
+                                    >
+                                        <td style={{ padding: '20px 24px', fontWeight: '700' }}>{cls.name}</td>
+                                        <td style={{ padding: '20px 24px', color: 'var(--ink-ghost)' }}>{cls.subject || '—'}</td>
+                                        <td style={{ padding: '20px 24px' }}>{cls.student_count ?? 0} Members</td>
+                                        <td style={{ padding: '20px 24px', color: 'var(--ink-ghost)' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <Clock size={14} />
+                                                {cls.created_at
+                                                    ? formatDistanceToNow(new Date(cls.created_at), { addSuffix: true })
+                                                    : '—'}
+                                            </div>
+                                        </td>
+                                        <td style={{ padding: '20px 24px' }}>
+                                            <span style={{ padding: '4px 8px', background: 'var(--moss-soft)', color: 'var(--moss)', borderRadius: '6px', fontSize: '11px', fontWeight: '800' }}>ACTIVE</span>
+                                        </td>
+                                        <td style={{ padding: '20px 24px', textAlign: 'right' }}>
+                                            <button style={{ background: 'transparent', border: 'none', color: 'var(--ink-ghost)', cursor: 'pointer' }}>
+                                                <MoreHorizontal size={20} />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
         </div>
     );

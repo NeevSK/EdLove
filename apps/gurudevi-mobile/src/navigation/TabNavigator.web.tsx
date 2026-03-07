@@ -17,6 +17,11 @@ import ProfileStackNavigatorWeb from './ProfileStackNavigator.web';
 import CommunityStackNavigatorWeb from './CommunityStackNavigator.web';
 import SelfStackNavigatorWeb from './SelfStackNavigator.web';
 import LibraryStackNavigatorWeb from './LibraryStackNavigator.web';
+// In-shell overlay screens (must stay inside sidebar+topbar)
+import NotificationsScreenWeb from '../screens/NotificationsScreen.web';
+import AppSettingsScreenWeb from '../screens/AppSettingsScreen.web';
+
+type SubView = 'none' | 'notifications' | 'settings';
 
 const Tab = createBottomTabNavigator();
 
@@ -42,6 +47,7 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
     const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(true);
     const [isMobileView, setIsMobileView] = React.useState(false);
     const [activeTab, setActiveTab] = React.useState('Self');
+    const [activeSubView, setActiveSubView] = React.useState<SubView>('none');
     const [showCelebration, setShowCelebration] = React.useState(false);
     const [currentAchievement, setCurrentAchievement] = React.useState('');
 
@@ -140,13 +146,14 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
 
                     <nav className="sidebar-nav">
                         {TAB_CONFIG.map((conf) => {
-                            const isActive = activeTab === conf.name;
+                            const isActive = activeTab === conf.name && activeSubView === 'none';
                             const Icon = conf.icon;
                             return (
                                 <button
                                     key={conf.name}
                                     className={`sidebar-item ${isActive ? 'active' : ''}`}
                                     onClick={() => {
+                                        setActiveSubView('none');
                                         (navigation.navigate as any)('Main', { screen: conf.name });
                                         if (isMobileView) setIsSidebarExpanded(false);
                                     }}
@@ -164,21 +171,27 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
                     <div className="sidebar-footer">
                         <div className="sidebar-divider" />
                         <button
-                            className="sidebar-item"
+                            className={`sidebar-item ${activeSubView === 'notifications' ? 'active' : ''}`}
                             title={t('common.notifications', 'Notifications')}
-                            onClick={() => (navigation.navigate as any)('Notifications')}
+                            onClick={() => {
+                                setActiveSubView(activeSubView === 'notifications' ? 'none' : 'notifications');
+                                if (isMobileView) setIsSidebarExpanded(false);
+                            }}
                         >
                             <div style={{ position: 'relative' }}>
-                                <Bell size={20} color="var(--ink-ghost)" />
+                                <Bell size={20} color={activeSubView === 'notifications' ? 'var(--water)' : 'var(--ink-ghost)'} />
                                 <div className="bell-dot" />
                             </div>
                             {isSidebarExpanded && <span className="sidebar-label">Notifications</span>}
                         </button>
 
                         <button
-                            className="sidebar-profile-btn"
+                            className={`sidebar-profile-btn ${activeSubView === 'settings' ? 'active' : ''}`}
                             title={t('common.settings', 'Settings')}
-                            onClick={() => (navigation.navigate as any)('AppSettings')}
+                            onClick={() => {
+                                setActiveSubView(activeSubView === 'settings' ? 'none' : 'settings');
+                                if (isMobileView) setIsSidebarExpanded(false);
+                            }}
                         >
                             <div className="profile-gem">
                                 <Settings size={16} color="var(--ink-ghost)" />
@@ -195,47 +208,55 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
 
                 {/* ── MAIN CONTENT CANVAS (Filling Remaining Body Flex) ── */}
                 <main className="main-content-canvas">
-                    <Tab.Navigator
-                        id="MainTabs"
-                        initialRouteName="Self"
-                        tabBar={() => null}
-                        // @ts-ignore
-                        sceneContainerStyle={{
-                            backgroundColor: 'transparent',
-                            minHeight: '100%',
-                            overflow: 'visible',
-                        }}
-                        screenListeners={{
-                            state: (e) => {
-                                const s = (e.data as any)?.state;
-                                if (!s || s.index === undefined) return;
-                                const routeName = s.routes[s.index]?.name;
-                                if (routeName) {
-                                    setActiveTab(routeName);
-                                    onTabChange?.(routeName.toLowerCase());
-                                }
-                            },
-                        }}
-                        screenOptions={{
-                            headerShown: false,
-                        }}
-                    >
-                        <Tab.Screen name="Self">
-                            {() => <ErrorBoundary name="Self"><SelfStackNavigatorWeb /></ErrorBoundary>}
-                        </Tab.Screen>
-                        <Tab.Screen name="Community">
-                            {() => <ErrorBoundary name="Community"><CommunityStackNavigatorWeb /></ErrorBoundary>}
-                        </Tab.Screen>
-                        <Tab.Screen name="Classroom">
-                            {() => <ErrorBoundary name="Classroom"><ClassroomStackNavigatorWeb /></ErrorBoundary>}
-                        </Tab.Screen>
-                        <Tab.Screen name="Library">
-                            {() => <ErrorBoundary name="Library"><LibraryStackNavigatorWeb /></ErrorBoundary>}
-                        </Tab.Screen>
-                        <Tab.Screen name="Profile">
-                            {() => <ErrorBoundary name="Profile"><ProfileStackNavigatorWeb /></ErrorBoundary>}
-                        </Tab.Screen>
-                    </Tab.Navigator>
+                    {activeSubView === 'notifications' && (
+                        <NotificationsScreenWeb />
+                    )}
+                    {activeSubView === 'settings' && (
+                        <AppSettingsScreenWeb />
+                    )}
+                    <div style={{ display: activeSubView === 'none' ? 'contents' : 'none' }}>
+                        <Tab.Navigator
+                            id="MainTabs"
+                            initialRouteName="Self"
+                            tabBar={() => null}
+                            // @ts-ignore
+                            sceneContainerStyle={{
+                                backgroundColor: 'transparent',
+                                minHeight: '100%',
+                                overflow: 'visible',
+                            }}
+                            screenListeners={{
+                                state: (e) => {
+                                    const s = (e.data as any)?.state;
+                                    if (!s || s.index === undefined) return;
+                                    const routeName = s.routes[s.index]?.name;
+                                    if (routeName) {
+                                        setActiveTab(routeName);
+                                        onTabChange?.(routeName.toLowerCase());
+                                    }
+                                },
+                            }}
+                            screenOptions={{
+                                headerShown: false,
+                            }}
+                        >
+                            <Tab.Screen name="Self">
+                                {() => <ErrorBoundary name="Self"><SelfStackNavigatorWeb /></ErrorBoundary>}
+                            </Tab.Screen>
+                            <Tab.Screen name="Community">
+                                {() => <ErrorBoundary name="Community"><CommunityStackNavigatorWeb /></ErrorBoundary>}
+                            </Tab.Screen>
+                            <Tab.Screen name="Classroom">
+                                {() => <ErrorBoundary name="Classroom"><ClassroomStackNavigatorWeb /></ErrorBoundary>}
+                            </Tab.Screen>
+                            <Tab.Screen name="Library">
+                                {() => <ErrorBoundary name="Library"><LibraryStackNavigatorWeb /></ErrorBoundary>}
+                            </Tab.Screen>
+                            <Tab.Screen name="Profile">
+                                {() => <ErrorBoundary name="Profile"><ProfileStackNavigatorWeb /></ErrorBoundary>}
+                            </Tab.Screen>
+                        </Tab.Navigator>
+                    </div>
                 </main>
             </div>
 
