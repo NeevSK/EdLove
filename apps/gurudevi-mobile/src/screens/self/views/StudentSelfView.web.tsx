@@ -1,26 +1,59 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore } from '@repo/core';
+import { SkeletonCard } from '@repo/ui';
+import { useMoodLogs, useStudentGoals, useJournalEntries } from '@repo/self';
 import {
     BookOpen,
     Sparkles,
     Zap,
-    Clock,
     MessageSquare,
     TrendingUp,
     Library,
     Target,
-    Compass
+    Compass,
+    CheckCircle2,
+    Heart
 } from 'lucide-react-native';
+import { formatDistanceToNow } from 'date-fns';
+
+const MOOD_COLORS = ['', 'var(--lotus)', 'var(--amber-glow)', 'var(--water)', 'var(--moss)', 'var(--action)'];
+const MOOD_LABELS = ['', 'Depleted', 'Low', 'Steady', 'Energised', 'Vibrant'];
 
 export default function StudentSelfViewWeb() {
     const { t } = useTranslation();
     const { user } = useStore();
+    const { userId } = useUserRole();
+
+    const { moodHistory, isLoading: moodLoading } = useMoodLogs(userId ?? undefined);
+    const { goals, isLoading: goalsLoading } = useStudentGoals(userId ?? undefined);
+    const { entries: journalEntries, loading: journalLoading } = useJournalEntries();
+
+    const latestMood = moodHistory[0];
+    const completedGoals = goals.filter(g => g.progress >= 100).length;
 
     const studyStats = [
-        { id: '1', label: 'Study Hours', value: '38.5', icon: Clock, color: 'var(--water)' },
-        { id: '2', label: 'Milestones', value: '12', icon: Target, color: 'var(--lotus)' },
-        { id: '3', label: 'Resonance', value: '94%', icon: Sparkles, color: 'var(--moss)' },
+        {
+            id: '1',
+            label: 'Goals Active',
+            value: goalsLoading ? '—' : String(goals.length),
+            icon: Target,
+            color: 'var(--water)'
+        },
+        {
+            id: '2',
+            label: 'Goals Completed',
+            value: goalsLoading ? '—' : String(completedGoals),
+            icon: CheckCircle2,
+            color: 'var(--lotus)'
+        },
+        {
+            id: '3',
+            label: 'Journal Entries',
+            value: journalLoading ? '—' : String(journalEntries.length),
+            icon: Sparkles,
+            color: 'var(--moss)'
+        },
     ];
 
     return (
@@ -40,12 +73,15 @@ export default function StudentSelfViewWeb() {
                     <h1 className="greeting-main">
                         Peaceful <span style={{ color: 'var(--water)' }}>Progress</span>.
                     </h1>
-                    <p className="greeting-note">Welcome back to your sanctuary of growth.</p>
+                    <p className="greeting-note">
+                        {user?.full_name ? `Welcome back, ${user.full_name.split(' ')[0]}.` : 'Welcome back to your sanctuary of growth.'}
+                    </p>
                 </div>
+
                 {/* Key Stats Grid */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '40px' }}>
                     {studyStats.map(stat => (
-                        <div key={stat.id} className={`sanctuary-card ${stat.id === '1' ? 'card-water' : stat.id === '2' ? 'card-lotus' : 'card-moss'}`}>
+                        <div key={stat.id} className="sanctuary-card">
                             <div className="card-body-inner">
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                                     <div style={{ color: stat.color }}>
@@ -59,54 +95,102 @@ export default function StudentSelfViewWeb() {
                     ))}
                 </div>
 
-                {/* Primary Study Suite */}
+                {/* Goals Progress */}
                 <div className="sanctuary-card" style={{ marginBottom: '40px' }}>
                     <div className="card-body-inner">
-                        <h2 style={{ fontSize: '22px', fontFamily: 'var(--font-display)', fontStyle: 'italic', marginBottom: '24px' }}>Continuing Exploration</h2>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '20px' }}>
-                            {['Mathematics', 'Quantum Physics', 'Sanskrit Philosophy'].map((subject, i) => (
-                                <div key={i} className="sanctuary-card" style={{ padding: '20px', background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(0,0,0,0.03)' }}>
-                                    <div style={{ marginBottom: '16px', fontWeight: '700', color: 'var(--ink)' }}>{subject}</div>
-                                    <div style={{ height: '6px', background: 'rgba(0,0,0,0.05)', borderRadius: '10px', overflow: 'hidden', position: 'relative' }}>
-                                        <div style={{ position: 'absolute', top: 0, left: 0, width: i === 0 ? '70%' : i === 1 ? '45%' : '85%', height: '100%', background: 'linear-gradient(to right, var(--water), #5a9aba)', borderRadius: '10px' }}></div>
+                        <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            Active Goals
+                            {!goalsLoading && goals.length > 0 && (
+                                <span style={{ padding: '4px 8px', background: 'var(--background-alt)', borderRadius: '6px', fontSize: '11px', color: 'var(--ink-ghost)' }}>
+                                    {goals.length} Total
+                                </span>
+                            )}
+                        </h2>
+                        {goalsLoading ? (
+                            <SkeletonCard />
+                        ) : goals.length === 0 ? (
+                            <p style={{ color: 'var(--ink-ghost)', fontSize: '14px' }}>
+                                No goals set yet. Start your growth journey by adding your first goal.
+                            </p>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                {goals.slice(0, 5).map(goal => (
+                                    <div key={goal.id}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                            <span style={{ fontSize: '14px', fontWeight: '700' }}>{goal.text}</span>
+                                            <span style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>{goal.progress ?? 0}%</span>
+                                        </div>
+                                        <div style={{ height: '6px', background: 'var(--background-alt)', borderRadius: '10px', overflow: 'hidden' }}>
+                                            <div style={{ width: `${goal.progress ?? 0}%`, height: '100%', background: 'linear-gradient(to right, var(--water), #5a9aba)', borderRadius: '10px' }} />
+                                        </div>
                                     </div>
-                                    <div style={{ marginTop: '10px', fontSize: '11px', color: 'var(--ink-ghost)', fontWeight: '600' }}>{i === 0 ? '70' : i === 1 ? '45' : '85'}% Mastered</div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                {/* Wisdom Inscription */}
-                <div className="sanctuary-card">
-                    <div className="card-body-inner" style={{ padding: '40px' }}>
-                        <div style={{ fontSize: '20px', fontFamily: 'var(--font-display)', fontStyle: 'italic', color: 'var(--ink-soft)', lineHeight: '1.6', textAlign: 'center' }}>
-                            "The goal of your exploration today is not just to learn, but to resonate. <br />Let the knowledge flow through you like water."
+                {/* Journal Glimpse */}
+                {!journalLoading && journalEntries.length > 0 && (
+                    <div className="sanctuary-card">
+                        <div className="card-body-inner" style={{ padding: '40px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                                <Sparkles size={18} color="var(--water)" />
+                                <h3 style={{ fontSize: '16px', fontWeight: '800', margin: 0 }}>Latest Reflection</h3>
+                                <span style={{ marginLeft: 'auto', fontSize: '11px', color: 'var(--ink-ghost)' }}>
+                                    {formatDistanceToNow(new Date(journalEntries[0].created_at), { addSuffix: true })}
+                                </span>
+                            </div>
+                            <p style={{ fontSize: '14px', lineHeight: '1.7', color: 'var(--ink)', fontStyle: 'italic' }}>
+                                "{journalEntries[0].content.substring(0, 200)}{journalEntries[0].content.length > 200 ? '…' : ''}"
+                            </p>
                         </div>
                     </div>
-                </div>
+                )}
             </div>
 
             {/* ── RIGHT COLUMN: UTILITIES ── */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                {/* Shadow Agent */}
+                {/* Mood Resonance */}
                 <div className="sanctuary-card card-water" style={{ background: 'var(--water)', color: 'white' }}>
                     <div className="card-body-inner">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                            <Sparkles size={20} />
-                            <h3 style={{ fontSize: '18px', fontFamily: 'var(--font-display)', fontStyle: 'italic', margin: 0 }}>Study Shadow Agent</h3>
+                            <Heart size={20} />
+                            <h3 style={{ fontSize: '18px', fontWeight: '800', margin: 0 }}>Mood Resonance</h3>
                         </div>
-                        <p style={{ fontSize: '14px', lineHeight: '1.6', opacity: 0.9, marginBottom: '24px' }}>
-                            "I've analyzed your Sanskrit homework. Would you like to review the sandhi rules now?"
-                        </p>
-                        <button style={{ width: '100%', padding: '14px', borderRadius: '14px', background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', fontWeight: '700', transition: 'all 0.2s' }}>Begin Deep Review</button>
+                        {moodLoading ? (
+                            <p style={{ fontSize: '13px', opacity: 0.8 }}>Loading mood data…</p>
+                        ) : latestMood ? (
+                            <>
+                                <div style={{ fontSize: '36px', fontWeight: '800', marginBottom: '4px' }}>
+                                    {latestMood.mood_score}/5
+                                </div>
+                                <div style={{ fontSize: '14px', opacity: 0.9, marginBottom: '8px' }}>
+                                    {latestMood.mood
+                                        ? latestMood.mood.charAt(0).toUpperCase() + latestMood.mood.slice(1)
+                                        : MOOD_LABELS[latestMood.mood_score]}
+                                </div>
+                                {latestMood.note && (
+                                    <p style={{ fontSize: '12px', opacity: 0.8, lineHeight: '1.5', fontStyle: 'italic', marginBottom: '8px' }}>
+                                        "{latestMood.note}"
+                                    </p>
+                                )}
+                                <div style={{ fontSize: '11px', opacity: 0.6 }}>
+                                    {formatDistanceToNow(new Date(latestMood.created_at), { addSuffix: true })}
+                                </div>
+                            </>
+                        ) : (
+                            <p style={{ fontSize: '13px', opacity: 0.8 }}>Log your first mood check-in to see your resonance.</p>
+                        )}
                     </div>
                 </div>
 
                 {/* Quick Jumps */}
                 <div className="sanctuary-card">
                     <div className="card-body-inner">
-                        <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '20px' }}>Library Quick-Jump</h3>
+                        <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '20px' }}>
+                            Library Quick-Jump
+                        </h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             {[
                                 { icon: Library, label: 'Monastery Library' },
@@ -116,27 +200,6 @@ export default function StudentSelfViewWeb() {
                                 <button key={idx} className="sidebar-item" style={{ margin: 0 }}>
                                     <item.icon size={16} /> <span>{item.label}</span>
                                 </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Time Pulse */}
-                <div className="sanctuary-card">
-                    <div className="card-body-inner">
-                        <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '20px' }}>Timetable Pulse</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            {[
-                                { time: '10:30', title: 'Philosophy Discussion', loc: 'Hall of Wisdom', col: 'var(--water)' },
-                                { time: '12:00', title: 'Energy Mapping', loc: 'Observation Deck', col: 'var(--lotus)' }
-                            ].map((item, idx) => (
-                                <div key={idx} style={{ display: 'flex', gap: '16px' }}>
-                                    <div style={{ fontSize: '12px', fontWeight: '900', color: item.col, paddingTop: '2px' }}>{item.time}</div>
-                                    <div>
-                                        <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--ink)' }}>{item.title}</div>
-                                        <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>{item.loc}</div>
-                                    </div>
-                                </div>
                             ))}
                         </div>
                     </div>

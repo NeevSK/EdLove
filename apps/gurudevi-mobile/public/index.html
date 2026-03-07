@@ -28,6 +28,7 @@
     <!-- ── PWA / Icons ──────────────────────────────────────────────── -->
     <link rel="icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
     <link rel="canonical" href="https://app.gurudevi.edlove.org/" />
 
     <!-- Prevent iOS from auto-linking phone numbers, dates, addresses -->
@@ -36,16 +37,24 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <!-- Safari on iOS — full-screen web app mode -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Gurudevi" />
     <!-- Windows / Edge tile -->
     <meta name="application-name" content="Gurudevi" />
     <meta name="msapplication-TileColor" content="#D4843A" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+
+    <!-- Google Fonts — loaded here (not inside React) to prevent FOUC on theme change -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" />
 
     <!-- Expo root element reset -->
     <style id="expo-reset">
       html, body { height: 100%; margin: 0; padding: 0; }
-      body { overflow: hidden; }
+      /* overflow:clip (not hidden) — avoids creating a scroll container so
+         hash navigation and browser scroll restoration work correctly. */
+      body { overflow: clip; }
       #root { display: flex; height: 100%; flex: 1; flex-direction: column; }
     </style>
 
@@ -293,5 +302,33 @@
       </div>
     </noscript>
     <div id="root"></div>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            .then(function (reg) {
+              console.log('[Gurudevi SW] Registered:', reg.scope);
+            })
+            .catch(function (err) {
+              console.warn('[Gurudevi SW] Registration failed:', err);
+            });
+        });
+      }
+    </script>
+    <script>
+      // Capture beforeinstallprompt for an in-app install button
+      window.__pwaInstallPrompt = null;
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        window.__pwaInstallPrompt = e;
+        document.dispatchEvent(new CustomEvent('pwa-installable'));
+      });
+      window.addEventListener('appinstalled', function() {
+        window.__pwaInstallPrompt = null;
+        document.dispatchEvent(new CustomEvent('pwa-installed'));
+      });
+    </script>
   </body>
 </html>

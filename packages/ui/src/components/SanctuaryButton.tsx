@@ -32,7 +32,7 @@ export default function SanctuaryButton({
     accessibilityLabel,
     accessibilityHint
 }: SanctuaryButtonProps) {
-    const { accent, glass } = useTheme();
+    const { accent, glass, textOnAccent, textOnReward } = useTheme();
 
     // Determine colors based on action and variant
     const getBgColor = () => {
@@ -48,10 +48,16 @@ export default function SanctuaryButton({
     };
 
     const getTextColor = () => {
-        // Solid buttons usually have light text
         if (variant === 'solid') {
-            // Exception: If background is very light? No, our primary colors are dark/rich enough.
-            return Theme.colors.sacredWhite;
+            // Use WCAG-computed adaptive text color — handles bright phases like
+            // Temple Gold (#FDD925) that need dark ink text instead of sacredWhite.
+            switch (action) {
+                case 'primary':   return textOnAccent;
+                case 'positive':  return textOnReward;
+                case 'negative':  return Theme.colors.sacredWhite;
+                case 'secondary': return accent.action;
+                default:          return textOnAccent;
+            }
         }
 
         switch (action) {

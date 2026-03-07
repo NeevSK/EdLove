@@ -1,7 +1,11 @@
 /**
  * FounderSelfView Component
- * 
- * Sanctuary for the Founder - focus on Vision, Philosophy, and Legacy
+ *
+ * Personal sanctuary for the Founder — Vision, Philosophy, and Personal Wellbeing.
+ * Scope: Individual wellness only — mood, energy, wisdom seeds, personal vision notes.
+ *
+ * Institutional features (ecosystem stats, executive oversight, school gallery)
+ * deliberately live in FounderDashboard (Classroom section).
  */
 
 import { supabase, useStore } from '@repo/core';
@@ -17,7 +21,7 @@ import {
     GlobalHeader
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { Sparkles, Compass, Zap, Lightbulb, Globe, Heart } from 'lucide-react-native';
+import { Sparkles, Compass, Zap, Lightbulb } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
 import MoodLotus from '../../components/MoodLotus';
@@ -29,16 +33,16 @@ import WelcomeModal from '../../components/WelcomeModal';
 import { SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useThemedColors, useBottomTabPadding, ScreenWrapper } from '@repo/ui';
 
+// Personal core features — individual wellbeing + purpose
 const FOUNDER_CORE_FEATURES = [
     { id: 'vision', label: 'founder.platformVision', icon: Compass, category: 'core' },
     { id: 'mood', label: 'common.moodLotus', icon: Sparkles, category: 'core' },
     { id: 'energy', label: 'principal.energy', icon: Zap, category: 'core' },
 ];
 
+// Discover tools — personal philosophy and growth, not platform management
 const FOUNDER_MORE_TOOLS = [
     { id: 'philosophy', label: 'principal.wisdom', icon: Lightbulb, category: 'discover' },
-    { id: 'ecosystem', label: 'founder.educationalEcology', icon: Globe, category: 'discover' },
-    { id: 'legacy', label: 'founder.executiveOversight', icon: Heart, category: 'discover' },
 ];
 
 export default function FounderSelfView() {
