@@ -119,7 +119,9 @@ function NotificationRow({
             onClick={handleClick}
             onKeyDown={(e: React.KeyboardEvent) => {
                 if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault(); // prevent Space from scrolling the page
+                    // preventDefault for Space only on the row element itself —
+                    // avoids blocking scroll in any scrollable child element.
+                    if (e.target === e.currentTarget) e.preventDefault();
                     handleClick();
                 }
             }}

@@ -50,12 +50,16 @@ function PWAInstallRow({ showToast }: { showToast: (msg: string, type: string) =
     const handleInstall = async () => {
         const prompt = (window as any).__pwaInstallPrompt;
         if (!prompt) return;
-        prompt.prompt();
-        const { outcome } = await prompt.userChoice;
-        if (outcome === 'accepted') {
-            showToast('Gurudevi installed on your device!', 'success');
-            (window as any).__pwaInstallPrompt = null;
-            setCanInstall(false);
+        try {
+            prompt.prompt();
+            const { outcome } = await prompt.userChoice;
+            if (outcome === 'accepted') {
+                showToast('Gurudevi installed on your device!', 'success');
+                (window as any).__pwaInstallPrompt = null;
+                setCanInstall(false);
+            }
+        } catch {
+            showToast('Install not available in this browser', 'info');
         }
     };
 

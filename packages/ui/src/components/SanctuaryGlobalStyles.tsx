@@ -17,6 +17,9 @@ const STATIC_CSS = `
     body { 
       font-family: var(--font-body); 
       color: var(--ink); 
+      /* overflow: clip (not hidden) — doesn't create a scroll container,
+         so browser scroll restoration and URL-hash navigation work correctly.
+         All actual scrolling is handled by .sanctuary-screen (overflow-y: auto). */
       overflow: clip; 
       overscroll-behavior-y: none;
       -webkit-font-smoothing: antialiased;
@@ -109,6 +112,8 @@ const STATIC_CSS = `
       overflow: hidden;
 
       background: var(--sidebar-bg);
+      /* Reduced blur (16px) vs topbar (28px) — avoids stacking two heavy
+         backdrop-filter compositing layers on mid-range Android devices. */
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-right: 1px solid rgba(255, 255, 255, 0.2);

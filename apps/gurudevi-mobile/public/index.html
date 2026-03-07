@@ -52,6 +52,8 @@
     <!-- Expo root element reset -->
     <style id="expo-reset">
       html, body { height: 100%; margin: 0; padding: 0; }
+      /* overflow:clip (not hidden) — avoids creating a scroll container so
+         hash navigation and browser scroll restoration work correctly. */
       body { overflow: clip; }
       #root { display: flex; height: 100%; flex: 1; flex-direction: column; }
     </style>
