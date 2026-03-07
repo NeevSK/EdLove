@@ -13,7 +13,8 @@ i18n
         // Default language (English for dev)
         lng: 'en',
 
-        // Fallback language if translation missing
+        // Fallback language if translation missing.
+        // Keep runtime fallbacks in i18n config + locale files (never inline t('key', 'default')).
         fallbackLng: 'en',
 
         // Available languages

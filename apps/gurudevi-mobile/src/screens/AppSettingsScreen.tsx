@@ -187,17 +187,17 @@ export default function AppSettingsScreen({ navigation }: any) {
 
   // Theme mode labels
   const getThemeLabel = () => {
-    if (themeMode === 'system') return t('settings.theme.system', 'System Default');
-    if (themeMode === 'auto') return t('settings.theme.auto', 'Auto (Time-based)');
-    if (themeMode === 'light') return t('settings.theme.light', 'Light');
-    return t('settings.theme.dark', 'Dark');
+    if (themeMode === 'system') return t('settings.theme.system');
+    if (themeMode === 'auto') return t('settings.theme.auto');
+    if (themeMode === 'light') return t('settings.theme.light');
+    return t('settings.theme.dark');
   };
 
   // Fidelity labels
   const getFidelityLabel = () => {
-    if (fidelityLevel === 'auto') return t('settings.fidelity.auto', 'Auto (Smart)');
-    if (fidelityLevel === 'low') return t('settings.fidelity.low', 'Battery Saver');
-    return t('settings.fidelity.high', 'Best Quality');
+    if (fidelityLevel === 'auto') return t('settings.fidelity.auto');
+    if (fidelityLevel === 'low') return t('settings.fidelity.low');
+    return t('settings.fidelity.high');
   };
 
   // Language labels
@@ -211,12 +211,12 @@ export default function AppSettingsScreen({ navigation }: any) {
   const getTemporalDescription = () => {
     const time = new Date().toLocaleTimeString(i18n.language, { hour: 'numeric', minute: '2-digit' });
     const phases = {
-      predawn: t('settings.temporal.predawn', 'Deep quiet (4-6 AM)'),
-      dawn: t('settings.temporal.dawn', 'Gentle awakening (6-9 AM)'),
-      morning: t('settings.temporal.morning', 'Active start (9 AM-12 PM)'),
-      afternoon: t('settings.temporal.afternoon', 'Full energy (12-5 PM)'),
-      dusk: t('settings.temporal.dusk', 'Winding down (5-8 PM)'),
-      night: t('settings.temporal.night', 'Restful (8 PM-4 AM)'),
+      predawn: t('settings.temporal.predawn'),
+      dawn: t('settings.temporal.dawn'),
+      morning: t('settings.temporal.morning'),
+      afternoon: t('settings.temporal.afternoon'),
+      dusk: t('settings.temporal.dusk'),
+      night: t('settings.temporal.night'),
     };
     return `${phases[temporalPhase]} • ${time}`;
   };
@@ -250,39 +250,36 @@ export default function AppSettingsScreen({ navigation }: any) {
         {/* Appearance Section */}
         <SectionHeader
           colors={colors}
-          title={t('settings.appearance.title', 'Appearance')}
-          description={t(
-            'settings.appearance.description',
-            'Personalize how Gurudevi looks and feels'
-          )}
+          title={t('settings.appearance.title')}
+          description={t('settings.appearance.description')}
         />
 
         <SettingsOption
           colors={colors}
           icon={themeMode === 'dark' ? <Moon size={24} color={Theme.colors.sacredWhite} /> : <Sun size={24} color={Theme.colors.sacredWhite} />}
-          title={t('settings.theme.title', 'Theme')}
+          title={t('settings.theme.title')}
           description={getTemporalDescription()}
           value={getThemeLabel()}
           onPress={() => setShowThemeModal(true)}
-          accessibilityLabel={t('settings.theme.title', 'Theme')}
-          accessibilityHint={t('settings.theme.hint', 'Choose between light, dark, or automatic theme based on time of day')}
+          accessibilityLabel={t('settings.theme.title')}
+          accessibilityHint={t('settings.theme.hint')}
         />
 
         <SettingsOption
           colors={colors}
           icon={<Sparkles size={24} color={Theme.colors.sacredWhite} />}
-          title={t('settings.fidelity.title', 'Visual Quality')}
+          title={t('settings.fidelity.title')}
           description={
             fidelityLevel === 'auto'
-              ? t('settings.fidelity.auto_desc', 'Adapts to your device automatically')
+              ? t('settings.fidelity.auto_desc')
               : fidelityLevel === 'low'
-                ? t('settings.fidelity.low_desc', 'Saves battery, works on all devices')
-                : t('settings.fidelity.high_desc', 'Beautiful effects, needs good device')
+                ? t('settings.fidelity.low_desc')
+                : t('settings.fidelity.high_desc')
           }
           value={getFidelityLabel()}
           onPress={() => setShowFidelityModal(true)}
-          accessibilityLabel={t('settings.fidelity.title', 'Visual Quality')}
-          accessibilityHint={t('settings.fidelity.hint', 'Control visual effects and animations quality')}
+          accessibilityLabel={t('settings.fidelity.title')}
+          accessibilityHint={t('settings.fidelity.hint')}
         />
 
         {/* Living Theme Toggle */}
@@ -307,12 +304,12 @@ export default function AppSettingsScreen({ navigation }: any) {
               </Box>
               <VStack flex={1} space="xs">
                 <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: Theme.typography.fontWeight.semibold, color: colors.text }}>
-                  {t('settings.living_theme.title', 'Living Theme')}
+                  {t('settings.living_theme.title')}
                 </Text>
                 <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary }}>
                   {enableLivingTheme
-                    ? t('settings.living_theme.on', 'Phase-aware colors shift with the time of day')
-                    : t('settings.living_theme.off', 'Classic calm — simple static appearance')}
+                    ? t('settings.living_theme.on')
+                    : t('settings.living_theme.off')}
                 </Text>
               </VStack>
             </HStack>
@@ -326,7 +323,7 @@ export default function AppSettingsScreen({ navigation }: any) {
               thumbColor={Theme.colors.sacredWhite}
               accessible={true}
               accessibilityRole="switch"
-              accessibilityLabel={t('settings.living_theme.title', 'Living Theme')}
+              accessibilityLabel={t('settings.living_theme.title')}
               accessibilityState={{ checked: enableLivingTheme }}
             />
           </HStack>
@@ -335,32 +332,26 @@ export default function AppSettingsScreen({ navigation }: any) {
         {/* Language & Localization */}
         <SectionHeader
           colors={colors}
-          title={t('settings.language.title', 'Language')}
-          description={t(
-            'settings.language.description',
-            'Choose your preferred language'
-          )}
+          title={t('settings.language.title')}
+          description={t('settings.language.description')}
         />
 
         <SettingsOption
           colors={colors}
           icon={<Globe size={24} color={Theme.colors.sacredWhite} />}
-          title={t('settings.language.current', 'App Language')}
-          description={t('settings.language.change_desc', 'Switch between English, Sinhala, and Tamil')}
+          title={t('settings.language.current')}
+          description={t('settings.language.change_desc')}
           value={getLanguageLabel()}
           onPress={() => setShowLanguageModal(true)}
-          accessibilityLabel={t('settings.language.current', 'App Language')}
-          accessibilityHint={t('settings.language.hint', 'Change the language of the entire app')}
+          accessibilityLabel={t('settings.language.current')}
+          accessibilityHint={t('settings.language.hint')}
         />
 
         {/* Privacy Section */}
         <SectionHeader
           colors={colors}
-          title={t('settings.privacy.title', 'Privacy')}
-          description={t(
-            'settings.privacy.description',
-            'Control how your information is displayed'
-          )}
+          title={t('settings.privacy.title')}
+          description={t('settings.privacy.description')}
         />
 
         <Box
@@ -400,7 +391,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                     color: colors.text,
                   }}
                 >
-                  {t('settings.veil.title', 'Privacy Veil')}
+                  {t('settings.veil.title')}
                 </Text>
                 <Text
                   sx={{
@@ -432,7 +423,7 @@ export default function AppSettingsScreen({ navigation }: any) {
               thumbColor={Theme.colors.sacredWhite}
               accessible={true}
               accessibilityRole="switch"
-              accessibilityLabel={t('settings.veil.title', 'Privacy Veil')}
+              accessibilityLabel={t('settings.veil.title')}
               accessibilityState={{ checked: isVeilActive }}
             />
           </HStack>
@@ -441,11 +432,8 @@ export default function AppSettingsScreen({ navigation }: any) {
         {/* Explorer Section (Demo Mode) */}
         <SectionHeader
           colors={colors}
-          title={t('settings.explorer.title', 'Explorer Mode')}
-          description={t(
-            'settings.explorer.description',
-            'Full potential simulation with visionary sample data'
-          )}
+          title={t('settings.explorer.title')}
+          description={t('settings.explorer.description')}
         />
 
         <Box
@@ -484,7 +472,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                     color: colors.text,
                   }}
                 >
-                  {t('settings.explorer.toggle', 'Visionary Sandbox')}
+                  {t('settings.explorer.toggle')}
                 </Text>
                 <Text
                   sx={{
@@ -516,7 +504,7 @@ export default function AppSettingsScreen({ navigation }: any) {
               thumbColor={Theme.colors.sacredWhite}
               accessible={true}
               accessibilityRole="switch"
-              accessibilityLabel={t('settings.explorer.title', 'Explorer Mode')}
+              accessibilityLabel={t('settings.explorer.title')}
               accessibilityState={{ checked: isDemoMode }}
             />
           </HStack>
@@ -525,11 +513,8 @@ export default function AppSettingsScreen({ navigation }: any) {
         {/* Device Info Section */}
         <SectionHeader
           colors={colors}
-          title={t('settings.device.title', 'Device Information')}
-          description={t(
-            'settings.device.description',
-            'How Gurudevi adapts to your device'
-          )}
+          title={t('settings.device.title')}
+          description={t('settings.device.description')}
         />
 
         <Box
@@ -545,7 +530,7 @@ export default function AppSettingsScreen({ navigation }: any) {
           <VStack space="sm">
             <HStack justifyContent="space-between" alignItems="center">
               <Text sx={{ color: colors.textSecondary }}>
-                {t('settings.device.tier', 'Device Tier')}
+                {t('settings.device.tier')}
               </Text>
               <Text
                 sx={{
@@ -559,7 +544,7 @@ export default function AppSettingsScreen({ navigation }: any) {
 
             <HStack justifyContent="space-between" alignItems="center">
               <Text sx={{ color: colors.textSecondary }}>
-                {t('settings.device.memory', 'Available Memory')}
+                {t('settings.device.memory')}
               </Text>
               <Text
                 sx={{
@@ -573,7 +558,7 @@ export default function AppSettingsScreen({ navigation }: any) {
 
             <HStack justifyContent="space-between" alignItems="center">
               <Text sx={{ color: colors.textSecondary }}>
-                {t('settings.device.network', 'Network Quality')}
+                {t('settings.device.network')}
               </Text>
               <Text
                 sx={{
@@ -602,10 +587,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                       color: colors.text,
                     }}
                   >
-                    {t(
-                      'settings.device.data_saver',
-                      'Data Saver mode is active due to poor connection'
-                    )}
+                    {t('settings.device.data_saver')}
                   </Text>
                 </HStack>
               </Box>
@@ -616,11 +598,8 @@ export default function AppSettingsScreen({ navigation }: any) {
         {/* Support & Debug Section */}
         <SectionHeader
           colors={colors}
-          title={t('settings.support.title', 'Support & Debug')}
-          description={t(
-            'settings.support.description',
-            'Help us improve Gurudevi'
-          )}
+          title={t('settings.support.title')}
+          description={t('settings.support.description')}
         />
 
         {__DEV__ && (
@@ -657,7 +636,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                     color: colors.text,
                   }}
                 >
-                  {t('settings.debug.sentry_test', 'Sentry Test Event')}
+                  {t('settings.debug.sentry_test')}
                 </Text>
                 <Text
                   sx={{
@@ -666,10 +645,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                     lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.sm,
                   }}
                 >
-                  {t(
-                    'settings.debug.sentry_desc',
-                    'Sends a test error to verify monitoring setup'
-                  )}
+                  {t('settings.debug.sentry_desc')}
                 </Text>
               </VStack>
             </HStack>
@@ -688,7 +664,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                 borderColor: colors.border,
               }}
             >
-              <ButtonText sx={{ color: colors.text, fontSize: '$xs' as any }}>{t('settings.debug.send', 'Send')}</ButtonText>
+              <ButtonText sx={{ color: colors.text, fontSize: '$xs' as any }}>{t('settings.debug.send')}</ButtonText>
             </Button>
           </HStack>
         </Box>
@@ -714,7 +690,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                   fontWeight: Theme.typography.fontWeight.semibold,
                 }}
               >
-                {t('settings.tip.title', 'Tip')}
+                {t('settings.tip.title')}
               </Text>
               <Text
                 sx={{
@@ -723,10 +699,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                   lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.sm,
                 }}
               >
-                {t(
-                  'settings.tip.message',
-                  'These settings help Gurudevi work best for you. Auto mode is recommended for most users.'
-                )}
+                {t('settings.tip.message')}
               </Text>
             </VStack>
           </HStack>
@@ -737,33 +710,33 @@ export default function AppSettingsScreen({ navigation }: any) {
       {showThemeModal && (
         <SelectionModal
           colors={colors}
-          title={t('settings.theme.select', 'Choose Theme')}
+          title={t('settings.theme.select')}
           options={[
             {
               id: 'system',
-              label: t('settings.theme.system', 'System Default'),
-              description: t('settings.theme.system_full', 'Follows your device theme settings'),
+              label: t('settings.theme.system'),
+              description: t('settings.theme.system_full'),
               icon: <Smartphone size={24} color={colors.action} />,
               isSelected: themeMode === 'system',
             },
             {
               id: 'auto',
-              label: t('settings.theme.auto', 'Auto (Time-based)'),
-              description: t('settings.theme.auto_full', 'Automatically adjusts between light and dark based on time of day'),
+              label: t('settings.theme.auto'),
+              description: t('settings.theme.auto_full'),
               icon: <Sparkles size={24} color={Theme.colors.gurudeviViolet} />,
               isSelected: themeMode === 'auto',
             },
             {
               id: 'light',
-              label: t('settings.theme.light', 'Light'),
-              description: t('settings.theme.light_full', 'Bright and clear for daytime use'),
+              label: t('settings.theme.light'),
+              description: t('settings.theme.light_full'),
               icon: <Sun size={24} color={Theme.colors.templeGold} />,
               isSelected: themeMode === 'light',
             },
             {
               id: 'dark',
-              label: t('settings.theme.dark', 'Dark'),
-              description: t('settings.theme.dark_full', 'Easy on the eyes in low light'),
+              label: t('settings.theme.dark'),
+              description: t('settings.theme.dark_full'),
               icon: <Moon size={24} color={Theme.colors.shadowViolet} />,
               isSelected: themeMode === 'dark',
             },
@@ -777,26 +750,26 @@ export default function AppSettingsScreen({ navigation }: any) {
       {showFidelityModal && (
         <SelectionModal
           colors={colors}
-          title={t('settings.fidelity.select', 'Visual Quality')}
+          title={t('settings.fidelity.select')}
           options={[
             {
               id: 'auto',
-              label: t('settings.fidelity.auto', 'Auto (Smart)'),
-              description: t('settings.fidelity.auto_full', 'Automatically adjusts based on your device capabilities'),
+              label: t('settings.fidelity.auto'),
+              description: t('settings.fidelity.auto_full'),
               icon: <Sparkles size={24} color={colors.action} />,
               isSelected: fidelityLevel === 'auto',
             },
             {
               id: 'low',
-              label: t('settings.fidelity.low', 'Battery Saver'),
-              description: t('settings.fidelity.low_full', 'Simplified visuals, works smoothly on all devices'),
+              label: t('settings.fidelity.low'),
+              description: t('settings.fidelity.low_full'),
               icon: <Smartphone size={24} color={Theme.colors.sageGreen} />,
               isSelected: fidelityLevel === 'low',
             },
             {
               id: 'high',
-              label: t('settings.fidelity.high', 'Best Quality'),
-              description: t('settings.fidelity.high_full', 'Beautiful effects and animations (requires capable device)'),
+              label: t('settings.fidelity.high'),
+              description: t('settings.fidelity.high_full'),
               icon: <Sparkles size={24} color={Theme.colors.gurudeviViolet} />,
               isSelected: fidelityLevel === 'high',
             },
@@ -810,7 +783,7 @@ export default function AppSettingsScreen({ navigation }: any) {
       {showLanguageModal && (
         <SelectionModal
           colors={colors}
-          title={t('settings.language.select', 'Choose Language')}
+          title={t('settings.language.select')}
           options={[
             {
               id: 'en',

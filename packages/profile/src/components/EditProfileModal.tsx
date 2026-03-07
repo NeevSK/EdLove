@@ -205,7 +205,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                         </Pressable>
                                     </Box>
                                     <Text {...({ color: text.muted, size: "xs", mt: "$2" } as any)}>
-                                        {t('profile.tapToChange', 'Tap icon to change photo')}
+                                        {t('profile.tapToChange')}
                                     </Text>
                                 </Center>
 

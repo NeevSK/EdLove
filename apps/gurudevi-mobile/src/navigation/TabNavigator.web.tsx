@@ -267,7 +267,7 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
                         <div className="sidebar-divider" />
                         <button
                             className={`sidebar-item ${activeSubView === 'notifications' ? 'active' : ''}`}
-                            title={t('common.notifications', 'Notifications')}
+                            title={t('common.notifications')}
                             onClick={() => {
                                 setActiveSubView(activeSubView === 'notifications' ? 'none' : 'notifications');
                                 if (isMobileView) closeSidebar();
@@ -284,7 +284,7 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
 
                         <button
                             className={`sidebar-profile-btn ${activeSubView === 'settings' ? 'active' : ''}`}
-                            title={t('common.settings', 'Settings')}
+                            title={t('common.settings')}
                             onClick={() => {
                                 setActiveSubView(activeSubView === 'settings' ? 'none' : 'settings');
                                 if (isMobileView) closeSidebar();
@@ -296,7 +296,7 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
                             {(isSidebarExpanded || isMobileView) && (
                                 <div className="profile-info">
                                     <span className="profile-nm">{role?.split('_').join(' ') || 'Guest'}</span>
-                                    <span className="profile-status">{t('common.settings', 'Settings')}</span>
+                                    <span className="profile-status">{t('common.settings')}</span>
                                 </div>
                             )}
                         </button>

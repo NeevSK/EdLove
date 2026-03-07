@@ -190,8 +190,8 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                 {!user ? (
                     <PositiveInvitation
                         type="guest"
-                        title={t('classroom.inventory.guestTitle', 'A Glimpse into the Sanctuary')}
-                        description={t('classroom.inventory.guestDesc', 'Explore the tools teachers use to manage their sacred spaces.')}
+                        title={t('classroom.inventory.guestTitle')}
+                        description={t('classroom.inventory.guestDesc')}
                     />
                 ) : filteredItems.length === 0 ? (
                     <Box sx={{ padding: 40, alignItems: 'center' }}>
