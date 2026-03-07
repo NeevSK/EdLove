@@ -44,10 +44,15 @@
     <meta name="msapplication-TileColor" content="#D4843A" />
     <meta name="msapplication-config" content="/browserconfig.xml" />
 
+    <!-- Google Fonts — loaded here (not inside React) to prevent FOUC on theme change -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" />
+
     <!-- Expo root element reset -->
     <style id="expo-reset">
       html, body { height: 100%; margin: 0; padding: 0; }
-      body { overflow: hidden; }
+      body { overflow: clip; }
       #root { display: flex; height: 100%; flex: 1; flex-direction: column; }
     </style>
 

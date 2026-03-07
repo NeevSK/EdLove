@@ -14,9 +14,6 @@ export function SanctuaryGlobalStyles() {
   const { accent, glass, text, isDark, gradientNodes } = useTheme();
 
   const css = `
-    /* ── FONTS ── */
-    @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
-
     /* ── TOKENS ── */
     :root {
       /* Sanctuary Core Tokens (Dynamic) */
@@ -53,7 +50,7 @@ export function SanctuaryGlobalStyles() {
 
       /* Backgrounds */
       --background:     ${isDark ? '#111218' : '#F5EDD6'};
-      --background-alt: ${isDark ? 'rgba(40,42,58,0.40)' : 'rgba(255,255,255,0.55)'};
+      --background-alt: ${isDark ? 'rgba(40,42,58,0.65)' : 'rgba(255,255,255,0.55)'};
       --surface:        ${glass.surface.bg};
       --glass-surface:  ${glass.surface.bg};
       --glass-interact: ${isDark ? 'rgba(50,52,68,0.70)' : 'rgba(255,255,255,0.75)'};
@@ -61,7 +58,7 @@ export function SanctuaryGlobalStyles() {
       /* Ink */
       --ink:         ${isDark ? text.primary : '#2a2820'};
       --ink-soft:    ${text.secondary};
-      --ink-ghost:   #9a9080;
+      --ink-ghost:   #7a7068;
 
       /* Borders & Shadows */
       --border:       ${glass.surface.border};
@@ -93,7 +90,7 @@ export function SanctuaryGlobalStyles() {
     body { 
       font-family: var(--font-body); 
       color: var(--ink); 
-      overflow: hidden; 
+      overflow: clip; 
       overscroll-behavior-y: none;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -483,18 +480,55 @@ export function SanctuaryGlobalStyles() {
     }
     .greeting-main {
       font-family: var(--font-display);
-      font-size: 48px;
+      font-size: clamp(28px, 3.5vw, 48px);
       font-style: italic;
       color: var(--ink);
       line-height: 1.1;
       margin-bottom: 12px;
       text-shadow: 0 1px 0 rgba(255,255,255,0.8);
     }
+    .greeting-time {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--action);
+      margin-bottom: 8px;
+      opacity: 0.85;
+    }
     .greeting-note {
       font-size: 18px;
       color: var(--ink-soft);
       font-weight: 300;
       letter-spacing: 0.01em;
+    }
+
+    /* ── FILTER TABS (top-tab) ── */
+    .top-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      color: var(--ink-soft);
+      background: ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'};
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+      font-family: var(--font-body);
+    }
+    .top-tab:hover {
+      background: ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.07)'};
+      color: var(--ink);
+    }
+    .top-tab.active {
+      background: ${isDark ? 'rgba(58,122,154,0.22)' : 'rgba(58,122,154,0.10)'};
+      border-color: var(--water);
+      color: var(--water);
     }
 
     /* ── LAYOUT UTILS ── */

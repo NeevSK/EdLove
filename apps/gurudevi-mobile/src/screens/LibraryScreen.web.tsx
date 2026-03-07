@@ -1,22 +1,13 @@
-﻿import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+﻿import React, { useState, useMemo, useCallback } from 'react';
 import {
-    Box,
-    Text,
-    VStack,
-    HStack,
-    Heading,
-    useThemedColors,
-    Theme,
-    useTheme,
-    PositiveInvitation,
-    LotusPetalFAB,
     openExternalURL,
-    LibraryThumbnailCard
+    LibraryThumbnailCard,
+    LotusPetalFAB,
 } from '@repo/ui';
 import {
-    useStore,
     useUserRole,
-    useRoleFeatures
+    useRoleFeatures,
+    useStore,
 } from '@repo/core';
 import {
     Search,
@@ -151,7 +142,7 @@ export default function LibraryScreen() {
                     </div>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '32px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: '32px' }}>
                             {resources.map(res => (
                                 <div key={res.id} className="sanctuary-card" onClick={() => handleOpenResource(res)}>
                                     <LibraryThumbnailCard
