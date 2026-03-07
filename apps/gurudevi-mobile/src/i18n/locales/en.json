@@ -27,7 +27,13 @@
     "initialize": "Initialize",
     "start": "Start",
     "completeProfile": "Complete Profile",
-    "join": "Join"
+    "join": "Join",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "close": "Close",
+    "now": "Now",
+    "saving": "Saving",
+    "comingSoon": "Coming Soon"
   },
   "demoMode": {
     "realityCheckTitle": "Sandbox Simulation",
@@ -41,7 +47,10 @@
     "visionaryEcology": "VISIONARY ECOLOGY: Previewing platform potential"
   },
   "greeting": {
-    "ayubowan": "Ayubowan!"
+    "ayubowan": "Ayubowan!",
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening"
   },
   "role": {
     "teacher": "Teacher",
@@ -88,7 +97,16 @@
     "continueAsGuest": "Continue as Guest",
     "saveSanctuary": "Save Your Sanctuary",
     "upgradePrompt": "Create an account to save your progress and sync across devices.",
-    "backToGoogle": "Back to Google Sign In"
+    "backToGoogle": "Back to Google Sign In",
+    "continueInApp": "Continue In App",
+    "betterOnApp": "Better On App",
+    "handoffDesc": "Handoff Desc",
+    "openInAppDesc": "Open In App Desc",
+    "openAppAndSync": "Open App And Sync",
+    "openApp": "Open App",
+    "alreadyLinked": "Already Linked",
+    "alreadyRegistered": "Already Registered",
+    "acceptTermsRequired": "Accept Terms Required"
   },
   "welcome": {
     "title": "Gurudevi",
@@ -120,7 +138,8 @@
     "community": "Community",
     "library": "Library",
     "profile": "Profile",
-    "grade": "Grade"
+    "grade": "Grade",
+    "school": "School"
   },
   "self": {
     "goodMorning": "Good Morning!",
@@ -249,7 +268,11 @@
     "backToMood": "Back to Mood",
     "moodPrivacy": "Your mood data is private and only visible to you",
     "savedAt": "Saved {{time}}",
-    "privacyNote": "Your personal reflections are encrypted and private."
+    "privacyNote": "Your personal reflections are encrypted and private.",
+    "guestMode": "Guest Mode",
+    "decisionPlaceholder": "Decision Placeholder",
+    "recentDecisions": "Recent Decisions",
+    "noDecisionsYet": "No Decisions Yet"
   },
   "student": {
     "mood": "Mood Check",
@@ -264,7 +287,12 @@
     "learningReflection": "Learning Reflection",
     "learningReflectionDesc": "Reflect on what you learned today",
     "myProgress": "My Progress",
-    "myProgressDesc": "Track your learning journey and achievements"
+    "myProgressDesc": "Track your learning journey and achievements",
+    "noGradesYet": "No grades yet — keep going! 🌱",
+    "unknownAssignment": "Assignment",
+    "goalsComingSoon": "Goal Setting Arriving Soon",
+    "goalsComingSoonDesc": "We are building a beautiful space for your daily aspirations.",
+    "myGrades": "My Grades"
   },
   "principal": {
     "energy": "Leadership Energy",
@@ -334,7 +362,13 @@
       "tapToCopy": "Tap to copy",
       "noCodes": "No active invite codes. Generate your first code to get started!",
       "copied": "Copied!"
-    }
+    },
+    "recentDecisions": "Recent Decisions",
+    "noDecisionsYet": "No Decisions Yet",
+    "wisdomComingSoon": "Leadership Treasury",
+    "wisdomComingSoonDesc": "A curated library of leadership philosophies is being assembled.",
+    "monthlyComingSoon": "Architect of Growth",
+    "monthlyComingSoonDesc": "A deep reflection module for your monthly milestones is on its way."
   },
   "founder": {
     "platformVision": "Platform Vision",
@@ -346,7 +380,9 @@
     "guidingSpirits": "Guiding Spirits",
     "visionaryInsights": "Visionary Insights",
     "wellnessIndex": "Wellness Index",
-    "wellnessIncrease": "+{{percent}}% from last cycle"
+    "wellnessIncrease": "+{{percent}}% from last cycle",
+    "visionComingSoon": "Architecting the Future",
+    "visionComingSoonDesc": "The vision alignment dashboard is currently being synthesized."
   },
   "admin": {
     "systemOperations": "System Operations",
@@ -362,7 +398,9 @@
     "config": "Stability",
     "security": "Security Pulse",
     "data": "Data Ecology",
-    "ui": "UI Harmony"
+    "ui": "UI Harmony",
+    "balanceComingSoon": "System Pulse Arriving",
+    "balanceComingSoonDesc": "A dashboard for operational harmony is being calibrated."
   },
   "classroom": {
     "title": "Classroom",
@@ -485,13 +523,64 @@
     "postAnnouncement": "Post Announcement",
     "connecting": "Connecting to Sanctuary Network...",
     "feed": "Feed",
-    "groups": "Groups",
+    "groups": {
+      "sanctuary": "My Sanctuary",
+      "title": "Groups",
+      "joinedTitle": "Joined Sanctuaries",
+      "noGalaxyTitle": "You haven't joined any sanctuatries yet.",
+      "joinRequested": "Request to join this circle has been sent.",
+      "manage": "Circle Management",
+      "members": "Members",
+      "noDesc": "A space for collective learning and support.",
+      "join": "Join this Circle",
+      "feed": "Resonant Feed",
+      "emptyFeed": "The conversation is waiting to blossom. Be the first to share.",
+      "galaxy": "Infinite Galaxy",
+      "create": "Found a New Circle",
+      "noSanctuaryTitle": "No Sanctuary Title",
+      "noSanctuaryDesc": "No Sanctuary Desc",
+      "exploreGalaxy": "Explore Galaxy",
+      "noGalaxyDesc": "No Galaxy Desc",
+      "foundCircle": "Found Circle"
+    },
     "sections": {
       "vision": "SCHOOL VISION",
       "updates": "RECENT UPDATES"
     },
     "noGroups": "No circles found",
-    "noGroupsDesc": "Connect with others by joining a community group."
+    "noGroupsDesc": "Connect with others by joining a community group.",
+    "filters": {
+      "allUpdates": "All Updates"
+    },
+    "tabs": {
+      "resonantFeed": "Resonant Feed",
+      "dms": "Messages",
+      "infiniteGalaxy": "Infinite Galaxy"
+    },
+    "empty": {
+      "title": "The silence is waiting for your resonance.",
+      "desc": "Desc",
+      "button": "Button",
+      "joinFirst": "Join First"
+    },
+    "students": "Students",
+    "members": "Members",
+    "educators": "Educators",
+    "studentMotivation": "Your peers are thriving. You are not alone on this path.",
+    "principalMotivation": "Your school community is alive. Keep the current flowing.",
+    "teacherMotivation": "Fellow educators are present. Share wisdom, not just content.",
+    "offline": "Offline",
+    "offlineTitle": "Connection Interrupted",
+    "sanctuaryPulse": "Sanctuary Pulse",
+    "offlineDesc": "Reconnecting to current...",
+    "onlineNow": "thriving now",
+    "dominantVibe": "Dominant Vibe",
+    "guestTitle": "Your Community Awaits",
+    "guestDesc": "Connect with educators, share wisdom, and feel the pulse of your school. Create a free account to join the circle.",
+    "dms": {
+      "guestTitle": "Private Resonance",
+      "guestDesc": "Sign in to connect directly with fellow educators and share private reflections."
+    }
   },
   "library": {
     "title": "Library",
@@ -600,7 +689,43 @@
       "learningGrowth": "LEARNING GROWTH",
       "professionalGrowth": "PROFESSIONAL GROWTH",
       "level": "Level"
-    }
+    },
+    "deleteAccount": "Delete Account",
+    "viewEditProfile": "View or Edit Profile",
+    "account": {
+      "support": "Support",
+      "support_app": "Support this app",
+      "actions": "Account Management",
+      "switch": "Switch Identity"
+    },
+    "faqTitle": "FAQ & Help Center",
+    "feedbackTitle": "Send Feedback",
+    "privacyLedgerTitle": "Privacy Ledger & Transparency",
+    "aboutTitle": "About Sanctuary",
+    "loveApp": "I love this app",
+    "loveTitle": "Radiant Energy",
+    "loveMessage": "Your love for the Sanctuary fuels our mission. We are grateful for your presence in our community!",
+    "helpSupportApp": "I want to support this app",
+    "thankYouTitle": "Radiant Gratitude",
+    "thankYouMessage": "Your desire to support the Sanctuary is deeply appreciated. We are currently preparing premium patronage options for our most dedicated explorers.",
+    "deleteFailedTitle": "Deletion Failed",
+    "deleteFailedMessage": "We could not delete your account. Please try again later.",
+    "guestTitle": "Guest Explorer",
+    "guestDesc": "You are exploring as a guest. Create an account to save your sanctuary permanently.",
+    "bio_title": "Resonance Story",
+    "no_bio_fallback": "This resident has not yet shared their resonance manifesto with the sanctuary.",
+    "fullProfile": "Profile Details",
+    "personalDetails": "Identity & Contact",
+    "indexNumber": "Index Number",
+    "nicNumber": "NIC Number",
+    "professionalDetails": "Professional Branding",
+    "currentSchool": "Sanctuary Institution",
+    "noSchool": "Affiliate with a school",
+    "experience": "Years of Experience",
+    "subjects": "Specialized Subjects",
+    "qualifications": "Degrees & Certifications",
+    "aboutMe": "Your Story",
+    "tellUsAboutYourself": "Tell us about yourself..."
   },
   "invite": {
     "enterCode": "Enter Invite Code",
@@ -804,13 +929,19 @@
       "auto_full": "Automatically adjusts between light and dark based on time of day",
       "light_full": "Bright and clear for daytime use",
       "dark_full": "Easy on the eyes in low light",
-      "hint": "Choose between light, dark, or automatic theme based on time of day"
+      "hint": "Choose between light, dark, or automatic theme based on time of day",
+      "system": "System Default",
+      "system_full": "Follows your device theme settings"
     },
     "temporal": {
       "dawn": "Gentle awakening (5-8 AM)",
       "day": "Active work (8 AM-5 PM)",
       "evening": "Winding down (5-8 PM)",
-      "night": "Restful (8 PM-5 AM)"
+      "night": "Restful (8 PM-5 AM)",
+      "predawn": "Deep quiet (4-6 AM)",
+      "morning": "Active start (9 AM-12 PM)",
+      "afternoon": "Full energy (12-5 PM)",
+      "dusk": "Winding down (5-8 PM)"
     },
     "fidelity": {
       "title": "Visual Quality",
@@ -853,6 +984,32 @@
     "tip": {
       "title": "Tip",
       "message": "These settings help Gurudevi work best for you. Auto mode is recommended for most users."
+    },
+    "living_theme": {
+      "title": "Living Theme",
+      "on": "Phase-aware colors shift with the time of day",
+      "off": "Classic calm — simple static appearance"
+    },
+    "explorer": {
+      "title": "Explorer Mode",
+      "description": "Full potential simulation with visionary sample data",
+      "toggle": "Visionary Sandbox",
+      "status": "Status"
+    },
+    "support": {
+      "title": "Support & Debug",
+      "description": "Help us improve Gurudevi"
+    },
+    "debug": {
+      "sentry_test": "Sentry Test Event",
+      "sentry_desc": "Sends a test error to verify monitoring setup",
+      "send": "Send"
+    },
+    "language_updated": "Language updated",
+    "sanctuary_config": "Sanctuary Configuration",
+    "description": "Customize your experience within the Gurudevi Ecosystem",
+    "account": {
+      "title": "Account Stewardship"
     }
   },
   "invitation": {
@@ -1105,5 +1262,54 @@
     "completeTitle": "Sync Complete!",
     "successMessage": "All your data has been synced successfully!",
     "successDescription": "You can now access your data from any device."
+  },
+  "notifications": {
+    "stream": "Echoes of the Sanctuary",
+    "title": "Notifications",
+    "unread": "{{count}} unread echoes",
+    "description": "Stay in resonance with your community and growth",
+    "markAllRead": "Mark all as read",
+    "empty": "The sanctuary is quiet. New echoes will appear here."
+  },
+  "announcements": {
+    "justNow": "Just Now",
+    "hoursAgo": "Hours Ago",
+    "daysAgo": "Days Ago",
+    "title": "Title",
+    "create": "Create",
+    "pinned": "Pinned",
+    "recent": "Recent",
+    "noAnnouncements": "No Announcements",
+    "createTitle": "Create Title",
+    "contentPlaceholder": "Content Placeholder",
+    "pinAnnouncement": "Pin Announcement",
+    "post": "Post"
+  },
+  "pulse": {
+    "motivation": "Motivation",
+    "wisdom": "Wisdom",
+    "actions": "Actions",
+    "allClear": "All Clear",
+    "markAttendance": "Mark Attendance",
+    "beforeNine": "Before Nine",
+    "grade": "Grade",
+    "submissions": "Submissions",
+    "view_full": "View Full"
+  },
+  "studentGoals": {
+    "streakStart": "Streak Start",
+    "streak1": "Streak1",
+    "streakDays": "Streak Days",
+    "streakWeeks": "Streak Weeks",
+    "streakMonths": "Streak Months",
+    "motivationTitle": "Motivation Title",
+    "streakDesc": "Streak Desc",
+    "goalsTitle": "Goals Title",
+    "addGoal": "Add Goal",
+    "goalPlaceholder": "Goal Placeholder",
+    "saveGoal": "Save Goal",
+    "progress": "Progress",
+    "completed": "Completed",
+    "noGoals": "No Goals"
   }
 }

@@ -10,7 +10,8 @@
     "check-types": "turbo run check-types",
     "check-all": "pnpm run lint && pnpm run check-types && pnpm run test",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "audit:i18n": "node scripts/i18n/audit-keys.mjs"
   },
   "devDependencies": {
     "@repo/types-shim": "workspace:*",
