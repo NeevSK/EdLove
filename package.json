@@ -10,7 +10,10 @@
     "check-types": "turbo run check-types",
     "check-all": "pnpm run lint && pnpm run check-types && pnpm run test",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "i18n:audit": "node scripts/i18n/audit-i18n.js",
+    "i18n:no-inline-fallbacks": "node scripts/i18n/check-inline-fallbacks.js",
+    "i18n:check": "pnpm run i18n:audit && pnpm run i18n:no-inline-fallbacks"
   },
   "devDependencies": {
     "@repo/types-shim": "workspace:*",
