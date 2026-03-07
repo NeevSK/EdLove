@@ -1,92 +1,166 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Bell, Info, Shield, CheckCircle2 } from 'lucide-react-native';
-import { useThemedColors } from '@repo/ui';
+import { Bell, Info, Shield, Sparkles, CheckCircle2, Inbox } from 'lucide-react-native';
+import { useStore } from '@repo/core';
+import { useNotifications, AppNotification } from '@repo/core';
+import { formatDistanceToNow } from 'date-fns';
+
+const ICON_MAP: Record<string, React.ReactNode> = {
+    resonance:   <Bell     size={18} color="var(--action)"  />,
+    system:      <Info     size={18} color="var(--water)"   />,
+    community:   <Sparkles size={18} color="var(--moss)"    />,
+    security:    <Shield   size={18} color="var(--lotus)"   />,
+    achievement: <Sparkles size={18} color="var(--reward)"  />,
+};
+
+function timeAgo(ts: string): string {
+    try {
+        return formatDistanceToNow(new Date(ts), { addSuffix: true });
+    } catch {
+        return '';
+    }
+}
 
 export default function NotificationsScreenWeb() {
     const { t } = useTranslation();
-    const colors = useThemedColors();
-
-    const mockNotifications = [
-        {
-            id: '1',
-            type: 'resonance',
-            title: 'New Resonance Insight',
-            body: 'Your "Lotus Path" has reached a new stage of fidelity.',
-            time: '2 hours ago',
-            read: false,
-            icon: <Bell size={18} color="var(--action)" />
-        },
-        {
-            id: '2',
-            type: 'system',
-            title: 'Sanctuary Update',
-            body: 'Gurudevi Ecosystem v4.2.0 is now live with enhanced web features.',
-            time: '5 hours ago',
-            read: true,
-            icon: <Info size={18} color="var(--water)" />
-        },
-        {
-            id: '3',
-            type: 'community',
-            title: 'Community Spark',
-            body: 'Someone resonated with your recent post in the Resonant Feed.',
-            time: 'Yesterday',
-            read: true,
-            icon: <Shield size={18} color="var(--moss)" />
-        }
-    ];
+    const { user } = useStore();
+    const { notifications, unreadCount, isLoading, markAsRead, markAllRead } = useNotifications(user?.id);
 
     return (
         <div className="sanctuary-screen">
             <div className="sanctuary-container">
+                {/* GREETING */}
                 <div className="greeting">
                     <div className="greeting-time">{t('notifications.stream', 'Echoes of the Sanctuary')}</div>
                     <h1 className="greeting-main">{t('notifications.title', 'Notifications')}</h1>
-                    <p className="greeting-note">{t('notifications.description', 'Stay in resonance with your community and growth')}</p>
+                    <p className="greeting-note">
+                        {unreadCount > 0
+                            ? t('notifications.unread', '{{count}} unread echoes', { count: unreadCount })
+                            : t('notifications.description', 'Stay in resonance with your community and growth')}
+                    </p>
                 </div>
 
-                <div className="notification-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '800px' }}>
-                    {mockNotifications.map(notif => (
-                        <div
-                            key={notif.id}
-                            className={`sanctuary-card ${notif.read ? 'read' : 'unread'}`}
-                            style={{
-                                padding: '20px',
-                                borderLeft: notif.read ? '1px solid var(--border)' : '4px solid var(--action)',
-                                opacity: notif.read ? 0.8 : 1
-                            }}
-                        >
-                            <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                                <div style={{
-                                    width: '40px',
-                                    height: '40px',
-                                    borderRadius: '12px',
-                                    background: 'var(--glass-interact)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}>
-                                    {notif.icon}
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                                        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700' }}>{notif.title}</h3>
-                                        <span style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>{notif.time}</span>
-                                    </div>
-                                    <p style={{ margin: 0, fontSize: '14px', color: 'var(--ink)', lineHeight: '1.4' }}>{notif.body}</p>
-                                </div>
-                                {!notif.read && <div style={{ width: '8px', height: '8px', borderRadius: '4px', background: 'var(--action)', marginTop: '6px' }} />}
-                            </div>
+                {/* CONTENT */}
+                <div style={{ maxWidth: '800px' }}>
+                    {/* Actions bar */}
+                    {notifications.length > 0 && unreadCount > 0 && (
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
+                            <button
+                                className="sanctuary-button-ghost"
+                                onClick={() => markAllRead()}
+                            >
+                                <CheckCircle2 size={14} />
+                                {t('notifications.markAllRead', 'Mark all as read')}
+                            </button>
                         </div>
-                    ))}
+                    )}
 
-                    <div style={{ textAlign: 'center', marginTop: '40px' }}>
-                        <button className="sanctuary-button-ghost" style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.6 }}>
-                            <CheckCircle2 size={14} style={{ marginRight: 8 }} /> Mark all as read
-                        </button>
-                    </div>
+                    {/* Loading */}
+                    {isLoading && (
+                        <div style={{ padding: '80px 40px', textAlign: 'center', color: 'var(--ink-ghost)' }}>
+                            <p style={{ fontStyle: 'italic' }}>Gathering echoes...</p>
+                        </div>
+                    )}
+
+                    {/* Empty state */}
+                    {!isLoading && notifications.length === 0 && (
+                        <div style={{
+                            display: 'flex', flexDirection: 'column', alignItems: 'center',
+                            gap: '16px', padding: '80px 40px', textAlign: 'center'
+                        }}>
+                            <div style={{
+                                width: '64px', height: '64px', borderRadius: '20px',
+                                background: 'var(--action-soft)', display: 'flex',
+                                alignItems: 'center', justifyContent: 'center'
+                            }}>
+                                <Inbox size={28} color="var(--action)" />
+                            </div>
+                            <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic', maxWidth: '320px', lineHeight: 1.6 }}>
+                                {t('notifications.empty', 'The sanctuary is quiet. New echoes will appear here.')}
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Notification list */}
+                    {!isLoading && notifications.length > 0 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            {notifications.map((notif: AppNotification) => (
+                                <NotificationRow
+                                    key={notif.id}
+                                    notif={notif}
+                                    onRead={markAsRead}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
+            </div>
+        </div>
+    );
+}
+
+function NotificationRow({
+    notif,
+    onRead,
+}: {
+    notif: AppNotification;
+    onRead: (id: string) => Promise<void>;
+}) {
+    const icon = ICON_MAP[notif.type] ?? ICON_MAP.system;
+
+    const handleClick = useCallback(() => {
+        if (!notif.is_read) onRead(notif.id);
+    }, [notif.id, notif.is_read, onRead]);
+
+    return (
+        <div
+            role="button"
+            tabIndex={0}
+            onClick={handleClick}
+            onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') handleClick(); }}
+            className="sanctuary-card"
+            style={{
+                padding: '20px',
+                borderLeft: notif.is_read ? '1px solid var(--border)' : '4px solid var(--action)',
+                opacity: notif.is_read ? 0.75 : 1,
+                cursor: notif.is_read ? 'default' : 'pointer',
+                transition: 'opacity 0.3s ease',
+            }}
+        >
+            <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                {/* Icon */}
+                <div style={{
+                    width: '40px', height: '40px', borderRadius: '12px', flexShrink: 0,
+                    background: 'var(--glass-interact)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                    {icon}
+                </div>
+
+                {/* Body */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', marginBottom: '4px' }}>
+                        <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: 'var(--ink)', lineHeight: 1.3 }}>
+                            {notif.title}
+                        </h3>
+                        <span style={{ fontSize: '11px', color: 'var(--ink-ghost)', flexShrink: 0 }}>
+                            {timeAgo(notif.created_at)}
+                        </span>
+                    </div>
+                    {notif.body && (
+                        <p style={{ margin: 0, fontSize: '13px', color: 'var(--ink-soft)', lineHeight: 1.5 }}>
+                            {notif.body}
+                        </p>
+                    )}
+                </div>
+
+                {/* Unread dot */}
+                {!notif.is_read && (
+                    <div style={{
+                        width: '8px', height: '8px', borderRadius: '50%',
+                        background: 'var(--action)', flexShrink: 0, marginTop: '6px',
+                    }} />
+                )}
             </div>
         </div>
     );

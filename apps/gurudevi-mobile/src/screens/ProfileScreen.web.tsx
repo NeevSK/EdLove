@@ -49,7 +49,7 @@ export default function ProfileScreenWeb() {
                 <div className="sanctuary-container">
                     {/* Hero skeleton */}
                     <div style={{ height: '220px', background: 'var(--border)', borderRadius: '24px', marginBottom: '32px', opacity: 0.4 }} />
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(240px, 100%), 1fr))', gap: '24px' }}>
                         {[1, 2, 3, 4].map(i => (
                             <div key={i} style={{ height: '140px', background: 'var(--border)', borderRadius: '16px', opacity: 0.3 }} />
                         ))}
@@ -100,7 +100,7 @@ export default function ProfileScreenWeb() {
                                     {profile.full_name}
                                 </h1>
                                 {profile.is_thuthimal && (
-                                    <span style={{ padding: '4px 10px', background: 'var(--sanctuary-saffron)', color: 'white', borderRadius: '8px', fontSize: '11px', fontWeight: '800' }}>
+                                    <span style={{ padding: '4px 10px', background: 'var(--sanctuary-saffron)', color: 'var(--text-on-action)', borderRadius: '8px', fontSize: '11px', fontWeight: '800' }}>
                                         🌸 Thuthimal
                                     </span>
                                 )}

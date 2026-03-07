@@ -52,6 +52,11 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
     const [showCelebration, setShowCelebration] = React.useState(false);
     const [currentAchievement, setCurrentAchievement] = React.useState('');
 
+    // Ref to the sidebar element — used for focus trap
+    const sidebarRef = React.useRef<HTMLElement>(null);
+    // Last focused element before sidebar opened — returned on close
+    const preSidebarFocusRef = React.useRef<HTMLElement | null>(null);
+
     // Responsive design: mobile/tablet < 1024px
     React.useEffect(() => {
         const checkScreenSize = () => {
@@ -70,6 +75,71 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
             setShowCelebration(true);
         }
     }, [newAchievements]);
+
+    // ── FOCUS TRAP: mobile sidebar ──────────────────────────────────────────
+    // When the overlay sidebar opens, move keyboard focus inside and prevent
+    // Tab from escaping to page content behind the backdrop.
+    React.useEffect(() => {
+        if (!isMobileView || !isSidebarExpanded) return;
+
+        // Save the element that was focused before we opened the sidebar
+        preSidebarFocusRef.current = document.activeElement as HTMLElement;
+
+        // Move focus to the first focusable element inside the sidebar
+        const sidebar = sidebarRef.current;
+        if (!sidebar) return;
+        const focusable = sidebar.querySelectorAll<HTMLElement>(
+            'a[href], button:not([disabled]), input:not([disabled]), textarea, select, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length > 0) focusable[0].focus();
+
+        // Tab key handler — cycle inside the sidebar only
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                closeSidebar();
+                return;
+            }
+            if (e.key !== 'Tab') return;
+            const items = Array.from(
+                sidebar.querySelectorAll<HTMLElement>(
+                    'a[href], button:not([disabled]), input:not([disabled]), textarea, select, [tabindex]:not([tabindex="-1"])'
+                )
+            );
+            if (items.length === 0) return;
+            const first = items[0];
+            const last = items[items.length - 1];
+            if (e.shiftKey) {
+                if (document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                }
+            } else {
+                if (document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+            // Restore focus to the element that was active before the sidebar opened
+            preSidebarFocusRef.current?.focus();
+        };
+    }, [isMobileView, isSidebarExpanded]);
+
+    // ── DOCUMENT TITLE: update on tab/subview change ────────────────────────
+    React.useEffect(() => {
+        const base = 'Gurudevi Sanctuary';
+        if (activeSubView === 'notifications') {
+            document.title = `Notifications — ${base}`;
+        } else if (activeSubView === 'settings') {
+            document.title = `Settings — ${base}`;
+        } else {
+            document.title = activeTab ? `${activeTab} — ${base}` : base;
+        }
+    }, [activeTab, activeSubView]);
 
     const getClassroomLabel = () => {
         if (role === 'principal') return t('tabs.mySchool') || 'My School';
@@ -130,7 +200,9 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
 
                 {/* ── SIDEBAR ── */}
                 <aside
+                    ref={sidebarRef}
                     className={`sidebar ${isSidebarExpanded ? 'open expanded' : 'collapsed'}`}
+                    aria-hidden={isMobileView && !isSidebarExpanded}
                     style={{
                         zIndex: isMobileView ? 1000 : 10,
                         position: isMobileView ? 'fixed' : 'relative',
@@ -168,7 +240,7 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
                         )}
                     </div>
 
-                    <nav className="sidebar-nav" role="navigation" aria-label="Main navigation">
+                    <nav className="sidebar-nav" aria-label="Main navigation">
                         {TAB_CONFIG.map((conf) => {
                             const isActive = activeTab === conf.name && activeSubView === 'none';
                             const Icon = conf.icon;
@@ -283,7 +355,7 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
 
             {/* ── MOBILE BOTTOM NAV (< 1024px) ── */}
             {isMobileView && activeSubView === 'none' && (
-                <nav className="mobile-bottom-nav" role="navigation" aria-label="Tab navigation">
+                <nav className="mobile-bottom-nav" aria-label="Tab navigation">
                     {TAB_CONFIG.map((conf) => {
                         const isActive = activeTab === conf.name;
                         const Icon = conf.icon;

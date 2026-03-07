@@ -94,7 +94,7 @@ export default function TeacherSelfViewWeb() {
                 </div>
 
                 {/* Daily Professional Practice */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(240px, 100%), 1fr))', gap: '20px' }}>
                     <div className="sanctuary-card interactive" style={{ padding: '32px' }}>
                         <div style={{ marginBottom: '16px', color: 'var(--moss)' }}><Wind size={24} /></div>
                         <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px' }}>Breath & Presence</h3>

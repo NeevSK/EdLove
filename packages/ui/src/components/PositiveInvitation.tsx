@@ -3,6 +3,7 @@ import { Box, VStack, Heading, Text, Button, ButtonText, Center } from '../glues
 import { Plus, Sparkles, LogIn } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../theme/Theme';
+import { useTheme } from '../hooks/useTheme';
 import { useThemedColors } from '../hooks/useThemedColors';
 import { hapticLight } from '../utils/haptics';
 
@@ -27,6 +28,7 @@ const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
 }) => {
     const { t } = useTranslation();
     const colors = useThemedColors();
+    const { textOnAccent } = useTheme();
 
     const getMessages = () => {
         if (type === 'guest') {
@@ -121,7 +123,7 @@ const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
                             paddingHorizontal: Theme.spacing.lg
                         }}
                     >
-                        <ButtonText color={Theme.colors.sacredWhite}>{actionLabel || messages.action}</ButtonText>
+                        <ButtonText color={textOnAccent}>{actionLabel || messages.action}</ButtonText>
                     </Button>
                 )}
             </VStack>

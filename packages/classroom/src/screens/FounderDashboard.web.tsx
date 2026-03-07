@@ -77,7 +77,7 @@ export default function FounderDashboard() {
             </div>
 
             {/* Ecosystem Pulse Stats */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))', gap: '24px' }}>
                 {pulseStats.map((stat, i) => (
                     <div key={i} className="sanctuary-card">
                         <div className="card-body-inner">
@@ -113,7 +113,7 @@ export default function FounderDashboard() {
                 </div>
 
                 {isLoading ? (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: '24px' }}>
                         <SkeletonCard height={200} />
                         <SkeletonCard height={200} />
                         <SkeletonCard height={200} />
@@ -137,7 +137,7 @@ export default function FounderDashboard() {
                         )}
                     </div>
                 ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: '24px' }}>
                         {filteredSchools.map(school => (
                             <SchoolCard
                                 key={school.id}

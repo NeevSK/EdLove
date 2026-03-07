@@ -46,11 +46,14 @@ export default function FounderSelfViewWeb() {
     const latestMood = moodHistory[0];
     const todayForecast = forecasts[0];
 
-    const TABS: { id: ActivePanel; icon: any; label: string; color: string }[] = [
-        { id: 'vision', icon: Compass, label: 'Vision', color: 'var(--sanctuary-saffron)' },
-        { id: 'mood', icon: Sparkles, label: 'Mood Lotus', color: 'var(--water)' },
-        { id: 'energy', icon: Zap, label: 'Energy', color: 'var(--lotus)' },
-        { id: 'philosophy', icon: Lightbulb, label: 'Philosophy', color: 'var(--ink)' },
+    const TABS: { id: ActivePanel; icon: any; label: string; color: string; textColor: string }[] = [
+        // vision uses the phase accent (--sanctuary-saffron) which can be any luminance,
+        // so we use --text-on-action for WCAG-safe adaptive text.
+        { id: 'vision',     icon: Compass,    label: 'Vision',       color: 'var(--sanctuary-saffron)', textColor: 'var(--text-on-action)' },
+        // water (#3a7a9a), lotus (#c05878), ink (very dark) — all pass AA with white/vellum
+        { id: 'mood',       icon: Sparkles,   label: 'Mood Lotus',   color: 'var(--water)',             textColor: '#FCF9F2' },
+        { id: 'energy',     icon: Zap,        label: 'Energy',       color: 'var(--lotus)',             textColor: '#FCF9F2' },
+        { id: 'philosophy', icon: Lightbulb,  label: 'Philosophy',   color: 'var(--ink)',               textColor: '#FCF9F2' },
     ];
 
     return (
@@ -86,7 +89,7 @@ export default function FounderSelfViewWeb() {
                                 padding: '10px 18px', borderRadius: '12px', border: 'none', cursor: 'pointer',
                                 fontWeight: '700', fontSize: '13px', transition: 'all 0.2s',
                                 background: activePanel === tab.id ? tab.color : 'var(--background-alt)',
-                                color: activePanel === tab.id ? 'white' : 'var(--ink)',
+                                color: activePanel === tab.id ? tab.textColor : 'var(--ink)',
                             }}
                         >
                             <tab.icon size={15} />
@@ -296,7 +299,7 @@ function PhilosophyPanel({ notes, wisdomLoading }: { notes: any[]; wisdomLoading
                     <p style={{ color: 'var(--ink-ghost)', fontSize: '14px', margin: 0 }}>No wisdom seeds yet. Plant your first insight from the mobile app.</p>
                 </div>
             ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(240px, 100%), 1fr))', gap: '16px' }}>
                     {notes.slice(0, 8).map((note: any) => (
                         <div key={note.id} style={{ padding: '20px 24px', background: 'var(--background-alt)', borderRadius: '14px', borderLeft: '3px solid var(--sanctuary-saffron)' }}>
                             <p style={{ fontSize: '14px', fontStyle: 'italic', lineHeight: '1.6', margin: '0 0 8px' }}>"{note.insight}"</p>

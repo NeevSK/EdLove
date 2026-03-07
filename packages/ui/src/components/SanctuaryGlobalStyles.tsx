@@ -1,17 +1,25 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
+import { hexToRgba } from '../utils/colorUtils';
 
 /**
  * SanctuaryGlobalStyles (Web-only)
- * 
- * Injects global CSS for the web platform to resolve "Aesthetic Decay"
- * and align with superior browser standards (e.g., custom scrollbars).
+ *
+ * Injects global CSS for the web platform.  Consumes the full adaptive
+ * token set from useTheme() — including WCAG-computed textOnAccent /
+ * textOnReward — so that text colors automatically adapt whenever the
+ * temporal phase changes the active accent (Saffron → Sage → Blue → Gold).
  */
 export function SanctuaryGlobalStyles() {
   if (Platform.OS !== 'web') return null;
 
-  const { accent, glass, text, isDark, gradientNodes } = useTheme();
+  const {
+    accent, glass, text, isDark, gradientNodes,
+    textOnAccent, textOnReward,
+    accentRgb, rewardRgb, surfaceRgb,
+    phase,
+  } = useTheme();
 
   const css = `
     /* ── TOKENS ── */
@@ -42,11 +50,46 @@ export function SanctuaryGlobalStyles() {
       /* Gurudevi Blue (alias for water) */
       --gurudevi-blue: #3a7a9a;
 
-      /* Action (Saffron) */
+      /* Action (Saffron / phase-aware) */
       --action:             ${accent.action};
-      --action-soft:        ${accent.action}18;
+      --action-rgb:         ${accentRgb};
+      --action-soft:        ${hexToRgba(accent.action, 0.09)};
+      --action-medium:      ${hexToRgba(accent.action, 0.18)};
+      --action-glow:        ${hexToRgba(accent.action, 0.28)};
+      --action-border:      ${hexToRgba(accent.action, 0.40)};
+      /* Text that is WCAG-safe on top of --action backgrounds */
+      --text-on-action:     ${textOnAccent};
       --sanctuary-saffron:  ${accent.action};
-      --sanctuary-saffron-soft: ${accent.action}18;
+      --sanctuary-saffron-soft: ${hexToRgba(accent.action, 0.09)};
+
+      /* Reward (achievement / celebration — phase-aware) */
+      --reward:             ${accent.reward};
+      --reward-rgb:         ${rewardRgb};
+      --reward-soft:        ${hexToRgba(accent.reward, 0.09)};
+      --reward-medium:      ${hexToRgba(accent.reward, 0.18)};
+      --reward-glow:        ${hexToRgba(accent.reward, 0.28)};
+      /* Text that is WCAG-safe on top of --reward backgrounds */
+      --text-on-reward:     ${textOnReward};
+
+      /* Danger */
+      --danger:             #FF6347;
+      --danger-soft:        rgba(255,99,71,0.09);
+      --text-on-danger:     #FCF9F2;
+
+      /* Phase surface gradient nodes (used for ambient tints) */
+      --surface-primary:   ${gradientNodes[0]};
+      --surface-secondary: ${gradientNodes[1]};
+      --surface-tertiary:  ${gradientNodes[2]};
+      --surface-rgb:        ${surfaceRgb};
+
+      /* Full text token set exposed as CSS variables */
+      --text-primary:   ${text.primary};
+      --text-secondary: ${text.secondary};
+      --text-inverse:   ${text.inverse};
+      --text-muted:     ${text.muted};
+
+      /* Phase identifier — useful for CSS [data-phase="morning"] overrides */
+      --phase: "${phase}";
 
       /* Backgrounds */
       --background:     ${isDark ? '#111218' : '#F5EDD6'};
@@ -372,18 +415,19 @@ export function SanctuaryGlobalStyles() {
       font-size: 14px;
       font-weight: 700;
       letter-spacing: 0.01em;
-      background: ${accent.action};
-      color: #fff;
-      box-shadow: 0 4px 16px ${accent.action}40;
+      background: var(--action);
+      color: var(--text-on-action);
+      box-shadow: 0 4px 16px var(--action-glow);
       transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
       white-space: nowrap;
     }
     .premium-button:hover {
       transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 8px 24px ${accent.action}55;
+      box-shadow: 0 8px 24px var(--action-glow);
       filter: brightness(1.07);
     }
     .premium-button:active { transform: scale(0.97); }
+    .premium-button:disabled { opacity: 0.45; cursor: not-allowed; }
 
     .secondary-button {
       display: inline-flex;
@@ -530,6 +574,162 @@ export function SanctuaryGlobalStyles() {
       border-color: var(--water);
       color: var(--water);
     }
+
+    /* ──────────────────────────────────────────────────────────────────
+       ADAPTIVE COLOUR UTILITY CLASSES
+       These classes automatically adapt when the temporal phase changes
+       the active accent colour (Saffron → Sage → Blue → Gold etc.).
+       Text colours are WCAG-computed so contrast is always ≥ 4.5 : 1.
+    ────────────────────────────────────────────────────────────────── */
+
+    /* Solid accent background — text colour auto-adapts */
+    .action-bg {
+      background: var(--action);
+      color: var(--text-on-action);
+    }
+    .action-bg-soft {
+      background: var(--action-soft);
+      color: var(--action);
+    }
+
+    /* Solid reward background — text colour auto-adapts */
+    .reward-bg {
+      background: var(--reward);
+      color: var(--text-on-reward);
+    }
+    .reward-bg-soft {
+      background: var(--reward-soft);
+      color: var(--reward);
+    }
+
+    /* Danger background */
+    .danger-bg {
+      background: var(--danger);
+      color: var(--text-on-danger);
+    }
+    .danger-bg-soft {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    /* Phase-aware glass chip (small tag / badge) */
+    .glass-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: var(--action-soft);
+      color: var(--action);
+      border: 1px solid var(--action-border);
+    }
+    .glass-chip.reward {
+      background: var(--reward-soft);
+      color: var(--reward);
+      border-color: rgba(var(--reward-rgb), 0.35);
+    }
+    .glass-chip.danger {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border-color: rgba(255,99,71,0.35);
+    }
+    .glass-chip.neutral {
+      background: ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'};
+      color: var(--ink-soft);
+      border-color: var(--border);
+    }
+
+    /* Stat chip — metric pill used in dashboards */
+    .stat-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      background: var(--action-soft);
+      border: 1px solid var(--action-border);
+    }
+    .stat-chip .stat-value {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--action);
+      line-height: 1;
+    }
+    .stat-chip .stat-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-ghost);
+    }
+
+    /* Phase-aware focus ring (replaces the hardcoded saffron outline) */
+    *:focus-visible {
+      outline: 2.5px solid var(--action) !important;
+      outline-offset: 3px;
+    }
+
+    /* Phase-aware action button — adapts to current phase accent */
+    .action-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      background: var(--action);
+      color: var(--text-on-action);
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+      font-family: var(--font-body);
+    }
+    .action-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px var(--action-glow);
+    }
+    .action-button:active { transform: scale(0.97); }
+    .action-button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* Outline variant of action button */
+    .action-button.outline {
+      background: var(--action-soft);
+      color: var(--action);
+      border: 1.5px solid var(--action-border);
+    }
+    .action-button.outline:hover {
+      background: var(--action-medium);
+    }
+
+    /* Ghost button — subtle, no fill, used for secondary actions (e.g. "Mark all read") */
+    .sanctuary-button-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-ghost);
+      background: transparent;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-family: var(--font-body);
+    }
+    .sanctuary-button-ghost:hover {
+      background: var(--background-alt);
+      color: var(--ink);
+      border-color: var(--action-border);
+    }
+    .sanctuary-button-ghost:active { transform: scale(0.97); }
 
     /* ── LAYOUT UTILS ── */
     .sub-view-container {

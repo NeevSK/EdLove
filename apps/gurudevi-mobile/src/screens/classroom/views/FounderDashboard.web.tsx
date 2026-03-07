@@ -111,7 +111,7 @@ export default function FounderDashboardWeb() {
             </div>
 
             {/* ─── 2. ECOSYSTEM PULSE STATS ──────────────────── */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))', gap: '24px' }}>
                 {ecosystemStats.map((stat, i) => (
                     <div key={i} className="sanctuary-card" style={{ transition: 'transform 0.2s' }}>
                         <div className="card-body-inner">
@@ -147,7 +147,7 @@ export default function FounderDashboardWeb() {
                 </div>
 
                 {isLoading ? (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: '24px' }}>
                         <SkeletonCard height={200} />
                         <SkeletonCard height={200} />
                         <SkeletonCard height={200} />
@@ -172,7 +172,7 @@ export default function FounderDashboardWeb() {
                         )}
                     </div>
                 ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: '24px' }}>
                         {filteredSchools.map(school => (
                             <SchoolCard key={school.id} school={school} />
                         ))}
@@ -182,7 +182,7 @@ export default function FounderDashboardWeb() {
 
             {/* ─── 4. PLATFORM INSIGHTS ROW ──────────────────── */}
             {!isLoading && stats && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(240px, 100%), 1fr))', gap: '24px' }}>
                     {/* Teacher/Student split */}
                     <div className="sanctuary-card">
                         <div className="card-body-inner">
@@ -210,7 +210,7 @@ export default function FounderDashboardWeb() {
                     <div className="sanctuary-card">
                         <div className="card-body-inner">
                             <h3 style={{ fontSize: '14px', fontWeight: '800', marginBottom: '20px' }}>Platform Activity</h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '16px' }}>
                                 {[
                                     { label: 'Active Communities', value: stats.active_communities?.toLocaleString() ?? '—', color: 'var(--lotus)' },
                                     { label: 'Total Classrooms', value: stats.total_classrooms?.toLocaleString() ?? '—', color: 'var(--water)' },

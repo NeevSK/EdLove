@@ -62,7 +62,7 @@ export default function AppSettingsScreenWeb() {
                     <p className="greeting-note">{t('settings.description', 'Customize your experience within the Gurudevi Ecosystem')}</p>
                 </div>
 
-                <div className="settings-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '24px' }}>
+                <div className="settings-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(350px, 100%), 1fr))', gap: '24px' }}>
 
                     {/* 1. APPEARANCE SECTION */}
                     <div className="sanctuary-card" style={{ padding: '24px' }}>

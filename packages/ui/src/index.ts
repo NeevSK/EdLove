@@ -16,6 +16,7 @@ export * from './utils/haptics';
 export * from './utils/themeColors';
 export * from './utils/linking';
 export * from './utils/SanctuaryLocation';
+export * from './utils/colorUtils';
 export * from './hooks/useAccessibility';
 export * from './hooks/useDemoBridge';
 export * from './hooks/useQRDeepLink';

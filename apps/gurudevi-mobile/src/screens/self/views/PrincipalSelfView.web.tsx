@@ -367,7 +367,7 @@ function WisdomPanel({ notes, wisdomLoading }: { notes: any[]; wisdomLoading: bo
             {notes.length === 0 ? (
                 <p style={{ color: 'var(--ink-ghost)', fontSize: '14px' }}>No wisdom notes yet. Add your first insight from the mobile app.</p>
             ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(240px, 100%), 1fr))', gap: '16px' }}>
                     {notes.slice(0, 6).map((note: any) => (
                         <div key={note.id} style={{ padding: '20px 24px', background: 'var(--background-alt)', borderRadius: '14px' }}>
                             <p style={{ fontSize: '14px', fontStyle: 'italic', lineHeight: '1.6', margin: '0 0 8px' }}>"{note.insight}"</p>
