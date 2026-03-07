@@ -12,6 +12,7 @@
  */
 
 import React, { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import QRCodeGenerator from '../QRCodeGenerator';
 
@@ -53,6 +54,7 @@ export default function QRShareButton({
   backgroundColor = '#1a1a2e',
   accentColor = '#f5a623',
 }: QRShareButtonProps) {
+  const { t } = useTranslation();
   const viewRef = useRef<View>(null);
 
   const shareUrl = shortUrl ?? value;
@@ -73,7 +75,7 @@ export default function QRShareButton({
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(uri, {
           mimeType: 'image/png',
-          dialogTitle: label ? `Share ${label} QR Code` : 'Share QR Code',
+          dialogTitle: label ? t('scanner.qrShare.dialogWithLabel', { label, defaultValue: `Share ${label} QR Code` }) : t('scanner.qrShare.dialog', 'Share QR Code'),
         });
       }
     } catch (err) {
@@ -104,17 +106,17 @@ export default function QRShareButton({
         <TouchableOpacity
           onPress={handleShareImage}
           style={[styles.button, { borderColor: accentColor }]}
-          accessibilityLabel="Share QR code as image"
+          accessibilityLabel={t('scanner.qrShare.shareImageAria', 'Share QR code as image')}
         >
-          <Text style={[styles.buttonText, { color: accentColor }]}>📤 Share Image</Text>
+          <Text style={[styles.buttonText, { color: accentColor }]}>📤 {t('scanner.qrShare.shareImage', 'Share Image')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={handleCopyLink}
           style={[styles.button, { borderColor: accentColor }]}
-          accessibilityLabel="Copy QR link to clipboard"
+          accessibilityLabel={t('scanner.qrShare.copyLinkAria', 'Copy QR link to clipboard')}
         >
-          <Text style={[styles.buttonText, { color: accentColor }]}>🔗 Copy Link</Text>
+          <Text style={[styles.buttonText, { color: accentColor }]}>🔗 {t('scanner.qrShare.copyLink', 'Copy Link')}</Text>
         </TouchableOpacity>
       </View>
     </View>

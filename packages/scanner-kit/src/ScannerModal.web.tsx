@@ -16,6 +16,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Modal,
     View,
@@ -37,9 +38,11 @@ export default function ScannerModal({
     visible,
     onClose,
     onScan,
-    title = 'Enter QR Code',
+    title,
     accentColor = '#D4843A',
 }: ScannerModalProps) {
+    const { t } = useTranslation();
+    const resolvedTitle = title ?? t('scanner.modal.web.title', 'Enter QR Code');
     const [value, setValue] = useState('');
     const [error, setError] = useState('');
     const inputRef = useRef<TextInput>(null);
@@ -57,7 +60,7 @@ export default function ScannerModal({
     const handleSubmit = () => {
         const trimmed = value.trim();
         if (!trimmed) {
-            setError('Please paste or type a QR code value.');
+            setError(t('scanner.modal.web.errors.emptyValue', 'Please paste or type a QR code value.'));
             return;
         }
         onScan(trimmed);
@@ -77,11 +80,11 @@ export default function ScannerModal({
                     <View style={styles.card}>
                         {/* Header */}
                         <View style={styles.header}>
-                            <Text style={styles.titleText}>{title}</Text>
+                            <Text style={styles.titleText}>{resolvedTitle}</Text>
                             <TouchableOpacity
                                 onPress={onClose}
                                 style={styles.closeButton}
-                                accessibilityLabel="Close scanner"
+                                accessibilityLabel={t('scanner.modal.web.closeAriaLabel', 'Close scanner')}
                             >
                                 <Text style={styles.closeText}>✕</Text>
                             </TouchableOpacity>
@@ -94,10 +97,10 @@ export default function ScannerModal({
                                 <Text style={[styles.iconGlyph, { color: accentColor }]}>⊞</Text>
                             </View>
                             <Text style={styles.messageText}>
-                                Camera scanning is available in the{'\n'}Gurudevi mobile app.
+                                {t('scanner.modal.web.cameraInApp', 'Camera scanning is available in the\nGurudevi mobile app.')}
                             </Text>
                             <Text style={styles.subText}>
-                                On desktop, paste the QR code value below.
+                                {t('scanner.modal.web.desktopHint', 'On desktop, paste the QR code value below.')}
                             </Text>
                         </View>
 
@@ -109,7 +112,7 @@ export default function ScannerModal({
                                 error ? styles.inputError : null,
                                 { borderColor: error ? '#E74C3C' : '#DED5BC' },
                             ]}
-                            placeholder="Paste QR code value here…"
+                            placeholder={t('scanner.modal.web.placeholder', 'Paste QR code value here…')}
                             placeholderTextColor="#A09070"
                             value={value}
                             onChangeText={(v) => { setValue(v); setError(''); }}
@@ -127,7 +130,7 @@ export default function ScannerModal({
                             onPress={handleSubmit}
                             activeOpacity={0.85}
                         >
-                            <Text style={styles.submitText}>Submit Code</Text>
+                            <Text style={styles.submitText}>{t('scanner.modal.web.submit', 'Submit Code')}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

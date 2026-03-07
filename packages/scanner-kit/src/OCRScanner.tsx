@@ -3,6 +3,7 @@
 // Provider-agnostic: uses OCRPipeline (MLKit by default, cloud for Pro users)
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, Alert, View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { defaultOCRPipeline, OCRPipeline } from './ocr/OCRPipeline';
@@ -62,6 +63,7 @@ export default function OCRScanner({
     providerName = 'mlkit',
     pipeline = defaultOCRPipeline,
 }: OCRScannerProps) {
+    const { t } = useTranslation();
     const colors = { ...DEFAULT_COLORS, ...colorsProp };
     const [imageUri, setImageUri] = useState<string | null>(null);
     const [scannedText, setScannedText] = useState<string>('');
@@ -79,9 +81,9 @@ export default function OCRScanner({
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== 'granted') {
             Alert.alert(
-                'Camera Permission',
-                'We need camera permission to scan student registers.',
-                [{ text: 'OK' }]
+                t('scanner.ocr.cameraPermissionTitle', 'Camera Permission'),
+                t('scanner.ocr.cameraPermissionMessage', 'We need camera permission to scan student registers.'),
+                [{ text: t('common.ok', 'OK') }]
             );
             return false;
         }
@@ -127,22 +129,22 @@ export default function OCRScanner({
             const ocrResult = await pipeline.recognize(uri, { provider: providerName });
 
             if (!ocrResult.text && ocrResult.blocks.length === 0) {
-                throw new Error('No text detected in image');
+                throw new Error(t('scanner.ocr.errors.noTextDetected', 'No text detected in image'));
             }
 
             setScannedText(ocrResult.text);
             const students = parseStudents(ocrResult);
 
             if (students.length === 0) {
-                throw new Error('No student data could be parsed from the image');
+                throw new Error(t('scanner.ocr.errors.noStudentData', 'No student data could be parsed from the image'));
             }
 
             setParsedStudents(students);
             setStep('review');
-            showToast(`Found ${students.length} student(s)! Review and confirm.`);
+            showToast(t('scanner.ocr.foundStudentsToast', { count: students.length, defaultValue: `Found ${students.length} student(s)! Review and confirm.` }));
         } catch (error) {
             console.error('OCR Error:', error);
-            showToast('Failed to scan register. Try manual entry instead.');
+            showToast(t('scanner.ocr.errors.scanFailed', 'Failed to scan register. Try manual entry instead.'));
             setStep('capture');
             setImageUri(null);
         }
@@ -150,7 +152,7 @@ export default function OCRScanner({
 
     const handleConfirm = () => {
         if (parsedStudents.length === 0) {
-            showToast('No students to add');
+            showToast(t('scanner.ocr.errors.noStudentsToAdd', 'No students to add'));
             return;
         }
         onStudentsScanned(parsedStudents);
@@ -182,7 +184,7 @@ export default function OCRScanner({
                 borderBottomWidth: 1, borderBottomColor: colors.border,
             }}>
                 <Text style={{ color: colors.accent, fontSize: 20, fontWeight: 'bold' }}>
-                    Scan Student Register
+                    {t('scanner.ocr.title', 'Scan Student Register')}
                 </Text>
                 <TouchableOpacity onPress={onCancel}>
                     <Text style={{ color: colors.textSecondary, fontSize: 24 }}>✕</Text>
@@ -194,7 +196,7 @@ export default function OCRScanner({
                 {step === 'capture' && (
                     <View style={{ gap: 16 }}>
                         <Text style={{ color: colors.textSecondary, textAlign: 'center' }}>
-                            Take a photo of your student register. Works with Sinhala, Tamil, and English text.
+                            {t('scanner.ocr.captureDescription', 'Take a photo of your student register. Works with Sinhala, Tamil, and English text.')}
                         </Text>
 
                         <TouchableOpacity
@@ -204,7 +206,7 @@ export default function OCRScanner({
                                 borderRadius: 12, alignItems: 'center',
                             }}
                         >
-                            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>📷 Take Photo</Text>
+                            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>📷 {t('scanner.ocr.takePhoto', 'Take Photo')}</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -214,15 +216,20 @@ export default function OCRScanner({
                                 borderRadius: 12, alignItems: 'center',
                             }}
                         >
-                            <Text style={{ color: colors.text, fontSize: 16 }}>Choose from Gallery</Text>
+                            <Text style={{ color: colors.text, fontSize: 16 }}>{t('scanner.ocr.chooseFromGallery', 'Choose from Gallery')}</Text>
                         </TouchableOpacity>
 
                         <View style={{
                             backgroundColor: colors.tertiary, padding: 16,
                             borderRadius: 12, borderWidth: 1, borderColor: colors.border, gap: 6,
                         }}>
-                            <Text style={{ color: colors.accent, fontWeight: '600', fontSize: 13 }}>Tips for best results:</Text>
-                            {['Good lighting (avoid shadows)', 'Clear, focused image', 'Straight angle (not tilted)', 'Include column headers if possible'].map(tip => (
+                            <Text style={{ color: colors.accent, fontWeight: '600', fontSize: 13 }}>{t('scanner.ocr.tipsTitle', 'Tips for best results:')}</Text>
+                            {[
+                                t('scanner.ocr.tips.goodLighting', 'Good lighting (avoid shadows)'),
+                                t('scanner.ocr.tips.clearImage', 'Clear, focused image'),
+                                t('scanner.ocr.tips.straightAngle', 'Straight angle (not tilted)'),
+                                t('scanner.ocr.tips.includeHeaders', 'Include column headers if possible'),
+                            ].map(tip => (
                                 <Text key={tip} style={{ color: colors.textSecondary, fontSize: 13 }}>• {tip}</Text>
                             ))}
                         </View>
@@ -235,14 +242,14 @@ export default function OCRScanner({
                             <Image source={{ uri: imageUri }} style={{ width: 300, height: 400, borderRadius: 12 }} resizeMode="contain" />
                         )}
                         <ActivityIndicator size="large" color={colors.accent} />
-                        <Text style={{ color: colors.textSecondary, textAlign: 'center' }}>Scanning and analyzing text...</Text>
+                        <Text style={{ color: colors.textSecondary, textAlign: 'center' }}>{t('scanner.ocr.processing', 'Scanning and analyzing text...')}</Text>
                     </View>
                 )}
 
                 {step === 'review' && (
                     <View style={{ gap: 16 }}>
                         <Text style={{ color: colors.textSecondary, textAlign: 'center' }}>
-                            Found {parsedStudents.length} student(s). Review and confirm or edit manually.
+                            {t('scanner.ocr.reviewDescription', { count: parsedStudents.length, defaultValue: `Found ${parsedStudents.length} student(s). Review and confirm or edit manually.` })}
                         </Text>
 
                         {imageUri && (
@@ -260,11 +267,11 @@ export default function OCRScanner({
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <View style={{ flex: 1, gap: 4 }}>
                                             <Text style={{ color: colors.text, fontWeight: '600' }}>{student.name}</Text>
-                                            <Text style={{ color: colors.textSecondary, fontSize: 13 }}>Index: {student.index_number}</Text>
+                                            <Text style={{ color: colors.textSecondary, fontSize: 13 }}>{t('scanner.ocr.indexLabel', 'Index')}: {student.index_number}</Text>
                                             {student.notes && <Text style={{ color: colors.textSecondary, fontSize: 13 }}>{student.notes}</Text>}
                                             {student.uncertain && (
                                                 <Text style={{ color: colors.warning, fontSize: 11 }}>
-                                                    ⚠ Low confidence — please verify
+                                                    ⚠ {t('scanner.ocr.lowConfidence', 'Low confidence — please verify')}
                                                 </Text>
                                             )}
                                         </View>
@@ -298,7 +305,7 @@ export default function OCRScanner({
                                     padding: 16, borderRadius: 12, alignItems: 'center',
                                 }}
                             >
-                                <Text style={{ color: colors.text }}>Try Again</Text>
+                                <Text style={{ color: colors.text }}>{t('scanner.ocr.tryAgain', 'Try Again')}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={handleConfirm}
@@ -307,7 +314,7 @@ export default function OCRScanner({
                                     padding: 16, borderRadius: 12, alignItems: 'center',
                                 }}
                             >
-                                <Text style={{ color: '#fff', fontWeight: 'bold' }}>Confirm ({parsedStudents.length})</Text>
+                                <Text style={{ color: '#fff', fontWeight: 'bold' }}>{t('scanner.ocr.confirmWithCount', { count: parsedStudents.length, defaultValue: `Confirm (${parsedStudents.length})` })}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

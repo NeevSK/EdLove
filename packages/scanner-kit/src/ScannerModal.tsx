@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Modal, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
+import { useTranslation } from 'react-i18next';
 
 /**
  * ScannerModal — QR code scanner for Gurudevi
@@ -48,9 +49,11 @@ export default function ScannerModal({
     visible,
     onClose,
     onScan,
-    title = 'Scan QR Code',
+    title,
     accentColor = '#f5a623',
 }: ScannerModalProps) {
+    const { t } = useTranslation();
+    const resolvedTitle = title ?? t('scanner.modal.title', 'Scan QR Code');
     const [permission, requestPermission] = useCameraPermissions();
     const [scanned, setScanned] = useState(false);
     const [facing, setFacing] = useState<CameraType>('back');
@@ -74,7 +77,7 @@ export default function ScannerModal({
         setGalleryError(null);
         try {
             if (!BarcodeScanning) {
-                setGalleryError('Gallery scanning requires a custom dev build.\nRun: expo prebuild && expo run:android (or run:ios)');
+                setGalleryError(t('scanner.modal.errors.galleryRequiresBuild', 'Gallery scanning requires a custom dev build.\nRun: expo prebuild && expo run:android (or run:ios)'));
                 return;
             }
 
@@ -88,11 +91,11 @@ export default function ScannerModal({
             if (qr?.value || qr?.rawValue) {
                 handleBarCodeScanned({ data: (qr.value ?? qr.rawValue)! });
             } else {
-                setGalleryError('No QR code found in image.\nTry cropping closer to the QR code.');
+                setGalleryError(t('scanner.modal.errors.noQrFound', 'No QR code found in image.\nTry cropping closer to the QR code.'));
             }
         } catch (error) {
             console.error('Gallery Scan Error:', error);
-            setGalleryError('Could not scan image. Please try again.');
+            setGalleryError(t('scanner.modal.errors.scanFailed', 'Could not scan image. Please try again.'));
         } finally {
             setProcessing(false);
         }
@@ -137,16 +140,16 @@ export default function ScannerModal({
                     <View style={styles.permissionContainer}>
                         <View style={{ gap: 10, alignItems: 'center' }}>
                             <Text style={{ textAlign: 'center', color: '#fff' }}>
-                                We need your permission to show the camera
+                                {t('scanner.modal.permissionMessage', 'We need your permission to show the camera')}
                             </Text>
                             <TouchableOpacity
                                 onPress={requestPermission}
                                 style={[styles.button, { backgroundColor: accentColor }]}
                             >
-                                <Text style={styles.buttonText}>Grant Permission</Text>
+                                <Text style={styles.buttonText}>{t('scanner.modal.grantPermission', 'Grant Permission')}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={onClose}>
-                                <Text style={{ color: '#888' }}>Cancel</Text>
+                                <Text style={{ color: '#888' }}>{t('common.cancel', 'Cancel')}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -171,7 +174,7 @@ export default function ScannerModal({
                 >
                     <View style={styles.overlay}>
                         <View style={styles.header}>
-                            <Text style={styles.heading}>{title}</Text>
+                            <Text style={styles.heading}>{resolvedTitle}</Text>
                             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
                                 <Text style={{ color: 'white', fontSize: 20 }}>✕</Text>
                             </TouchableOpacity>
@@ -181,18 +184,18 @@ export default function ScannerModal({
                             {processing ? (
                                 <View style={{ backgroundColor: 'rgba(0,0,0,0.7)', padding: 20, borderRadius: 10, alignItems: 'center' }}>
                                     <ActivityIndicator size="large" color={accentColor} />
-                                    <Text style={{ color: 'white', marginTop: 10 }}>Scanning with ML Kit...</Text>
+                                    <Text style={{ color: 'white', marginTop: 10 }}>{t('scanner.modal.processing', 'Scanning with ML Kit...')}</Text>
                                 </View>
                             ) : galleryError ? (
                                 <View style={{ backgroundColor: 'rgba(220,50,50,0.85)', padding: 14, borderRadius: 10, maxWidth: 260 }}>
                                     <Text style={{ color: 'white', textAlign: 'center', fontSize: 13 }}>{galleryError}</Text>
                                     <TouchableOpacity onPress={() => setGalleryError(null)} style={{ marginTop: 8, alignSelf: 'center' }}>
-                                        <Text style={{ color: 'white', textDecorationLine: 'underline', fontSize: 12 }}>Dismiss</Text>
+                                        <Text style={{ color: 'white', textDecorationLine: 'underline', fontSize: 12 }}>{t('common.dismiss', 'Dismiss')}</Text>
                                     </TouchableOpacity>
                                 </View>
                             ) : (
                                 <Text style={styles.instructionText}>
-                                    Point camera at QR code{'\n'}or select from gallery
+                                    {t('scanner.modal.instructions', 'Point camera at QR code\nor select from gallery')}
                                 </Text>
                             )}
                         </View>
@@ -204,7 +207,7 @@ export default function ScannerModal({
                                 disabled={processing}
                             >
                                 <Text style={{ fontSize: 24 }}>🖼</Text>
-                                <Text style={[styles.controlLabel, processing && { color: 'gray' }]}>Gallery</Text>
+                                <Text style={[styles.controlLabel, processing && { color: 'gray' }]}>{t('scanner.modal.gallery', 'Gallery')}</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
@@ -213,7 +216,7 @@ export default function ScannerModal({
                                 disabled={processing}
                             >
                                 <Text style={{ fontSize: 24 }}>🔄</Text>
-                                <Text style={[styles.controlLabel, processing && { color: 'gray' }]}>Flip</Text>
+                                <Text style={[styles.controlLabel, processing && { color: 'gray' }]}>{t('scanner.modal.flip', 'Flip')}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

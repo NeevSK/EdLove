@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Modal, StyleSheet, TouchableOpacity } from 'react-native';
 import {
     Box,
@@ -9,14 +9,11 @@ import {
     Button,
     ButtonText,
     Theme,
-    hapticSuccess,
-    hapticError,
-    useLotusToast,
     useTheme,
 } from '@repo/ui';
 import { X, AlertTriangle, ShieldOff, UserX, ShieldCheck, LifeBuoy } from 'lucide-react-native';
 import { useSocialShield, type ReportTarget } from '../hooks/useSocialShield';
-import { useStore } from '@repo/core';
+import { useTranslation } from 'react-i18next';
 
 interface SocialShieldModalProps {
     isOpen: boolean;
@@ -28,30 +25,36 @@ interface SocialShieldModalProps {
 }
 
 const REPORT_REASONS = [
-    { label: 'Harmful Content', value: 'harmful', icon: AlertTriangle },
-    { label: 'Harassment', value: 'harassment', icon: UserX },
-    { label: 'Inappropriate for School', value: 'inappropriate', icon: ShieldOff },
-    { label: 'Other', value: 'other', icon: AlertTriangle },
+    { labelKey: 'community.socialShield.reasons.harmful', fallback: 'Harmful Content', value: 'harmful', icon: AlertTriangle },
+    { labelKey: 'community.socialShield.reasons.harassment', fallback: 'Harassment', value: 'harassment', icon: UserX },
+    { labelKey: 'community.socialShield.reasons.inappropriate', fallback: 'Inappropriate for School', value: 'inappropriate', icon: ShieldOff },
+    { labelKey: 'community.socialShield.reasons.other', fallback: 'Other', value: 'other', icon: AlertTriangle },
 ];
 
-const TARGET_OPTIONS: { label: string; value: ReportTarget; icon: any; description: string }[] = [
-    { 
-        label: 'Class Teacher', 
-        value: 'teacher', 
-        icon: ShieldCheck, 
-        description: 'For classroom-related issues and minor conflicts.' 
+const TARGET_OPTIONS: { labelKey: string; labelFallback: string; value: ReportTarget; icon: any; descriptionKey: string; descriptionFallback: string }[] = [
+    {
+        labelKey: 'community.socialShield.targets.teacher.label',
+        labelFallback: 'Class Teacher',
+        value: 'teacher',
+        icon: ShieldCheck,
+        descriptionKey: 'community.socialShield.targets.teacher.description',
+        descriptionFallback: 'For classroom-related issues and minor conflicts.'
     },
-    { 
-        label: 'School Principal', 
-        value: 'principal', 
-        icon: ShieldCheck, 
-        description: 'For serious safety concerns or severe harassment.' 
+    {
+        labelKey: 'community.socialShield.targets.principal.label',
+        labelFallback: 'School Principal',
+        value: 'principal',
+        icon: ShieldCheck,
+        descriptionKey: 'community.socialShield.targets.principal.description',
+        descriptionFallback: 'For serious safety concerns or severe harassment.'
     },
-    { 
-        label: 'Platform Guardians', 
-        value: 'platform', 
-        icon: LifeBuoy, 
-        description: 'For technical abuse or violations of platform rules.' 
+    {
+        labelKey: 'community.socialShield.targets.platform.label',
+        labelFallback: 'Platform Guardians',
+        value: 'platform',
+        icon: LifeBuoy,
+        descriptionKey: 'community.socialShield.targets.platform.description',
+        descriptionFallback: 'For technical abuse or violations of platform rules.'
     },
 ];
 
@@ -61,9 +64,10 @@ export default function SocialShieldModal({
     postId,
     groupId,
     targetUserId,
-    targetUserName = 'this user'
+    targetUserName
 }: SocialShieldModalProps) {
     const { glass, text, accent, isDark } = useTheme();
+    const { t } = useTranslation();
     const { submitReport, blockUser } = useSocialShield();
     const [reason, setReason] = useState<string>('');
     const [target, setTarget] = useState<ReportTarget>('platform');
@@ -128,12 +132,12 @@ export default function SocialShieldModal({
                         <HStack justifyContent="space-between" alignItems="center">
                             <VStack {...({ space: "xs" } as any)}>
                                 <Heading {...({ color: text.primary, size: "lg" } as any)}>
-                                    {step === 'reason' ? 'Shielding the Sanctuary' : 'Who should guide this?'}
+                                    {step === 'reason' ? t('community.socialShield.title.reason', 'Shielding the Sanctuary') : t('community.socialShield.title.target', 'Who should guide this?')}
                                 </Heading>
                                 <Text {...({ color: text.secondary, size: "sm" } as any)}>
                                     {step === 'reason' 
-                                        ? `Help us understand the concern with ${targetUserName}.` 
-                                        : 'Choose the appropriate guardian for this report.'}
+                                        ? t('community.socialShield.subtitle.reason', { targetUserName: targetUserName ?? t('community.socialShield.thisUser', 'this user'), defaultValue: `Help us understand the concern with ${targetUserName ?? t('community.socialShield.thisUser', 'this user')}.` })
+                                        : t('community.socialShield.subtitle.target', 'Choose the appropriate guardian for this report.')}
                                 </Text>
                             </VStack>
                             <TouchableOpacity onPress={onClose}>
@@ -163,7 +167,7 @@ export default function SocialShieldModal({
                                                     <ItemIcon size={20} color={isSelected ? accent.action : text.muted} />
                                                 </Box>
                                                 <Text {...({ color: isSelected ? text.primary : text.secondary, bold: isSelected } as any)}>
-                                                    {item.label}
+                                                    {t(item.labelKey, item.fallback)}
                                                 </Text>
                                             </HStack>
                                         </TouchableOpacity>
@@ -177,7 +181,7 @@ export default function SocialShieldModal({
                                     >
                                         {shouldBlock && <Box sx={{ width: 12, height: 12, borderRadius: 2, backgroundColor: accent.action }} />}
                                     </TouchableOpacity>
-                                    <Text size="sm" color={text.secondary}>Also block this user from interacting with me</Text>
+                                    <Text size="sm" color={text.secondary}>{t('community.socialShield.blockAlso', 'Also block this user from interacting with me')}</Text>
                                 </HStack>
 
                                 <Button
@@ -185,7 +189,7 @@ export default function SocialShieldModal({
                                     isDisabled={!reason}
                                     sx={{ backgroundColor: accent.action, borderRadius: Theme.corners.comfortable, height: 50, mt: '$2' }}
                                 >
-                                    <ButtonText {...({ color: text.inverse, bold: true } as any)}>Next: Choose Guardian</ButtonText>
+                                    <ButtonText {...({ color: text.inverse, bold: true } as any)}>{t('community.socialShield.nextChooseGuardian', 'Next: Choose Guardian')}</ButtonText>
                                 </Button>
                             </VStack>
                         ) : (
@@ -211,9 +215,9 @@ export default function SocialShieldModal({
                                                 </Box>
                                                 <VStack flex={1}>
                                                     <Text {...({ color: isSelected ? text.primary : text.secondary, bold: true } as any)}>
-                                                        {item.label}
+                                                        {t(item.labelKey, item.labelFallback)}
                                                     </Text>
-                                                    <Text size="xs" color={text.muted}>{item.description}</Text>
+                                                    <Text size="xs" color={text.muted}>{t(item.descriptionKey, item.descriptionFallback)}</Text>
                                                 </VStack>
                                             </HStack>
                                         </TouchableOpacity>
@@ -226,18 +230,18 @@ export default function SocialShieldModal({
                                         variant="outline"
                                         sx={{ flex: 1, borderRadius: Theme.corners.comfortable, height: 50 }}
                                     >
-                                        <ButtonText {...({ color: text.primary } as any)}>Back</ButtonText>
+                                        <ButtonText {...({ color: text.primary } as any)}>{t('common.back', 'Back')}</ButtonText>
                                     </Button>
                                     <Button
                                         onPress={handleSubmit}
                                         sx={{ flex: 2, backgroundColor: accent.action, borderRadius: Theme.corners.comfortable, height: 50 }}
                                     >
-                                        <ButtonText {...({ color: text.inverse, bold: true } as any)}>Submit Report</ButtonText>
+                                        <ButtonText {...({ color: text.inverse, bold: true } as any)}>{t('community.socialShield.submitReport', 'Submit Report')}</ButtonText>
                                     </Button>
                                 </HStack>
                                 
                                 <Text size="xs" color={text.muted} textAlign="center" sx={{ mt: '$2' }}>
-                                    Need to manage your blocks later? Visit Privacy Settings.
+                                    {t('community.socialShield.manageBlocks', 'Need to manage your blocks later? Visit Privacy Settings.')}
                                 </Text>
                             </VStack>
                         )}

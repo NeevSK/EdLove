@@ -27,7 +27,8 @@
     "initialize": "Initialize",
     "start": "Start",
     "completeProfile": "Complete Profile",
-    "join": "Join"
+    "join": "Join",
+    "dismiss": "Dismiss"
   },
   "demoMode": {
     "realityCheckTitle": "Sandbox Simulation",
@@ -491,7 +492,48 @@
       "updates": "RECENT UPDATES"
     },
     "noGroups": "No circles found",
-    "noGroupsDesc": "Connect with others by joining a community group."
+    "noGroupsDesc": "Connect with others by joining a community group.",
+    "headerMenu": {
+      "mute": "Mute Sanctuary",
+      "unmute": "Unmute Sanctuary",
+      "blockUser": "Block User",
+      "report": "Report"
+    },
+    "socialShield": {
+      "thisUser": "this user",
+      "title": {
+        "reason": "Shielding the Sanctuary",
+        "target": "Who should guide this?"
+      },
+      "subtitle": {
+        "reason": "Help us understand the concern with {{targetUserName}}.",
+        "target": "Choose the appropriate guardian for this report."
+      },
+      "reasons": {
+        "harmful": "Harmful Content",
+        "harassment": "Harassment",
+        "inappropriate": "Inappropriate for School",
+        "other": "Other"
+      },
+      "targets": {
+        "teacher": {
+          "label": "Class Teacher",
+          "description": "For classroom-related issues and minor conflicts."
+        },
+        "principal": {
+          "label": "School Principal",
+          "description": "For serious safety concerns or severe harassment."
+        },
+        "platform": {
+          "label": "Platform Guardians",
+          "description": "For technical abuse or violations of platform rules."
+        }
+      },
+      "blockAlso": "Also block this user from interacting with me",
+      "nextChooseGuardian": "Next: Choose Guardian",
+      "submitReport": "Submit Report",
+      "manageBlocks": "Need to manage your blocks later? Visit Privacy Settings."
+    }
   },
   "library": {
     "title": "Library",
@@ -1105,5 +1147,68 @@
     "completeTitle": "Sync Complete!",
     "successMessage": "All your data has been synced successfully!",
     "successDescription": "You can now access your data from any device."
+  },
+  "scanner": {
+    "modal": {
+      "title": "Scan QR Code",
+      "permissionMessage": "We need your permission to show the camera",
+      "grantPermission": "Grant Permission",
+      "processing": "Scanning with ML Kit...",
+      "instructions": "Point camera at QR code\nor select from gallery",
+      "gallery": "Gallery",
+      "flip": "Flip",
+      "errors": {
+        "galleryRequiresBuild": "Gallery scanning requires a custom dev build.\nRun: expo prebuild && expo run:android (or run:ios)",
+        "noQrFound": "No QR code found in image.\nTry cropping closer to the QR code.",
+        "scanFailed": "Could not scan image. Please try again."
+      },
+      "web": {
+        "title": "Enter QR Code",
+        "closeAriaLabel": "Close scanner",
+        "cameraInApp": "Camera scanning is available in the\nGurudevi mobile app.",
+        "desktopHint": "On desktop, paste the QR code value below.",
+        "placeholder": "Paste QR code value here…",
+        "submit": "Submit Code",
+        "errors": {
+          "emptyValue": "Please paste or type a QR code value."
+        }
+      }
+    },
+    "qrShare": {
+      "dialog": "Share QR Code",
+      "dialogWithLabel": "Share {{label}} QR Code",
+      "shareImageAria": "Share QR code as image",
+      "shareImage": "Share Image",
+      "copyLinkAria": "Copy QR link to clipboard",
+      "copyLink": "Copy Link"
+    },
+    "ocr": {
+      "cameraPermissionTitle": "Camera Permission",
+      "cameraPermissionMessage": "We need camera permission to scan student registers.",
+      "title": "Scan Student Register",
+      "captureDescription": "Take a photo of your student register. Works with Sinhala, Tamil, and English text.",
+      "takePhoto": "Take Photo",
+      "chooseFromGallery": "Choose from Gallery",
+      "tipsTitle": "Tips for best results:",
+      "tips": {
+        "goodLighting": "Good lighting (avoid shadows)",
+        "clearImage": "Clear, focused image",
+        "straightAngle": "Straight angle (not tilted)",
+        "includeHeaders": "Include column headers if possible"
+      },
+      "processing": "Scanning and analyzing text...",
+      "reviewDescription": "Found {{count}} student(s). Review and confirm or edit manually.",
+      "indexLabel": "Index",
+      "lowConfidence": "Low confidence — please verify",
+      "tryAgain": "Try Again",
+      "confirmWithCount": "Confirm ({{count}})",
+      "errors": {
+        "noTextDetected": "No text detected in image",
+        "noStudentData": "No student data could be parsed from the image",
+        "scanFailed": "Failed to scan register. Try manual entry instead.",
+        "noStudentsToAdd": "No students to add"
+      },
+      "foundStudentsToast": "Found {{count}} student(s)! Review and confirm."
+    }
   }
 }
