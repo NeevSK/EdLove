@@ -14,7 +14,7 @@
 /** Parse hex (#RGB / #RRGGBB / #RGBA / #RRGGBBAA) → [r, g, b] in 0-255 */
 export function hexToRgb(hex: string): [number, number, number] {
   if (!hex || typeof hex !== 'string') {
-    throw new Error(`colorUtils.hexToRgb: expected a hex string, got ${JSON.stringify(hex)}`);
+    throw new Error(`colorUtils.hexToRgb: expected a hex string, got ${typeof hex} (${String(hex)})`);
   }
   const h = hex.replace(/^#/, '');
   if (!/^[0-9a-fA-F]{3,8}$/.test(h)) {

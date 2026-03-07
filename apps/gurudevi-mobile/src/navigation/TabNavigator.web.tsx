@@ -57,6 +57,9 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
     // Last focused element before sidebar opened — returned on close
     const preSidebarFocusRef = React.useRef<HTMLElement | null>(null);
 
+    // Define closeSidebar before the useEffects that reference it
+    const closeSidebar = React.useCallback(() => setIsSidebarExpanded(false), []);
+
     // Responsive design: mobile/tablet < 1024px
     React.useEffect(() => {
         const checkScreenSize = () => {
@@ -127,7 +130,7 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
             // Restore focus to the element that was active before the sidebar opened
             preSidebarFocusRef.current?.focus();
         };
-    }, [isMobileView, isSidebarExpanded]);
+    }, [isMobileView, isSidebarExpanded, closeSidebar]);
 
     // ── DOCUMENT TITLE: update on tab/subview change ────────────────────────
     React.useEffect(() => {
@@ -162,8 +165,6 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
         }
         return TAB_CONFIG.find(c => c.name === route)?.mobileLabel ?? route;
     };
-
-    const closeSidebar = () => setIsSidebarExpanded(false);
 
     return (
         <div className="vellum-app-shell">

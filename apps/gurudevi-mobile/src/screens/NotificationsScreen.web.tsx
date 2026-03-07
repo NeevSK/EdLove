@@ -117,7 +117,12 @@ function NotificationRow({
             role="button"
             tabIndex={0}
             onClick={handleClick}
-            onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') handleClick(); }}
+            onKeyDown={(e: React.KeyboardEvent) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault(); // prevent Space from scrolling the page
+                    handleClick();
+                }
+            }}
             className="sanctuary-card"
             style={{
                 padding: '20px',
