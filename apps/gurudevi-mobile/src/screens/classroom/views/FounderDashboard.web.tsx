@@ -72,7 +72,7 @@ export default function FounderDashboardWeb() {
     ];
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '40px', height: '100%', overflowY: 'auto' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
 
             {/* ─── 1. COMMAND HEADER ─────────────────────────── */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>

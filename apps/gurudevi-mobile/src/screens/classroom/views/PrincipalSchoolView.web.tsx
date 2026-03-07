@@ -93,7 +93,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?
     const resonanceScore = pulse?.resonance_score ?? 0;
 
     return (
-        <div className="sub-view-container" style={{ display: 'flex', flexDirection: 'column', gap: '32px', height: '100%' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
 
             {/* ─── 1. COMMAND HEADER ─────────────────────────── */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>

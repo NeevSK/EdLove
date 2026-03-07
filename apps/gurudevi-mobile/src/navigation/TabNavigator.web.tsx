@@ -28,11 +28,11 @@ const Tab = createBottomTabNavigator();
 // ─── NAV HELPERS ──────────────────────────────────────────────────────────
 
 const TAB_CONFIG = [
-    { name: 'Self', icon: Heart, labelKey: 'tabs.self' },
-    { name: 'Community', icon: Users, labelKey: 'tabs.community' },
-    { name: 'Classroom', icon: School, labelKey: 'tabs.classroom' },
-    { name: 'Library', icon: Library, labelKey: 'tabs.library' },
-    { name: 'Profile', icon: User, labelKey: 'tabs.profile' },
+    { name: 'Self', icon: Heart, labelKey: 'tabs.self', mobileLabel: 'Self' },
+    { name: 'Community', icon: Users, labelKey: 'tabs.community', mobileLabel: 'Community' },
+    { name: 'Classroom', icon: School, labelKey: 'tabs.classroom', mobileLabel: 'Classroom' },
+    { name: 'Library', icon: Library, labelKey: 'tabs.library', mobileLabel: 'Library' },
+    { name: 'Profile', icon: User, labelKey: 'tabs.profile', mobileLabel: 'Profile' },
 ];
 
 // ─── MAIN NAVIGATOR (Overlay Architecture) ─────────────────────────────────
@@ -45,18 +45,19 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
     const navigation = useNavigation();
 
     const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(true);
+    // Mobile/tablet: < 1024px (aligns with CSS @media max-width: 1023px)
     const [isMobileView, setIsMobileView] = React.useState(false);
     const [activeTab, setActiveTab] = React.useState('Self');
     const [activeSubView, setActiveSubView] = React.useState<SubView>('none');
     const [showCelebration, setShowCelebration] = React.useState(false);
     const [currentAchievement, setCurrentAchievement] = React.useState('');
 
-    // Responsive design: detect mobile view
+    // Responsive design: mobile/tablet < 1024px
     React.useEffect(() => {
         const checkScreenSize = () => {
-            const isMobile = window.innerWidth < 768;
-            setIsMobileView(isMobile);
-            if (isMobile) setIsSidebarExpanded(false);
+            const isCompact = window.innerWidth < 1024;
+            setIsMobileView(isCompact);
+            if (isCompact) setIsSidebarExpanded(false);
         };
         checkScreenSize();
         window.addEventListener('resize', checkScreenSize);
@@ -83,36 +84,30 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
         return t(labelKey);
     };
 
-    const sidebarWidth = isMobileView ? 0 : (isSidebarExpanded ? 240 : 60);
+    const getMobileLabel = (route: string) => {
+        if (route === 'Classroom') {
+            if (role === 'principal') return 'School';
+            if (role === 'founder') return 'Platform';
+            return 'Class';
+        }
+        return TAB_CONFIG.find(c => c.name === route)?.mobileLabel ?? route;
+    };
+
+    const closeSidebar = () => setIsSidebarExpanded(false);
 
     return (
-        <div className="vellum-app-shell" style={{ ...({ '--dynamic-sidebar-w': `${sidebarWidth}px` } as any) }}>
+        <div className="vellum-app-shell">
             <div className="world-bg" />
 
-            {/* ── TOP BAR (Header Flex Item) ── */}
+            {/* ── TOP BAR ── */}
             <header className="top-bar">
-                <div
-                    className="top-bar-left"
-                    style={{
-                        paddingLeft: 24,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '16px'
-                    }}
-                >
+                <div className="top-bar-left" style={{ paddingLeft: 24, display: 'flex', alignItems: 'center', gap: '16px' }}>
                     {isMobileView && (
                         <button
                             className="mobile-menu-toggle"
                             onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
-                            style={{
-                                background: 'transparent',
-                                border: 'none',
-                                cursor: 'pointer',
-                                color: 'var(--ink)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                            }}
+                            aria-label="Toggle navigation"
+                            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         >
                             <Menu size={24} />
                         </button>
@@ -124,27 +119,56 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
             </header>
 
             <div className="shell-body-core">
-                {/* ── SIDEBAR (Inside Body Flex Row) ── */}
-                <aside className={`sidebar ${isSidebarExpanded ? 'expanded' : 'collapsed'} ${isMobileView ? 'mobile' : ''}`}
+                {/* ── MOBILE SIDEBAR OVERLAY ── */}
+                {isMobileView && isSidebarExpanded && (
+                    <div
+                        className="sidebar-overlay visible"
+                        onClick={closeSidebar}
+                        aria-hidden="true"
+                    />
+                )}
+
+                {/* ── SIDEBAR ── */}
+                <aside
+                    className={`sidebar ${isSidebarExpanded ? 'open expanded' : 'collapsed'}`}
                     style={{
                         zIndex: isMobileView ? 1000 : 10,
                         position: isMobileView ? 'fixed' : 'relative',
                         height: isMobileView ? '100%' : 'auto',
-                        width: isMobileView ? (isSidebarExpanded ? '280px' : '0px') : (isSidebarExpanded ? '240px' : '60px'),
-                        boxShadow: isMobileView && isSidebarExpanded ? '0 0 50px rgba(0,0,0,0.5)' : 'none',
+                        top: isMobileView ? 0 : undefined,
+                        left: isMobileView ? 0 : undefined,
+                        width: isMobileView
+                            ? '280px'
+                            : (isSidebarExpanded ? '240px' : '60px'),
+                        boxShadow: isMobileView && isSidebarExpanded
+                            ? '4px 0 40px rgba(107,100,128,0.2)'
+                            : 'none',
                     }}
                 >
-                    <div className="sidebar-header" style={{ display: isMobileView ? 'none' : 'flex' }}>
-                        <button
-                            className="sidebar-toggle"
-                            onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
-                        >
-                            {isSidebarExpanded ? <ChevronLeft size={16} /> : <Menu size={16} />}
-                        </button>
-                        {isSidebarExpanded && <span className="sidebar-group-label" style={{ marginLeft: '12px' }}>Navigate</span>}
+                    <div className="sidebar-header" style={{ display: 'flex' }}>
+                        {isMobileView ? (
+                            <button
+                                className="sidebar-toggle"
+                                onClick={closeSidebar}
+                                aria-label="Close navigation"
+                            >
+                                <ChevronLeft size={16} />
+                            </button>
+                        ) : (
+                            <button
+                                className="sidebar-toggle"
+                                onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+                                aria-label={isSidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+                            >
+                                {isSidebarExpanded ? <ChevronLeft size={16} /> : <Menu size={16} />}
+                            </button>
+                        )}
+                        {(isSidebarExpanded || isMobileView) && (
+                            <span className="sidebar-group-label" style={{ marginLeft: '12px' }}>Navigate</span>
+                        )}
                     </div>
 
-                    <nav className="sidebar-nav">
+                    <nav className="sidebar-nav" role="navigation" aria-label="Main navigation">
                         {TAB_CONFIG.map((conf) => {
                             const isActive = activeTab === conf.name && activeSubView === 'none';
                             const Icon = conf.icon;
@@ -155,12 +179,13 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
                                     onClick={() => {
                                         setActiveSubView('none');
                                         (navigation.navigate as any)('Main', { screen: conf.name });
-                                        if (isMobileView) setIsSidebarExpanded(false);
+                                        if (isMobileView) closeSidebar();
                                     }}
                                     title={getLabel(conf.name, conf.labelKey)}
+                                    aria-current={isActive ? 'page' : undefined}
                                 >
                                     <Icon size={20} color={isActive ? 'var(--water)' : 'var(--ink-ghost)'} />
-                                    {isSidebarExpanded && (
+                                    {(isSidebarExpanded || isMobileView) && (
                                         <span className="sidebar-label">{getLabel(conf.name, conf.labelKey)}</span>
                                     )}
                                 </button>
@@ -175,14 +200,16 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
                             title={t('common.notifications', 'Notifications')}
                             onClick={() => {
                                 setActiveSubView(activeSubView === 'notifications' ? 'none' : 'notifications');
-                                if (isMobileView) setIsSidebarExpanded(false);
+                                if (isMobileView) closeSidebar();
                             }}
                         >
                             <div style={{ position: 'relative' }}>
                                 <Bell size={20} color={activeSubView === 'notifications' ? 'var(--water)' : 'var(--ink-ghost)'} />
                                 <div className="bell-dot" />
                             </div>
-                            {isSidebarExpanded && <span className="sidebar-label">Notifications</span>}
+                            {(isSidebarExpanded || isMobileView) && (
+                                <span className="sidebar-label">Notifications</span>
+                            )}
                         </button>
 
                         <button
@@ -190,13 +217,13 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
                             title={t('common.settings', 'Settings')}
                             onClick={() => {
                                 setActiveSubView(activeSubView === 'settings' ? 'none' : 'settings');
-                                if (isMobileView) setIsSidebarExpanded(false);
+                                if (isMobileView) closeSidebar();
                             }}
                         >
                             <div className="profile-gem">
                                 <Settings size={16} color="var(--ink-ghost)" />
                             </div>
-                            {isSidebarExpanded && (
+                            {(isSidebarExpanded || isMobileView) && (
                                 <div className="profile-info">
                                     <span className="profile-nm">{role?.split('_').join(' ') || 'Guest'}</span>
                                     <span className="profile-status">{t('common.settings', 'Settings')}</span>
@@ -206,14 +233,10 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
                     </div>
                 </aside>
 
-                {/* ── MAIN CONTENT CANVAS (Filling Remaining Body Flex) ── */}
+                {/* ── MAIN CONTENT CANVAS ── */}
                 <main className="main-content-canvas">
-                    {activeSubView === 'notifications' && (
-                        <NotificationsScreenWeb />
-                    )}
-                    {activeSubView === 'settings' && (
-                        <AppSettingsScreenWeb />
-                    )}
+                    {activeSubView === 'notifications' && <NotificationsScreenWeb />}
+                    {activeSubView === 'settings' && <AppSettingsScreenWeb />}
                     <div style={{ display: activeSubView === 'none' ? 'contents' : 'none' }}>
                         <Tab.Navigator
                             id="MainTabs"
@@ -236,9 +259,7 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
                                     }
                                 },
                             }}
-                            screenOptions={{
-                                headerShown: false,
-                            }}
+                            screenOptions={{ headerShown: false }}
                         >
                             <Tab.Screen name="Self">
                                 {() => <ErrorBoundary name="Self"><SelfStackNavigatorWeb /></ErrorBoundary>}
@@ -260,6 +281,45 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
                 </main>
             </div>
 
+            {/* ── MOBILE BOTTOM NAV (< 1024px) ── */}
+            {isMobileView && activeSubView === 'none' && (
+                <nav className="mobile-bottom-nav" role="navigation" aria-label="Tab navigation">
+                    {TAB_CONFIG.map((conf) => {
+                        const isActive = activeTab === conf.name;
+                        const Icon = conf.icon;
+                        return (
+                            <button
+                                key={conf.name}
+                                className={`mobile-nav-item ${isActive ? 'active' : ''}`}
+                                onClick={() => {
+                                    setActiveSubView('none');
+                                    (navigation.navigate as any)('Main', { screen: conf.name });
+                                }}
+                                aria-current={isActive ? 'page' : undefined}
+                            >
+                                <Icon
+                                    size={22}
+                                    color={isActive ? 'var(--water)' : 'var(--ink-ghost)'}
+                                />
+                                <span className="mobile-nav-label">
+                                    {getMobileLabel(conf.name)}
+                                </span>
+                            </button>
+                        );
+                    })}
+                    <button
+                        className={`mobile-nav-item ${activeSubView === 'notifications' ? 'active' : ''}`}
+                        onClick={() => setActiveSubView(activeSubView === 'notifications' ? 'none' : 'notifications')}
+                    >
+                        <div style={{ position: 'relative' }}>
+                            <Bell size={22} color={activeSubView === 'notifications' ? 'var(--water)' : 'var(--ink-ghost)'} />
+                            <div className="bell-dot" />
+                        </div>
+                        <span className="mobile-nav-label">Alerts</span>
+                    </button>
+                </nav>
+            )}
+
             <AchievementUnlockOverlay
                 title={currentAchievement}
                 visible={showCelebration}
@@ -268,4 +328,3 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
         </div>
     );
 }
-

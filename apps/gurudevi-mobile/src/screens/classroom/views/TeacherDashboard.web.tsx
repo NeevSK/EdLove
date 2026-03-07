@@ -86,7 +86,7 @@ export default function TeacherDashboardWeb() {
     const totalStudents = classrooms.reduce((acc, cls) => acc + (cls.student_count ?? 0), 0);
 
     return (
-        <div className="sub-view-container" style={{ display: 'flex', flexDirection: 'column', gap: '32px', height: '100%' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
             {/* Header & Quick Actions */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
                 <div>

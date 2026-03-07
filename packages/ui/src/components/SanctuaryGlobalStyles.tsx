@@ -29,35 +29,63 @@ export function SanctuaryGlobalStyles() {
       /* High-Fidelity Design Palette (Vellum/Ink) */
       --water:       #3a7a9a;
       --water-glow:  rgba(90,154,186,0.25);
+      --water-soft:  rgba(90,154,186,0.09);
       --moss:        #4a7a5a;
       --moss-glow:   rgba(74,122,90,0.25);
+      --moss-soft:   rgba(74,122,90,0.09);
       --lotus:       #c05878;
       --lotus-glow:  rgba(192,88,120,0.2);
+      --lotus-soft:  rgba(192,88,120,0.08);
       --gold:        #a07830;
       --gold-glow:   rgba(160,120,48,0.2);
+      --ember:       #c04040;
+      --ember-soft:  rgba(192,64,64,0.08);
+      --amber-glow:  #c8803a;
 
+      /* Gurudevi Blue (alias for water) */
+      --gurudevi-blue: #3a7a9a;
+
+      /* Action (Saffron) */
+      --action:             ${accent.action};
+      --action-soft:        ${accent.action}18;
+      --sanctuary-saffron:  ${accent.action};
+      --sanctuary-saffron-soft: ${accent.action}18;
+
+      /* Backgrounds */
+      --background:     ${isDark ? '#111218' : '#F5EDD6'};
+      --background-alt: ${isDark ? 'rgba(40,42,58,0.40)' : 'rgba(255,255,255,0.55)'};
+      --surface:        ${glass.surface.bg};
+      --glass-surface:  ${glass.surface.bg};
+      --glass-interact: ${isDark ? 'rgba(50,52,68,0.70)' : 'rgba(255,255,255,0.75)'};
+
+      /* Ink */
       --ink:         ${isDark ? text.primary : '#2a2820'};
       --ink-soft:    ${text.secondary};
       --ink-ghost:   #9a9080;
 
-      --surface:     ${glass.surface.bg};
-      --border:      ${glass.surface.border};
-      --border-light:rgba(255,255,255,0.7);
+      /* Borders & Shadows */
+      --border:       ${glass.surface.border};
+      --border-light: rgba(255,255,255,0.7);
+      --shadow-sm:    0 2px 8px rgba(107,100,128,0.07);
+      --shadow-md:    0 8px 24px rgba(107,100,128,0.10);
+      --shadow-lg:    0 16px 48px rgba(107,100,128,0.14);
 
+      /* Typography */
       --font-display:'IM Fell English', serif;
       --font-body:   'DM Sans', sans-serif;
 
+      /* Layout */
       --top-bar-h:   64px;
       --sidebar-w:   240px;
+      --bp-mobile:   768px;
       --bp-tablet:   768px;
       --bp-desktop:  1024px;
       
-      /* Bridge Variables for existing components */
+      /* Legacy bridge tokens */
       --sanctuary-primary: ${gradientNodes[0]};
       --sanctuary-primary-rgb: ${isDark ? '26, 22, 16' : '245, 237, 214'};
       --sanctuary-text-primary: ${text.primary};
       --sanctuary-text-secondary: ${text.secondary};
-      --sanctuary-saffron: ${accent.action};
     }
 
     /* ── RESET ── */
@@ -333,6 +361,91 @@ export function SanctuaryGlobalStyles() {
       padding: 24px;
     }
 
+    /* ── BUTTONS ── */
+    .premium-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      background: ${accent.action};
+      color: #fff;
+      box-shadow: 0 4px 16px ${accent.action}40;
+      transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+      white-space: nowrap;
+    }
+    .premium-button:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 8px 24px ${accent.action}55;
+      filter: brightness(1.07);
+    }
+    .premium-button:active { transform: scale(0.97); }
+
+    .secondary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      background: ${isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.65)'};
+      color: var(--ink);
+      border: 1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'};
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+      white-space: nowrap;
+    }
+    .secondary-button:hover {
+      background: ${isDark ? 'rgba(255,255,255,0.13)' : 'rgba(255,255,255,0.90)'};
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ── INTERACTIVE CARD ── */
+    .sanctuary-card.interactive {
+      cursor: pointer;
+    }
+    .sanctuary-card.interactive:hover {
+      transform: translateY(-6px) scale(1.012);
+    }
+
+    /* ── SIDEBAR LABEL ── */
+    .sidebar-label {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── PROFILE GEM ── */
+    .profile-gem {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(58,122,154,0.12)'};
+      border: 1.5px solid ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(58,122,154,0.2)'};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .sidebar-profile-btn:hover .profile-gem { transform: scale(1.1); }
+
     .main-content-canvas {
       flex: 1;
       height: 100%;
@@ -496,10 +609,125 @@ export function SanctuaryGlobalStyles() {
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
-    /* ── RESPONSIVE ── */
+    /* ── RESPONSIVE — TABLET (768–1023px) ── */
     @media (max-width: 1023px) {
-      .sidebar { transform: translateX(-100%); width: 0; padding: 0; }
+      .sidebar {
+        transform: translateX(-100%);
+        position: fixed;
+        height: 100%;
+        z-index: 1000;
+        width: 280px !important;
+        transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .sanctuary-screen {
+        padding: 32px 20px 100px 20px;
+      }
       .greeting-main { font-size: 36px; }
+      .greeting-note  { font-size: 15px; }
+      .sub-view-container {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .community-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      .community-sidebar,
+      .community-panel {
+        display: none;
+      }
+      .community-sub-nav { display: flex !important; }
+    }
+
+    /* ── RESPONSIVE — MOBILE (< 768px) ── */
+    @media (max-width: 767px) {
+      .sanctuary-screen {
+        padding: 20px 14px 88px 14px;
+      }
+      .greeting-main { font-size: 28px; }
+      .greeting-note  { font-size: 13px; }
+      .brand-name     { display: none; }
+      .top-bar        { padding: 0 16px; }
+      .card-body-inner { padding: 16px; }
+      .sub-view-container { gap: 16px; }
+      .premium-button, .secondary-button { padding: 10px 16px; font-size: 13px; }
+    }
+
+    /* ── SIDEBAR OVERLAY (mobile backdrop) ── */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      animation: fadeIn 0.2s ease;
+    }
+    .sidebar-overlay.visible { display: block; }
+
+    /* ── MOBILE BOTTOM NAV ── */
+    .mobile-bottom-nav {
+      display: none;
+    }
+    @media (max-width: 1023px) {
+      .mobile-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 72px;
+        z-index: 1100;
+        align-items: center;
+        justify-content: space-around;
+        padding: 0 8px env(safe-area-inset-bottom, 0px) 8px;
+        background: ${isDark ? 'rgba(26,27,38,0.88)' : 'rgba(255,255,255,0.88)'};
+        backdrop-filter: blur(28px) saturate(1.8);
+        -webkit-backdrop-filter: blur(28px) saturate(1.8);
+        border-top: 1px solid rgba(255,255,255,0.2);
+        box-shadow: 0 -4px 24px rgba(107,100,128,0.12);
+      }
+      .mobile-nav-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 8px 4px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+      }
+      .mobile-nav-item.active {
+        color: var(--water);
+      }
+      .mobile-nav-item:not(.active) {
+        color: var(--ink-ghost);
+      }
+      .mobile-nav-label {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        line-height: 1;
+      }
+      .mobile-nav-item.active .mobile-nav-label { color: var(--water); }
+      .mobile-nav-item:not(.active) .mobile-nav-label { color: var(--ink-ghost); }
+    }
+
+    /* ── PWA SAFE AREA ── */
+    @supports (padding: env(safe-area-inset-bottom)) {
+      .sanctuary-screen { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
+      @media (max-width: 767px) {
+        .sanctuary-screen { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
+      }
     }
     `;
 
