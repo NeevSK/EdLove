@@ -28,13 +28,15 @@ import {
   MessageSquare,
   Heart,
   BadgeCheck,
-  Info
+  Info,
+  Gift
 } from "lucide-react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { CommunityStackParamList } from "@repo/core";
-import { useUserRole, supabase } from "@repo/core";
+import { useUserRole, supabase, useStore } from "@repo/core";
+import { GiveThuthimalModal } from "@repo/profile";
 import { communityAPI } from "../api/community";
 
 /**
@@ -52,12 +54,14 @@ export default function UserPublicProfileScreen() {
     useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
   const { userId, userName } = route.params;
   const { userId: currentUserId } = useUserRole();
+  const currentUser = useStore(state => state.user);
   const { glass, text, accent } = useTheme();
   const colors = useThemedColors();
 
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [initiatingDM, setInitiatingDM] = useState(false);
+  const [showThuthimal, setShowThuthimal] = useState(false);
   const [stats, setStats] = useState({ posts: 0, endorsements: 0 });
 
   useEffect(() => {
@@ -182,24 +186,50 @@ export default function UserPublicProfileScreen() {
             )}
 
             {currentUserId !== userId && (
-              <Button
-                action="primary"
-                onPress={handleMessagePress}
-                isDisabled={initiatingDM}
-                sx={{
-                  height: 52,
-                  borderRadius: 26,
-                  backgroundColor: Theme.colors.sanctuarySaffron,
-                  marginTop: 12
-                }}
-              >
-                <HStack sx={{ gap: 8, alignItems: 'center' }}>
-                  <Send size={18} color="white" />
-                  <Text sx={{ color: 'white', fontWeight: '800' }}>
-                    {t("community.profile.sendMessage")}
-                  </Text>
-                </HStack>
-              </Button>
+              <VStack sx={{ gap: 10, marginTop: 12 }}>
+                <Button
+                  action="primary"
+                  onPress={handleMessagePress}
+                  isDisabled={initiatingDM}
+                  sx={{
+                    height: 52,
+                    borderRadius: 26,
+                    backgroundColor: Theme.colors.sanctuarySaffron,
+                  }}
+                >
+                  <HStack sx={{ gap: 8, alignItems: 'center' }}>
+                    <Send size={18} color="white" />
+                    <Text sx={{ color: 'white', fontWeight: '800' }}>
+                      {t("community.profile.sendMessage")}
+                    </Text>
+                  </HStack>
+                </Button>
+                {(user?.role === 'teacher' || user?.role === 'principal') && currentUser && (
+                  <Button
+                    action="secondary"
+                    onPress={() => setShowThuthimal(true)}
+                    sx={{ height: 52, borderRadius: 26 }}
+                  >
+                    <HStack sx={{ gap: 8, alignItems: 'center' }}>
+                      <Gift size={18} />
+                      <Text sx={{ fontWeight: '800' }}>Send Thuthimal 🌸</Text>
+                    </HStack>
+                  </Button>
+                )}
+              </VStack>
+            )}
+
+            {/* Thuthimal gift modal */}
+            {currentUser && (
+              <GiveThuthimalModal
+                isOpen={showThuthimal}
+                onClose={() => setShowThuthimal(false)}
+                recipientId={userId}
+                recipientName={user?.full_name ?? userName}
+                recipientRole={user?.role ?? 'teacher'}
+                giverId={currentUser.id}
+                giverName={currentUser.full_name ?? 'A Colleague'}
+              />
             )}
           </VStack>
         </View>

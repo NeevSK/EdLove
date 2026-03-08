@@ -13,6 +13,7 @@ export type ProfileStackParamList = {
     ProfileMain: undefined;
     FullProfile: { profile: any };
     AppSettings: undefined;
+    PrivacyLedger: undefined;
 };
 export type CommunityStackParamList = {
     CommunityMain: undefined;

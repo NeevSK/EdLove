@@ -6,9 +6,8 @@ import { SelfStackParamList } from '@repo/core';
 
 // Web-specific screens — lazy loaded for code splitting
 const SelfScreenWeb = React.lazy(() => import('../screens/SelfScreen.web'));
-// AI Assistant screen — accessible from the Self stack on web
-// (navigating cross-navigator from Tab → Root silently fails on web)
-const AIAssistantScreen = React.lazy(() => import('../screens/AIAssistantScreen'));
+// AI Assistant screen — web override with CSS message list (no FlatList)
+const AIAssistantScreen = React.lazy(() => import('../screens/AIAssistantScreen.web'));
 
 const Stack = createNativeStackNavigator<SelfStackParamList>();
 

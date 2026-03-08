@@ -17,6 +17,9 @@ const VideoPlayerScreen = React.lazy(() =>
 const MapScreen = React.lazy(() =>
     import('@repo/library').then(m => ({ default: m.MapScreen }))
 );
+const CuratorReviewScreen = React.lazy(() =>
+    import('@repo/library').then(m => ({ default: m.CuratorReviewScreen }))
+);
 
 const Stack = createNativeStackNavigator<LibraryStackParamList>();
 
@@ -40,6 +43,7 @@ export default function LibraryStackNavigatorWeb() {
             <Stack.Screen name="PDFViewer" component={PDFViewerScreen} />
             <Stack.Screen name="VideoPlayer" component={VideoPlayerScreen} />
             <Stack.Screen name="LibraryMap" component={MapScreen} />
+            <Stack.Screen name="CuratorReview" component={CuratorReviewScreen} />
         </Stack.Navigator>
         </React.Suspense>
     );

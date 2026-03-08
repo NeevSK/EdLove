@@ -8,6 +8,9 @@ import { ProfileStackParamList } from '@repo/core';
 const ProfileScreenWeb = React.lazy(() => import('../screens/ProfileScreen.web'));
 const AppSettingsScreenWeb = React.lazy(() => import('../screens/AppSettingsScreen.web'));
 const FullProfileScreen = React.lazy(() => import('../screens/profile/FullProfileScreen'));
+const PrivacyLedgerScreen = React.lazy(() =>
+    import('@repo/self').then(m => ({ default: m.PrivacyLedgerScreen }))
+);
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
@@ -30,6 +33,7 @@ export default function ProfileStackNavigatorWeb() {
             <Stack.Screen name="ProfileMain" component={ProfileScreenWeb} />
             <Stack.Screen name="AppSettings" component={AppSettingsScreenWeb} />
             <Stack.Screen name="FullProfile" component={FullProfileScreen} />
+            <Stack.Screen name="PrivacyLedger" component={PrivacyLedgerScreen} />
         </Stack.Navigator>
         </React.Suspense>
     );

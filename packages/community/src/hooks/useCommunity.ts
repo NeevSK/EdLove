@@ -1,4 +1,4 @@
-import { storage, StorageKeys, requireAuth } from '@repo/core';
+import { storage, StorageKeys, requireAuth, useStore } from '@repo/core';
 import { CommunityPost, CommunityGroup, Group, Post } from '../types';
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { communityAPI } from '../api/community';
@@ -12,6 +12,7 @@ export const COMMUNITY_KEYS = {
 
 export const useCommunity = (groupId?: string) => {
     const queryClient = useQueryClient();
+    const storeUser = useStore(state => state.user);
 
     // Fetch Groups with Infinite Scroll
     const groupsInfiniteQuery = useInfiniteQuery({
@@ -45,8 +46,11 @@ export const useCommunity = (groupId?: string) => {
     const createPostMutation = useMutation({
         mutationFn: async (input: any) => {
             const user = await requireAuth();
-
-            return communityAPI.createPost(input, user.id, 'teacher', 'mock-school');
+            const schoolId = storeUser?.school_id ?? user.school_id;
+            if (!schoolId) {
+                throw new Error('No school context — please complete your profile before posting.');
+            }
+            return communityAPI.createPost(input, user.id, storeUser?.role ?? 'teacher', schoolId);
         },
         onMutate: async (newPost) => {
             // Optimistic Update
@@ -62,7 +66,7 @@ export const useCommunity = (groupId?: string) => {
                         created_at: new Date().toISOString(),
                         reactions: {},
                         author_name: 'Me',
-                        author_role: 'teacher',
+                        author_role: storeUser?.role ?? 'teacher',
                         post_type: newPost.post_type || 'discussion',
                         visibility: 'school',
                         media_url: newPost.media_url,
@@ -70,7 +74,7 @@ export const useCommunity = (groupId?: string) => {
                         is_anonymous: false,
                         comment_count: 0,
                         view_count: 0,
-                        school_id: 'mock-school',
+                        school_id: storeUser?.school_id ?? '',
                         tags: [],
                         updated_at: new Date().toISOString()
                     } as Post,

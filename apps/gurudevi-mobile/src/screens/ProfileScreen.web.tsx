@@ -236,6 +236,13 @@ export default function ProfileScreenWeb() {
                                         >
                                             ⚙ Settings
                                         </button>
+                                        <button
+                                            className="secondary-button"
+                                            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                                            onClick={() => (navigation as any).navigate('PrivacyLedger')}
+                                        >
+                                            🔒 Privacy Ledger
+                                        </button>
                                     </div>
                                 )}
                             </div>

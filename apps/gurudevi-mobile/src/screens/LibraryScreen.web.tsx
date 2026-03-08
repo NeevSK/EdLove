@@ -8,6 +8,8 @@ import {
     useRoleFeatures,
     useStore,
     useUserRole,
+    growthSignalsAPI,
+    impactRipplesAPI,
 } from '@repo/core';
 import {
     Search,
@@ -22,7 +24,7 @@ import {
     Map,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { useLibrary, LIBRARY_UI_CATEGORIES, libraryAPI } from '@repo/library';
+import { useLibrary, LIBRARY_UI_CATEGORIES, libraryAPI, AddResourceModal } from '@repo/library';
 import { LibraryResource } from '@repo/library';
 import { useNavigation } from '@react-navigation/native';
 import { StackFallback } from '../components/web/WebScreenShimmer';
@@ -38,7 +40,9 @@ export default function LibraryScreen() {
     const [selectedCategoryId, setSelectedCategoryId] = useState('All');
     const [selectedSort, setSelectedSort] = useState<'recent' | 'popular' | 'most_endorsed' | 'most_bookmarked'>('recent');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+    const [showAddResource, setShowAddResource] = useState(false);
 
+    const isTeacherOrCurator = role === 'teacher' || role === 'principal' || role === 'founder';
     const isSearchMode = searchQuery.trim().length > 0 || selectedCategoryId !== 'All';
     const resourceTypeFilter = useMemo(() => {
         if (selectedCategoryId === 'All' || ['trending', 'bookmarks', 'activity'].includes(selectedCategoryId)) return undefined;
@@ -92,6 +96,18 @@ export default function LibraryScreen() {
         });
         try {
             await libraryAPI.bookmarkResource(resource.id, user.id);
+            // Growth signal + Impact Ripple — fire-and-forget
+            void growthSignalsAPI.emitSignal(user.id, 'resource_read').catch((err) => console.warn('[LibraryScreen] growth signal failed:', err));
+            if (resource.creator_id && resource.creator_id !== user.id) {
+                void impactRipplesAPI.createRipple({
+                    recipientUserId: resource.creator_id,
+                    actorUserId: user.id,
+                    rippleType: 'resource_saved',
+                    schoolId: user.school_id,
+                    sourceEntityType: 'resource',
+                    sourceEntityId: resource.id,
+                }).catch((err) => console.warn('[LibraryScreen] impact ripple failed:', err));
+            }
         } catch (err) {
             console.error('[LibraryScreen] bookmark failed:', err);
             // Revert optimistic update
@@ -114,14 +130,26 @@ export default function LibraryScreen() {
                         <h1 className="greeting-main">The Sanctuary</h1>
                         <p className="greeting-note">Gurudevi Knowledge Hub</p>
                     </div>
-                    <button
-                        className="secondary-button"
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
-                        onClick={() => navigation.navigate('LibraryMap')}
-                    >
-                        <Map size={15} />
-                        Knowledge Map
-                    </button>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                        {isTeacherOrCurator && !isGuest && (
+                            <button
+                                className="premium-button"
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
+                                onClick={() => setShowAddResource(true)}
+                            >
+                                <Plus size={15} />
+                                Contribute Resource
+                            </button>
+                        )}
+                        <button
+                            className="secondary-button"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
+                            onClick={() => navigation.navigate('LibraryMap')}
+                        >
+                            <Map size={15} />
+                            Knowledge Map
+                        </button>
+                    </div>
                 </div>
 
                 {/* 2. FILTERS & SEARCH */}
@@ -313,6 +341,18 @@ export default function LibraryScreen() {
             </div>
 
             <LotusPetalFAB />
+
+            {/* Add Resource Modal — teachers/curators can contribute */}
+            {isTeacherOrCurator && !isGuest && (
+                <AddResourceModal
+                    isOpen={showAddResource}
+                    onClose={() => setShowAddResource(false)}
+                    onAdd={async () => {
+                        setShowAddResource(false);
+                        showToast('Resource added! It will be reviewed before publishing.', 'success');
+                    }}
+                />
+            )}
         </div>
     );
 }

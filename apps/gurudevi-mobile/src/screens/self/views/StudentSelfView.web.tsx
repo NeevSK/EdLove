@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUserRole, useStore, supabase } from '@repo/core';
+import { useUserRole, useStore, supabase, growthSignalsAPI } from '@repo/core';
 import { SkeletonCard } from '@repo/ui';
 import { useMoodLogs, useStudentGoals, useJournalEntries, VoiceJournaling } from '@repo/self';
 import type { MoodLog, Goal } from '@repo/self';
@@ -70,6 +70,8 @@ export default function StudentSelfViewWeb() {
             await addJournalEntry(journalDraft.trim());
             setJournalDraft('');
             setShowJournalForm(false);
+            // Growth signal — fire-and-forget
+            if (userId) void growthSignalsAPI.emitSignal(userId, 'reflection_written').catch(() => {});
         } finally {
             setSavingJournal(false);
         }
@@ -86,6 +88,8 @@ export default function StudentSelfViewWeb() {
                 .single();
             if (!error && data) {
                 setGoals((prev: Goal[]) => [data, ...prev]);
+                // Growth signal — fire-and-forget
+                void growthSignalsAPI.emitSignal(userId, 'goal_set').catch(() => {});
             }
             setGoalDraft('');
             setShowGoalForm(false);
@@ -319,6 +323,7 @@ export default function StudentSelfViewWeb() {
                                                     await addMoodLog(opt.value, moodNote || undefined);
                                                     setMoodNote('');
                                                     setShowMoodPicker(false);
+                                                    if (userId) void growthSignalsAPI.emitSignal(userId, 'mood_checkin').catch(() => {});
                                                 } finally {
                                                     setSavingMood(false);
                                                 }

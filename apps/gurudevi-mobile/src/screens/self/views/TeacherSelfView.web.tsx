@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUserRole, useStore } from '@repo/core';
+import { useUserRole, useStore, warmMirrorAPI, impactRipplesAPI } from '@repo/core';
+import type { ImpactRipple } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { SkeletonCard } from '@repo/ui';
 import { useMoodLogs, useJournalEntries, useEnergyForecast, VoiceJournaling } from '@repo/self';
@@ -43,6 +44,11 @@ export default function TeacherSelfViewWeb() {
     const [moodNote, setMoodNote] = React.useState('');
     const [savingMood, setSavingMood] = React.useState(false);
 
+    // Warm Mirror — weekly narrative
+    const [warmMirrorText, setWarmMirrorText] = React.useState<string | null>(null);
+    // Impact Ripples — undelivered ripples for this user
+    const [ripples, setRipples] = React.useState<ImpactRipple[]>([]);
+
     const { moodHistory, isLoading: moodLoading, addMoodLog } = useMoodLogs(userId ?? undefined);
     const { entries: journalEntries, loading: journalLoading, addJournalEntry } = useJournalEntries();
     const { forecasts, isLoading: energyLoading } = useEnergyForecast(userId ?? undefined);
@@ -52,6 +58,30 @@ export default function TeacherSelfViewWeb() {
     const latestJournal = journalEntries[0];
     // Last 7 energy forecasts as a bar chart (most recent last)
     const energyBars = forecasts.slice(0, 7).reverse();
+
+    // Fetch Warm Mirror data points and generate narrative (Sunday-style: any day)
+    React.useEffect(() => {
+        if (!userId) return;
+        warmMirrorAPI.getDataPoints(userId).then(data => {
+            setWarmMirrorText(warmMirrorAPI.generateNarrativeEn(data));
+        }).catch(() => {});
+    }, [userId]);
+
+    // Fetch pending impact ripples and mark them delivered after display
+    React.useEffect(() => {
+        if (!userId) return;
+        impactRipplesAPI.getPendingRipples(userId).then(pending => {
+            if (pending.length > 0) {
+                setRipples(pending);
+                // Mark all as delivered after a short delay
+                setTimeout(() => {
+                    pending.forEach(r => void impactRipplesAPI.markDelivered(r.id).catch(
+                        (err) => console.warn('[TeacherSelfView] markDelivered failed:', err)
+                    ));
+                }, 3000);
+            }
+        }).catch(() => {});
+    }, [userId]);
 
     return (
         <div className="sub-view-container">
@@ -284,6 +314,36 @@ export default function TeacherSelfViewWeb() {
                         </p>
                     )}
                 </div>
+
+                {/* Impact Ripples — warm echoes from colleagues and students */}
+                {ripples.length > 0 && (
+                    <div className="sanctuary-card" style={{ padding: '24px', background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(245,158,11,0.06))' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                            <h3 style={{ fontSize: '14px', fontWeight: '800' }}>Ripples 🌊</h3>
+                            <span style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>Your impact, quietly echoing</span>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            {ripples.map(r => (
+                                <div key={r.id} style={{ fontSize: '13px', color: 'var(--ink)', lineHeight: '1.5', padding: '10px 14px', background: 'var(--surface)', borderRadius: '10px', borderLeft: '3px solid var(--action)' }}>
+                                    {r.warm_message_en}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Warm Mirror — weekly narrative */}
+                {warmMirrorText && (
+                    <div className="sanctuary-card" style={{ padding: '24px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                            <h3 style={{ fontSize: '14px', fontWeight: '800' }}>Your Week ✦</h3>
+                            <span style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>A quiet reflection</span>
+                        </div>
+                        <p style={{ fontSize: '13px', color: 'var(--ink)', lineHeight: '1.8', whiteSpace: 'pre-wrap' }}>
+                            {warmMirrorText}
+                        </p>
+                    </div>
+                )}
             </div>
         </div>
     );

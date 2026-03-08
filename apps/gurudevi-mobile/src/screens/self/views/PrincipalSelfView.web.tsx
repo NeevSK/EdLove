@@ -9,7 +9,8 @@
  */
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUserRole, useStore, supabase } from '@repo/core';
+import { useUserRole, useStore, supabase, schoolForestAPI, warmMirrorAPI, impactRipplesAPI } from '@repo/core';
+import type { SchoolForestState, ImpactRipple } from '@repo/core';
 import { useSchoolPulse } from '@repo/profile';
 import { useMoodLogs, useEnergyForecast, useDecisionJournal, useWisdom } from '@repo/self';
 import { SkeletonCard } from '@repo/ui';
@@ -43,6 +44,9 @@ export default function PrincipalSelfViewWeb() {
     const [activePanel, setActivePanel] = useState<ActivePanel>('pulse');
     const [newDecision, setNewDecision] = useState('');
     const [addingDecision, setAddingDecision] = useState(false);
+    const [forest, setForest] = useState<SchoolForestState | null>(null);
+    const [warmMirrorText, setWarmMirrorText] = useState<string | null>(null);
+    const [ripples, setRipples] = useState<ImpactRipple[]>([]);
 
     // ── Personal wellbeing hooks ─────────────────────────────────────────
     const { moodHistory, isLoading: moodLoading } = useMoodLogs(userId ?? undefined);
@@ -55,6 +59,35 @@ export default function PrincipalSelfViewWeb() {
 
     const latestMood = moodHistory[0];
     const todayForecast = forecasts[0];
+
+    // School Forest — compassionate overview of teacher tree health
+    React.useEffect(() => {
+        if (!schoolId) return;
+        schoolForestAPI.getForestOverview(schoolId).then(f => setForest(f)).catch(() => {});
+    }, [schoolId]);
+
+    // Warm Mirror — weekly narrative for the principal
+    React.useEffect(() => {
+        if (!userId) return;
+        warmMirrorAPI.getDataPoints(userId).then(data => {
+            setWarmMirrorText(warmMirrorAPI.generateNarrativeEn(data));
+        }).catch(() => {});
+    }, [userId]);
+
+    // Impact Ripples — undelivered ripples for this principal
+    React.useEffect(() => {
+        if (!userId) return;
+        impactRipplesAPI.getPendingRipples(userId).then(pending => {
+            if (pending.length > 0) {
+                setRipples(pending);
+                setTimeout(() => {
+                    pending.forEach(r => void impactRipplesAPI.markDelivered(r.id).catch(
+                        (err) => console.warn('[PrincipalSelfView] markDelivered failed:', err)
+                    ));
+                }, 3000);
+            }
+        }).catch(() => {});
+    }, [userId]);
 
     const handleAddDecision = async () => {
         if (!newDecision.trim() || !userId) return;
@@ -250,6 +283,71 @@ export default function PrincipalSelfViewWeb() {
                         </button>
                     </div>
                 </div>
+
+                {/* School Forest — compassionate teacher tree health */}
+                {forest && forest.trees.length > 0 && (
+                    <div className="sanctuary-card">
+                        <div className="card-body-inner">
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                                <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>
+                                    School Forest 🌳
+                                </h3>
+                                <span style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>
+                                    {forest.forest_weather === 'radiant' ? '☀️' : forest.forest_weather === 'lush' ? '🌿' : forest.forest_weather === 'resting' ? '🌙' : '🌤'} {forest.forest_weather}
+                                </span>
+                            </div>
+                            <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginBottom: '12px', lineHeight: '1.5' }}>
+                                {forest.forest_narrative_en}
+                            </p>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                {forest.trees.slice(0, 6).map(tree => {
+                                    const healthEmoji: Record<string, string> = {
+                                        seedling: '🌱', growing: '🌿', flourishing: '🌳', flowering: '🌸', ancient: '🪵'
+                                    };
+                                    return (
+                                        <div key={tree.user_id} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', padding: '6px 10px', borderRadius: '8px', background: tree.needs_rain ? 'rgba(231,76,60,0.06)' : 'var(--background-alt)', border: tree.needs_rain ? '1px solid rgba(231,76,60,0.2)' : 'none' }}>
+                                            <span style={{ fontSize: '16px' }}>{healthEmoji[tree.tree_health] ?? '🌱'}</span>
+                                            <span style={{ flex: 1, color: 'var(--ink)' }}>{tree.tree_health}</span>
+                                            {tree.needs_rain && <span style={{ fontSize: '10px', color: '#c0392b' }}>needs care</span>}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Impact Ripples */}
+                {ripples.length > 0 && (
+                    <div className="sanctuary-card" style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(245,158,11,0.06))' }}>
+                        <div className="card-body-inner">
+                            <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '12px' }}>
+                                Ripples 🌊
+                            </h3>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                {ripples.map(r => (
+                                    <div key={r.id} style={{ fontSize: '12px', color: 'var(--ink)', lineHeight: '1.5', padding: '8px 12px', background: 'var(--surface)', borderRadius: '8px', borderLeft: '3px solid var(--action)' }}>
+                                        {r.warm_message_en}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Warm Mirror */}
+                {warmMirrorText && (
+                    <div className="sanctuary-card">
+                        <div className="card-body-inner">
+                            <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '12px' }}>
+                                Your Week ✦
+                            </h3>
+                            <p style={{ fontSize: '13px', color: 'var(--ink)', lineHeight: '1.8', whiteSpace: 'pre-wrap' }}>
+                                {warmMirrorText}
+                            </p>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
