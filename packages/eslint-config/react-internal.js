@@ -40,7 +40,7 @@ export const config = [
       "no-restricted-syntax": [
         "warn",
         {
-          selector: "CallExpression[callee.name='t'][arguments.length=2] > Literal:nth-child(2)",
+          selector: "CallExpression[callee.name='t'][arguments.length=2][arguments.1.type='Literal'], CallExpression[callee.name='t'][arguments.length=2][arguments.1.type='TemplateLiteral']",
           message: "Avoid inline default text in t('key', 'default'). Define fallback text in locale files and use i18n fallbackLng.",
         },
       ],
