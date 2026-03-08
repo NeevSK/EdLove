@@ -266,6 +266,29 @@
       })();
     </script>
 
+    <!--
+    =========================================================================
+    SPA DEEP LINK RESTORER (companion to public/404.html)
+    When GitHub Pages serves 404.html for a deep link, that page encodes the
+    original path as ?p=<encoded> and redirects to root.  This script detects
+    that param and uses history.replaceState() to restore the original URL
+    BEFORE React/React-Navigation mounts, so the linking config resolves the
+    correct screen on first paint.
+    =========================================================================
+    -->
+    <script>
+      (function () {
+        var search = window.location.search;
+        if (search) {
+          var match = search.match(/[?&]p=([^&]+)/);
+          if (match) {
+            var path = decodeURIComponent(match[1]);
+            window.history.replaceState(null, '', path);
+          }
+        }
+      })();
+    </script>
+
   </head>
 
   <body>

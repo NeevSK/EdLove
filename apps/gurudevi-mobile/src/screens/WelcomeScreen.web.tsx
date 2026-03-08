@@ -337,7 +337,7 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
     const [langHover, setLangHover] = useState<string | null>(null);
     const [btnHover, setBtnHover] = useState<'explore' | 'login' | null>(null);
 
-    const isNarrow = width < 768;
+    const isNarrow = width < 900;
 
     const bgFrom = gradientNodes[0];
 
@@ -473,7 +473,9 @@ const styles = StyleSheet.create({
     narrowContent: {
         flexGrow: 1,
         paddingVertical: 24,
+        paddingHorizontal: 16,
         gap: 16,
+        alignItems: 'stretch',
     },
 
     // ── Left panel ──────────────────────────────────────────────────────
@@ -580,7 +582,8 @@ const styles = StyleSheet.create({
 
     // ── Right panel ─────────────────────────────────────────────────────
     rightPanel: {
-        width: 420,
+        width: '100%',
+        maxWidth: 420,
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 32,

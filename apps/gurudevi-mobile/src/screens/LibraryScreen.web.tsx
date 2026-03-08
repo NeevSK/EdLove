@@ -49,7 +49,7 @@ export default function LibraryScreen() {
     } = useLibrary(
         isSearchMode
             ? { type: resourceTypeFilter, search: searchQuery || undefined, sort_by: selectedSort }
-            : { limit: 100 }
+            : { limit: 100, sort_by: selectedSort }
     );
 
     const handleOpenResource = useCallback((resource: LibraryResource) => {
@@ -76,32 +76,71 @@ export default function LibraryScreen() {
                 </div>
 
                 {/* 2. FILTERS & SEARCH */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '48px' }}>
-                    <div style={{
-                        display: 'flex',
-                        gap: '16px',
-                        alignItems: 'center',
-                        background: 'rgba(255,255,255,0.5)',
-                        padding: '8px 16px',
-                        borderRadius: '12px',
-                        border: '1px solid var(--border)'
-                    }}>
-                        <Search size={18} color="var(--ink-ghost)" />
-                        <input
-                            className="search-input"
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '48px' }}>
+                    {/* Search + Sort row */}
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <div style={{
+                            flex: 1,
+                            minWidth: '200px',
+                            display: 'flex',
+                            gap: '16px',
+                            alignItems: 'center',
+                            background: 'rgba(255,255,255,0.5)',
+                            padding: '8px 16px',
+                            borderRadius: '12px',
+                            border: '1px solid var(--border)'
+                        }}>
+                            <Search size={18} color="var(--ink-ghost)" />
+                            <input
+                                className="search-input"
+                                style={{
+                                    flex: 1,
+                                    border: 'none',
+                                    background: 'transparent',
+                                    fontSize: '14px',
+                                    padding: '8px 0',
+                                    color: 'var(--ink)',
+                                    outline: 'none'
+                                }}
+                                placeholder={t('library.searchPlaceholder') || 'Explore the sanctuary...'}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                            {searchQuery && (
+                                <button
+                                    onClick={() => setSearchQuery('')}
+                                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', fontSize: '16px', padding: '0 4px', lineHeight: 1 }}
+                                    aria-label="Clear search"
+                                >
+                                    ✕
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Sort selector */}
+                        <select
+                            value={selectedSort}
+                            onChange={(e) => setSelectedSort(e.target.value as typeof selectedSort)}
                             style={{
-                                flex: 1,
-                                border: 'none',
-                                background: 'transparent',
-                                fontSize: '14px',
-                                padding: '8px 0',
+                                padding: '10px 14px',
+                                borderRadius: '12px',
+                                border: '1px solid var(--border)',
+                                background: 'rgba(255,255,255,0.5)',
                                 color: 'var(--ink)',
-                                outline: 'none'
+                                fontSize: '13px',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                outline: 'none',
+                                fontFamily: 'var(--font-body, DM Sans, sans-serif)',
+                                flexShrink: 0,
                             }}
-                            placeholder="Explore the sanctuary..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
+                            aria-label={t('library.sort.label') || 'Sort library resources'}
+                        >
+                            <option value="recent">{t('library.sort.recent') || 'Most Recent'}</option>
+                            <option value="popular">{t('library.sort.popular') || 'Most Popular'}</option>
+                            <option value="most_endorsed">{t('library.sort.endorsed') || 'Most Endorsed'}</option>
+                            <option value="most_bookmarked">{t('library.sort.bookmarked') || 'Most Bookmarked'}</option>
+                        </select>
                     </div>
 
                     <div className="filter-scroll" style={{

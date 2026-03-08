@@ -176,6 +176,15 @@ export default function AppSettingsScreenWeb() {
                                     {language === 'si' && <ChevronRight size={18} />}
                                 </div>
                             </button>
+                            <button className="settings-row" onClick={() => handleLanguageChange('ta')}>
+                                <div className="settings-row-info">
+                                    <span className="settings-row-title">தமிழ்</span>
+                                    {language === 'ta' && <span className="settings-row-tag">செயலில்</span>}
+                                </div>
+                                <div className="settings-row-action">
+                                    {language === 'ta' && <ChevronRight size={18} />}
+                                </div>
+                            </button>
                         </div>
                     </div>
 
