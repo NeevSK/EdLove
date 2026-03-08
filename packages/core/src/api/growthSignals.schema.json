@@ -1,0 +1,189 @@
+{
+    "signals": [
+        {
+            "id": "app_opened",
+            "dimension": "presence",
+            "description": "User opened the application"
+        },
+        {
+            "id": "mood_checkin",
+            "dimension": "presence",
+            "description": "User performed a mood check-in"
+        },
+        {
+            "id": "breathing_exercise_complete",
+            "dimension": "presence",
+            "description": "User completed a breathing exercise"
+        },
+        {
+            "id": "joy_jar_entry",
+            "dimension": "presence",
+            "description": "User added an entry to their joy jar"
+        },
+        {
+            "id": "fire_journal_entry",
+            "dimension": "presence",
+            "description": "User wrote a fire journal entry"
+        },
+        {
+            "id": "attendance_recorded",
+            "dimension": "presence",
+            "description": "Teacher recorded classroom attendance"
+        },
+        {
+            "id": "attendance_marked",
+            "dimension": "presence",
+            "description": "Specific attendance mark action"
+        },
+        {
+            "id": "resource_uploaded",
+            "dimension": "nourishing",
+            "description": "User uploaded a learning resource"
+        },
+        {
+            "id": "lesson_plan_created",
+            "dimension": "nourishing",
+            "description": "Teacher created a new lesson plan"
+        },
+        {
+            "id": "assignment_created",
+            "dimension": "nourishing",
+            "description": "Teacher created an assignment"
+        },
+        {
+            "id": "wisdom_seed_shared",
+            "dimension": "nourishing",
+            "description": "User shared a wisdom seed"
+        },
+        {
+            "id": "lesson_material_created",
+            "dimension": "nourishing",
+            "description": "Teacher created lesson material"
+        },
+        {
+            "id": "assignment_graded",
+            "dimension": "nourishing",
+            "description": "Teacher graded an assignment"
+        },
+        {
+            "id": "classroom_created",
+            "dimension": "nourishing",
+            "description": "Teacher created a new classroom space"
+        },
+        {
+            "id": "assignment_submitted",
+            "dimension": "witnessing",
+            "description": "Student submitted an assignment"
+        },
+        {
+            "id": "resource_read",
+            "dimension": "witnessing",
+            "description": "User read a resource"
+        },
+        {
+            "id": "wisdom_seed_read",
+            "dimension": "witnessing",
+            "description": "User read a wisdom seed"
+        },
+        {
+            "id": "reflection_written",
+            "dimension": "witnessing",
+            "description": "User wrote a reflection"
+        },
+        {
+            "id": "goal_set",
+            "dimension": "witnessing",
+            "description": "User set a goal"
+        },
+        {
+            "id": "lesson_completed",
+            "dimension": "witnessing",
+            "description": "Student completed a lesson"
+        },
+        {
+            "id": "deep_study_session",
+            "dimension": "witnessing",
+            "description": "Extended focused study session"
+        },
+        {
+            "id": "reflection_submitted",
+            "dimension": "witnessing",
+            "description": "Student submitted a reflection"
+        },
+        {
+            "id": "knowledge_connected",
+            "dimension": "witnessing",
+            "description": "Student connected knowledge concepts"
+        },
+        {
+            "id": "crystal_found",
+            "dimension": "witnessing",
+            "description": "Student discovered a knowledge crystal"
+        },
+        {
+            "id": "community_post_created",
+            "dimension": "weaving",
+            "description": "User created a post in the community"
+        },
+        {
+            "id": "manifesto_endorsed",
+            "dimension": "weaving",
+            "description": "User endorsed a community manifesto"
+        },
+        {
+            "id": "resource_shared",
+            "dimension": "weaving",
+            "description": "User shared a resource with others"
+        },
+        {
+            "id": "colleague_helped",
+            "dimension": "weaving",
+            "description": "User helped a colleague"
+        },
+        {
+            "id": "group_message_sent",
+            "dimension": "weaving",
+            "description": "User sent a group message"
+        },
+        {
+            "id": "group_joined",
+            "dimension": "weaving",
+            "description": "User joined a community group"
+        },
+        {
+            "id": "peer_mentored",
+            "dimension": "weaving",
+            "description": "Teacher mentored a peer"
+        },
+        {
+            "id": "circle_facilitated",
+            "dimension": "weaving",
+            "description": "Teacher facilitated a staff circle"
+        },
+        {
+            "id": "resource_gifted",
+            "dimension": "weaving",
+            "description": "Teacher gifted a resource"
+        },
+        {
+            "id": "thuthimal_received",
+            "dimension": "blooming",
+            "description": "User received a Thuthimal"
+        },
+        {
+            "id": "principal_recognition",
+            "dimension": "blooming",
+            "description": "Principal recognized user's work"
+        },
+        {
+            "id": "community_milestone_reached",
+            "dimension": "blooming",
+            "description": "Community milestone achieved"
+        },
+        {
+            "id": "fractal_moment",
+            "dimension": "witnessing",
+            "description": "A rare cross-domain connection recognized"
+        }
+    ]
+}
