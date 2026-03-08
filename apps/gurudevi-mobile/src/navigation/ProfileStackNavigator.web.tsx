@@ -1,6 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Theme, useTheme } from '@repo/ui';
+import { StackFallback } from '../components/web/WebScreenShimmer';
 import { ProfileStackParamList } from '@repo/core';
 
 // Web-specific screens — lazy loaded for code splitting
@@ -11,15 +12,7 @@ const FullProfileScreen = React.lazy(() => import('../screens/profile/FullProfil
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
 function ScreenFallback() {
-    return (
-        <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            minHeight: '200px', color: 'var(--ink-ghost)', fontSize: '14px',
-            fontFamily: 'var(--font-body)',
-        }}>
-            <span style={{ fontStyle: 'italic' }}>Loading...</span>
-        </div>
-    );
+    return <StackFallback variant="profile" />;
 }
 
 export default function ProfileStackNavigatorWeb() {

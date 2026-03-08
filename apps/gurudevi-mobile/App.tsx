@@ -375,12 +375,44 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
       const hasValidSession = !!session;
 
       if (!hasValidSession && !onboardingCompleted && !allowedRoutes.includes(currentRoute || '')) {
+        // Save the intended deep link so we can restore it after successful auth
+        const intendedPath = window.location.pathname + window.location.search;
+        if (intendedPath && intendedPath !== '/' && !intendedPath.startsWith('/onboarding')) {
+          sessionStorage.setItem('__pendingDeepLink', intendedPath);
+        }
         console.log('🛡️ WebAuthGuard: Redirecting to Welcome...');
         navigationRef.current?.reset({
           index: 0,
           routes: [{ name: 'Welcome' }],
         });
       }
+    }
+  }, [onboardingCompleted, session]);
+
+  // Restore saved deep link after successful authentication + onboarding
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !onboardingCompleted || !session) return;
+    const pending = sessionStorage.getItem('__pendingDeepLink');
+    if (!pending) return;
+    // Clear before navigating to avoid loops
+    sessionStorage.removeItem('__pendingDeepLink');
+
+    // Map URL path segments to React Navigation screen names
+    const segments = pending.split('/').filter(Boolean);
+    if (segments[0] !== 'app') return;
+
+    const screenMap: Record<string, string> = {
+      self: 'Self',
+      community: 'Community',
+      classroom: 'Classroom',
+      library: 'Library',
+      profile: 'Profile',
+      notifications: 'NotificationsPanel',
+      settings: 'SettingsPanel',
+    };
+    const tabName = segments[1] ? screenMap[segments[1]] : 'Self';
+    if (tabName && navigationRef.isReady()) {
+      (navigationRef as any).navigate('Main', { screen: tabName });
     }
   }, [onboardingCompleted, session]);
 

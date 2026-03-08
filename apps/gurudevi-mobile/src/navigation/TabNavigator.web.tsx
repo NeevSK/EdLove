@@ -42,6 +42,9 @@ const AppSettingsScreenWeb = React.lazy(
   () => import("../screens/AppSettingsScreen.web"),
 );
 
+// Shimmer fallback for Tab.Screen Suspense boundaries
+import { StackFallback } from "../components/web/WebScreenShimmer";
+
 const Tab = createBottomTabNavigator();
 
 // ─── NAV HELPERS ──────────────────────────────────────────────────────────
@@ -435,7 +438,7 @@ export default function TabNavigator({
                 {() => (
                   <ErrorBoundary name="Self">
                     <React.Suspense
-                      fallback={<div style={{ minHeight: "100vh" }} />}
+                      fallback={<StackFallback />}
                     >
                       <SelfStackNavigatorWeb />
                     </React.Suspense>
@@ -446,7 +449,7 @@ export default function TabNavigator({
                 {() => (
                   <ErrorBoundary name="Community">
                     <React.Suspense
-                      fallback={<div style={{ minHeight: "100vh" }} />}
+                      fallback={<StackFallback />}
                     >
                       <CommunityStackNavigatorWeb />
                     </React.Suspense>
@@ -457,7 +460,7 @@ export default function TabNavigator({
                 {() => (
                   <ErrorBoundary name="Classroom">
                     <React.Suspense
-                      fallback={<div style={{ minHeight: "100vh" }} />}
+                      fallback={<StackFallback />}
                     >
                       <ClassroomStackNavigatorWeb />
                     </React.Suspense>
@@ -468,7 +471,7 @@ export default function TabNavigator({
                 {() => (
                   <ErrorBoundary name="Library">
                     <React.Suspense
-                      fallback={<div style={{ minHeight: "100vh" }} />}
+                      fallback={<StackFallback />}
                     >
                       <LibraryStackNavigatorWeb />
                     </React.Suspense>
@@ -479,7 +482,7 @@ export default function TabNavigator({
                 {() => (
                   <ErrorBoundary name="Profile">
                     <React.Suspense
-                      fallback={<div style={{ minHeight: "100vh" }} />}
+                      fallback={<StackFallback />}
                     >
                       <ProfileStackNavigatorWeb />
                     </React.Suspense>
@@ -491,7 +494,7 @@ export default function TabNavigator({
                 {() => (
                   <ErrorBoundary name="Notifications">
                     <React.Suspense
-                      fallback={<div style={{ minHeight: "100vh" }} />}
+                      fallback={<StackFallback />}
                     >
                       <NotificationsScreenWeb />
                     </React.Suspense>
@@ -502,7 +505,7 @@ export default function TabNavigator({
                 {() => (
                   <ErrorBoundary name="Settings">
                     <React.Suspense
-                      fallback={<div style={{ minHeight: "100vh" }} />}
+                      fallback={<StackFallback />}
                     >
                       <AppSettingsScreenWeb />
                     </React.Suspense>

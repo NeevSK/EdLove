@@ -26,6 +26,7 @@ import {
     Heart,
     Flame
 } from 'lucide-react-native';
+import { StackFallback } from '../components/web/WebScreenShimmer';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { formatDistanceToNow } from 'date-fns';
@@ -219,9 +220,7 @@ export default function CommunityScreen() {
                                 ) : (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                                         {isLoadingPosts ? (
-                                            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-ghost)' }}>
-                                                Channelling Stream...
-                                            </div>
+                                            <StackFallback variant="cards" />
                                         ) : (posts?.filter(p => {
                                             if (selectedGroupId === 'all') return true;
                                             if (selectedGroupId === 'my') {

@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
     LibraryThumbnailCard,
     LotusPetalFAB,
@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import { useLibrary, LIBRARY_UI_CATEGORIES } from '@repo/library';
 import { LibraryResource } from '@repo/library';
 import { useNavigation } from '@react-navigation/native';
+import { StackFallback } from '../components/web/WebScreenShimmer';
 
 export default function LibraryScreen() {
     const { t } = useTranslation();
@@ -176,9 +177,7 @@ export default function LibraryScreen() {
 
                 {/* 3. CONTENT GRID */}
                 {loading && resources.length === 0 ? (
-                    <div style={{ padding: '80px 0', textAlign: 'center' }}>
-                        <p style={{ color: 'var(--ink-ghost)' }}>Assembling knowledge base...</p>
-                    </div>
+                    <StackFallback variant="cards" />
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: '32px' }}>

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Bell, Info, Shield, Sparkles, CheckCircle2, Inbox } from 'lucide-react-native';
 import { useStore } from '@repo/core';
 import { useNotifications, AppNotification } from '@repo/core';
+import { StackFallback } from '../components/web/WebScreenShimmer';
 import { formatDistanceToNow } from 'date-fns';
 
 const ICON_MAP: Record<string, React.ReactNode> = {
@@ -56,11 +57,7 @@ export default function NotificationsScreenWeb() {
                     )}
 
                     {/* Loading */}
-                    {isLoading && (
-                        <div style={{ padding: '80px 40px', textAlign: 'center', color: 'var(--ink-ghost)' }}>
-                            <p style={{ fontStyle: 'italic' }}>Gathering echoes...</p>
-                        </div>
-                    )}
+                    {isLoading && <StackFallback variant="list" />}
 
                     {/* Empty state */}
                     {!isLoading && notifications.length === 0 && (
