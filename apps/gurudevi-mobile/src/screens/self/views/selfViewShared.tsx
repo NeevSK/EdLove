@@ -88,12 +88,14 @@ export function useWellbeingEnrichment(userId: string | null | undefined): Wellb
     // Impact Ripples — show undelivered, then mark delivered after display
     useEffect(() => {
         if (!userId) return;
+        let deliveryTimer: ReturnType<typeof setTimeout>;
+
         impactRipplesAPI
             .getPendingRipples(userId)
             .then(pending => {
                 if (!pending.length) return;
                 setRipples(pending);
-                setTimeout(() => {
+                deliveryTimer = setTimeout(() => {
                     pending.forEach(r =>
                         void impactRipplesAPI
                             .markDelivered(r.id)
@@ -104,6 +106,10 @@ export function useWellbeingEnrichment(userId: string | null | undefined): Wellb
                 }, RIPPLE_DELIVERY_DELAY_MS);
             })
             .catch(() => {});
+
+        return () => {
+            clearTimeout(deliveryTimer);
+        };
     }, [userId]);
 
     return { warmMirrorText, ripples };

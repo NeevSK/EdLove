@@ -71,8 +71,6 @@ export default function StudentSelfViewWeb() {
             await addJournalEntry(journalDraft.trim());
             setJournalDraft('');
             setShowJournalForm(false);
-            // Growth signal — fire-and-forget
-            if (userId) void growthSignalsAPI.emitSignal(userId, 'reflection_written').catch(() => {});
         } finally {
             setSavingJournal(false);
         }

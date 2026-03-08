@@ -8,6 +8,7 @@ export type ClassroomStackParamList = {
     FounderDashboard: undefined;
     FounderSchoolView: { schoolId: string; userId: string };
     Timetable: { schoolId?: string };
+    SchoolForest: undefined;
 };
 
 export type ProfileStackParamList = {

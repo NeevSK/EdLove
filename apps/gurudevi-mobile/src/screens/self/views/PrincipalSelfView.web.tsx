@@ -14,6 +14,7 @@ import type { SchoolForestState } from '@repo/core';
 import { useSchoolPulse } from '@repo/profile';
 import { useMoodLogs, useEnergyForecast, useDecisionJournal, useWisdom } from '@repo/self';
 import { SkeletonCard } from '@repo/ui';
+import { useNavigation } from '@react-navigation/native';
 import {
     Battery,
     Activity,
@@ -43,6 +44,7 @@ type ActivePanel = 'pulse' | 'energy' | 'decisions' | 'wisdom' | 'monthly';
 
 export default function PrincipalSelfViewWeb() {
     const { t } = useTranslation();
+    const navigation = useNavigation<any>();
     const { user } = useStore();
     const { userId } = useUserRole();
     const schoolId = user?.school_id ?? '';
@@ -262,9 +264,17 @@ export default function PrincipalSelfViewWeb() {
                                 <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>
                                     School Forest 🌳
                                 </h3>
-                                <span style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>
-                                    {forest.forest_weather === 'radiant' ? '☀️' : forest.forest_weather === 'lush' ? '🌿' : forest.forest_weather === 'resting' ? '🌙' : '🌤'} {forest.forest_weather}
-                                </span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <span style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>
+                                        {forest.forest_weather === 'radiant' ? '☀️' : forest.forest_weather === 'lush' ? '🌿' : forest.forest_weather === 'resting' ? '🌙' : forest.forest_weather === 'steady' ? '⛅' : forest.forest_weather === 'quiet' ? '🌫️' : '🌤'} {forest.forest_weather}
+                                    </span>
+                                    <button
+                                        onClick={() => navigation.navigate('SchoolForest')}
+                                        style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', fontWeight: '700', color: 'var(--moss)', fontFamily: 'var(--font-body)', padding: 0 }}
+                                    >
+                                        View all →
+                                    </button>
+                                </div>
                             </div>
                             <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginBottom: '12px', lineHeight: '1.5' }}>
                                 {forest.forest_narrative_en}

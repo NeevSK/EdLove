@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase, GuestDataManager, authAPI } from '@repo/core';
+import { supabase, GuestDataManager, authAPI, growthSignalsAPI } from '@repo/core';
 import { JournalEntry } from '../types';
 
 export const useJournalEntries = () => {
@@ -78,6 +78,8 @@ export const useJournalEntries = () => {
 
                 if (error) throw error;
                 setEntries(prev => [data, ...prev]);
+                // Growth signal — fire-and-forget (benefits mobile + web callers)
+                void growthSignalsAPI.emitSignal(user.id, 'reflection_written', {}).catch(() => {});
                 return data;
             }
         } catch (error) {
