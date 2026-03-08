@@ -393,10 +393,10 @@
     "announcements": "නිවේදන",
     "postAnnouncement": "නිවේදනයක් පළ කරන්න",
     "headerMenu": {
-      "mute": "Mute Sanctuary",
-      "unmute": "Unmute Sanctuary",
-      "blockUser": "Block User",
-      "report": "Report"
+      "mute": "Sanctuary නිහඬ කරන්න",
+      "unmute": "Sanctuary නිහඬ කිරීම අවලංගු කරන්න",
+      "blockUser": "පරිශීලකයා අවහිර කරන්න",
+      "report": "වාර්තා කරන්න"
     },
     "socialShield": {
       "thisUser": "this user",
