@@ -113,8 +113,8 @@ export default function AdminSelfView() {
                         </VStack>
                         <PositiveInvitation
                             context="self"
-                            title={t('admin.balanceComingSoon', 'System Pulse Arriving')}
-                            description={t('admin.balanceComingSoonDesc', 'A dashboard for operational harmony is being calibrated.')}
+                            title={t('admin.balanceComingSoon')}
+                            description={t('admin.balanceComingSoonDesc')}
                         />
                     </VStack>
                 );

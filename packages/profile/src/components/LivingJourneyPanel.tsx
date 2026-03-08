@@ -177,7 +177,7 @@ function MoonRow({ moon, colors, t }: MoonRowProps) {
                             color={colors.textTertiary}
                             style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
                         >
-                            {t('journey.moonTonight', 'Moon Tonight')}
+                            {t('journey.moonTonight')}
                         </Text>
                         <Text size="sm" bold color={colors.text}>
                             {moon.name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
@@ -188,7 +188,7 @@ function MoonRow({ moon, colors, t }: MoonRowProps) {
                     </Text>
                     {moon.is_poya && (
                         <Text size="xs" color={`${colors.action}`} style={{ marginTop: 2 }}>
-                            {t('journey.poyaDay', '✦ Poya day')}
+                            {t('journey.poyaDay')}
                         </Text>
                     )}
                 </VStack>
@@ -219,10 +219,10 @@ function WhisperedMomentsRow({ moments, colors, t }: WhisperedMomentsRowProps) {
                             color={colors.textTertiary}
                             style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
                         >
-                            {t('journey.whisperedMoments', 'Whispered Moments')}
+                            {t('journey.whisperedMoments')}
                         </Text>
                         <Text size="sm" color={colors.textSecondary} style={{ fontStyle: 'italic' }}>
-                            {t('journey.noMoments', 'Discoveries arrive in their own time — quietly.')}
+                            {t('journey.noMoments')}
                         </Text>
                     </VStack>
                 </HStack>
@@ -241,7 +241,7 @@ function WhisperedMomentsRow({ moments, colors, t }: WhisperedMomentsRowProps) {
                             color={colors.textTertiary}
                             style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
                         >
-                            {t('journey.whisperedMoments', 'Whispered Moments')}
+                            {t('journey.whisperedMoments')}
                         </Text>
                         <Text size="xs" color={colors.textTertiary}>
                             {moments.length} {moments.length === 1 ? 'discovery' : 'discoveries'}
@@ -326,7 +326,7 @@ export default function LivingJourneyPanel({ userId, role }: LivingJourneyPanelP
                 }}
             >
                 <Text size="sm" color={colors.textTertiary} style={{ fontStyle: 'italic' }}>
-                    {t('journey.loading', 'Your journey is waking up...')}
+                    {t('journey.loading')}
                 </Text>
             </Box>
         );
@@ -368,10 +368,10 @@ export default function LivingJourneyPanel({ userId, role }: LivingJourneyPanelP
                     }}
                 >
                     <Heading size="sm" color={colors.textSecondary as string}>
-                        {t('journey.title', 'Your Living Journey')}
+                        {t('journey.title')}
                     </Heading>
                     <Text size="xs" color={colors.textTertiary} style={{ marginTop: 4 }}>
-                        {t('journey.subtitle', 'Private — only you can see this')}
+                        {t('journey.subtitle')}
                     </Text>
                 </Box>
 
@@ -380,7 +380,7 @@ export default function LivingJourneyPanel({ userId, role }: LivingJourneyPanelP
                     {/* Bhumi (Lotus) — all users */}
                     <PathRow
                         emoji="🌸"
-                        pathName={t('journey.lotusPath', 'Lotus Path')}
+                        pathName={t('journey.lotusPath')}
                         stageLabel={bhumiData.label}
                         narrative={bhumiData.description}
                         colors={colors}
@@ -390,7 +390,7 @@ export default function LivingJourneyPanel({ userId, role }: LivingJourneyPanelP
                     {isTeacherRole && (
                         <PathRow
                             emoji="🌳"
-                            pathName={t('journey.banyanPath', 'Banyan Path')}
+                            pathName={t('journey.banyanPath')}
                             stageLabel={banyan.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                             narrative={BANYAN_NARRATIVES[banyan]}
                             colors={colors}
@@ -401,7 +401,7 @@ export default function LivingJourneyPanel({ userId, role }: LivingJourneyPanelP
                     {isStudentRole && (
                         <PathRow
                             emoji="🌊"
-                            pathName={t('journey.riverPath', 'River Path')}
+                            pathName={t('journey.riverPath')}
                             stageLabel={river.charAt(0).toUpperCase() + river.slice(1)}
                             narrative={RIVER_NARRATIVES[river]}
                             colors={colors}
@@ -412,7 +412,7 @@ export default function LivingJourneyPanel({ userId, role }: LivingJourneyPanelP
                     {isStudentRole && (
                         <PathRow
                             emoji="💎"
-                            pathName={t('journey.crystalPath', 'Crystal Collection')}
+                            pathName={t('journey.crystalPath')}
                             stageLabel={crystal.charAt(0).toUpperCase() + crystal.slice(1)}
                             narrative={CRYSTAL_NARRATIVES[crystal]}
                             colors={colors}

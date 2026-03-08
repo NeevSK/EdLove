@@ -58,7 +58,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                             bold
                             color={activeSubTab === 'sanctuary' ? Theme.colors.sacredWhite : colors.text}
                         >
-                            {t('community.groups.sanctuary', 'My Sanctuary')}
+                            {t('community.groups.sanctuary')}
                         </Text>
                     </HStack>
                 </Pressable>
@@ -81,7 +81,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                             bold
                             color={activeSubTab === 'galaxy' ? Theme.colors.sacredWhite : colors.text}
                         >
-                            {t('community.groups.galaxy', 'Infinite Galaxy')}
+                            {t('community.groups.galaxy')}
                         </Text>
                     </HStack>
                 </Pressable>
@@ -109,7 +109,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                         onPress={() => onCreateGroup?.()}
                         leftIcon={Plus}
                     >
-                        {t('community.groups.create', 'Found a New Circle')}
+                        {t('community.groups.create')}
                     </SanctuaryButton>
                 </Box>
             </Animated.View>

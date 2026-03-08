@@ -98,16 +98,16 @@ export default function AppSettingsScreenWeb() {
     const handleLanguageChange = async (lang: 'en' | 'si' | 'ta') => {
         await setLanguage(lang);
         await i18n.changeLanguage(lang);
-        showToast(t('settings.language_updated', 'Language updated'), 'success');
+        showToast(t('settings.language_updated'), 'success');
     };
 
     return (
         <div className="sanctuary-screen">
             <div className="sanctuary-container">
                 <div className="greeting">
-                    <div className="greeting-time">{t('settings.sanctuary_config', 'Sanctuary Configuration')}</div>
-                    <h1 className="greeting-main">{t('settings.title', 'Settings')}</h1>
-                    <p className="greeting-note">{t('settings.description', 'Customize your experience within the Gurudevi Ecosystem')}</p>
+                    <div className="greeting-time">{t('settings.sanctuary_config')}</div>
+                    <h1 className="greeting-main">{t('settings.title')}</h1>
+                    <p className="greeting-note">{t('settings.description')}</p>
                 </div>
 
                 <div className="settings-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(350px, 100%), 1fr))', gap: '24px' }}>
@@ -115,13 +115,13 @@ export default function AppSettingsScreenWeb() {
                     {/* 1. APPEARANCE SECTION */}
                     <div className="sanctuary-card" style={{ padding: '24px' }}>
                         <h3 className="card-header-label">
-                            <Sparkles size={16} /> {t('settings.appearance.title', 'Appearance')}
+                            <Sparkles size={16} /> {t('settings.appearance.title')}
                         </h3>
 
                         <div className="settings-list">
                             <button className="settings-row" onClick={() => setThemeMode(themeMode === 'dark' ? 'light' : 'dark')}>
                                 <div className="settings-row-info">
-                                    <span className="settings-row-title">{t('settings.theme.title', 'Theme')}</span>
+                                    <span className="settings-row-title">{t('settings.theme.title')}</span>
                                     <span className="settings-row-desc">{themeMode === 'dark' ? 'Dark' : 'Light'} Mode</span>
                                 </div>
                                 <div className="settings-row-action">
@@ -131,7 +131,7 @@ export default function AppSettingsScreenWeb() {
 
                             <button className="settings-row" onClick={() => setEnableLivingTheme(!enableLivingTheme)}>
                                 <div className="settings-row-info">
-                                    <span className="settings-row-title">{t('settings.living_theme.title', 'Living Theme')}</span>
+                                    <span className="settings-row-title">{t('settings.living_theme.title')}</span>
                                     <span className="settings-row-desc">{enableLivingTheme ? 'Phase-aware active' : 'Simple static color'}</span>
                                 </div>
                                 <div className="settings-row-action">
@@ -141,7 +141,7 @@ export default function AppSettingsScreenWeb() {
 
                             <button className="settings-row" onClick={() => setFidelityLevel(fidelityLevel === 'high' ? 'low' : 'high')}>
                                 <div className="settings-row-info">
-                                    <span className="settings-row-title">{t('settings.fidelity.title', 'Visual Quality')}</span>
+                                    <span className="settings-row-title">{t('settings.fidelity.title')}</span>
                                     <span className="settings-row-desc">{fidelityLevel === 'high' ? 'Premium Resonance' : 'Performance Optimized'}</span>
                                 </div>
                                 <div className="settings-row-action">
@@ -154,7 +154,7 @@ export default function AppSettingsScreenWeb() {
                     {/* 2. LOCALIZATION SECTION */}
                     <div className="sanctuary-card" style={{ padding: '24px' }}>
                         <h3 className="card-header-label">
-                            <Globe size={16} /> {t('settings.language.title', 'Language & Regional')}
+                            <Globe size={16} /> {t('settings.language.title')}
                         </h3>
 
                         <div className="settings-list">
@@ -184,13 +184,13 @@ export default function AppSettingsScreenWeb() {
                     {/* 4. ACCOUNT MANAGEMENT */}
                     <div className="sanctuary-card" style={{ padding: '24px', borderColor: 'rgba(255, 100, 100, 0.2)' }}>
                         <h3 className="card-header-label" style={{ color: 'var(--ink)' }}>
-                            <Info size={16} /> {t('settings.account.title', 'Account Stewardship')}
+                            <Info size={16} /> {t('settings.account.title')}
                         </h3>
 
                         <div className="settings-list">
                             <button className="settings-row" onClick={() => setLogoutModalVisible(true)}>
                                 <div className="settings-row-info">
-                                    <span className="settings-row-title" style={{ color: colors.error }}>{t('profile.logout', 'Sign Out')}</span>
+                                    <span className="settings-row-title" style={{ color: colors.error }}>{t('profile.logout')}</span>
                                     <span className="settings-row-desc">Currently as {role?.split('_').join(' ')}</span>
                                 </div>
                                 <div className="settings-row-action">
@@ -200,7 +200,7 @@ export default function AppSettingsScreenWeb() {
 
                             <button className="settings-row" style={{ marginTop: '12px', borderTop: '1px dashed var(--border)', paddingTop: '12px' }} onClick={() => setDeleteModalVisible(true)}>
                                 <div className="settings-row-info">
-                                    <span className="settings-row-title" style={{ color: colors.textTertiary, fontSize: '12px' }}>{t('profile.deleteAccount', 'Delete Account')}</span>
+                                    <span className="settings-row-title" style={{ color: colors.textTertiary, fontSize: '12px' }}>{t('profile.deleteAccount')}</span>
                                 </div>
                                 <div className="settings-row-action">
                                     <Trash2 size={16} color={colors.textTertiary} />
@@ -212,7 +212,7 @@ export default function AppSettingsScreenWeb() {
                     {/* 5. SUPPORT & RESONANCE */}
                     <div className="sanctuary-card" style={{ padding: '24px' }}>
                         <h3 className="card-header-label">
-                            <HelpCircle size={16} /> {t('settings.support.title', 'Support & Resonance')}
+                            <HelpCircle size={16} /> {t('settings.support.title')}
                         </h3>
 
                         <div className="settings-list">

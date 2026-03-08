@@ -134,8 +134,8 @@ export default function PrincipalSelfView() {
 
                         <PositiveInvitation
                             context="self"
-                            title={t('principal.wisdomComingSoon', 'Leadership Treasury')}
-                            description={t('principal.wisdomComingSoonDesc', 'A curated library of leadership philosophies is being assembled.')}
+                            title={t('principal.wisdomComingSoon')}
+                            description={t('principal.wisdomComingSoonDesc')}
                         />
                     </VStack>
                 );
@@ -153,8 +153,8 @@ export default function PrincipalSelfView() {
 
                         <PositiveInvitation
                             context="self"
-                            title={t('principal.monthlyComingSoon', 'Architect of Growth')}
-                            description={t('principal.monthlyComingSoonDesc', 'A deep reflection module for your monthly milestones is on its way.')}
+                            title={t('principal.monthlyComingSoon')}
+                            description={t('principal.monthlyComingSoonDesc')}
                         />
                     </VStack>
                 );

@@ -87,9 +87,9 @@ export default function GlobalHeader({
     // Determine greeting based on time of day
     const getGreetingDetails = () => {
         const hour = new Date().getHours();
-        if (hour < 12) return { text: t('goodMorning', 'Good Morning'), emoji: '🌅' };
-        if (hour < 18) return { text: t('goodAfternoon', 'Good Afternoon'), emoji: '☀️' };
-        return { text: t('goodEvening', 'Good Evening'), emoji: '🏮' };
+        if (hour < 12) return { text: t('goodMorning'), emoji: '🌅' };
+        if (hour < 18) return { text: t('goodAfternoon'), emoji: '☀️' };
+        return { text: t('goodEvening'), emoji: '🏮' };
     };
 
     const { text: greetingText, emoji } = getGreetingDetails();
@@ -224,7 +224,7 @@ export default function GlobalHeader({
                     <SanctuaryInput
                         value={searchQuery}
                         onChangeText={setSearchQuery}
-                        placeholder={t('searchPlaceholder', 'Find anything...')}
+                        placeholder={t('searchPlaceholder')}
                         leftIcon={Search}
                         autoFocus
                     />

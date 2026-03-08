@@ -71,7 +71,7 @@ export default function CommunityScreen() {
     const hasJoinedGroups = useMemo(() => (groups || []).some(g => g.is_member), [groups]);
 
     // Derived feed filter chips via shared hook
-    const feedFilterChips = useCommunityFilters(groups, t('community.filters.allUpdates', 'All Updates'));
+    const feedFilterChips = useCommunityFilters(groups, t('community.filters.allUpdates'));
 
     // Initial data load
     useEffect(() => {
@@ -131,15 +131,15 @@ export default function CommunityScreen() {
     return (
         <ScreenWrapper scroll={false} noTopInset={true}>
             <Box sx={{ flex: 1, backgroundColor: colors.secondary }}>
-                <GlobalHeader title={t('community.title', 'Heal & Bloom')} />
+                <GlobalHeader title={t('community.title')} />
 
                 {/* Sub-Tabs via Chips - ALWAYS VISIBLE for navigation awareness */}
                 <Animated.View entering={FadeInDown.delay(150).springify()}>
                     <HorizontalChipRow
                         chips={[
-                            { label: t('community.tabs.resonantFeed', 'Resonant Feed'), value: 'feed' },
-                            { label: t('community.tabs.infiniteGalaxy', 'Infinite Galaxy'), value: 'groups' },
-                            { label: t('community.tabs.dms', 'Messages'), value: 'dms' }
+                            { label: t('community.tabs.resonantFeed'), value: 'feed' },
+                            { label: t('community.tabs.infiniteGalaxy'), value: 'groups' },
+                            { label: t('community.tabs.dms'), value: 'dms' }
                         ]}
                         selectedValue={activeTab}
                         onSelect={(value) => setActiveTab(value as TabType)}
@@ -157,8 +157,8 @@ export default function CommunityScreen() {
                                 <Box px="$4">
                                     <PositiveInvitation
                                         type="guest"
-                                        title={t('community.guestTitle', 'Your Community Awaits')}
-                                        description={t('community.guestDesc', 'Connect with educators, share wisdom, and feel the pulse of your school. Create a free account to join the circle.')}
+                                        title={t('community.guestTitle')}
+                                        description={t('community.guestDesc')}
                                         onAction={() => navigation.navigate('Auth' as never)}
                                     />
                                 </Box>
@@ -258,8 +258,8 @@ export default function CommunityScreen() {
                         <VStack sx={{ flex: 1, justifyContent: 'center', padding: Theme.spacing.xl }}>
                             <PositiveInvitation
                                 type="guest"
-                                title={t('community.dms.guestTitle', 'Private Resonance')}
-                                description={t('community.dms.guestDesc', 'Sign in to connect directly with fellow educators and share private reflections.')}
+                                title={t('community.dms.guestTitle')}
+                                description={t('community.dms.guestDesc')}
                                 onAction={() => navigation.navigate('Auth' as never)}
                             />
                         </VStack>

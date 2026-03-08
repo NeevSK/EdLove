@@ -75,19 +75,19 @@ export default function CommunityScreen() {
                         <nav className="sidebar-nav" style={{ gap: '8px' }}>
                             <SidebarItem
                                 icon={<Compass size={18} />}
-                                label={t('community.filters.allUpdates', 'All Updates')}
+                                label={t('community.filters.allUpdates')}
                                 active={selectedGroupId === 'all' && showList === 'none'}
                                 onClick={() => { setSelectedGroupId('all'); setShowList('none'); }}
                             />
                             <SidebarItem
                                 icon={<Users2 size={18} />}
-                                label={t('community.groups.sanctuary', 'My Sanctuary')}
+                                label={t('community.groups.sanctuary')}
                                 active={selectedGroupId === 'my' && showList === 'none'}
                                 onClick={() => { setSelectedGroupId('my'); setShowList('none'); }}
                             />
                             <SidebarItem
                                 icon={<Activity size={18} />}
-                                label={t('community.tabs.resonantFeed', 'Resonant Feed')}
+                                label={t('community.tabs.resonantFeed')}
                                 active={selectedGroupId === 'pulse' && showList === 'none'}
                                 onClick={() => { setSelectedGroupId('pulse'); setShowList('none'); }}
                             />
@@ -98,14 +98,14 @@ export default function CommunityScreen() {
                                 <span className="sidebar-icon">
                                     <MessageSquare size={18} />
                                 </span>
-                                <span className="sidebar-label">{t('community.tabs.dms', 'Messages')}</span>
+                                <span className="sidebar-label">{t('community.tabs.dms')}</span>
                             </button>
                         </nav>
 
                         <div className="sidebar-divider" style={{ margin: '20px 16px 12px 16px', opacity: 0.1, backgroundColor: 'var(--ink)' }} />
 
                         <div style={{ padding: '0 16px', marginTop: '12px' }}>
-                            <div className="sidebar-group-label" style={{ marginBottom: '12px', opacity: 0.6 }}>{t('community.groups.title', 'Groups')}</div>
+                            <div className="sidebar-group-label" style={{ marginBottom: '12px', opacity: 0.6 }}>{t('community.groups.title')}</div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                 {joinedGroups?.map((g) => (
                                     <button
@@ -126,7 +126,7 @@ export default function CommunityScreen() {
                         <div className="sidebar-divider" style={{ margin: '24px 16px 12px 16px', opacity: 0.1, backgroundColor: 'var(--ink)' }} />
 
                         <div style={{ padding: '0 16px' }}>
-                            <div className="sidebar-group-label" style={{ marginBottom: '12px', opacity: 0.6 }}>{t('community.tabs.infiniteGalaxy', 'Infinite Galaxy')}</div>
+                            <div className="sidebar-group-label" style={{ marginBottom: '12px', opacity: 0.6 }}>{t('community.tabs.infiniteGalaxy')}</div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                 {discoverGroups?.map((g) => (
                                     <button
@@ -153,27 +153,27 @@ export default function CommunityScreen() {
                                 onClick={() => setShowList('none')}
                             >
                                 <Compass size={16} />
-                                <span>{t('community.tabs.resonantFeed', 'Resonant Feed')}</span>
+                                <span>{t('community.tabs.resonantFeed')}</span>
                             </button>
                             <button
                                 className={`sub-nav-item ${showList === 'joined' ? 'active' : ''}`}
                                 onClick={() => setShowList('joined')}
                             >
                                 <Users2 size={16} />
-                                <span>{t('community.groups.sanctuary', 'My Sanctuary')}</span>
+                                <span>{t('community.groups.sanctuary')}</span>
                             </button>
                             <button
                                 className={`sub-nav-item ${showList === 'discover' ? 'active' : ''}`}
                                 onClick={() => setShowList('discover')}
                             >
                                 <Compass size={16} />
-                                <span>{t('community.tabs.infiniteGalaxy', 'Infinite Galaxy')}</span>
+                                <span>{t('community.tabs.infiniteGalaxy')}</span>
                             </button>
                         </div>
 
                         {showList === 'joined' ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                <h2 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '8px' }}>{t('community.groups.joinedTitle', 'Joined Sanctuaries')}</h2>
+                                <h2 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '8px' }}>{t('community.groups.joinedTitle')}</h2>
                                 {joinedGroups?.map(g => (
                                     <button
                                         key={g.id}
@@ -188,7 +188,7 @@ export default function CommunityScreen() {
                             </div>
                         ) : showList === 'discover' ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                <h2 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '8px' }}>{t('community.tabs.infiniteGalaxy', 'Infinite Galaxy')}</h2>
+                                <h2 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '8px' }}>{t('community.tabs.infiniteGalaxy')}</h2>
                                 {discoverGroups?.map(g => (
                                     <button
                                         key={g.id}
@@ -264,8 +264,8 @@ export default function CommunityScreen() {
                                             <div style={{ padding: '80px 40px', textAlign: 'center' }}>
                                                 <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic' }}>
                                                     {selectedGroupId === 'my'
-                                                        ? t('community.groups.noGalaxyTitle', "You haven't joined any sanctuatries yet.")
-                                                        : t('community.empty.title', "The silence is waiting for your resonance.")}
+                                                        ? t('community.groups.noGalaxyTitle')
+                                                        : t('community.empty.title')}
                                                 </p>
                                             </div>
                                         )}

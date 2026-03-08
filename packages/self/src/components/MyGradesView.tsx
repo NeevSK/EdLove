@@ -102,7 +102,7 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
                 }}
             >
                 <Text color={colors.textSecondary} size="sm" textAlign="center">
-                    {t('student.noGradesYet', 'No grades yet — keep going! 🌱')}
+                    {t('student.noGradesYet')}
                 </Text>
             </Box>
         );
@@ -125,7 +125,7 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
                             <HStack justifyContent="space-between" alignItems="flex-start">
                                 <VStack sx={{ flex: 1, marginRight: Theme.spacing.sm }}>
                                     <Text color={colors.text} size="sm" bold numberOfLines={1}>
-                                        {item.assignments?.title ?? t('student.unknownAssignment', 'Assignment')}
+                                        {item.assignments?.title ?? t('student.unknownAssignment')}
                                     </Text>
                                     <Text color={colors.textSecondary} size="xs">
                                         {item.classrooms?.name ?? ''}

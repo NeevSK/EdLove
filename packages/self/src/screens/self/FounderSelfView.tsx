@@ -112,8 +112,8 @@ export default function FounderSelfView() {
                         </VStack>
                         <PositiveInvitation
                             context="community"
-                            title={t('founder.visionComingSoon', 'Architecting the Future')}
-                            description={t('founder.visionComingSoonDesc', 'The vision alignment dashboard is currently being synthesized.')}
+                            title={t('founder.visionComingSoon')}
+                            description={t('founder.visionComingSoonDesc')}
                         />
                     </VStack>
                 );

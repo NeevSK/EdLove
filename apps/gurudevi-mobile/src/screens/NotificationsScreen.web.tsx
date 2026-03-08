@@ -31,12 +31,12 @@ export default function NotificationsScreenWeb() {
             <div className="sanctuary-container">
                 {/* GREETING */}
                 <div className="greeting">
-                    <div className="greeting-time">{t('notifications.stream', 'Echoes of the Sanctuary')}</div>
-                    <h1 className="greeting-main">{t('notifications.title', 'Notifications')}</h1>
+                    <div className="greeting-time">{t('notifications.stream')}</div>
+                    <h1 className="greeting-main">{t('notifications.title')}</h1>
                     <p className="greeting-note">
                         {unreadCount > 0
-                            ? t('notifications.unread', '{{count}} unread echoes', { count: unreadCount })
-                            : t('notifications.description', 'Stay in resonance with your community and growth')}
+                            ? t('notifications.unread', { count: unreadCount })
+                            : ''}
                     </p>
                 </div>
 
@@ -50,7 +50,7 @@ export default function NotificationsScreenWeb() {
                                 onClick={() => markAllRead()}
                             >
                                 <CheckCircle2 size={14} />
-                                {t('notifications.markAllRead', 'Mark all as read')}
+                                {t('notifications.markAllRead')}
                             </button>
                         </div>
                     )}
@@ -76,7 +76,7 @@ export default function NotificationsScreenWeb() {
                                 <Inbox size={28} color="var(--action)" />
                             </div>
                             <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic', maxWidth: '320px', lineHeight: 1.6 }}>
-                                {t('notifications.empty', 'The sanctuary is quiet. New echoes will appear here.')}
+                                {t('notifications.empty')}
                             </p>
                         </div>
                     )}
