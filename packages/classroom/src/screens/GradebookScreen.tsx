@@ -205,7 +205,7 @@ export default function GradebookScreen({
                                         color={Theme.colors.sacredWhite}
                                         sx={{ fontSize: 14 }}
                                     >
-                                        {t(`grading.gradebook.sort${option.charAt(0).toUpperCase() + option.slice(1)}`, option.charAt(0).toUpperCase() + option.slice(1))}
+                                        {t(`grading.gradebook.sort${option.charAt(0).toUpperCase() + option.slice(1)}`) || option.charAt(0).toUpperCase() + option.slice(1)}
                                     </Text>
                                 </Box>
                             </TouchableOpacity>

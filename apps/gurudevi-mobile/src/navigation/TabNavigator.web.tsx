@@ -16,6 +16,7 @@ import {
   Menu,
   Settings,
 } from "lucide-react-native";
+import { StackFallback } from "../components/web/WebScreenShimmer";
 
 // ── Preload helper ──────────────────────────────────────────────────────────
 // Kicks off the dynamic import for each chunk immediately after the main
@@ -69,8 +70,7 @@ const AppSettingsScreenWeb = React.lazy(
 );
 schedulePreload(() => import("../screens/AppSettingsScreen.web"));
 
-// Shimmer fallback for Tab.Screen Suspense boundaries
-import { StackFallback } from "../components/web/WebScreenShimmer";
+// ── Tab navigator ────────────────────────────────────────────────────────────
 
 const Tab = createBottomTabNavigator();
 

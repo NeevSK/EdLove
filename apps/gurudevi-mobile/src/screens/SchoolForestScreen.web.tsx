@@ -52,6 +52,7 @@ function lastSignalLabel(days: number): string {
 export default function SchoolForestScreenWeb() {
     const { user } = useStore();
     const { userId } = useUserRole();
+    const navigation = useNavigation();
     const schoolId = user?.school_id ?? '';
 
     const [forest, setForest] = useState<SchoolForestState | null>(null);

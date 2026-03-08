@@ -47,7 +47,7 @@ export default function GroupChatScreen() {
 
     const scrollToBottom = useCallback((smooth = true) => {
         setTimeout(() => {
-            bottomRef.current?.scrollIntoView({ behavior: smooth ? 'smooth' : 'instant' });
+            bottomRef.current?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto' });
         }, 60);
     }, []);
 

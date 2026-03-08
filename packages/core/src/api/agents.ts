@@ -51,7 +51,7 @@ export const ReliefCoordinator = {
             // 2. Find classrooms assigned to those teachers
             let classroomQuery = supabase
                 .from('classrooms')
-                .select('id, name, grade')
+                .select('id, name, grade, teacher_id')
                 .in('teacher_id', absentTeacherIds)
                 .eq('school_id', schoolId);
 

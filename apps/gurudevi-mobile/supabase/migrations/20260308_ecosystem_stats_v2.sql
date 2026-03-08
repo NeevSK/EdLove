@@ -16,11 +16,12 @@ DECLARE
     caller_role TEXT;
 BEGIN
     -- Strict role check — Founders and Admins only
+    -- A NULL role (no row found, or role column is NULL) is also rejected.
     SELECT role INTO caller_role
     FROM public.users
     WHERE id = auth.uid();
 
-    IF caller_role NOT IN ('founder', 'admin', 'developer') THEN
+    IF caller_role IS NULL OR caller_role NOT IN ('founder', 'admin', 'developer') THEN
         RAISE EXCEPTION 'Access Denied: Founder privileges required.';
     END IF;
 
