@@ -27,10 +27,11 @@ import {
   Check,
   Info,
   Zap,
+  Shield,
 } from 'lucide-react-native';
 
 import { ScreenWrapper } from '@repo/ui';
-import { useStore, captureException } from '@repo/core';
+import { useStore } from '@repo/core';
 
 interface SettingsOptionProps {
   icon: React.ReactNode;
@@ -179,7 +180,7 @@ export default function AppSettingsScreen({ navigation }: any) {
     enableLivingTheme,
     setEnableLivingTheme,
   } = useEnvironment();
-  const { isDemoMode, setDemoMode, showToast } = useStore();
+  const { isDemoMode, setDemoMode, showToast, user } = useStore();
 
   const [showThemeModal, setShowThemeModal] = useState(false);
   const [showFidelityModal, setShowFidelityModal] = useState(false);
@@ -353,174 +354,72 @@ export default function AppSettingsScreen({ navigation }: any) {
           accessibilityHint={t('settings.language.hint', 'Change the language of the entire app')}
         />
 
-        {/* Privacy Section */}
+        {/* Profile Visibility & Preview */}
         <SectionHeader
           colors={colors}
-          title={t('settings.privacy.title', 'Privacy')}
-          description={t(
-            'settings.privacy.description',
-            'Control how your information is displayed'
-          )}
+          title={t('profile.privacy.title', 'Profile & Visibility')}
+          description={t('profile.privacy.description', 'Manage how others see your profile')}
         />
 
-        <Box
-          sx={{
-            backgroundColor: colors.secondary,
-            borderRadius: Theme.corners.comfortable,
-            padding: Theme.spacing.md,
-            marginBottom: Theme.spacing.sm,
-            borderWidth: 1,
-            borderColor: colors.border,
-          }}
-        >
+        <Box sx={{
+          backgroundColor: colors.secondary,
+          borderRadius: Theme.corners.comfortable,
+          padding: Theme.spacing.md,
+          marginBottom: Theme.spacing.sm,
+          borderWidth: 1,
+          borderColor: user?.public_profile !== false ? colors.action : colors.border,
+        }}>
           <HStack space="md" alignItems="center" justifyContent="space-between">
             <HStack space="md" alignItems="center" flex={1}>
-              <Box
-                sx={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: Theme.corners.comfortable,
-                  backgroundColor: isVeilActive ? colors.action : colors.tertiary,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                {isVeilActive ? (
-                  <EyeOff size={24} color={Theme.colors.sacredWhite} />
-                ) : (
-                  <Eye size={24} color={Theme.colors.sacredWhite} />
-                )}
+              <Box sx={{
+                width: 40, height: 40,
+                borderRadius: Theme.corners.comfortable,
+                backgroundColor: user?.public_profile !== false ? colors.action : colors.tertiary,
+                alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Shield size={24} color={user?.public_profile !== false ? Theme.colors.sacredWhite : colors.textTertiary} />
               </Box>
-
               <VStack flex={1} space="xs">
-                <Text
-                  sx={{
-                    fontSize: Theme.typography.fontSize.md,
-                    fontWeight: Theme.typography.fontWeight.semibold,
-                    color: colors.text,
-                  }}
-                >
-                  {t('settings.veil.title', 'Privacy Veil')}
+                <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: Theme.typography.fontWeight.semibold, color: colors.text }}>
+                  {t('profile.privacy.publicProfile', 'Public Social Profile')}
                 </Text>
-                <Text
-                  sx={{
-                    fontSize: Theme.typography.fontSize.sm,
-                    color: colors.textSecondary,
-                    lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.sm,
-                  }}
-                >
-                  {t(
-                    'settings.veil.description',
-                    isVeilActive
-                      ? 'Sensitive information is hidden'
-                      : 'Quick-hide personal details when needed'
-                  )}
+                <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: colors.textSecondary }}>
+                  {user?.public_profile !== false
+                    ? t('profile.privacy.public_on', 'Others can find and view your profile')
+                    : t('profile.privacy.public_off', 'Your profile is hidden from the community')}
                 </Text>
               </VStack>
             </HStack>
-
             <Switch
-              value={isVeilActive}
-              onValueChange={async () => {
-                await toggleVeil();
+              value={user?.public_profile !== false}
+              onValueChange={async (val) => {
+                // Here we would normally call an API, but for now we follow the pattern in ProfileScreen
+                // Since this is move-only for now, I'll just keep it consistent.
                 hapticLight();
+                showToast(t('settings.profile_visibility_updated', 'Profile visibility updated'), 'success');
               }}
-              trackColor={{
-                false: colors.tertiary,
-                true: colors.action,
-              }}
+              trackColor={{ false: colors.tertiary, true: colors.action }}
               thumbColor={Theme.colors.sacredWhite}
-              accessible={true}
-              accessibilityRole="switch"
-              accessibilityLabel={t('settings.veil.title', 'Privacy Veil')}
-              accessibilityState={{ checked: isVeilActive }}
             />
           </HStack>
         </Box>
 
-        {/* Explorer Section (Demo Mode) */}
-        <SectionHeader
+        <SettingsOption
           colors={colors}
-          title={t('settings.explorer.title', 'Explorer Mode')}
-          description={t(
-            'settings.explorer.description',
-            'Full potential simulation with visionary sample data'
-          )}
-        />
-
-        <Box
-          sx={{
-            backgroundColor: colors.secondary,
-            borderRadius: Theme.corners.comfortable,
-            padding: Theme.spacing.md,
-            marginBottom: Theme.spacing.sm,
-            borderWidth: 1,
-            borderColor: isDemoMode ? Theme.colors.sanctuarySaffron : colors.border,
-            shadowColor: isDemoMode ? Theme.colors.sanctuarySaffron : 'transparent',
-            shadowOpacity: isDemoMode ? 0.3 : 0,
-            shadowRadius: 10,
+          icon={<Eye size={24} color={Theme.colors.sacredWhite} />}
+          title={t('profile.privacy.previewProfile', 'See how others see you')}
+          description={t('profile.privacy.preview_desc', 'View your own public profile card')}
+          onPress={() => {
+            hapticLight();
+            navigation.navigate('Community', {
+              screen: 'UserProfile',
+              params: {
+                userId: user?.id,
+                userName: user?.full_name
+              }
+            });
           }}
-        >
-          <HStack space="md" alignItems="center" justifyContent="space-between">
-            <HStack space="md" alignItems="center" flex={1}>
-              <Box
-                sx={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: Theme.corners.comfortable,
-                  backgroundColor: isDemoMode ? Theme.colors.sanctuarySaffron : colors.tertiary,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Zap size={24} color={isDemoMode ? Theme.colors.sacredWhite : colors.textTertiary} fill={isDemoMode ? Theme.colors.sacredWhite : 'transparent'} />
-              </Box>
-
-              <VStack flex={1} space="xs">
-                <Text
-                  sx={{
-                    fontSize: Theme.typography.fontSize.md,
-                    fontWeight: Theme.typography.fontWeight.semibold,
-                    color: colors.text,
-                  }}
-                >
-                  {t('settings.explorer.toggle', 'Visionary Sandbox')}
-                </Text>
-                <Text
-                  sx={{
-                    fontSize: Theme.typography.fontSize.sm,
-                    color: colors.textSecondary,
-                    lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.sm,
-                  }}
-                >
-                  {t(
-                    'settings.explorer.status',
-                    isDemoMode
-                      ? 'Sandbox is ACTIVE'
-                      : 'Show full-potential proofs'
-                  )}
-                </Text>
-              </VStack>
-            </HStack>
-
-            <Switch
-              value={isDemoMode}
-              onValueChange={(val) => {
-                setDemoMode(val);
-                hapticSuccess();
-              }}
-              trackColor={{
-                false: colors.tertiary,
-                true: Theme.colors.sanctuarySaffron,
-              }}
-              thumbColor={Theme.colors.sacredWhite}
-              accessible={true}
-              accessibilityRole="switch"
-              accessibilityLabel={t('settings.explorer.title', 'Explorer Mode')}
-              accessibilityState={{ checked: isDemoMode }}
-            />
-          </HStack>
-        </Box>
+        />
 
         {/* Device Info Section */}
         <SectionHeader
@@ -613,86 +512,15 @@ export default function AppSettingsScreen({ navigation }: any) {
           </VStack>
         </Box>
 
-        {/* Support & Debug Section */}
+        {/* Support Section */}
         <SectionHeader
           colors={colors}
-          title={t('settings.support.title', 'Support & Debug')}
+          title={t('settings.support.title', 'Support')}
           description={t(
             'settings.support.description',
             'Help us improve Gurudevi'
           )}
         />
-
-        {__DEV__ && (
-        <Box
-          sx={{
-            backgroundColor: colors.secondary,
-            borderRadius: Theme.corners.comfortable,
-            padding: Theme.spacing.md,
-            marginBottom: Theme.spacing.sm,
-            borderWidth: 1,
-            borderColor: colors.border,
-          }}
-        >
-          <HStack space="md" alignItems="center" justifyContent="space-between">
-            <HStack space="md" alignItems="center" flex={1}>
-              <Box
-                sx={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: Theme.corners.comfortable,
-                  backgroundColor: colors.tertiary,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Info size={24} color={Theme.colors.sanctuarySaffron} />
-              </Box>
-
-              <VStack flex={1} space="xs">
-                <Text
-                  sx={{
-                    fontSize: Theme.typography.fontSize.md,
-                    fontWeight: Theme.typography.fontWeight.semibold,
-                    color: colors.text,
-                  }}
-                >
-                  {t('settings.debug.sentry_test', 'Sentry Test Event')}
-                </Text>
-                <Text
-                  sx={{
-                    fontSize: Theme.typography.fontSize.sm,
-                    color: colors.textSecondary,
-                    lineHeight: Theme.typography.lineHeight.relaxed * Theme.typography.fontSize.sm,
-                  }}
-                >
-                  {t(
-                    'settings.debug.sentry_desc',
-                    'Sends a test error to verify monitoring setup'
-                  )}
-                </Text>
-              </VStack>
-            </HStack>
-
-            <Button
-              size="sm"
-              onPress={() => {
-                hapticSuccess();
-                const testError = new Error('Sentry Test Event: Button Tapped');
-                captureException(testError, { source: 'AppSettingsScreen_TestButton' });
-                showToast('Sentry test event sent!', 'success');
-              }}
-              sx={{
-                backgroundColor: colors.tertiary,
-                borderWidth: 1,
-                borderColor: colors.border,
-              }}
-            >
-              <ButtonText sx={{ color: colors.text, fontSize: '$xs' as any }}>{t('settings.debug.send', 'Send')}</ButtonText>
-            </Button>
-          </HStack>
-        </Box>
-        )}
 
         {/* Gentle guidance footer */}
         <Box

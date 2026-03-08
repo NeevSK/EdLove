@@ -15,6 +15,7 @@ interface ScreenWrapperProps {
     refreshControl?: React.ReactElement<import('react-native').RefreshControlProps>;
     style?: any;
     hasBottomTab?: boolean;
+    noTopInset?: boolean;
 }
 
 export function useBottomTabPadding() {
@@ -33,14 +34,15 @@ export default function ScreenWrapper({
     backgroundColor,
     refreshControl,
     style,
-    hasBottomTab = false
+    hasBottomTab = false,
+    noTopInset = false
 }: ScreenWrapperProps) {
     const insets = useSafeAreaInsets();
     const { isDark, temporalPhase } = useEnvironment();
     const colors = getThemeColors(isDark, temporalPhase);
 
     const safeAreaStyle = {
-        paddingTop: insets.top,
+        paddingTop: noTopInset ? 0 : insets.top,
         paddingBottom: insets.bottom,
         paddingLeft: insets.left,
         paddingRight: insets.right,

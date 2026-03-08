@@ -22,6 +22,7 @@ export interface User {
     nic_number?: string;         // Mandatory for teachers
     onboarding_completed?: boolean; // Flag indicating if user has completed onboarding
     onboarding_completed_at?: string; // Timestamp when onboarding was completed
+    public_profile: boolean;      // Visibility flag for community profile
     /**
      * Private orientation fingerprint — 4-dimensional learning tendency vector.
      * Set during onboarding orientation step and updated via behavioral inference.

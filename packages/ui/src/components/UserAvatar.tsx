@@ -72,6 +72,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
         return (
             <Image
                 source={{ uri: avatarUrl }}
+                accessible={true}
+                accessibilityLabel={fullName ? `Avatar of ${fullName}` : 'User avatar'}
+                accessibilityRole="image"
                 style={[
                     styles.base,
                     { width: size, height: size, borderRadius: radius },
@@ -84,6 +87,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 
     return (
         <View
+            accessible={true}
+            accessibilityLabel={fullName ? `Avatar of ${fullName}` : (role ? `Avatar for ${role} role` : 'User avatar')}
+            accessibilityRole="image"
             style={[
                 styles.base,
                 { width: size, height: size, borderRadius: radius, backgroundColor: bgColor },

@@ -129,7 +129,7 @@ export default function CommunityScreen() {
     };
 
     return (
-        <ScreenWrapper scroll={false}>
+        <ScreenWrapper scroll={false} noTopInset={true}>
             <Box sx={{ flex: 1, backgroundColor: colors.secondary }}>
                 <GlobalHeader title={t('community.title', 'Heal & Bloom')} />
 

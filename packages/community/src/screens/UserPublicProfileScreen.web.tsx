@@ -15,7 +15,8 @@ import {
   SanctuaryBackground,
   GlobalHeader,
   LotusPetalFAB,
-} from "@repo/ui";
+  UserAvatar
+} from '@repo/ui';
 import {
   Send,
   UserCircle,
@@ -27,6 +28,7 @@ import {
   MessageSquare,
   Heart,
   BadgeCheck,
+  Info
 } from "lucide-react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -56,6 +58,7 @@ export default function UserPublicProfileScreen() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [initiatingDM, setInitiatingDM] = useState(false);
+  const [stats, setStats] = useState({ posts: 0, endorsements: 0 });
 
   useEffect(() => {
     loadProfile();
@@ -66,15 +69,37 @@ export default function UserPublicProfileScreen() {
     try {
       // Fetch profile data directly using supabase
       const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", userId)
+        .from('users')
+        .select('id, full_name, role, avatar_url, public_profile, username, bio, school:schools(name)')
+        .eq('id', userId)
         .single();
 
       if (error) throw error;
-      setUser(data);
+      setUser({
+        ...data,
+        school_name: (data.school as any)?.name ?? null
+      });
+
+      // Parallel stats fetching for parity with mobile
+      const [postsRes, endorsementsRes] = await Promise.all([
+        supabase
+          .from('community_posts')
+          .select('id', { count: 'exact', head: true })
+          .eq('author_id', userId)
+          .eq('is_anonymous', false),
+        supabase
+          .from('resource_engagements')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', userId)
+          .eq('engagement_type', 'endorse')
+      ]);
+
+      setStats({
+        posts: postsRes.count ?? 0,
+        endorsements: endorsementsRes.count ?? 0
+      });
     } catch (error) {
-      console.error("[UserProfile.web] Load Error:", error);
+      console.error('[UserProfile.web] Load Error:', error);
     } finally {
       setLoading(false);
     }
@@ -97,40 +122,30 @@ export default function UserPublicProfileScreen() {
     }
   };
 
+  const isPrivate = user && user.public_profile === false && currentUserId !== userId;
+
   return (
     <View style={webStyles.container}>
       <SanctuaryBackground />
 
       <View style={webStyles.layout}>
         {/* 1. Left Column: Profile Card */}
-        <View
-          style={[
-            webStyles.sidebar,
-            {
-              backgroundColor: glass.surface.bg,
-              borderRightColor: glass.surface.border,
-              // @ts-ignore
-              backdropFilter: `blur(${glass.surface.blur}px)`,
-            },
-          ]}
-        >
+        <View style={[webStyles.sidebar, {
+          backgroundColor: glass.surface.bg,
+          borderRightColor: glass.surface.border,
+          // @ts-ignore
+          backdropFilter: `blur(${glass.surface.blur}px)`
+        }]}>
           <VStack sx={{ gap: 24, padding: 32 }}>
-            <VStack sx={{ alignItems: "center", gap: 16 }}>
-              <Box
-                sx={{
-                  width: 120,
-                  height: 120,
-                  borderRadius: 60,
-                  backgroundColor: colors.secondary,
-                  borderWidth: 4,
-                  borderColor: Theme.colors.sanctuarySaffron + "40",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  overflow: "hidden",
-                }}
-              >
-                <UserCircle size={80} color={text.secondary} strokeWidth={1} />
-              </Box>
+            <VStack sx={{ alignItems: 'center', gap: 16 }}>
+              <HStack sx={{ justifyContent: 'center', marginBottom: 16 }}>
+                <UserAvatar
+                  avatarUrl={user?.avatar_url}
+                  fullName={user?.full_name || userName}
+                  role={user?.role}
+                  size={120}
+                />
+              </HStack>
 
               <VStack sx={{ alignItems: "center", gap: 4 }}>
                 <HStack sx={{ gap: 6, alignItems: "center" }}>
@@ -152,13 +167,19 @@ export default function UserPublicProfileScreen() {
             </VStack>
 
             <VStack sx={{ gap: 12 }}>
-              <InfoRow icon={<MapPin size={16} />} text="Colombo, Sri Lanka" />
-              <InfoRow icon={<Calendar size={16} />} text="Joined March 2024" />
-              <InfoRow
-                icon={<Shield size={16} />}
-                text={user?.role?.toUpperCase() || "MEMBER"}
-              />
+              {user?.school_name && <InfoRow icon={<MapPin size={16} />} text={user.school_name} />}
+              <InfoRow icon={<Calendar size={16} />} text={t("community.profile.memberOfGurudevi") || "Member of Gurudevi"} />
+              <InfoRow icon={<Shield size={16} />} text={user?.role?.toUpperCase() || 'MEMBER'} />
             </VStack>
+
+            {isPrivate && (
+              <HStack sx={{ gap: 8, alignItems: 'center', opacity: 0.7, padding: 12, borderRadius: 12, backgroundColor: 'rgba(0,0,0,0.05)' }}>
+                <Shield size={14} color={text.secondary} />
+                <Text sx={{ fontSize: 12, color: text.secondary, fontStyle: 'italic' }}>
+                  {t("community.profile.privateSanctuary") || "Private Sanctuary"}
+                </Text>
+              </HStack>
+            )}
 
             {currentUserId !== userId && (
               <Button
@@ -169,12 +190,12 @@ export default function UserPublicProfileScreen() {
                   height: 52,
                   borderRadius: 26,
                   backgroundColor: Theme.colors.sanctuarySaffron,
-                  marginTop: 12,
+                  marginTop: 12
                 }}
               >
-                <HStack sx={{ gap: 8, alignItems: "center" }}>
+                <HStack sx={{ gap: 8, alignItems: 'center' }}>
                   <Send size={18} color="white" />
-                  <Text sx={{ color: "white", fontWeight: "800" }}>
+                  <Text sx={{ color: 'white', fontWeight: '800' }}>
                     {t("community.profile.sendMessage")}
                   </Text>
                 </HStack>
@@ -186,174 +207,132 @@ export default function UserPublicProfileScreen() {
         {/* 2. Center Column: Contributions Feed */}
         <View style={webStyles.content}>
           <GlobalHeader
-            title="Resonance Sphere"
-            subtitle={`Public presence of ${user?.full_name || userName}`}
+            title={t("community.profile.resonanceSphere") || "Resonance Sphere"}
+            subtitle={`${t("community.profile.publicPresenceOf") || "Public presence of"} ${user?.full_name || userName}`}
           />
 
           <ScrollView
             showsVerticalScrollIndicator={false}
             contentContainerStyle={webStyles.feedScroll}
           >
-            <VStack
-              sx={{
-                gap: 24,
-                maxWidth: 700,
-                width: "100%",
-                alignSelf: "center",
-              }}
-            >
-              <Box
-                sx={{
-                  padding: 24,
+            <VStack sx={{ gap: 24, maxWidth: 700, width: '100%', alignSelf: 'center' }}>
+              {isPrivate ? (
+                <Box sx={{
+                  padding: 40,
                   borderRadius: 24,
                   backgroundColor: glass.surface.bg,
                   borderWidth: 1,
                   borderColor: glass.surface.border,
-                }}
-              >
-                <VStack sx={{ gap: 12 }}>
-                  <Heading
-                    sx={{
-                      fontSize: 18,
-                      fontWeight: "800",
-                      color: text.primary,
-                    }}
-                  >
-                    {t("community.profile.aspiration")}
-                  </Heading>
-                  <Text
-                    sx={{ fontSize: 16, lineHeight: 26, color: text.secondary }}
-                  >
-                    {user?.bio ||
-                      "This user is on a journey of growth and resonance within the Gurudevi ecosystem. Their contributions light the path for others."}
+                  alignItems: 'center',
+                  gap: 16
+                }}>
+                  <Shield size={48} color={text.secondary} />
+                  <Text sx={{ fontSize: 16, color: text.secondary, textAlign: 'center' }}>
+                    {t("community.profile.privateNote") || "This explorer has chosen to keep their detailed presence private."}
                   </Text>
-                </VStack>
-              </Box>
-
-              <Heading
-                sx={{
-                  fontSize: 20,
-                  fontWeight: "900",
-                  color: text.primary,
-                  marginTop: 12,
-                }}
-              >
-                {t("community.profile.recentReflections")}
-              </Heading>
-
-              {/* Mock Contributions */}
-              {[1, 2, 3].map((i) => (
-                <Box
-                  key={i}
-                  sx={{
+                </Box>
+              ) : (
+                <>
+                  <Box sx={{
                     padding: 24,
                     borderRadius: 24,
                     backgroundColor: glass.surface.bg,
                     borderWidth: 1,
-                    borderColor: glass.surface.border,
-                    "&:hover": {
-                      transform: "translateY(-2px)",
-                      borderColor: Theme.colors.sanctuarySaffron + "40",
-                    },
-                  }}
-                >
-                  <VStack sx={{ gap: 12 }}>
-                    <HStack sx={{ justifyContent: "space-between" }}>
-                      <Text
-                        sx={{
-                          fontSize: 12,
-                          fontWeight: "700",
-                          color: Theme.colors.sanctuarySaffron,
-                        }}
-                      >
-                        {t("community.profile.philosophyDeepDive")}
+                    borderColor: glass.surface.border
+                  }}>
+                    <VStack sx={{ gap: 12 }}>
+                      <Heading sx={{ fontSize: 18, fontWeight: '800', color: text.primary }}>
+                        {t("community.profile.aspiration")}
+                      </Heading>
+                      <Text sx={{ fontSize: 16, lineHeight: 26, color: text.secondary }}>
+                        {user?.bio || t("community.profile.defaultBio") || "This user is on a journey of growth and resonance within the Gurudevi ecosystem."}
                       </Text>
-                      <Text sx={{ fontSize: 12, color: text.secondary }}>
-                        2 days ago
-                      </Text>
-                    </HStack>
-                    <Text
-                      sx={{ fontSize: 15, lineHeight: 24, color: text.primary }}
-                    >
-                      The intersection of ancient mindfulness and modern
-                      algorithmic efficiency is where true wisdom resides.
-                    </Text>
-                    <HStack sx={{ gap: 16 }}>
-                      <HStack sx={{ gap: 4, alignItems: "center" }}>
-                        <Heart size={14} color={text.secondary} />
-                        <Text sx={{ fontSize: 13, color: text.secondary }}>
-                          12
+                    </VStack>
+                  </Box>
+
+                  <Heading sx={{ fontSize: 20, fontWeight: '900', color: text.primary, marginTop: 12 }}>
+                    {t("community.profile.publicResonance") || "Public Resonance"}
+                  </Heading>
+
+                  {/* Mock Contributions */}
+                  {[1, 2, 3].map(i => (
+                    <Box key={i} sx={{
+                      padding: 24,
+                      borderRadius: 24,
+                      backgroundColor: glass.surface.bg,
+                      borderWidth: 1,
+                      borderColor: glass.surface.border,
+                      '&:hover': { transform: 'translateY(-2px)', borderColor: Theme.colors.sanctuarySaffron + '40' }
+                    }}>
+                      <VStack sx={{ gap: 12 }}>
+                        <HStack sx={{ justifyContent: 'space-between' }}>
+                          <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron }}>
+                            {t("community.profile.reflection").toUpperCase() || "REFLECTION"}
+                          </Text>
+                          <Text sx={{ fontSize: 12, color: text.secondary }}>
+                            {t("community.profile.recent") || "Recent"}
+                          </Text>
+                        </HStack>
+                        <Text sx={{ fontSize: 15, lineHeight: 24, color: text.primary }}>
+                          The intersection of ancient mindfulness and modern algorithmic efficiency is where true wisdom resides.
                         </Text>
-                      </HStack>
-                      <HStack sx={{ gap: 4, alignItems: "center" }}>
-                        <MessageSquare size={14} color={text.secondary} />
-                        <Text sx={{ fontSize: 13, color: text.secondary }}>
-                          4
-                        </Text>
-                      </HStack>
-                    </HStack>
-                  </VStack>
-                </Box>
-              ))}
+                        <HStack sx={{ gap: 16 }}>
+                          <HStack sx={{ gap: 4, alignItems: 'center' }}>
+                            <Heart size={14} color={text.secondary} />
+                            <Text sx={{ fontSize: 13, color: text.secondary }}>--</Text>
+                          </HStack>
+                          <HStack sx={{ gap: 4, alignItems: 'center' }}>
+                            <MessageSquare size={14} color={text.secondary} />
+                            <Text sx={{ fontSize: 13, color: text.secondary }}>--</Text>
+                          </HStack>
+                        </HStack>
+                      </VStack>
+                    </Box>
+                  ))}
+                </>
+              )}
             </VStack>
           </ScrollView>
         </View>
 
         {/* 3. Right Column: Stats & Badges */}
-        <View
-          style={[
-            webStyles.presenceSidebar,
-            {
-              borderLeftColor: glass.surface.border,
-              backgroundColor: "rgba(255,255,255,0.01)",
-            },
-          ]}
-        >
+        <View style={[webStyles.presenceSidebar, {
+          borderLeftColor: glass.surface.border,
+          backgroundColor: 'rgba(255,255,255,0.01)'
+        }]}>
           <VStack sx={{ gap: 32, padding: 32 }}>
-            <VStack sx={{ gap: 16 }}>
-              <Heading
-                sx={{ fontSize: 18, fontWeight: "800", color: text.primary }}
-              >
-                {t("community.profile.resonanceStats")}
-              </Heading>
-              <HStack sx={{ flexWrap: "wrap", gap: 12 }}>
-                <StatCard
-                  label={t("community.profile.hearts")}
-                  value="1.2k"
-                  icon={<Heart size={16} />}
-                />
-                <StatCard
-                  label={t("community.profile.ties")}
-                  value="48"
-                  icon={<Activity size={16} />}
-                />
-                <StatCard
-                  label={t("community.profile.pulse")}
-                  value={t("community.profile.pulseHigh")}
-                  icon={<MessageSquare size={16} />}
-                />
-              </HStack>
-            </VStack>
+            {!isPrivate && (
+              <>
+                <VStack sx={{ gap: 16 }}>
+                  <Heading sx={{ fontSize: 18, fontWeight: '800', color: text.primary }}>
+                    {t("community.profile.resonanceStats")}
+                  </Heading>
+                  <HStack sx={{ flexWrap: 'wrap', gap: 12 }}>
+                    <StatCard label={t("community.profile.posts") || "Posts"} value={stats.posts.toString()} icon={<MessageSquare size={16} />} />
+                    <StatCard label={t("community.profile.endorsements") || "Endorsements"} value={stats.endorsements.toString()} icon={<Heart size={16} />} />
+                    <StatCard label={t("community.profile.pulse") || "Pulse"} value={t("community.profile.pulseActive") || "Active"} icon={<Activity size={16} />} />
+                  </HStack>
+                </VStack>
 
-            <VStack sx={{ gap: 16 }}>
-              <Heading
-                sx={{ fontSize: 18, fontWeight: "800", color: text.primary }}
-              >
-                {t("community.profile.sanctuaryHonors")}
-              </Heading>
-              <VStack sx={{ gap: 12 }}>
-                <BadgeItem
-                  icon={
-                    <Medal size={18} color={Theme.colors.sanctuarySaffron} />
-                  }
-                  title={t("community.profile.earlyResonator")}
-                />
-                <BadgeItem
-                  icon={<BadgeCheck size={18} color="#10b981" />}
-                  title={t("community.profile.verifiedArchitect")}
-                />
+                <VStack sx={{ gap: 16 }}>
+                  <Heading sx={{ fontSize: 18, fontWeight: '800', color: text.primary }}>
+                    {t("community.profile.sanctuaryHonors")}
+                  </Heading>
+                  <VStack sx={{ gap: 12 }}>
+                    <BadgeItem icon={<Medal size={18} color={Theme.colors.sanctuarySaffron} />} title={t("community.profile.explorer") || "Explorer"} />
+                    <BadgeItem icon={<BadgeCheck size={18} color="#10b981" />} title={t("community.profile.verified") || "Verified"} />
+                  </VStack>
+                </VStack>
+              </>
+            )}
+            {isPrivate && (
+              <VStack sx={{ gap: 12, alignItems: 'center', p: 20, borderRadius: 20, borderStyle: 'dashed', borderWidth: 1, borderColor: glass.surface.border }}>
+                <Shield size={24} color={text.secondary} />
+                <Text sx={{ fontSize: 12, color: text.secondary, textAlign: 'center' }}>
+                  {t("community.profile.privacyProtected") || "Privacy Protected"}
+                </Text>
               </VStack>
-            </VStack>
+            )}
           </VStack>
         </View>
       </View>

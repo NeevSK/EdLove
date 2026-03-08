@@ -472,7 +472,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 reward: { color: '#FDD925', radius: 20, opacity: 0.45 },
             },
             accent: { action: '#E67E22', reward: '#FDD925', danger: '#FF6347', muted: '#A1978A' },
-            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#FCF9F2', muted: '#8C8273' },
+            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#2A2318', muted: '#8C8273' },
         },
     },
 
@@ -507,7 +507,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 reward: { color: '#DA70D6', radius: 22, opacity: 0.45 },
             },
             accent: { action: '#E67E22', reward: '#DA70D6', danger: '#FF6347', muted: '#A1978A' },
-            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#FCF9F2', muted: '#8C8273' },
+            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#2A2318', muted: '#8C8273' },
         },
     },
 
@@ -542,7 +542,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 reward: { color: '#E67E22', radius: 22, opacity: 0.50 },
             },
             accent: { action: '#8FBC8F', reward: '#E67E22', danger: '#FF6347', muted: '#A1978A' },
-            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#FCF9F2', muted: '#8C8273' },
+            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#2A2318', muted: '#8C8273' },
         },
     },
 
@@ -577,7 +577,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 reward: { color: '#FDD925', radius: 20, opacity: 0.48 },
             },
             accent: { action: '#3B82F6', reward: '#FDD925', danger: '#FF6347', muted: '#A1978A' },
-            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#FCF9F2', muted: '#8C8273' },
+            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#2A2318', muted: '#8C8273' },
         },
     },
 
@@ -612,7 +612,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 reward: { color: '#DA70D6', radius: 22, opacity: 0.45 },
             },
             accent: { action: '#E67E22', reward: '#DA70D6', danger: '#FF6347', muted: '#A1978A' },
-            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#FCF9F2', muted: '#8C8273' },
+            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#2A2318', muted: '#8C8273' },
         },
     },
 
