@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUserRole, useStore, warmMirrorAPI, impactRipplesAPI } from '@repo/core';
-import type { ImpactRipple } from '@repo/core';
+import { useUserRole, useStore, warmMirrorAPI, impactRipplesAPI, naturePathsAPI } from '@repo/core';
+import type { ImpactRipple, BanyanStage } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { SkeletonCard } from '@repo/ui';
 import { useMoodLogs, useJournalEntries, useEnergyForecast, VoiceJournaling } from '@repo/self';
@@ -48,6 +48,8 @@ export default function TeacherSelfViewWeb() {
     const [warmMirrorText, setWarmMirrorText] = React.useState<string | null>(null);
     // Impact Ripples — undelivered ripples for this user
     const [ripples, setRipples] = React.useState<ImpactRipple[]>([]);
+    // Nature Path — Banyan stage (teacher mentorship journey)
+    const [banyanState, setBanyanState] = React.useState<{ banyan_stage: BanyanStage; peer_mentored_count: number } | null>(null);
 
     const { moodHistory, isLoading: moodLoading, addMoodLog } = useMoodLogs(userId ?? undefined);
     const { entries: journalEntries, loading: journalLoading, addJournalEntry } = useJournalEntries();
@@ -64,6 +66,14 @@ export default function TeacherSelfViewWeb() {
         if (!userId) return;
         warmMirrorAPI.getDataPoints(userId).then(data => {
             setWarmMirrorText(warmMirrorAPI.generateNarrativeEn(data));
+        }).catch(() => {});
+    }, [userId]);
+
+    // Fetch Banyan path state
+    React.useEffect(() => {
+        if (!userId) return;
+        naturePathsAPI.getBanyanState(userId).then(state => {
+            if (state) setBanyanState(state);
         }).catch(() => {});
     }, [userId]);
 
@@ -328,6 +338,29 @@ export default function TeacherSelfViewWeb() {
                                     {r.warm_message_en}
                                 </div>
                             ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Nature Path — Banyan (Vata Vriksha) badge */}
+                {banyanState && (
+                    <div className="sanctuary-card" style={{ padding: '24px', background: 'linear-gradient(135deg, rgba(34,197,94,0.06), rgba(16,185,129,0.04))' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                            <h3 style={{ fontSize: '14px', fontWeight: '800' }}>Banyan Path 🌳</h3>
+                            <span style={{ fontSize: '11px', color: 'var(--ink-ghost)', fontStyle: 'italic' }}>Vata Vriksha</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <span style={{ fontSize: '32px' }}>
+                                {banyanState.banyan_stage === 'sapling' ? '🌱' : banyanState.banyan_stage === 'roots_spreading' ? '🌿' : banyanState.banyan_stage === 'canopy' ? '🌳' : banyanState.banyan_stage === 'shade_giver' ? '🌲' : '🌳'}
+                            </span>
+                            <div>
+                                <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--moss)', textTransform: 'capitalize' }}>
+                                    {banyanState.banyan_stage.replace(/_/g, ' ')}
+                                </div>
+                                <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>
+                                    {banyanState.peer_mentored_count} colleague{banyanState.peer_mentored_count !== 1 ? 's' : ''} nurtured
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}

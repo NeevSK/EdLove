@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { ErrorBoundary, AchievementUnlockOverlay, useTheme } from "@repo/ui";
-import { useUserRole, useRewards } from "@repo/core";
+import { useUserRole, useRewards, useNotifications } from "@repo/core";
 import {
   User,
   School,
@@ -117,9 +117,10 @@ export default function TabNavigator({
   onTabChange?: (tab: string) => void;
 }) {
   const { t } = useTranslation();
-  const { role } = useUserRole();
+  const { role, userId } = useUserRole();
   const { isDark } = useTheme();
   const { newAchievements } = useRewards();
+  const { unreadCount } = useNotifications(userId);
   const navigation = useNavigation();
 
   const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(true);
@@ -398,7 +399,9 @@ export default function TabNavigator({
                       : "var(--ink-ghost)"
                   }
                 />
-                <div className="bell-dot" />
+                <div className="bell-dot" style={unreadCount > 0 ? { display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '16px', height: '16px', padding: '0 4px', fontSize: '9px', fontWeight: '800', background: 'var(--lotus)', color: 'white', borderRadius: '8px', top: '-4px', right: '-6px' } : {}}>
+                  {unreadCount > 0 ? (unreadCount > 99 ? '99+' : String(unreadCount)) : ''}
+                </div>
               </div>
               {(isSidebarExpanded || isMobileView) && (
                 <span className="sidebar-label">Notifications</span>
@@ -592,7 +595,9 @@ export default function TabNavigator({
                     : "var(--ink-ghost)"
                 }
               />
-              <div className="bell-dot" />
+              <div className="bell-dot" style={unreadCount > 0 ? { display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px', height: '14px', padding: '0 3px', fontSize: '8px', fontWeight: '800', background: 'var(--lotus)', color: 'white', borderRadius: '7px', top: '-3px', right: '-5px' } : {}}>
+                {unreadCount > 0 ? (unreadCount > 99 ? '99+' : String(unreadCount)) : ''}
+              </div>
             </div>
             <span className="mobile-nav-label">{t("webNav.alerts")}</span>
           </button>

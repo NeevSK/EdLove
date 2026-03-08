@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUserRole, useStore, supabase, useRewards } from '@repo/core';
+import { useUserRole, useStore, supabase, useRewards, assignmentsAPI, growthSignalsAPI } from '@repo/core';
 import { Classroom } from '@repo/core';
 import { SkeletonCard } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
-import { useClassroomRoleData } from '@repo/classroom';
+import { useClassroomRoleData, SubmissionModal } from '@repo/classroom';
 import { useStudentGoals } from '@repo/self';
 import {
     BookOpen,
@@ -31,6 +31,8 @@ export default function StudentDashboardWeb() {
 
     const { goals, isLoading: goalsLoading } = useStudentGoals(userId ?? undefined);
     const [classrooms, setClassrooms] = useState<Classroom[]>([]);
+    const [assignments, setAssignments] = useState<any[]>([]);
+    const [submissionModal, setSubmissionModal] = useState<{ open: boolean; assignment: any | null }>({ open: false, assignment: null });
 
     const [classroomsLoading, setClassroomsLoading] = useState(true);
     useEffect(() => {
@@ -48,6 +50,19 @@ export default function StudentDashboardWeb() {
                         .map((row: any) => row.classrooms)
                         .filter(Boolean) as Classroom[];
                     setClassrooms(cls);
+
+                    // Fetch upcoming assignments for all enrolled classrooms
+                    if (cls.length > 0) {
+                        const today = new Date().toISOString().split('T')[0];
+                        const { data: asgn } = await supabase
+                            .from('assignments')
+                            .select('id, title, classroom_id, due_date, classrooms(name)')
+                            .in('classroom_id', cls.map((c: any) => c.id))
+                            .gte('due_date', today)
+                            .order('due_date', { ascending: true })
+                            .limit(6);
+                        setAssignments(asgn ?? []);
+                    }
                 }
             } catch (err) {
                 console.error('[StudentDashboard] Error fetching classrooms:', err);
@@ -195,12 +210,12 @@ export default function StudentDashboardWeb() {
                     <h3 style={{ fontSize: '14px', fontWeight: '800', marginBottom: '16px' }}>Study Suite</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {[
-                            { label: 'Library', icon: BookOpen, color: 'var(--amber-glow)' },
-                            { label: 'Sanctuaries', icon: MessageSquare, color: 'var(--gurudevi-blue)' },
-                            { label: 'Rewards', icon: Star, color: 'var(--sanctuary-saffron)' },
-                            { label: 'Timetable', icon: Layout, color: 'var(--moss)' },
+                            { label: 'Library', icon: BookOpen, color: 'var(--amber-glow)', onClick: () => navigation.navigate('Main', { screen: 'Library' }) },
+                            { label: 'Sanctuaries', icon: MessageSquare, color: 'var(--gurudevi-blue)', onClick: () => navigation.navigate('Main', { screen: 'Community' }) },
+                            { label: 'Rewards', icon: Star, color: 'var(--sanctuary-saffron)', onClick: () => {} },
+                            { label: 'Timetable', icon: Layout, color: 'var(--moss)', onClick: () => navigation.navigate('Timetable', {}) },
                         ].map((item, i) => (
-                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '12px', cursor: 'pointer' }} onMouseOver={e => (e.currentTarget.style.background = 'var(--background-alt)')} onMouseOut={e => (e.currentTarget.style.background = 'transparent')}>
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '12px', cursor: 'pointer' }} onMouseOver={e => (e.currentTarget.style.background = 'var(--background-alt)')} onMouseOut={e => (e.currentTarget.style.background = 'transparent')} onClick={item.onClick}>
                                 <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--background-alt)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     <item.icon size={16} color={item.color} />
                                 </div>
@@ -210,7 +225,58 @@ export default function StudentDashboardWeb() {
                         ))}
                     </div>
                 </div>
+
+                {/* Upcoming Assignments */}
+                {assignments.length > 0 && (
+                    <div className="sanctuary-card" style={{ padding: '24px' }}>
+                        <h3 style={{ fontSize: '14px', fontWeight: '800', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <CheckCircle2 size={16} color="var(--moss)" /> Upcoming Assignments
+                        </h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            {assignments.map(a => (
+                                <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '10px', background: 'var(--background-alt)', border: '1px solid var(--border-light)' }}>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--ink)' }}>{a.title}</div>
+                                        <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>
+                                            {(a.classrooms as { name: string } | null)?.name ?? ''} · Due {a.due_date}
+                                        </div>
+                                    </div>
+                                    <button
+                                        className="premium-button"
+                                        style={{ fontSize: '11px', padding: '6px 12px' }}
+                                        onClick={() => setSubmissionModal({ open: true, assignment: a })}
+                                    >
+                                        Submit
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
+
+        {/* Submission modal */}
+        {submissionModal.assignment && (
+            <SubmissionModal
+                isOpen={submissionModal.open}
+                assignmentTitle={submissionModal.assignment.title}
+                onClose={() => setSubmissionModal({ open: false, assignment: null })}
+                onSubmit={async (content, photoUri) => {
+                    if (!userId || !submissionModal.assignment) return;
+                    await supabase.from('submissions').insert({
+                        assignment_id: submissionModal.assignment.id,
+                        student_id: userId,
+                        content,
+                        photo_url: photoUri ?? null,
+                        submitted_at: new Date().toISOString(),
+                    });
+                    // Growth signal
+                    void growthSignalsAPI.emitSignal(userId, 'assignment_submitted', {
+                        assignment_id: submissionModal.assignment.id,
+                    }).catch(() => {});
+                }}
+            />
+        )}
     );
 }

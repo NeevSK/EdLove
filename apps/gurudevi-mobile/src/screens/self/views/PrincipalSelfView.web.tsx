@@ -82,7 +82,7 @@ export default function PrincipalSelfViewWeb() {
                 setRipples(pending);
                 setTimeout(() => {
                     pending.forEach(r => void impactRipplesAPI.markDelivered(r.id).catch(
-                        (err) => console.warn('[PrincipalSelfView] markDelivered failed:', err)
+                        (err) => console.warn(`[PrincipalSelfView] markDelivered failed for ripple ${r.id}:`, err)
                     ));
                 }, 3000);
             }

@@ -37,3 +37,4 @@ export { default as ManagementStation } from './principal/ManagementStation';
 export { default as NoSchoolOnboarding } from './NoSchoolOnboarding';
 export { default as ClassroomHolisticInsights } from './ClassroomHolisticInsights';
 
+export { default as SubmissionModal } from './SubmissionModal';

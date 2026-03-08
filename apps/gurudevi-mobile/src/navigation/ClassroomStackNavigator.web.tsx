@@ -27,6 +27,9 @@ const FounderSchoolView = React.lazy(() =>
 const SchoolCreationScreen = React.lazy(() =>
     import('../screens/SchoolCreationScreen')
 );
+const TimetableScreen = React.lazy(() =>
+    import('../screens/TimetableScreen.web')
+);
 
 const Stack = createNativeStackNavigator<ClassroomStackParamList>();
 
@@ -54,6 +57,7 @@ export default function ClassroomStackNavigatorWeb() {
             <Stack.Screen name="FounderDashboard" component={FounderDashboard} />
             <Stack.Screen name="FounderSchoolView" component={FounderSchoolView} />
             <Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} />
+            <Stack.Screen name="Timetable" component={TimetableScreen} />
         </Stack.Navigator>
         </React.Suspense>
     );

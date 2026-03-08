@@ -37,10 +37,7 @@ export function useAIAgent() {
      */
     const generateTimetable = useCallback(async (schoolId: string) => {
         setIsThinking(true);
-        // Simulate processing time for "Agentic Deliberation"
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        const draft = TimetableScheduler.generateDraft(schoolId, {
+        const draft = await TimetableScheduler.generateDraft(schoolId, {
             maxDailyPeriods: 7,
             mandatorySubjects: ['Math', 'Science', 'Sinhala', 'English'],
             teacherPreferences: true

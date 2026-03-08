@@ -38,6 +38,7 @@ import { privacyAPI } from './privacy';
 
 export * from './mockData';
 export * from './types';
+export * from './assignments'; // Export assignments/submissions API
 export * from './thuthimal'; // Restore types and thuthimalAPI
 export * from './sacredMissions'; // Export mission types
 export * from './agents'; // Export agent types

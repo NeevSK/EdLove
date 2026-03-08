@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUserRole, useStore, supabase, growthSignalsAPI } from '@repo/core';
+import { useUserRole, useStore, supabase, growthSignalsAPI, naturePathsAPI } from '@repo/core';
+import type { RiverStage, CrystalTier } from '@repo/core';
 import { SkeletonCard } from '@repo/ui';
 import { useMoodLogs, useStudentGoals, useJournalEntries, VoiceJournaling } from '@repo/self';
 import type { MoodLog, Goal } from '@repo/self';
@@ -59,9 +60,19 @@ export default function StudentSelfViewWeb() {
 
     // Voice journaling panel toggle
     const [showVoiceJournal, setShowVoiceJournal] = React.useState(false);
+    // Nature Paths — River stage + Crystal tier
+    const [studentPaths, setStudentPaths] = React.useState<{ river_stage: RiverStage; crystal_tier: CrystalTier; crystals_found_count: number } | null>(null);
 
     const latestMood = moodHistory[0];
     const completedGoals = goals.filter(g => g.progress >= 100).length;
+
+    // Fetch student nature path state
+    React.useEffect(() => {
+        if (!userId) return;
+        naturePathsAPI.getStudentPathState(userId).then(state => {
+            if (state) setStudentPaths(state);
+        }).catch(() => {});
+    }, [userId]);
 
     const handleAddJournalEntry = async () => {
         if (!journalDraft.trim()) return;
@@ -415,6 +426,37 @@ export default function StudentSelfViewWeb() {
                         )}
                     </div>
                 </div>
+
+                {/* Nature Paths — River + Crystal tier badges */}
+                {studentPaths && (
+                    <div className="sanctuary-card" style={{ padding: '20px' }}>
+                        <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '14px' }}>
+                            Your Paths ✨
+                        </h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            {/* River Path */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', background: 'rgba(59,130,246,0.08)', borderRadius: '10px', border: '1px solid rgba(59,130,246,0.18)' }}>
+                                <span style={{ fontSize: '20px' }}>🌊</span>
+                                <div>
+                                    <div style={{ fontSize: '12px', fontWeight: '800', color: '#3b82f6', textTransform: 'capitalize' }}>
+                                        {studentPaths.river_stage.replace(/_/g, ' ')}
+                                    </div>
+                                    <div style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>River path (Ganga Pravaham)</div>
+                                </div>
+                            </div>
+                            {/* Crystal Tier */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', background: 'rgba(139,92,246,0.08)', borderRadius: '10px', border: '1px solid rgba(139,92,246,0.18)' }}>
+                                <span style={{ fontSize: '20px' }}>💎</span>
+                                <div>
+                                    <div style={{ fontSize: '12px', fontWeight: '800', color: '#8b5cf6', textTransform: 'capitalize' }}>
+                                        {studentPaths.crystal_tier} tier
+                                    </div>
+                                    <div style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{studentPaths.crystals_found_count} crystal{studentPaths.crystals_found_count !== 1 ? 's' : ''} found</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

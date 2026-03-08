@@ -96,10 +96,10 @@ export default function LibraryScreen() {
         });
         try {
             await libraryAPI.bookmarkResource(resource.id, user.id);
-            // Growth signal + Impact Ripple — fire-and-forget
-            void growthSignalsAPI.emitSignal(user.id, 'resource_read').catch((err) => console.warn('[LibraryScreen] growth signal failed:', err));
+            // Growth signal + Impact Ripple — fire-and-forget (errors logged, don't block UX)
+            growthSignalsAPI.emitSignal(user.id, 'resource_read').catch((err) => console.warn('[LibraryScreen] growth signal failed:', err));
             if (resource.creator_id && resource.creator_id !== user.id) {
-                void impactRipplesAPI.createRipple({
+                impactRipplesAPI.createRipple({
                     recipientUserId: resource.creator_id,
                     actorUserId: user.id,
                     rippleType: 'resource_saved',

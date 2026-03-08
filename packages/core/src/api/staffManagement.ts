@@ -234,6 +234,13 @@ export const staffManagementAPI = {
    */
   async approveLeave(leaveId: string, principalId: string, approve: boolean): Promise<boolean> {
     try {
+      // Fetch leave request for notification metadata
+      const { data: leave } = await supabase
+        .from('staff_leaves')
+        .select('user_id, leave_type, start_date, end_date')
+        .eq('id', leaveId)
+        .maybeSingle();
+
       const { error } = await supabase
         .from('staff_leaves')
         .update({
@@ -247,6 +254,27 @@ export const staffManagementAPI = {
         console.error('[staffManagement] approveLeave:', error.message);
         return false;
       }
+
+      // Notify the staff member — fire-and-forget, non-fatal
+      if (leave?.user_id) {
+        const dateRange = leave.start_date === leave.end_date
+          ? leave.start_date
+          : `${leave.start_date} – ${leave.end_date}`;
+        void supabase.from('notifications').insert({
+          user_id: leave.user_id,
+          type: approve ? 'leave_approved' : 'leave_rejected',
+          title: approve ? 'Leave Approved ✓' : 'Leave Request Update',
+          body: approve
+            ? `Your ${leave.leave_type ?? 'leave'} request for ${dateRange} has been approved.`
+            : `Your ${leave.leave_type ?? 'leave'} request for ${dateRange} was not approved. Please speak with the principal.`,
+          is_read: false,
+          reference_id: leaveId,
+          reference_type: 'staff_leave',
+        }).then(() => {}).catch((err: any) =>
+          console.warn('[staffManagement] leave notification failed:', err?.message)
+        );
+      }
+
       return true;
     } catch (e) {
       console.error('[staffManagement] approveLeave unexpected:', e);

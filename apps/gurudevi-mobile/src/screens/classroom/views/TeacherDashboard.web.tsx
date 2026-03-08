@@ -114,6 +114,9 @@ export default function TeacherDashboardWeb() {
                         <Plus size={18} />
                         Create Classroom
                     </button>
+                    <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => navigation.navigate('Timetable', {})}>
+                        📅 Timetable
+                    </button>
                     <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <ScanLine size={18} />
                         Scan QR

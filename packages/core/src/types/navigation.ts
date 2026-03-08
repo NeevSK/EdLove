@@ -7,6 +7,7 @@ export type ClassroomStackParamList = {
     SchoolCreation: undefined;
     FounderDashboard: undefined;
     FounderSchoolView: { schoolId: string; userId: string };
+    Timetable: { schoolId?: string };
 };
 
 export type ProfileStackParamList = {
