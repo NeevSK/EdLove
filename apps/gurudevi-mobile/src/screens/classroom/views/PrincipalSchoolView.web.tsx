@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore, staffManagementAPI, StaffPresenceSummary, TeacherCarouselItem, StudentAttendancePulse, StaffLeaveDTO } from '@repo/core';
-import { useSchoolStats, CreateClassroomModal } from '@repo/classroom';
+import { useSchoolStats, CreateClassroomModal, AddStudentModal } from '@repo/classroom';
 import { useSchoolPulse } from '@repo/profile';
 import { SkeletonCard } from '@repo/ui';
 import {
@@ -64,6 +64,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?
     const [pendingLeaves, setPendingLeaves] = useState<StaffLeaveDTO[]>([]);
     const [staffLoading, setStaffLoading] = useState(true);
     const [showCreateClassroom, setShowCreateClassroom] = useState(false);
+    const [showAddTeacher, setShowAddTeacher] = useState(false);
     const [processingLeave, setProcessingLeave] = useState<string | null>(null);
 
     useEffect(() => {
@@ -121,7 +122,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?
                     <button className="premium-button" style={{ background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowCreateClassroom(true)}>
                         <Plus size={18} /> Establish Hierarchy
                     </button>
-                    <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowCreateClassroom(true)}>
+                    <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowAddTeacher(true)}>
                         <Users size={18} /> Invite Staff
                     </button>
                 </div>
@@ -427,6 +428,11 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?
             isOpen={showCreateClassroom}
             onClose={() => setShowCreateClassroom(false)}
             onSuccess={() => setShowCreateClassroom(false)}
+        />
+        <AddStudentModal
+            isOpen={showAddTeacher}
+            onClose={() => setShowAddTeacher(false)}
+            classroomId=""
         />
     );
 }

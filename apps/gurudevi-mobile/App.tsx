@@ -31,6 +31,7 @@ import TabNavigatorWeb from './src/navigation/TabNavigator.web';
 import { AIAssistantScreen, AuthScreen, AppSettingsScreen, NotificationsScreen } from './src/screens';
 import QRHandlerScreen from './src/screens/QRHandlerScreen';
 import ThuthimalClaimScreen from './src/screens/ThuthimalClaimScreen';
+import InvitationWelcomeScreen from './src/screens/InvitationWelcomeScreen';
 import { useQRDeepLink, redeemPendingQRAction } from '@repo/ui';
 import { SanctuaryToast, ToastProvider } from '@repo/ui';
 import type { ActionItem } from '@repo/ui';
@@ -448,6 +449,7 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                   AIAssistant: 'ai',
                   QRHandler: 'qr',
                   ThuthimalClaim: 'thuthimal',
+                  InvitationWelcome: 'invite',
                   Main: {
                     path: 'app',
                     screens: {
@@ -593,6 +595,14 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                     <RootStack.Screen
                       name="ThuthimalClaim"
                       component={ThuthimalClaimScreen}
+                      options={{
+                        presentation: 'modal',
+                        animation: 'fade_from_bottom',
+                      }}
+                    />
+                    <RootStack.Screen
+                      name="InvitationWelcome"
+                      component={InvitationWelcomeScreen}
                       options={{
                         presentation: 'modal',
                         animation: 'fade_from_bottom',

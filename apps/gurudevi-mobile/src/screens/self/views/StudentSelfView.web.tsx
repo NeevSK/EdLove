@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore, supabase } from '@repo/core';
 import { SkeletonCard } from '@repo/ui';
-import { useMoodLogs, useStudentGoals, useJournalEntries } from '@repo/self';
+import { useMoodLogs, useStudentGoals, useJournalEntries, VoiceJournaling } from '@repo/self';
 import type { MoodLog, Goal } from '@repo/self';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -56,6 +56,9 @@ export default function StudentSelfViewWeb() {
     const [showGoalForm, setShowGoalForm] = React.useState(false);
     const [goalDraft, setGoalDraft] = React.useState('');
     const [savingGoal, setSavingGoal] = React.useState(false);
+
+    // Voice journaling panel toggle
+    const [showVoiceJournal, setShowVoiceJournal] = React.useState(false);
 
     const latestMood = moodHistory[0];
     const completedGoals = goals.filter(g => g.progress >= 100).length;
@@ -380,6 +383,31 @@ export default function StudentSelfViewWeb() {
                                 </button>
                             ))}
                         </div>
+                    </div>
+                </div>
+
+                {/* Voice Journaling */}
+                <div className="sanctuary-card">
+                    <div className="card-body-inner">
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                            <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '1px', margin: 0 }}>
+                                🎙 Voice Journal
+                            </h3>
+                            <button
+                                className="secondary-button"
+                                style={{ fontSize: '11px', padding: '4px 10px' }}
+                                onClick={() => setShowVoiceJournal(v => !v)}
+                            >
+                                {showVoiceJournal ? 'Hide' : 'Record'}
+                            </button>
+                        </div>
+                        {showVoiceJournal ? (
+                            <VoiceJournaling userId={user?.id} onComplete={() => setShowVoiceJournal(false)} />
+                        ) : (
+                            <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', margin: 0, lineHeight: '1.5' }}>
+                                Capture your thoughts and reflections with your voice.
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>
