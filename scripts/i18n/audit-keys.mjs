@@ -20,7 +20,8 @@ const TRANSLATION_CALL_REGEX = /\bt\(\s*(['"])((?:\\.|(?!\1).)+)\1/g;
 
 function walkFiles(dirPath, files = []) {
   if (!fs.existsSync(dirPath)) {
-    return files;
+    console.error(`i18n audit error: source directory does not exist: ${dirPath}`);
+    process.exit(1);
   }
 
   for (const entry of fs.readdirSync(dirPath, { withFileTypes: true })) {
