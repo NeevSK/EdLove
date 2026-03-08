@@ -417,7 +417,7 @@ export default function ProfileScreen() {
                 Alert.alert(
                     t('profile.deleteFailedTitle'),
                     t('profile.deleteFailedMessage'),
-                    [{ text: 'OK' }]
+                    [{ text: t('common.ok') }]
                 );
             }
         }
