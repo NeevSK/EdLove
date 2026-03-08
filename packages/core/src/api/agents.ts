@@ -67,7 +67,7 @@ export const ReliefCoordinator = {
                 .eq('role', 'teacher');
 
             const { data: allTeachers } = absentTeacherIds.length > 0
-                ? await availableTeachersQuery.not('id', 'in', `(${absentTeacherIds.join(',')})`)
+                ? await availableTeachersQuery.not('id', 'in', `(${absentTeacherIds.map(id => `"${id}"`).join(',')})`)
                 : await availableTeachersQuery;
 
             for (const classroom of (classrooms ?? [])) {

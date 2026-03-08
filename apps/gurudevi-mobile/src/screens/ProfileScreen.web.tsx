@@ -4,7 +4,6 @@ import { useUserRole, useStore, useRoleFeatures } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import {
-    Trophy,
     FileText,
     Briefcase,
     GraduationCap,
@@ -22,7 +21,6 @@ import {
     useProfileCompletion,
     AvatarDisplay,
     LivingJourneyPanel,
-    AchievementGallery,
     AddSocialLinkModal,
     useSocialLinks,
 } from '@repo/profile';
@@ -444,16 +442,6 @@ export default function ProfileScreenWeb() {
                             )}
                         </div>
 
-                        {/* Achievement Gallery */}
-                        <div className="sanctuary-card" style={{ padding: '32px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-                                <Trophy size={18} color="var(--ink-ghost)" />
-                                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-                                    Achievements & Badges
-                                </h3>
-                            </div>
-                            <AchievementGallery unlockedBadges={rewards?.badges || []} />
-                        </div>
                     </div>
 
                     {/* RIGHT COLUMN */}

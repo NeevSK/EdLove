@@ -111,6 +111,17 @@ const TAB_CONFIG = [
 
 // ─── MAIN NAVIGATOR (Overlay Architecture) ─────────────────────────────────
 
+/** Reusable notification badge dot for Bell icons */
+function NotificationBadge({ count, size = 'md' }: { count: number; size?: 'sm' | 'md' }) {
+  if (count <= 0) return null;
+  const dim = size === 'sm' ? { minW: '14px', h: '14px', fs: '8px', top: '-3px', right: '-5px' } : { minW: '16px', h: '16px', fs: '9px', top: '-4px', right: '-6px' };
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: dim.minW, height: dim.h, padding: '0 4px', fontSize: dim.fs, fontWeight: '800', background: 'var(--lotus)', color: 'white', borderRadius: '8px', position: 'absolute', top: dim.top, right: dim.right }}>
+      {count > 99 ? '99+' : String(count)}
+    </div>
+  );
+}
+
 export default function TabNavigator({
   onTabChange,
 }: {

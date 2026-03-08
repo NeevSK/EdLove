@@ -1,4 +1,4 @@
-import { storage, StorageKeys, requireAuth, useStore } from '@repo/core';
+import { storage, StorageKeys, requireAuth, useStore, growthSignalsAPI } from '@repo/core';
 import { CommunityPost, CommunityGroup, Group, Post } from '../types';
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { communityAPI } from '../api/community';
@@ -91,6 +91,13 @@ export const useCommunity = (groupId?: string) => {
         },
         onSettled: (data, error, variables) => {
             queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(variables.group_id) });
+        },
+        onSuccess: (_data, _variables) => {
+            // Growth signal — post created, fire-and-forget
+            if (storeUser?.id) {
+                growthSignalsAPI.emitSignal(storeUser.id, 'post_created')
+                    .catch((err) => console.warn('[useCommunity] growth signal failed:', err));
+            }
         },
     });
 

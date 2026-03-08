@@ -26,7 +26,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useLibrary, LIBRARY_UI_CATEGORIES, libraryAPI, AddResourceModal } from '@repo/library';
 import { LibraryResource } from '@repo/library';
+import type { CreateResourceInput } from '@repo/library';
 import { useNavigation } from '@react-navigation/native';
+import { supabase } from '@repo/core';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 
 export default function LibraryScreen() {
@@ -53,6 +55,7 @@ export default function LibraryScreen() {
         resources,
         loading,
         fetchNextResources,
+        fetchResources,
         hasNextResources,
         isFetchingNextResources,
     } = useLibrary(
@@ -347,9 +350,39 @@ export default function LibraryScreen() {
                 <AddResourceModal
                     isOpen={showAddResource}
                     onClose={() => setShowAddResource(false)}
-                    onAdd={async () => {
-                        setShowAddResource(false);
-                        showToast('Resource added! It will be reviewed before publishing.', 'success');
+                    onAdd={async (data) => {
+                        if (!user?.id) return;
+                        try {
+                            // Map AddResourceModal's simplified data shape → CreateResourceInput
+                            const input: CreateResourceInput = {
+                                title: data.title,
+                                description: data.description,
+                                type: data.type as any,
+                                format: (data.url.includes('youtube') || data.url.includes('youtu.be') || data.url.includes('vimeo'))
+                                    ? 'video'
+                                    : data.url.match(/\.pdf(\?|$)/i)
+                                        ? 'pdf'
+                                        : 'link',
+                                url: data.url,
+                                subject: data.tags[0] ?? 'General',
+                                topics: data.tags,
+                                grades: [],
+                                difficulty: 'intermediate',
+                                language: 'en',
+                                visibility: 'school',
+                            };
+                            const created = await libraryAPI.createResource(input, user.id, role ?? 'teacher');
+                            // Trigger ETL enrichment asynchronously (topic extraction + embedding)
+                            supabase.functions.invoke('library-etl', {
+                                body: { resourceId: created.id, action: 'enrich' },
+                            }).catch((err) => console.warn('[LibraryScreen] ETL enrichment failed:', err));
+                            setShowAddResource(false);
+                            showToast('Resource contributed! It will be reviewed before publishing.', 'success');
+                            // Refresh library list
+                            fetchResources();
+                        } catch (err: any) {
+                            showToast(err.message ?? 'Failed to add resource', 'error');
+                        }
                     }}
                 />
             )}

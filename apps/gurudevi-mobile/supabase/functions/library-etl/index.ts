@@ -75,7 +75,12 @@ Deno.serve(async (req: Request) => {
                     if (topicRes.ok) {
                         const topicData = await topicRes.json();
                         const raw = topicData.choices?.[0]?.message?.content?.trim() ?? '';
-                        const parsed = JSON.parse(raw);
+                        let parsed: unknown;
+                        try {
+                            parsed = JSON.parse(raw);
+                        } catch (parseErr) {
+                            console.warn('[library-etl] topic JSON parse failed, raw response:', raw, parseErr);
+                        }
                         if (Array.isArray(parsed)) {
                             enrichedTopics = parsed;
                         }

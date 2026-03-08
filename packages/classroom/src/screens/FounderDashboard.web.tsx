@@ -17,7 +17,7 @@ import { useStore, ClassroomStackParamList, School } from '@repo/core';
 import { SkeletonCard } from '@repo/ui';
 import { useEcosystemStats } from '../hooks/useEcosystemStats';
 import GlobalCreateModal from '../components/GlobalCreateModal.web';
-import { Activity, Building, LayoutGrid, Users, ArrowUpRight, Plus, Globe, Zap } from 'lucide-react-native';
+import { Activity, Building, LayoutGrid, Users, ArrowUpRight, Plus, Globe, Zap, BookOpen, MessageSquare, CheckSquare, TrendingUp } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 export default function FounderDashboard() {
@@ -37,6 +37,13 @@ export default function FounderDashboard() {
         { label: 'Active Classrooms', value: stats?.total_classrooms ?? 0, icon: LayoutGrid, color: 'var(--water)', bg: 'rgba(58,122,154,0.1)' },
         { label: 'Lives Empowered', value: stats?.total_users ?? 0, icon: Users, color: 'var(--moss)', bg: 'rgba(78,154,78,0.1)' },
         { label: 'Ecosystem Health', value: stats?.ecosystem_health != null ? `${Math.round(stats.ecosystem_health)}%` : '—', icon: Activity, color: 'var(--lotus)', bg: 'rgba(180,80,100,0.1)', isText: true as const },
+    ];
+
+    const engagementStats = [
+        { label: 'Active (7d)', value: stats?.active_users_7d ?? '—', icon: TrendingUp, color: 'var(--gurudevi-blue)', bg: 'rgba(59,130,246,0.08)' },
+        { label: 'Library Resources', value: stats?.total_library_resources ?? '—', icon: BookOpen, color: 'var(--amber-glow)', bg: 'rgba(245,158,11,0.08)' },
+        { label: 'Community Posts', value: stats?.total_community_posts ?? '—', icon: MessageSquare, color: 'var(--lotus)', bg: 'rgba(180,80,100,0.08)' },
+        { label: 'Attendance Records', value: stats?.attendance_records ?? '—', icon: CheckSquare, color: 'var(--moss)', bg: 'rgba(78,154,78,0.08)' },
     ];
 
     return (
@@ -93,6 +100,44 @@ export default function FounderDashboard() {
                         </div>
                     </div>
                 ))}
+            </div>
+
+            {/* Engagement Vitals — 7-day window */}
+            <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                    <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0 }}>Engagement Vitals</h2>
+                    <span style={{ fontSize: '11px', color: 'var(--ink-ghost)', padding: '2px 8px', background: 'var(--background-alt)', borderRadius: '6px' }}>Last 7 days</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(180px, 100%), 1fr))', gap: '16px' }}>
+                    {engagementStats.map((stat, i) => (
+                        <div key={i} style={{ padding: '16px', borderRadius: '12px', background: stat.bg, border: `1px solid ${stat.bg.replace('0.08', '0.2')}` }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                <div style={{ color: stat.color }}><stat.icon size={16} /></div>
+                                <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)' }}>{stat.label}</span>
+                            </div>
+                            <div style={{ fontSize: '28px', fontWeight: '900', color: 'var(--ink)' }}>
+                                {isLoading ? '—' : typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                {/* Breakdown detail row */}
+                {!isLoading && stats && (
+                    <div style={{ marginTop: '16px', display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+                        <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>
+                            👩‍🎓 <strong>{stats.total_students?.toLocaleString() ?? '—'}</strong> students &nbsp;·&nbsp;
+                            👩‍🏫 <strong>{stats.total_teachers?.toLocaleString() ?? '—'}</strong> teachers &nbsp;·&nbsp;
+                            🏛 <strong>{stats.active_communities?.toLocaleString() ?? '—'}</strong> communities &nbsp;·&nbsp;
+                            ✅ <strong>{stats.verified_resources?.toLocaleString() ?? '—'}</strong> verified resources &nbsp;·&nbsp;
+                            💚 <strong>{stats.growth_signals_7d?.toLocaleString() ?? '—'}</strong> growth signals
+                        </div>
+                        {stats.avg_mood_score_7d != null && (
+                            <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>
+                                😊 Avg mood: <strong>{stats.avg_mood_score_7d.toFixed(1)}/5</strong>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* Institutions Gallery */}

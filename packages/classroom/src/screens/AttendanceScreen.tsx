@@ -4,7 +4,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ClassroomStackParamList } from '@repo/core';
 import AttendanceSheet from '../components/AttendanceSheet';
 import { StudentAttendance } from '@repo/core';
-import { api, ClassroomStudent, useStore, useSafeMutation } from '@repo/core';
+import { api, ClassroomStudent, useStore, useSafeMutation, growthSignalsAPI } from '@repo/core';
 import { Theme, hapticSuccess, Button, ButtonText, Spinner, Text, Box, VStack } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 
@@ -55,6 +55,7 @@ export default function AttendanceScreen() {
     };
 
     const showToast = useStore(state => state.showToast);
+    const currentUser = useStore(state => state.user);
 
     const saveMutation = useSafeMutation(
         async (updatedAttendance: StudentAttendance[]) => {
@@ -70,6 +71,11 @@ export default function AttendanceScreen() {
             onSuccess: () => {
                 hapticSuccess();
                 showToast('Attendance saved successfully', 'success');
+                // Growth signal — fire-and-forget
+                if (currentUser?.id) {
+                    growthSignalsAPI.emitSignal(currentUser.id, 'attendance_marked', { classroom_id: classroomId })
+                        .catch((err) => console.warn('[AttendanceScreen] growth signal failed:', err));
+                }
             },
             onError: (err: any) => {
                 showToast(err.message || 'Failed to save attendance', 'error');

@@ -3,7 +3,6 @@ export * from './types';
 export * from './hooks/useLibrary';
 export * from './components/ResourceList';
 export * from './components/AddResourceModal';
-export { default as AddResourceModal } from './components/AddResourceModal';
 export { default as LibraryScreen } from './screens/LibraryScreen';
 export { default as PDFViewerScreen } from './screens/PDFViewerScreen';
 export { default as VideoPlayerScreen } from './screens/VideoPlayerScreen';

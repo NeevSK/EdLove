@@ -29,6 +29,7 @@ export default function ClassroomScreen() {
     const navigation = useNavigation<any>();
     const { role } = useUserRole();
     const { isGuest } = useRoleFeatures();
+    const storeSchoolId = useStore(state => state.user?.school_id);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const { data: classroomData, loading, fetchRoleData } = useClassroomRoleData(refreshTrigger);
 
@@ -69,9 +70,20 @@ export default function ClassroomScreen() {
     if (classroomData) {
         if (role === 'founder') return <FounderDashboard />;
         if (role === 'principal' || role === 'developer' || role === 'admin') {
+            const schoolId = classroomData.schoolId || storeSchoolId || '';
+            // Surface NoSchoolOnboarding for principals who haven't created their school yet
+            if (!schoolId) {
+                return (
+                    <NoSchoolOnboarding
+                        userId={classroomData.userId}
+                        profileCompleted={classroomData.profileCompleted ?? false}
+                        onRefresh={fetchRoleData}
+                    />
+                );
+            }
             return (
                 <PrincipalSchoolView
-                    schoolId={classroomData.schoolId || useStore.getState().user?.school_id || ''}
+                    schoolId={schoolId}
                     userId={classroomData.userId}
                     onRefresh={fetchRoleData}
                 />
