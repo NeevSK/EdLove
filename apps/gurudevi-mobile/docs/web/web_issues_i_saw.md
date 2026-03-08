@@ -10,7 +10,7 @@ this doc is to list issues in web i saw when manual testing.
 5. all sections/tabs in web for all roles(principal, teacher, student),  should be functional using what offered and capable in mobile. i think we did lot of implemntations but still old web screens are there.
 6. add sociallink(linktree?) functionalities in to profile section in web similar to mobile fullprofileview and integrated anything missed. 
 7. Filtering and sorting functionalities for library 
-8. searching should be functional in all library, community and classrooms. any chick/tap on anything should do the job.
+8. searching should be functional in all library, community and classrooms. any click/tap on anything should do the job.
 9. Better UI deisgn/ layout for library??
 10. self, classroom and community sections seems not 100% functional yet
 11. test dark vs light theme and other settings
@@ -18,7 +18,7 @@ this doc is to list issues in web i saw when manual testing.
 13. Edit profile view should also appera within shell(top,side bar while it should be closable)
 14. In profilesection integrate publicsocialprofile or something under the id card. then under that add the edit profile thing. horizontally next to the id card add QR code section to  then its two column. only id and QR are two columns.
 15. i selected lang as ta in welcome screen but in settings no tamil lang option and still shows as enlish so seetings should be synced and dynamic in every screen
-16. 
+16. mobile vs web parity. now i see nothing in web works. what i need is in simpler terms web should have all features in role*section*screen*features and only difference should be is layout, UI visuals. how is the gap now??
 
 
 ###  3.35 pm

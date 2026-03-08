@@ -10,7 +10,8 @@ this file is for issues i saw while doing manual testing and should complement/i
 5. integrate wellbeing related features which also added into teacherselfview into principal self view as well.
 6. see whether anything have created for sleep tracker - quality and duration, water reminder, guided breathing for all roles and check whether existing screens/componets
 7. userpublicprofilescreen is bad where is linktree/social links thing isnt even there.  (privacy, available details/ edit detail/ public view should be sits around same place. now its different buttons different places). i think isssue is i can't remember the exact name of things yet we have done several items regarding profile now they are scattered.
-8. UI in global santuries and how groups are listed are feel like very primitive. need premium modern view. related to all chat or other list sections.
+8. UI in global santuries and how groups are listed are feel like very primitive. need premium modern view. related to all chat or other list sections. how to join a group? UI? logic? when joining whats visible?
+9. emojies dont work and show some chinese or whatver letters both in mobile and web
 
 ### 10.09 am 
 1. bottom nav bar should not be blurd or transparent. solid color. 
