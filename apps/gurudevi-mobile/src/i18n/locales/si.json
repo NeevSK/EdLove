@@ -555,10 +555,10 @@
       "emptyFeed": "The conversation is waiting to blossom. Be the first to share.",
       "galaxy": "Infinite Galaxy",
       "create": "Found a New Circle",
-      "noSanctuaryTitle": "No Sanctuary Title",
-      "noSanctuaryDesc": "No Sanctuary Desc",
+      "noSanctuaryTitle": "You haven't created a sanctuary yet.",
+      "noSanctuaryDesc": "Create a sanctuary to gather your community in one shared space.",
       "exploreGalaxy": "Explore Galaxy",
-      "noGalaxyDesc": "No Galaxy Desc",
+      "noGalaxyDesc": "Explore the galaxy to discover circles that resonate with you.",
       "foundCircle": "Found Circle"
     },
     "tabs": {
