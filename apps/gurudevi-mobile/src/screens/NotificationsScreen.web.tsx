@@ -35,7 +35,8 @@ export default function NotificationsScreenWeb() {
                     <h1 className="greeting-main">{t('notifications.title')}</h1>
                     <p className="greeting-note">
                         {unreadCount > 0
-                            ? t('notifications.unread')}
+                            ? t('notifications.unread', { count: unreadCount })
+                            : ''}
                     </p>
                 </div>
 
