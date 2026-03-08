@@ -118,10 +118,6 @@
     "exploreAsGuest": "Explore as Guest",
     "guestSubtext": "No account needed ΓÇó Full access",
     "openingSanctuary": "Initializing Sanctuary...",
-    "login": "I have an account. Log in",
-    "footer": "Education born from Love, built with Love.",
-    "privacyPactStatement": "By joining, you agree to our Sacred Privacy Pact.",
-    "message": "Welcome to Gurudevi",
     "description": "Your AI-powered educational companion.",
     "start": "Get Started"
   },
@@ -140,8 +136,7 @@
     "profile": "Profile",
     "grade": "Grade",
     "platform": "Platform",
-    "class": "Class",
-    "school": "School"
+    "class": "Class"
   },
   "self": {
     "goodMorning": "Good Morning!",
@@ -525,7 +520,26 @@
     "postAnnouncement": "Post Announcement",
     "connecting": "Connecting to Sanctuary Network...",
     "feed": "Feed",
-    "groups": "Groups",
+    "groups": {
+      "sanctuary": "My Sanctuary",
+      "title": "Groups",
+      "joinedTitle": "Joined Sanctuaries",
+      "noGalaxyTitle": "You haven't joined any sanctuaries yet.",
+      "joinRequested": "Request to join this circle has been sent.",
+      "manage": "Circle Management",
+      "members": "Members",
+      "noDesc": "A space for collective learning and support.",
+      "join": "Join this Circle",
+      "feed": "Resonant Feed",
+      "emptyFeed": "The conversation is waiting to blossom. Be the first to share.",
+      "galaxy": "Infinite Galaxy",
+      "create": "Found a New Circle",
+      "noSanctuaryTitle": "No Sanctuary Title",
+      "noSanctuaryDesc": "No Sanctuary Desc",
+      "exploreGalaxy": "Explore Galaxy",
+      "noGalaxyDesc": "No Galaxy Desc",
+      "foundCircle": "Found Circle"
+    },
     "sections": {
       "vision": "SCHOOL VISION",
       "updates": "RECENT UPDATES"
