@@ -22,7 +22,7 @@ import {
 } from 'lucide-react-native';
 import { api, AttendanceReport, AcademicCycle } from '@repo/core';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 
 interface AttendanceReportScreenProps {
     schoolId: string;

@@ -469,20 +469,27 @@ export const staffManagementAPI = {
 
       const trend: AttendanceTrendPoint[] = [];
       let totalPresent = 0;
+      let totalLate = 0;
       let totalAbsents = 0;
       let totalRecords = 0;
 
       dailyMap.forEach((p) => {
-        p.rate = p.totalCount > 0 ? Math.round((p.presentCount / p.totalCount) * 100) : 0;
+        // Count 'late' as present — consistent with getStudentAttendancePulse
+        p.rate = p.totalCount > 0
+          ? Math.round(((p.presentCount + p.lateCount) / p.totalCount) * 100)
+          : 0;
         trend.push(p);
         totalPresent += p.presentCount;
+        totalLate += p.lateCount;
         totalAbsents += p.absentCount;
         totalRecords += p.totalCount;
       });
 
       return {
         trend: trend.sort((a, b) => a.date.localeCompare(b.date)),
-        overallRate: totalRecords > 0 ? Math.round((totalPresent / totalRecords) * 100) : 0,
+        overallRate: totalRecords > 0
+          ? Math.round(((totalPresent + totalLate) / totalRecords) * 100)
+          : 0,
         totalAbsences: totalAbsents,
       };
     } catch (e) {

@@ -96,7 +96,10 @@ export function getTextOnBackground(
   lightText = '#FCF9F2',
 ): string {
   try {
-    const candidates = [darkText, lightText, '#FFFFFF'];
+    // Include pure black as a 4th candidate so mid-luminance accents like
+    // gurudeviBlue (#3B82F6) and gurudeviViolet (#8B5CF6) resolve to an
+    // AA-passing foreground (≥4.5:1) instead of Ink at ~4.2.
+    const candidates = [darkText, lightText, '#FFFFFF', '#000000'];
     let best = darkText;
     let bestRatio = 0;
     for (const c of candidates) {
@@ -122,7 +125,7 @@ export function getAccessibleTextColor(
   darkText = '#2A2318',
   lightText = '#FCF9F2',
 ): { color: string; ratio: number; passesAA: boolean } {
-  const candidates = [darkText, lightText, '#FFFFFF'];
+  const candidates = [darkText, lightText, '#FFFFFF', '#000000'];
   let best = darkText;
   let bestRatio = 0;
   for (const c of candidates) {

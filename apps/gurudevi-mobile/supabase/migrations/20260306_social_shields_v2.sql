@@ -27,9 +27,19 @@ CREATE TABLE IF NOT EXISTS public.conversation_settings (
     CONSTRAINT one_target CHECK (
         (conversation_id IS NOT NULL AND group_id IS NULL) OR
         (conversation_id IS NULL AND group_id IS NOT NULL)
-    ),
-    CONSTRAINT unique_user_chat_settings UNIQUE (user_id, conversation_id, group_id)
+    )
 );
+
+-- Partial unique indexes: Postgres NULLs don't compare equal, so a compound
+-- UNIQUE(user_id, conversation_id, group_id) allows duplicates when one column
+-- is NULL.  Two filtered indexes enforce the intended one-setting-per-chat rule.
+CREATE UNIQUE INDEX IF NOT EXISTS conversation_settings_user_dm_unique
+    ON public.conversation_settings (user_id, conversation_id)
+    WHERE conversation_id IS NOT NULL;
+
+CREATE UNIQUE INDEX IF NOT EXISTS conversation_settings_user_group_unique
+    ON public.conversation_settings (user_id, group_id)
+    WHERE group_id IS NOT NULL;
 
 -- 3. Update community_reports
 DO $$ 

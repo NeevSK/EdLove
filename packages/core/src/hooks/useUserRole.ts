@@ -28,8 +28,10 @@ export function useUserRole(): UseUserRoleReturn & { refresh: () => Promise<void
     const setSchoolType = useStore(state => state.setSchoolType);
 
     // Offline-first identity logic
-    const schoolId = user?.school_id || (user ? null : 'mock-school');
-    const isGuest = !user || schoolId === 'mock-school';
+    // An authenticated user without a school_id is still treated as guest/limited-access
+    // because school-scoped features require a valid school context.
+    const schoolId = user?.school_id || null;
+    const isGuest = !user || !user.school_id || schoolId === 'mock-school';
 
 
     const refresh = async () => {

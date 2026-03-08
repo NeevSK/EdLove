@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Modal, StyleSheet, TouchableOpacity } from 'react-native';
 import {
     Box,
@@ -9,14 +9,10 @@ import {
     Button,
     ButtonText,
     Theme,
-    hapticSuccess,
-    hapticError,
-    useLotusToast,
     useTheme,
 } from '@repo/ui';
 import { X, AlertTriangle, ShieldOff, UserX, ShieldCheck, LifeBuoy } from 'lucide-react-native';
 import { useSocialShield, type ReportTarget } from '../hooks/useSocialShield';
-import { useStore } from '@repo/core';
 
 interface SocialShieldModalProps {
     isOpen: boolean;

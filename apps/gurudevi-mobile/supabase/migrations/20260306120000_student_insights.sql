@@ -25,13 +25,35 @@ CREATE INDEX IF NOT EXISTS idx_student_observations_author ON public.student_obs
 -- RLS Policies
 ALTER TABLE public.student_observations ENABLE ROW LEVEL SECURITY;
 
--- Authors can manage their own observations if not finalized
-CREATE POLICY "Teachers can manage their own non-finalized observations"
+-- Split into per-command policies so that:
+--   SELECT: authors can always view their own observations (including finalised ones)
+--   INSERT/UPDATE/DELETE: only allowed while is_finalized = false
+-- (Note: cmd() is not a valid Postgres function and cannot be used in policies.)
+
+CREATE POLICY "Teachers can view their own observations"
 ON public.student_observations
-FOR ALL
+FOR SELECT
 TO authenticated
-USING (auth.uid() = author_id AND (is_finalized = false OR cmd() = 'SELECT'))
+USING (auth.uid() = author_id);
+
+CREATE POLICY "Teachers can insert their own non-finalized observations"
+ON public.student_observations
+FOR INSERT
+TO authenticated
 WITH CHECK (auth.uid() = author_id AND is_finalized = false);
+
+CREATE POLICY "Teachers can update their own non-finalized observations"
+ON public.student_observations
+FOR UPDATE
+TO authenticated
+USING (auth.uid() = author_id AND is_finalized = false)
+WITH CHECK (auth.uid() = author_id AND is_finalized = false);
+
+CREATE POLICY "Teachers can delete their own non-finalized observations"
+ON public.student_observations
+FOR DELETE
+TO authenticated
+USING (auth.uid() = author_id AND is_finalized = false);
 
 -- Current teachers can view history if student is in their current classroom
 CREATE POLICY "Current teachers can view historical observations"
