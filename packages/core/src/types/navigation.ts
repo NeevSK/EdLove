@@ -28,6 +28,7 @@ export type CommunityStackParamList = {
 
 export type SelfStackParamList = {
     SelfMain: undefined;
+    AIAssistant: undefined;
 };
 
 export type LibraryStackParamList = {

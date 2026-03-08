@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { SkeletonCard } from '@repo/ui';
-import { useMoodLogs, useJournalEntries, useEnergyForecast } from '@repo/self';
+import { useMoodLogs, useJournalEntries, useEnergyForecast, VoiceJournaling } from '@repo/self';
 import type { MoodLog } from '@repo/self';
 import {
     Activity,
@@ -160,6 +160,11 @@ export default function TeacherSelfViewWeb() {
                                 </button>
                             </div>
                         )}
+                    </div>
+
+                    {/* Voice Journaling */}
+                    <div className="sanctuary-card interactive" style={{ padding: '32px' }}>
+                        <VoiceJournaling userId={user?.id} onComplete={() => {}} />
                     </div>
                 </div>
             </div>

@@ -8,6 +8,26 @@ import { ClassroomStackParamList } from '@repo/core';
 const ClassroomScreenWeb = React.lazy(() => import('../screens/ClassroomScreen.web'));
 const ClassroomDetailScreenWeb = React.lazy(() => import('../screens/ClassroomDetailScreen.web'));
 
+// Package classroom screens (Metro resolves .web.tsx automatically where available)
+const AttendanceScreen = React.lazy(() =>
+    import('@repo/classroom').then(m => ({ default: m.AttendanceScreen }))
+);
+const GradebookScreen = React.lazy(() =>
+    import('@repo/classroom').then(m => ({ default: m.GradebookScreen }))
+);
+const StudentProfileScreen = React.lazy(() =>
+    import('@repo/classroom').then(m => ({ default: m.StudentProfileScreen }))
+);
+const FounderDashboard = React.lazy(() =>
+    import('@repo/classroom').then(m => ({ default: m.FounderDashboard }))
+);
+const FounderSchoolView = React.lazy(() =>
+    import('@repo/classroom').then(m => ({ default: m.FounderSchoolView }))
+);
+const SchoolCreationScreen = React.lazy(() =>
+    import('../screens/SchoolCreationScreen')
+);
+
 const Stack = createNativeStackNavigator<ClassroomStackParamList>();
 
 function ScreenFallback() {
@@ -28,6 +48,12 @@ export default function ClassroomStackNavigatorWeb() {
         >
             <Stack.Screen name="ClassroomList" component={ClassroomScreenWeb} />
             <Stack.Screen name="ClassroomDetails" component={ClassroomDetailScreenWeb} />
+            <Stack.Screen name="Attendance" component={AttendanceScreen} />
+            <Stack.Screen name="Gradebook" component={GradebookScreen} />
+            <Stack.Screen name="StudentProfile" component={StudentProfileScreen} />
+            <Stack.Screen name="FounderDashboard" component={FounderDashboard} />
+            <Stack.Screen name="FounderSchoolView" component={FounderSchoolView} />
+            <Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} />
         </Stack.Navigator>
         </React.Suspense>
     );

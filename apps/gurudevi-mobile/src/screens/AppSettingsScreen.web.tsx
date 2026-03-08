@@ -148,6 +148,35 @@ export default function AppSettingsScreenWeb() {
                                     <Smartphone size={20} />
                                 </div>
                             </button>
+
+                            {/* Notifications permission row (web only) */}
+                            {typeof Notification !== 'undefined' && Notification.permission !== undefined && (
+                                <button
+                                    className="settings-row"
+                                    onClick={async () => {
+                                        if (Notification.permission === 'default') {
+                                            const perm = await Notification.requestPermission();
+                                            if (perm === 'granted') {
+                                                showToast(t('settings.notifications_enabled'), 'success');
+                                            }
+                                        }
+                                    }}
+                                >
+                                    <div className="settings-row-info">
+                                        <span className="settings-row-title">Push Notifications</span>
+                                        <span className="settings-row-desc">
+                                            {Notification.permission === 'granted'
+                                                ? 'Enabled — you will receive updates'
+                                                : Notification.permission === 'denied'
+                                                ? 'Blocked in browser settings'
+                                                : 'Tap to enable browser notifications'}
+                                        </span>
+                                    </div>
+                                    <div className="settings-row-action">
+                                        <div className={`web-toggle ${Notification.permission === 'granted' ? 'active' : ''}`} />
+                                    </div>
+                                </button>
+                            )}
                         </div>
                     </div>
 

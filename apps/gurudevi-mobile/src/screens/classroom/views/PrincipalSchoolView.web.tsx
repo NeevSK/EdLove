@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore, staffManagementAPI, StaffPresenceSummary, TeacherCarouselItem, StudentAttendancePulse, StaffLeaveDTO } from '@repo/core';
-import { useSchoolStats } from '@repo/classroom';
+import { useSchoolStats, CreateClassroomModal } from '@repo/classroom';
 import { useSchoolPulse } from '@repo/profile';
 import { SkeletonCard } from '@repo/ui';
 import {
@@ -17,7 +17,9 @@ import {
     BookOpen,
     Zap,
     Building,
-    Activity
+    Activity,
+    UserPlus,
+    Share2,
 } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -61,6 +63,8 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?
     const [studentPulse, setStudentPulse] = useState<StudentAttendancePulse | null>(null);
     const [pendingLeaves, setPendingLeaves] = useState<StaffLeaveDTO[]>([]);
     const [staffLoading, setStaffLoading] = useState(true);
+    const [showCreateClassroom, setShowCreateClassroom] = useState(false);
+    const [processingLeave, setProcessingLeave] = useState<string | null>(null);
 
     useEffect(() => {
         if (!effectiveSchoolId) return;
@@ -114,10 +118,10 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?
                     </p>
                 </div>
                 <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                    <button className="premium-button" style={{ background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <button className="premium-button" style={{ background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowCreateClassroom(true)}>
                         <Plus size={18} /> Establish Hierarchy
                     </button>
-                    <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowCreateClassroom(true)}>
                         <Users size={18} /> Invite Staff
                     </button>
                 </div>
@@ -185,7 +189,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?
                                     </span>
                                 )}
                             </h3>
-                            <button style={{ color: 'var(--lotus)', background: 'transparent', border: 'none', fontWeight: '800', fontSize: '12px', cursor: 'pointer' }}>View All</button>
+                             <button style={{ color: 'var(--lotus)', background: 'transparent', border: 'none', fontWeight: '800', fontSize: '12px', cursor: 'pointer' }} onClick={() => setShowCreateClassroom(true)}>+ New Classroom</button>
                         </div>
                         {staffLoading ? (
                             <SkeletonCard />
@@ -312,11 +316,29 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?
                                             )}
                                         </div>
                                         <div style={{ display: 'flex', gap: '8px' }}>
-                                            <button style={{ padding: '6px 12px', borderRadius: '8px', background: 'var(--moss-soft)', color: 'var(--moss)', border: 'none', fontWeight: '700', fontSize: '11px', cursor: 'pointer' }}>
-                                                Approve
+                                            <button
+                                                disabled={processingLeave === leave.id}
+                                                onClick={async () => {
+                                                    setProcessingLeave(leave.id);
+                                                    const ok = await staffManagementAPI.approveLeave(leave.id, effectiveUserId, true);
+                                                    if (ok) setPendingLeaves(prev => prev.filter(l => l.id !== leave.id));
+                                                    setProcessingLeave(null);
+                                                }}
+                                                style={{ padding: '6px 12px', borderRadius: '8px', background: 'var(--moss-soft)', color: 'var(--moss)', border: 'none', fontWeight: '700', fontSize: '11px', cursor: 'pointer', opacity: processingLeave === leave.id ? 0.5 : 1 }}
+                                            >
+                                                {processingLeave === leave.id ? '…' : 'Approve'}
                                             </button>
-                                            <button style={{ padding: '6px 12px', borderRadius: '8px', background: 'var(--background-alt)', color: 'var(--ink-ghost)', border: 'none', fontWeight: '700', fontSize: '11px', cursor: 'pointer' }}>
-                                                Review
+                                            <button
+                                                disabled={processingLeave === leave.id}
+                                                onClick={async () => {
+                                                    setProcessingLeave(leave.id);
+                                                    const ok = await staffManagementAPI.approveLeave(leave.id, effectiveUserId, false);
+                                                    if (ok) setPendingLeaves(prev => prev.filter(l => l.id !== leave.id));
+                                                    setProcessingLeave(null);
+                                                }}
+                                                style={{ padding: '6px 12px', borderRadius: '8px', background: 'var(--background-alt)', color: 'var(--ink-ghost)', border: 'none', fontWeight: '700', fontSize: '11px', cursor: 'pointer', opacity: processingLeave === leave.id ? 0.5 : 1 }}
+                                            >
+                                                Reject
                                             </button>
                                         </div>
                                     </div>
@@ -399,5 +421,12 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?
                 </div>
             </div>
         </div>
+
+        {/* ── Modals ──────────────────────────────────────── */}
+        <CreateClassroomModal
+            isOpen={showCreateClassroom}
+            onClose={() => setShowCreateClassroom(false)}
+            onSuccess={() => setShowCreateClassroom(false)}
+        />
     );
 }

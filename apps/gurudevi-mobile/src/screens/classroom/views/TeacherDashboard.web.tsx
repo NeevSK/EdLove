@@ -4,7 +4,7 @@ import { useUserRole, useStore, supabase } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { Classroom } from '@repo/core';
 import { SkeletonCard } from '@repo/ui';
-import { useClassroomRoleData } from '@repo/classroom';
+import { useClassroomRoleData, CreateClassroomModal } from '@repo/classroom';
 import {
     Plus,
     Users,
@@ -19,7 +19,8 @@ import {
     UserPlus,
     BarChart3,
     School,
-    Archive
+    Archive,
+    ClipboardList,
 } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -31,6 +32,7 @@ export default function TeacherDashboardWeb() {
     const [searchQuery, setSearchQuery] = useState('');
     const [classrooms, setClassrooms] = useState<(Classroom & { student_count?: number; last_activity?: string })[]>([]);
     const [classroomsLoading, setClassroomsLoading] = useState(true);
+    const [showCreateClassroom, setShowCreateClassroom] = useState(false);
     const { data: roleData } = useClassroomRoleData();
 
     // Fetch real classrooms from Supabase
@@ -108,7 +110,7 @@ export default function TeacherDashboardWeb() {
                 </div>
 
                 <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                    <button className="premium-button" style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <button className="premium-button" style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowCreateClassroom(true)}>
                         <Plus size={18} />
                         Create Classroom
                     </button>
@@ -218,9 +220,19 @@ export default function TeacherDashboardWeb() {
                                             <span style={{ padding: '4px 8px', background: 'var(--moss-soft)', color: 'var(--moss)', borderRadius: '6px', fontSize: '11px', fontWeight: '800' }}>ACTIVE</span>
                                         </td>
                                         <td style={{ padding: '20px 24px', textAlign: 'right' }}>
-                                            <button style={{ background: 'transparent', border: 'none', color: 'var(--ink-ghost)', cursor: 'pointer' }}>
-                                                <MoreHorizontal size={20} />
-                                            </button>
+                                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                                <button
+                                                    className="secondary-button"
+                                                    style={{ padding: '6px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                                                    onClick={e => { e.stopPropagation(); navigation.navigate('Attendance', { classroomId: cls.id, classroomName: cls.name }); }}
+                                                >
+                                                    <ClipboardList size={13} />
+                                                    Attendance
+                                                </button>
+                                                <button style={{ background: 'transparent', border: 'none', color: 'var(--ink-ghost)', cursor: 'pointer' }} onClick={e => e.stopPropagation()}>
+                                                    <MoreHorizontal size={20} />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -230,5 +242,15 @@ export default function TeacherDashboardWeb() {
                 )}
             </div>
         </div>
+
+        {/* Create Classroom Modal */}
+        <CreateClassroomModal
+            isOpen={showCreateClassroom}
+            onClose={() => setShowCreateClassroom(false)}
+            onSuccess={(newClass) => {
+                setClassrooms(prev => [newClass, ...prev]);
+                setShowCreateClassroom(false);
+            }}
+        />
     );
 }

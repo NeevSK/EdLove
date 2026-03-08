@@ -23,6 +23,10 @@ const DirectMessagesListScreen = React.lazy(() =>
 const DirectMessageScreen = React.lazy(() =>
     import('@repo/community').then(m => ({ default: m.DirectMessageScreen }))
 );
+// Announcements — in-app announcements screen
+const AnnouncementsScreen = React.lazy(() =>
+    import('../screens/community/AnnouncementsScreen')
+);
 
 const Stack = createNativeStackNavigator<CommunityStackParamList>();
 
@@ -48,6 +52,7 @@ export default function CommunityStackNavigatorWeb() {
             <Stack.Screen name="GroupChat" component={GroupChatScreen} />
             <Stack.Screen name="DirectMessagesList" component={DirectMessagesListScreen} />
             <Stack.Screen name="DirectMessage" component={DirectMessageScreen} />
+            <Stack.Screen name="Announcements" component={AnnouncementsScreen} />
         </Stack.Navigator>
         </React.Suspense>
     );

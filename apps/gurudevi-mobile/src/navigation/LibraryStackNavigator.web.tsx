@@ -7,6 +7,17 @@ import { LibraryStackParamList } from '@repo/core';
 // Web-specific screens — lazy loaded for code splitting
 const LibraryScreenWeb = React.lazy(() => import('../screens/LibraryScreen.web'));
 
+// Package screens (Metro auto-resolves .web.tsx for each)
+const PDFViewerScreen = React.lazy(() =>
+    import('@repo/library').then(m => ({ default: m.PDFViewerScreen }))
+);
+const VideoPlayerScreen = React.lazy(() =>
+    import('@repo/library').then(m => ({ default: m.VideoPlayerScreen }))
+);
+const MapScreen = React.lazy(() =>
+    import('@repo/library').then(m => ({ default: m.MapScreen }))
+);
+
 const Stack = createNativeStackNavigator<LibraryStackParamList>();
 
 function ScreenFallback() {
@@ -26,6 +37,9 @@ export default function LibraryStackNavigatorWeb() {
             }}
         >
             <Stack.Screen name="LibraryHome" component={LibraryScreenWeb} />
+            <Stack.Screen name="PDFViewer" component={PDFViewerScreen} />
+            <Stack.Screen name="VideoPlayer" component={VideoPlayerScreen} />
+            <Stack.Screen name="LibraryMap" component={MapScreen} />
         </Stack.Navigator>
         </React.Suspense>
     );

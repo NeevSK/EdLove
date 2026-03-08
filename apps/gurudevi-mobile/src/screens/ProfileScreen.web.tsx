@@ -213,14 +213,30 @@ export default function ProfileScreenWeb() {
                                         Create Account
                                     </button>
                                 ) : (
-                                    <button
-                                        className="secondary-button"
-                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-                                        onClick={openInlineEdit}
-                                    >
-                                        <Edit3 size={16} />
-                                        {t('profile.viewEditProfile')}
-                                    </button>
+                                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                        <button
+                                            className="secondary-button"
+                                            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                                            onClick={openInlineEdit}
+                                        >
+                                            <Edit3 size={16} />
+                                            {t('profile.viewEditProfile')}
+                                        </button>
+                                        <button
+                                            className="secondary-button"
+                                            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                                            onClick={() => (navigation as any).navigate('FullProfile', { profile })}
+                                        >
+                                            Full Profile
+                                        </button>
+                                        <button
+                                            className="secondary-button"
+                                            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                                            onClick={() => (navigation as any).navigate('AppSettings')}
+                                        >
+                                            ⚙ Settings
+                                        </button>
+                                    </div>
                                 )}
                             </div>
                         </div>

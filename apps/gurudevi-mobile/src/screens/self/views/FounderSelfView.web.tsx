@@ -11,6 +11,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore } from '@repo/core';
 import { useMoodLogs, useEnergyForecast, useWisdom } from '@repo/self';
+import type { MoodLog } from '@repo/self';
 import { SkeletonCard } from '@repo/ui';
 import {
     Compass,
@@ -29,6 +30,15 @@ const MOOD_LABELS = ['', 'Depleted', 'Low', 'Steady', 'Energised', 'Vibrant'];
 const MOOD_COLORS = ['', 'var(--ember)', 'var(--amber-glow)', 'var(--water)', 'var(--moss)', 'var(--lotus)'];
 const ENERGY_COLORS = ['', 'var(--ember)', 'var(--amber-glow)', 'var(--water)', 'var(--moss)', 'var(--sanctuary-saffron)'];
 
+const MOOD_OPTIONS: { value: MoodLog['mood']; emoji: string; label: string }[] = [
+    { value: 'sad',        emoji: '😔', label: 'Sad' },
+    { value: 'frustrated', emoji: '😤', label: 'Frustrated' },
+    { value: 'anxious',    emoji: '😰', label: 'Anxious' },
+    { value: 'calm',       emoji: '😌', label: 'Calm' },
+    { value: 'curious',    emoji: '🤔', label: 'Curious' },
+    { value: 'joyful',     emoji: '😊', label: 'Joyful' },
+];
+
 type ActivePanel = 'vision' | 'mood' | 'energy' | 'philosophy';
 
 export default function FounderSelfViewWeb() {
@@ -37,9 +47,12 @@ export default function FounderSelfViewWeb() {
     const { userId } = useUserRole();
 
     const [activePanel, setActivePanel] = useState<ActivePanel>('vision');
+    const [showMoodPicker, setShowMoodPicker] = React.useState(false);
+    const [moodNote, setMoodNote] = React.useState('');
+    const [savingMood, setSavingMood] = React.useState(false);
 
     // ── Personal wellbeing hooks ─────────────────────────────────────────
-    const { moodHistory, isLoading: moodLoading } = useMoodLogs(userId ?? undefined);
+    const { moodHistory, isLoading: moodLoading, addMoodLog } = useMoodLogs(userId ?? undefined);
     const { forecasts, isLoading: energyLoading } = useEnergyForecast(userId ?? undefined);
     const { notes: wisdomNotes, isLoading: wisdomLoading } = useWisdom(userId ?? undefined);
 
@@ -114,10 +127,52 @@ export default function FounderSelfViewWeb() {
                 {/* Mood Card */}
                 <div className="sanctuary-card" style={{ background: 'var(--ink)', color: 'white' }}>
                     <div className="card-body-inner">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                            <Sparkles size={18} />
-                            <h3 style={{ fontSize: '14px', fontWeight: '800', margin: 0, textTransform: 'uppercase', letterSpacing: '1px' }}>Personal State</h3>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '16px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <Sparkles size={18} />
+                                <h3 style={{ fontSize: '14px', fontWeight: '800', margin: 0, textTransform: 'uppercase', letterSpacing: '1px' }}>Personal State</h3>
+                            </div>
+                            <button
+                                onClick={() => setShowMoodPicker(v => !v)}
+                                style={{ background: showMoodPicker ? 'var(--lotus)' : 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '8px', padding: '5px 9px', cursor: 'pointer', color: 'white', fontSize: '10px', fontWeight: '700', fontFamily: 'var(--font-body)' }}
+                            >
+                                {showMoodPicker ? 'Cancel' : '+ Log'}
+                            </button>
                         </div>
+
+                        {showMoodPicker && (
+                            <div style={{ marginBottom: '14px', padding: '12px', background: 'rgba(255,255,255,0.08)', borderRadius: '10px' }}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
+                                    {MOOD_OPTIONS.map(opt => (
+                                        <button
+                                            key={opt.value}
+                                            disabled={savingMood}
+                                            onClick={async () => {
+                                                setSavingMood(true);
+                                                try {
+                                                    await addMoodLog(opt.value, moodNote || undefined);
+                                                    setMoodNote('');
+                                                    setShowMoodPicker(false);
+                                                } finally {
+                                                    setSavingMood(false);
+                                                }
+                                            }}
+                                            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', padding: '6px 8px', background: 'rgba(255,255,255,0.12)', border: 'none', borderRadius: '8px', cursor: 'pointer', color: 'white', fontSize: '9px', fontWeight: '600', fontFamily: 'var(--font-body)' }}
+                                        >
+                                            <span style={{ fontSize: '16px' }}>{opt.emoji}</span>
+                                            {opt.label}
+                                        </button>
+                                    ))}
+                                </div>
+                                <input
+                                    value={moodNote}
+                                    onChange={e => setMoodNote(e.target.value)}
+                                    placeholder="Note (optional)…"
+                                    style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: 'none', background: 'rgba(255,255,255,0.12)', color: 'white', fontSize: '12px', fontFamily: 'var(--font-body)', outline: 'none', boxSizing: 'border-box' }}
+                                />
+                            </div>
+                        )}
+
                         {moodLoading ? (
                             <p style={{ fontSize: '13px', opacity: 0.7 }}>Loading…</p>
                         ) : latestMood ? (
@@ -136,7 +191,7 @@ export default function FounderSelfViewWeb() {
                                 </div>
                             </>
                         ) : (
-                            <p style={{ fontSize: '13px', opacity: 0.7 }}>No mood check-in yet today.</p>
+                            <p style={{ fontSize: '13px', opacity: 0.7 }}>Tap "+ Log" to begin your check-in.</p>
                         )}
                     </div>
                 </div>

@@ -19,18 +19,20 @@ import {
     Globe,
     LayoutGrid,
     List,
-    X,
+    Map,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { useLibrary, LIBRARY_UI_CATEGORIES } from '@repo/library';
+import { useLibrary, LIBRARY_UI_CATEGORIES, libraryAPI } from '@repo/library';
 import { LibraryResource } from '@repo/library';
+import { useNavigation } from '@react-navigation/native';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 
 export default function LibraryScreen() {
     const { t } = useTranslation();
+    const navigation = useNavigation<any>();
     const { role } = useUserRole();
     const { isGuest } = useRoleFeatures();
-    const { user } = useStore();
+    const { user, showToast } = useStore();
 
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategoryId, setSelectedCategoryId] = useState('All');
@@ -55,31 +57,71 @@ export default function LibraryScreen() {
             : { limit: 100, sort_by: selectedSort }
     );
 
-    const [openVideoResource, setOpenVideoResource] = useState<LibraryResource | null>(null);
-
     const handleOpenResource = useCallback((resource: LibraryResource) => {
         if (!resource.url) return;
         if (resource.type === 'pdf') {
-            // Open PDFs in a new browser tab — browser's built-in viewer handles it natively
-            window.open(resource.url, '_blank', 'noopener,noreferrer');
+            // Navigate to the full inline PDFViewerScreen (packages/library/src/screens/PDFViewerScreen.web.tsx)
+            navigation.navigate('PDFViewer', {
+                resourceId: resource.id,
+                title: resource.title,
+                url: resource.url,
+                creator: resource.creator_name,
+            });
             return;
         }
         if (resource.type === 'video' || resource.type === 'movie_trailer') {
-            // Open video inline in a simple overlay player
-            setOpenVideoResource(resource);
+            // Navigate to the full VideoPlayerScreen (packages/library/src/screens/VideoPlayerScreen.web.tsx)
+            navigation.navigate('VideoPlayer', {
+                resourceId: resource.id,
+                title: resource.title,
+                url: resource.url,
+                creator: resource.creator_name ?? '',
+            });
             return;
         }
         openExternalURL(resource.url).catch((err: any) => console.error("Couldn't load page", err));
-    }, []);
+    }, [navigation]);
+
+    const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
+    const handleBookmark = useCallback(async (resource: LibraryResource) => {
+        if (!user?.id) return;
+        setBookmarkedIds(prev => {
+            const next = new Set(prev);
+            if (next.has(resource.id)) { next.delete(resource.id); } else { next.add(resource.id); }
+            return next;
+        });
+        try {
+            await libraryAPI.bookmarkResource(resource.id, user.id);
+        } catch (err) {
+            console.error('[LibraryScreen] bookmark failed:', err);
+            // Revert optimistic update
+            setBookmarkedIds(prev => {
+                const next = new Set(prev);
+                if (next.has(resource.id)) { next.delete(resource.id); } else { next.add(resource.id); }
+                return next;
+            });
+            showToast('Could not save bookmark. Please try again.', 'error');
+        }
+    }, [user?.id]);
 
     return (
         <div className="sanctuary-screen">
             <div className="sanctuary-container">
                 {/* 1. GREETING */}
-                <div className="greeting">
-                    <div className="greeting-time">Curated Wisdom</div>
-                    <h1 className="greeting-main">The Sanctuary</h1>
-                    <p className="greeting-note">Gurudevi Knowledge Hub</p>
+                <div className="greeting" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
+                    <div>
+                        <div className="greeting-time">Curated Wisdom</div>
+                        <h1 className="greeting-main">The Sanctuary</h1>
+                        <p className="greeting-note">Gurudevi Knowledge Hub</p>
+                    </div>
+                    <button
+                        className="secondary-button"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
+                        onClick={() => navigation.navigate('LibraryMap')}
+                    >
+                        <Map size={15} />
+                        Knowledge Map
+                    </button>
                 </div>
 
                 {/* 2. FILTERS & SEARCH */}
@@ -218,6 +260,8 @@ export default function LibraryScreen() {
                                             endorsements={res.endorsements}
                                             verified={res.verified}
                                             onPress={() => handleOpenResource(res)}
+                                            onBookmark={!isGuest ? () => handleBookmark(res) : undefined}
+                                            isBookmarked={bookmarkedIds.has(res.id)}
                                         />
                                     </div>
                                 ))}
@@ -269,45 +313,6 @@ export default function LibraryScreen() {
             </div>
 
             <LotusPetalFAB />
-
-            {/* ── Inline video overlay ─────────────────────────────────── */}
-            {openVideoResource && (
-                <div
-                    style={{
-                        position: 'fixed', inset: 0, zIndex: 1000,
-                        background: 'rgba(15,13,10,0.92)',
-                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                        padding: '32px',
-                    }}
-                    onClick={() => setOpenVideoResource(null)}
-                >
-                    <div
-                        style={{ width: '100%', maxWidth: '900px', background: 'var(--ink)', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 32px 80px rgba(0,0,0,0.6)' }}
-                        onClick={e => e.stopPropagation()}
-                    >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                            <div>
-                                <div style={{ fontWeight: '700', color: 'white', fontSize: '16px' }}>{openVideoResource.title}</div>
-                                {openVideoResource.creator_name && (
-                                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>{openVideoResource.creator_name}</div>
-                                )}
-                            </div>
-                            <button
-                                onClick={() => setOpenVideoResource(null)}
-                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.6)', padding: '4px' }}
-                            >
-                                <X size={22} />
-                            </button>
-                        </div>
-                        <video
-                            src={openVideoResource.url}
-                            controls
-                            autoPlay
-                            style={{ width: '100%', display: 'block', maxHeight: '70vh', background: '#000' }}
-                        />
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

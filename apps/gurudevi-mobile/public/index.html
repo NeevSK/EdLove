@@ -245,6 +245,36 @@
 
     <!--
     =========================================================================
+    DARK MODE FOUC PREVENTION
+    Reads themeMode from Zustand's persisted localStorage BEFORE React mounts.
+    Sets data-theme="dark" on <html> so CSS variables resolve correctly on
+    the very first paint — zero flash of wrong theme.
+    =========================================================================
+    -->
+    <script>
+      (function () {
+        try {
+          var raw = localStorage.getItem('gurudevi-storage');
+          if (raw) {
+            var state = JSON.parse(raw);
+            var mode = (state && state.state && state.state.themeMode) || 'system';
+            if (mode === 'dark') {
+              document.documentElement.setAttribute('data-theme', 'dark');
+            } else if (mode === 'light') {
+              document.documentElement.setAttribute('data-theme', 'light');
+            } else {
+              // system — match prefers-color-scheme
+              if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+              }
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <!--
+    =========================================================================
     TEMPORAL PHASE INITIALISER
     Reads the current hour BEFORE React loads and sets the correct phase
     class on <html> - zero first-paint flicker.
