@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useThemedColors } from '@repo/ui';
-import { useUserRole, useStore } from '@repo/core';
+import { useUserRole, useStore, useRoleFeatures } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -13,6 +13,7 @@ import {
     Mail,
     Edit3,
     CheckCircle2,
+    Plus,
 } from 'lucide-react-native';
 import {
     useProfile,
@@ -22,7 +23,8 @@ import {
     AvatarDisplay,
     LivingJourneyPanel,
     AchievementGallery,
-    EditProfileModal,
+    AddSocialLinkModal,
+    useSocialLinks,
 } from '@repo/profile';
 import { QRCodeGenerator } from '@repo/scanner-kit';
 
@@ -31,10 +33,37 @@ export default function ProfileScreenWeb() {
     const navigation = useNavigation<any>();
     const colors = useThemedColors();
     const { role } = useUserRole();
+    const { isGuest } = useRoleFeatures();
     const { user } = useStore();
     const { profile, loading: isProfileLoading, updateField, rewards, refresh } = useProfile();
     const completionResult = useProfileCompletion(profile, (role as any) ?? null);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    // isEditModalOpen removed — openInlineEdit() is used instead
+    const [isAddLinkOpen, setIsAddLinkOpen] = useState(false);
+    const [copiedLink, setCopiedLink] = useState(false);
+    const [editForm, setEditForm] = useState<{ full_name: string; bio: string; phone: string } | null>(null);
+    const [isSaving, setIsSaving] = useState(false);
+
+    // Social links — own data, live-updated
+    const { links: socialLinks, addLink: addSocialLink, loading: isSocialLinksLoading } = useSocialLinks(user?.id);
+
+    const openInlineEdit = () => setEditForm({ full_name: profile?.full_name ?? '', bio: profile?.bio ?? '', phone: profile?.phone ?? '' });
+    const cancelEdit = () => setEditForm(null);
+    const saveEdit = async () => {
+        if (!editForm || !profile) return;
+        setIsSaving(true);
+        try {
+            if (editForm.full_name !== profile.full_name) await updateField('full_name', editForm.full_name);
+            if (editForm.bio !== (profile.bio ?? '')) await updateField('bio', editForm.bio);
+            if (editForm.phone !== (profile.phone ?? '')) await updateField('phone', editForm.phone);
+            setEditForm(null);
+            refresh?.();
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    // Profile public URL — used by QR code and copy-link button
+    const profilePublicUrl = profile ? `https://app.gurudevi.edlove.org/app/community/user/${profile.id}` : '';
 
     const isStaff = profile?.role && ['teacher', 'principal', 'grade_head', 'section_head'].includes(profile.role);
     const subjectsTaught = Array.isArray(profile?.subjects_taught)
@@ -174,19 +203,30 @@ export default function ProfileScreenWeb() {
                                     )}
                                 </div>
 
-                                {/* Edit profile button */}
-                                <button
-                                    className="secondary-button"
-                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-                                    onClick={() => setIsEditModalOpen(true)}
-                                >
-                                    <Edit3 size={16} />
-                                    {t('profile.viewEditProfile')}
-                                </button>
+                                {/* Edit profile button — guests must create an account first */}
+                                {isGuest ? (
+                                    <button
+                                        className="premium-button"
+                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}
+                                        onClick={() => (navigation as any).navigate('Auth')}
+                                    >
+                                        Create Account
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="secondary-button"
+                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                                        onClick={openInlineEdit}
+                                    >
+                                        <Edit3 size={16} />
+                                        {t('profile.viewEditProfile')}
+                                    </button>
+                                )}
                             </div>
                         </div>
 
-                        {/* ── RIGHT: QR code panel ── */}
+                        {/* ── RIGHT: QR code panel (authenticated users only) ── */}
+                        {isGuest ? null :
                         <div style={{
                             display: 'flex',
                             flexDirection: 'column',
@@ -201,7 +241,7 @@ export default function ProfileScreenWeb() {
                         }}>
                             <div style={{ borderRadius: '8px', overflow: 'hidden', background: '#fff', padding: '8px' }}>
                                 <QRCodeGenerator
-                                    value={`https://app.gurudevi.edlove.org/app/community/user/${profile.id}`}
+                                    value={profilePublicUrl}
                                     size={104}
                                     label={profile.full_name}
                                 />
@@ -215,21 +255,70 @@ export default function ProfileScreenWeb() {
                                     border: 'none',
                                     cursor: 'pointer',
                                     fontSize: '11px',
-                                    color: 'var(--action)',
+                                    color: copiedLink ? 'var(--moss)' : 'var(--action)',
                                     fontWeight: '600',
                                     padding: '2px 0',
                                     fontFamily: 'var(--font-body)',
+                                    transition: 'color 0.2s',
                                 }}
                                 onClick={() => {
-                                    const url = `https://app.gurudevi.edlove.org/app/community/user/${profile.id}`;
-                                    navigator.clipboard?.writeText(url).catch(() => {});
+                                    navigator.clipboard?.writeText(profilePublicUrl)
+                                        .then(() => {
+                                            setCopiedLink(true);
+                                            setTimeout(() => setCopiedLink(false), 2000);
+                                        })
+                                        .catch(() => {});
                                 }}
                             >
-                                Copy link
+                                {copiedLink ? '✓ Copied!' : 'Copy link'}
                             </button>
                         </div>
+                        }
                     </div>
                 </div>
+
+                {/* ─── INLINE EDIT PANEL ─── */}
+                {editForm && !isGuest && (
+                    <div className="sanctuary-card" style={{ padding: '32px', marginBottom: '24px', border: '2px solid var(--action)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>Edit Profile</h3>
+                            <button onClick={cancelEdit} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', fontSize: '20px' }}>✕</button>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '20px', marginBottom: '24px' }}>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--ink-ghost)', marginBottom: '6px' }}>Display Name</label>
+                                <input
+                                    value={editForm.full_name}
+                                    onChange={e => setEditForm(f => f ? { ...f, full_name: e.target.value } : f)}
+                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--glass-surface)', fontSize: '15px', fontFamily: 'var(--font-body)', color: 'var(--ink)', outline: 'none', boxSizing: 'border-box' }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--ink-ghost)', marginBottom: '6px' }}>Phone</label>
+                                <input
+                                    value={editForm.phone}
+                                    onChange={e => setEditForm(f => f ? { ...f, phone: e.target.value } : f)}
+                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--glass-surface)', fontSize: '15px', fontFamily: 'var(--font-body)', color: 'var(--ink)', outline: 'none', boxSizing: 'border-box' }}
+                                />
+                            </div>
+                        </div>
+                        <div style={{ marginBottom: '24px' }}>
+                            <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--ink-ghost)', marginBottom: '6px' }}>Bio</label>
+                            <textarea
+                                value={editForm.bio}
+                                onChange={e => setEditForm(f => f ? { ...f, bio: e.target.value } : f)}
+                                rows={3}
+                                style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--glass-surface)', fontSize: '14px', fontFamily: 'var(--font-body)', color: 'var(--ink)', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
+                            />
+                        </div>
+                        <div style={{ display: 'flex', gap: '12px' }}>
+                            <button className="premium-button" onClick={saveEdit} disabled={isSaving} style={{ minWidth: '100px' }}>
+                                {isSaving ? 'Saving…' : 'Save Changes'}
+                            </button>
+                            <button className="secondary-button" onClick={cancelEdit}>Cancel</button>
+                        </div>
+                    </div>
+                )}
 
                 {/* ─── MAIN GRID ───────────────────────────────── */}
                 <div style={{
@@ -297,22 +386,40 @@ export default function ProfileScreenWeb() {
                             </div>
                         )}
 
-                        {/* Social Sanctuary */}
-                        {profile.social_links && profile.social_links.length > 0 && (
-                            <div className="sanctuary-card" style={{ padding: '32px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                        {/* Social Sanctuary — always shown with add/edit */}
+                        <div className="sanctuary-card" style={{ padding: '32px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '20px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                     <Globe size={18} color="var(--ink-ghost)" />
                                     <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
                                         Social Sanctuary
                                     </h3>
                                 </div>
+                                <button
+                                    className="secondary-button"
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', padding: '6px 12px' }}
+                                    onClick={() => setIsAddLinkOpen(true)}
+                                >
+                                    <Plus size={14} />
+                                    Add Link
+                                </button>
+                            </div>
+
+                            {socialLinks && socialLinks.length > 0 ? (
                                 <ContactLinktree
-                                    links={profile.social_links}
+                                    links={socialLinks}
                                     userName={profile.full_name}
                                     isOwnProfile={true}
                                 />
-                            </div>
-                        )}
+                            ) : (
+                                <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--ink-ghost)' }}>
+                                    <Globe size={32} color="var(--border)" />
+                                    <p style={{ fontSize: '13px', marginTop: '12px', fontStyle: 'italic' }}>
+                                        No social links yet. Add your first one.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
 
                         {/* Achievement Gallery */}
                         <div className="sanctuary-card" style={{ padding: '32px' }}>
@@ -347,18 +454,14 @@ export default function ProfileScreenWeb() {
                 </div>
             </div>
 
-            {/* Edit Profile Modal */}
-            {isEditModalOpen && (
-                <EditProfileModal
-                    visible={isEditModalOpen}
-                    currentProfile={profile}
-                    onClose={() => setIsEditModalOpen(false)}
-                    onSave={() => {
-                        setIsEditModalOpen(false);
-                        refresh?.();
-                    }}
-                />
-            )}
+            {/* EditProfileModal removed — inline edit panel used instead for web shell compatibility */}
+
+            {/* Add Social Link Modal */}
+            <AddSocialLinkModal
+                visible={isAddLinkOpen}
+                userId={user?.id}
+                onClose={() => setIsAddLinkOpen(false)}
+            />
         </div>
     );
 }

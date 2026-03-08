@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore, supabase, useRewards } from '@repo/core';
 import { Classroom } from '@repo/core';
 import { SkeletonCard } from '@repo/ui';
+import { useNavigation } from '@react-navigation/native';
 import { useClassroomRoleData } from '@repo/classroom';
 import { useStudentGoals } from '@repo/self';
 import {
@@ -22,6 +23,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 export default function StudentDashboardWeb() {
     const { t } = useTranslation();
+    const navigation = useNavigation<any>();
     const { user } = useStore();
     const { userId } = useUserRole();
     const { rewards, isLoading: rewardsLoading } = useRewards();
@@ -183,7 +185,7 @@ export default function StudentDashboardWeb() {
                             ))}
                         </div>
                     )}
-                    <button className="secondary-button" style={{ width: '100%', marginTop: '20px', fontSize: '12px' }}>
+                    <button className="secondary-button" style={{ width: '100%', marginTop: '20px', fontSize: '12px' }} onClick={() => navigation.navigate('Main', { screen: 'Self' })}>
                         View All Goals
                     </button>
                 </div>

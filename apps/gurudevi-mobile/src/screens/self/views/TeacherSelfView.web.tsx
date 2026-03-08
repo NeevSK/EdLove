@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore } from '@repo/core';
+import { useNavigation } from '@react-navigation/native';
 import { SkeletonCard } from '@repo/ui';
 import { useMoodLogs, useJournalEntries, useEnergyForecast } from '@repo/self';
 import {
@@ -22,11 +23,14 @@ const MOOD_COLORS = ['', 'var(--lotus)', 'var(--amber-glow)', 'var(--water)', 'v
 
 export default function TeacherSelfViewWeb() {
     const { t } = useTranslation();
+    const navigation = useNavigation<any>();
     const { user } = useStore();
     const { userId } = useUserRole();
+    const [journalDraft, setJournalDraft] = React.useState('');
+    const [showJournalForm, setShowJournalForm] = React.useState(false);
 
     const { moodHistory, isLoading: moodLoading } = useMoodLogs(userId ?? undefined);
-    const { entries: journalEntries, loading: journalLoading } = useJournalEntries();
+    const { entries: journalEntries, loading: journalLoading, addJournalEntry } = useJournalEntries();
     const { forecasts, isLoading: energyLoading } = useEnergyForecast(userId ?? undefined);
 
     const recentMoods = moodHistory.slice(0, 9);
@@ -99,7 +103,7 @@ export default function TeacherSelfViewWeb() {
                         <div style={{ marginBottom: '16px', color: 'var(--moss)' }}><Wind size={24} /></div>
                         <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px' }}>Breath & Presence</h3>
                         <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginBottom: '20px' }}>Reconnect with your center before the next instructional cycle.</p>
-                        <button className="sidebar-item" style={{ background: 'var(--moss-soft)' }}>Begin Centering</button>
+                        <button className="sidebar-item" style={{ background: 'var(--moss-soft)' }} onClick={() => (navigation as any).navigate('AIAssistant')}>Begin Centering</button>
                     </div>
 
                     <div className="sanctuary-card interactive" style={{ padding: '32px' }}>
@@ -115,7 +119,33 @@ export default function TeacherSelfViewWeb() {
                                 No journal entries yet. Begin your reflective practice.
                             </p>
                         )}
-                        <button className="sidebar-item" style={{ background: 'var(--water-soft)' }}>Add Entry</button>
+                        <button className="sidebar-item" style={{ background: 'var(--water-soft)' }} onClick={() => setShowJournalForm(v => !v)}>
+                            {showJournalForm ? 'Close' : 'Add Entry'}
+                        </button>
+                        {showJournalForm && (
+                            <div style={{ marginTop: '16px' }}>
+                                <textarea
+                                    value={journalDraft}
+                                    onChange={e => setJournalDraft(e.target.value)}
+                                    placeholder="What's on your mind today?"
+                                    rows={4}
+                                    style={{ width: '100%', padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--glass-surface)', fontSize: '14px', fontFamily: 'var(--font-body)', color: 'var(--ink)', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
+                                />
+                                <button
+                                    className="sidebar-item"
+                                    style={{ background: 'var(--water)', color: '#fff', marginTop: '10px' }}
+                                    onClick={async () => {
+                                        if (journalDraft.trim()) {
+                                            await addJournalEntry(journalDraft.trim());
+                                            setJournalDraft('');
+                                            setShowJournalForm(false);
+                                        }
+                                    }}
+                                >
+                                    Save Entry
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -6,6 +6,7 @@ import { ClassroomStackParamList } from '@repo/core';
 
 // Web-specific screens — lazy loaded for code splitting
 const ClassroomScreenWeb = React.lazy(() => import('../screens/ClassroomScreen.web'));
+const ClassroomDetailScreenWeb = React.lazy(() => import('../screens/ClassroomDetailScreen.web'));
 
 const Stack = createNativeStackNavigator<ClassroomStackParamList>();
 
@@ -26,6 +27,7 @@ export default function ClassroomStackNavigatorWeb() {
             }}
         >
             <Stack.Screen name="ClassroomList" component={ClassroomScreenWeb} />
+            <Stack.Screen name="ClassroomDetails" component={ClassroomDetailScreenWeb} />
         </Stack.Navigator>
         </React.Suspense>
     );

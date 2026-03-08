@@ -157,7 +157,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                 .from('users')
                 .upsert({
                     id: user.id,
-                    full_name: name || user.user_metadata?.full_name || 'Sanctuary User',
+                    full_name: name || user.user_metadata?.full_name || 'Gurudevi User',
                     role,
                     school_id: schoolId,
                     onboarding_completed: true,

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore, supabase } from '@repo/core';
+import { useNavigation } from '@react-navigation/native';
 import { Classroom } from '@repo/core';
 import { SkeletonCard } from '@repo/ui';
 import { useClassroomRoleData } from '@repo/classroom';
@@ -24,6 +25,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 export default function TeacherDashboardWeb() {
     const { t } = useTranslation();
+    const navigation = useNavigation<any>();
     const { user } = useStore();
     const { role, userId } = useUserRole();
     const [searchQuery, setSearchQuery] = useState('');
@@ -197,6 +199,7 @@ export default function TeacherDashboardWeb() {
                                     <tr
                                         key={cls.id}
                                         style={{ borderBottom: '1px solid var(--border-light)', cursor: 'pointer' }}
+                                        onClick={() => navigation.navigate('ClassroomDetails', { classroomId: cls.id, classroomName: cls.name })}
                                         onMouseOver={e => (e.currentTarget.style.background = 'var(--background-alt)')}
                                         onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                                     >

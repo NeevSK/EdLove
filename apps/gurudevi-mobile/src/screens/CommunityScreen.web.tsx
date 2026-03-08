@@ -39,6 +39,7 @@ export default function CommunityScreen() {
 
     const [selectedGroupId, setSelectedGroupId] = useState<string | 'all' | 'my' | 'pulse'>('all');
     const [showList, setShowList] = useState<'none' | 'joined' | 'discover'>('none');
+    const [searchQuery, setSearchQuery] = useState('');
 
     // Real data wiring
     const { posts, isLoadingPosts, fetchPosts } = useCommunity(
@@ -57,6 +58,25 @@ export default function CommunityScreen() {
 
     const isEcosystemRole = role === 'founder' || role === 'admin' || role === 'developer';
     const colors = useThemedColors();
+
+    // Client-side search filter — runs over fetched posts and groups
+    const q = searchQuery.toLowerCase().trim();
+    const filteredPosts = q
+        ? (posts || []).filter(p =>
+            p.content?.toLowerCase().includes(q) ||
+            p.author_name?.toLowerCase().includes(q) ||
+            p.subject?.toLowerCase().includes(q) ||
+            (p.tags || []).some((tag: string) => tag.toLowerCase().includes(q))
+          )
+        : posts;
+
+    const allGroups = [...(joinedGroups || []), ...(discoverGroups || [])];
+    const filteredGroups = q
+        ? allGroups.filter(g =>
+            g.name?.toLowerCase().includes(q) ||
+            g.description?.toLowerCase().includes(q)
+          )
+        : null; // null = not in search mode, show normal group sidebar
 
     return (
         <div className="sanctuary-screen">
@@ -148,6 +168,39 @@ export default function CommunityScreen() {
 
                     {/* CENTER: Main Feed */}
                     <div className="community-feed">
+                        {/* ── Search bar ── */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', padding: '10px 14px', borderRadius: '12px', border: '1px solid var(--border)', background: 'rgba(255,255,255,0.5)' }}>
+                            <Compass size={16} color="var(--ink-ghost)" />
+                            <input
+                                style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '14px', color: 'var(--ink)', outline: 'none', fontFamily: 'var(--font-body)' }}
+                                placeholder={t('community.search.placeholder') || 'Search posts, groups, members…'}
+                                value={searchQuery}
+                                onChange={(e) => { setSearchQuery(e.target.value); if (e.target.value) setShowList('none'); }}
+                                aria-label="Search community"
+                            />
+                            {searchQuery && (
+                                <button onClick={() => setSearchQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', fontSize: '16px', lineHeight: 1 }} aria-label="Clear search">✕</button>
+                            )}
+                        </div>
+
+                        {/* ── Search results: matching groups ── */}
+                        {filteredGroups && filteredGroups.length > 0 && (
+                            <div style={{ marginBottom: '24px' }}>
+                                <p style={{ fontSize: '11px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '10px' }}>Groups</p>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    {filteredGroups.map(g => (
+                                        <button key={g.id} onClick={() => { setSelectedGroupId(g.id); setSearchQuery(''); setShowList('none'); }} className="sanctuary-card" style={{ padding: '14px 18px', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <Hash size={16} color="var(--water)" />
+                                            <div>
+                                                <div style={{ fontWeight: '700', fontSize: '14px' }}>{g.name}</div>
+                                                {g.description && <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{g.description}</div>}
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         <div className="community-sub-nav">
                             <button
                                 className={`sub-nav-item ${showList === 'none' ? 'active' : ''}`}
@@ -221,26 +274,24 @@ export default function CommunityScreen() {
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                                         {isLoadingPosts ? (
                                             <StackFallback variant="cards" />
-                                        ) : (posts?.filter(p => {
-                                            if (selectedGroupId === 'all') return true;
-                                            if (selectedGroupId === 'my') {
-                                                return joinedGroups?.some(g => g.id === p.group_id);
-                                            }
-                                            if (selectedGroupId === 'pulse') {
-                                                return p.post_type === 'announcement' || Object.values(p.reactions || {}).reduce((a, b) => a + (b as number), 0) > 5;
-                                            }
-                                            return p.group_id === selectedGroupId;
-                                        }) || []).length > 0 ? (
-                                            (posts?.filter(p => {
+                                        ) : (() => {
+                                            // Apply group filter on top of the text-search filter
+                                            const visiblePosts = (filteredPosts || []).filter(p => {
                                                 if (selectedGroupId === 'all') return true;
-                                                if (selectedGroupId === 'my') {
-                                                    return joinedGroups?.some(g => g.id === p.group_id);
-                                                }
-                                                if (selectedGroupId === 'pulse') {
-                                                    return p.post_type === 'announcement' || Object.values(p.reactions || {}).reduce((a, b) => a + (b as number), 0) > 5;
-                                                }
+                                                if (selectedGroupId === 'my') return joinedGroups?.some(g => g.id === p.group_id);
+                                                if (selectedGroupId === 'pulse') return p.post_type === 'announcement' || Object.values(p.reactions || {}).reduce((a: number, b) => a + (b as number), 0) > 5;
                                                 return p.group_id === selectedGroupId;
-                                            }) || []).map((post) => (
+                                            });
+                                            if (visiblePosts.length === 0) {
+                                                return (
+                                                    <div style={{ padding: '80px 40px', textAlign: 'center' }}>
+                                                        <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic' }}>
+                                                            {q ? `No posts match "${searchQuery}"` : (selectedGroupId === 'my' ? t('community.groups.noGalaxyTitle') : t('community.empty.title'))}
+                                                        </p>
+                                                    </div>
+                                                );
+                                            }
+                                            return visiblePosts.map((post) => (
                                                 <PostCard
                                                     key={post.id}
                                                     post={post}
@@ -258,16 +309,8 @@ export default function CommunityScreen() {
                                                         }
                                                     }}
                                                 />
-                                            ))
-                                        ) : (
-                                            <div style={{ padding: '80px 40px', textAlign: 'center' }}>
-                                                <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic' }}>
-                                                    {selectedGroupId === 'my'
-                                                        ? t('community.groups.noGalaxyTitle')
-                                                        : t('community.empty.title')}
-                                                </p>
-                                            </div>
-                                        )}
+                                            ));
+                                        })()}
                                     </div>
                                 )}
                             </>

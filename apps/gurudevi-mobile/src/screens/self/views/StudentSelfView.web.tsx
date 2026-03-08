@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore } from '@repo/core';
 import { SkeletonCard } from '@repo/ui';
 import { useMoodLogs, useStudentGoals, useJournalEntries } from '@repo/self';
+import { useNavigation } from '@react-navigation/native';
 import {
     BookOpen,
     Sparkles,
@@ -22,6 +23,7 @@ const MOOD_LABELS = ['', 'Depleted', 'Low', 'Steady', 'Energised', 'Vibrant'];
 
 export default function StudentSelfViewWeb() {
     const { t } = useTranslation();
+    const navigation = useNavigation<any>();
     const { user } = useStore();
     const { userId } = useUserRole();
 
@@ -193,11 +195,11 @@ export default function StudentSelfViewWeb() {
                         </h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             {[
-                                { icon: Library, label: 'Monastery Library' },
-                                { icon: BookOpen, label: 'Bookmarked Seeds' },
-                                { icon: MessageSquare, label: 'Resonant Discussions' }
+                                { icon: Library, label: 'Monastery Library', screen: 'Library' as const },
+                                { icon: BookOpen, label: 'Bookmarked Seeds', screen: 'Library' as const },
+                                { icon: MessageSquare, label: 'Resonant Discussions', screen: 'Community' as const }
                             ].map((item, idx) => (
-                                <button key={idx} className="sidebar-item" style={{ margin: 0 }}>
+                                <button key={idx} className="sidebar-item" style={{ margin: 0 }} onClick={() => navigation.navigate('Main', { screen: item.screen })}>
                                     <item.icon size={16} /> <span>{item.label}</span>
                                 </button>
                             ))}

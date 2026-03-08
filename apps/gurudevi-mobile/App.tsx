@@ -375,9 +375,16 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
       const hasValidSession = !!session;
 
       if (!hasValidSession && !onboardingCompleted && !allowedRoutes.includes(currentRoute || '')) {
-        // Save the intended deep link so we can restore it after successful auth
+        // Validate and save intended deep link before redirecting
         const intendedPath = window.location.pathname + window.location.search;
-        if (intendedPath && intendedPath !== '/' && !intendedPath.startsWith('/onboarding')) {
+        // Only store paths that begin with '/' and don't contain protocol specifiers
+        if (
+          intendedPath &&
+          intendedPath !== '/' &&
+          !intendedPath.startsWith('/onboarding') &&
+          intendedPath.charAt(0) === '/' &&
+          !/[a-z][a-z0-9+\-.]*:/i.test(intendedPath)
+        ) {
           sessionStorage.setItem('__pendingDeepLink', intendedPath);
         }
         console.log('🛡️ WebAuthGuard: Redirecting to Welcome...');
