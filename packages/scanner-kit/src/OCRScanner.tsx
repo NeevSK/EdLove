@@ -225,12 +225,24 @@ export default function OCRScanner({
                         }}>
                             <Text style={{ color: colors.accent, fontWeight: '600', fontSize: 13 }}>{t('scanner.ocr.tipsTitle', 'Tips for best results:')}</Text>
                             {[
-                                t('scanner.ocr.tips.goodLighting', 'Good lighting (avoid shadows)'),
-                                t('scanner.ocr.tips.clearImage', 'Clear, focused image'),
-                                t('scanner.ocr.tips.straightAngle', 'Straight angle (not tilted)'),
-                                t('scanner.ocr.tips.includeHeaders', 'Include column headers if possible'),
+                                {
+                                    id: 'goodLighting',
+                                    text: t('scanner.ocr.tips.goodLighting', 'Good lighting (avoid shadows)'),
+                                },
+                                {
+                                    id: 'clearImage',
+                                    text: t('scanner.ocr.tips.clearImage', 'Clear, focused image'),
+                                },
+                                {
+                                    id: 'straightAngle',
+                                    text: t('scanner.ocr.tips.straightAngle', 'Straight angle (not tilted)'),
+                                },
+                                {
+                                    id: 'includeHeaders',
+                                    text: t('scanner.ocr.tips.includeHeaders', 'Include column headers if possible'),
+                                },
                             ].map(tip => (
-                                <Text key={tip} style={{ color: colors.textSecondary, fontSize: 13 }}>• {tip}</Text>
+                                <Text key={tip.id} style={{ color: colors.textSecondary, fontSize: 13 }}>• {tip.text}</Text>
                             ))}
                         </View>
                     </View>
