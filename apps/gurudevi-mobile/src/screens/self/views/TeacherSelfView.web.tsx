@@ -4,6 +4,7 @@ import { useUserRole, useStore } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { SkeletonCard } from '@repo/ui';
 import { useMoodLogs, useJournalEntries, useEnergyForecast } from '@repo/self';
+import type { MoodLog } from '@repo/self';
 import {
     Activity,
     Zap,
@@ -21,6 +22,16 @@ import { formatDistanceToNow } from 'date-fns';
 const MOOD_LABELS = ['', 'Depleted', 'Low', 'Steady', 'Energised', 'Vibrant'];
 const MOOD_COLORS = ['', 'var(--lotus)', 'var(--amber-glow)', 'var(--water)', 'var(--moss)', 'var(--action)'];
 
+// Mood picker options — ordered from lowest to highest energy
+const MOOD_OPTIONS: { value: MoodLog['mood']; emoji: string; label: string }[] = [
+    { value: 'sad',        emoji: '😔', label: 'Sad' },
+    { value: 'frustrated', emoji: '😤', label: 'Frustrated' },
+    { value: 'anxious',    emoji: '😰', label: 'Anxious' },
+    { value: 'calm',       emoji: '😌', label: 'Calm' },
+    { value: 'curious',    emoji: '🤔', label: 'Curious' },
+    { value: 'joyful',     emoji: '😊', label: 'Joyful' },
+];
+
 export default function TeacherSelfViewWeb() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
@@ -28,8 +39,11 @@ export default function TeacherSelfViewWeb() {
     const { userId } = useUserRole();
     const [journalDraft, setJournalDraft] = React.useState('');
     const [showJournalForm, setShowJournalForm] = React.useState(false);
+    const [showMoodPicker, setShowMoodPicker] = React.useState(false);
+    const [moodNote, setMoodNote] = React.useState('');
+    const [savingMood, setSavingMood] = React.useState(false);
 
-    const { moodHistory, isLoading: moodLoading } = useMoodLogs(userId ?? undefined);
+    const { moodHistory, isLoading: moodLoading, addMoodLog } = useMoodLogs(userId ?? undefined);
     const { entries: journalEntries, loading: journalLoading, addJournalEntry } = useJournalEntries();
     const { forecasts, isLoading: energyLoading } = useEnergyForecast(userId ?? undefined);
 
@@ -154,10 +168,54 @@ export default function TeacherSelfViewWeb() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                 {/* Mood Resonance */}
                 <div className="sanctuary-card" style={{ padding: '24px', background: 'var(--ink)', color: 'white' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                        <TrendingUp size={20} color="var(--lotus)" />
-                        <h3 style={{ fontSize: '16px', fontWeight: '800', margin: 0 }}>Mood Resonance</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <TrendingUp size={20} color="var(--lotus)" />
+                            <h3 style={{ fontSize: '16px', fontWeight: '800', margin: 0 }}>Mood Resonance</h3>
+                        </div>
+                        <button
+                            onClick={() => setShowMoodPicker(v => !v)}
+                            style={{ background: showMoodPicker ? 'var(--lotus)' : 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '8px', padding: '6px 10px', cursor: 'pointer', color: 'white', fontSize: '11px', fontWeight: '700', fontFamily: 'var(--font-body)', transition: 'background 0.2s' }}
+                        >
+                            {showMoodPicker ? 'Cancel' : '+ Log Mood'}
+                        </button>
                     </div>
+
+                    {/* Inline mood picker */}
+                    {showMoodPicker && (
+                        <div style={{ marginBottom: '16px', padding: '16px', background: 'rgba(255,255,255,0.08)', borderRadius: '12px' }}>
+                            <p style={{ fontSize: '12px', opacity: 0.7, marginBottom: '12px' }}>How are you feeling right now?</p>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+                                {MOOD_OPTIONS.map(opt => (
+                                    <button
+                                        key={opt.value}
+                                        disabled={savingMood}
+                                        onClick={async () => {
+                                            setSavingMood(true);
+                                            try {
+                                                await addMoodLog(opt.value, moodNote || undefined);
+                                                setMoodNote('');
+                                                setShowMoodPicker(false);
+                                            } finally {
+                                                setSavingMood(false);
+                                            }
+                                        }}
+                                        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '8px 12px', background: 'rgba(255,255,255,0.12)', border: 'none', borderRadius: '10px', cursor: 'pointer', color: 'white', fontSize: '10px', fontWeight: '600', fontFamily: 'var(--font-body)', transition: 'background 0.15s' }}
+                                    >
+                                        <span style={{ fontSize: '20px' }}>{opt.emoji}</span>
+                                        {opt.label}
+                                    </button>
+                                ))}
+                            </div>
+                            <input
+                                value={moodNote}
+                                onChange={e => setMoodNote(e.target.value)}
+                                placeholder="Optional note…"
+                                style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: 'none', background: 'rgba(255,255,255,0.12)', color: 'white', fontSize: '13px', fontFamily: 'var(--font-body)', outline: 'none', boxSizing: 'border-box' }}
+                            />
+                        </div>
+                    )}
+
                     {moodLoading ? (
                         <p style={{ fontSize: '13px', opacity: 0.7 }}>Loading mood data…</p>
                     ) : latestMood ? (
@@ -178,7 +236,7 @@ export default function TeacherSelfViewWeb() {
                             </div>
                         </>
                     ) : (
-                        <p style={{ fontSize: '13px', opacity: 0.7 }}>No mood logs yet. Log your first mood check-in.</p>
+                        <p style={{ fontSize: '13px', opacity: 0.7 }}>No mood logs yet. Tap "+ Log Mood" above to begin.</p>
                     )}
                 </div>
 

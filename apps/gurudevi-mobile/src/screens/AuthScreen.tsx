@@ -62,9 +62,11 @@ interface AuthScreenProps {
     isAnonymous?: boolean;
     onContinueAsGuest?: () => void;
     onSuccess?: () => void;
+    /** Start the auth screen in login mode (vs default sign-up) */
+    initialMode?: 'login' | 'signup';
 }
 
-export default function AuthScreen({ onboardingData, isAnonymous = false, onContinueAsGuest, onSuccess }: AuthScreenProps) {
+export default function AuthScreen({ onboardingData, isAnonymous = false, onContinueAsGuest, onSuccess, initialMode }: AuthScreenProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
     const [email, setEmail] = useState('');
@@ -72,7 +74,8 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
     const [loading, setLoading] = useState(false);
     const [showEmailAuth, setShowEmailAuth] = useState(false);
     // Issue 3.1 fix: new unauthenticated visitors should land on Sign Up, not Login.
-    const [isSignUp, setIsSignUp] = useState(true);
+    // But if initialMode='login' is passed (e.g. from identity_already_exists redirect), start on Login.
+    const [isSignUp, setIsSignUp] = useState(initialMode !== 'login');
     const [showScanner, setShowScanner] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [currentUser, setCurrentUser] = useState<any>(null);
@@ -86,6 +89,55 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
             setCurrentUser(user);
         });
     }, []);
+
+    // ── Web: detect Supabase OAuth error params in URL hash/query ────────────
+    // e.g. ?error=server_error&error_code=identity_already_exists&...
+    // Supabase redirects back with these params when an identity is already linked.
+    React.useEffect(() => {
+        if (Platform.OS !== 'web') return;
+        const fullUrl = window.location.href;
+        const getUrlParam = (name: string) => {
+            // Search both the query string and the hash fragment
+            const fromQuery = new URLSearchParams(window.location.search).get(name);
+            if (fromQuery) return fromQuery;
+            const hashSearch = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+            return hashSearch.get(name);
+        };
+        const errorCode = getUrlParam('error_code');
+        const errorDesc = getUrlParam('error_description');
+        if (!errorCode) return;
+
+        if (errorCode === 'identity_already_exists') {
+            // Switch to login tab and show a helpful message
+            setIsSignUp(false);
+            setShowEmailAuth(true);
+            // Decode and surface the message after a short delay so AuthScreen has mounted
+            setTimeout(() => {
+                showToast(
+                    t('auth.identityAlreadyExists') ||
+                    'This account already exists. Please sign in instead.',
+                    'error'
+                );
+            }, 300);
+            // Clean the error params from the URL without triggering a reload
+            try {
+                const cleanUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState(null, '', cleanUrl);
+            } catch (_) { /* ignore */ }
+        } else if (errorCode) {
+            setTimeout(() => {
+                showToast(
+                    decodeURIComponent(errorDesc ?? errorCode).replace(/\+/g, ' '),
+                    'error'
+                );
+            }, 300);
+            try {
+                const cleanUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState(null, '', cleanUrl);
+            } catch (_) { /* ignore */ }
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [t]);
 
     const isRealUser = currentUser && currentUser.email && !currentUser.email.includes('anonymous');
     const shouldHideGeneralAuth = onboardingData && isRealUser;

@@ -17,30 +17,57 @@ import {
   Settings,
 } from "lucide-react-native";
 
+// ── Preload helper ──────────────────────────────────────────────────────────
+// Kicks off the dynamic import for each chunk immediately after the main
+// bundle executes (i.e. before the user taps any tab).  Uses
+// requestIdleCallback so it doesn't compete with first-paint work.
+// The promises are thrown away — React.lazy() caches the result internally
+// once the import resolves, so Suspense renders instantly on first navigation.
+const schedulePreload = (importFn: () => Promise<unknown>) => {
+  if (typeof requestIdleCallback !== 'undefined') {
+    requestIdleCallback(() => { importFn().catch(() => {}); }, { timeout: 2000 });
+  } else {
+    setTimeout(() => { importFn().catch(() => {}); }, 500);
+  }
+};
+
 // Screens / stacks
 // Tab stacks — lazy loaded (major code split boundary)
 const ClassroomStackNavigatorWeb = React.lazy(
   () => import("./ClassroomStackNavigator.web"),
 );
+schedulePreload(() => import("./ClassroomStackNavigator.web"));
+
 const ProfileStackNavigatorWeb = React.lazy(
   () => import("./ProfileStackNavigator.web"),
 );
+schedulePreload(() => import("./ProfileStackNavigator.web"));
+
 const CommunityStackNavigatorWeb = React.lazy(
   () => import("./CommunityStackNavigator.web"),
 );
+schedulePreload(() => import("./CommunityStackNavigator.web"));
+
 const SelfStackNavigatorWeb = React.lazy(
   () => import("./SelfStackNavigator.web"),
 );
+schedulePreload(() => import("./SelfStackNavigator.web"));
+
 const LibraryStackNavigatorWeb = React.lazy(
   () => import("./LibraryStackNavigator.web"),
 );
+schedulePreload(() => import("./LibraryStackNavigator.web"));
+
 // In-shell panel screens — lazy loaded (rendered as Tab.Screen for URL-native navigation)
 const NotificationsScreenWeb = React.lazy(
   () => import("../screens/NotificationsScreen.web"),
 );
+schedulePreload(() => import("../screens/NotificationsScreen.web"));
+
 const AppSettingsScreenWeb = React.lazy(
   () => import("../screens/AppSettingsScreen.web"),
 );
+schedulePreload(() => import("../screens/AppSettingsScreen.web"));
 
 // Shimmer fallback for Tab.Screen Suspense boundaries
 import { StackFallback } from "../components/web/WebScreenShimmer";

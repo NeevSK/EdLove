@@ -18,7 +18,7 @@
  * Shadow rule: Shadow Violet only, never grey/black.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     View,
     Text,
@@ -331,7 +331,25 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
     const { phase, isDark, gradientNodes, text: themeText } = useTheme();
     const { width } = useWindowDimensions();
 
-    const [showAuth, setShowAuth] = useState(initialShowAuth);
+    // ── Detect Supabase OAuth error params in URL ──────────────────────────
+    // When Supabase redirects back with ?error_code=identity_already_exists, we
+    // automatically open the Auth screen in login mode so the user can sign in.
+    const urlErrorMode = useMemo<'login' | undefined>(() => {
+        try {
+            const getUrlParam = (name: string) => {
+                const fromQuery = new URLSearchParams(window.location.search).get(name);
+                if (fromQuery) return fromQuery;
+                const hashSearch = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+                return hashSearch.get(name);
+            };
+            const code = getUrlParam('error_code');
+            return code === 'identity_already_exists' ? 'login' : undefined;
+        } catch {
+            return undefined;
+        }
+    }, []);
+
+    const [showAuth, setShowAuth] = useState(initialShowAuth || !!urlErrorMode);
     const [acceptedTerms, setAcceptedTerms] = useState(true);
     const [isConnecting, setIsConnecting] = useState(false);
     const [langHover, setLangHover] = useState<string | null>(null);
@@ -370,6 +388,7 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
         return (
             <AuthScreen
                 isAnonymous
+                initialMode={urlErrorMode ?? 'signup'}
                 onContinueAsGuest={handleStartExploring}
                 onSuccess={() => { onNext?.(); }}
             />

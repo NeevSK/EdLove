@@ -106,6 +106,7 @@
     "openApp": "Open App",
     "alreadyLinked": "Already Linked",
     "alreadyRegistered": "Already Registered",
+    "identityAlreadyExists": "This account already exists. Please sign in instead.",
     "acceptTermsRequired": "Please accept the terms to continue."
   },
   "welcome": {

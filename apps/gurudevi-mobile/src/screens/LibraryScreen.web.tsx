@@ -19,16 +19,15 @@ import {
     Globe,
     LayoutGrid,
     List,
+    X,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useLibrary, LIBRARY_UI_CATEGORIES } from '@repo/library';
 import { LibraryResource } from '@repo/library';
-import { useNavigation } from '@react-navigation/native';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 
 export default function LibraryScreen() {
     const { t } = useTranslation();
-    const navigation = useNavigation<any>();
     const { role } = useUserRole();
     const { isGuest } = useRoleFeatures();
     const { user } = useStore();
@@ -56,18 +55,22 @@ export default function LibraryScreen() {
             : { limit: 100, sort_by: selectedSort }
     );
 
+    const [openVideoResource, setOpenVideoResource] = useState<LibraryResource | null>(null);
+
     const handleOpenResource = useCallback((resource: LibraryResource) => {
         if (!resource.url) return;
         if (resource.type === 'pdf') {
-            navigation.navigate('PDFViewer', { resourceId: resource.id, title: resource.title, url: resource.url });
+            // Open PDFs in a new browser tab — browser's built-in viewer handles it natively
+            window.open(resource.url, '_blank', 'noopener,noreferrer');
             return;
         }
         if (resource.type === 'video' || resource.type === 'movie_trailer') {
-            navigation.navigate('VideoPlayer', { resourceId: resource.id, title: resource.title, url: resource.url, creator: resource.creator_name });
+            // Open video inline in a simple overlay player
+            setOpenVideoResource(resource);
             return;
         }
         openExternalURL(resource.url).catch((err: any) => console.error("Couldn't load page", err));
-    }, [navigation]);
+    }, []);
 
     return (
         <div className="sanctuary-screen">
@@ -266,6 +269,45 @@ export default function LibraryScreen() {
             </div>
 
             <LotusPetalFAB />
+
+            {/* ── Inline video overlay ─────────────────────────────────── */}
+            {openVideoResource && (
+                <div
+                    style={{
+                        position: 'fixed', inset: 0, zIndex: 1000,
+                        background: 'rgba(15,13,10,0.92)',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                        padding: '32px',
+                    }}
+                    onClick={() => setOpenVideoResource(null)}
+                >
+                    <div
+                        style={{ width: '100%', maxWidth: '900px', background: 'var(--ink)', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 32px 80px rgba(0,0,0,0.6)' }}
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                            <div>
+                                <div style={{ fontWeight: '700', color: 'white', fontSize: '16px' }}>{openVideoResource.title}</div>
+                                {openVideoResource.creator_name && (
+                                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>{openVideoResource.creator_name}</div>
+                                )}
+                            </div>
+                            <button
+                                onClick={() => setOpenVideoResource(null)}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.6)', padding: '4px' }}
+                            >
+                                <X size={22} />
+                            </button>
+                        </div>
+                        <video
+                            src={openVideoResource.url}
+                            controls
+                            autoPlay
+                            style={{ width: '100%', display: 'block', maxHeight: '70vh', background: '#000' }}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

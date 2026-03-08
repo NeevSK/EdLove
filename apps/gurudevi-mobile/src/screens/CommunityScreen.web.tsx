@@ -13,6 +13,8 @@ import {
     useManifestos,
     CommunityHearth,
     PostCard,
+    CreatePostModal,
+    CreateGroupModal,
     communityAPI
 } from '@repo/community';
 import { CommunityPresence } from '@repo/self';
@@ -24,7 +26,9 @@ import {
     Activity,
     Users2,
     Heart,
-    Flame
+    Flame,
+    Plus,
+    PenLine,
 } from 'lucide-react-native';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 import { useTranslation } from 'react-i18next';
@@ -40,6 +44,8 @@ export default function CommunityScreen() {
     const [selectedGroupId, setSelectedGroupId] = useState<string | 'all' | 'my' | 'pulse'>('all');
     const [showList, setShowList] = useState<'none' | 'joined' | 'discover'>('none');
     const [searchQuery, setSearchQuery] = useState('');
+    const [showCreatePost, setShowCreatePost] = useState(false);
+    const [showCreateGroup, setShowCreateGroup] = useState(false);
 
     // Real data wiring
     const { posts, isLoadingPosts, fetchPosts } = useCommunity(
@@ -82,10 +88,32 @@ export default function CommunityScreen() {
         <div className="sanctuary-screen">
             <div className="sanctuary-container">
                 {/* 1. GREETING */}
-                <div className="greeting">
-                    <div className="greeting-time">{isEcosystemRole ? "Architect's Stream" : "Global Resonance"}</div>
-                    <h1 className="greeting-main">The Heart</h1>
-                    <p className="greeting-note">Ecosystem Resonance</p>
+                <div className="greeting" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
+                    <div>
+                        <div className="greeting-time">{isEcosystemRole ? "Architect's Stream" : "Global Resonance"}</div>
+                        <h1 className="greeting-main">The Heart</h1>
+                        <p className="greeting-note">Ecosystem Resonance</p>
+                    </div>
+                    {!isGuest && (
+                        <div style={{ display: 'flex', gap: '10px', paddingBottom: '4px' }}>
+                            <button
+                                className="premium-button"
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}
+                                onClick={() => setShowCreatePost(true)}
+                            >
+                                <PenLine size={15} />
+                                New Post
+                            </button>
+                            <button
+                                className="secondary-button"
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}
+                                onClick={() => setShowCreateGroup(true)}
+                            >
+                                <Plus size={15} />
+                                New Group
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* 2. COMMUNITY GRID */}
@@ -231,12 +259,16 @@ export default function CommunityScreen() {
                                 {joinedGroups?.map(g => (
                                     <button
                                         key={g.id}
-                                        onClick={() => { setSelectedGroupId(g.id); setShowList('none'); }}
-                                        className="sanctuary-card"
+                                        onClick={() => navigation.navigate('GroupDetails', { groupId: g.id, groupName: g.name })}
+                                        className="sanctuary-card interactive"
                                         style={{ padding: '20px', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '12px' }}
                                     >
                                         <Hash size={20} color="var(--water)" />
-                                        <span style={{ fontWeight: '600' }}>{g.name}</span>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontWeight: '700' }}>{g.name}</div>
+                                            {g.description && <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{g.description}</div>}
+                                        </div>
+                                        <MessageSquare size={16} color="var(--ink-ghost)" />
                                     </button>
                                 ))}
                             </div>
@@ -246,12 +278,16 @@ export default function CommunityScreen() {
                                 {discoverGroups?.map(g => (
                                     <button
                                         key={g.id}
-                                        onClick={() => { setSelectedGroupId(g.id); setShowList('none'); }}
-                                        className="sanctuary-card"
+                                        onClick={() => navigation.navigate('GroupDetails', { groupId: g.id, groupName: g.name })}
+                                        className="sanctuary-card interactive"
                                         style={{ padding: '20px', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '12px' }}
                                     >
                                         <Compass size={20} color="var(--moss)" />
-                                        <span style={{ fontWeight: '600' }}>{g.name}</span>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontWeight: '700' }}>{g.name}</div>
+                                            {g.description && <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{g.description}</div>}
+                                        </div>
+                                        <Plus size={16} color="var(--ink-ghost)" />
                                     </button>
                                 ))}
                             </div>
@@ -296,7 +332,15 @@ export default function CommunityScreen() {
                                                     key={post.id}
                                                     post={post}
                                                     currentUserId={user?.id}
-                                                    onPress={() => { }}
+                                                    onPress={() => {
+                                                        // Navigate to the group where this post lives
+                                                        if (post.group_id) {
+                                                            navigation.navigate('GroupDetails', {
+                                                                groupId: post.group_id,
+                                                                groupName: post.group_name ?? 'Group',
+                                                            });
+                                                        }
+                                                    }}
                                                     onLike={() => {
                                                         if (user?.id) communityAPI.togglePostReaction(post.id, user.id).catch(console.error);
                                                     }}
@@ -334,6 +378,19 @@ export default function CommunityScreen() {
             </div>
 
             {/* FAB Removed per user request */}
+
+            {/* Create Post Modal */}
+            <CreatePostModal
+                isOpen={showCreatePost}
+                onClose={() => { setShowCreatePost(false); fetchPosts?.(); }}
+                groupId={typeof selectedGroupId === 'string' && selectedGroupId !== 'all' && selectedGroupId !== 'my' && selectedGroupId !== 'pulse' ? selectedGroupId : undefined}
+            />
+
+            {/* Create Group Modal */}
+            <CreateGroupModal
+                isOpen={showCreateGroup}
+                onClose={() => { setShowCreateGroup(false); fetchGroups?.(); }}
+            />
         </div>
     );
 }
