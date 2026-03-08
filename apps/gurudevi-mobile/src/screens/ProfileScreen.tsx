@@ -100,7 +100,7 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
                 }}
                 accessible={true}
                 accessibilityRole="button"
-                accessibilityLabel={isGuest ? t('auth.createAccount', 'Create Account') : t('profile.viewEditProfile', 'View or Edit Profile')}
+                accessibilityLabel={isGuest ? t('auth.createAccount') : t('profile.viewEditProfile')}
                 style={{
                     marginTop: Theme.spacing.lg,
                     width: cardWidth,
@@ -127,8 +127,8 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
                     )}
                     <Text color={colors.text} bold>
                         {isGuest
-                            ? t('auth.createAccount', 'Create Account')
-                            : t('profile.viewEditProfile', 'View / Edit Profile')}
+                            ? t('auth.createAccount')
+                            : t('profile.viewEditProfile')}
                     </Text>
                 </HStack>
             </TouchableOpacity>
@@ -179,17 +179,17 @@ const SupportSection = ({ t, colors, navigation, cardWidth = CARD_WIDTH }: any) 
             </Heading>
             <ProfileListItem
                 icon={HelpCircle}
-                label={t('profile.faqTitle', 'FAQ & Help Center')}
+                label={t('profile.faqTitle')}
                 onPress={() => hapticLight()}
             />
             <ProfileListItem
                 icon={MessageSquare}
-                label={t('profile.feedbackTitle', 'Send Feedback')}
+                label={t('profile.feedbackTitle')}
                 onPress={() => hapticLight()}
             />
             <ProfileListItem
                 icon={Info}
-                label={t('profile.aboutTitle', 'About Sanctuary')}
+                label={t('profile.aboutTitle')}
                 onPress={() => hapticLight()}
             />
         </VStack>
@@ -222,36 +222,36 @@ const AppExperienceSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => {
                     mt={Theme.spacing.sm}
                     mb={Theme.spacing.md}
                 >
-                    {t('profile.account.support_app', 'Support this app')}
+                    {t('profile.account.support_app')}
                 </Heading>
                 <ProfileListItem
                     icon={Heart}
-                    label={t('profile.loveApp', 'I love this app')}
+                    label={t('profile.loveApp')}
                     onPress={() => {
                         hapticSuccess();
                         if (Platform.OS === 'web') {
-                            showToast(t('profile.loveTitle', 'Radiant Energy'), 'success');
+                            showToast(t('profile.loveTitle'), 'success');
                         } else {
                             Alert.alert(
-                                t('profile.loveTitle', 'Radiant Energy'),
-                                t('profile.loveMessage', 'Your love for the Sanctuary fuels our mission. We are grateful for your presence in our community!'),
-                                [{ text: t('common.ok', 'OK'), style: 'default' }]
+                                t('profile.loveTitle'),
+                                t('profile.loveMessage'),
+                                [{ text: t('common.ok'), style: 'default' }]
                             );
                         }
                     }}
                 />
                 <ProfileListItem
                     icon={Heart}
-                    label={t('profile.helpSupportApp', 'I want to support this app')}
+                    label={t('profile.helpSupportApp')}
                     onPress={() => {
                         hapticSuccess();
                         if (Platform.OS === 'web') {
-                            showToast(t('profile.thankYouTitle', 'Radiant Gratitude'), 'success');
+                            showToast(t('profile.thankYouTitle'), 'success');
                         } else {
                             Alert.alert(
-                                t('profile.thankYouTitle', 'Radiant Gratitude'),
-                                t('profile.thankYouMessage', 'Your desire to support the Sanctuary is deeply appreciated. We are currently preparing premium patronage options for our most dedicated explorers.'),
-                                [{ text: t('common.ok', 'OK'), style: 'default' }]
+                                t('profile.thankYouTitle'),
+                                t('profile.thankYouMessage'),
+                                [{ text: t('common.ok'), style: 'default' }]
                             );
                         }
                     }}
@@ -271,7 +271,7 @@ const AccountActions = ({ t, colors, isGuest, navigation, cardWidth = CARD_WIDTH
                 color={colors.textSecondary as any}
                 mb={Theme.spacing.xs}
             >
-                {t('profile.account.actions', 'Account Management')}
+                {t('profile.account.actions')}
             </Heading>
             <Button
                 variant="outline"
@@ -287,7 +287,7 @@ const AccountActions = ({ t, colors, isGuest, navigation, cardWidth = CARD_WIDTH
                 }}
             >
                 <ButtonText color={colors.action}>
-                    {t('profile.account.switch', 'Switch Identity')}
+                    {t('profile.account.switch')}
                 </ButtonText>
             </Button>
         </VStack>
@@ -314,7 +314,7 @@ const SettingsModal = ({ isVisible, onClose, colors, t, navigation }: any) => (
             >
                 <HStack justifyContent="space-between" alignItems="center">
                     <Heading size="lg" color={colors.text}>
-                        {t('settings.title', 'App Settings')}
+                        {t('settings.title')}
                     </Heading>
                     <TouchableOpacity
                         onPress={() => {
@@ -323,7 +323,7 @@ const SettingsModal = ({ isVisible, onClose, colors, t, navigation }: any) => (
                         }}
                         accessible={true}
                         accessibilityRole="button"
-                        accessibilityLabel={t('common.close', 'Close')}
+                        accessibilityLabel={t('common.close')}
                         style={{
                             padding: 8,
                             borderRadius: Theme.corners.full,
@@ -420,12 +420,12 @@ export default function ProfileScreen() {
         } catch (error) {
             hapticError();
             if (Platform.OS === 'web') {
-                showToast(t('profile.deleteFailedTitle', 'Deletion Failed'), 'error');
+                showToast(t('profile.deleteFailedTitle'), 'error');
             } else {
                 Alert.alert(
-                    t('profile.deleteFailedTitle', 'Deletion Failed'),
-                    t('profile.deleteFailedMessage', 'We could not delete your account. Please try again later.'),
-                    [{ text: 'OK' }]
+                    t('profile.deleteFailedTitle'),
+                    t('profile.deleteFailedMessage'),
+                    [{ text: t('common.ok') }]
                 );
             }
         }
@@ -442,8 +442,8 @@ export default function ProfileScreen() {
     return (
         <ScreenWrapper scroll={false} noTopInset={true}>
             <GlobalHeader
-                title={t('profile.title', 'Identity')}
-                subtitle={t('profile.subtitle', "Sanctuary Profile")}
+                title={t('profile.title')}
+                subtitle={t('profile.subtitle')}
                 rightAction={
                     <TouchableOpacity
                         onPress={() => {
@@ -452,7 +452,7 @@ export default function ProfileScreen() {
                         }}
                         accessible={true}
                         accessibilityRole="button"
-                        accessibilityLabel={t('settings.title', 'App Settings')}
+                        accessibilityLabel={t('settings.title')}
                         style={{
                             padding: 8,
                             borderRadius: Theme.corners.comfortable,
@@ -497,9 +497,9 @@ export default function ProfileScreen() {
                                         elevation: 4
                                     }}>
                                         <VStack space="sm">
-                                            <Heading size="md" color={Theme.colors.sacredWhite}>{t('profile.guestTitle', 'Guest Explorer')}</Heading>
+                                            <Heading size="md" color={Theme.colors.sacredWhite}>{t('profile.guestTitle')}</Heading>
                                             <Text color={Theme.colors.sacredWhite} sx={{ fontSize: '$sm' }}>
-                                                {t('profile.guestDesc', 'You are exploring as a guest. Create an account to save your sanctuary permanently.')}
+                                                {t('profile.guestDesc')}
                                             </Text>
                                             <Button
                                                 size="sm"
@@ -509,7 +509,7 @@ export default function ProfileScreen() {
                                                 }}
                                                 sx={{ bg: Theme.colors.sacredWhite, alignSelf: 'flex-start', mt: '$2' }}
                                             >
-                                                <ButtonText color={colors.action}>{t('auth.createAccount', 'Create Account')}</ButtonText>
+                                                <ButtonText color={colors.action}>{t('auth.createAccount')}</ButtonText>
                                             </Button>
                                         </VStack>
                                     </Box>
@@ -552,7 +552,7 @@ export default function ProfileScreen() {
                                 <Box sx={{ width: cardWidth }}>
                                     <ProfileListItem
                                         icon={Settings}
-                                        label={t('settings.title', 'App Settings')}
+                                        label={t('settings.title')}
                                         onPress={() => setSettingsVisible(true)}
                                     />
                                 </Box>
@@ -598,7 +598,7 @@ export default function ProfileScreen() {
                                             onPress={handleLogout}
                                             accessible={true}
                                             accessibilityRole="button"
-                                            accessibilityLabel={t('profile.logout', 'Log Out')}
+                                            accessibilityLabel={t('profile.logout')}
                                             style={{
                                                 flexDirection: 'row',
                                                 alignItems: 'center',
@@ -612,7 +612,7 @@ export default function ProfileScreen() {
                                         >
                                             <LogOut size={20} color={colors.error} style={{ marginRight: 8 }} />
                                             <Text color={colors.error} bold>
-                                                {t('profile.logout', 'Log Out')}
+                                                {t('profile.logout')}
                                             </Text>
                                         </TouchableOpacity>
 
@@ -620,7 +620,7 @@ export default function ProfileScreen() {
                                             onPress={handleDeleteAccount}
                                             accessible={true}
                                             accessibilityRole="button"
-                                            accessibilityLabel={t('profile.deleteAccount', 'Delete Account')}
+                                            accessibilityLabel={t('profile.deleteAccount')}
                                             style={{
                                                 flexDirection: 'row',
                                                 alignItems: 'center',
@@ -630,7 +630,7 @@ export default function ProfileScreen() {
                                         >
                                             <Trash2 size={16} color={colors.textTertiary} style={{ marginRight: 6 }} />
                                             <Text color={colors.textTertiary} size="xs">
-                                                {t('profile.deleteAccount', 'Delete Account')}
+                                                {t('profile.deleteAccount')}
                                             </Text>
                                         </TouchableOpacity>
                                     </VStack>

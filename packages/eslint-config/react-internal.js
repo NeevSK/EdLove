@@ -40,6 +40,13 @@ export const config = [
       "react-compiler/react-compiler": "error",
       // React scope no longer necessary with new JSX transform.
       "react/react-in-jsx-scope": "off",
+      "no-restricted-syntax": [
+        "warn",
+        {
+          selector: "CallExpression[callee.name='t'][arguments.length=2][arguments.1.type='Literal'], CallExpression[callee.name='t'][arguments.length=2][arguments.1.type='TemplateLiteral']",
+          message: "Avoid inline default text in t('key', 'default'). Define fallback text in locale files and use i18n fallbackLng.",
+        },
+      ],
     },
   },
 ];

@@ -33,9 +33,9 @@ const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
     const getMessages = () => {
         if (type === 'guest') {
             return {
-                title: t('invitation.guestTitle', 'Your sanctuary begins here'),
-                desc: t('invitation.guestDesc', 'Sign in to sync your journey across all your devices.'),
-                action: t('invitation.guestAction', 'Sign In / Sign Up'),
+                title: t('invitation.guestTitle'),
+                desc: t('invitation.guestDesc'),
+                action: t('invitation.guestAction'),
                 icon: LogIn
             };
         }
@@ -43,30 +43,30 @@ const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
         switch (context) {
             case 'library':
                 return {
-                    title: t('invitation.libraryEmptyTitle', 'A Public Space for Knowledge'),
-                    desc: t('invitation.libraryEmptyDesc', 'This is a shared commons â€” explore, endorse, and contribute resources that elevate everyone.'),
-                    action: t('invitation.libraryEmptyAction', 'Explore Knowledge'),
+                    title: t('invitation.libraryEmptyTitle'),
+                    desc: t('invitation.libraryEmptyDesc'),
+                    action: t('invitation.libraryEmptyAction'),
                     icon: Plus
                 };
             case 'classroom':
                 return {
-                    title: t('invitation.classroomEmptyTitle', 'Connect with your students'),
-                    desc: t('invitation.classroomEmptyDesc', 'Start a new session or view your active classrooms here.'),
-                    action: t('invitation.classroomEmptyAction', 'Open Classroom'),
+                    title: t('invitation.classroomEmptyTitle'),
+                    desc: t('invitation.classroomEmptyDesc'),
+                    action: t('invitation.classroomEmptyAction'),
                     icon: Plus
                 };
             case 'community':
                 return {
-                    title: t('invitation.communityEmptyTitle', 'Join the circle of wisdom'),
-                    desc: t('invitation.communityEmptyDesc', 'Engage with fellow educators and share your experiences.'),
-                    action: t('invitation.communityEmptyAction', 'Join Discussion'),
+                    title: t('invitation.communityEmptyTitle'),
+                    desc: t('invitation.communityEmptyDesc'),
+                    action: t('invitation.communityEmptyAction'),
                     icon: Plus
                 };
             default:
                 return {
-                    title: t('invitation.emptyTitle', 'This space is yours to create'),
-                    desc: t('invitation.emptyDesc', 'Start by adding your first entry to this section.'),
-                    action: t('invitation.emptyAction', 'Create Now'),
+                    title: t('invitation.emptyTitle'),
+                    desc: t('invitation.emptyDesc'),
+                    action: t('invitation.emptyAction'),
                     icon: Sparkles
                 };
         }

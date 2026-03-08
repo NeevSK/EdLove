@@ -226,16 +226,16 @@ export default function CommunityPresence({
 
     // Role-aware label: who am I seeing?
     const roleLabel = useMemo(() => {
-        if (userRole === 'student') return t('community.students', 'Students');
-        if (userRole === 'principal' || userRole === 'founder' || userRole === 'developer') return t('community.members', 'Members');
-        return t('community.educators', 'Educators'); // teachers see other educators
+        if (userRole === 'student') return t('community.students');
+        if (userRole === 'principal' || userRole === 'founder' || userRole === 'developer') return t('community.members');
+        return t('community.educators'); // teachers see other educators
     }, [userRole, t]);
 
     // Motivational message based on role
     const motivationText = useMemo(() => {
-        if (userRole === 'student') return t('community.studentMotivation', 'Your peers are thriving. You are not alone on this path.');
-        if (userRole === 'principal' || userRole === 'founder' || userRole === 'developer') return t('community.principalMotivation', 'Your school community is alive. Keep the current flowing.');
-        return t('community.teacherMotivation', 'Fellow educators are present. Share wisdom, not just content.');
+        if (userRole === 'student') return t('community.studentMotivation');
+        if (userRole === 'principal' || userRole === 'founder' || userRole === 'developer') return t('community.principalMotivation');
+        return t('community.teacherMotivation');
     }, [userRole, t]);
 
     if (isLoading) {
@@ -259,7 +259,7 @@ export default function CommunityPresence({
                     }}
                 />
                 <Text size="xs" color={colors.textSecondary} bold>
-                    {isOffline ? t('community.offline', 'Offline') : `${onlineCount} ${roleLabel}`}
+                    {isOffline ? t('community.offline') : `${onlineCount} ${roleLabel}`}
                 </Text>
             </HStack>
         );
@@ -294,12 +294,12 @@ export default function CommunityPresence({
                 </Box>
                 <VStack>
                     <Heading size="sm" color={colors.text}>
-                        {isOffline ? t('community.offlineTitle', 'Connection Interrupted') : t('community.sanctuaryPulse', 'Sanctuary Pulse')}
+                        {isOffline ? t('community.offlineTitle') : t('community.sanctuaryPulse')}
                     </Heading>
                     <Text color={colors.textSecondary} size="sm">
                         {isOffline
-                            ? t('community.offlineDesc', 'Reconnecting to current...')
-                            : `${onlineCount} ${roleLabel} ${t('community.onlineNow', 'thriving now')}`}
+                            ? t('community.offlineDesc')
+                            : `${onlineCount} ${roleLabel} ${t('community.onlineNow')}`}
                     </Text>
                     {!isOffline && (
                         <Text
@@ -307,7 +307,7 @@ export default function CommunityPresence({
                             size="xs"
                             sx={{ mt: '$1' }}
                         >
-                            {t('community.dominantVibe', 'Dominant Vibe')}: {dominantVibe}
+                            {t('community.dominantVibe')}: {dominantVibe}
                         </Text>
                     )}
                 </VStack>

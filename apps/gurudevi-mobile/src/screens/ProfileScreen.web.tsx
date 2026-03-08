@@ -177,7 +177,7 @@ export default function ProfileScreenWeb() {
                             onClick={() => setIsEditModalOpen(true)}
                         >
                             <Edit3 size={16} />
-                            {t('profile.viewEditProfile', 'Edit Profile')}
+                            {t('profile.viewEditProfile')}
                         </button>
                     </div>
                 </div>
@@ -197,11 +197,11 @@ export default function ProfileScreenWeb() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                                 <FileText size={18} color="var(--ink-ghost)" />
                                 <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-                                    {t('profile.bio_title', 'Resonance Story')}
+                                    {t('profile.bio_title')}
                                 </h3>
                             </div>
                             <p style={{ margin: 0, fontSize: '15px', lineHeight: '1.7', color: profile.bio ? 'var(--ink)' : 'var(--ink-ghost)', fontStyle: profile.bio ? 'normal' : 'italic' }}>
-                                {profile.bio || t('profile.no_bio_fallback', 'This resident has not yet shared their resonance manifesto with the sanctuary.')}
+                                {profile.bio || t('profile.no_bio_fallback')}
                             </p>
                         </div>
 

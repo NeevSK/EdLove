@@ -29,6 +29,9 @@ jobs:
       - name: ✨ Lint
         run: pnpm lint
 
+      - name: 🌐 i18n policy checks
+        run: pnpm run i18n:check
+
       - name: 🔍 Type-Check (Mobile)
         run: |
           cd apps/gurudevi-mobile

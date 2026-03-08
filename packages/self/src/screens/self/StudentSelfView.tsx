@@ -118,8 +118,8 @@ export default function StudentSelfView() {
 
                         <PositiveInvitation
                             context="self"
-                            title={t('student.goalsComingSoon', 'Goal Setting Arriving Soon')}
-                            description={t('student.goalsComingSoonDesc', 'We are building a beautiful space for your daily aspirations.')}
+                            title={t('student.goalsComingSoon')}
+                            description={t('student.goalsComingSoonDesc')}
                         />
                     </VStack>
                 );
@@ -164,7 +164,7 @@ export default function StudentSelfView() {
                         </VStack>
                         <ProgressTree userId={userId ?? undefined} />
                         <Heading color={colors.textSecondary} size="sm" mt="$2">
-                            {t('student.myGrades', 'My Grades')}
+                            {t('student.myGrades')}
                         </Heading>
                         <MyGradesView userId={userId ?? undefined} />
                     </VStack>
