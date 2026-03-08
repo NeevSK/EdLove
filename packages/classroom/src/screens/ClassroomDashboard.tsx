@@ -35,22 +35,25 @@ import {
     GraduationCap,
     LayoutGrid,
     NotebookPen,
-    Plus
+    Plus,
+    TrendingUp
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { api, supabase } from '@repo/core';
 import type { Classroom } from '@repo/core';
-import { StudentList, GradebookTable, AttendanceView, InventoryView, ResourcesView } from '../components';
+import { StudentList, GradebookTable, AttendanceView, InventoryView, ResourcesView, StudentPulseSection, ClassroomHolisticInsights } from '../components';
 import ClassroomNotes from '../components/ClassroomNotes';
 import LessonFeed from './LessonFeed';
+import AttendanceReportScreen from './AttendanceReportScreen';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ClassroomStackParamList } from '@repo/core';
 
 type Props = NativeStackScreenProps<ClassroomStackParamList, 'ClassroomDetails'>;
 
-type FeatureId = 'notes' | 'students' | 'attendance' | 'gradebook' | 'lessons' | 'resources' | 'inventory';
+type FeatureId = 'insights' | 'notes' | 'students' | 'attendance' | 'gradebook' | 'lessons' | 'resources' | 'inventory';
 
 const ALL_FEATURES: { id: FeatureId; label: string; icon: any }[] = [
+    { id: 'insights', label: 'Insights', icon: TrendingUp },
     { id: 'notes', label: 'Notes', icon: NotebookPen },
     { id: 'students', label: 'Students', icon: Users },
     { id: 'attendance', label: 'Attendance', icon: ClipboardCheck },
@@ -64,7 +67,7 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
     const { classroomId, classroomName } = route.params;
     const { t } = useTranslation();
     const [classroom, setClassroom] = useState<Classroom | null>(null);
-    const [activeFeature, setActiveFeature] = useState<FeatureId>('notes');
+    const [activeFeature, setActiveFeature] = useState<FeatureId>('insights');
     const [loading, setLoading] = useState(true);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const [students, setStudents] = useState<any[]>([]);
@@ -78,6 +81,7 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
     const [showAddContentModal, setShowAddContentModal] = useState(false);
     const [contentType, setContentType] = useState<'material' | 'assignment'>('material');
     const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
+    const [activeView, setActiveView] = useState<'main' | 'attendance_report'>('main');
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     const [formTitle, setFormTitle] = useState('');
@@ -206,6 +210,8 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
 
     const renderFeatureContent = () => {
         switch (activeFeature) {
+            case 'insights':
+                return <ClassroomHolisticInsights classroomId={classroomId} />;
             case 'notes':
                 return (
                     <ClassroomNotes
@@ -278,6 +284,19 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
         );
     }
 
+    const schoolId = classroom?.school_id || '';
+
+
+    if (activeView === 'attendance_report') {
+        return (
+            <AttendanceReportScreen
+                schoolId={schoolId}
+                classroomId={classroomId}
+                onBack={() => setActiveView('main')}
+            />
+        );
+    }
+
     return (
         <ScreenWrapper scroll={false}>
             <GlobalHeader
@@ -324,6 +343,16 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
                             )}
                         </HStack>
                     </HStack>
+                </Box>
+
+                {/* 1.5 Student Pulse (Teacher Insights) */}
+                <Box sx={{ paddingHorizontal: Theme.spacing.md, paddingBottom: Theme.spacing.md, backgroundColor: colors.secondary }}>
+                    <StudentPulseSection
+                        schoolId={schoolId}
+                        classroomId={classroomId}
+                        onViewAtRisk={() => setActiveFeature('students')}
+                        onViewFullReport={() => setActiveView('attendance_report')}
+                    />
                 </Box>
 
                 {/* 2. Horizontal Carousel (Sticky) */}

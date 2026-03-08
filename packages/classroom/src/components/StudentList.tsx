@@ -83,94 +83,92 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
 
     return (
         <VStack sx={{ flex: 1, backgroundColor: colors.primary }}>
-            <ScrollView contentContainerStyle={{ padding: Theme.spacing.md }}>
-                <VStack sx={{ gap: Theme.spacing.md }}>
-                    {students.length === 0 ? (
-                        <Center sx={{ padding: Theme.spacing.xl, marginTop: 40 }}>
-                            <Text sx={{ color: colors.textSecondary, textAlign: 'center' }}>
-                                {t('classroom.students.emptyState') || 'No students in this class yet.'}
-                            </Text>
-                        </Center>
-                    ) : (
-                        students.map((student) => (
-                            <Box
-                                key={student.id}
-                                sx={{
-                                    backgroundColor: colors.secondary,
-                                    borderRadius: Theme.corners.comfortable,
-                                    padding: Theme.spacing.md,
-                                    borderWidth: 1,
-                                    borderColor: student.student_id ? colors.border : Theme.colors.amberGlow,
-                                    opacity: student.student_id ? 1 : 0.9,
-                                }}
-                            >
-                                {!student.student_id && (
-                                    <Box sx={{ position: 'absolute', top: -Theme.spacing.xs, right: 12, backgroundColor: Theme.colors.amberGlow, paddingHorizontal: 6, borderRadius: Theme.corners.tight }}>
-                                        <Text sx={{ fontSize: 10, color: Theme.colors.black, fontWeight: '700' }}>
-                                            {t('classroom.students.unclaimed') || 'UNCLAIMED'}
+            <VStack sx={{ padding: Theme.spacing.md, gap: Theme.spacing.md }}>
+                {students.length === 0 ? (
+                    <Center sx={{ padding: Theme.spacing.xl, marginTop: 40 }}>
+                        <Text sx={{ color: colors.textSecondary, textAlign: 'center' }}>
+                            {t('classroom.students.emptyState') || 'No students in this class yet.'}
+                        </Text>
+                    </Center>
+                ) : (
+                    students.map((student) => (
+                        <Box
+                            key={student.id}
+                            sx={{
+                                backgroundColor: colors.secondary,
+                                borderRadius: Theme.corners.comfortable,
+                                padding: Theme.spacing.md,
+                                borderWidth: 1,
+                                borderColor: student.student_id ? colors.border : Theme.colors.amberGlow,
+                                opacity: student.student_id ? 1 : 0.9,
+                            }}
+                        >
+                            {!student.student_id && (
+                                <Box sx={{ position: 'absolute', top: -Theme.spacing.xs, right: 12, backgroundColor: Theme.colors.amberGlow, paddingHorizontal: 6, borderRadius: Theme.corners.tight }}>
+                                    <Text sx={{ fontSize: 10, color: Theme.colors.black, fontWeight: '700' }}>
+                                        {t('classroom.students.unclaimed') || 'UNCLAIMED'}
+                                    </Text>
+                                </Box>
+                            )}
+                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
+                                    <Box
+                                        sx={{
+                                            width: 42,
+                                            height: 42,
+                                            borderRadius: Theme.corners.full,
+                                            backgroundColor: colors.tertiary,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700', fontSize: Theme.typography.fontSize.md }}>
+                                            {student.roll_number || '#'}
                                         </Text>
                                     </Box>
-                                )}
-                                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
-                                        <Box
-                                            sx={{
-                                                width: 42,
-                                                height: 42,
-                                                borderRadius: Theme.corners.full,
-                                                backgroundColor: colors.tertiary,
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                            }}
-                                        >
-                                            <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700', fontSize: Theme.typography.fontSize.md }}>
-                                                {student.roll_number || '#'}
+                                    <VStack sx={{ flex: 1 }}>
+                                        <Text sx={{ color: colors.text, fontWeight: '700', fontSize: Theme.typography.fontSize.md }}>
+                                            {student.full_name}
+                                        </Text>
+                                        {student.notes && (
+                                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textSecondary }}>
+                                                {student.notes}
                                             </Text>
-                                        </Box>
-                                        <VStack sx={{ flex: 1 }}>
-                                            <Text sx={{ color: colors.text, fontWeight: '700', fontSize: Theme.typography.fontSize.md }}>
-                                                {student.full_name}
-                                            </Text>
-                                            {student.notes && (
-                                                <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textSecondary }}>
-                                                    {student.notes}
-                                                </Text>
-                                            )}
-                                        </VStack>
-                                    </HStack>
-
-                                    <HStack sx={{ gap: Theme.spacing.sm }}>
-                                        {!student.student_id && student.invite_code && (
-                                            <Pressable onPress={() => handleShowQr(student)}>
-                                                <Box sx={{ padding: Theme.spacing.xs }}>
-                                                    <QrCode size={20} color={Theme.colors.sanctuarySaffron} />
-                                                </Box>
-                                            </Pressable>
                                         )}
-                                        <Pressable onPress={() => handleEditStudent(student)}>
-                                            <Box sx={{ padding: Theme.spacing.xs }}>
-                                                <Edit2 size={20} color={colors.textSecondary} />
-                                            </Box>
-                                        </Pressable>
-                                        <Pressable
-                                            onPress={() => handleRemoveStudent(student.id)}
-                                            disabled={isDeleting === student.id}
-                                        >
-                                            <Box sx={{ padding: Theme.spacing.xs }}>
-                                                {isDeleting === student.id ? (
-                                                    <ActivityIndicator size="small" color={Theme.colors.emberRed} />
-                                                ) : (
-                                                    <Trash2 size={20} color={Theme.colors.emberRed} />
-                                                )}
-                                            </Box>
-                                        </Pressable>
-                                    </HStack>
+                                    </VStack>
                                 </HStack>
-                            </Box>
-                        ))
-                    )}
-                </VStack>
-            </ScrollView>
+
+                                <HStack sx={{ gap: Theme.spacing.sm }}>
+                                    {!student.student_id && student.invite_code && (
+                                        <Pressable onPress={() => handleShowQr(student)}>
+                                            <Box sx={{ padding: Theme.spacing.xs }}>
+                                                <QrCode size={20} color={Theme.colors.sanctuarySaffron} />
+                                            </Box>
+                                        </Pressable>
+                                    )}
+                                    <Pressable onPress={() => handleEditStudent(student)}>
+                                        <Box sx={{ padding: Theme.spacing.xs }}>
+                                            <Edit2 size={20} color={colors.textSecondary} />
+                                        </Box>
+                                    </Pressable>
+                                    <Pressable
+                                        onPress={() => handleRemoveStudent(student.id)}
+                                        disabled={isDeleting === student.id}
+                                    >
+                                        <Box sx={{ padding: Theme.spacing.xs }}>
+                                            {isDeleting === student.id ? (
+                                                <ActivityIndicator size="small" color={Theme.colors.emberRed} />
+                                            ) : (
+                                                <Trash2 size={20} color={Theme.colors.emberRed} />
+                                            )}
+                                        </Box>
+                                    </Pressable>
+                                </HStack>
+                            </HStack>
+                        </Box>
+                    ))
+                )}
+            </VStack>
 
             {/* Floating Action Button for Adding Students */}
             <Pressable
@@ -263,4 +261,3 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
         </VStack>
     );
 }
-

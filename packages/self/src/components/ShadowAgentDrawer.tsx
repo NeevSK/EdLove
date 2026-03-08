@@ -130,7 +130,7 @@ export default function ShadowAgentDrawer() {
         hapticLight();
         // Pick a random thought seed
         const randomSeed = THOUGHT_SEEDS[Math.floor(Math.random() * THOUGHT_SEEDS.length)];
-        setCurrentSeed(randomSeed);
+        setCurrentSeed(randomSeed || '');
 
         // Determine contextual suggestion based on time
         const hour = new Date().getHours();

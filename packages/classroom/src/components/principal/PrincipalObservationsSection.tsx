@@ -8,7 +8,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity, TextInput } from 'react-native';
-import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors } from '@repo/ui';
+import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors, formatShortDate } from '@repo/ui';
 import { Theme } from '@repo/ui';
 import { supabase } from '@repo/core';
 
@@ -35,14 +35,6 @@ const OBS_TYPE_OPTIONS = ['walkthrough', 'note', 'concern', 'praise'];
 
 function obsBadgeColor(type: string): string {
   return OBS_TYPE_COLORS[type] ?? '#9e9e9e';
-}
-
-function formatDate(dateStr: string): string {
-  try {
-    return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-  } catch {
-    return dateStr;
-  }
 }
 
 export default function PrincipalObservationsSection({
@@ -165,7 +157,7 @@ export default function PrincipalObservationsSection({
               </Text>
             </Box>
             <Text sx={{ fontSize: 11, color: colors.textSecondary, marginLeft: 'auto' }}>
-              {formatDate(obs.created_at)}
+              {formatShortDate(obs.created_at)}
             </Text>
           </HStack>
           <Text sx={{ fontSize: 13, color: colors.text }} numberOfLines={2}>

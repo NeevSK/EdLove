@@ -15,7 +15,7 @@ export { default as CreateGroupModal } from './components/CreateGroupModal';
 export { default as GroupCard } from './components/GroupCard';
 export { default as PostCard } from './components/PostCard';
 export { default as ManifestoCard } from './components/ManifestoCard';
-export { default as ReportPostModal } from './components/ReportPostModal';
+export { default as SocialShieldModal } from './components/SocialShieldModal';
 
 // Screens
 export { default as CommunityScreen } from './screens/CommunityScreen';

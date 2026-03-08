@@ -7,13 +7,14 @@
 
 import { supabase } from '../lib/supabase';
 import { useStore } from '../store/useStore';
+import { identityAPI } from '../api/identity';
 import { UserRole } from '../types';
 import { SchoolType } from '../constants/SriLankanSchools';
 
 interface UseUserRoleReturn {
     role: UserRole | null;
     schoolType: SchoolType | null;
-    schoolId: string;
+    schoolId: string | null;
     userId: string | null;
     isAuthenticated: boolean;
     isGuest: boolean;
@@ -28,21 +29,26 @@ export function useUserRole(): UseUserRoleReturn & { refresh: () => Promise<void
     const setSchoolType = useStore(state => state.setSchoolType);
 
     // Offline-first identity logic
-    const schoolId = user?.school_id || 'mock-school';
-    const isGuest = !user || schoolId === 'mock-school';
+    // An authenticated user without a school_id is still treated as guest/limited-access
+    // because school-scoped features require a valid school context.
+    const schoolId = user?.school_id || null;
+    const isGuest = !user || !user.school_id || schoolId === 'mock-school';
+
 
     const refresh = async () => {
-        if (!user?.id) return;
         try {
+            const internalId = await identityAPI.getMyInternalId();
+            if (!internalId) return;
+
             const { data: profile } = await supabase
                 .from('users')
                 .select('role, school_id')
-                .eq('id', user.id)
+                .eq('id', internalId)
                 .maybeSingle();
 
             if (profile) {
                 // Convergence: Update store if server has different info
-                if (profile.role !== role || profile.school_id !== user.school_id) {
+                if (profile.role !== role || (user && profile.school_id !== user.school_id)) {
                     setUser({ ...user, ...profile } as any);
 
                     // Fetch school type if school_id changed

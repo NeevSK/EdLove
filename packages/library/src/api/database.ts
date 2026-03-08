@@ -132,10 +132,10 @@ export const knowledgeDB = {
             const sanitizedQuery = query.replace(/['"]/g, '');
             if (!sanitizedQuery) return [];
 
-            const results = await this.db.getAllAsync<{ id: string }>(
+            const results = (await this.db.getAllAsync(
                 `SELECT id FROM knowledge_search_fts WHERE knowledge_search_fts MATCH ? LIMIT ?`,
                 [`${sanitizedQuery}*`, limit]
-            );
+            )) as { id: string }[];
 
             return results.map(r => r.id);
         } catch (error) {
@@ -195,10 +195,10 @@ export const knowledgeDB = {
 
         try {
             const placeholders = ids.map(() => '?').join(',');
-            const results = await this.db.getAllAsync<KnowledgeNodeIndex>(
+            const results = (await this.db.getAllAsync(
                 `SELECT * FROM knowledge_index WHERE id IN (${placeholders})`,
                 ids
-            );
+            )) as KnowledgeNodeIndex[];
             return results;
         } catch (error) {
             console.error('Failed to get nodes by IDs:', error);
@@ -236,6 +236,33 @@ export const knowledgeDB = {
             });
         } catch (error) {
             console.error('Failed to upsert layers:', error);
+        }
+    },
+
+    /**
+     * Convenience wrapper: get the first row from a SQL query.
+     * Delegates to the underlying SQLite database instance.
+     */
+    async getFirstAsync<T>(query: string, params: (string | number | null)[]): Promise<T | null> {
+        if (!this.db) return null;
+        try {
+            return await this.db.getFirstAsync<T>(query, params);
+        } catch (error) {
+            console.error('getFirstAsync failed:', error);
+            return null;
+        }
+    },
+
+    /**
+     * Convenience wrapper: execute a SQL statement.
+     * Delegates to the underlying SQLite database instance.
+     */
+    async runAsync(query: string, params: (string | number | null)[]): Promise<void> {
+        if (!this.db) return;
+        try {
+            await this.db.runAsync(query, params);
+        } catch (error) {
+            console.error('runAsync failed:', error);
         }
     }
 };

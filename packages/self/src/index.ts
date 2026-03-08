@@ -40,3 +40,9 @@ export { default as VoiceJournaling } from './components/VoiceJournaling';
 export { default as WelcomeModal } from './components/WelcomeModal';
 export { default as WindDownRitual } from './components/WindDownRitual';
 export { default as WisdomSeeds } from './components/WisdomSeeds';
+export { default as DecisionJournalSection } from './components/DecisionJournalSection';
+export { default as PulseDashboard } from './components/PulseDashboard';
+
+// Screens
+export { default as SelfScreen } from './screens/SelfScreen';
+export { default as PrivacyLedgerScreen } from './screens/PrivacyLedgerScreen';

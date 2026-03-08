@@ -160,6 +160,8 @@ export const OrientationCaptureStep = ({
     const [selectedPerQuestion, setSelectedPerQuestion] = useState<number[]>([]);
 
     const question = QUESTIONS[questionIndex];
+    if (!question) return null; // Safety guard
+
     const isLast = questionIndex === QUESTIONS.length - 1;
 
     const handleSelect = useCallback((optionIndex: number) => {
@@ -243,16 +245,16 @@ export const OrientationCaptureStep = ({
                         color={colors.text}
                         style={{ lineHeight: 28 }}
                     >
-                        {question.situation}
+                        {question?.situation}
                     </Heading>
                     <Text color={colors.textSecondary} size="sm">
-                        {question.prompt}
+                        {question?.prompt}
                     </Text>
                 </VStack>
 
                 {/* Options */}
                 <VStack space="sm">
-                    {question.options.map((opt, i) => {
+                    {question?.options.map((opt, i) => {
                         const isSelected = selected === i;
                         return (
                             <Pressable
@@ -355,7 +357,7 @@ export const OrientationCaptureStep = ({
  * Clamps to [0, 100].
  */
 export function computeSeeds(selections: number[]): OrientationSeeds {
-    const acc: Record<string, number> = {
+    const acc: { [K in keyof Omit<OrientationSeeds, 'source' | 'seeded_at' | 'last_updated'>]: number } = {
         depth_breadth: 50,
         reflect_act: 50,
         solo_social: 50,
@@ -363,24 +365,31 @@ export function computeSeeds(selections: number[]): OrientationSeeds {
     };
 
     selections.forEach((optIdx, qIdx) => {
-        if (optIdx < 0 || optIdx >= QUESTIONS[qIdx].options.length) return;
-        const delta = QUESTIONS[qIdx].options[optIdx].delta;
+        const currentQuestion = QUESTIONS[qIdx];
+        if (!currentQuestion) return;
+
+        const option = currentQuestion.options[optIdx];
+        if (!option) return;
+
+        const delta = option.delta;
         for (const [key, val] of Object.entries(delta)) {
             if (val !== undefined && key in acc) {
-                acc[key] = Math.max(0, Math.min(100, acc[key] + val));
+                const k = key as keyof typeof acc;
+                acc[k] = Math.max(0, Math.min(100, acc[k] + (val as number)));
             }
         }
     });
 
     return {
-        depth_breadth: acc.depth_breadth,
-        reflect_act: acc.reflect_act,
-        solo_social: acc.solo_social,
-        steady_surge: acc.steady_surge,
+        depth_breadth: acc.depth_breadth || 50,
+        reflect_act: acc.reflect_act || 50,
+        solo_social: acc.solo_social || 50,
+        steady_surge: acc.steady_surge || 50,
         source: 'seeded',
         seeded_at: new Date().toISOString(),
         last_updated: new Date().toISOString(),
     };
 }
 
-// export default OrientationCaptureStep;
+// No default export — use the named export: import { OrientationCaptureStep } from './OrientationCaptureStep'
+

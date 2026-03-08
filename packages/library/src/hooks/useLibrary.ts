@@ -22,12 +22,12 @@ export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilt
     const resourcesInfiniteQuery = useInfiniteQuery({
         queryKey: LIBRARY_KEYS.resources(resourceFilters),
         queryFn: async ({ pageParam = 0 }) => {
-            // High-Performance Sync Search — enabled for web via IndexedDB resonance
-            if (resourceFilters.search) {
+            // High-Performance Sync Search — IndexedDB local search for web only
+            if (resourceFilters.search && Platform.OS === 'web') {
                 return libraryAPI.searchResourcesLocal(resourceFilters.search, 20);
             }
 
-            // Versatile Server-Side Search
+            // Versatile Server-Side Search (for native, or web without local index)
             if (resourceFilters.search || resourceFilters.type) {
                 return libraryAPI.searchLibrary({
                     query: resourceFilters.search || '',

@@ -21,7 +21,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { User, GraduationCap, Briefcase, Crown, ShieldAlert, Compass } from 'lucide-react-native';
 import { QRCodeGenerator, QRBuilder } from '@repo/scanner-kit';
-import { UserProfile, AvatarDisplay } from '@repo/profile';
+import type { UserProfile } from '../types';
+import { AvatarDisplay } from './AvatarDisplay';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_WIDTH = SCREEN_WIDTH - Theme.spacing.xl * 2;
@@ -144,7 +145,7 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile, style
                 <Animated.View style={[styles.cardCommon, frontStyle]}>
                     <Box style={styles.glassLayer} />
 
-                    <HStack space="lg" alignItems="center" h="100%" p={Theme.spacing.xl}>
+                    <HStack space="lg" alignItems="center" h="100%" sx={{ p: Theme.spacing.xl }}>
                         {/* Avatar — AvatarDisplay handles image / initials / offline */}
                         <AvatarDisplay
                             userId={profile?.id || ''}
@@ -163,17 +164,17 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile, style
                                 <roleConfig.icon size={14} color={roleConfig.color} />
                             </HStack>
 
-                            <Text color={colors.text as any} size="xl" bold numberOfLines={1}>
+                            <Text color={colors.text} size="xl" bold numberOfLines={1}>
                                 {profile?.full_name || 'Guest User'}
                             </Text>
 
-                            <Text color={colors.textTertiary as any} size="xs" numberOfLines={1} mb={2}>
+                            <Text color={colors.textSecondary} size="xs" numberOfLines={1} mb={2}>
                                 {profile?.school_name || t('profile.noSchoolConnected')}
                             </Text>
 
                             {/* Identification Row */}
                             {(profile?.nic_number || profile?.index_number) && (
-                                <Box bg={`${colors.action}10`} px={Theme.spacing.sm} py={Theme.spacing.xs} borderRadius={Theme.corners.tight} alignSelf="flex-start">
+                                <Box sx={{ bg: `${colors.action}10`, px: Theme.spacing.sm, py: Theme.spacing.xs, borderRadius: Theme.corners.tight, alignSelf: "flex-start" }}>
                                     <Text color={colors.action} size="xxs" bold>
                                         {profile?.role === 'student' ? 'INDEX:' : 'NIC:'} {profile?.nic_number || profile?.index_number}
                                     </Text>
@@ -195,7 +196,7 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile, style
                 <Animated.View style={[styles.cardCommon, styles.cardBack, backStyle]}>
                     <Box style={styles.glassLayer} />
                     <Center h="100%">
-                        <Box p={Theme.spacing.md} bg="white" borderRadius={Theme.corners.comfortable}>
+                        <Box sx={{ p: Theme.spacing.md, bg: "white", borderRadius: Theme.corners.comfortable }}>
                             <QRCodeGenerator
                                 value={
                                     profile?.id

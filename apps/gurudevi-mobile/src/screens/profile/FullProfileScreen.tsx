@@ -21,7 +21,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { MapPin, Mail, Phone, Shield, Edit3, Check, X, User as UserIcon, FileText, Fingerprint, Briefcase, GraduationCap, BookOpen, School } from 'lucide-react-native';
 import { hapticLight, hapticError } from '@repo/ui';
-import { supabase } from '@repo/core';
+import { supabase, identityAPI } from '@repo/core';
 import {
     IdentityCard,
     AddSocialLinkModal,
@@ -79,10 +79,12 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
 
     // Resolve current session user
     useEffect(() => {
-        supabase.auth.getUser().then(({ data: { user } }) => {
-            if (user) {
-                setCurrentUserId(user.id);
-                setCurrentUserName(user.user_metadata?.full_name ?? user.email ?? '');
+        identityAPI.getMyInternalId().then(async (id) => {
+            if (id) {
+                setCurrentUserId(id);
+                // For name, we can try to fetch the profile name or keep it fallback
+                const { data: { user } } = await supabase.auth.getUser();
+                setCurrentUserName(user?.user_metadata?.full_name ?? user?.email ?? '');
             }
         });
     }, []);
@@ -141,7 +143,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
     return (
         <ScreenWrapper scroll={false}>
             <GlobalHeader
-                title={t('profile.fullProfile', 'Profile Details')}
+                title={t('profile.fullProfile')}
                 showBack
                 onBack={() => navigation.goBack()}
             />
@@ -217,13 +219,13 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                             }}
                         >
                             <Heading size="md" color={colors.text} mb="$4">
-                                {t('profile.personalDetails', 'Identity & Contact')}
+                                {t('profile.personalDetails')}
                             </Heading>
 
                             <VStack space="xl">
                                 <EditableItem
                                     icon={UserIcon}
-                                    label={t('profile.fullName', 'Full Name')}
+                                    label={t('profile.fullName')}
                                     value={profile.full_name}
                                     field="full_name"
                                     placeholder="Enter full name"
@@ -232,7 +234,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
 
                                 <EditableItem
                                     icon={Phone}
-                                    label={t('profile.phone', 'Phone Number')}
+                                    label={t('profile.phone')}
                                     value={profile.phone}
                                     field="phone"
                                     placeholder="+94 XX XXX XXXX"
@@ -242,7 +244,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                 {profile.role === 'student' ? (
                                     <EditableItem
                                         icon={Fingerprint}
-                                        label={t('profile.indexNumber', 'Index Number')}
+                                        label={t('profile.indexNumber')}
                                         value={profile.index_number}
                                         field="index_number"
                                         placeholder="STU-XXXXX"
@@ -251,7 +253,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                 ) : (
                                     <EditableItem
                                         icon={Fingerprint}
-                                        label={t('profile.nicNumber', 'NIC Number')}
+                                        label={t('profile.nicNumber')}
                                         value={profile.nic_number}
                                         field="nic_number"
                                         placeholder="19XXXXXXXXXX"
@@ -277,22 +279,22 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                 }}
                             >
                                 <Heading size="md" color={colors.text} mb="$4">
-                                    {t('profile.professionalDetails', 'Professional Branding')}
+                                    {t('profile.professionalDetails')}
                                 </Heading>
 
                                 <VStack space="xl">
                                     <EditableItem
                                         icon={School}
-                                        label={t('profile.currentSchool', 'Sanctuary Institution')}
+                                        label={t('profile.currentSchool')}
                                         value={profile.school_name || ''}
                                         field="school_name"
-                                        placeholder={t('profile.noSchool', 'Affiliate with a school')}
+                                        placeholder={t('profile.noSchool')}
                                         onSave={async () => { }} // Read-only for now or needs school Picker
                                     />
 
                                     <EditableItem
                                         icon={Briefcase}
-                                        label={t('profile.experience', 'Years of Experience')}
+                                        label={t('profile.experience')}
                                         value={profile.experience_years?.toString()}
                                         field="experience_years"
                                         placeholder="0"
@@ -301,7 +303,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
 
                                     <EditableItem
                                         icon={BookOpen}
-                                        label={t('profile.subjects', 'Specialized Subjects')}
+                                        label={t('profile.subjects')}
                                         value={Array.isArray(profile.subjects_taught) ? profile.subjects_taught.join(', ') : profile.subjects_taught}
                                         field="subjects_taught"
                                         placeholder="Math, Physics..."
@@ -310,7 +312,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
 
                                     <EditableItem
                                         icon={GraduationCap}
-                                        label={t('profile.qualifications', 'Degrees & Certifications')}
+                                        label={t('profile.qualifications')}
                                         value={Array.isArray(profile.qualifications) ? profile.qualifications.join(', ') : profile.qualifications}
                                         field="qualifications"
                                         placeholder="B.A, M.Sc, etc."
@@ -335,14 +337,14 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                             }}
                         >
                             <Heading size="md" color={colors.text} mb="$4">
-                                {t('profile.aboutMe', 'Your Story')}
+                                {t('profile.aboutMe')}
                             </Heading>
                             <EditableItem
                                 field="bio"
-                                label={t('profile.bio', 'Bio')}
+                                label={t('profile.bio')}
                                 value={profile.bio}
                                 icon={FileText}
-                                placeholder={t('profile.tellUsAboutYourself', 'Tell us about yourself...')}
+                                placeholder={t('profile.tellUsAboutYourself')}
                                 onSave={isOtherProfile ? async () => { } : handleSave}
                                 multiline={true}
                             />

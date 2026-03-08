@@ -27,9 +27,11 @@ import { useTheme } from '@repo/ui';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import TabNavigator from './src/navigation/TabNavigator';
-import { AIAssistantScreen, AuthScreen } from './src/screens';
+import TabNavigatorWeb from './src/navigation/TabNavigator.web';
+import { AIAssistantScreen, AuthScreen, AppSettingsScreen, NotificationsScreen } from './src/screens';
 import QRHandlerScreen from './src/screens/QRHandlerScreen';
 import ThuthimalClaimScreen from './src/screens/ThuthimalClaimScreen';
+import InvitationWelcomeScreen from './src/screens/InvitationWelcomeScreen';
 import { useQRDeepLink, redeemPendingQRAction } from '@repo/ui';
 import { SanctuaryToast, ToastProvider } from '@repo/ui';
 import type { ActionItem } from '@repo/ui';
@@ -204,7 +206,13 @@ function App() {
             refresh_token,
           });
           if (error) {
-            console.error('❌ App: Failed to set session from deep link:', error.message);
+            // Gracefully handle Invalid Refresh Token errors
+            if (error.message?.includes('Refresh Token') || (error as any).status === 400) {
+              console.warn('🔄 App: Stale session from deep link, clearing local storage...');
+              await supabase.auth.signOut({ scope: 'local' });
+            } else {
+              console.error('❌ App: Failed to set session from deep link:', error.message);
+            }
           } else {
             console.log('✅ App: Session recovered from deep link');
           }
@@ -356,6 +364,66 @@ function App() {
 
 // Main Content Component to access Theme/Context
 function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardingCompleted, showWelcome, setShowWelcome, toast, hideToast }: any) {
+  // Web Auth Guard: Prevent direct URL access to /app/* if not onboarded
+  useEffect(() => {
+    if (Platform.OS === 'web' && navigationRef.isReady()) {
+      const state = navigationRef.current?.getRootState();
+      const currentRoute = state?.routes[state.index]?.name;
+
+      // If web and not onboarded/session, and trying to hit anything other than Welcome/Auth/QR
+      // Allow access for authenticated users (including anonymous guests) and specific routes
+      const allowedRoutes = ['Welcome', 'Auth', 'QRHandler'];
+      const hasValidSession = !!session;
+
+      if (!hasValidSession && !onboardingCompleted && !allowedRoutes.includes(currentRoute || '')) {
+        // Validate and save intended deep link before redirecting
+        const intendedPath = window.location.pathname + window.location.search;
+        // Only store paths that begin with '/' and don't contain protocol specifiers
+        if (
+          intendedPath &&
+          intendedPath !== '/' &&
+          !intendedPath.startsWith('/onboarding') &&
+          intendedPath.charAt(0) === '/' &&
+          !/[a-z][a-z0-9+\-.]*:/i.test(intendedPath)
+        ) {
+          sessionStorage.setItem('__pendingDeepLink', intendedPath);
+        }
+        console.log('🛡️ WebAuthGuard: Redirecting to Welcome...');
+        navigationRef.current?.reset({
+          index: 0,
+          routes: [{ name: 'Welcome' }],
+        });
+      }
+    }
+  }, [onboardingCompleted, session]);
+
+  // Restore saved deep link after successful authentication + onboarding
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !onboardingCompleted || !session) return;
+    const pending = sessionStorage.getItem('__pendingDeepLink');
+    if (!pending) return;
+    // Clear before navigating to avoid loops
+    sessionStorage.removeItem('__pendingDeepLink');
+
+    // Map URL path segments to React Navigation screen names
+    const segments = pending.split('/').filter(Boolean);
+    if (segments[0] !== 'app') return;
+
+    const screenMap: Record<string, string> = {
+      self: 'Self',
+      community: 'Community',
+      classroom: 'Classroom',
+      library: 'Library',
+      profile: 'Profile',
+      notifications: 'NotificationsPanel',
+      settings: 'SettingsPanel',
+    };
+    const tabName = segments[1] ? screenMap[segments[1]] : 'Self';
+    if (tabName && navigationRef.isReady()) {
+      (navigationRef as any).navigate('Main', { screen: tabName });
+    }
+  }, [onboardingCompleted, session]);
+
   return (
 
     <SafeAreaProvider>
@@ -381,6 +449,7 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                   AIAssistant: 'ai',
                   QRHandler: 'qr',
                   ThuthimalClaim: 'thuthimal',
+                  InvitationWelcome: 'invite',
                   Main: {
                     path: 'app',
                     screens: {
@@ -390,6 +459,7 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                         screens: {
                           ProfileMain: '',
                           FullProfile: 'full',
+                          PrivacyLedger: 'privacy-ledger',
                         },
                       },
                       Classroom: {
@@ -424,6 +494,9 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                           LibraryMap: 'map',
                         }
                       },
+                      // In-shell panel screens — proper URLs for browser history & deep linking
+                      NotificationsPanel: 'notifications',
+                      SettingsPanel: 'settings',
                     },
                   },
                 },
@@ -479,7 +552,11 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                     <RootStack.Screen name="Main">
                       {() => (
                         <ErrorBoundary name="Main Tabs">
-                          <TabNavigator onTabChange={(tab: any) => setCurrentTab(tab)} />
+                          {Platform.OS === 'web' ? (
+                            <TabNavigatorWeb onTabChange={(tab: any) => setCurrentTab(tab)} />
+                          ) : (
+                            <TabNavigator onTabChange={(tab: any) => setCurrentTab(tab)} />
+                          )}
                         </ErrorBoundary>
                       )}
                     </RootStack.Screen>
@@ -506,8 +583,26 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                       }}
                     />
                     <RootStack.Screen
+                      name="AppSettings"
+                      component={AppSettingsScreen}
+                      options={{ presentation: 'modal' }}
+                    />
+                    <RootStack.Screen
+                      name="Notifications"
+                      component={NotificationsScreen}
+                      options={{ presentation: 'modal' }}
+                    />
+                    <RootStack.Screen
                       name="ThuthimalClaim"
                       component={ThuthimalClaimScreen}
+                      options={{
+                        presentation: 'modal',
+                        animation: 'fade_from_bottom',
+                      }}
+                    />
+                    <RootStack.Screen
+                      name="InvitationWelcome"
+                      component={InvitationWelcomeScreen}
                       options={{
                         presentation: 'modal',
                         animation: 'fade_from_bottom',

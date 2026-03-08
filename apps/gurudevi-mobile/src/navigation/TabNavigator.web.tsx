@@ -1,571 +1,625 @@
-/**
- * TabNavigator.web.tsx — Sidebar Navigation (Pattern A)
- *
- * On native, TabNavigator renders a bottom tab bar. On web Metro resolves
- * this file instead, replacing the bottom bar with a fixed left sidebar.
- * Every screen registration, error boundary, and role-aware label is kept
- * identical — only the chrome layer changes.
- *
- * Layout contract:
- *   ┌────────────┬────────────────────────────────┐
- *   │  Sidebar   │  Screen content (sceneStyle)   │
- *   │  220 px    │  flex: 1, marginLeft: 220      │
- *   └────────────┴────────────────────────────────┘
- *
- * The sidebar is `position: 'absolute'` so it floats over the Tab.Navigator's
- * internal column layout. `sceneStyle` adds `marginLeft` to every scene so
- * content is never hidden behind the sidebar.
- *
- * Design tokens: Vellum bg · Ink text · Saffron active · Shadow Violet shadows
- */
-
-import React from 'react';
+import React from "react";
+import { View, Platform } from "react-native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
+import { ErrorBoundary, AchievementUnlockOverlay, useTheme } from "@repo/ui";
+import { useUserRole, useRewards, useNotifications } from "@repo/core";
 import {
-    View,
-    Text,
-    Pressable,
-    StyleSheet,
-    useWindowDimensions,
-    Platform,
-    StyleProp,
-    ViewStyle,
-} from 'react-native';
-import { createBottomTabNavigator, type BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { useTranslation } from 'react-i18next';
-import { Theme, SanctuaryBackground, ErrorBoundary, AchievementUnlockOverlay } from '@repo/ui';
-import { useTheme } from '@repo/ui';
-import { useUserRole, useRewards } from '@repo/core';
-// Icons (same set as native TabNavigator)
-import { User, Heart, Users, Library, School } from 'lucide-react-native';
+  User,
+  School,
+  Heart,
+  Users,
+  Library,
+  Bell,
+  ChevronLeft,
+  Menu,
+  Settings,
+} from "lucide-react-native";
+import { StackFallback } from "../components/web/WebScreenShimmer";
 
-// Screens / stacks (same as native)
-import ClassroomStackNavigator from './ClassroomStackNavigator';
-import ProfileStackNavigator from './ProfileStackNavigator';
-import CommunityStackNavigator from './CommunityStackNavigator';
-import { SelfScreen, LibraryScreen } from '../screens';
-
-// ─────────────────────────────────────────────
-// Constants
-// ─────────────────────────────────────────────
-const SIDEBAR_WIDTH = 220;
-const SIDEBAR_COLLAPSED_WIDTH = 64;
-
-// Phase → top-accent colour (mirrors TemporalGlass palette)
-const PHASE_ACCENT: Record<string, string> = {
-    predawn: 'rgba(184,169,224,0.60)',
-    dawn: 'rgba(212,132,58,0.80)',
-    morning: 'rgba(212,132,58,0.70)',
-    midday: 'rgba(125,212,192,0.70)',
-    afternoon: 'rgba(212,132,58,0.75)',
-    evening: 'rgba(212,132,58,0.85)',
-    dusk: 'rgba(184,169,224,0.65)',
-    night: 'rgba(184,169,224,0.55)',
+// ── Preload helper ──────────────────────────────────────────────────────────
+// Kicks off the dynamic import for each chunk immediately after the main
+// bundle executes (i.e. before the user taps any tab).  Uses
+// requestIdleCallback so it doesn't compete with first-paint work.
+// The promises are thrown away — React.lazy() caches the result internally
+// once the import resolves, so Suspense renders instantly on first navigation.
+const schedulePreload = (importFn: () => Promise<unknown>) => {
+  if (typeof requestIdleCallback !== 'undefined') {
+    requestIdleCallback(() => { importFn().catch(() => {}); }, { timeout: 2000 });
+  } else {
+    setTimeout(() => { importFn().catch(() => {}); }, 500);
+  }
 };
 
-// Role → display name + accent colour
-const ROLE_META: Record<string, { label: string; color: string }> = {
-    teacher:      { label: 'Teacher',    color: Theme.colors.sanctuarySaffron },
-    student:      { label: 'Student',    color: Theme.colors.sageGreen },
-    principal:    { label: 'Principal',  color: Theme.colors.shadowViolet },
-    founder:      { label: 'Founder',    color: Theme.colors.sanctuarySaffron },
-    section_head: { label: 'Sec. Head',  color: Theme.colors.sanctuarySaffron },
-    grade_head:   { label: 'Grade Head', color: Theme.colors.sanctuarySaffron },
-    admin:        { label: 'Admin',      color: Theme.colors.shadowViolet },
-    guest:        { label: 'Guest',      color: Theme.colors.starlightGray },
-};
+// Screens / stacks
+// Tab stacks — lazy loaded (major code split boundary)
+const ClassroomStackNavigatorWeb = React.lazy(
+  () => import("./ClassroomStackNavigator.web"),
+);
+schedulePreload(() => import("./ClassroomStackNavigator.web"));
 
-// ─── Keyboard shortcut label per tab (matches Cmd+1-5) ────────────────────────
-const TAB_SHORTCUTS: Record<string, string> = {
-    Profile:   '⌘1',
-    Classroom: '⌘2',
-    Self:      '⌘3',
-    Community: '⌘4',
-    Library:   '⌘5',
-};
-interface WebSidebarProps extends BottomTabBarProps {
-    onTabChange?: (tab: string) => void;
-    phase: string;
-    isDark: boolean;
-    role: string | null;
-    collapsed: boolean;
-    onToggle: () => void;
-}
+const ProfileStackNavigatorWeb = React.lazy(
+  () => import("./ProfileStackNavigator.web"),
+);
+schedulePreload(() => import("./ProfileStackNavigator.web"));
 
-const TAB_ICONS: Record<string, typeof Heart> = {
-    Profile: User,
-    Classroom: School,
-    Self: Heart,
-    Community: Users,
-    Library: Library,
-};
+const CommunityStackNavigatorWeb = React.lazy(
+  () => import("./CommunityStackNavigator.web"),
+);
+schedulePreload(() => import("./CommunityStackNavigator.web"));
 
-function WebSidebar({
-    state,
-    descriptors,
-    navigation,
-    onTabChange,
-    phase,
-    isDark,
-    role,
-    collapsed,
-    onToggle,
-}: WebSidebarProps) {
-    const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
+const SelfStackNavigatorWeb = React.lazy(
+  () => import("./SelfStackNavigator.web"),
+);
+schedulePreload(() => import("./SelfStackNavigator.web"));
 
-    const bg = isDark ? Theme.colors.shroud : Theme.colors.vellum;
-    const border = isDark
-        ? 'rgba(252,249,242,0.08)'
-        : 'rgba(42,35,24,0.07)';
-    const accentLine = PHASE_ACCENT[phase] ?? PHASE_ACCENT.morning;
-    const roleMeta = ROLE_META[role ?? 'guest'] ?? ROLE_META.guest;
-    const width = collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
+const LibraryStackNavigatorWeb = React.lazy(
+  () => import("./LibraryStackNavigator.web"),
+);
+schedulePreload(() => import("./LibraryStackNavigator.web"));
 
-    return (
-        <View
-            accessibilityLabel="Main navigation sidebar"
-            style={[
-                styles.sidebar,
-                {
-                    width,
-                    backgroundColor: bg,
-                    borderRightColor: border,
-                    shadowColor: Theme.colors.shadowViolet,
-                },
-            ]}
-        >
-            {/* Phase accent line at the very top */}
-            <View style={[styles.phaseAccent, { backgroundColor: accentLine }]} />
+// In-shell panel screens — lazy loaded (rendered as Tab.Screen for URL-native navigation)
+const NotificationsScreenWeb = React.lazy(
+  () => import("../screens/NotificationsScreen.web"),
+);
+schedulePreload(() => import("../screens/NotificationsScreen.web"));
 
-            {/* Logo + collapse toggle */}
-            <Pressable
-                onPress={onToggle}
-                style={styles.logoRow}
-                accessibilityLabel={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-                <View style={styles.logoCircle}>
-                    <Text style={styles.logoGlyph}>🪷</Text>
-                </View>
-                {!collapsed && (
-                    <Text
-                        style={[
-                            styles.logoText,
-                            { color: isDark ? Theme.colors.sacredWhite : Theme.colors.inkTruth },
-                        ]}
-                        numberOfLines={1}
-                    >
-                        Gurudevi
-                    </Text>
-                )}
-            </Pressable>
+const AppSettingsScreenWeb = React.lazy(
+  () => import("../screens/AppSettingsScreen.web"),
+);
+schedulePreload(() => import("../screens/AppSettingsScreen.web"));
 
-            {/* Role badge */}
-            {!collapsed && (
-                <View style={[styles.roleBadge, { borderColor: roleMeta.color + '40' }]}>
-                    <View
-                        style={[styles.roleDot, { backgroundColor: roleMeta.color }]}
-                    />
-                    <Text style={[styles.roleLabel, { color: roleMeta.color }]}>
-                        {roleMeta.label}
-                    </Text>
-                </View>
-            )}
+// ── Tab navigator ────────────────────────────────────────────────────────────
 
-            {/* Divider */}
-            <View style={[styles.divider, { backgroundColor: border }]} />
-
-            {/* Tab items */}
-            <View style={styles.tabList}>
-                {state.routes.map((route, index) => {
-                    const isActive = state.index === index;
-                    const isHovered = hoveredIndex === index;
-                    const { options } = descriptors[route.key];
-                    const label = options.tabBarLabel as string ?? route.name;
-                    const IconComponent = TAB_ICONS[route.name] ?? Heart;
-                    const activeColor = Theme.colors.sanctuarySaffron;
-                    const inactiveColor = isDark
-                        ? Theme.colors.starlightGray
-                        : Theme.colors.willow;
-                    const iconColor = isActive ? activeColor : inactiveColor;
-
-                    return (
-                        <Pressable
-                            key={route.key}
-                            onPress={() => {
-                                navigation.navigate(route.name);
-                                onTabChange?.(route.name.toLowerCase());
-                            }}
-                            onHoverIn={() => setHoveredIndex(index)}
-                            onHoverOut={() => setHoveredIndex(null)}
-                            accessibilityRole="tab"
-                            accessibilityState={{ selected: isActive }}
-                            style={[
-                                styles.tabItem,
-                                collapsed && styles.tabItemCollapsed,
-                                isActive && [
-                                    styles.tabItemActive,
-                                    {
-                                        backgroundColor: isDark
-                                            ? 'rgba(212,132,58,0.12)'
-                                            : 'rgba(212,132,58,0.08)',
-                                    },
-                                ],
-                                !isActive && isHovered && {
-                                    backgroundColor: isDark
-                                        ? 'rgba(252,249,242,0.05)'
-                                        : 'rgba(42,35,24,0.04)',
-                                },
-                            ]}
-                        >
-                            {/* Active left accent bar */}
-                            <View
-                                style={[
-                                    styles.activeBar,
-                                    { opacity: isActive ? 1 : 0 },
-                                ]}
-                            />
-
-                            <View
-                                style={[
-                                    styles.iconWrap,
-                                    isActive && { transform: [{ scale: 1.08 }] },
-                                ]}
-                            >
-                                <IconComponent
-                                    size={20}
-                                    color={iconColor}
-                                    fill={isActive ? iconColor : 'none'}
-                                />
-                            </View>
-
-                            {!collapsed && (
-                                <Text
-                                    style={[
-                                        styles.tabLabel,
-                                        {
-                                            color: isActive ? activeColor : inactiveColor,
-                                            fontWeight: isActive ? '700' : '500',
-                                        },
-                                    ]}
-                                    numberOfLines={1}
-                                >
-                                    {label}
-                                </Text>
-                            )}
-
-                            {/* Shortcut hint — visible on hover when expanded */}
-                            {!collapsed && isHovered && !isActive && TAB_SHORTCUTS[route.name] && (
-                                <View style={[styles.shortcutHint, { borderColor: isDark ? 'rgba(252,249,242,0.12)' : 'rgba(42,35,24,0.10)' }]}>
-                                    <Text style={[styles.shortcutText, { color: inactiveColor }]}>
-                                        {TAB_SHORTCUTS[route.name]}
-                                    </Text>
-                                </View>
-                            )}
-                        </Pressable>
-                    );
-                })}
-            </View>
-
-            {/* Footer */}
-            <View style={styles.sidebarFooter}>
-                <View style={[styles.divider, { backgroundColor: border, marginBottom: 12 }]} />
-                {!collapsed && (
-                    <Text
-                        style={[
-                            styles.footerText,
-                            { color: isDark ? Theme.colors.mistGray : Theme.colors.willow },
-                        ]}
-                    >
-                        app.gurudevi.edlove.org
-                    </Text>
-                )}
-            </View>
-        </View>
-    );
-}
-
-// ─────────────────────────────────────────────
-// Main Navigator
-// ─────────────────────────────────────────────
 const Tab = createBottomTabNavigator();
 
-interface TabNavigatorProps {
-    onTabChange?: (tabName: string) => void;
+// ─── NAV HELPERS ──────────────────────────────────────────────────────────
+
+const TAB_CONFIG = [
+  {
+    name: "Self",
+    icon: Heart,
+    labelKey: "tabs.self",
+    mobileLabelKey: "tabs.self",
+  },
+  {
+    name: "Community",
+    icon: Users,
+    labelKey: "tabs.community",
+    mobileLabelKey: "tabs.community",
+  },
+  {
+    name: "Classroom",
+    icon: School,
+    labelKey: "tabs.classroom",
+    mobileLabelKey: "tabs.classroom",
+  },
+  {
+    name: "Library",
+    icon: Library,
+    labelKey: "tabs.library",
+    mobileLabelKey: "tabs.library",
+  },
+  {
+    name: "Profile",
+    icon: User,
+    labelKey: "tabs.profile",
+    mobileLabelKey: "tabs.profile",
+  },
+];
+
+// ─── MAIN NAVIGATOR (Overlay Architecture) ─────────────────────────────────
+
+/** Reusable notification badge dot for Bell icons */
+function NotificationBadge({ count, size = 'md' }: { count: number; size?: 'sm' | 'md' }) {
+  if (count <= 0) return null;
+  const dim = size === 'sm' ? { minW: '14px', h: '14px', fs: '8px', top: '-3px', right: '-5px' } : { minW: '16px', h: '16px', fs: '9px', top: '-4px', right: '-6px' };
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: dim.minW, height: dim.h, padding: '0 4px', fontSize: dim.fs, fontWeight: '800', background: 'var(--lotus)', color: 'white', borderRadius: '8px', position: 'absolute', top: dim.top, right: dim.right }}>
+      {count > 99 ? '99+' : String(count)}
+    </div>
+  );
 }
 
-export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
-    const { t } = useTranslation();
-    const { role } = useUserRole();
-    const { phase, isDark } = useTheme();
-    const { width } = useWindowDimensions();
-    const { newAchievements } = useRewards();
-    const [collapsed, setCollapsed] = React.useState(width < 960);
-    const [showCelebration, setShowCelebration] = React.useState(false);
-    const [currentAchievement, setCurrentAchievement] = React.useState('');
+export default function TabNavigator({
+  onTabChange,
+}: {
+  onTabChange?: (tab: string) => void;
+}) {
+  const { t } = useTranslation();
+  const { role, userId } = useUserRole();
+  const { isDark } = useTheme();
+  const { newAchievements } = useRewards();
+  const { unreadCount } = useNotifications(userId);
+  const navigation = useNavigation();
 
-    // Auto-collapse on narrow screens
-    React.useEffect(() => {
-        setCollapsed(width < 960);
-    }, [width]);
+  const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(true);
+  // Mobile/tablet: < 1024px (aligns with CSS @media max-width: 1023px)
+  const [isMobileView, setIsMobileView] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState("Self");
+  const [showCelebration, setShowCelebration] = React.useState(false);
+  const [currentAchievement, setCurrentAchievement] = React.useState("");
 
-    React.useEffect(() => {
-        if (newAchievements.length > 0) {
-            setCurrentAchievement(newAchievements[0]);
-            setShowCelebration(true);
+  // Ref to the sidebar element — used for focus trap
+  const sidebarRef = React.useRef<HTMLElement>(null);
+  // Last focused element before sidebar opened — returned on close
+  const preSidebarFocusRef = React.useRef<HTMLElement | null>(null);
+
+  // Define closeSidebar before the useEffects that reference it
+  const closeSidebar = React.useCallback(() => setIsSidebarExpanded(false), []);
+
+  // Responsive design: mobile/tablet < 1024px
+  React.useEffect(() => {
+    const checkScreenSize = () => {
+      const isCompact = window.innerWidth < 1024;
+      setIsMobileView(isCompact);
+      if (isCompact) setIsSidebarExpanded(false);
+    };
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  React.useEffect(() => {
+    if (newAchievements.length > 0) {
+      setCurrentAchievement(newAchievements[0]);
+      setShowCelebration(true);
+    }
+  }, [newAchievements]);
+
+  // ── FOCUS TRAP: mobile sidebar ──────────────────────────────────────────
+  // When the overlay sidebar opens, move keyboard focus inside and prevent
+  // Tab from escaping to page content behind the backdrop.
+  React.useEffect(() => {
+    if (!isMobileView || !isSidebarExpanded) return;
+
+    // Save the element that was focused before we opened the sidebar
+    preSidebarFocusRef.current = document.activeElement as HTMLElement;
+
+    // Move focus to the first focusable element inside the sidebar
+    const sidebar = sidebarRef.current;
+    if (!sidebar) return;
+    const focusable = sidebar.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), input:not([disabled]), textarea, select, [tabindex]:not([tabindex="-1"])',
+    );
+    if (focusable.length > 0) focusable[0].focus();
+
+    // Tab key handler — cycle inside the sidebar only
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closeSidebar();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const items = Array.from(
+        sidebar.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), textarea, select, [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
         }
-    }, [newAchievements]);
-
-    const getClassroomLabel = () => {
-        if (role === 'principal') return t('tabs.mySchool') || 'My School';
-        if (role === 'founder') return t('tabs.school');
-        if (role === 'section_head') return t('tabs.section');
-        if (role === 'grade_head') return t('tabs.grade') || t('tabs.classroom');
-        return t('tabs.classroom');
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
 
-    const sidebarWidth = collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      // Restore focus to the element that was active before the sidebar opened
+      preSidebarFocusRef.current?.focus();
+    };
+  }, [isMobileView, isSidebarExpanded, closeSidebar]);
 
-    const renderTabBar = (props: BottomTabBarProps) => (
-        <WebSidebar
-            {...props}
-            onTabChange={(tab) => {
-                onTabChange?.(tab);
-            }}
-            phase={phase}
-            isDark={isDark}
-            role={role}
-            collapsed={collapsed}
-            onToggle={() => setCollapsed((c) => !c)}
-        />
-    );
+  // ── DOCUMENT TITLE: update on tab change ───────────────────────────────
+  React.useEffect(() => {
+    const base = t("webNav.brandName");
+    if (activeTab === "NotificationsPanel") {
+      document.title = `${t("webNav.notifications")} — ${base}`;
+    } else if (activeTab === "SettingsPanel") {
+      document.title = `${t("webNav.settings")} — ${base}`;
+    } else {
+      document.title = activeTab ? `${activeTab} — ${base}` : base;
+    }
+  }, [activeTab, t]);
 
-    return (
-        <View style={{ flex: 1 }}>
-            <SanctuaryBackground />
+  const getClassroomLabel = () => {
+    if (role === "principal") return t("tabs.mySchool");
+    if (role === "founder") return t("tabs.school");
+    if (role === "section_head") return t("tabs.section");
+    if (role === "grade_head") return t("tabs.grade");
+    return t("tabs.classroom");
+  };
 
-            <Tab.Navigator
-                id="MainTabs"
-                initialRouteName="Self"
-                tabBar={renderTabBar}
-                screenListeners={{
-                    state: (e) => {
-                        const s = (e.data as any)?.state;
-                        if (!s || s.index === undefined) return;
-                        const routeName = s.routes[s.index]?.name;
-                        if (routeName) {
-                            const tab = routeName.toLowerCase();
-                            onTabChange?.(tab);
-                        }
-                    },
-                }}
-                screenOptions={{
-                    headerShown: false,
-                    // Push every scene right so content is never behind the sidebar
-                    sceneStyle: { marginLeft: sidebarWidth },
-                }}
+  const getLabel = (route: string, labelKey: string) => {
+    if (route === "Classroom") return getClassroomLabel();
+    return t(labelKey);
+  };
+
+  const getMobileLabel = (route: string) => {
+    if (route === "Classroom") {
+      if (role === "principal") return t("tabs.school");
+      if (role === "founder") return t("tabs.platform");
+      return t("tabs.class");
+    }
+    return t(TAB_CONFIG.find((c) => c.name === route)?.mobileLabelKey ?? route);
+  };
+
+  return (
+    <div className="vellum-app-shell">
+      <div className="world-bg" />
+
+      {/* ── TOP BAR ── */}
+      <header className="top-bar">
+        <div
+          className="top-bar-left"
+          style={{
+            paddingLeft: 24,
+            display: "flex",
+            alignItems: "center",
+            gap: "16px",
+          }}
+        >
+          {isMobileView && (
+            <button
+              className="mobile-menu-toggle"
+              onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+              aria-label={t("webNav.toggleNavigation")}
+              style={{
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                color: "var(--ink)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
-                <Tab.Screen
-                    name="Profile"
-                    options={{ tabBarLabel: t('tabs.profile') }}
-                >
-                    {() => (
-                        <ErrorBoundary name="Profile Stack">
-                            <ProfileStackNavigator />
-                        </ErrorBoundary>
-                    )}
-                </Tab.Screen>
+              <Menu size={24} />
+            </button>
+          )}
+          <span className="brand-lotus">🪷</span>
+          <span className="brand-name">{t("webNav.brandName")}</span>
+        </div>
+        <div className="top-bar-right" />
+      </header>
 
-                <Tab.Screen
-                    name="Classroom"
-                    options={{ tabBarLabel: getClassroomLabel() }}
-                >
-                    {() => (
-                        <ErrorBoundary name="Classroom Tab">
-                            <ClassroomStackNavigator />
-                        </ErrorBoundary>
-                    )}
-                </Tab.Screen>
+      <div className="shell-body-core">
+        {/* ── MOBILE SIDEBAR OVERLAY ── */}
+        {isMobileView && isSidebarExpanded && (
+          <div
+            className="sidebar-overlay visible"
+            onClick={closeSidebar}
+            aria-hidden="true"
+          />
+        )}
 
-                <Tab.Screen
-                    name="Self"
-                    options={{ tabBarLabel: t('tabs.self') }}
-                >
-                    {() => (
-                        <ErrorBoundary name="Self Screen">
-                            <SelfScreen />
-                        </ErrorBoundary>
-                    )}
-                </Tab.Screen>
+        {/* ── SIDEBAR ── */}
+        <aside
+          ref={sidebarRef}
+          className={`sidebar ${isSidebarExpanded ? "open expanded" : "collapsed"}`}
+          aria-hidden={isMobileView && !isSidebarExpanded}
+          style={{
+            zIndex: isMobileView ? 1000 : 10,
+            position: isMobileView ? "fixed" : "relative",
+            height: isMobileView ? "100%" : "auto",
+            top: isMobileView ? 0 : undefined,
+            left: isMobileView ? 0 : undefined,
+            width: isMobileView
+              ? "280px"
+              : isSidebarExpanded
+                ? "240px"
+                : "60px",
+            boxShadow:
+              isMobileView && isSidebarExpanded
+                ? "4px 0 40px rgba(107,100,128,0.2)"
+                : "none",
+          }}
+        >
+          <div className="sidebar-header" style={{ display: "flex" }}>
+            {isMobileView ? (
+              <button
+                className="sidebar-toggle"
+                onClick={closeSidebar}
+                aria-label="Close navigation"
+              >
+                <ChevronLeft size={16} />
+              </button>
+            ) : (
+              <button
+                className="sidebar-toggle"
+                onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+                aria-label={
+                  isSidebarExpanded ? "Collapse sidebar" : "Expand sidebar"
+                }
+              >
+                {isSidebarExpanded ? (
+                  <ChevronLeft size={16} />
+                ) : (
+                  <Menu size={16} />
+                )}
+              </button>
+            )}
+            {(isSidebarExpanded || isMobileView) && (
+              <span
+                className="sidebar-group-label"
+                style={{ marginLeft: "12px" }}
+              >
+                {t("webNav.navigate")}
+              </span>
+            )}
+          </div>
 
-                <Tab.Screen
-                    name="Community"
-                    options={{ tabBarLabel: t('tabs.community') }}
+          <nav className="sidebar-nav" aria-label="Main navigation">
+            {TAB_CONFIG.map((conf) => {
+              const isActive = activeTab === conf.name;
+              const Icon = conf.icon;
+              return (
+                <button
+                  key={conf.name}
+                  className={`sidebar-item ${isActive ? "active" : ""}`}
+                  onClick={() => {
+                    (navigation.navigate as any)("Main", { screen: conf.name });
+                    if (isMobileView) closeSidebar();
+                  }}
+                  title={getLabel(conf.name, conf.labelKey)}
+                  aria-current={isActive ? "page" : undefined}
                 >
-                    {() => (
-                        <ErrorBoundary name="Community Stack">
-                            <CommunityStackNavigator />
-                        </ErrorBoundary>
-                    )}
-                </Tab.Screen>
+                  <Icon
+                    size={20}
+                    color={isActive ? "var(--water)" : "var(--ink-ghost)"}
+                  />
+                  {(isSidebarExpanded || isMobileView) && (
+                    <span className="sidebar-label">
+                      {getLabel(conf.name, conf.labelKey)}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
 
-                <Tab.Screen
-                    name="Library"
-                    options={{ tabBarLabel: t('tabs.library') }}
-                >
-                    {() => (
-                        <ErrorBoundary name="Library Screen">
-                            <LibraryScreen />
-                        </ErrorBoundary>
-                    )}
-                </Tab.Screen>
+          <div className="sidebar-footer">
+            <div className="sidebar-divider" />
+            <button
+              className={`sidebar-item ${activeTab === "NotificationsPanel" ? "active" : ""}`}
+              title={t("common.notifications")}
+              onClick={() => {
+                (navigation.navigate as any)("Main", {
+                  screen: activeTab === "NotificationsPanel" ? "Self" : "NotificationsPanel",
+                });
+                if (isMobileView) closeSidebar();
+              }}
+            >
+              <div style={{ position: "relative" }}>
+                <Bell
+                  size={20}
+                  color={
+                    activeTab === "NotificationsPanel"
+                      ? "var(--water)"
+                      : "var(--ink-ghost)"
+                  }
+                />
+                <div className="bell-dot" style={unreadCount > 0 ? { display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '16px', height: '16px', padding: '0 4px', fontSize: '9px', fontWeight: '800', background: 'var(--lotus)', color: 'white', borderRadius: '8px', top: '-4px', right: '-6px' } : {}}>
+                  {unreadCount > 0 ? (unreadCount > 99 ? '99+' : String(unreadCount)) : ''}
+                </div>
+              </div>
+              {(isSidebarExpanded || isMobileView) && (
+                <span className="sidebar-label">Notifications</span>
+              )}
+            </button>
+
+            <button
+              className={`sidebar-profile-btn ${activeTab === "SettingsPanel" ? "active" : ""}`}
+              title={t("common.settings")}
+              onClick={() => {
+                (navigation.navigate as any)("Main", {
+                  screen: activeTab === "SettingsPanel" ? "Self" : "SettingsPanel",
+                });
+                if (isMobileView) closeSidebar();
+              }}
+            >
+              <div className="profile-gem">
+                <Settings size={16} color="var(--ink-ghost)" />
+              </div>
+              {(isSidebarExpanded || isMobileView) && (
+                <div className="profile-info">
+                  <span className="profile-nm">
+                    {role?.split("_").join(" ") || "Guest"}
+                  </span>
+                  <span className="profile-status">
+                    {t("common.settings")}
+                  </span>
+                </div>
+              )}
+            </button>
+          </div>
+        </aside>
+
+        {/* ── MAIN CONTENT CANVAS ── */}
+        <main className="main-content-canvas">
+            <Tab.Navigator
+              id="MainTabs"
+              initialRouteName="Self"
+              tabBar={() => null}
+              // @ts-ignore
+              sceneContainerStyle={{
+                backgroundColor: "transparent",
+                minHeight: "100%",
+                overflow: "visible",
+              }}
+              screenListeners={{
+                state: (e) => {
+                  const s = (e.data as any)?.state;
+                  if (!s || s.index === undefined) return;
+                  const routeName = s.routes[s.index]?.name;
+                  if (routeName) {
+                    setActiveTab(routeName);
+                    // Only report main tabs to parent (not panel screens)
+                    const mainTabs = ["Self", "Community", "Classroom", "Library", "Profile"];
+                    if (mainTabs.includes(routeName)) {
+                      onTabChange?.(routeName.toLowerCase());
+                    }
+                  }
+                },
+              }}
+              screenOptions={{ headerShown: false }}
+            >
+              <Tab.Screen name="Self">
+                {() => (
+                  <ErrorBoundary name="Self">
+                    <React.Suspense
+                      fallback={<StackFallback />}
+                    >
+                      <SelfStackNavigatorWeb />
+                    </React.Suspense>
+                  </ErrorBoundary>
+                )}
+              </Tab.Screen>
+              <Tab.Screen name="Community">
+                {() => (
+                  <ErrorBoundary name="Community">
+                    <React.Suspense
+                      fallback={<StackFallback />}
+                    >
+                      <CommunityStackNavigatorWeb />
+                    </React.Suspense>
+                  </ErrorBoundary>
+                )}
+              </Tab.Screen>
+              <Tab.Screen name="Classroom">
+                {() => (
+                  <ErrorBoundary name="Classroom">
+                    <React.Suspense
+                      fallback={<StackFallback />}
+                    >
+                      <ClassroomStackNavigatorWeb />
+                    </React.Suspense>
+                  </ErrorBoundary>
+                )}
+              </Tab.Screen>
+              <Tab.Screen name="Library">
+                {() => (
+                  <ErrorBoundary name="Library">
+                    <React.Suspense
+                      fallback={<StackFallback />}
+                    >
+                      <LibraryStackNavigatorWeb />
+                    </React.Suspense>
+                  </ErrorBoundary>
+                )}
+              </Tab.Screen>
+              <Tab.Screen name="Profile">
+                {() => (
+                  <ErrorBoundary name="Profile">
+                    <React.Suspense
+                      fallback={<StackFallback />}
+                    >
+                      <ProfileStackNavigatorWeb />
+                    </React.Suspense>
+                  </ErrorBoundary>
+                )}
+              </Tab.Screen>
+              {/* Panel screens — rendered within shell, URL-native via React Navigation */}
+              <Tab.Screen name="NotificationsPanel">
+                {() => (
+                  <ErrorBoundary name="Notifications">
+                    <React.Suspense
+                      fallback={<StackFallback />}
+                    >
+                      <NotificationsScreenWeb />
+                    </React.Suspense>
+                  </ErrorBoundary>
+                )}
+              </Tab.Screen>
+              <Tab.Screen name="SettingsPanel">
+                {() => (
+                  <ErrorBoundary name="Settings">
+                    <React.Suspense
+                      fallback={<StackFallback />}
+                    >
+                      <AppSettingsScreenWeb />
+                    </React.Suspense>
+                  </ErrorBoundary>
+                )}
+              </Tab.Screen>
             </Tab.Navigator>
+        </main>
+      </div>
 
-            <AchievementUnlockOverlay
-                title={currentAchievement}
-                visible={showCelebration}
-                onHide={() => setShowCelebration(false)}
-            />
-        </View>
-    );
+      {/* ── MOBILE BOTTOM NAV (< 1024px) ── */}
+      {/* Always visible on mobile — even in notifications/settings subviews so
+                users always have a path back. Tab buttons return to 'none' subview
+                first; Alerts button toggles notifications. */}
+      {isMobileView && (
+        <nav
+          className="mobile-bottom-nav"
+          aria-label={t("webNav.tabNavigation")}
+        >
+          {TAB_CONFIG.map((conf) => {
+            const isActive = activeTab === conf.name;
+            const Icon = conf.icon;
+            return (
+              <button
+                key={conf.name}
+                className={`mobile-nav-item ${isActive ? "active" : ""}`}
+                onClick={() => {
+                  (navigation.navigate as any)("Main", { screen: conf.name });
+                }}
+                aria-current={isActive ? "page" : undefined}
+              >
+                <Icon
+                  size={22}
+                  color={isActive ? "var(--water)" : "var(--ink-ghost)"}
+                />
+                <span className="mobile-nav-label">
+                  {getMobileLabel(conf.name)}
+                </span>
+              </button>
+            );
+          })}
+          <button
+            className={`mobile-nav-item ${activeTab === "NotificationsPanel" ? "active" : ""}`}
+            onClick={() =>
+              (navigation.navigate as any)("Main", {
+                screen: activeTab === "NotificationsPanel" ? "Self" : "NotificationsPanel",
+              })
+            }
+            aria-current={activeTab === "NotificationsPanel" ? "page" : undefined}
+          >
+            <div style={{ position: "relative" }}>
+              <Bell
+                size={22}
+                color={
+                  activeTab === "NotificationsPanel"
+                    ? "var(--water)"
+                    : "var(--ink-ghost)"
+                }
+              />
+              <div className="bell-dot" style={unreadCount > 0 ? { display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px', height: '14px', padding: '0 3px', fontSize: '8px', fontWeight: '800', background: 'var(--lotus)', color: 'white', borderRadius: '7px', top: '-3px', right: '-5px' } : {}}>
+                {unreadCount > 0 ? (unreadCount > 99 ? '99+' : String(unreadCount)) : ''}
+              </div>
+            </div>
+            <span className="mobile-nav-label">{t("webNav.alerts")}</span>
+          </button>
+        </nav>
+      )}
+
+      <AchievementUnlockOverlay
+        title={currentAchievement}
+        visible={showCelebration}
+        onHide={() => setShowCelebration(false)}
+      />
+    </div>
+  );
 }
-
-// ─────────────────────────────────────────────
-// Styles
-// ─────────────────────────────────────────────
-const styles = StyleSheet.create({
-    sidebar: {
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        bottom: 0,
-        zIndex: 100,
-        borderRightWidth: 1,
-        shadowOpacity: 0.12,
-        shadowRadius: 20,
-        shadowOffset: { width: 4, height: 0 },
-        elevation: 8,
-        overflow: 'hidden',
-    },
-    phaseAccent: {
-        height: 3,
-        width: '100%',
-    },
-    logoRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingTop: 20,
-        paddingBottom: 12,
-        gap: 10,
-    },
-    logoCircle: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: 'rgba(212,132,58,0.15)',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-    },
-    logoGlyph: {
-        fontSize: 18,
-    },
-    logoText: {
-        fontSize: 17,
-        fontWeight: '800',
-        letterSpacing: -0.3,
-        flexShrink: 1,
-    },
-    roleBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginHorizontal: 14,
-        marginBottom: 8,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 20,
-        borderWidth: 1,
-        gap: 6,
-        alignSelf: 'flex-start',
-    },
-    roleDot: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-    },
-    roleLabel: {
-        fontSize: 11,
-        fontWeight: '700',
-        letterSpacing: 0.5,
-        textTransform: 'uppercase',
-    },
-    divider: {
-        height: 1,
-        marginHorizontal: 14,
-        marginVertical: 4,
-    },
-    tabList: {
-        flex: 1,
-        paddingVertical: 8,
-        gap: 2,
-    },
-    tabItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginHorizontal: 8,
-        paddingHorizontal: 10,
-        paddingVertical: 11,
-        borderRadius: 12,
-        gap: 12,
-        position: 'relative',
-    },
-    tabItemCollapsed: {
-        justifyContent: 'center',
-        paddingHorizontal: 0,
-        marginHorizontal: 10,
-    },
-    tabItemActive: {
-        borderRadius: 12,
-    },
-    activeBar: {
-        position: 'absolute',
-        left: 0,
-        top: '20%',
-        bottom: '20%',
-        width: 3,
-        borderRadius: 2,
-        backgroundColor: Theme.colors.sanctuarySaffron,
-    },
-    iconWrap: {
-        width: 24,
-        height: 24,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-    },
-    tabLabel: {
-        fontSize: 14,
-        letterSpacing: 0.1,
-        flexShrink: 1,
-    },
-    shortcutHint: {
-        marginLeft: 'auto',
-        paddingHorizontal: 7,
-        paddingVertical: 2,
-        borderRadius: 6,
-        borderWidth: 1,
-    },
-    shortcutText: {
-        fontSize: 11,
-        fontWeight: '600',
-        letterSpacing: 0.3,
-    },
-    sidebarFooter: {
-        paddingHorizontal: 14,
-        paddingBottom: 20,
-    },
-    footerText: {
-        fontSize: 10,
-        letterSpacing: 0.3,
-        textAlign: 'center',
-    },
-});

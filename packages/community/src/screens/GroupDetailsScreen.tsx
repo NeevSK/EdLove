@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
+import { ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import {
     Box,
     VStack,
@@ -11,12 +11,12 @@ import {
     FadeInDown,
     SanctuaryCard,
     SanctuaryButton,
+    SanctuaryFlashList,
     useLotusToast
 } from '@repo/ui';
 import {
     ChevronLeft,
     Users,
-    Shield,
     Settings,
     MoreVertical,
     UserPlus,
@@ -35,7 +35,7 @@ import { isDemo } from '@repo/core';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import PostCard from '../components/PostCard';
-import ReportPostModal from '../components/ReportPostModal';
+import SocialShieldModal from '../components/SocialShieldModal';
 
 type GroupDetailsRouteProp = {
     key: string;
@@ -88,12 +88,12 @@ export default function GroupDetailsScreen() {
         try {
             await joinGroup({ groupId, userId: user.id, joinPolicy: group?.join_policy || 'open' });
             showToast({
-                message: t('community.groups.joinRequested', 'Request to join this circle has been sent.'),
+                message: t('community.groups.joinRequested'),
                 type: 'success'
             });
         } catch (err) {
             showToast({
-                message: t('common.error', 'Something went wrong.'),
+                message: t('common.error'),
                 type: 'error'
             });
         }
@@ -121,7 +121,7 @@ export default function GroupDetailsScreen() {
                     <TouchableOpacity onPress={() => setShowAdmin(false)}>
                         <ChevronLeft color={colors.textPrimary} />
                     </TouchableOpacity>
-                    <Text bold size="lg">{t('community.groups.manage', 'Circle Management')}</Text>
+                    <Text bold size="lg">{t('community.groups.manage')}</Text>
                 </HStack>
                 <GroupMemberManagement groupId={groupId} />
             </Box>
@@ -129,7 +129,7 @@ export default function GroupDetailsScreen() {
     }
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper scroll={false}>
             <Box sx={{ flex: 1 }}>
                 {/* Custom Header */}
                 <HStack
@@ -160,9 +160,23 @@ export default function GroupDetailsScreen() {
                     </HStack>
                 </HStack>
 
-                <FlatList
-                    data={[]}
-                    renderItem={() => null}
+                <SanctuaryFlashList
+                    data={posts}
+                    estimatedItemSize={Theme.listSizes.communityCard}
+                    renderItem={({ item, index }) => (
+                        <Animated.View entering={FadeInDown.duration(400).delay(index * 150).springify()}>
+                            <Box px="$4" pb="$4">
+                                <PostCard
+                                    post={item}
+                                    onPress={() => console.log('OPEN_POST', item.id)}
+                                    onReport={() => {
+                                        setReportPostId(item.id);
+                                        setShowReportModal(true);
+                                    }}
+                                />
+                            </Box>
+                        </Animated.View>
+                    )}
                     ListHeaderComponent={
                         <VStack space="xl" p="$4">
                             {/* Hero Card */}
@@ -217,14 +231,14 @@ export default function GroupDetailsScreen() {
                                                 <HStack space="xs" alignItems="center">
                                                     <Users size={14} color={Theme.colors.dimGray} />
                                                     <Text color={Theme.colors.dimGray} size="sm">
-                                                        {group.member_count || 0} {t('community.groups.members', 'Members')}
+                                                        {group.member_count || 0} {t('community.groups.members')}
                                                     </Text>
                                                 </HStack>
                                             </VStack>
                                         </HStack>
 
                                         <Text color={Theme.colors.mistGray} size="sm">
-                                            {group.description || t('community.groups.noDesc', 'A space for collective learning and support.')}
+                                            {group.description || t('community.groups.noDesc')}
                                         </Text>
 
                                         {!isAdmin && (
@@ -236,7 +250,7 @@ export default function GroupDetailsScreen() {
                                                     isLoading={isJoiningGroup}
                                                     leftIcon={UserPlus}
                                                 >
-                                                    {t('community.groups.join', 'Join this Circle')}
+                                                    {t('community.groups.join')}
                                                 </SanctuaryButton>
                                             </Box>
                                         )}
@@ -251,23 +265,9 @@ export default function GroupDetailsScreen() {
                             <HStack space="sm" alignItems="center" mt="$2">
                                 <MessageSquare size={18} color={Theme.colors.sanctuarySaffron} />
                                 <Text bold size="md" color={Theme.colors.sacredWhite}>
-                                    {t('community.groups.feed', 'Resonant Feed')}
+                                    {t('community.groups.feed')}
                                 </Text>
                             </HStack>
-
-                            <VStack space="md" mt="$2">
-                                {posts.map((post: Post) => (
-                                    <PostCard
-                                        key={post.id}
-                                        post={post}
-                                        onPress={() => console.log('OPEN_POST', post.id)}
-                                        onReport={() => {
-                                            setReportPostId(post.id);
-                                            setShowReportModal(true);
-                                        }}
-                                    />
-                                ))}
-                            </VStack>
                         </VStack>
                     }
                     ListEmptyComponent={
@@ -277,14 +277,14 @@ export default function GroupDetailsScreen() {
                                     <MessageSquare size={32} color={Theme.colors.mistGray} />
                                 </Box>
                                 <Text color={Theme.colors.mistGray} textAlign="center">
-                                    {t('community.groups.emptyFeed', 'The conversation is waiting to blossom. Be the first to share.')}
+                                    {t('community.groups.emptyFeed')}
                                 </Text>
                             </VStack>
                         ) : null
                     }
                 />
 
-                <ReportPostModal
+                <SocialShieldModal
                     isOpen={showReportModal}
                     onClose={() => {
                         setShowReportModal(false);
@@ -292,7 +292,6 @@ export default function GroupDetailsScreen() {
                     }}
                     postId={reportPostId}
                     groupId={groupId}
-                    reporterId={user?.id || ''}
                 />
             </Box>
         </ScreenWrapper>

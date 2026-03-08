@@ -58,6 +58,49 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
     load();
   }, [load]);
 
+  // Real-time subscription — new notifications arrive instantly without polling
+  useEffect(() => {
+    if (!userId) return;
+
+    const channel = supabase
+      .channel(`notifications:${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          // Prepend new notification immediately
+          const incoming = payload.new as AppNotification;
+          setNotifications((prev) => [incoming, ...prev].slice(0, 20));
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          // Reflect is_read changes in real-time
+          const updated = payload.new as AppNotification;
+          setNotifications((prev) =>
+            prev.map((n) => (n.id === updated.id ? { ...n, is_read: updated.is_read } : n))
+          );
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId]);
+
   const markAsRead = useCallback(
     async (id: string) => {
       if (!userId) return;

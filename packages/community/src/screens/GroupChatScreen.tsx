@@ -13,6 +13,7 @@ import type { CommunityStackParamList } from '@repo/core';
 import { supabase } from '@repo/core';
 import { communityAPI } from '../api/community';
 import BaseChatScreen, { type ChatMessage, type SubscriptionConfig } from './BaseChatScreen';
+import HeaderMoreMenu from '../components/HeaderMoreMenu';
 
 type GroupChatRoute = {
     key: string;
@@ -57,6 +58,11 @@ export default function GroupChatScreen() {
             onPressAuthor={(userId, userName) => {
                 navigation.navigate('UserProfile', { userId, userName });
             }}
+            headerRight={
+                <HeaderMoreMenu
+                    groupId={groupId}
+                />
+            }
         />
     );
 }

@@ -8,7 +8,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity, TextInput, ScrollView as RNScrollView } from 'react-native';
-import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors } from '@repo/ui';
+import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors, formatShortDate } from '@repo/ui';
 import { Theme } from '@repo/ui';
 import { staffManagementAPI, CalendarEvent } from '@repo/core';
 
@@ -38,14 +38,6 @@ const TYPE_OPTIONS = ['term_start', 'exam', 'holiday', 'event', 'other'];
 
 function typeBadgeColor(type: string): string {
   return TYPE_COLORS[type] ?? '#9e9e9e';
-}
-
-function formatDate(dateStr: string): string {
-  try {
-    return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-  } catch {
-    return dateStr;
-  }
 }
 
 export default function InstitutionalCalendarSection({
@@ -172,7 +164,7 @@ export default function InstitutionalCalendarSection({
           <Text sx={{ flex: 1, fontSize: 13, color: colors.text }} numberOfLines={1}>
             {ev.title}
           </Text>
-          <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{formatDate(ev.start_date)}</Text>
+          <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{formatShortDate(ev.start_date)}</Text>
         </HStack>
       ))}
 

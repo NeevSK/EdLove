@@ -65,7 +65,10 @@ export const communityAPI = {
             .order('created_at', { ascending: false });
 
         if (error) throw error;
-        return data as CommunityGroup[];
+        return (data || []).map((group: any) => ({
+            ...group,
+            type: group.group_type || group.type || 'general'
+        })) as CommunityGroup[];
     },
 
     /**
@@ -163,7 +166,10 @@ export const communityAPI = {
         // Non-fatal: if this fails (e.g. duplicate), the group still exists.
         if (memberErr) console.warn('createGroupWithOwner: member insert warning', memberErr);
 
-        return created as CommunityGroup;
+        return {
+            ...created,
+            type: created.group_type || 'general'
+        } as CommunityGroup;
     },
 
     /**
@@ -190,7 +196,7 @@ export const communityAPI = {
     /**
      * Get a single group by ID
      */
-    async getGroupById(groupId: string) {
+    async getGroupById(groupId: string): Promise<CommunityGroup> {
         const { data, error } = await supabase
             .from('community_groups')
             .select('*')
@@ -198,7 +204,10 @@ export const communityAPI = {
             .single();
 
         if (error) throw error;
-        return data as CommunityGroup;
+        return {
+            ...(data as any),
+            type: (data as any).group_type || (data as any).type || 'general'
+        } as CommunityGroup;
     },
 
     // ── Group Chat ───────────────────────────────────────────

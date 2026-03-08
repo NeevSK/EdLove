@@ -153,7 +153,10 @@ export default function ClassroomList({
                     } else if (role === 'student') {
                         realData = await api.classrooms.getByStudent(user.id, pagination);
                     } else if (role === 'principal') {
-                        realData = await api.classrooms.getBySchool(user.id, pagination);
+                        const schoolId = user.user_metadata?.school_id;
+                        if (schoolId) {
+                            realData = await api.classrooms.getBySchool(schoolId, pagination);
+                        }
                     }
 
                     // If real data exists, use it and ignore samples
@@ -222,7 +225,10 @@ export default function ClassroomList({
             } else if (role === 'student') {
                 newData = await api.classrooms.getByStudent(user.id, pagination);
             } else if (role === 'principal') {
-                newData = await api.classrooms.getBySchool(user.id, pagination);
+                const schoolId = user.user_metadata?.school_id;
+                if (schoolId) {
+                    newData = await api.classrooms.getBySchool(schoolId, pagination);
+                }
             }
 
             if (newData.length > 0) {

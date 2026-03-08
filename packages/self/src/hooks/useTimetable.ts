@@ -1,8 +1,9 @@
-import { SafeZustandStorage, supabase, useStore, GuestDataManager, authAPI } from '@repo/core';
+import { SafeZustandStorage, supabase, useStore, GuestDataManager, authAPI, identityAPI } from '@repo/core';
 import { useState, useEffect, useCallback } from 'react';
 
 const TIMETABLE_CACHE_KEY = 'gurudevi-timetable-cache';
 import { Period } from '../types';
+export type { Period };
 
 export const useTimetable = (activeDay: number) => {
     const isOnline = useStore(state => state.isOnline);
@@ -115,8 +116,8 @@ export const useTimetable = (activeDay: number) => {
                 const guestPeriod = await GuestDataManager.addTimetablePeriod({
                     day_of_week: period.day_of_week,
                     period_number: period.period_number,
-                    subject: period.subject,
-                    class_name: period.class_name,
+                    subject: period.subject || '',
+                    class_name: period.class_name || '',
                     type: period.type,
                     start_time: period.start_time,
                     end_time: period.end_time
@@ -129,12 +130,12 @@ export const useTimetable = (activeDay: number) => {
                 } : p));
             } else {
                 // Authenticated mode: Save to Supabase
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) throw new Error("Not authenticated");
+                const myId = await identityAPI.getMyInternalId();
+                if (!myId) throw new Error("Not authenticated");
 
                 const { data, error } = await supabase
                     .from('timetable')
-                    .insert([{ ...period, user_id: user.id }])
+                    .insert([{ ...period, user_id: myId }])
                     .select()
                     .single();
 

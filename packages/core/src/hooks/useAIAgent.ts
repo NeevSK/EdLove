@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
 import { useStore } from '../store/useStore';
-import { supabase } from '../lib/supabase';
+import { supabase, identityAPI } from '@repo/core';
 import { TimetableScheduler, CoordinationGap } from '../api/agents';
+import { moonPhaseAPI } from '../api/moonPhase';
 
 export interface Message {
     id: string;
@@ -28,6 +29,7 @@ export function useAIAgent() {
     const [activeGaps, setActiveGaps] = useState<CoordinationGap[]>([]);
     const [lastTimetableDraft, setLastTimetableDraft] = useState<any>(null);
     const userRole = useStore((state) => state.userRole);
+    const user = useStore((state) => state.user);
 
     /**
      * Workflow Assistant: Structural Repair
@@ -35,10 +37,7 @@ export function useAIAgent() {
      */
     const generateTimetable = useCallback(async (schoolId: string) => {
         setIsThinking(true);
-        // Simulate processing time for "Agentic Deliberation"
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        const draft = TimetableScheduler.generateDraft(schoolId, {
+        const draft = await TimetableScheduler.generateDraft(schoolId, {
             maxDailyPeriods: 7,
             mandatorySubjects: ['Math', 'Science', 'Sinhala', 'English'],
             teacherPreferences: true
@@ -56,8 +55,8 @@ export function useAIAgent() {
      * Falls back to empty array on any error — non-fatal.
      */
     const refreshStatus = useCallback(async () => {
-        const { data: { user } } = await supabase.auth.getUser().catch(() => ({ data: { user: null } }));
-        if (!user) {
+        const myId = await identityAPI.getMyInternalId().catch(() => null);
+        if (!myId) {
             setActiveGaps([]);
             return [];
         }
@@ -70,7 +69,7 @@ export function useAIAgent() {
             const { data: classrooms } = await supabase
                 .from('classrooms')
                 .select('id, name')
-                .eq('teacher_id', user.id)
+                .eq('teacher_id', myId)
                 .limit(5);
 
             if (classrooms?.length) {
@@ -145,6 +144,10 @@ export function useAIAgent() {
         return gaps;
     }, []);
 
+    /**
+     * Send a message to the real AI assistant edge function.
+     * Falls back to local Socratic generator if the edge function is unreachable.
+     */
     const sendMessage = useCallback(async (content: string) => {
         if (!content.trim()) return;
 
@@ -158,21 +161,85 @@ export function useAIAgent() {
         setMessages((prev) => [...prev, userMessage]);
         setIsThinking(true);
 
-        // Simulate AI Response Delay
-        setTimeout(() => {
-            const assistantMessage: Message = {
+        // Build context for the edge function
+        const conversationHistory = messages.map(m => ({ role: m.role, content: m.content }));
+
+        // Get moon phase for context (best-effort, non-blocking)
+        let moonPhase: string | undefined;
+        try {
+            const moonData = moonPhaseAPI.getCurrentMoonPhase();
+            moonPhase = moonData.name;
+        } catch { /* non-fatal */ }
+
+        // Fetch school name if available (best-effort)
+        let schoolName: string | undefined;
+        if (user?.school_id) {
+            try {
+                const { data } = await supabase
+                    .from('schools')
+                    .select('name')
+                    .eq('id', user.school_id)
+                    .maybeSingle();
+                schoolName = data?.name;
+            } catch { /* non-fatal */ }
+        }
+
+        try {
+            const { data: sessionData } = await supabase.auth.getSession();
+            const token = sessionData?.session?.access_token;
+
+            if (!token) {
+                throw new Error('No auth token');
+            }
+
+            const response = await supabase.functions.invoke('ai-assistant', {
+                body: {
+                    message: content,
+                    history: conversationHistory,
+                    context: {
+                        role: userRole ?? 'teacher',
+                        schoolName,
+                        activeGaps,
+                        orientationSeeds: user?.orientation_seeds ?? null,
+                        moonPhase,
+                    },
+                },
+            });
+
+            const reply = response.data?.reply as string | undefined;
+
+            if (reply) {
+                setMessages((prev) => [...prev, {
+                    id: (Date.now() + 1).toString(),
+                    role: 'assistant',
+                    content: reply,
+                    timestamp: Date.now(),
+                }]);
+                return;
+            }
+            throw new Error('Empty reply from edge function');
+        } catch (err) {
+            console.warn('[useAIAgent] edge function error, falling back to local:', err);
+            // Local fallback — still Socratic, just not LLM-powered
+            const fallback = generateLocalFallback(content, userRole);
+            setMessages((prev) => [...prev, {
                 id: (Date.now() + 1).toString(),
                 role: 'assistant',
-                content: generateResponse(content, userRole),
+                content: fallback,
                 timestamp: Date.now(),
-            };
-            setMessages((prev) => [...prev, assistantMessage]);
+            }]);
+        } finally {
             setIsThinking(false);
-        }, 1500);
-    }, [userRole]);
+        }
+    }, [messages, userRole, user, activeGaps]);
 
     const clearHistory = useCallback(() => {
-        setMessages([]);
+        setMessages([{
+            id: '1',
+            role: 'assistant',
+            content: 'Welcome to the Sanctuary. I am monitoring the school flow. How can I assist you today?',
+            timestamp: Date.now(),
+        }]);
     }, []);
 
     return {
@@ -188,29 +255,28 @@ export function useAIAgent() {
 }
 
 /**
- * Socratic Response Generator (Mock for Alpha)
- * In production, this will call the actual LLM endpoint.
+ * Local Socratic fallback — used when the edge function is unreachable.
+ * Keeps the AI feeling present even without network.
  */
-function generateResponse(input: string, role: string | null): string {
-    const reflections = [
-        "That is an interesting perspective. Why do you feel that is the core of the issue?",
-        "I hear you. If we look at this through the lens of growth, what becomes possible?",
-        "The path of a teacher is often complex. How can we simplify this for your students?",
-        "Reflection is the first step toward transformation. What else do you see in this situation?",
-        "That sounds significant. How does this align with your deeper values?"
-    ];
-
-    // Simple keyword matching for a more "aware" feel
+function generateLocalFallback(input: string, role: string | null): string {
     const lowerInput = input.toLowerCase();
     if (lowerInput.includes('lesson') || lowerInput.includes('class')) {
-        return "Lessons are more than just delivery; they are shared experiences. How was the energy in the room?";
+        return 'Lessons are more than delivery — they are shared experiences. How was the energy in the room?';
     }
     if (lowerInput.includes('tired') || lowerInput.includes('stress')) {
-        return "Rest is not a luxury; it is a vital part of the cycle. How can you find a moment of stillness today?";
+        return 'Rest is not a luxury; it is a vital part of the cycle. How can you find a moment of stillness today?';
     }
     if (lowerInput.includes('student')) {
-        return "Each student is a world unto themselves. What did one of them teach you today?";
+        return 'Each student is a world unto themselves. What did one of them teach you today?';
     }
-
-    return reflections[Math.floor(Math.random() * reflections.length)] || '';
+    if (role === 'principal') {
+        return 'Leading a school means holding many realities at once. Which one needs your attention most right now?';
+    }
+    const reflections = [
+        'That is something worth sitting with. What feels most true about it to you?',
+        'If we look at this through the lens of growth, what becomes possible?',
+        'Reflection is the first step toward transformation. What else do you see in this situation?',
+        'That sounds significant. How does this align with your deeper values?',
+    ];
+    return reflections[Math.floor(Math.random() * reflections.length)] ?? reflections[0]!;
 }

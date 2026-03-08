@@ -10,3 +10,4 @@ export { default as ClassroomDetailsScreen } from './ClassroomDetailsScreen';
 export { default as AttendanceScreen } from './AttendanceScreen';
 export { default as GradebookScreen } from './GradebookScreen';
 export { default as ClassroomDashboard } from './ClassroomDashboard';
+export { default as StudentProfileScreen } from './StudentProfileScreen';

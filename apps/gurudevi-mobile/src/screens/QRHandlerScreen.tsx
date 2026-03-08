@@ -25,7 +25,7 @@ import {
 } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { supabase, api, FlowResolver } from '@repo/core';
+import { supabase, api, FlowResolver, identityAPI } from '@repo/core';
 import { communityAPI } from '@repo/community';
 import type { QRPayload } from '@repo/scanner-kit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -56,15 +56,15 @@ export default function QRHandlerScreen() {
 
   const executeAction = async (p: QRPayload) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const myId = await identityAPI.getMyInternalId();
+      if (!myId) {
         // Store and redirect to auth
         await AsyncStorage.setItem('pending_qr_action', JSON.stringify(p));
         navigation.navigate('Auth');
         return;
       }
 
-      const result = await FlowResolver.resolveQR(p, user.id);
+      const result = await FlowResolver.resolveQR(p, myId);
 
       if (result.outcome === 'success') {
         hapticSuccess();

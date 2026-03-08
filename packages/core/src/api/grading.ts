@@ -1,4 +1,4 @@
-﻿import { supabase } from '../lib/supabase';
+﻿import { supabase, identityAPI } from '@repo/core';
 import { APIError } from './types';
 import { StudentGrade, ClassroomGradingSettings } from '../types/Grade';
 import { marksToGPA } from '../lib/grading';
@@ -53,25 +53,23 @@ export const gradingAPI = {
 
         // Growth signal: teacher nourished a student by reviewing their work
         // (Tier 1 Work Signal — grading IS an act of care and presence)
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        if (authError || !user) {
-            console.warn('[GrowthSignals] Auth unavailable for grading signal:', authError?.message);
-        } else {
-            void growthSignalsAPI.emitSignal(user.id, 'assignment_graded', {
+        const myId = await identityAPI.getMyInternalId();
+        if (myId) {
+            void growthSignalsAPI.emitSignal(myId, 'assignment_graded', {
                 classroom_id: classroomId,
                 has_feedback: !!feedback && feedback.length > 0,
-            }).catch(() => {});
+            }).catch(() => { });
 
             // If the teacher wrote substantive written feedback, create an Impact Ripple
             // for the student — "your teacher thought carefully about your work"
             if (feedback && feedback.length > 20 && studentId) {
                 void impactRipplesAPI.createRipple({
                     recipientUserId: studentId,
-                    actorUserId: user.id,
+                    actorUserId: myId,
                     rippleType: 'feedback_given',
                     sourceEntityType: 'lesson',
                     sourceEntityId: assignmentId,
-                }).catch(() => {});
+                }).catch(() => { });
             }
         }
 

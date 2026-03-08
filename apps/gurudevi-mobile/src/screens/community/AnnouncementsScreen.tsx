@@ -142,7 +142,7 @@ export default function AnnouncementsScreen({
                         }}
                     >
                         <Heading size="2xl" color={Theme.colors.sanctuarySaffron}>
-                            {t('announcements.title') || '?? Announcements'}
+                            {t('announcements.title') || '📢 Announcements'}
                         </Heading>
                     </HStack>
 
@@ -191,7 +191,7 @@ export default function AnnouncementsScreen({
                                 size="sm"
                                 sx={{ fontWeight: '600' }}
                             >
-                                {t('announcements.pinned') || '?? PINNED'}
+                                {t('announcements.pinned') || '📌 PINNED'}
                             </Text>
 
                             {pinnedAnnouncements.map((announcement) => (

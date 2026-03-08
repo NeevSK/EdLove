@@ -20,3 +20,18 @@ export interface StudentAttendance {
     roll_number?: string | null;
     status: AttendanceStatus;
 }
+
+export interface AttendanceTrendPoint {
+    date: string;
+    presentCount: number;
+    absentCount: number;
+    lateCount: number;
+    totalCount: number;
+    rate: number;
+}
+
+export interface AttendanceReport {
+    trend: AttendanceTrendPoint[];
+    overallRate: number;
+    totalAbsences: number;
+}

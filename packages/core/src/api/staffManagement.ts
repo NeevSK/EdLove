@@ -9,6 +9,7 @@
  */
 
 import { supabase } from '../lib/supabase';
+import { AttendanceTrendPoint, AttendanceReport } from '../types/Attendance';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -233,6 +234,13 @@ export const staffManagementAPI = {
    */
   async approveLeave(leaveId: string, principalId: string, approve: boolean): Promise<boolean> {
     try {
+      // Fetch leave request for notification metadata
+      const { data: leave } = await supabase
+        .from('staff_leaves')
+        .select('user_id, leave_type, start_date, end_date')
+        .eq('id', leaveId)
+        .maybeSingle();
+
       const { error } = await supabase
         .from('staff_leaves')
         .update({
@@ -246,6 +254,28 @@ export const staffManagementAPI = {
         console.error('[staffManagement] approveLeave:', error.message);
         return false;
       }
+
+      // Notify the staff member — fire-and-forget, non-fatal
+      if (leave?.user_id) {
+        const dateRange = leave.start_date === leave.end_date
+          ? leave.start_date
+          : `${leave.start_date} – ${leave.end_date}`;
+        void supabase.from('notifications').insert({
+          user_id: leave.user_id,
+          type: approve ? 'leave_approved' : 'leave_rejected',
+          title: approve ? 'Leave Approved ✓' : 'Leave Request Update',
+          body: approve
+            ? `Your ${leave.leave_type ?? 'leave'} request for ${dateRange} has been approved.`
+            : `Your ${leave.leave_type ?? 'leave'} request for ${dateRange} was not approved. Please speak with the principal.`,
+          is_read: false,
+          reference_id: leaveId,
+          reference_type: 'staff_leave',
+        }).then(
+          () => { },
+          (err: any) => console.warn('[staffManagement] leave notification failed:', err?.message)
+        );
+      }
+
       return true;
     } catch (e) {
       console.error('[staffManagement] approveLeave unexpected:', e);
@@ -254,25 +284,30 @@ export const staffManagementAPI = {
   },
 
   /**
-   * Returns school-wide student attendance pulse (today rate, yesterday delta, at-risk count).
-   * Derives school scope by first fetching classroom IDs for the school, then filtering
-   * attendance by those classroom IDs. At-risk is computed as students whose last 20 attendance
-   * records show < 75% present.
+   * Returns student attendance pulse (today rate, yesterday delta, at-risk count).
+   * If classroomId is provided, filters to that classroom. Otherwise fetches for whole school.
+   * At-risk is computed as students absent on both today AND yesterday.
    */
-  async getStudentAttendancePulse(schoolId: string): Promise<StudentAttendancePulse> {
+  async getStudentAttendancePulse(schoolId: string, classroomId?: string): Promise<StudentAttendancePulse> {
     const empty: StudentAttendancePulse = { todayRate: 0, yesterdayRate: 0, atRiskCount: 0 };
     try {
       const today = todayISO();
       const yesterday = yesterdayISO();
 
-      // Step 1 — get classroom IDs for this school
-      const { data: classrooms, error: classErr } = await supabase
-        .from('classrooms')
-        .select('id')
-        .eq('school_id', schoolId);
+      let classroomIds: string[] = [];
 
-      if (classErr || !classrooms || classrooms.length === 0) return empty;
-      const classroomIds = classrooms.map((c) => c.id);
+      if (classroomId) {
+        classroomIds = [classroomId];
+      } else {
+        // Step 1 — get all classroom IDs for this school
+        const { data: classrooms, error: classErr } = await supabase
+          .from('classrooms')
+          .select('id')
+          .eq('school_id', schoolId);
+
+        if (classErr || !classrooms || classrooms.length === 0) return empty;
+        classroomIds = classrooms.map((c) => c.id);
+      }
 
       // Step 2 — fetch today & yesterday attendance rows filtered by classroom
       const [todayRes, yesterdayRes] = await Promise.all([
@@ -290,7 +325,7 @@ export const staffManagementAPI = {
 
       const calcRate = (rows: { status: string }[] | null) => {
         if (!rows || rows.length === 0) return 0;
-        const present = rows.filter((r) => r.status === 'present').length;
+        const present = rows.filter((r) => r.status === 'present' || r.status === 'late').length;
         return Math.round((present / rows.length) * 100);
       };
 
@@ -370,6 +405,97 @@ export const staffManagementAPI = {
     } catch (e) {
       console.error('[staffManagement] createCalendarEvent unexpected:', e);
       return false;
+    }
+  },
+
+  /**
+   * Returns a detailed attendance report for a school or specific classroom over a date range.
+   */
+  async getAttendanceReport(
+    schoolId: string,
+    startDate: string,
+    endDate: string,
+    classroomId?: string,
+  ): Promise<AttendanceReport> {
+    const empty: AttendanceReport = { trend: [], overallRate: 0, totalAbsences: 0 };
+    try {
+      let classroomIds: string[] = [];
+
+      if (classroomId) {
+        classroomIds = [classroomId];
+      } else {
+        // 1. Get classroom IDs for this school
+        const { data: classrooms, error: classErr } = await supabase
+          .from('classrooms')
+          .select('id')
+          .eq('school_id', schoolId);
+
+        if (classErr || !classrooms || classrooms.length === 0) return empty;
+        classroomIds = classrooms.map((c) => c.id);
+      }
+
+      // 2. Fetch all attendance records in range
+      const { data: records, error: attErr } = await supabase
+        .from('attendance')
+        .select('status, date')
+        .in('classroom_id', classroomIds)
+        .gte('date', startDate)
+        .lte('date', endDate)
+        .order('date', { ascending: true });
+
+      if (attErr || !records) {
+        console.error('[staffManagement] getAttendanceReport:', attErr?.message);
+        return empty;
+      }
+
+      // 3. Aggregate results by day
+      const dailyMap = new Map<string, AttendanceTrendPoint>();
+      records.forEach((r) => {
+        if (!dailyMap.has(r.date)) {
+          dailyMap.set(r.date, {
+            date: r.date,
+            presentCount: 0,
+            absentCount: 0,
+            lateCount: 0,
+            totalCount: 0,
+            rate: 0,
+          });
+        }
+        const point = dailyMap.get(r.date)!;
+        point.totalCount++;
+        if (r.status === 'present') point.presentCount++;
+        else if (r.status === 'absent') point.absentCount++;
+        else if (r.status === 'late') point.lateCount++;
+      });
+
+      const trend: AttendanceTrendPoint[] = [];
+      let totalPresent = 0;
+      let totalLate = 0;
+      let totalAbsents = 0;
+      let totalRecords = 0;
+
+      dailyMap.forEach((p) => {
+        // Count 'late' as present — consistent with getStudentAttendancePulse
+        p.rate = p.totalCount > 0
+          ? Math.round(((p.presentCount + p.lateCount) / p.totalCount) * 100)
+          : 0;
+        trend.push(p);
+        totalPresent += p.presentCount;
+        totalLate += p.lateCount;
+        totalAbsents += p.absentCount;
+        totalRecords += p.totalCount;
+      });
+
+      return {
+        trend: trend.sort((a, b) => a.date.localeCompare(b.date)),
+        overallRate: totalRecords > 0
+          ? Math.round(((totalPresent + totalLate) / totalRecords) * 100)
+          : 0,
+        totalAbsences: totalAbsents,
+      };
+    } catch (e) {
+      console.error('[staffManagement] getAttendanceReport unexpected:', e);
+      return empty;
     }
   },
 };

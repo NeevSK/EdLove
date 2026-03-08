@@ -26,27 +26,25 @@ import { Mic, Send, MessageCircle, Repeat, Flower, Flame, Sparkles, Heart, Light
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { hapticLight } from '@repo/ui';
-import {
-    MoodLotus,
-    ShadowAgentDrawer,
-    FireJournal,
-    JoyJar,
-    GratitudeGlimmers,
-    WisdomSeeds,
-    TomorrowPrep,
-    EnergyForecast,
-    WindDownRitual,
-    SleepTracker,
-    RemindersManager,
-    VoiceJournaling,
-    DailyContentCard,
-    DailyRhythm,
-    WelcomeModal
-} from '@repo/self';
-import PulseDashboard from '../self/PulseDashboard';
+import MoodLotus from '../../components/MoodLotus';
+import ShadowAgentDrawer from '../../components/ShadowAgentDrawer';
+import FireJournal from '../../components/FireJournal';
+import JoyJar from '../../components/JoyJar';
+import GratitudeGlimmers from '../../components/GratitudeGlimmers';
+import WisdomSeeds from '../../components/WisdomSeeds';
+import TomorrowPrep from '../../components/TomorrowPrep';
+import EnergyForecast from '../../components/EnergyForecast';
+import WindDownRitual from '../../components/WindDownRitual';
+import SleepTracker from '../../components/SleepTracker';
+import RemindersManager from '../../components/RemindersManager';
+import VoiceJournaling from '../../components/VoiceJournaling';
+import DailyContentCard from '../../components/DailyContentCard';
+import DailyRhythm from '../../components/DailyRhythm';
+import WelcomeModal from '../../components/WelcomeModal';
+import DecisionJournalSection from '../../components/DecisionJournalSection';
+import PulseDashboard from '../../components/PulseDashboard';
 import { supabase, useStore, useSafeMutation } from '@repo/core';
 import { GlobalHeader } from '@repo/ui';
-import { useDecisionJournal } from '@repo/self';
 import { ThuthimalBadge } from '@repo/profile';
 import {
     SkeletonCard,
@@ -54,7 +52,7 @@ import {
     useThemedColors,
     useBottomTabPadding
 } from '@repo/ui';
-import { ScreenWrapper } from '@repo/ui';
+import { ScreenWrapper, AdaptiveLayout } from '@repo/ui';
 
 // Progressive Architecture: PulseDashboard is the Entry Hall.
 // Core features are revealed after the user taps "Enter Full Sanctuary".
@@ -187,7 +185,7 @@ export default function TeacherSelfView() {
                                 minHeight: 150
                             }}
                         >
-                            <Input variant="outline" size="md" sx={{ borderWidth: 0, flex: 1 }}>
+                            <Input sx={{ borderWidth: 0, flex: 1 }}>
                                 <InputField
                                     placeholder={t('self.speakTruth')}
                                     multiline
@@ -240,9 +238,86 @@ export default function TeacherSelfView() {
     const allFeatures = showMoreTools ? [...CORE_FEATURES, ...MORE_TOOLS_FEATURES] : CORE_FEATURES;
 
     return (
-        <ScreenWrapper scroll={false}>
+        <ScreenWrapper scroll={false} noTopInset={true}>
             <GlobalHeader isSelfView avatarUrl={userProfile?.avatar_url} />
-            <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+            <AdaptiveLayout
+                renderSidebar={() => (
+                    <VStack space="lg" sx={{ p: Theme.spacing.lg }}>
+                        {/* Daily Content Section */}
+                        <VStack space="md">
+                            <DailyContentCard type="motivation" />
+                            <DailyContentCard type="did_you_know" />
+                        </VStack>
+
+                        {/* Feature Grid (Vertical on Tablet) */}
+                        <VStack space="md" sx={{ mt: Theme.spacing.md }}>
+                            <Heading size="sm" color={colors.textSecondary}>{t('self.features')}</Heading>
+                            <Box sx={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+                                {allFeatures.map((feature) => (
+                                    <Pressable
+                                        key={feature.id}
+                                        onPress={() => {
+                                            hapticLight();
+                                            setActiveFeature(feature.id);
+                                        }}
+                                        sx={{ width: '45%' }}
+                                    >
+                                        <VStack
+                                            alignItems="center"
+                                            justifyContent="center"
+                                            space="xs"
+                                            sx={{
+                                                height: 80,
+                                                borderRadius: Theme.corners.generous,
+                                                backgroundColor: activeFeature === feature.id
+                                                    ? Theme.colors.sanctuarySaffron
+                                                    : colors.secondary,
+                                                borderWidth: 1,
+                                                borderColor: activeFeature === feature.id
+                                                    ? Theme.colors.sanctuarySaffron
+                                                    : colors.border,
+                                            }}
+                                        >
+                                            <feature.icon
+                                                color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary}
+                                                size={24}
+                                            />
+                                            <Text
+                                                size="xs"
+                                                bold={activeFeature === feature.id}
+                                                color={activeFeature === feature.id ? Theme.colors.white : colors.text}
+                                                textAlign="center"
+                                            >
+                                                {t(`self.${feature.id}`)}
+                                            </Text>
+                                        </VStack>
+                                    </Pressable>
+                                ))}
+                            </Box>
+                        </VStack>
+                    </VStack>
+                )}
+                renderContent={() => (
+                    <Box p={Theme.spacing.xl}>
+                        <Box
+                            p={Theme.spacing.xl}
+                            sx={{
+                                backgroundColor: colors.secondary,
+                                borderRadius: Theme.corners.generous,
+                                minHeight: 500
+                            }}
+                        >
+                            {loadingUser ? (
+                                <VStack space="md">
+                                    <SkeletonCard height={40} />
+                                    <SkeletonCard height={150} />
+                                    <SkeletonCard height={40} />
+                                </VStack>
+                            ) : renderFeature()}
+                        </Box>
+                    </Box>
+                )}
+            >
                 <ScrollView
                     sx={{ flex: 1 }}
                     showsVerticalScrollIndicator={false}
@@ -380,7 +455,7 @@ export default function TeacherSelfView() {
                         </Box>
                     </Box>
                 </ScrollView>
-            </Box>
+            </AdaptiveLayout>
 
             {/* Shadow Agent Drawer - Always present as a floating orb */}
             <ShadowAgentDrawer />
@@ -389,103 +464,5 @@ export default function TeacherSelfView() {
                 onClose={() => setJustFinishedOnboarding(false)}
             />
         </ScreenWrapper>
-    );
-}
-
-function DecisionJournalSection({ userId, colors, t }: { userId: string | null, colors: any, t: any }) {
-    const navigation = useNavigation<any>();
-    const [decisionText, setDecisionText] = useState('');
-    const { decisions, refreshData } = useDecisionJournal(userId ?? undefined);
-
-    const { mutate, isLoading: isSaving } = useSafeMutation(
-        async (text: string) => {
-            const { error } = await supabase
-                .from('decision_journals')
-                .insert({ user_id: userId, decision_text: text, is_reviewed: false });
-            if (error) {
-                if (error.code === '42P01') {
-                    console.warn('[DecisionJournal] Table not yet migrated — entry saved to local cache only.', error.message);
-                    return;
-                }
-                throw error;
-            }
-        },
-        {
-            onSuccess: () => { hapticLight(); setDecisionText(''); refreshData(); },
-            retryCount: 3,
-        }
-    );
-
-    if (!userId) {
-        return <PositiveInvitation type="guest" onAction={() => navigation.navigate('Auth' as never)} />;
-    }
-
-    return (
-        <VStack space="md" sx={{ flex: 1 }}>
-            <Box
-                p={Theme.spacing.md}
-                sx={{ backgroundColor: colors.tertiary, borderRadius: Theme.corners.comfortable, minHeight: 120 }}
-            >
-                <Input variant="outline" size="md" sx={{ borderWidth: 0, flex: 1 }}>
-                    <InputField
-                        placeholder={t('self.decisionPlaceholder', 'What decision is weighing on you today?')}
-                        multiline
-                        color={colors.text}
-                        placeholderTextColor={colors.textTertiary}
-                        sx={{ textAlignVertical: 'top', minHeight: 100 }}
-                        value={decisionText}
-                        onChangeText={setDecisionText}
-                    />
-                </Input>
-                <Box alignItems="flex-end" mt="$2">
-                    <Pressable
-                        onPress={() => mutate(decisionText.trim())}
-                        disabled={!decisionText.trim() || isSaving}
-                        sx={{
-                            backgroundColor: decisionText.trim() ? colors.action : colors.border,
-                            paddingHorizontal: Theme.spacing.md,
-                            paddingVertical: Theme.spacing.xs,
-                            borderRadius: Theme.corners.comfortable,
-                            opacity: isSaving ? 0.7 : 1,
-                        }}
-                    >
-                        <Text color={Theme.colors.white} size="sm" bold>
-                            {isSaving ? t('common.saving', 'Saving…') : t('common.save')}
-                        </Text>
-                    </Pressable>
-                </Box>
-            </Box>
-
-            <Heading size="sm" color={colors.textSecondary} mt="$4">
-                {t('self.recentDecisions', 'Recent Decisions')}
-            </Heading>
-
-            <ScrollView sx={{ maxHeight: 300 }} nestedScrollEnabled>
-                <VStack space="sm">
-                    {decisions.map((decision) => (
-                        <Box
-                            key={decision.id}
-                            p={Theme.spacing.md}
-                            sx={{
-                                backgroundColor: colors.secondary,
-                                borderRadius: Theme.corners.comfortable,
-                                borderLeftWidth: 3,
-                                borderLeftColor: colors.action,
-                            }}
-                        >
-                            <Text color={colors.text} size="sm" numberOfLines={3}>{decision.decision_text}</Text>
-                            <Text color={colors.textTertiary} size="xs" mt="$1">
-                                {new Date(decision.created_at).toLocaleDateString()}
-                            </Text>
-                        </Box>
-                    ))}
-                    {decisions.length === 0 && (
-                        <Text color={colors.textTertiary} size="sm" fontStyle="italic">
-                            {t('self.noDecisionsYet', 'No decisions logged yet.')}
-                        </Text>
-                    )}
-                </VStack>
-            </ScrollView>
-        </VStack>
     );
 }

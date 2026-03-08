@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿﻿import React, { useState, useEffect } from 'react';
 import {
   Box,
   VStack,
@@ -15,9 +15,9 @@ import { Lightbulb, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { supabase, useSafeMutation } from '@repo/core';
-import { WisdomNote } from '@repo/self';
 import { hapticLight, hapticSuccess, SkeletonCard, PositiveInvitation } from '@repo/ui';
-import { useWisdom } from '@repo/self';
+import { useWisdom } from '../hooks/useWisdom';
+import { WisdomNote } from '../types';
 import { useNavigation } from '@react-navigation/native';
 
 interface WisdomSeedsProps {

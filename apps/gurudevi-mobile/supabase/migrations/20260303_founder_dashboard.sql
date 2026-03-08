@@ -31,7 +31,7 @@ BEGIN
 
     RETURN result;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp;
 
 -- 2. RLS Refinement for Founders/Admins
 -- Founders and Admins should see ALL data in key tables.

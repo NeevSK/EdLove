@@ -229,16 +229,19 @@ export function LibraryThumbnailCard({
         </View>
     );
 
+    const PressableAny = Pressable as any;
     return (
-        <Pressable
+        <PressableAny
             onPress={onPress}
             style={({ hovered }: any) => [
                 styles.pressable,
                 Platform.OS === 'web' && hovered && { opacity: 0.9, cursor: 'pointer' }
             ]}
-            // @ts-ignore - web-only props
+            // @ts-ignore
             accessibilityRole={href ? 'link' : 'button'}
+            // @ts-ignore
             href={href}
+            // @ts-ignore
             hrefAttrs={{
                 target: target,
                 rel: target === '_blank' ? 'noopener noreferrer' : undefined,
@@ -258,7 +261,7 @@ export function LibraryThumbnailCard({
                     </>
                 )}
             </View>
-        </Pressable>
+        </PressableAny>
     );
 }
 

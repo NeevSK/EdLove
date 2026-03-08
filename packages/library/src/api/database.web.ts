@@ -134,23 +134,70 @@ export const knowledgeDB = {
 
     // Shim for compatibility with sync logic that uses SQLite methods
     async runAsync(query: string, params: any[]) {
-        if (query.includes('INSERT OR REPLACE INTO sync_state')) {
-            const [key, last_sync_timestamp] = params;
-            const transaction = this.db!.transaction([SYNC_STORE], 'readwrite');
-            transaction.objectStore(SYNC_STORE).put({ key, last_sync_timestamp, sync_status: 'idle' });
+        if (!this.db) await this.init();
+        if (!this.db) return;
+        if (query.includes('sync_state')) {
+            const key = params[0] as string;
+            // Two SQL variants are called by sync.ts:
+            //   3-param: INSERT … (key, last_sync_timestamp, sync_status)
+            //   2-param: INSERT … (key, sync_status)  ← error path
+            let record: Record<string, unknown>;
+            if (query.includes('last_sync_timestamp')) {
+                record = { key, last_sync_timestamp: params[1], sync_status: params[2] ?? 'idle' };
+            } else {
+                record = { key, sync_status: params[1] ?? 'error' };
+            }
+            return new Promise<void>((resolve, reject) => {
+                const tx = this.db!.transaction([SYNC_STORE], 'readwrite');
+                tx.objectStore(SYNC_STORE).put(record);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
         }
     },
 
     async getFirstAsync<T>(query: string, params: any[]): Promise<T | null> {
-        if (query.includes('FROM sync_state')) {
+        if (!this.db) await this.init();
+        if (!this.db) return null;
+        if (query.includes('sync_state')) {
             const [key] = params;
             return new Promise((resolve) => {
-                const transaction = this.db!.transaction([SYNC_STORE], 'readonly');
-                const request = transaction.objectStore(SYNC_STORE).get(key);
-                request.onsuccess = () => resolve(request.result as T);
+                const tx = this.db!.transaction([SYNC_STORE], 'readonly');
+                const request = tx.objectStore(SYNC_STORE).get(key);
+                request.onsuccess = () => resolve(request.result as T ?? null);
                 request.onerror = () => resolve(null);
             });
         }
         return null;
+    },
+
+    async upsertLayers(layers: { id: string, name: string, category: string | null, is_geographic: boolean, updated_at: number }[]) {
+        if (!this.db) await this.init();
+        if (!this.db) return;
+
+        return new Promise<void>((resolve, reject) => {
+            const transaction = this.db!.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+
+            layers.forEach(layer => store.put({
+                id: layer.id,
+                type: 'layer',
+                content_type: layer.category,
+                title_en: layer.name,
+                title_si: null,
+                title_ta: null,
+                tags: null,
+                map_x: null,
+                map_y: null,
+                latitude: null,
+                longitude: null,
+                parent_id: null,
+                island_id: null,
+                updated_at: layer.updated_at,
+            }));
+
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = () => reject(transaction.error);
+        });
     }
 };

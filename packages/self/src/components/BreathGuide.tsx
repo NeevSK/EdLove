@@ -65,6 +65,8 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
 
     const startBreathCycle = () => {
         const currentStep = BREATH_CYCLE[phaseIndex];
+        if (!currentStep) return;
+
         setCurrentPhase(currentStep.phase);
 
         // Trigger haptic feedback at phase start

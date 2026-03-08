@@ -23,7 +23,7 @@ import {
 import { useThemedColors } from '@repo/ui';
 import { hapticSuccess, hapticError } from '@repo/ui';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { supabase, thuthimalAPI } from '@repo/core';
+import { supabase, thuthimalAPI, identityAPI } from '@repo/core';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -69,13 +69,13 @@ export default function ThuthimalClaimScreen() {
   const claimGift = async () => {
     const { gift_token } = route.params;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const myId = await identityAPI.getMyInternalId();
+      if (!myId) {
         navigation.navigate('Auth');
         return;
       }
 
-      const result = await thuthimalAPI.claimGift(gift_token, user.id);
+      const result = await thuthimalAPI.claimGift(gift_token, myId);
 
       if (result.success) {
         setGifterName(result.gifter_name ?? gifterName);

@@ -4,7 +4,7 @@ import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Theme } from '@repo/ui';
-import { UserRole, supabase, useStore } from '@repo/core';
+import { UserRole, supabase, useStore, identityAPI } from '@repo/core';
 import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
@@ -27,6 +27,23 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
     const [orientationSeeds, setOrientationSeeds] = useState<OrientationSeeds | null>(null);
     const [isCompleting, setIsCompleting] = useState(false);
     const toast = useToast();
+
+    // Onboarding Sentinel: If already authenticated (e.g. via Google), 
+    // fetch name and jump to Role step (Step 1).
+    React.useEffect(() => {
+        const checkExistingAuth = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || '';
+                if (displayName) {
+                    setName(displayName);
+                    // If we have a name but no role, jump to Role selection
+                    setCurrentStep(1);
+                }
+            }
+        };
+        checkExistingAuth();
+    }, []);
 
     const tourScreens = useMemo(() => [
         {
@@ -87,8 +104,9 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
     const handleCompleteOnboarding = async () => {
         setIsCompleting(true);
         try {
+            const internalId = await identityAPI.getMyInternalId();
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) throw new Error('No user found');
+            if (!internalId || !user) throw new Error('No identity found');
 
             hapticSuccess();
 
@@ -96,7 +114,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             const { data: existingProfile } = await supabase
                 .from('users')
                 .select('school_id')
-                .eq('id', user.id)
+                .eq('id', internalId)
                 .single();
 
             // 1. Create a default school (Personal Workspace) only if they don't have one
@@ -105,7 +123,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                 const schoolName = `${name}'s Workspace`;
                 const { data: schoolData, error: schoolError } = await supabase
                     .from('schools')
-                    .insert({ name: schoolName, type: 'personal_workspace', created_by: user.id })
+                    .insert({ name: schoolName, type: 'personal_workspace', created_by: internalId })
                     .select().single();
                 if (schoolError) console.warn('Workspace creation failed:', schoolError);
                 schoolId = schoolData?.id;
@@ -115,7 +133,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             const { error: profileError } = await supabase
                 .from('users')
                 .upsert({
-                    id: user.id,
+                    id: internalId,
                     full_name: name || user.user_metadata?.full_name || 'Sanctuary User',
                     role: role,
                     school_id: schoolId,
@@ -186,8 +204,6 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                         <SelectItem label={t('role.teacher')} value="teacher" />
                         <SelectItem label={t('role.student')} value="student" />
                         <SelectItem label={t('role.principal')} value="principal" />
-                        <SelectItem label={t('role.admin')} value="admin" />
-                        <SelectItem label={t('role.founder')} value="founder" />
                     </SelectContent>
                 </SelectPortal>
             </Select>

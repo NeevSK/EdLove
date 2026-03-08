@@ -83,14 +83,16 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
             .reverse()
             .find(s => interactionCount >= s.minInteractions) || GROWTH_STAGES[0];
 
+        if (!stage) return; // Extreme safety fallback
+
         // Check if we just reached a new stage
         const previousStage = currentStage;
-        if (stage.stage !== previousStage.stage && stage.minInteractions > 0) {
+        if (stage && previousStage && stage.stage !== previousStage.stage && stage.minInteractions > 0) {
             // Show bloom animation when reaching milestone
             triggerBloomAnimation();
         }
 
-        setCurrentStage(stage);
+        if (stage) setCurrentStage(stage);
     }, [interactionCount]);
 
     const fetchInteractionCount = async () => {
@@ -153,7 +155,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
 
     // Calculate progress to next stage
     const nextStage = GROWTH_STAGES.find(s => s.minInteractions > interactionCount);
-    const progressPercent = nextStage
+    const progressPercent = (nextStage && currentStage)
         ? ((interactionCount - currentStage.minInteractions) /
             (nextStage.minInteractions - currentStage.minInteractions)) * 100
         : 100;
@@ -231,7 +233,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
                 {/* Main tree */}
                 <Animated.View style={treeStyle}>
                     <Text style={{ fontSize: 96 }}>
-                        {currentStage.emoji}
+                        {currentStage?.emoji || '🌱'}
                     </Text>
                 </Animated.View>
 
@@ -243,14 +245,14 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
                         marginTop: Theme.spacing.md,
                     }}
                 >
-                    {currentStage.label}
+                    {currentStage?.label || ''}
                 </Text>
                 <Text
                     color={Theme.colors.mistGray}
                     size="sm"
                     sx={{ fontStyle: 'italic' }}
                 >
-                    {currentStage.description}
+                    {currentStage?.description || ''}
                 </Text>
             </Box>
 

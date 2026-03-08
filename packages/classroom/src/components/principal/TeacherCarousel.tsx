@@ -10,7 +10,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Box, HStack, VStack, Text, ScrollView, SkeletonCard, useThemedColors } from '@repo/ui';
+import { Box, HStack, VStack, Text, ScrollView, SkeletonCard, useThemedColors, getInitialsFromName } from '@repo/ui';
 import { Theme } from '@repo/ui';
 import { staffManagementAPI, TeacherCarouselItem } from '@repo/core';
 
@@ -34,15 +34,6 @@ const STATUS_LABELS: Record<string, string> = {
   on_leave: 'On Leave',
   half_day: 'Half Day',
 };
-
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map((w) => w[0] ?? '')
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-}
 
 function formatRole(role: string): string {
   return role
@@ -94,7 +85,7 @@ function TeacherCard({
           }}
         >
           <Text sx={{ fontSize: 20, fontWeight: '700', color: Theme.colors.amberGlow ?? colors.text }}>
-            {getInitials(item.fullName)}
+            {getInitialsFromName(item.fullName)}
           </Text>
         </Box>
 

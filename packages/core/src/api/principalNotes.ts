@@ -10,7 +10,7 @@
  * but remain in the record forever (the history matters).
  */
 
-import { supabase } from '../lib/supabase';
+import { supabase, identityAPI } from '@repo/core';
 import { APIError } from './types';
 import type { PrincipalNote } from '../types/PrincipalNote';
 
@@ -23,8 +23,8 @@ export const principalNotesAPI = {
      * RLS guarantees only the author ever sees their own notes.
      */
     async getAll(schoolId: string): Promise<PrincipalNote[]> {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
         const { data, error } = await supabase
             .from('principal_notes')
@@ -34,7 +34,7 @@ export const principalNotesAPI = {
                 context_classroom:classrooms!principal_notes_context_classroom_id_fkey(name)
             `)
             .eq('school_id', schoolId)
-            .eq('author_id', user.id)
+            .eq('author_id', myId)
             .order('is_pinned', { ascending: false })
             .order('created_at', { ascending: false });
 
@@ -47,14 +47,14 @@ export const principalNotesAPI = {
      * dashboard preview strip.
      */
     async getRecent(schoolId: string, limit = 3): Promise<PrincipalNote[]> {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
         const { data, error } = await supabase
             .from('principal_notes')
             .select('*')
             .eq('school_id', schoolId)
-            .eq('author_id', user.id)
+            .eq('author_id', myId)
             .eq('is_done', false)
             .order('is_pinned', { ascending: false })
             .order('created_at', { ascending: false })
@@ -74,14 +74,14 @@ export const principalNotesAPI = {
         context_teacher_id?: string | null;
         context_classroom_id?: string | null;
     }): Promise<PrincipalNote> {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
         const { data, error } = await supabase
             .from('principal_notes')
             .insert([{
                 ...note,
-                author_id: user.id,
+                author_id: myId,
                 is_pinned: false,
                 is_done: false,
             }])

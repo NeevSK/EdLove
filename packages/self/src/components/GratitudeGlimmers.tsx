@@ -16,9 +16,9 @@ import { Heart, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { supabase, useSafeMutation } from '@repo/core';
-import { GratitudeEntry } from '@repo/self';
+import { GratitudeEntry } from '../types';
 import { hapticLight, hapticSuccess, SkeletonCard, PositiveInvitation } from '@repo/ui';
-import { useGratitude } from '@repo/self';
+import { useGratitude } from '../hooks/useGratitude';
 import { useNavigation } from '@react-navigation/native';
 
 interface GratitudeGlimmersProps {

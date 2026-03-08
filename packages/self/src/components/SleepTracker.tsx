@@ -37,7 +37,7 @@ import { Moon, Sun, Cloud, Stars } from 'lucide-react-native';
 import { Theme, typography } from '@repo/ui';
 import { hapticLight, hapticSuccess } from '@repo/ui';
 import { useSafeMutation } from '@repo/core';
-import { useSleepTracker } from '@repo/self';
+import { useSleepTracker } from '../hooks/useSleepTracker';
 import { useTranslation } from 'react-i18next';
 
 interface SleepTrackerProps {
@@ -64,7 +64,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
         { value: 5, label: t('sleepTracker.excellent'), emoji: '😌', color: Theme.colors.sanctuarySaffron, description: t('sleepTracker.excellentDesc') },
     ], [i18n.resolvedLanguage]);
 
-    const currentQuality = SLEEP_QUALITY[sleepQuality - 1];
+    const currentQuality = SLEEP_QUALITY[sleepQuality - 1] || SLEEP_QUALITY[2];
 
     const checkTodayLog = () => {
         if (!sleepLogs.length) return;
@@ -213,26 +213,26 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
                 {/* Moon/Sun based on quality */}
                 <Animated.View style={moonStyle}>
                     <Text style={{ fontSize: 96 }}>
-                        {currentQuality.emoji}
+                        {currentQuality?.emoji}
                     </Text>
                 </Animated.View>
 
                 <Text
-                    color={currentQuality.color}
+                    color={currentQuality?.color}
                     size="2xl"
                     sx={{
                         fontWeight: typography.fontWeight.semibold,
                         marginTop: Theme.spacing.md,
                     }}
                 >
-                    {currentQuality.label}
+                    {currentQuality?.label}
                 </Text>
                 <Text
                     color={Theme.colors.mistGray}
                     size="sm"
                     sx={{ fontStyle: 'italic' }}
                 >
-                    {currentQuality.description}
+                    {currentQuality?.description}
                 </Text>
             </Box>
 
@@ -242,7 +242,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
                     <Box sx={{ paddingHorizontal: Theme.spacing.md }}>
                         <Slider
                             value={sleepQuality}
-                            onChange={(value) => {
+                            onChange={(value: number) => {
                                 hapticLight();
                                 setSleepQuality(value);
                             }}
@@ -255,13 +255,13 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
                             <SliderTrack sx={{ height: 12, borderRadius: 6, backgroundColor: Theme.colors.ink }}>
                                 <SliderFilledTrack
                                     sx={{
-                                        backgroundColor: currentQuality.color,
+                                        backgroundColor: currentQuality?.color,
                                     }}
                                 />
                             </SliderTrack>
                             <SliderThumb
                                 sx={{
-                                    backgroundColor: currentQuality.color,
+                                    backgroundColor: currentQuality?.color,
                                     borderWidth: 4,
                                     borderColor: Theme.colors.sacredWhite,
                                     width: 36,
@@ -291,7 +291,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
                         isDisabled={isSaving}
                         sx={{
                             borderRadius: Theme.corners.full,
-                            backgroundColor: currentQuality.color,
+                            backgroundColor: currentQuality?.color,
                         }}
                     >
                         <ButtonText>

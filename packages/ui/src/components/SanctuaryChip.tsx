@@ -24,7 +24,7 @@ export const SanctuaryChip: React.FC<SanctuaryChipProps> = ({
     variant = 'filter',
     size = 'md',
 }) => {
-    const { accent } = useTheme();
+    const { accent, textOnAccent } = useTheme();
     const colors = useThemedColors();
     const isSmall = size === 'sm';
 
@@ -47,7 +47,7 @@ export const SanctuaryChip: React.FC<SanctuaryChipProps> = ({
                 style={[
                     styles.label,
                     {
-                        color: selected ? Theme.colors.sacredWhite : colors.textSecondary,
+                        color: selected ? textOnAccent : colors.textSecondary,
                         fontWeight: selected ? '700' : '500',
                     },
                     isSmall && styles.smallLabel,

@@ -89,7 +89,7 @@ export default function TeacherFeedbackModal({ isOpen, onClose, schoolId, teache
                 sx={{ flex: 1, borderColor: glass.interact.border }}
             >
                 <ButtonText {...({ color: text.secondary } as any)}>
-                    {t('common.cancel', 'Cancel')}
+                    {t('common.cancel')}
                 </ButtonText>
             </Button>
             <Button
@@ -101,7 +101,7 @@ export default function TeacherFeedbackModal({ isOpen, onClose, schoolId, teache
                     <Spinner {...({ color: text.inverse } as any)} />
                 ) : (
                     <ButtonText {...({ color: text.inverse } as any)}>
-                        {t('common.send', 'Send to Principal')}
+                        {t('common.send')}
                     </ButtonText>
                 )}
             </Button>
@@ -112,8 +112,8 @@ export default function TeacherFeedbackModal({ isOpen, onClose, schoolId, teache
         <SanctuaryModal
             isOpen={isOpen}
             onClose={onClose}
-            title={t('teacher.feedback.title', 'Principal Echo')}
-            subtitle={t('teacher.feedback.subtitle', 'Send a reflection or request to administration')}
+            title={t('teacher.feedback.title')}
+            subtitle={t('teacher.feedback.subtitle')}
             footer={footer}
         >
             <VStack sx={{ gap: Theme.spacing.md }}>
@@ -122,7 +122,7 @@ export default function TeacherFeedbackModal({ isOpen, onClose, schoolId, teache
                         sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}
                         {...({ color: text.primary } as any)}
                     >
-                        {t('teacher.feedback.category', 'Category')}
+                        {t('teacher.feedback.category')}
                     </Text>
                     <Select onValueChange={setCategory} defaultValue={category}>
                         <SelectTrigger
@@ -151,7 +151,7 @@ export default function TeacherFeedbackModal({ isOpen, onClose, schoolId, teache
                         sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}
                         {...({ color: text.primary } as any)}
                     >
-                        {t('teacher.feedback.priority', 'Urgency')}
+                        {t('teacher.feedback.priority')}
                     </Text>
                     <HStack sx={{ gap: Theme.spacing.sm }}>
                         {(['low', 'medium', 'high'] as const).map((p) => (
@@ -184,7 +184,7 @@ export default function TeacherFeedbackModal({ isOpen, onClose, schoolId, teache
                         sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '700' }}
                         {...({ color: text.primary } as any)}
                     >
-                        {t('teacher.feedback.content', 'Your Reflection')}
+                        {t('teacher.feedback.content')}
                     </Text>
                     <Textarea
                         isReadOnly={false}
@@ -193,7 +193,7 @@ export default function TeacherFeedbackModal({ isOpen, onClose, schoolId, teache
                         sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border, minHeight: 100 }}
                     >
                         <TextareaInput
-                            placeholder={t('teacher.feedback.placeholder', 'Share your thoughts, resource needs, or concerns...')}
+                            placeholder={t('teacher.feedback.placeholder')}
                             value={content}
                             onChangeText={setContent}
                             {...({ color: text.primary } as any)}
@@ -216,7 +216,7 @@ export default function TeacherFeedbackModal({ isOpen, onClose, schoolId, teache
                         sx={{ fontSize: Theme.typography.fontSize.xs, fontStyle: 'italic' }}
                         {...({ color: text.secondary } as any)}
                     >
-                        {t('teacher.feedback.note', 'This reflection will be surfaced on the Principal\'s Dashboard "Echo" vistas.')}
+                        {t('teacher.feedback.note')}
                     </Text>
                 </Box>
             </VStack>

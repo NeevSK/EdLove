@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabase, identityAPI } from '@repo/core';
 import { growthSignalsAPI } from './growthSignals';
 import { impactRipplesAPI } from './impactRipples';
 // Note: Types should ideally be shared in @repo/core/src/types, 
@@ -114,7 +114,7 @@ export const communityAPI = {
         void growthSignalsAPI.emitSignal(userId, 'community_post_created', {
             post_id: data?.id,
             school_id: schoolId,
-        }).catch(() => {});
+        }).catch(() => { });
 
         return data;
     },
@@ -138,7 +138,7 @@ export const communityAPI = {
         // Growth signal: teacher started a community circle (Weaving — Banyan path)
         void growthSignalsAPI.emitSignal(userId, 'circle_facilitated', {
             group_id: data?.id,
-        }).catch(() => {});
+        }).catch(() => { });
 
         return data;
     },
@@ -169,7 +169,7 @@ export const communityAPI = {
         // Growth signal for the person joining (Weaving dimension)
         void growthSignalsAPI.emitSignal(userId, 'group_joined', {
             group_id: groupId,
-        }).catch(() => {});
+        }).catch(() => { });
 
         // Impact Ripple for the circle creator — "someone joined the circle you started"
         if (group?.creator_id && group.creator_id !== userId) {
@@ -179,7 +179,7 @@ export const communityAPI = {
                 rippleType: 'circle_joined',
                 sourceEntityType: 'circle',
                 sourceEntityId: groupId,
-            }).catch(() => {});
+            }).catch(() => { });
         }
 
         return data;
@@ -221,21 +221,21 @@ export const communityAPI = {
      * Send a message to a group chat.
      */
     async sendGroupMessage(groupId: string, content: string) {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error('Not authenticated');
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new Error('Not authenticated');
 
         const { data, error } = await supabase
             .from('group_messages')
-            .insert([{ group_id: groupId, author_id: user.id, content: content.trim() }])
+            .insert([{ group_id: groupId, author_id: myId, content: content.trim() }])
             .select('*, author:users!group_messages_author_id_fkey(full_name, avatar_url)')
             .single();
 
         if (error) throw error;
 
         // Growth signal: teacher engaged with the community (Weaving dimension)
-        void growthSignalsAPI.emitSignal(user.id, 'group_message_sent', {
+        void growthSignalsAPI.emitSignal(myId, 'group_message_sent', {
             group_id: groupId,
-        }).catch(() => {});
+        }).catch(() => { });
 
         return data;
     },

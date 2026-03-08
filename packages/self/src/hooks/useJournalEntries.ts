@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase, GuestDataManager, authAPI } from '@repo/core';
+import { supabase, GuestDataManager, authAPI, identityAPI, growthSignalsAPI } from '@repo/core';
 import { JournalEntry } from '../types';
 
 export const useJournalEntries = () => {
@@ -31,10 +31,14 @@ export const useJournalEntries = () => {
                     }));
                     setEntries(mappedEntries);
                 } else {
-                    // Load from Supabase
+                    // Load from Supabase using internal identity
+                    const internalId = await identityAPI.getMyInternalId();
+                    if (!internalId) return;
+
                     const { data, error } = await supabase
                         .from('journal_entries')
                         .select('*')
+                        .eq('user_id', internalId) // Explicitly filter for robustness
                         .order('created_at', { ascending: false })
                         .limit(50);
 
@@ -66,18 +70,20 @@ export const useJournalEntries = () => {
                 setEntries(prev => [newEntry, ...prev]);
                 return newEntry;
             } else {
-                // Authenticated mode: Save to Supabase
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) throw new Error("Not authenticated");
+                // Authenticated mode: Save to Supabase using internal identity
+                const internalId = await identityAPI.getMyInternalId();
+                if (!internalId) throw new Error("Not authenticated");
 
                 const { data, error } = await supabase
                     .from('journal_entries')
-                    .insert([{ content, user_id: user.id }])
+                    .insert([{ content, user_id: internalId }])
                     .select()
                     .single();
 
                 if (error) throw error;
                 setEntries(prev => [data, ...prev]);
+                // Growth signal — fire-and-forget (benefits mobile + web callers)
+                void growthSignalsAPI.emitSignal(internalId, 'reflection_written', {}).catch(() => { });
                 return data;
             }
         } catch (error) {

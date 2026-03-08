@@ -18,7 +18,7 @@
  * Shadow rule: Shadow Violet only, never grey/black.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     View,
     Text,
@@ -176,7 +176,6 @@ function RightPanel({
                 {
                     backgroundColor: glass.modal.bg,
                     borderColor: glass.modal.border,
-                    shadowColor: Theme.colors.shadowViolet,
                 },
             ]}>
                 {/* Language selector */}
@@ -295,19 +294,19 @@ function RightPanel({
                     </View>
                     <Text style={[styles.termsText, { color: text.secondary }]}>
                         I agree to the{' '}
+                        <Pressable
+                            onPress={(e) => {
+                                e.stopPropagation();
+                                openExternalURL('https://neevsk.org/privacy');
+                            }}
+                            accessibilityRole="link"
+                            accessibilityLabel="Read Privacy Pact"
+                        >
+                            <Text style={{ color: accent.action, fontWeight: '600', textDecorationLine: 'underline', fontSize: 13 }}>
+                                Privacy Pact
+                            </Text>
+                        </Pressable>
                     </Text>
-                    <Pressable
-                        onPress={(e) => {
-                            e.stopPropagation();
-                            openExternalURL('https://neevsk.org/privacy');
-                        }}
-                        accessibilityRole="link"
-                        accessibilityLabel="Read Privacy Pact"
-                    >
-                        <Text style={{ color: accent.action, fontWeight: '600', textDecorationLine: 'underline', fontSize: 13 }}>
-                            Privacy Pact
-                        </Text>
-                    </Pressable>
                 </Pressable>
 
                 {/* Footer note */}
@@ -332,13 +331,31 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
     const { phase, isDark, gradientNodes, text: themeText } = useTheme();
     const { width } = useWindowDimensions();
 
-    const [showAuth, setShowAuth] = useState(initialShowAuth);
-    const [acceptedTerms, setAcceptedTerms] = useState(false);
+    // ── Detect Supabase OAuth error params in URL ──────────────────────────
+    // When Supabase redirects back with ?error_code=identity_already_exists, we
+    // automatically open the Auth screen in login mode so the user can sign in.
+    const urlErrorMode = useMemo<'login' | undefined>(() => {
+        try {
+            const getUrlParam = (name: string) => {
+                const fromQuery = new URLSearchParams(window.location.search).get(name);
+                if (fromQuery) return fromQuery;
+                const hashSearch = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+                return hashSearch.get(name);
+            };
+            const code = getUrlParam('error_code');
+            return code === 'identity_already_exists' ? 'login' : undefined;
+        } catch {
+            return undefined;
+        }
+    }, []);
+
+    const [showAuth, setShowAuth] = useState(initialShowAuth || !!urlErrorMode);
+    const [acceptedTerms, setAcceptedTerms] = useState(true);
     const [isConnecting, setIsConnecting] = useState(false);
     const [langHover, setLangHover] = useState<string | null>(null);
     const [btnHover, setBtnHover] = useState<'explore' | 'login' | null>(null);
 
-    const isNarrow = width < 768;
+    const isNarrow = width < 900;
 
     const bgFrom = gradientNodes[0];
 
@@ -371,6 +388,7 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
         return (
             <AuthScreen
                 isAnonymous
+                initialMode={urlErrorMode ?? 'signup'}
                 onContinueAsGuest={handleStartExploring}
                 onSuccess={() => { onNext?.(); }}
             />
@@ -474,7 +492,9 @@ const styles = StyleSheet.create({
     narrowContent: {
         flexGrow: 1,
         paddingVertical: 24,
+        paddingHorizontal: 16,
         gap: 16,
+        alignItems: 'stretch',
     },
 
     // ── Left panel ──────────────────────────────────────────────────────
@@ -581,7 +601,8 @@ const styles = StyleSheet.create({
 
     // ── Right panel ─────────────────────────────────────────────────────
     rightPanel: {
-        width: 420,
+        width: '100%',
+        maxWidth: 420,
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 32,
@@ -593,9 +614,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         padding: 32,
         gap: 14,
-        shadowOpacity: 0.16,
-        shadowRadius: 28,
-        shadowOffset: { width: 0, height: 8 },
+        boxShadow: '0 8px 28px rgba(107, 100, 128, 0.16)',
         elevation: 12,
     },
     langRow: {
@@ -629,10 +648,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: 54,
-        shadowColor: 'rgba(107,100,128,1)',
-        shadowOpacity: 0.20,
-        shadowRadius: 14,
-        shadowOffset: { width: 0, height: 4 },
+        boxShadow: '0 4px 14px rgba(107, 100, 128, 0.20)',
     },
     primaryBtnText: {
         fontSize: 16,

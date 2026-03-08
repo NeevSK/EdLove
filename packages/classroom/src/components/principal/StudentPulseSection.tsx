@@ -11,13 +11,23 @@
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors } from '@repo/ui';
+import {
+  ChevronRight,
+  TrendingUp,
+  AlertTriangle,
+  Users,
+  Zap,
+  Clock
+} from 'lucide-react-native';
 import { Theme } from '@repo/ui';
 import { staffManagementAPI, StudentAttendancePulse, supabase } from '@repo/core';
 
 interface StudentPulseSectionProps {
   schoolId: string;
+  classroomId?: string;
   onViewAtRisk?: () => void;
   onViewEnrollments?: () => void;
+  onViewFullReport?: () => void;
 }
 
 function attendanceColor(rate: number): string {
@@ -36,8 +46,10 @@ function weekStartISO(): string {
 
 export default function StudentPulseSection({
   schoolId,
+  classroomId,
   onViewAtRisk,
   onViewEnrollments,
+  onViewFullReport,
 }: StudentPulseSectionProps) {
   const colors = useThemedColors();
   const [loading, setLoading] = useState(true);
@@ -51,29 +63,36 @@ export default function StudentPulseSection({
       setLoading(true);
       const weekStart = weekStartISO();
 
-      // Fetch assignment IDs for this school this week — used to scope submissions correctly.
-      const assignResult = await supabase
+      // Fetch assignment IDs for this school/classroom this week — used to scope submissions correctly.
+      let assignQuery = supabase
         .from('assignments')
         .select('id', { count: 'exact' })
         .eq('school_id', schoolId)
         .gte('created_at', weekStart);
 
+      if (classroomId) {
+        assignQuery = assignQuery.eq('classroom_id', classroomId);
+      }
+
+      const assignResult = await assignQuery;
       const assignmentIds = (assignResult.data ?? []).map((a) => a.id);
       const assignmentCount = assignmentIds.length;
 
       const [pulseData, subsResult, enrollResult] = await Promise.all([
-        staffManagementAPI.getStudentAttendancePulse(schoolId),
+        staffManagementAPI.getStudentAttendancePulse(schoolId, classroomId),
         assignmentIds.length > 0
           ? supabase
             .from('submissions')
             .select('assignment_id')
             .in('assignment_id', assignmentIds)
           : Promise.resolve({ data: [] as { assignment_id: string }[], error: null }),
-        supabase
-          .from('enrollment_requests')
-          .select('id', { count: 'exact' })
-          .eq('school_id', schoolId)
-          .eq('status', 'pending'),
+        !classroomId
+          ? supabase
+            .from('enrollment_requests')
+            .select('id', { count: 'exact' })
+            .eq('school_id', schoolId)
+            .eq('status', 'pending')
+          : Promise.resolve({ count: 0, error: null }),
       ]);
 
       if (!mounted) return;
@@ -95,7 +114,7 @@ export default function StudentPulseSection({
     }
     load();
     return () => { mounted = false; };
-  }, [schoolId]);
+  }, [schoolId, classroomId]);
 
   if (loading) {
     return (
@@ -114,7 +133,7 @@ export default function StudentPulseSection({
         ? `${delta}% vs yesterday`
         : 'same as yesterday';
   const deltaColor =
-    delta >= 0 ? (Theme.colors.sageGreen ?? '#4caf50') : (Theme.colors.emberRed ?? '#f44336');
+    delta >= 0 ? colors.success : colors.error;
 
   return (
     <VStack sx={{ gap: Theme.spacing.sm }}>
@@ -182,14 +201,14 @@ export default function StudentPulseSection({
               borderWidth: 1,
               borderColor:
                 (pulse?.atRiskCount ?? 0) > 0
-                  ? (Theme.colors.emberRed ?? '#f44336')
+                  ? colors.error
                   : colors.border,
             }}
           >
             <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
               <Box
                 sx={{
-                  backgroundColor: Theme.colors.emberRed ?? '#f44336',
+                  backgroundColor: colors.error,
                   borderRadius: 10,
                   paddingHorizontal: 8,
                   paddingVertical: 2,
@@ -209,44 +228,66 @@ export default function StudentPulseSection({
           </Box>
         </TouchableOpacity>
 
-        {/* Pending enrollments badge */}
-        <TouchableOpacity onPress={onViewEnrollments} activeOpacity={0.8} style={{ flex: 1 }}>
-          <Box
-            sx={{
-              flex: 1,
-              backgroundColor: colors.primary,
-              borderRadius: Theme.corners.comfortable,
-              padding: Theme.spacing.md,
-              borderWidth: 1,
-              borderColor:
-                pendingEnrollments > 0
-                  ? (Theme.colors.amberGlow ?? '#ffc107')
-                  : colors.border,
-            }}
-          >
-            <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
-              <Box
-                sx={{
-                  backgroundColor: Theme.colors.amberGlow ?? '#ffc107',
-                  borderRadius: 10,
-                  paddingHorizontal: 8,
-                  paddingVertical: 2,
-                }}
-              >
-                <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>
-                  {pendingEnrollments}
+        {/* Pending enrollments badge - Only show if not in classroom context */}
+        {!classroomId && (
+          <TouchableOpacity onPress={onViewEnrollments} activeOpacity={0.8} style={{ flex: 1 }}>
+            <Box
+              sx={{
+                flex: 1,
+                backgroundColor: colors.primary,
+                borderRadius: Theme.corners.comfortable,
+                padding: Theme.spacing.md,
+                borderWidth: 1,
+                borderColor:
+                  pendingEnrollments > 0
+                    ? colors.warning
+                    : colors.border,
+              }}
+            >
+              <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
+                <Box
+                  sx={{
+                    backgroundColor: colors.warning,
+                    borderRadius: 10,
+                    paddingHorizontal: 8,
+                    paddingVertical: 2,
+                  }}
+                >
+                  <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>
+                    {pendingEnrollments}
+                  </Text>
+                </Box>
+                <Text sx={{ fontSize: 12, color: colors.text, flex: 1 }}>Pending enrollments</Text>
+                <ChevronRight size={16} color={colors.textTertiary} />
+              </HStack>
+              {onViewEnrollments && (
+                <Text sx={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>
+                  Tap to review
                 </Text>
-              </Box>
-              <Text sx={{ fontSize: 12, color: colors.text, flex: 1 }}>Pending enrollments</Text>
-            </HStack>
-            {onViewEnrollments && (
-              <Text sx={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>
-                Tap to review
-              </Text>
-            )}
-          </Box>
-        </TouchableOpacity>
+              )}
+            </Box>
+          </TouchableOpacity>
+        )}
       </HStack>
+
+      {onViewFullReport && (
+        <TouchableOpacity onPress={onViewFullReport} activeOpacity={0.7}>
+          <HStack sx={{
+            marginTop: Theme.spacing.sm,
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 4,
+            paddingVertical: 8,
+            borderTopWidth: 1,
+            borderTopColor: colors.border
+          }}>
+            <Text sx={{ fontSize: 12, fontWeight: '700', color: colors.action }}>
+              VIEW FULL ANALYTICS
+            </Text>
+            <TrendingUp size={14} color={colors.action} />
+          </HStack>
+        </TouchableOpacity>
+      )}
     </VStack>
   );
 }

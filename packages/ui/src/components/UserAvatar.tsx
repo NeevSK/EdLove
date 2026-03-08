@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { Theme } from '../theme/Theme';
+import { getInitialsFromName } from '../utils/stringUtils';
 
 export interface UserAvatarProps {
     avatarUrl?: string | null;
@@ -32,17 +33,6 @@ const AVATAR_COLORS = [
     Theme.colors.sageGreen,
 ];
 
-function getInitials(name?: string | null): string {
-    if (!name) return '';
-    return name
-        .split(' ')
-        .filter(Boolean)
-        .map((w) => w[0])
-        .slice(0, 2)
-        .join('')
-        .toUpperCase();
-}
-
 const FALLBACK_COLOR = Theme.colors.gurudeviBlue;
 
 function getAvatarColor(name?: string | null): string {
@@ -65,13 +55,16 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 }) => {
     const radius = borderRadius ?? size / 2;
     const bgColor = getAvatarColor(fullName);
-    const initials = getInitials(fullName);
+    const initials = getInitialsFromName(fullName);
     const fallbackIcon = role ? (ROLE_ICONS[role] ?? DEFAULT_ICON) : DEFAULT_ICON;
 
     if (avatarUrl) {
         return (
             <Image
                 source={{ uri: avatarUrl }}
+                accessible={true}
+                accessibilityLabel={fullName ? `Avatar of ${fullName}` : 'User avatar'}
+                accessibilityRole="image"
                 style={[
                     styles.base,
                     { width: size, height: size, borderRadius: radius },
@@ -84,6 +77,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 
     return (
         <View
+            accessible={true}
+            accessibilityLabel={fullName ? `Avatar of ${fullName}` : (role ? `Avatar for ${role} role` : 'User avatar')}
+            accessibilityRole="image"
             style={[
                 styles.base,
                 { width: size, height: size, borderRadius: radius, backgroundColor: bgColor },

@@ -35,12 +35,13 @@ export const RedirectToApp = () => {
 
         let url = 'gurudevi://';
 
-        // If we have a session, append the tokens for handoff
-        if (session?.access_token && session?.refresh_token) {
-            url += `auth/callback#access_token=${session.access_token}&refresh_token=${session.refresh_token}&type=recovery`;
+        // If we have a session, signal that a web session exists without
+        // exposing raw tokens in the URL (to prevent leakage via history/logs).
+        if (session) {
+            url += 'auth/callback?hasSession=true';
         }
 
-        console.log('🔗 Harmonizer: Handing off session to app...', { hasSession: !!session });
+        console.log('🔗 Harmonizer: Opening native app...', { hasSession: !!session });
 
         Linking.openURL(url).catch(() => {
             alert("Ensure the Gurudevi app is installed on your device.");

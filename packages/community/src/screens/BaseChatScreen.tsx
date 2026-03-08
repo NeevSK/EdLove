@@ -34,6 +34,7 @@ import {
     useThemedColors,
     Theme,
     ScreenWrapper,
+    GlobalHeader,
 } from '@repo/ui';
 import { ChevronLeft, Send } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -65,6 +66,7 @@ export interface BaseChatScreenProps {
     sendMessage: (content: string) => Promise<ChatMessage>;
     subscription: SubscriptionConfig;
     onPressAuthor?: (userId: string, userName: string) => void;
+    headerRight?: React.ReactNode;
 }
 
 export default function BaseChatScreen({
@@ -75,6 +77,7 @@ export default function BaseChatScreen({
     sendMessage,
     subscription,
     onPressAuthor,
+    headerRight,
 }: BaseChatScreenProps) {
     const navigation = useNavigation<any>();
     const user = useStore(state => state.user);
@@ -207,21 +210,16 @@ export default function BaseChatScreen({
         );
     };
 
-    // ── Layout ────────────────────────────────────────────────
     return (
-        <ScreenWrapper scroll={false}>
-            {/* Header */}
-            <HStack sx={{ paddingHorizontal: Theme.spacing.md, paddingVertical: Theme.spacing.sm, alignItems: 'center', gap: Theme.spacing.md, borderBottomWidth: 1, borderBottomColor: colors.border }}>
-                <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                    <ChevronLeft size={24} color={colors.text} />
-                </TouchableOpacity>
-                <VStack sx={{ flex: 1 }}>
-                    <Text sx={{ fontSize: Theme.typography.fontSize.md, fontWeight: '700', color: colors.text }} numberOfLines={1}>{title}</Text>
-                    {subtitle && <Text sx={{ fontSize: 11, color: colors.textTertiary }}>{subtitle}</Text>}
-                </VStack>
-            </HStack>
+        <ScreenWrapper scroll={false} noTopInset={true}>
+            <GlobalHeader
+                title={title}
+                subtitle={subtitle}
+                showBack
+                rightAction={headerRight}
+            />
 
-            <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+            <Box sx={{ flex: 1 }}>
                 {loading ? (
                     <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                         <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
@@ -266,7 +264,7 @@ export default function BaseChatScreen({
                         </TouchableOpacity>
                     </HStack>
                 </Box>
-            </KeyboardAvoidingView>
+            </Box>
         </ScreenWrapper>
     );
 }

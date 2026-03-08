@@ -4,7 +4,7 @@
  * API methods for managing students in classrooms
  */
 
-import { supabase } from '../lib/supabase';
+import { supabase, identityAPI } from '@repo/core';
 import { APIError } from './types';
 import type { ClassroomStudent } from './types';
 
@@ -67,13 +67,13 @@ export const classroomStudentsAPI = {
      * Claim a shadow student record using an invite code
      */
     async claimStudent(inviteCode: string): Promise<ClassroomStudent> {
-        const user = await supabase.auth.getUser();
-        if (!user.data.user) throw new APIError('Authentication required to claim record');
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new APIError('Authentication required to claim record');
 
         const { data, error } = await supabase
             .from('classroom_students')
             .update({
-                student_id: user.data.user.id,
+                student_id: myId,
                 claimed_at: new Date().toISOString()
             })
             .eq('invite_code', inviteCode)

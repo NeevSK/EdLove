@@ -1,4 +1,4 @@
-﻿/**
+/**
  * STUDENT GOALS COMPONENT
  * 
  * Student-specific feature for the Self tab.
@@ -31,7 +31,8 @@ import { Theme } from '@repo/ui';
 import { supabase } from '@repo/core';
 import { hapticLight, hapticSuccess } from '@repo/ui';
 import { useSafeMutation } from '@repo/core';
-import { useStudentGoals, Goal } from '@repo/self';
+import { useStudentGoals } from '../hooks/useStudentGoals';
+import type { Goal } from '../types';
 
 interface StudentGoalsProps {
     userId: string;

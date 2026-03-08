@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { FlatList, ActivityIndicator } from 'react-native';
-import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, PositiveInvitation, Theme, FadeInDown, SanctuaryButton, SanctuaryFlashList } from '@repo/ui';
+import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, PositiveInvitation, Theme, FadeInDown, SanctuaryButton, SanctuaryFlashList, Heading } from '@repo/ui';
 import Animated from 'react-native-reanimated';
-import ReportPostModal from '../components/ReportPostModal';
 import GroupCard from '../components/GroupCard';
 import { useCommunityGroups } from '../hooks/useCommunityGroups';
 import { useTranslation } from 'react-i18next';
@@ -59,7 +58,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                             bold
                             color={activeSubTab === 'sanctuary' ? Theme.colors.sacredWhite : colors.text}
                         >
-                            {t('community.groups.sanctuary', 'My Sanctuary')}
+                            {t('community.groups.sanctuary')}
                         </Text>
                     </HStack>
                 </Pressable>
@@ -82,7 +81,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                             bold
                             color={activeSubTab === 'galaxy' ? Theme.colors.sacredWhite : colors.text}
                         >
-                            {t('community.groups.galaxy', 'Infinite Galaxy')}
+                            {t('community.groups.galaxy')}
                         </Text>
                     </HStack>
                 </Pressable>
@@ -95,22 +94,14 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
 
         return (
             <Animated.View entering={FadeInDown.duration(600).delay(300).springify()}>
-                <Box
-                    sx={{
-                        mx: '$4',
-                        mb: '$4',
-                        borderStyle: 'dashed',
-                        borderWidth: 1,
-                        borderColor: '$border',
-                        borderRadius: '$comfortable'
-                    }}
-                >
+                <Box sx={{ mx: '$4', mb: '$4' }}>
                     <SanctuaryButton
-                        variant="outline"
+                        action="primary"
                         onPress={() => onCreateGroup?.()}
                         leftIcon={Plus}
+                        fullWidth
                     >
-                        {t('community.groups.create', 'Found a New Circle')}
+                        {t('community.groups.create')}
                     </SanctuaryButton>
                 </Box>
             </Animated.View>
@@ -130,21 +121,58 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
 
         if (activeSubTab === 'sanctuary') {
             return (
-                <PositiveInvitation
-                    context="community"
-                    title={t('community.noGroups', 'No circles found')}
-                    description={t('community.noGroupsDesc', 'Connect with others by joining a community group.')}
-                />
+                <VStack space="xl" alignItems="center" sx={{ padding: Theme.spacing['2xl'], marginTop: Theme.spacing.xl }}>
+                    <Box sx={{
+                        padding: Theme.spacing.xl,
+                        backgroundColor: Theme.colors.sanctuarySaffron + '11',
+                        borderRadius: Theme.corners.full
+                    }}>
+                        <Shield size={48} color={Theme.colors.sanctuarySaffron} />
+                    </Box>
+                    <VStack space="sm" alignItems="center">
+                        <Heading size="md" textAlign="center" color={Theme.colors.sanctuarySaffron}>
+                            {t('community.groups.noSanctuaryTitle') || 'Your Sanctuary is Quiet'}
+                        </Heading>
+                        <Text textAlign="center" color={colors.textSecondary}>
+                            {t('community.groups.noSanctuaryDesc') || 'You haven\'t joined any school circles yet. Explore the Galaxy to find your tribe.'}
+                        </Text>
+                    </VStack>
+                    <SanctuaryButton
+                        onPress={() => setActiveSubTab('galaxy')}
+                        variant="outline"
+                        size="lg"
+                    >
+                        {t('community.groups.exploreGalaxy') || 'Explore the Infinite Galaxy'}
+                    </SanctuaryButton>
+                </VStack>
             );
         }
 
         return (
-            <PositiveInvitation
-                context="community"
-                title={t('community.groups.noGalaxy', 'Galaxy Waiting to Bloom')}
-                description={t('community.groups.noGalaxyDesc', 'Be the first to create a club, interest group, or inter-school circle.')}
-                onAction={() => onCreateGroup?.()} // Triggers group creation flow
-            />
+            <VStack space="xl" alignItems="center" sx={{ padding: Theme.spacing['2xl'], marginTop: Theme.spacing.xl }}>
+                <Box sx={{
+                    padding: Theme.spacing.xl,
+                    backgroundColor: Theme.colors.gurudeviViolet + '11',
+                    borderRadius: Theme.corners.full
+                }}>
+                    <Compass size={48} color={Theme.colors.gurudeviViolet} />
+                </Box>
+                <VStack space="sm" alignItems="center">
+                    <Heading size="md" textAlign="center" color={Theme.colors.gurudeviViolet}>
+                        {t('community.groups.noGalaxyTitle') || 'Galaxy Waiting to Bloom'}
+                    </Heading>
+                    <Text textAlign="center" color={colors.textSecondary}>
+                        {t('community.groups.noGalaxyDesc') || 'Be the first to create a club, interest group, or inter-school circle.'}
+                    </Text>
+                </VStack>
+                <SanctuaryButton
+                    onPress={() => onCreateGroup?.()}
+                    action="primary"
+                    size="lg"
+                >
+                    {t('community.groups.foundCircle') || 'Found a New Circle'}
+                </SanctuaryButton>
+            </VStack>
         );
     };
 
@@ -156,7 +184,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                     id={item.id}
                     name={isDemo() ? `(Sample) ${item.name}` : item.name}
                     memberCount={item.member_count}
-                    type={item.type as any}
+                    type={(item.type || (item as any).group_type || 'general') as any}
                     description={item.description}
                     onPress={() => onNavigateToGroup(item.id)}
                 />

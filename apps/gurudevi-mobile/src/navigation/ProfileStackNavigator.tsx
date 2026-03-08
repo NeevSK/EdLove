@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import ProfileScreen from '../screens/ProfileScreen';
 import FullProfileScreen from '../screens/profile/FullProfileScreen';
+import { PrivacyLedgerScreen } from '@repo/self';
 import { useThemedColors } from '@repo/ui';
 
 const Stack = createNativeStackNavigator();
@@ -23,6 +24,15 @@ export default function ProfileStackNavigator() {
             <Stack.Screen
                 name="FullProfile"
                 component={FullProfileScreen}
+                options={{
+                    headerShown: false,
+                    presentation: 'modal',
+                    animation: 'slide_from_bottom',
+                }}
+            />
+            <Stack.Screen
+                name="PrivacyLedger"
+                component={PrivacyLedgerScreen}
                 options={{
                     headerShown: false,
                     presentation: 'modal',

@@ -80,6 +80,23 @@ export const useGradebook = (classroomId: string) => {
         return { totalStudents: total, averageMarks: average };
     }, [grades]);
 
+    const submitGrade = async (
+        studentId: string,
+        marks: number,
+        feedback?: string,
+        assignmentId?: string,
+    ) => {
+        const saved = await api.grading.submitGrade(studentId, classroomId, marks, assignmentId, feedback);
+        // Refresh grades so the table reflects the new entry
+        setGrades(prev => {
+            const idx = prev.findIndex(g => g.student_id === studentId && g.assignment_id === (assignmentId ?? null));
+            return idx >= 0
+                ? prev.map((g, i) => (i === idx ? saved : g))
+                : [saved, ...prev];
+        });
+        return saved;
+    };
+
     return {
         grades,
         studentNames,
@@ -91,6 +108,7 @@ export const useGradebook = (classroomId: string) => {
         sortedGrades,
         stats,
         updateSettings,
+        submitGrade,
         refreshData: loadData,
     };
 };

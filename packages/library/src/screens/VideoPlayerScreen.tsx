@@ -10,6 +10,7 @@ import {
     Theme,
     SanctuaryButton,
     Pressable,
+    formatTimeMs,
 } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 import { Play, Pause, RotateCcw, RotateCw, X } from 'lucide-react-native';
@@ -39,13 +40,6 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
     const [durationMillis, setDurationMillis] = useState(0);
     const [showControls, setShowControls] = useState(true);
     const [hasError, setHasError] = useState(false);
-
-    const formatTime = (ms: number) => {
-        const total = Math.floor(ms / 1000);
-        const mins = Math.floor(total / 60);
-        const secs = total % 60;
-        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-    };
 
     const onPlaybackStatusUpdate = useCallback((status: AVPlaybackStatus) => {
         if (!status.isLoaded) {
@@ -196,7 +190,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
 
                             <HStack justifyContent="space-between" alignItems="center">
                                 <Text color="white" size="xs">
-                                    {formatTime(positionMillis)} / {formatTime(durationMillis)}
+                                    {formatTimeMs(positionMillis)} / {formatTimeMs(durationMillis)}
                                 </Text>
                             </HStack>
                         </VStack>

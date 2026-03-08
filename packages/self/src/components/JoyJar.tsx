@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿﻿import React, { useState, useEffect } from 'react';
 import {
   Box,
   VStack,
@@ -16,9 +16,9 @@ import { Sparkles, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { supabase, useSafeMutation } from '@repo/core';
-import { JoyMoment } from '@repo/self';
 import { hapticLight, hapticSuccess, SkeletonCard, PositiveInvitation } from '@repo/ui';
-import { useJoyJar } from '@repo/self';
+import { useJoyJar } from '../hooks/useJoyJar';
+import { JoyMoment } from '../types';
 import { useNavigation } from '@react-navigation/native';
 
 interface JoyJarProps {

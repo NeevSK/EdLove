@@ -51,7 +51,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   const { phase, isDark } = useTheme();
   const { width } = useWindowDimensions();
   const [currentTab, setCurrentTab] = React.useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
-  const insets = useSafeAreaInsets(); // Get safe area insets
+  const insets = useSafeAreaInsets();
   const { newAchievements } = useRewards();
   const { exploredFeatures } = useTracking();
   const [showCelebration, setShowCelebration] = React.useState(false);
@@ -98,9 +98,11 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         }}
         screenOptions={{
           headerShown: false,
+          tabBarHideOnKeyboard: true, // Universal keyboard behavior
           tabBarStyle: {
-            backgroundColor: 'transparent',
-            borderTopWidth: 0, // TemporalGlass handles the visual boundary — no raw rectangle edge
+            backgroundColor: colors.secondary, // Solid color aligned with Global Header
+            borderTopWidth: 1,
+            borderTopColor: colors.border,
             height: 60 + insets.bottom,
             paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
             paddingTop: 8,
@@ -108,7 +110,11 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             bottom: 0,
             left: 0,
             right: 0,
-            elevation: 0,
+            elevation: 8,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
           },
           tabBarActiveTintColor: colors.action,
           tabBarInactiveTintColor: colors.textTertiary,
@@ -117,19 +123,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             fontFamily: 'Inter_500Medium',
             marginBottom: insets.bottom > 0 ? 0 : 4,
           },
-          tabBarBackground: () => (
-            <BlurView
-              intensity={isDark ? 40 : 12}
-              tint={isDark ? 'dark' : 'light'}
-              style={[
-                StyleSheet.absoluteFill,
-                {
-                  borderTopWidth: 1,
-                  borderTopColor: isDark ? 'rgba(253, 217, 37, 0.1)' : 'rgba(230, 126, 34, 0.1)',
-                }
-              ]}
-            />
-          ),
+          tabBarBackground: () => <View style={StyleSheet.absoluteFill} />,
         }}
       >
         {/* 1. Profile Tab */}

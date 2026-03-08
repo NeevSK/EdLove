@@ -40,7 +40,7 @@ import {
     Shield,
     ShieldAlert
 } from 'lucide-react-native';
-import { useSocialLinks } from '@repo/profile';
+import { useSocialLinks } from '../hooks/useSocialLinks';
 import { SocialPlatform, PrivacyLevel } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 

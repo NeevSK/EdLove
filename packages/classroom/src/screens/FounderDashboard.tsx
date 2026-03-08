@@ -55,6 +55,7 @@ export default function FounderDashboard() {
     const { t } = useTranslation();
     const colors = useThemedColors();
     const { isDemoMode } = useStore();
+    const user = useStore(state => state.user);
     const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
 
     const { stats, schools, isLoading, error, refreshData } = useEcosystemStats();
@@ -94,6 +95,44 @@ export default function FounderDashboard() {
                                 </Text>
                             </HStack>
                         </HStack>
+
+                        {/* Quick Access to Main School */}
+                        {schools.find(s => s.id === user?.school_id) && (
+                            <TouchableOpacity
+                                onPress={() => {
+                                    const schoolId = user?.school_id || schools.find(s => s.id === user?.school_id)?.id;
+
+                                    if (schoolId) {
+                                        navigation.navigate('FounderSchoolView', {
+                                            schoolId: schoolId,
+                                            userId: user?.id || 'founder-id'
+                                        });
+                                    }
+
+                                }}
+                            >
+                                <Box sx={{
+                                    padding: Theme.spacing.md,
+                                    backgroundColor: Theme.colors.sanctuarySaffron + '11',
+                                    borderRadius: Theme.corners.comfortable,
+                                    borderWidth: 1,
+                                    borderColor: Theme.colors.sanctuarySaffron,
+                                    marginBottom: Theme.spacing.md
+                                }}>
+                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
+                                            <SchoolIcon size={24} color={Theme.colors.sanctuarySaffron} />
+                                            <VStack>
+                                                <Text sx={{ fontWeight: '700' }} color={colors.text}>Manage My Institution</Text>
+                                                <Text sx={{ fontSize: 12 }} color={colors.textSecondary}>Full principal oversight for your school</Text>
+                                            </VStack>
+                                        </HStack>
+                                        <ChevronRight size={20} color={colors.textTertiary} />
+                                    </HStack>
+                                </Box>
+                            </TouchableOpacity>
+                        )}
+
 
                         {isLoading ? (
                             <HStack sx={{ gap: Theme.spacing.md }}>

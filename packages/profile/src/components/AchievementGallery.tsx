@@ -31,42 +31,42 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
     const achievements: Achievement[] = [
         {
             id: 'Sanctuary Seeker',
-            title: t('achievements.sanctuarySeeker', 'Sanctuary Seeker'),
+            title: t('achievements.sanctuarySeeker'),
             description: 'Visit all 4 main sections of the app',
             icon: Compass,
             unlocked: unlockedBadges.includes('Sanctuary Seeker'),
         },
         {
             id: 'Early Riser',
-            title: t('achievements.earlyRiser', 'Early Riser'),
+            title: t('achievements.earlyRiser'),
             description: 'Log mood or attendance before 8 AM',
             icon: Clock,
             unlocked: unlockedBadges.includes('Early Riser'),
         },
         {
             id: 'Energy Master',
-            title: t('achievements.energyMaster', 'Energy Master'),
+            title: t('achievements.energyMaster'),
             description: 'Log energy levels 3 days in a row',
             icon: Zap,
             unlocked: unlockedBadges.includes('Energy Master'),
         },
         {
             id: 'Community Builder',
-            title: t('achievements.communityBuilder', 'Community Builder'),
+            title: t('achievements.communityBuilder'),
             description: 'Join your first group or post an announcement',
             icon: Users,
             unlocked: unlockedBadges.includes('Community Builder'),
         },
         {
             id: 'Wisdom Collector',
-            title: t('achievements.wisdomCollector', 'Wisdom Collector'),
+            title: t('achievements.wisdomCollector'),
             description: 'Save 5 items to your personal library',
             icon: BookOpen,
             unlocked: unlockedBadges.includes('Wisdom Collector'),
         },
         {
             id: 'QR Hunter',
-            title: t('achievements.qrHunter', 'QR Hunter'),
+            title: t('achievements.qrHunter'),
             description: 'Scan your first QR code',
             icon: QrCode,
             unlocked: unlockedBadges.includes('QR Hunter'),
@@ -114,7 +114,7 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
     };
 
     return (
-        <VStack mt={Theme.spacing.lg} px={Theme.spacing.md}>
+        <VStack sx={{ mt: Theme.spacing.lg, px: Theme.spacing.md }}>
             <Box
                 sx={{
                     backgroundColor: colors.secondary,
@@ -135,7 +135,7 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
                     mt={Theme.spacing.sm}
                     mb={Theme.spacing.md}
                 >
-                    {t('achievements.title', 'Sanctuary Achievements')}
+                    {t('achievements.title')}
                 </Heading>
                 <HStack style={styles.galleryGrid}>
                     {achievements.map((item) => (

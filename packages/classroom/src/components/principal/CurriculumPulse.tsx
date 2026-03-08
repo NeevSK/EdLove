@@ -82,7 +82,7 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
             <VStack sx={{ gap: Theme.spacing.xs }}>
                 <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
                     <Heading sx={{ fontSize: Theme.typography.fontSize.md }} color={colors.text}>
-                        {t('principal.pulse.title', 'Curriculum Pulse')}
+                        {t('principal.pulse.title')}
                     </Heading>
                     <Box
                         sx={{
@@ -101,7 +101,7 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
                     </Box>
                 </HStack>
                 <Text sx={{ fontSize: Theme.typography.fontSize.xs }} color={colors.textSecondary}>
-                    {t('principal.pulse.subtitle', 'Syllabus coverage across all grades')}
+                    {t('principal.pulse.subtitle')}
                 </Text>
             </VStack>
 
@@ -146,7 +146,7 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
                 <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
                     <BookOpen size={16} color={colors.action} />
                     <Text sx={{ fontSize: Theme.typography.fontSize.xs, flex: 1 }} color={colors.textSecondary}>
-                        {t('principal.pulse.insight', 'Grade 6 transition to the 2026 reform is currently at 45%. Consider a staff reflection on this progress.')}
+                        {t('principal.pulse.insight')}
                     </Text>
                 </HStack>
             </Box>

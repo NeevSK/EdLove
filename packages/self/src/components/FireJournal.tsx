@@ -37,7 +37,7 @@ import { Mic, Flame } from 'lucide-react-native';
 import { Theme, typography } from '@repo/ui';
 import { supabase, useSafeMutation } from '@repo/core';
 import { hapticLight, hapticMedium, SkeletonCard, SkeletonLoader, PositiveInvitation } from '@repo/ui';
-import { useFireJournal } from '@repo/self';
+import { useFireJournal } from '../hooks/useFireJournal';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 

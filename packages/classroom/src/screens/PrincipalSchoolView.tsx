@@ -58,9 +58,13 @@ import {
     LeaveApprovalSection,
     InstitutionalCalendarSection,
     PrincipalObservationsSection,
+    ManagementStation,
 } from '../components';
 import PrincipalNotes from '../components/principal/PrincipalNotes';
+import AcademicCycleManager from './AcademicCycleManager';
+import AttendanceReportScreen from './AttendanceReportScreen';
 import RoleInitialState from '../components/RoleInitialState';
+import { api, useUserRole, SchoolStats, StudentAttendancePulse } from '@repo/core';
 
 interface PrincipalSchoolViewProps {
     schoolId: string;
@@ -78,14 +82,16 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
     const { school, stats, isLoading, error, refreshData } = useSchoolStats(schoolId);
     const { generateTimetable, isThinking, lastTimetableDraft } = useAIAgent();
 
-    const [activeView, setActiveView] = useState<'dashboard' | 'hierarchy' | 'invites' | 'notes'>('dashboard');
+    const [activeView, setActiveView] = useState<
+        'main' | 'hierarchy' | 'invites' | 'notes' | 'cycles' | 'attendance_report'
+    >('main');
 
     if (activeView === 'hierarchy') {
         return (
             <ScreenWrapper>
                 <HierarchyBuilder
                     schoolId={schoolId}
-                    onBack={() => setActiveView('dashboard')}
+                    onBack={() => setActiveView('main')}
                 />
             </ScreenWrapper>
         );
@@ -97,7 +103,7 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                 <InviteManager
                     schoolId={schoolId}
                     userId={userId}
-                    onBack={() => setActiveView('dashboard')}
+                    onBack={() => setActiveView('main')}
                 />
             </ScreenWrapper>
         );
@@ -107,13 +113,31 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
         return (
             <PrincipalNotes
                 schoolId={schoolId}
-                onBack={() => setActiveView('dashboard')}
+                onBack={() => setActiveView('main')}
+            />
+        );
+    }
+
+    if (activeView === 'cycles') {
+        return (
+            <AcademicCycleManager
+                schoolId={schoolId}
+                onBack={() => setActiveView('main')}
+            />
+        );
+    }
+
+    if (activeView === 'attendance_report') {
+        return (
+            <AttendanceReportScreen
+                schoolId={schoolId}
+                onBack={() => setActiveView('main')}
             />
         );
     }
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper scroll={false} noTopInset={true}>
             {isDemoMode && <SandboxBanner />}
             <GlobalHeader
                 title={t('classroom.schoolManagement') || 'School Management'}
@@ -152,13 +176,21 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                         schoolId={schoolId}
                     />
 
+                    {/* Operational Command Center (The Principal's Office) */}
+                    <ManagementStation
+                        onAction={(action) => setActiveView(action)}
+                    />
+
                     {/* Teacher Faculty Carousel */}
                     <TeacherCarousel
                         schoolId={schoolId}
                     />
 
                     {/* Student Pulse */}
-                    <StudentPulseSection schoolId={schoolId} />
+                    <StudentPulseSection
+                        schoolId={schoolId}
+                        onViewFullReport={() => setActiveView('attendance_report')}
+                    />
 
                     {/* Leave Approvals */}
                     <LeaveApprovalSection schoolId={schoolId} principalId={userId} />

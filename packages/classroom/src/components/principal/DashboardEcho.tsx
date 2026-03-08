@@ -113,14 +113,14 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
             <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                 <VStack sx={{ gap: Theme.spacing.xs }}>
                     <Heading sx={{ fontSize: Theme.typography.fontSize.md }} color={colors.text}>
-                        {t('principal.echo.title', 'School Echo')}
+                        {t('principal.echo.title')}
                     </Heading>
                     <Text sx={{ fontSize: Theme.typography.fontSize.xs }} color={colors.textSecondary}>
-                        {t('principal.echo.subtitle', 'Recent voices from your institution')}
+                        {t('principal.echo.subtitle')}
                     </Text>
                 </VStack>
                 <Pressable>
-                    <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '700' }} color={colors.action}>{t('common.viewAll', 'View All')}</Text>
+                    <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: '700' }} color={colors.action}>{t('common.viewAll')}</Text>
                 </Pressable>
             </HStack>
 
@@ -169,7 +169,7 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
                 })}
                 {feedback.length === 0 && (
                     <Text sx={{ fontStyle: 'italic', textAlign: 'center' }} color={colors.textTertiary}>
-                        {t('principal.echo.empty', 'No recent feedback to display.')}
+                        {t('principal.echo.empty')}
                     </Text>
                 )}
             </VStack>

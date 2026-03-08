@@ -178,12 +178,30 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
                     <VStack space="md">
                         <Button
                             sx={{
+                                backgroundColor: Theme.colors.twilightBlue,
+                                padding: Theme.spacing.lg,
+                                marginBottom: Theme.spacing.xs,
+                            }}
+                            onPress={() => handleGenerateCode('principal')}
+                            disabled={isGenerating}
+                        >
+                            <ButtonText color={Theme.colors.sacredWhite}>
+                                {isGenerating
+                                    ? t('common.generating') || 'Generating...'
+                                    : t('principal.invites.generatePrincipal') ||
+                                    '👔 Generate Principal Code'}
+                            </ButtonText>
+                        </Button>
+
+                        <Button
+                            sx={{
                                 backgroundColor: Theme.colors.sageGreen,
                                 padding: Theme.spacing.lg,
                             }}
                             onPress={() => handleGenerateCode('teacher')}
                             disabled={isGenerating}
                         >
+
                             <ButtonText color={Theme.colors.sacredWhite}>
                                 {isGenerating
                                     ? t('common.generating') || 'Generating...'

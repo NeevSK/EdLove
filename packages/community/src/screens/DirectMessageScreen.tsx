@@ -12,6 +12,8 @@ import type { CommunityStackParamList } from '@repo/core';
 import { supabase } from '@repo/core';
 import { communityAPI } from '../api/community';
 import BaseChatScreen, { type ChatMessage, type SubscriptionConfig } from './BaseChatScreen';
+import HeaderMoreMenu from '../components/HeaderMoreMenu';
+import { useStore } from '@repo/core';
 
 type DMRoute = {
     key: string;
@@ -23,6 +25,11 @@ export default function DirectMessageScreen() {
     const route = useRoute<DMRoute>();
     const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
     const { conversationId, userName } = route.params;
+    const { user } = useStore();
+
+    // Determine the target user ID from the conversation metadata (if available) or assume from params
+    // In a real app, you'd fetch the conversation participants. 
+    // For now, we'll try to find it or let the menu handle it if we can pass it down.
 
     const fetchMessages = async (): Promise<ChatMessage[]> => {
         return communityAPI.getDirectMessages(conversationId) as Promise<ChatMessage[]>;
@@ -56,6 +63,12 @@ export default function DirectMessageScreen() {
             onPressAuthor={(userId, name) => {
                 navigation.navigate('UserProfile', { userId, userName: name });
             }}
+            headerRight={
+                <HeaderMoreMenu
+                    conversationId={conversationId}
+                    targetUserName={userName}
+                />
+            }
         />
     );
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { supabase, GuestDataManager, authAPI, SafeZustandStorage, useStore } from '@repo/core';
+import { supabase, GuestDataManager, authAPI, SafeZustandStorage, useStore, growthSignalsAPI } from '@repo/core';
 import { MoodLog } from '../types';
 
 const MOOD_CACHE_KEY = 'gurudevi-mood-cache';
@@ -38,7 +38,7 @@ export const useMoodLogs = (userId?: string) => {
                         id: gl.localId,
                         user_id: 'guest',
                         mood_score: gl.mood,
-                        mood: ['joyful', 'calm', 'curious', 'anxious', 'frustrated', 'sad'][gl.mood] as MoodLog['mood'],
+                        mood: (['joyful', 'calm', 'curious', 'anxious', 'frustrated', 'sad'][gl.mood] || 'calm') as MoodLog['mood'],
                         note: gl.note,
                         created_at: gl.timestamp
                     }));
@@ -68,7 +68,7 @@ export const useMoodLogs = (userId?: string) => {
                 id: gl.localId,
                 user_id: 'guest',
                 mood_score: gl.mood,
-                mood: ['joyful', 'calm', 'curious', 'anxious', 'frustrated', 'sad'][gl.mood] as MoodLog['mood'],
+                mood: (['joyful', 'calm', 'curious', 'anxious', 'frustrated', 'sad'][gl.mood] || 'calm') as MoodLog['mood'],
                 note: gl.note,
                 created_at: gl.timestamp
             }));
@@ -107,6 +107,7 @@ export const useMoodLogs = (userId?: string) => {
     }, [refreshData, isOnline]);
 
     const addMoodLog = useCallback(async (mood: MoodLog['mood'], note?: string) => {
+        if (!mood) return;
         try {
             const moodIndex = ['joyful', 'calm', 'curious', 'anxious', 'frustrated', 'sad'].indexOf(mood);
             const score = moodIndex !== -1 ? moodIndex : 3;
@@ -139,7 +140,16 @@ export const useMoodLogs = (userId?: string) => {
                     .single();
 
                 if (error) throw error;
+                if (!data) throw new Error('No data returned from mood log insertion');
+
                 setMoodHistory(prev => [data, ...prev]);
+
+                // Growth signal — fire-and-forget (benefits both mobile and web callers)
+                if (userId) {
+                    void growthSignalsAPI.emitSignal(userId, 'mood_checkin', { mood_score: score }).catch((err) => {
+                        if (__DEV__) console.warn('[useMoodLogs] mood_checkin signal failed:', err);
+                    });
+                }
 
                 // Update cache
                 if (userId) {

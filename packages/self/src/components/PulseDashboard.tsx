@@ -14,7 +14,8 @@ import {
     SkeletonCard,
     useTheme
 } from '@repo/ui';
-import { useUserRole, useStore, dailyContentAPI, usePendingActions, ClassroomStackParamList } from '@repo/core';
+import { useUserRole, useStore, dailyContentAPI, usePendingActions } from '@repo/core';
+import { ClassroomStackParamList } from '@repo/core'; // Keep core as it's cross-domain
 import { useTranslation } from 'react-i18next';
 import { Sparkles, Calendar, BookOpen, Clock, CheckCircle } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';

@@ -8,7 +8,8 @@
  * - Teacher/Student: Classroom list (assigned classes)
  */
 
-import { supabase, useUserRole, hasRole, ADMIN_ROLES, MANAGEMENT_ROLES, useRoleFeatures } from '@repo/core';
+import { supabase, useUserRole, hasRole, ADMIN_ROLES, MANAGEMENT_ROLES, useRoleFeatures, useStore } from '@repo/core';
+
 import React, { useEffect, useState } from 'react';
 import { Box, VStack, Theme, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, hapticLight } from '@repo/ui';
 import PrincipalSchoolView from './PrincipalSchoolView';
@@ -28,6 +29,7 @@ export default function ClassroomScreen() {
     const navigation = useNavigation<any>();
     const { role } = useUserRole();
     const { isGuest } = useRoleFeatures();
+    const storeSchoolId = useStore(state => state.user?.school_id);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const { data: classroomData, loading, fetchRoleData } = useClassroomRoleData(refreshTrigger);
 
@@ -38,7 +40,7 @@ export default function ClassroomScreen() {
     // 1. Loading state (only if no data at all)
     if (loading && !classroomData) {
         return (
-            <ScreenWrapper>
+            <ScreenWrapper scroll={false} noTopInset={true}>
                 <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.lg }}>
                     <SkeletonCard height={60} />
                     <SkeletonCard height={200} />
@@ -67,8 +69,28 @@ export default function ClassroomScreen() {
     // 2. Role-based routing
     if (classroomData) {
         if (role === 'founder') return <FounderDashboard />;
-        if (role === 'principal' || role === 'developer') return <PrincipalSchoolView schoolId={classroomData.schoolId || ''} userId={classroomData.userId} onRefresh={fetchRoleData} />;
+        if (role === 'principal' || role === 'developer' || role === 'admin') {
+            const schoolId = classroomData.schoolId || storeSchoolId || '';
+            // Surface NoSchoolOnboarding for principals who haven't created their school yet
+            if (!schoolId) {
+                return (
+                    <NoSchoolOnboarding
+                        userId={classroomData.userId}
+                        profileCompleted={classroomData.profileCompleted ?? false}
+                        onRefresh={fetchRoleData}
+                    />
+                );
+            }
+            return (
+                <PrincipalSchoolView
+                    schoolId={schoolId}
+                    userId={classroomData.userId}
+                    onRefresh={fetchRoleData}
+                />
+            );
+        }
     }
+
 
     if (role === 'section_head') return <SectionHeadView schoolId={classroomData?.schoolId || undefined} userId={classroomData?.userId} />;
     if (role === 'grade_head') return <GradeHeadView schoolId={classroomData?.schoolId || undefined} userId={classroomData?.userId} />;
@@ -76,7 +98,7 @@ export default function ClassroomScreen() {
     // Teacher View
     if (role === 'teacher') {
         return (
-            <ScreenWrapper>
+            <ScreenWrapper scroll={false} noTopInset={true}>
                 <GlobalHeader title="Classroom 💛" subtitle={undefined} />
                 <Box sx={{ flex: 1 }}>
                     {renderNudge()}
@@ -93,7 +115,7 @@ export default function ClassroomScreen() {
     // Student View (Instant Routing)
     if ((role as any) === 'student' || (isGuest && (role as any) === 'student')) {
         return (
-            <ScreenWrapper>
+            <ScreenWrapper scroll={false} noTopInset={true}>
                 <GlobalHeader title={t('classroom.mySanctuaries') || 'My Sanctuaries'} subtitle={undefined} />
                 <Box sx={{ flex: 1 }}>
                     {renderNudge()}
@@ -112,7 +134,7 @@ export default function ClassroomScreen() {
     const headerSubtitle = isGuest ? (t('classroom.explore') || 'Explore Sample Sanctuaries') : (t('classroom.mySanctuary') || 'My Sanctuary');
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper scroll={false} noTopInset={true}>
             <GlobalHeader title={headerTitle} subtitle={isGuest ? undefined : headerSubtitle} />
             <Box sx={{ flex: 1, padding: Theme.spacing.lg }}>
                 {renderNudge()}
