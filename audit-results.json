@@ -1,0 +1,39 @@
+{
+  "summary": {
+    "totalViolations": 4
+  },
+  "violations": [
+    {
+      "phase": "afternoon",
+      "mode": "light",
+      "type": "Action (Accent)",
+      "bg": "#3B82F6",
+      "fg": "#2A2318",
+      "ratio": "4.22"
+    },
+    {
+      "phase": "afternoon",
+      "mode": "dark",
+      "type": "Action (Accent)",
+      "bg": "#3B82F6",
+      "fg": "#2A2318",
+      "ratio": "4.22"
+    },
+    {
+      "phase": "night",
+      "mode": "light",
+      "type": "Reward",
+      "bg": "#8B5CF6",
+      "fg": "#2A2318",
+      "ratio": "3.67"
+    },
+    {
+      "phase": "night",
+      "mode": "dark",
+      "type": "Reward",
+      "bg": "#8B5CF6",
+      "fg": "#2A2318",
+      "ratio": "3.67"
+    }
+  ]
+}

@@ -85,7 +85,6 @@ export default function AppSettingsScreenWeb() {
         themeMode, setThemeMode,
         fidelityLevel, setFidelityLevel,
         language, setLanguage,
-        isVeilActive, toggleVeil,
         enableLivingTheme, setEnableLivingTheme
     } = useEnvironment();
 
@@ -180,24 +179,7 @@ export default function AppSettingsScreenWeb() {
                         </div>
                     </div>
 
-                    {/* 3. PRIVACY & SECURITY */}
-                    <div className="sanctuary-card" style={{ padding: '24px' }}>
-                        <h3 className="card-header-label">
-                            <Shield size={16} /> {t('settings.privacy.title')}
-                        </h3>
 
-                        <div className="settings-list">
-                            <button className="settings-row" onClick={() => toggleVeil()}>
-                                <div className="settings-row-info">
-                                    <span className="settings-row-title">{t('settings.veil.title')}</span>
-                                    <span className="settings-row-desc">{isVeilActive ? 'Sensitive info hidden' : 'Quick-hide details'}</span>
-                                </div>
-                                <div className="settings-row-action">
-                                    {isVeilActive ? <EyeOff size={20} color="var(--water)" /> : <Eye size={20} />}
-                                </div>
-                            </button>
-                        </div>
-                    </div>
 
                     {/* 4. ACCOUNT MANAGEMENT */}
                     <div className="sanctuary-card" style={{ padding: '24px', borderColor: 'rgba(255, 100, 100, 0.2)' }}>

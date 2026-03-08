@@ -16,7 +16,8 @@ import {
     LogoutModal,
     GlobalHeader,
     ScreenWrapper,
-    useEnvironment
+    useEnvironment,
+    Switch
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { useAccountDeletion, useTracking, useStore } from '@repo/core';
@@ -28,9 +29,21 @@ import {
     ThuthimalBadge,
     ProfileListItem
 } from '@repo/profile';
-import { Edit3, UserPlus, ChevronRight, Settings, LogOut, Trash2, HelpCircle, MessageSquare, Info, Heart, X, ShieldCheck } from 'lucide-react-native';
-// The import is correct now that we exported it from @repo/self
-import { PrivacyLedgerScreen } from '@repo/self';
+import {
+    Edit3,
+    UserPlus,
+    ChevronRight,
+    Settings,
+    LogOut,
+    Trash2,
+    HelpCircle,
+    MessageSquare,
+    Info,
+    Heart,
+    X,
+    Shield,
+    Eye
+} from 'lucide-react-native';
 import AppSettingsScreen from './AppSettingsScreen';
 
 import Animated, { FadeInDown, useSharedValue, useAnimatedStyle, withSequence, withTiming, withRepeat } from 'react-native-reanimated';
@@ -136,6 +149,8 @@ const StatsSection = ({ profile, role }: any) => {
     );
 };
 
+
+
 const SupportSection = ({ t, colors, navigation, cardWidth = CARD_WIDTH }: any) => (
     <Center>
         <VStack
@@ -171,14 +186,6 @@ const SupportSection = ({ t, colors, navigation, cardWidth = CARD_WIDTH }: any) 
                 icon={MessageSquare}
                 label={t('profile.feedbackTitle')}
                 onPress={() => hapticLight()}
-            />
-            <ProfileListItem
-                icon={ShieldCheck}
-                label={t('profile.privacyLedgerTitle')}
-                onPress={() => {
-                    hapticLight();
-                    navigation.navigate('PrivacyLedger');
-                }}
             />
             <ProfileListItem
                 icon={Info}
@@ -345,6 +352,7 @@ export default function ProfileScreen() {
         refreshing,
         refresh,
         logout,
+        updateField,
         rewards
     } = useProfile();
 
@@ -425,14 +433,14 @@ export default function ProfileScreen() {
 
     if (loading && !refreshing) {
         return (
-            <ScreenWrapper>
+            <ScreenWrapper noTopInset={true}>
                 <ProfileSkeleton />
             </ScreenWrapper>
         );
     }
 
     return (
-        <ScreenWrapper scroll={false}>
+        <ScreenWrapper scroll={false} noTopInset={true}>
             <GlobalHeader
                 title={t('profile.title')}
                 subtitle={t('profile.subtitle')}
@@ -551,7 +559,9 @@ export default function ProfileScreen() {
                             </Center>
                         </Animated.View>
 
-                        <Animated.View entering={FadeInDown.delay(500).duration(500)}>
+
+
+                        <Animated.View entering={FadeInDown.delay(550).duration(500)}>
                             <SupportSection t={t} colors={colors} navigation={navigation} cardWidth={cardWidth} />
                         </Animated.View>
 

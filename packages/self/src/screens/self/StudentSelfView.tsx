@@ -20,7 +20,8 @@ import {
     Input,
     InputField,
     Button,
-    ButtonText
+    ButtonText,
+    AdaptiveLayout
 } from '@repo/ui';
 import { Target, BookOpen, Flower, TrendingUp, Brain } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -178,33 +179,151 @@ export default function StudentSelfView() {
         : STUDENT_CORE_FEATURES;
 
     return (
-        <ScreenWrapper scroll={false}>
+        <ScreenWrapper scroll={false} noTopInset={true}>
             <GlobalHeader isSelfView avatarUrl={userProfile?.avatar_url} />
-            <ScrollView
-                sx={{ flex: 1 }}
-                contentContainerStyle={{ paddingBottom: bottomPadding, paddingTop: Theme.spacing.lg }}
-                showsVerticalScrollIndicator={false}
+            <AdaptiveLayout
+                renderSidebar={() => (
+                    <VStack space="lg" sx={{ p: Theme.spacing.lg }}>
+                        {/* Daily Content Section */}
+                        <VStack space="md">
+                            <DailyContentCard type="motivation" />
+                            <DailyContentCard type="did_you_know" />
+                        </VStack>
+
+                        {/* Feature Grid (Vertical on Tablet) */}
+                        <VStack space="md" sx={{ mt: Theme.spacing.md }}>
+                            <Heading size="sm" color={colors.textSecondary}>{t('self.features')}</Heading>
+                            <Box sx={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+                                {allFeatures.map((feature) => (
+                                    <Pressable
+                                        key={feature.id}
+                                        onPress={() => {
+                                            hapticLight();
+                                            setActiveFeature(feature.id);
+                                        }}
+                                        sx={{ width: '45%' }}
+                                    >
+                                        <VStack
+                                            alignItems="center"
+                                            justifyContent="center"
+                                            space="xs"
+                                            sx={{
+                                                height: 80,
+                                                borderRadius: Theme.corners.generous,
+                                                backgroundColor: activeFeature === feature.id
+                                                    ? Theme.colors.sanctuarySaffron
+                                                    : colors.secondary,
+                                                borderWidth: 1,
+                                                borderColor: activeFeature === feature.id
+                                                    ? Theme.colors.sanctuarySaffron
+                                                    : colors.border,
+                                            }}
+                                        >
+                                            <feature.icon
+                                                color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary}
+                                                size={24}
+                                            />
+                                            <Text
+                                                size="xs"
+                                                bold={activeFeature === feature.id}
+                                                color={activeFeature === feature.id ? Theme.colors.white : colors.text}
+                                                textAlign="center"
+                                            >
+                                                {t(`student.${feature.id}`)}
+                                            </Text>
+                                        </VStack>
+                                    </Pressable>
+                                ))}
+                            </Box>
+                        </VStack>
+                    </VStack>
+                )}
+                renderContent={() => (
+                    <Box p={Theme.spacing.xl}>
+                        <Box
+                            p={Theme.spacing.xl}
+                            sx={{
+                                backgroundColor: colors.secondary,
+                                borderRadius: Theme.corners.generous,
+                                minHeight: 500
+                            }}
+                        >
+                            {loadingUser ? (
+                                <VStack space="md">
+                                    <SkeletonCard height={40} />
+                                    <SkeletonCard height={150} />
+                                    <SkeletonCard height={40} />
+                                </VStack>
+                            ) : renderFeature()}
+                        </Box>
+                    </Box>
+                )}
             >
+                <ScrollView
+                    sx={{ flex: 1 }}
+                    contentContainerStyle={{ paddingBottom: bottomPadding, paddingTop: Theme.spacing.lg }}
+                    showsVerticalScrollIndicator={false}
+                >
 
-                {/* Daily Content Section */}
-                <Box mb="$4">
-                    <DailyContentCard type="motivation" />
-                    <DailyContentCard type="did_you_know" />
-                </Box>
+                    {/* Daily Content Section */}
+                    <Box mb="$4">
+                        <DailyContentCard type="motivation" />
+                        <DailyContentCard type="did_you_know" />
+                    </Box>
 
-                {/* Feature Carousel */}
-                <Box sx={{ height: 100 }}>
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, gap: 12 }}
-                    >
-                        {allFeatures.map((feature) => (
+                    {/* Feature Carousel */}
+                    <Box sx={{ height: 100 }}>
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, gap: 12 }}
+                        >
+                            {allFeatures.map((feature) => (
+                                <Pressable
+                                    key={feature.id}
+                                    onPress={() => {
+                                        hapticLight();
+                                        setActiveFeature(feature.id);
+                                    }}
+                                >
+                                    <VStack
+                                        alignItems="center"
+                                        justifyContent="center"
+                                        space="xs"
+                                        sx={{
+                                            width: 100,
+                                            height: 80,
+                                            borderRadius: Theme.corners.generous,
+                                            backgroundColor: activeFeature === feature.id
+                                                ? Theme.colors.sanctuarySaffron
+                                                : colors.secondary,
+                                            borderWidth: 1,
+                                            borderColor: activeFeature === feature.id
+                                                ? Theme.colors.sanctuarySaffron
+                                                : colors.border,
+                                        }}
+                                    >
+                                        <feature.icon
+                                            color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary}
+                                            size={24}
+                                        />
+                                        <Text
+                                            size="xs"
+                                            bold={activeFeature === feature.id}
+                                            color={activeFeature === feature.id ? Theme.colors.white : colors.text}
+                                            textAlign="center"
+                                        >
+                                            {t(`student.${feature.id}`)}
+                                        </Text>
+                                    </VStack>
+                                </Pressable>
+                            ))}
+
+                            {/* More Tools Toggle */}
                             <Pressable
-                                key={feature.id}
                                 onPress={() => {
                                     hapticLight();
-                                    setActiveFeature(feature.id);
+                                    setShowMoreTools(!showMoreTools);
                                 }}
                             >
                                 <VStack
@@ -215,92 +334,53 @@ export default function StudentSelfView() {
                                         width: 100,
                                         height: 80,
                                         borderRadius: Theme.corners.generous,
-                                        backgroundColor: activeFeature === feature.id
+                                        backgroundColor: showMoreTools
                                             ? Theme.colors.sanctuarySaffron
                                             : colors.secondary,
                                         borderWidth: 1,
-                                        borderColor: activeFeature === feature.id
+                                        borderColor: showMoreTools
                                             ? Theme.colors.sanctuarySaffron
                                             : colors.border,
+                                        borderStyle: 'dashed'
                                     }}
                                 >
-                                    <feature.icon
-                                        color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary}
-                                        size={24}
-                                    />
+                                    <Text fontSize="$2xl" color={showMoreTools ? Theme.colors.white : colors.text}>
+                                        {showMoreTools ? '−' : '+'}
+                                    </Text>
                                     <Text
                                         size="xs"
-                                        bold={activeFeature === feature.id}
-                                        color={activeFeature === feature.id ? Theme.colors.white : colors.text}
+                                        bold={showMoreTools}
+                                        color={showMoreTools ? Theme.colors.white : colors.textSecondary}
                                         textAlign="center"
                                     >
-                                        {t(`student.${feature.id}`)}
+                                        {showMoreTools ? t('self.lessTools') : t('self.moreTools')}
                                     </Text>
                                 </VStack>
                             </Pressable>
-                        ))}
+                        </ScrollView>
+                    </Box>
 
-                        {/* More Tools Toggle */}
-                        <Pressable
-                            onPress={() => {
-                                hapticLight();
-                                setShowMoreTools(!showMoreTools);
+                    {/* Dynamic Content */}
+                    <Box mt="$6">
+                        <Box
+                            p={Theme.spacing.xl}
+                            sx={{
+                                backgroundColor: colors.secondary,
+                                borderRadius: Theme.corners.generous,
+                                minHeight: 300
                             }}
                         >
-                            <VStack
-                                alignItems="center"
-                                justifyContent="center"
-                                space="xs"
-                                sx={{
-                                    width: 100,
-                                    height: 80,
-                                    borderRadius: Theme.corners.generous,
-                                    backgroundColor: showMoreTools
-                                        ? Theme.colors.sanctuarySaffron
-                                        : colors.secondary,
-                                    borderWidth: 1,
-                                    borderColor: showMoreTools
-                                        ? Theme.colors.sanctuarySaffron
-                                        : colors.border,
-                                    borderStyle: 'dashed'
-                                }}
-                            >
-                                <Text fontSize="$2xl" color={showMoreTools ? Theme.colors.white : colors.text}>
-                                    {showMoreTools ? '−' : '+'}
-                                </Text>
-                                <Text
-                                    size="xs"
-                                    bold={showMoreTools}
-                                    color={showMoreTools ? Theme.colors.white : colors.textSecondary}
-                                    textAlign="center"
-                                >
-                                    {showMoreTools ? t('self.lessTools') : t('self.moreTools')}
-                                </Text>
-                            </VStack>
-                        </Pressable>
-                    </ScrollView>
-                </Box>
-
-                {/* Dynamic Content */}
-                <Box mt="$6">
-                    <Box
-                        p={Theme.spacing.xl}
-                        sx={{
-                            backgroundColor: colors.secondary,
-                            borderRadius: Theme.corners.generous,
-                            minHeight: 300
-                        }}
-                    >
-                        {loadingUser ? (
-                            <VStack space="md">
-                                <SkeletonCard height={40} />
-                                <SkeletonCard height={150} />
-                                <SkeletonCard height={40} />
-                            </VStack>
-                        ) : renderFeature()}
+                            {loadingUser ? (
+                                <VStack space="md">
+                                    <SkeletonCard height={40} />
+                                    <SkeletonCard height={150} />
+                                    <SkeletonCard height={40} />
+                                </VStack>
+                            ) : renderFeature()}
+                        </Box>
                     </Box>
-                </Box>
-            </ScrollView>
+                </ScrollView>
+            </AdaptiveLayout>
 
             <ShadowAgentDrawer />
             <WelcomeModal

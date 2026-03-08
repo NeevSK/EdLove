@@ -28,7 +28,7 @@ import WelcomeModal from '../../components/WelcomeModal';
 import { useMoodLogs } from '../../hooks/useMoodLogs';
 import { useEnergyForecast } from '../../hooks/useEnergyForecast';
 import { SkeletonCard, PositiveInvitation } from '@repo/ui';
-import { useThemedColors, useBottomTabPadding, ScreenWrapper } from '@repo/ui';
+import { useThemedColors, useBottomTabPadding, ScreenWrapper, AdaptiveLayout } from '@repo/ui';
 
 const ADMIN_CORE_FEATURES = [
     { id: 'balance', icon: Activity, category: 'core' },
@@ -132,79 +132,169 @@ export default function AdminSelfView() {
     const allFeatures = showMoreTools ? [...ADMIN_CORE_FEATURES, ...ADMIN_MORE_TOOLS] : ADMIN_CORE_FEATURES;
 
     return (
-        <ScreenWrapper scroll={false}>
+        <ScreenWrapper scroll={false} noTopInset={true}>
             <GlobalHeader
                 isSelfView
                 avatarUrl={userProfile?.avatar_url}
                 subtitle={t('self.adminSubtitle') || 'System Architect'}
             />
-            <ScrollView
-                sx={{ flex: 1 }}
-                contentContainerStyle={{ paddingBottom: bottomPadding, paddingTop: Theme.spacing.lg }}
-                showsVerticalScrollIndicator={false}
-            >
+            <AdaptiveLayout
+                renderSidebar={() => (
+                    <VStack space="lg" sx={{ p: Theme.spacing.lg }}>
+                        {/* Daily Content Section */}
+                        <VStack space="md">
+                            <DailyContentCard type="motivation" />
+                            <DailyContentCard type="did_you_know" />
+                        </VStack>
 
-                <Box mb="$4">
-                    <DailyContentCard type="motivation" />
-                    <DailyContentCard type="did_you_know" />
-                </Box>
+                        {/* Resonance Pattern */}
+                        {userProfile && (
+                            <Box sx={{ mt: Theme.spacing.md }}>
+                                <ResonancePatternCard
+                                    orientationSeeds={userProfile?.orientation_seeds ?? null}
+                                    moodLogs={moodLogs}
+                                    energyForecasts={energyForecasts}
+                                />
+                            </Box>
+                        )}
 
-                {/* Resonance Pattern */}
-                {userProfile && (
-                    <Box sx={{ paddingHorizontal: Theme.spacing.md, marginBottom: Theme.spacing.md }}>
-                        <ResonancePatternCard
-                            orientationSeeds={userProfile?.orientation_seeds ?? null}
-                            moodLogs={moodLogs}
-                            energyForecasts={energyForecasts}
-                        />
+                        {/* Feature Grid (Vertical on Tablet) */}
+                        <VStack space="md" sx={{ mt: Theme.spacing.md }}>
+                            <Heading size="sm" color={colors.textSecondary}>System Controls</Heading>
+                            <Box sx={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+                                {allFeatures.map((feature) => (
+                                    <Pressable
+                                        key={feature.id}
+                                        onPress={() => {
+                                            hapticLight();
+                                            setActiveFeature(feature.id);
+                                        }}
+                                        sx={{ width: '45%' }}
+                                    >
+                                        <VStack
+                                            alignItems="center"
+                                            justifyContent="center"
+                                            space="xs"
+                                            sx={{
+                                                height: 80,
+                                                borderRadius: Theme.corners.generous,
+                                                backgroundColor: activeFeature === feature.id
+                                                    ? colors.action
+                                                    : colors.secondary,
+                                                borderWidth: 1,
+                                                borderColor: activeFeature === feature.id
+                                                    ? colors.action
+                                                    : colors.border,
+                                            }}
+                                        >
+                                            <feature.icon
+                                                color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary}
+                                                size={24}
+                                            />
+                                            <Text
+                                                size="xs"
+                                                bold={activeFeature === feature.id}
+                                                color={activeFeature === feature.id ? Theme.colors.white : colors.text}
+                                                textAlign="center"
+                                            >
+                                                {t(`admin.${feature.id}`)}
+                                            </Text>
+                                        </VStack>
+                                    </Pressable>
+                                ))}
+                            </Box>
+                        </VStack>
+                    </VStack>
+                )}
+                renderContent={() => (
+                    <Box p={Theme.spacing.xl}>
+                        <Box
+                            p={Theme.spacing.xl}
+                            sx={{
+                                backgroundColor: colors.secondary,
+                                borderRadius: Theme.corners.generous,
+                                minHeight: 500
+                            }}
+                        >
+                            {loadingUser ? (
+                                <VStack space="md">
+                                    <SkeletonCard height={40} />
+                                    <SkeletonCard height={150} />
+                                    <SkeletonCard height={40} />
+                                </VStack>
+                            ) : renderFeature()}
+                        </Box>
                     </Box>
                 )}
+            >
+                <ScrollView
+                    sx={{ flex: 1 }}
+                    contentContainerStyle={{ paddingBottom: bottomPadding, paddingTop: Theme.spacing.lg }}
+                    showsVerticalScrollIndicator={false}
+                >
 
-                <Box sx={{ height: 100 }}>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, gap: 12 }}>
-                        {allFeatures.map((feature) => (
-                            <Pressable
-                                key={feature.id}
-                                onPress={() => { hapticLight(); setActiveFeature(feature.id); }}
-                            >
-                                <VStack
-                                    alignItems="center"
-                                    justifyContent="center"
-                                    space="xs"
-                                    sx={{
-                                        width: 100, height: 80, borderRadius: Theme.corners.generous,
-                                        backgroundColor: activeFeature === feature.id ? colors.action : colors.secondary,
-                                        borderWidth: 1, borderColor: activeFeature === feature.id ? colors.action : colors.border,
-                                    }}
+                    <Box mb="$4">
+                        <DailyContentCard type="motivation" />
+                        <DailyContentCard type="did_you_know" />
+                    </Box>
+
+                    {/* Resonance Pattern */}
+                    {userProfile && (
+                        <Box sx={{ paddingHorizontal: Theme.spacing.md, marginBottom: Theme.spacing.md }}>
+                            <ResonancePatternCard
+                                orientationSeeds={userProfile?.orientation_seeds ?? null}
+                                moodLogs={moodLogs}
+                                energyForecasts={energyForecasts}
+                            />
+                        </Box>
+                    )}
+
+                    <Box sx={{ height: 100 }}>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, gap: 12 }}>
+                            {allFeatures.map((feature) => (
+                                <Pressable
+                                    key={feature.id}
+                                    onPress={() => { hapticLight(); setActiveFeature(feature.id); }}
                                 >
-                                    <feature.icon color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary} size={24} />
-                                    <Text size="xs" bold={activeFeature === feature.id} color={activeFeature === feature.id ? Theme.colors.white : colors.text} textAlign="center">
-                                        {t(`admin.${feature.id}`)}
-                                    </Text>
+                                    <VStack
+                                        alignItems="center"
+                                        justifyContent="center"
+                                        space="xs"
+                                        sx={{
+                                            width: 100, height: 80, borderRadius: Theme.corners.generous,
+                                            backgroundColor: activeFeature === feature.id ? colors.action : colors.secondary,
+                                            borderWidth: 1, borderColor: activeFeature === feature.id ? colors.action : colors.border,
+                                        }}
+                                    >
+                                        <feature.icon color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary} size={24} />
+                                        <Text size="xs" bold={activeFeature === feature.id} color={activeFeature === feature.id ? Theme.colors.white : colors.text} textAlign="center">
+                                            {t(`admin.${feature.id}`)}
+                                        </Text>
+                                    </VStack>
+                                </Pressable>
+                            ))}
+                            <Pressable onPress={() => { hapticLight(); setShowMoreTools(!showMoreTools); }}>
+                                <VStack alignItems="center" justifyContent="center" space="xs" sx={{ width: 100, height: 80, borderRadius: Theme.corners.generous, backgroundColor: colors.secondary, borderWidth: 1, borderColor: colors.border, borderStyle: 'dashed' }}>
+                                    <Text fontSize="$2xl" color={colors.text}>{showMoreTools ? '−' : '+'}</Text>
+                                    <Text size="xs" color={colors.textSecondary}>{showMoreTools ? t('self.lessTools') : t('self.moreTools')}</Text>
                                 </VStack>
                             </Pressable>
-                        ))}
-                        <Pressable onPress={() => { hapticLight(); setShowMoreTools(!showMoreTools); }}>
-                            <VStack alignItems="center" justifyContent="center" space="xs" sx={{ width: 100, height: 80, borderRadius: Theme.corners.generous, backgroundColor: colors.secondary, borderWidth: 1, borderColor: colors.border, borderStyle: 'dashed' }}>
-                                <Text fontSize="$2xl" color={colors.text}>{showMoreTools ? '−' : '+'}</Text>
-                                <Text size="xs" color={colors.textSecondary}>{showMoreTools ? t('self.lessTools') : t('self.moreTools')}</Text>
-                            </VStack>
-                        </Pressable>
-                    </ScrollView>
-                </Box>
-
-                <Box mt="$6">
-                    <Box p={Theme.spacing.xl} sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.generous, minHeight: 300 }}>
-                        {loadingUser ? (
-                            <VStack space="md">
-                                <SkeletonCard height={40} />
-                                <SkeletonCard height={150} />
-                                <SkeletonCard height={40} />
-                            </VStack>
-                        ) : renderFeature()}
+                        </ScrollView>
                     </Box>
-                </Box>
-            </ScrollView>
+
+                    <Box mt="$6">
+                        <Box p={Theme.spacing.xl} sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.generous, minHeight: 300 }}>
+                            {loadingUser ? (
+                                <VStack space="md">
+                                    <SkeletonCard height={40} />
+                                    <SkeletonCard height={150} />
+                                    <SkeletonCard height={40} />
+                                </VStack>
+                            ) : renderFeature()}
+                        </Box>
+                    </Box>
+                </ScrollView>
+            </AdaptiveLayout>
 
             <ShadowAgentDrawer />
             <WelcomeModal isOpen={justFinishedOnboarding} onClose={() => setJustFinishedOnboarding(false)} />

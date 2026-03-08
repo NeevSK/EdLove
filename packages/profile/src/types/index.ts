@@ -47,6 +47,7 @@ export interface UserProfile extends ProfileStats {
     role: UserRole;
     avatar_url?: string;
     is_anonymous?: boolean;
+    public_profile?: boolean;
     profile_completed?: boolean;
     bio?: string;
     index_number?: string;

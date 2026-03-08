@@ -130,7 +130,7 @@ export default function SchoolCreationScreen() {
 
     if (isSubmitting) {
         return (
-            <ScreenWrapper>
+            <ScreenWrapper noTopInset={true}>
                 <GlobalHeader title="Establishing Sanctuary..." />
                 <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}>
                     <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} />
@@ -144,7 +144,7 @@ export default function SchoolCreationScreen() {
 
     if (successData) {
         return (
-            <ScreenWrapper>
+            <ScreenWrapper noTopInset={true}>
                 <GlobalHeader title="Sanctuary Established!" />
                 <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg, paddingBottom: 120 }}>
                     <VStack sx={{ gap: Theme.spacing.xl, alignItems: 'center', marginTop: Theme.spacing.xl }}>
@@ -218,7 +218,7 @@ export default function SchoolCreationScreen() {
     }
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper noTopInset={true}>
             <GlobalHeader
                 title="Establish School"
                 subtitle="Bring your sanctuary to life"

@@ -52,7 +52,7 @@ import {
     useThemedColors,
     useBottomTabPadding
 } from '@repo/ui';
-import { ScreenWrapper } from '@repo/ui';
+import { ScreenWrapper, AdaptiveLayout } from '@repo/ui';
 
 // Progressive Architecture: PulseDashboard is the Entry Hall.
 // Core features are revealed after the user taps "Enter Full Sanctuary".
@@ -238,9 +238,86 @@ export default function TeacherSelfView() {
     const allFeatures = showMoreTools ? [...CORE_FEATURES, ...MORE_TOOLS_FEATURES] : CORE_FEATURES;
 
     return (
-        <ScreenWrapper scroll={false}>
+        <ScreenWrapper scroll={false} noTopInset={true}>
             <GlobalHeader isSelfView avatarUrl={userProfile?.avatar_url} />
-            <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+            <AdaptiveLayout
+                renderSidebar={() => (
+                    <VStack space="lg" sx={{ p: Theme.spacing.lg }}>
+                        {/* Daily Content Section */}
+                        <VStack space="md">
+                            <DailyContentCard type="motivation" />
+                            <DailyContentCard type="did_you_know" />
+                        </VStack>
+
+                        {/* Feature Grid (Vertical on Tablet) */}
+                        <VStack space="md" sx={{ mt: Theme.spacing.md }}>
+                            <Heading size="sm" color={colors.textSecondary}>{t('self.features')}</Heading>
+                            <Box sx={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+                                {allFeatures.map((feature) => (
+                                    <Pressable
+                                        key={feature.id}
+                                        onPress={() => {
+                                            hapticLight();
+                                            setActiveFeature(feature.id);
+                                        }}
+                                        sx={{ width: '45%' }}
+                                    >
+                                        <VStack
+                                            alignItems="center"
+                                            justifyContent="center"
+                                            space="xs"
+                                            sx={{
+                                                height: 80,
+                                                borderRadius: Theme.corners.generous,
+                                                backgroundColor: activeFeature === feature.id
+                                                    ? Theme.colors.sanctuarySaffron
+                                                    : colors.secondary,
+                                                borderWidth: 1,
+                                                borderColor: activeFeature === feature.id
+                                                    ? Theme.colors.sanctuarySaffron
+                                                    : colors.border,
+                                            }}
+                                        >
+                                            <feature.icon
+                                                color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary}
+                                                size={24}
+                                            />
+                                            <Text
+                                                size="xs"
+                                                bold={activeFeature === feature.id}
+                                                color={activeFeature === feature.id ? Theme.colors.white : colors.text}
+                                                textAlign="center"
+                                            >
+                                                {t(`self.${feature.id}`)}
+                                            </Text>
+                                        </VStack>
+                                    </Pressable>
+                                ))}
+                            </Box>
+                        </VStack>
+                    </VStack>
+                )}
+                renderContent={() => (
+                    <Box p={Theme.spacing.xl}>
+                        <Box
+                            p={Theme.spacing.xl}
+                            sx={{
+                                backgroundColor: colors.secondary,
+                                borderRadius: Theme.corners.generous,
+                                minHeight: 500
+                            }}
+                        >
+                            {loadingUser ? (
+                                <VStack space="md">
+                                    <SkeletonCard height={40} />
+                                    <SkeletonCard height={150} />
+                                    <SkeletonCard height={40} />
+                                </VStack>
+                            ) : renderFeature()}
+                        </Box>
+                    </Box>
+                )}
+            >
                 <ScrollView
                     sx={{ flex: 1 }}
                     showsVerticalScrollIndicator={false}
@@ -378,7 +455,7 @@ export default function TeacherSelfView() {
                         </Box>
                     </Box>
                 </ScrollView>
-            </Box>
+            </AdaptiveLayout>
 
             {/* Shadow Agent Drawer - Always present as a floating orb */}
             <ShadowAgentDrawer />

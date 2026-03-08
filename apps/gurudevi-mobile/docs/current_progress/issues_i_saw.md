@@ -1,10 +1,25 @@
 this file is for issues i saw while doing manual testing and should complement/integrate with the tasks do in future and update the progress as well)
 (other than not mentioned specifically all changes should apply both mobile and web - web related docs @ "/../docs/web")
 
-## 10.09 am 07/03/2026 (latest - [n])
+## 07/03/2026 (latest - [n])
+### 11.50 pm
+1. global header is still different colors/hieghts in different sectiuons
+2. for principalselfview all feature visible for guest users
+3. create demo school with whats avaiable in principal dahsboard and integrate into principalschoolview in guest or newuser screens
+4. make sure demo classrrom for teacher and students are what actually developed ofr them.(how to check that??
+5. integrate wellbeing related features which also added into teacherselfview into principal self view as well.
+6. see whether anything have created for sleep tracker - quality and duration, water reminder, guided breathing for all roles and check whether existing screens/componets
+7. userpublicprofilescreen is bad where is linktree/social links thing isnt even there.  (privacy, available details/ edit detail/ public view should be sits around same place. now its different buttons different places). i think isssue is i can't remember the exact name of things yet we have done several items regarding profile now they are scattered.
+8. UI in global santuries and how groups are listed are feel like very primitive. need premium modern view. related to all chat or other list sections.
+
+### 10.09 am 
 1. bottom nav bar should not be blurd or transparent. solid color. 
 2. if keyboard appears in any screen bottom nav bar should be collapsed down. (how to make sure it happen in universal way??)
 3. need to standardize global header in different screens for different roles seems it has different colors different naming or conventions, different hights
+4.  add toggle switch for publicsocilaprofile in profile section in mobile
+5. wcag math for text color vs backgroun color and any other standard libs, packages and utils for accessibility
+6. responsivenes for andoid apps in tab than mobile???
+7. focusing in signup user experience from now. principal, student, teacher
 
 
 ## 7.36 pm 03/03/2026 (latest - [n -1])  

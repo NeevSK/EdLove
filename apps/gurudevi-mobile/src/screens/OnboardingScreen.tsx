@@ -186,8 +186,6 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                         <SelectItem label={t('role.teacher')} value="teacher" />
                         <SelectItem label={t('role.student')} value="student" />
                         <SelectItem label={t('role.principal')} value="principal" />
-                        <SelectItem label={t('role.admin')} value="admin" />
-                        <SelectItem label={t('role.founder')} value="founder" />
                     </SelectContent>
                 </SelectPortal>
             </Select>

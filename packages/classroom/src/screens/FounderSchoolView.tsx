@@ -58,7 +58,7 @@ export default function FounderSchoolView({ schoolId, userId }: FounderSchoolVie
     // Load data handled by hook
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper noTopInset={true}>
             {isDemoMode && <SandboxBanner />}
             <GlobalHeader
                 title={t('founder.platformVision')}

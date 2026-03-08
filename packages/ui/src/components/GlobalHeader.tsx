@@ -12,6 +12,7 @@ import { hapticLight, hapticMedium } from '../utils/haptics';
 import NotificationDrawer from './NotificationDrawer';
 import { TouchableOpacity } from 'react-native';
 import { UserAvatar } from './UserAvatar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface GlobalHeaderProps {
     title?: string;
@@ -50,6 +51,7 @@ export default function GlobalHeader({
     const navigation = useNavigation<any>();
     const colors = useThemedColors();
     const { glass, text, accent, isDark, blurEnabled } = useTheme();
+    const insets = useSafeAreaInsets();
 
     const [showNotifications, setShowNotifications] = useState(false);
     const { notifications, unreadCount, isLoading: notifLoading, markAsRead, markAllRead } =
@@ -95,12 +97,13 @@ export default function GlobalHeader({
     return (
         <VStack sx={{
             gap: '$md' as any,
-            marginBottom: '$4' as any,
+            marginBottom: '$2' as any,
             paddingHorizontal: '$4' as any,
+            paddingTop: (insets.top + (title ? 12 : 16)) as any,
             paddingBottom: '$4' as any,
-            backgroundColor: glass.surface.bg,
+            backgroundColor: colors.secondary, // Solid background consistent with Tab Bar
             borderBottomWidth: 1,
-            borderBottomColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'
+            borderBottomColor: colors.border
         }}>
             <HStack sx={{ gap: '$sm' as any, alignItems: 'center', justifyContent: 'space-between' }}>
                 {/* LEFT: Greeting or Title */}
