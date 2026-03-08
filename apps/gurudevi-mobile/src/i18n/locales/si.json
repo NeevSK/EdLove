@@ -568,9 +568,9 @@
     },
     "empty": {
       "title": "The silence is waiting for your resonance.",
-      "desc": "Desc",
-      "button": "Button",
-      "joinFirst": "Join First"
+      "desc": "No updates have been shared in this circle yet.",
+      "button": "Share an Update",
+      "joinFirst": "Join this circle to share your first update."
     },
     "students": "Students",
     "members": "Members",
