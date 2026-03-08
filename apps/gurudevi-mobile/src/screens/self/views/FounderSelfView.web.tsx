@@ -11,7 +11,6 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore } from '@repo/core';
 import { useMoodLogs, useEnergyForecast, useWisdom } from '@repo/self';
-import type { MoodLog } from '@repo/self';
 import { SkeletonCard } from '@repo/ui';
 import {
     Compass,
@@ -19,25 +18,17 @@ import {
     Zap,
     Lightbulb,
     Network,
-    Heart,
-    TrendingUp,
-    Plus
 } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
-
-// ── colour helpers ──────────────────────────────────────────────────────────
-const MOOD_LABELS = ['', 'Depleted', 'Low', 'Steady', 'Energised', 'Vibrant'];
-const MOOD_COLORS = ['', 'var(--ember)', 'var(--amber-glow)', 'var(--water)', 'var(--moss)', 'var(--lotus)'];
-const ENERGY_COLORS = ['', 'var(--ember)', 'var(--amber-glow)', 'var(--water)', 'var(--moss)', 'var(--sanctuary-saffron)'];
-
-const MOOD_OPTIONS: { value: MoodLog['mood']; emoji: string; label: string }[] = [
-    { value: 'sad',        emoji: '😔', label: 'Sad' },
-    { value: 'frustrated', emoji: '😤', label: 'Frustrated' },
-    { value: 'anxious',    emoji: '😰', label: 'Anxious' },
-    { value: 'calm',       emoji: '😌', label: 'Calm' },
-    { value: 'curious',    emoji: '🤔', label: 'Curious' },
-    { value: 'joyful',     emoji: '😊', label: 'Joyful' },
-];
+import {
+    MOOD_LABELS,
+    MOOD_COLORS,
+    ENERGY_COLORS,
+    MoodPickerCard,
+    EnergyBarChart,
+} from './selfViewShared';
+import { SanctuaryTabBar } from '../../../components/web/SanctuaryTabBar';
+import type { SanctuaryTab } from '../../../components/web/SanctuaryTabBar';
 
 type ActivePanel = 'vision' | 'mood' | 'energy' | 'philosophy';
 
@@ -48,7 +39,6 @@ export default function FounderSelfViewWeb() {
 
     const [activePanel, setActivePanel] = useState<ActivePanel>('vision');
     const [showMoodPicker, setShowMoodPicker] = React.useState(false);
-    const [moodNote, setMoodNote] = React.useState('');
     const [savingMood, setSavingMood] = React.useState(false);
 
     // ── Personal wellbeing hooks ─────────────────────────────────────────
@@ -59,14 +49,14 @@ export default function FounderSelfViewWeb() {
     const latestMood = moodHistory[0];
     const todayForecast = forecasts[0];
 
-    const TABS: { id: ActivePanel; icon: any; label: string; color: string; textColor: string }[] = [
+    const TABS: SanctuaryTab<ActivePanel>[] = [
         // vision uses the phase accent (--sanctuary-saffron) which can be any luminance,
         // so we use --text-on-action for WCAG-safe adaptive text.
-        { id: 'vision',     icon: Compass,    label: 'Vision',       color: 'var(--sanctuary-saffron)', textColor: 'var(--text-on-action)' },
+        { id: 'vision',     icon: Compass,    label: 'Vision',       activeColor: 'var(--sanctuary-saffron)', activeTextColor: 'var(--text-on-action)' },
         // water (#3a7a9a), lotus (#c05878), ink (very dark) — all pass AA with white/vellum
-        { id: 'mood',       icon: Sparkles,   label: 'Mood Lotus',   color: 'var(--water)',             textColor: '#FCF9F2' },
-        { id: 'energy',     icon: Zap,        label: 'Energy',       color: 'var(--lotus)',             textColor: '#FCF9F2' },
-        { id: 'philosophy', icon: Lightbulb,  label: 'Philosophy',   color: 'var(--ink)',               textColor: '#FCF9F2' },
+        { id: 'mood',       icon: Sparkles,   label: 'Mood Lotus',   activeColor: 'var(--water)',             activeTextColor: '#FCF9F2' },
+        { id: 'energy',     icon: Zap,        label: 'Energy',       activeColor: 'var(--lotus)',             activeTextColor: '#FCF9F2' },
+        { id: 'philosophy', icon: Lightbulb,  label: 'Philosophy',   activeColor: 'var(--ink)',               activeTextColor: '#FCF9F2' },
     ];
 
     return (
@@ -92,24 +82,7 @@ export default function FounderSelfViewWeb() {
                 </div>
 
                 {/* Feature Tabs */}
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', flexWrap: 'wrap' }}>
-                    {TABS.map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActivePanel(tab.id)}
-                            style={{
-                                display: 'flex', alignItems: 'center', gap: '8px',
-                                padding: '10px 18px', borderRadius: '12px', border: 'none', cursor: 'pointer',
-                                fontWeight: '700', fontSize: '13px', transition: 'all 0.2s',
-                                background: activePanel === tab.id ? tab.color : 'var(--background-alt)',
-                                color: activePanel === tab.id ? tab.textColor : 'var(--ink)',
-                            }}
-                        >
-                            <tab.icon size={15} />
-                            {tab.label}
-                        </button>
-                    ))}
-                </div>
+                <SanctuaryTabBar tabs={TABS} activeId={activePanel} onSelect={setActivePanel} />
 
                 {/* Active Panel */}
                 <div className="sanctuary-card">
@@ -125,76 +98,23 @@ export default function FounderSelfViewWeb() {
             {/* ── RIGHT: Status Sidebar ──────────────────────── */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 {/* Mood Card */}
-                <div className="sanctuary-card" style={{ background: 'var(--ink)', color: 'white' }}>
-                    <div className="card-body-inner">
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '16px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <Sparkles size={18} />
-                                <h3 style={{ fontSize: '14px', fontWeight: '800', margin: 0, textTransform: 'uppercase', letterSpacing: '1px' }}>Personal State</h3>
-                            </div>
-                            <button
-                                onClick={() => setShowMoodPicker(v => !v)}
-                                style={{ background: showMoodPicker ? 'var(--lotus)' : 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '8px', padding: '5px 9px', cursor: 'pointer', color: 'white', fontSize: '10px', fontWeight: '700', fontFamily: 'var(--font-body)' }}
-                            >
-                                {showMoodPicker ? 'Cancel' : '+ Log'}
-                            </button>
-                        </div>
-
-                        {showMoodPicker && (
-                            <div style={{ marginBottom: '14px', padding: '12px', background: 'rgba(255,255,255,0.08)', borderRadius: '10px' }}>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
-                                    {MOOD_OPTIONS.map(opt => (
-                                        <button
-                                            key={opt.value}
-                                            disabled={savingMood}
-                                            onClick={async () => {
-                                                setSavingMood(true);
-                                                try {
-                                                    await addMoodLog(opt.value, moodNote || undefined);
-                                                    setMoodNote('');
-                                                    setShowMoodPicker(false);
-                                                } finally {
-                                                    setSavingMood(false);
-                                                }
-                                            }}
-                                            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', padding: '6px 8px', background: 'rgba(255,255,255,0.12)', border: 'none', borderRadius: '8px', cursor: 'pointer', color: 'white', fontSize: '9px', fontWeight: '600', fontFamily: 'var(--font-body)' }}
-                                        >
-                                            <span style={{ fontSize: '16px' }}>{opt.emoji}</span>
-                                            {opt.label}
-                                        </button>
-                                    ))}
-                                </div>
-                                <input
-                                    value={moodNote}
-                                    onChange={e => setMoodNote(e.target.value)}
-                                    placeholder="Note (optional)…"
-                                    style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: 'none', background: 'rgba(255,255,255,0.12)', color: 'white', fontSize: '12px', fontFamily: 'var(--font-body)', outline: 'none', boxSizing: 'border-box' }}
-                                />
-                            </div>
-                        )}
-
-                        {moodLoading ? (
-                            <p style={{ fontSize: '13px', opacity: 0.7 }}>Loading…</p>
-                        ) : latestMood ? (
-                            <>
-                                <div style={{ fontSize: '32px', fontWeight: '800', marginBottom: '4px' }}>
-                                    {MOOD_LABELS[latestMood.mood_score]}
-                                </div>
-                                <div style={{ fontSize: '13px', opacity: 0.6, marginBottom: '8px' }}>{latestMood.mood_score}/5</div>
-                                {latestMood.note && (
-                                    <p style={{ fontSize: '12px', opacity: 0.7, lineHeight: '1.5', fontStyle: 'italic' }}>
-                                        "{latestMood.note}"
-                                    </p>
-                                )}
-                                <div style={{ fontSize: '10px', opacity: 0.4, marginTop: '8px' }}>
-                                    {formatDistanceToNow(new Date(latestMood.created_at), { addSuffix: true })}
-                                </div>
-                            </>
-                        ) : (
-                            <p style={{ fontSize: '13px', opacity: 0.7 }}>Tap "+ Log" to begin your check-in.</p>
-                        )}
-                    </div>
-                </div>
+                <MoodPickerCard
+                    isOpen={showMoodPicker}
+                    onToggle={() => setShowMoodPicker(v => !v)}
+                    onSelect={async (mood, note) => {
+                        setSavingMood(true);
+                        try {
+                            await addMoodLog(mood, note || undefined);
+                            setShowMoodPicker(false);
+                        } finally {
+                            setSavingMood(false);
+                        }
+                    }}
+                    isSaving={savingMood}
+                    latestMood={latestMood}
+                    isLoading={moodLoading}
+                    accent="dark"
+                />
 
                 {/* Energy Snapshot */}
                 {!energyLoading && todayForecast && (

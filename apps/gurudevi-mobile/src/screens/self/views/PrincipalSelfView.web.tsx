@@ -9,8 +9,8 @@
  */
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUserRole, useStore, supabase, schoolForestAPI, warmMirrorAPI, impactRipplesAPI } from '@repo/core';
-import type { SchoolForestState, ImpactRipple } from '@repo/core';
+import { useUserRole, useStore, supabase, schoolForestAPI } from '@repo/core';
+import type { SchoolForestState } from '@repo/core';
 import { useSchoolPulse } from '@repo/profile';
 import { useMoodLogs, useEnergyForecast, useDecisionJournal, useWisdom } from '@repo/self';
 import { SkeletonCard } from '@repo/ui';
@@ -27,11 +27,17 @@ import {
     Building
 } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
-
-// ── colour helpers ──────────────────────────────────────────────────────────
-const MOOD_LABELS = ['', 'Depleted', 'Low', 'Steady', 'Energised', 'Vibrant'];
-const MOOD_COLORS = ['', 'var(--ember)', 'var(--amber-glow)', 'var(--water)', 'var(--moss)', 'var(--lotus)'];
-const ENERGY_COLORS = ['', 'var(--ember)', 'var(--amber-glow)', 'var(--water)', 'var(--moss)', 'var(--sanctuary-saffron)'];
+import {
+    MOOD_LABELS,
+    MOOD_COLORS,
+    ENERGY_COLORS,
+    EnergyBarChart,
+    WarmMirrorCard,
+    ImpactRipplesCard,
+    useWellbeingEnrichment,
+} from './selfViewShared';
+import { SanctuaryTabBar } from '../../../components/web/SanctuaryTabBar';
+import type { SanctuaryTab } from '../../../components/web/SanctuaryTabBar';
 
 type ActivePanel = 'pulse' | 'energy' | 'decisions' | 'wisdom' | 'monthly';
 
@@ -45,8 +51,9 @@ export default function PrincipalSelfViewWeb() {
     const [newDecision, setNewDecision] = useState('');
     const [addingDecision, setAddingDecision] = useState(false);
     const [forest, setForest] = useState<SchoolForestState | null>(null);
-    const [warmMirrorText, setWarmMirrorText] = useState<string | null>(null);
-    const [ripples, setRipples] = useState<ImpactRipple[]>([]);
+
+    // Warm Mirror + Impact Ripples via shared hook
+    const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
 
     // ── Personal wellbeing hooks ─────────────────────────────────────────
     const { moodHistory, isLoading: moodLoading } = useMoodLogs(userId ?? undefined);
@@ -67,27 +74,7 @@ export default function PrincipalSelfViewWeb() {
     }, [schoolId]);
 
     // Warm Mirror — weekly narrative for the principal
-    React.useEffect(() => {
-        if (!userId) return;
-        warmMirrorAPI.getDataPoints(userId).then(data => {
-            setWarmMirrorText(warmMirrorAPI.generateNarrativeEn(data));
-        }).catch(() => {});
-    }, [userId]);
-
-    // Impact Ripples — undelivered ripples for this principal
-    React.useEffect(() => {
-        if (!userId) return;
-        impactRipplesAPI.getPendingRipples(userId).then(pending => {
-            if (pending.length > 0) {
-                setRipples(pending);
-                setTimeout(() => {
-                    pending.forEach(r => void impactRipplesAPI.markDelivered(r.id).catch(
-                        (err) => console.warn(`[PrincipalSelfView] markDelivered failed for ripple ${r.id}:`, err)
-                    ));
-                }, 3000);
-            }
-        }).catch(() => {});
-    }, [userId]);
+    // (now handled by useWellbeingEnrichment above — no separate useEffect needed)
 
     const handleAddDecision = async () => {
         if (!newDecision.trim() || !userId) return;
@@ -109,12 +96,12 @@ export default function PrincipalSelfViewWeb() {
     };
 
     // ── Feature tabs ─────────────────────────────────────────────────────
-    const TABS: { id: ActivePanel; icon: any; label: string }[] = [
-        { id: 'pulse', icon: Activity, label: 'Personal Pulse' },
-        { id: 'energy', icon: Battery, label: 'Energy' },
-        { id: 'decisions', icon: BookOpen, label: 'Decisions' },
-        { id: 'wisdom', icon: Lightbulb, label: 'Wisdom' },
-        { id: 'monthly', icon: Calendar, label: 'Reflection' },
+    const TABS: SanctuaryTab<ActivePanel>[] = [
+        { id: 'pulse',     icon: Activity,  label: 'Personal Pulse' },
+        { id: 'energy',    icon: Battery,   label: 'Energy' },
+        { id: 'decisions', icon: BookOpen,  label: 'Decisions' },
+        { id: 'wisdom',    icon: Lightbulb, label: 'Wisdom' },
+        { id: 'monthly',   icon: Calendar,  label: 'Reflection' },
     ];
 
     return (
@@ -142,24 +129,7 @@ export default function PrincipalSelfViewWeb() {
                 </div>
 
                 {/* Feature Tabs */}
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', flexWrap: 'wrap' }}>
-                    {TABS.map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActivePanel(tab.id)}
-                            style={{
-                                display: 'flex', alignItems: 'center', gap: '8px',
-                                padding: '10px 18px', borderRadius: '12px', border: 'none', cursor: 'pointer',
-                                fontWeight: '700', fontSize: '13px', transition: 'all 0.2s',
-                                background: activePanel === tab.id ? 'var(--moss)' : 'var(--background-alt)',
-                                color: activePanel === tab.id ? 'white' : 'var(--ink)',
-                            }}
-                        >
-                            <tab.icon size={15} />
-                            {tab.label}
-                        </button>
-                    ))}
-                </div>
+                <SanctuaryTabBar tabs={TABS} activeId={activePanel} onSelect={setActivePanel} />
 
                 {/* Active Panel */}
                 <div className="sanctuary-card">
@@ -318,36 +288,10 @@ export default function PrincipalSelfViewWeb() {
                 )}
 
                 {/* Impact Ripples */}
-                {ripples.length > 0 && (
-                    <div className="sanctuary-card" style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(245,158,11,0.06))' }}>
-                        <div className="card-body-inner">
-                            <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '12px' }}>
-                                Ripples 🌊
-                            </h3>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                {ripples.map(r => (
-                                    <div key={r.id} style={{ fontSize: '12px', color: 'var(--ink)', lineHeight: '1.5', padding: '8px 12px', background: 'var(--surface)', borderRadius: '8px', borderLeft: '3px solid var(--action)' }}>
-                                        {r.warm_message_en}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
+                <ImpactRipplesCard ripples={ripples} />
 
                 {/* Warm Mirror */}
-                {warmMirrorText && (
-                    <div className="sanctuary-card">
-                        <div className="card-body-inner">
-                            <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '12px' }}>
-                                Your Week ✦
-                            </h3>
-                            <p style={{ fontSize: '13px', color: 'var(--ink)', lineHeight: '1.8', whiteSpace: 'pre-wrap' }}>
-                                {warmMirrorText}
-                            </p>
-                        </div>
-                    </div>
-                )}
+                <WarmMirrorCard text={warmMirrorText} />
             </div>
         </div>
     );

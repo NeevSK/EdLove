@@ -1,14 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUserRole, useStore, warmMirrorAPI, impactRipplesAPI, naturePathsAPI } from '@repo/core';
-import type { ImpactRipple, BanyanStage } from '@repo/core';
+import { useUserRole, useStore, naturePathsAPI } from '@repo/core';
+import type { BanyanStage } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { SkeletonCard } from '@repo/ui';
 import { useMoodLogs, useJournalEntries, useEnergyForecast, VoiceJournaling } from '@repo/self';
-import type { MoodLog } from '@repo/self';
 import {
     Activity,
-    Zap,
     BookOpen,
     MessageSquare,
     Users,
@@ -19,19 +17,15 @@ import {
     TrendingUp
 } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
-
-const MOOD_LABELS = ['', 'Depleted', 'Low', 'Steady', 'Energised', 'Vibrant'];
-const MOOD_COLORS = ['', 'var(--lotus)', 'var(--amber-glow)', 'var(--water)', 'var(--moss)', 'var(--action)'];
-
-// Mood picker options — ordered from lowest to highest energy
-const MOOD_OPTIONS: { value: MoodLog['mood']; emoji: string; label: string }[] = [
-    { value: 'sad',        emoji: '😔', label: 'Sad' },
-    { value: 'frustrated', emoji: '😤', label: 'Frustrated' },
-    { value: 'anxious',    emoji: '😰', label: 'Anxious' },
-    { value: 'calm',       emoji: '😌', label: 'Calm' },
-    { value: 'curious',    emoji: '🤔', label: 'Curious' },
-    { value: 'joyful',     emoji: '😊', label: 'Joyful' },
-];
+import {
+    MOOD_LABELS,
+    MOOD_COLORS,
+    EnergyBarChart,
+    MoodPickerCard,
+    WarmMirrorCard,
+    ImpactRipplesCard,
+    useWellbeingEnrichment,
+} from './selfViewShared';
 
 export default function TeacherSelfViewWeb() {
     const { t } = useTranslation();
@@ -41,13 +35,10 @@ export default function TeacherSelfViewWeb() {
     const [journalDraft, setJournalDraft] = React.useState('');
     const [showJournalForm, setShowJournalForm] = React.useState(false);
     const [showMoodPicker, setShowMoodPicker] = React.useState(false);
-    const [moodNote, setMoodNote] = React.useState('');
     const [savingMood, setSavingMood] = React.useState(false);
 
-    // Warm Mirror — weekly narrative
-    const [warmMirrorText, setWarmMirrorText] = React.useState<string | null>(null);
-    // Impact Ripples — undelivered ripples for this user
-    const [ripples, setRipples] = React.useState<ImpactRipple[]>([]);
+    // Warm Mirror + Impact Ripples — shared hook (eliminates duplicated useEffect blocks)
+    const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
     // Nature Path — Banyan stage (teacher mentorship journey)
     const [banyanState, setBanyanState] = React.useState<{ banyan_stage: BanyanStage; peer_mentored_count: number } | null>(null);
 
@@ -61,35 +52,11 @@ export default function TeacherSelfViewWeb() {
     // Last 7 energy forecasts as a bar chart (most recent last)
     const energyBars = forecasts.slice(0, 7).reverse();
 
-    // Fetch Warm Mirror data points and generate narrative (Sunday-style: any day)
-    React.useEffect(() => {
-        if (!userId) return;
-        warmMirrorAPI.getDataPoints(userId).then(data => {
-            setWarmMirrorText(warmMirrorAPI.generateNarrativeEn(data));
-        }).catch(() => {});
-    }, [userId]);
-
     // Fetch Banyan path state
     React.useEffect(() => {
         if (!userId) return;
         naturePathsAPI.getBanyanState(userId).then(state => {
             if (state) setBanyanState(state);
-        }).catch(() => {});
-    }, [userId]);
-
-    // Fetch pending impact ripples and mark them delivered after display
-    React.useEffect(() => {
-        if (!userId) return;
-        impactRipplesAPI.getPendingRipples(userId).then(pending => {
-            if (pending.length > 0) {
-                setRipples(pending);
-                // Mark all as delivered after a short delay
-                setTimeout(() => {
-                    pending.forEach(r => void impactRipplesAPI.markDelivered(r.id).catch(
-                        (err) => console.warn('[TeacherSelfView] markDelivered failed:', err)
-                    ));
-                }, 3000);
-            }
         }).catch(() => {});
     }, [userId]);
 
@@ -117,36 +84,8 @@ export default function TeacherSelfViewWeb() {
                         <h2 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '8px' }}>Energy Pulse</h2>
                         {energyLoading ? (
                             <SkeletonCard />
-                        ) : energyBars.length > 0 ? (
-                            <>
-                                <p style={{ color: 'var(--ink-ghost)', fontSize: '14px', marginBottom: '24px' }}>
-                                    Your energy over the last {energyBars.length} recorded day{energyBars.length !== 1 ? 's' : ''}.
-                                </p>
-                                <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', height: '100px' }}>
-                                    {energyBars.map((f, i) => (
-                                        <div
-                                            key={f.id ?? i}
-                                            title={`${MOOD_LABELS[f.energy_level]} — ${f.forecast_date}`}
-                                            style={{
-                                                flex: 1,
-                                                background: MOOD_COLORS[f.energy_level] ?? 'var(--lotus)',
-                                                height: `${(f.energy_level / 5) * 100}%`,
-                                                borderRadius: '4px',
-                                                minHeight: '10%',
-                                                opacity: 0.7 + ((f.energy_level / 5) * 0.3)
-                                            }}
-                                        />
-                                    ))}
-                                </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px', fontSize: '10px', color: 'var(--ink-ghost)' }}>
-                                    <span>Oldest</span>
-                                    <span>Today</span>
-                                </div>
-                            </>
                         ) : (
-                            <p style={{ color: 'var(--ink-ghost)', fontSize: '14px' }}>
-                                No energy logs yet. Log your first energy reading to see your pulse.
-                            </p>
+                            <EnergyBarChart bars={energyBars} colors={MOOD_COLORS} />
                         )}
                     </div>
                 </div>
@@ -212,78 +151,23 @@ export default function TeacherSelfViewWeb() {
             {/* 2. TEACHER SIDEBAR (Right) */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                 {/* Mood Resonance */}
-                <div className="sanctuary-card" style={{ padding: '24px', background: 'var(--ink)', color: 'white' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '16px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <TrendingUp size={20} color="var(--lotus)" />
-                            <h3 style={{ fontSize: '16px', fontWeight: '800', margin: 0 }}>Mood Resonance</h3>
-                        </div>
-                        <button
-                            onClick={() => setShowMoodPicker(v => !v)}
-                            style={{ background: showMoodPicker ? 'var(--lotus)' : 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '8px', padding: '6px 10px', cursor: 'pointer', color: 'white', fontSize: '11px', fontWeight: '700', fontFamily: 'var(--font-body)', transition: 'background 0.2s' }}
-                        >
-                            {showMoodPicker ? 'Cancel' : '+ Log Mood'}
-                        </button>
-                    </div>
-
-                    {/* Inline mood picker */}
-                    {showMoodPicker && (
-                        <div style={{ marginBottom: '16px', padding: '16px', background: 'rgba(255,255,255,0.08)', borderRadius: '12px' }}>
-                            <p style={{ fontSize: '12px', opacity: 0.7, marginBottom: '12px' }}>How are you feeling right now?</p>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
-                                {MOOD_OPTIONS.map(opt => (
-                                    <button
-                                        key={opt.value}
-                                        disabled={savingMood}
-                                        onClick={async () => {
-                                            setSavingMood(true);
-                                            try {
-                                                await addMoodLog(opt.value, moodNote || undefined);
-                                                setMoodNote('');
-                                                setShowMoodPicker(false);
-                                            } finally {
-                                                setSavingMood(false);
-                                            }
-                                        }}
-                                        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '8px 12px', background: 'rgba(255,255,255,0.12)', border: 'none', borderRadius: '10px', cursor: 'pointer', color: 'white', fontSize: '10px', fontWeight: '600', fontFamily: 'var(--font-body)', transition: 'background 0.15s' }}
-                                    >
-                                        <span style={{ fontSize: '20px' }}>{opt.emoji}</span>
-                                        {opt.label}
-                                    </button>
-                                ))}
-                            </div>
-                            <input
-                                value={moodNote}
-                                onChange={e => setMoodNote(e.target.value)}
-                                placeholder="Optional note…"
-                                style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: 'none', background: 'rgba(255,255,255,0.12)', color: 'white', fontSize: '13px', fontFamily: 'var(--font-body)', outline: 'none', boxSizing: 'border-box' }}
-                            />
-                        </div>
-                    )}
-
-                    {moodLoading ? (
-                        <p style={{ fontSize: '13px', opacity: 0.7 }}>Loading mood data…</p>
-                    ) : latestMood ? (
-                        <>
-                            <div style={{ fontSize: '28px', fontWeight: '800', marginBottom: '4px', color: MOOD_COLORS[latestMood.mood_score] ?? 'var(--lotus)' }}>
-                                {latestMood.mood_score}/5
-                            </div>
-                            <div style={{ fontSize: '13px', opacity: 0.8, marginBottom: '8px' }}>
-                                {latestMood.mood ? latestMood.mood.charAt(0).toUpperCase() + latestMood.mood.slice(1) : MOOD_LABELS[latestMood.mood_score]}
-                            </div>
-                            {latestMood.note && (
-                                <p style={{ fontSize: '12px', opacity: 0.7, lineHeight: '1.5', fontStyle: 'italic', marginBottom: '8px' }}>
-                                    "{latestMood.note}"
-                                </p>
-                            )}
-                            <div style={{ fontSize: '11px', opacity: 0.5 }}>
-                                {formatDistanceToNow(new Date(latestMood.created_at), { addSuffix: true })}
-                            </div>
-                        </>
-                    ) : (
-                        <p style={{ fontSize: '13px', opacity: 0.7 }}>No mood logs yet. Tap "+ Log Mood" above to begin.</p>
-                    )}
-                </div>
+                <MoodPickerCard
+                    isOpen={showMoodPicker}
+                    onToggle={() => setShowMoodPicker(v => !v)}
+                    onSelect={async (mood, note) => {
+                        setSavingMood(true);
+                        try {
+                            await addMoodLog(mood, note || undefined);
+                            setShowMoodPicker(false);
+                        } finally {
+                            setSavingMood(false);
+                        }
+                    }}
+                    isSaving={savingMood}
+                    latestMood={latestMood}
+                    isLoading={moodLoading}
+                    accent="dark"
+                />
 
                 {/* Quick Connections */}
                 <div className="sanctuary-card" style={{ padding: '24px' }}>
@@ -326,21 +210,7 @@ export default function TeacherSelfViewWeb() {
                 </div>
 
                 {/* Impact Ripples — warm echoes from colleagues and students */}
-                {ripples.length > 0 && (
-                    <div className="sanctuary-card" style={{ padding: '24px', background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(245,158,11,0.06))' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                            <h3 style={{ fontSize: '14px', fontWeight: '800' }}>Ripples 🌊</h3>
-                            <span style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>Your impact, quietly echoing</span>
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                            {ripples.map(r => (
-                                <div key={r.id} style={{ fontSize: '13px', color: 'var(--ink)', lineHeight: '1.5', padding: '10px 14px', background: 'var(--surface)', borderRadius: '10px', borderLeft: '3px solid var(--action)' }}>
-                                    {r.warm_message_en}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                <ImpactRipplesCard ripples={ripples} />
 
                 {/* Nature Path — Banyan (Vata Vriksha) badge */}
                 {banyanState && (
@@ -366,17 +236,7 @@ export default function TeacherSelfViewWeb() {
                 )}
 
                 {/* Warm Mirror — weekly narrative */}
-                {warmMirrorText && (
-                    <div className="sanctuary-card" style={{ padding: '24px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                            <h3 style={{ fontSize: '14px', fontWeight: '800' }}>Your Week ✦</h3>
-                            <span style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>A quiet reflection</span>
-                        </div>
-                        <p style={{ fontSize: '13px', color: 'var(--ink)', lineHeight: '1.8', whiteSpace: 'pre-wrap' }}>
-                            {warmMirrorText}
-                        </p>
-                    </div>
-                )}
+                <WarmMirrorCard text={warmMirrorText} />
             </div>
         </div>
     );
