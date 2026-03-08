@@ -372,10 +372,10 @@
     "announcements": "அறிவிப்புகள்",
     "postAnnouncement": "அறிவிப்பை இடுகையிடு",
     "headerMenu": {
-      "mute": "Mute Sanctuary",
-      "unmute": "Unmute Sanctuary",
-      "blockUser": "Block User",
-      "report": "Report"
+      "mute": "சங்கத்தை மௌனப்படுத்து",
+      "unmute": "சங்கத்தின் மௌனத்தை நீக்கு",
+      "blockUser": "பயனரை தடுத்து வை",
+      "report": "புகார் செய்யவும்"
     },
     "socialShield": {
       "thisUser": "this user",
