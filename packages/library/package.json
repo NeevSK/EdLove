@@ -32,7 +32,8 @@
     },
     "peerDependencies": {
         "@repo/ui": "*",
-        "expo-av": "*",
+        "expo-video": "*",
+        "expo-audio": "*",
         "expo-file-system": "*",
         "expo-sqlite": "*",
         "expo-linking": "*",

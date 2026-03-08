@@ -4,7 +4,8 @@
  * CRUD for qualitative teacher observations about students.
  */
 
-import { supabase, identityAPI } from '@repo/core';
+import { supabase } from '../lib/supabase';
+import { identityAPI } from './identity';
 import { APIError } from './types';
 
 export interface StudentObservation {

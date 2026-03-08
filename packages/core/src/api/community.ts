@@ -1,4 +1,5 @@
-import { supabase, identityAPI } from '@repo/core';
+import { supabase } from '../lib/supabase';
+import { identityAPI } from './identity';
 import { growthSignalsAPI } from './growthSignals';
 import { impactRipplesAPI } from './impactRipples';
 // Note: Types should ideally be shared in @repo/core/src/types, 

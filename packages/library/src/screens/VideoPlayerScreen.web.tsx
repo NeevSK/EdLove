@@ -1,12 +1,12 @@
 /**
  * VideoPlayerScreen.web.tsx — Pattern A: full web replacement
  *
- * On native, VideoPlayerScreen wraps expo-av's <Video> component with custom
- * controls.  On web we use the browser-native <video> element instead, which
+ * On native, VideoPlayerScreen wraps expo-video's components with custom
+ * controls. On web we use the browser-native <video> element instead, which
  * gives us full codec support, captions, and picture-in-picture for free.
  *
  * On web Metro resolves this file instead of VideoPlayerScreen.tsx.
- * No expo-av import here.
+ * No expo-av or expo-video import here.
  */
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';

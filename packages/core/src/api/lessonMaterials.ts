@@ -4,7 +4,8 @@
  * API methods for managing academic materials (PDFs, Links, Notes)
  */
 
-import { supabase, identityAPI } from '@repo/core';
+import { supabase } from '../lib/supabase';
+import { identityAPI } from './identity';
 import { APIError, LessonMaterial } from './types';
 import { growthSignalsAPI } from './growthSignals';
 

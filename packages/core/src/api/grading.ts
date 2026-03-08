@@ -1,4 +1,5 @@
-﻿import { supabase, identityAPI } from '@repo/core';
+﻿import { supabase } from '../lib/supabase';
+import { identityAPI } from './identity';
 import { APIError } from './types';
 import { StudentGrade, ClassroomGradingSettings } from '../types/Grade';
 import { marksToGPA } from '../lib/grading';

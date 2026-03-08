@@ -4,7 +4,8 @@
  * API methods for managing classroom attendance
  */
 
-import { supabase, identityAPI } from '@repo/core';
+import { supabase } from '../lib/supabase';
+import { identityAPI } from './identity';
 import { APIError } from './types';
 import type { AttendanceRecord } from './types';
 import { requireClassroomAccess } from '../lib/authorization';

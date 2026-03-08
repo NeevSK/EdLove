@@ -7,7 +7,8 @@
  * Nothing is ever deleted — old notes scroll back in time.
  */
 
-import { supabase, identityAPI } from '@repo/core';
+import { supabase } from '../lib/supabase';
+import { identityAPI } from './identity';
 import { APIError } from './types';
 import type { ClassroomNote } from '../types/ClassroomNote';
 

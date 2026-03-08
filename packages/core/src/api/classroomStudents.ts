@@ -4,7 +4,8 @@
  * API methods for managing students in classrooms
  */
 
-import { supabase, identityAPI } from '@repo/core';
+import { supabase } from '../lib/supabase';
+import { identityAPI } from './identity';
 import { APIError } from './types';
 import type { ClassroomStudent } from './types';
 

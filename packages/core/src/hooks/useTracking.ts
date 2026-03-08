@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { supabase, identityAPI } from '@repo/core';
+import { supabase } from '../lib/supabase';
+import { identityAPI } from '../api/identity';
 import { trackingAPI } from '../api/tracking';
 import { trackEvent } from '../lib/monitoring/posthog';
 import { useQuery, useQueryClient } from '@tanstack/react-query';

@@ -10,6 +10,7 @@
     },
     "scripts": {
         "lint": "eslint .",
+        "check-cycles": "node ../../scripts/refactor/check-barrel-imports.mjs",
         "clean": "rm -rf .turbo node_modules"
     },
     "peerDependencies": {

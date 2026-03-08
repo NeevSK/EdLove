@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { rewardsAPI } from '../api/rewards';
-import { supabase, identityAPI } from '@repo/core';
+import { supabase } from '../lib/supabase';
+import { identityAPI } from '../api/identity';
 import { useEffect, useState } from 'react';
 
 /**

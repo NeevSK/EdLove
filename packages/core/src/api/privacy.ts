@@ -1,4 +1,5 @@
-import { supabase, identityAPI } from '@repo/core';
+import { supabase } from '../lib/supabase';
+import { identityAPI } from './identity';
 
 export interface PrivacyLedgerEntry {
     id: string;

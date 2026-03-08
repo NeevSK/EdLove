@@ -7,7 +7,7 @@
 
 /**
  * Format a native video duration (milliseconds → "M:SS").
- * Used by expo-av VideoPlayerScreen (native).
+ * Used by expo-video VideoPlayerScreen (native).
  *
  * @example formatTimeMs(90500) // "1:30"
  */

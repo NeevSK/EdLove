@@ -4,7 +4,8 @@
  * API methods for managing classroom assignments
  */
 
-import { supabase, identityAPI } from '@repo/core';
+import { supabase } from '../lib/supabase';
+import { identityAPI } from './identity';
 import { APIError, Assignment } from './types';
 import { growthSignalsAPI } from './growthSignals';
 

@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useStore } from '../store/useStore';
-import { supabase, identityAPI } from '@repo/core';
+import { supabase } from '../lib/supabase';
+import { identityAPI } from '../api/identity';
 import { TimetableScheduler, CoordinationGap } from '../api/agents';
 import { moonPhaseAPI } from '../api/moonPhase';
 

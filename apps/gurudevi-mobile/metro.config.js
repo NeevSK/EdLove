@@ -81,6 +81,9 @@ const WEB_SHIMS = {
     'expo-file-system': path.resolve(projectRoot, 'src/shims/expo-file-system-web.js'),
     'expo-sharing': path.resolve(projectRoot, 'src/shims/expo-sharing-web.js'),
     'expo-sqlite': path.resolve(projectRoot, 'src/shims/expo-sqlite-web.js'),
+    'expo-av': path.resolve(projectRoot, 'src/shims/expo-av-web.js'),
+    'expo-video': path.resolve(projectRoot, 'src/shims/expo-video-web.js'),
+    'expo-audio': path.resolve(projectRoot, 'src/shims/expo-audio-web.js'),
 };
 
 const defaultResolveRequest = config.resolver.resolveRequest;

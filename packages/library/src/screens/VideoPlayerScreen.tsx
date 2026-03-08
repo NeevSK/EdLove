@@ -1,6 +1,6 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { StyleSheet, StatusBar, TouchableOpacity, View, LayoutChangeEvent } from 'react-native';
-import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { StyleSheet, StatusBar, View, LayoutChangeEvent } from 'react-native';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import {
     Box,
     VStack,
@@ -32,7 +32,6 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
     const { title, creator, url } = route.params;
     const navigation = useNavigation<any>();
     const colors = useThemedColors();
-    const videoRef = useRef<Video>(null);
     const progressBarWidth = useRef<number>(0);
 
     const [isPlaying, setIsPlaying] = useState(false);
@@ -41,36 +40,44 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
     const [showControls, setShowControls] = useState(true);
     const [hasError, setHasError] = useState(false);
 
-    const onPlaybackStatusUpdate = useCallback((status: AVPlaybackStatus) => {
-        if (!status.isLoaded) {
-            if ((status as { error?: string }).error) setHasError(true);
-            return;
-        }
-        setIsPlaying(status.isPlaying);
-        setPositionMillis(status.positionMillis);
-        setDurationMillis(status.durationMillis ?? 0);
-    }, []);
+    // Initialise expo-video player
+    const player = useVideoPlayer(url, (player) => {
+        player.loop = false;
+        player.play();
+    });
 
-    const handlePlayPause = useCallback(async () => {
-        if (!videoRef.current) return;
+    // Sync state with player
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (player) {
+                setIsPlaying(player.playing);
+                setPositionMillis(player.currentTime * 1000);
+                setDurationMillis(player.duration * 1000);
+            }
+        }, 500);
+
+        return () => clearInterval(interval);
+    }, [player]);
+
+    const handlePlayPause = useCallback(() => {
+        if (!player) return;
         if (isPlaying) {
-            await videoRef.current.pauseAsync();
+            player.pause();
         } else {
-            await videoRef.current.playAsync();
+            player.play();
         }
-    }, [isPlaying]);
+    }, [player, isPlaying]);
 
-    const handleSeekBy = useCallback(async (deltaMs: number) => {
-        if (!videoRef.current || durationMillis === 0) return;
-        const next = Math.max(0, Math.min(durationMillis, positionMillis + deltaMs));
-        await videoRef.current.setPositionAsync(next);
-    }, [positionMillis, durationMillis]);
+    const handleSeekBy = useCallback((deltaMs: number) => {
+        if (!player || durationMillis === 0) return;
+        player.currentTime += deltaMs / 1000;
+    }, [player, durationMillis]);
 
-    const handleProgressTap = useCallback(async (x: number, barWidth: number) => {
-        if (!videoRef.current || durationMillis === 0 || barWidth === 0) return;
+    const handleProgressTap = useCallback((x: number, barWidth: number) => {
+        if (!player || durationMillis === 0 || barWidth === 0) return;
         const ratio = Math.max(0, Math.min(1, x / barWidth));
-        await videoRef.current.setPositionAsync(ratio * durationMillis);
-    }, [durationMillis]);
+        player.currentTime = (ratio * durationMillis) / 1000;
+    }, [player, durationMillis]);
 
     const progressWidth = durationMillis > 0 ? `${(positionMillis / durationMillis) * 100}%` : '0%';
 
@@ -96,13 +103,11 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                 sx={{ flex: 1 }}
                 accessibilityLabel="Toggle controls"
             >
-                <Video
-                    ref={videoRef}
-                    source={{ uri: url }}
+                <VideoView
+                    player={player}
                     style={StyleSheet.absoluteFill}
-                    resizeMode={ResizeMode.CONTAIN}
-                    onPlaybackStatusUpdate={onPlaybackStatusUpdate}
-                    useNativeControls={false}
+                    contentFit="contain"
+                    nativeControls={false}
                 />
             </Pressable>
 
@@ -172,10 +177,9 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
 
                         {/* Footer: progress + time */}
                         <VStack space="sm">
-                            <TouchableOpacity
-                                activeOpacity={1}
+                            <Pressable
                                 onPress={(e) => {
-                                    const { locationX } = e.nativeEvent;
+                                    const { locationX } = (e as any).nativeEvent;
                                     handleProgressTap(locationX, progressBarWidth.current);
                                 }}
                                 onLayout={(e: LayoutChangeEvent) => {
@@ -186,7 +190,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                                 <View style={styles.progressTrack}>
                                     <View style={[styles.progressFill, { width: progressWidth as any }]} />
                                 </View>
-                            </TouchableOpacity>
+                            </Pressable>
 
                             <HStack justifyContent="space-between" alignItems="center">
                                 <Text color="white" size="xs">

@@ -10,7 +10,8 @@
  * but remain in the record forever (the history matters).
  */
 
-import { supabase, identityAPI } from '@repo/core';
+import { supabase } from '../lib/supabase';
+import { identityAPI } from './identity';
 import { APIError } from './types';
 import type { PrincipalNote } from '../types/PrincipalNote';
 
