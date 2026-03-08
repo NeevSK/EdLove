@@ -17,6 +17,8 @@ export * from './utils/themeColors';
 export * from './utils/linking';
 export * from './utils/SanctuaryLocation';
 export * from './utils/colorUtils';
+export * from './utils/stringUtils';
+export * from './utils/dateTimeUtils';
 export * from './hooks/useAccessibility';
 export * from './hooks/useDemoBridge';
 export * from './hooks/useQRDeepLink';

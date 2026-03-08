@@ -18,6 +18,7 @@ import {
     useThemedColors,
     Theme,
     SanctuaryButton,
+    formatTimeSecs,
 } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 import { Play, Pause, RotateCcw, RotateCw, X, Maximize } from 'lucide-react-native';
@@ -32,12 +33,6 @@ interface VideoPlayerScreenProps {
         };
     };
     navigation?: any;
-}
-
-function formatTime(seconds: number): string {
-    const m = Math.floor(seconds / 60);
-    const s = Math.floor(seconds % 60);
-    return `${m}:${s < 10 ? '0' : ''}${s}`;
 }
 
 export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
@@ -179,7 +174,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
 
                     {/* Progress bar + timestamps */}
                     <View style={styles.footer} pointerEvents="auto">
-                        <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
+                        <Text style={styles.timeText}>{formatTimeSecs(currentTime)}</Text>
                         {/* @ts-ignore — onClick on div in react-native-web */}
                         <div
                             style={styles.progressTrack as any}
@@ -192,7 +187,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                         >
                             <div style={{ ...styles.progressFill as any, width: `${progress}%` }} />
                         </div>
-                        <Text style={styles.timeText}>{formatTime(duration)}</Text>
+                        <Text style={styles.timeText}>{formatTimeSecs(duration)}</Text>
                     </View>
                 </View>
             )}

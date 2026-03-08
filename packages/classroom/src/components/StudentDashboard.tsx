@@ -41,6 +41,7 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
     const { t } = useTranslation();
     const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
     const { isDemoMode } = useStore();
+    const showToast = useStore(state => state.showToast);
     const { isGuest } = useFeatureAccess();
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
@@ -185,7 +186,7 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
                             label={t('student.rewards') || 'Rewards'}
                             onPress={() => {
                                 hapticLight();
-                                useStore.getState().showToast(t('common.comingSoon') || 'Rewards are blossoming soon! 🌸', 'info');
+                                showToast(t('common.comingSoon') || 'Rewards are blossoming soon! 🌸', 'info');
                             }}
                             color={Theme.colors.sanctuarySaffron}
                         />

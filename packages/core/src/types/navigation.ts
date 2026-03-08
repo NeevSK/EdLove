@@ -11,9 +11,21 @@ export type ClassroomStackParamList = {
     SchoolForest: undefined;
 };
 
+/** Minimal profile shape passed to FullProfile screen.  Use proper fields instead of `any`. */
+export type FullProfileParams = {
+    userId: string;
+    full_name: string;
+    role?: string;
+    school_name?: string;
+    avatar_url?: string | null;
+    bio?: string | null;
+    is_thuthimal?: boolean;
+    [key: string]: unknown;
+};
+
 export type ProfileStackParamList = {
     ProfileMain: undefined;
-    FullProfile: { profile: any };
+    FullProfile: { profile: FullProfileParams };
     AppSettings: undefined;
     PrivacyLedger: undefined;
 };
@@ -38,6 +50,8 @@ export type LibraryStackParamList = {
     LibraryHome: undefined;
     LibraryMap: undefined;
     CuratorReview: undefined;
-    PDFViewer: undefined;
-    VideoPlayer: undefined;
+    /** Inline PDF viewer — resourceId is used to mark resource_read growth signal */
+    PDFViewer: { resourceId: string; title: string; url: string; creator?: string };
+    /** Inline video player */
+    VideoPlayer: { resourceId: string; title: string; url: string; creator?: string };
 };

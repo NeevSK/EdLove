@@ -15,6 +15,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { CommunityStackParamList } from '@repo/core';
 import { supabase, useStore } from '@repo/core';
+import { getInitialsFromName, formatTimestamp } from '@repo/ui';
 import { communityAPI } from '../api/community';
 
 interface ChatMessage {
@@ -30,14 +31,6 @@ type GroupChatRoute = {
     name: 'GroupChat';
     params: { groupId: string; groupName: string };
 };
-
-function getInitials(name: string): string {
-    return name.split(' ').map(w => w[0] ?? '').join('').toUpperCase().slice(0, 2);
-}
-
-function formatTime(iso: string): string {
-    return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
 
 export default function GroupChatScreen() {
     const route = useRoute<GroupChatRoute>();
@@ -163,7 +156,7 @@ export default function GroupChatScreen() {
                     messages.map(msg => {
                         const isOwn = msg.author_id === user?.id;
                         const authorName = msg.author?.full_name || 'Unknown';
-                        const initials = getInitials(authorName);
+                        const initials = getInitialsFromName(authorName);
                         return (
                             <div
                                 key={msg.id}
@@ -198,7 +191,7 @@ export default function GroupChatScreen() {
                                     }}>
                                         {msg.content}
                                     </div>
-                                    <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{formatTime(msg.created_at)}</span>
+                                    <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{formatTimestamp(msg.created_at)}</span>
                                 </div>
                             </div>
                         );

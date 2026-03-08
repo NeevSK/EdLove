@@ -55,6 +55,7 @@ export default function FounderDashboard() {
     const { t } = useTranslation();
     const colors = useThemedColors();
     const { isDemoMode } = useStore();
+    const user = useStore(state => state.user);
     const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
 
     const { stats, schools, isLoading, error, refreshData } = useEcosystemStats();
@@ -96,10 +97,9 @@ export default function FounderDashboard() {
                         </HStack>
 
                         {/* Quick Access to Main School */}
-                        {schools.find(s => s.id === useStore.getState().user?.school_id) && (
+                        {schools.find(s => s.id === user?.school_id) && (
                             <TouchableOpacity
                                 onPress={() => {
-                                    const user = useStore.getState().user;
                                     const schoolId = user?.school_id || schools.find(s => s.id === user?.school_id)?.id;
 
                                     if (schoolId) {

@@ -1,9 +1,9 @@
-﻿import React, { useState, useEffect } from 'react';
+ï»¿import React, { useState, useEffect } from 'react';
 import { Box, VStack, HStack, Text, Spinner } from '../gluestack';
 import { Theme } from '../theme/Theme';
 import { useTheme } from '../hooks/useTheme';
 import { GuestDataSync } from '@repo/core';
-import { Check, AlertCircle } from 'lucide-react-native';
+import { Check, AlertCircle, AlertTriangle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import SanctuaryModal from './SanctuaryModal';
 import SanctuaryButton from './SanctuaryButton';
@@ -29,6 +29,7 @@ export default function GuestDataSyncModal({
     const [completed, setCompleted] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [summary, setSummary] = useState({ timetablePeriods: 0, moodLogs: 0, journalEntries: 0, students: 0, total: 0 });
+    const [confirmSkip, setConfirmSkip] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -70,6 +71,11 @@ export default function GuestDataSyncModal({
     };
 
     const handleSkip = () => {
+        // If user has data to lose, show a confirmation step first
+        if (summary.total > 0 && !confirmSkip) {
+            setConfirmSkip(true);
+            return;
+        }
         onClose();
     };
 
@@ -88,7 +94,7 @@ export default function GuestDataSyncModal({
                 onPress={handleSync}
                 isLoading={syncing}
             >
-                {syncing ? (t('sync.syncing') || 'Syncingâ€¦') : (t('sync.syncButton') || 'Sync Data')}
+                {syncing ? (t('sync.syncing') || 'Syncing…') : (t('sync.syncButton') || 'Sync Data')}
             </SanctuaryButton>
         </HStack>
     ) : undefined;
@@ -97,11 +103,43 @@ export default function GuestDataSyncModal({
         <SanctuaryModal
             isOpen={isOpen}
             onClose={handleSkip}
-            title={completed ? 'âœ¨ ' + (t('sync.completeTitle') || 'Sync Complete!') : 'â˜ï¸ ' + (t('sync.title') || 'Sync Your Data')}
+            title={completed ? '✨ ' + (t('sync.completeTitle') || 'Sync Complete!') : '☁️ ' + (t('sync.title') || 'Sync Your Data')}
             footer={footer}
         >
             <VStack {...({ space: "lg" } as any)}>
-                {!completed && !syncing && (
+                {/* Confirm-skip warning — shown when user tries to skip with unsaved data */}
+                {confirmSkip && !completed && (
+                    <VStack {...({ space: "md" } as any)}>
+                        <HStack {...({ space: "sm" } as any)} style={{ alignItems: 'center' }}>
+                            <AlertTriangle size={18} color={Theme.colors.amberGlow} />
+                            <Text {...({ bold: true } as any)}>
+                                {t('sync.skipWarningTitle') || 'Your data will be lost'}
+                            </Text>
+                        </HStack>
+                        <Text {...({ color: text.secondary, size: "sm" } as any)}>
+                            {t('sync.skipWarningBody') || `Skipping will permanently discard ${summary.total} item${summary.total !== 1 ? 's' : ''} from your guest session. This cannot be undone.`}
+                        </Text>
+                        <HStack {...({ space: "sm" } as any)}>
+                            <SanctuaryButton
+                                variant="ghost"
+                                action="secondary"
+                                onPress={() => setConfirmSkip(false)}
+                                style={{ flex: 1 }}
+                            >
+                                {t('common.back') || 'Back'}
+                            </SanctuaryButton>
+                            <SanctuaryButton
+                                variant="solid"
+                                action="negative"
+                                onPress={onClose}
+                                style={{ flex: 1 }}
+                            >
+                                {t('sync.discardButton') || 'Discard data'}
+                            </SanctuaryButton>
+                        </HStack>
+                    </VStack>
+                )}
+                {!confirmSkip && !completed && !syncing && (
                     <>
                         <Text {...({ color: text.secondary, size: "sm" } as any)}>
                             {t('sync.description') || 'We found data from your guest session. Would you like to sync it to your new account?'}

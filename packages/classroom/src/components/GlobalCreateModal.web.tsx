@@ -29,7 +29,8 @@ import {
     api,
     supabase,
     School,
-    handleAPIError
+    handleAPIError,
+    growthSignalsAPI,
 } from '@repo/core';
 import { communityAPI } from '@repo/community';
 import { useTranslation } from 'react-i18next';
@@ -158,6 +159,13 @@ export default function GlobalCreateModal({
                 }, user.id);
             }
 
+            // Growth signals — fire-and-forget
+            if (type === 'classroom' && result) {
+                void growthSignalsAPI.emitSignal(user.id, 'classroom_created', {
+                    classroom_id: result.id,
+                    school_id: selectedSchoolId,
+                }).catch(() => {});
+            }
             onSuccess(type, result);
             handleClose();
         } catch (err: any) {

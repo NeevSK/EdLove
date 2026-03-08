@@ -8,7 +8,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors } from '@repo/ui';
+import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors, formatShortDate } from '@repo/ui';
 import { Theme } from '@repo/ui';
 import { staffManagementAPI, StaffLeaveDTO } from '@repo/core';
 
@@ -28,14 +28,6 @@ const LEAVE_TYPE_COLORS: Record<string, string> = {
 
 function leaveTypeColor(type: string): string {
   return LEAVE_TYPE_COLORS[type.toLowerCase()] ?? '#9e9e9e';
-}
-
-function formatDate(dateStr: string): string {
-  try {
-    return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-  } catch {
-    return dateStr;
-  }
 }
 
 function shortId(id: string): string {
@@ -143,7 +135,7 @@ export default function LeaveApprovalSection({
               </Text>
               {/* Date range */}
               <Text sx={{ fontSize: 11, color: colors.textSecondary }}>
-                {formatDate(leave.start_date)} – {formatDate(leave.end_date)}
+                {formatShortDate(leave.start_date)} – {formatShortDate(leave.end_date)}
               </Text>
             </HStack>
 

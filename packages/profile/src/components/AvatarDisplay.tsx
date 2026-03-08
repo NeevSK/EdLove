@@ -6,7 +6,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { supabase } from '@repo/core';
-import { useTheme } from '@repo/ui';
+import { useTheme, getInitialsFromName } from '@repo/ui';
 import { Camera } from 'lucide-react-native';
 
 // expo-file-system/legacy has no web implementation.
@@ -24,16 +24,6 @@ interface AvatarDisplayProps {
   editable?: boolean;
   onAvatarUpdated?: (newPublicUrl: string) => Promise<void>;
   style?: object;
-}
-
-function getInitials(name?: string | null): string {
-  if (!name?.trim()) return '?';
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return '?';
-  const first = parts[0] ?? '';
-  const last = parts[parts.length - 1] ?? '';
-  if (parts.length === 1) return first.substring(0, 2).toUpperCase();
-  return (first.charAt(0) + last.charAt(0)).toUpperCase();
 }
 
 function getCachePath(userId: string): string | null {
@@ -155,7 +145,7 @@ export function AvatarDisplay({
 
   // Display source priority: local cache > remote URL > initials
   const displayUri = localCachePath || avatarUrl || null;
-  const initials = getInitials(fullName);
+  const initials = getInitialsFromName(fullName);
   const borderRadius = size / 2;
 
   const containerStyle = [

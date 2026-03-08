@@ -16,10 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useStore, useUserRole } from '@repo/core';
 import { useAIAgent } from '@repo/core';
 import { useTranslation } from 'react-i18next';
-
-function formatTime(ts: number): string {
-    return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
+import { formatTimestamp } from '@repo/ui';
 
 export default function AIAssistantScreen() {
     const navigation = useNavigation<any>();
@@ -191,7 +188,7 @@ export default function AIAssistantScreen() {
                                     }}>
                                         {msg.content}
                                     </div>
-                                    <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{formatTime(msg.timestamp)}</span>
+                                    <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{formatTimestamp(msg.timestamp)}</span>
                                 </div>
                             </div>
                         );

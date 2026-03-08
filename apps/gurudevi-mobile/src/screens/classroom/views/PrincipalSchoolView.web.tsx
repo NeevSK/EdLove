@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore, staffManagementAPI, StaffPresenceSummary, TeacherCarouselItem, StudentAttendancePulse, StaffLeaveDTO } from '@repo/core';
 import { useSchoolStats, CreateClassroomModal, AddStudentModal } from '@repo/classroom';
 import { useSchoolPulse } from '@repo/profile';
-import { SkeletonCard } from '@repo/ui';
+import { SkeletonCard, getInitialsFromName } from '@repo/ui';
 import {
     Users,
     Shield,
@@ -36,10 +36,6 @@ const PRESENCE_STATUS_COLORS: Record<string, string> = {
     late: 'var(--water)',
     half_day: 'var(--lotus)',
 };
-
-function getInitials(name: string): string {
-    return name.split(' ').map(w => w[0] ?? '').join('').toUpperCase().slice(0, 2);
-}
 
 function presenceColor(present: number, total: number): string {
     if (total === 0) return 'var(--ink-ghost)';
@@ -206,7 +202,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                                             marginBottom: '12px', color: 'white', fontWeight: '800', fontSize: '13px'
                                         }}>
-                                            {getInitials(teacher.fullName)}
+                                            {getInitialsFromName(teacher.fullName)}
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
                                             <div style={{ fontSize: '13px', fontWeight: '700' }}>{teacher.fullName.split(' ')[0]}</div>
