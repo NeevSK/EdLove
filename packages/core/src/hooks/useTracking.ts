@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, identityAPI } from '@repo/core';
 import { trackingAPI } from '../api/tracking';
 import { trackEvent } from '../lib/monitoring/posthog';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -13,8 +13,8 @@ export function useTracking() {
 
     useEffect(() => {
         const getUserId = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) setUserId(user.id);
+            const myId = await identityAPI.getMyInternalId();
+            if (myId) setUserId(myId);
         };
         getUserId();
     }, []);

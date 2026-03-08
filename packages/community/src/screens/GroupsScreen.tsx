@@ -94,20 +94,12 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
 
         return (
             <Animated.View entering={FadeInDown.duration(600).delay(300).springify()}>
-                <Box
-                    sx={{
-                        mx: '$4',
-                        mb: '$4',
-                        borderStyle: 'dashed',
-                        borderWidth: 1,
-                        borderColor: '$border',
-                        borderRadius: '$comfortable'
-                    }}
-                >
+                <Box sx={{ mx: '$4', mb: '$4' }}>
                     <SanctuaryButton
-                        variant="outline"
+                        action="primary"
                         onPress={() => onCreateGroup?.()}
                         leftIcon={Plus}
+                        fullWidth
                     >
                         {t('community.groups.create')}
                     </SanctuaryButton>

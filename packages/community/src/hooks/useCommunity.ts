@@ -95,7 +95,7 @@ export const useCommunity = (groupId?: string) => {
         onSuccess: (_data, _variables) => {
             // Growth signal — post created, fire-and-forget
             if (storeUser?.id) {
-                growthSignalsAPI.emitSignal(storeUser.id, 'post_created')
+                growthSignalsAPI.emitSignal(storeUser.id, 'community_post_created')
                     .catch((err) => console.warn('[useCommunity] growth signal failed:', err));
             }
         },

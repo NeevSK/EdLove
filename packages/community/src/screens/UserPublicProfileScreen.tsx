@@ -144,7 +144,7 @@ export default function UserPublicProfileScreen() {
   const isPrivate = user && user.public_profile === false && currentUserId !== userId;
 
   return (
-    <ScreenWrapper scroll={false}>
+    <ScreenWrapper scroll={false} noTopInset={true}>
       <GlobalHeader
         title={user?.full_name ?? userName}
         subtitle={roleLabel}

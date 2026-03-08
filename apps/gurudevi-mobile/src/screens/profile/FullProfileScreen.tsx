@@ -21,7 +21,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { MapPin, Mail, Phone, Shield, Edit3, Check, X, User as UserIcon, FileText, Fingerprint, Briefcase, GraduationCap, BookOpen, School } from 'lucide-react-native';
 import { hapticLight, hapticError } from '@repo/ui';
-import { supabase } from '@repo/core';
+import { supabase, identityAPI } from '@repo/core';
 import {
     IdentityCard,
     AddSocialLinkModal,
@@ -79,10 +79,12 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
 
     // Resolve current session user
     useEffect(() => {
-        supabase.auth.getUser().then(({ data: { user } }) => {
-            if (user) {
-                setCurrentUserId(user.id);
-                setCurrentUserName(user.user_metadata?.full_name ?? user.email ?? '');
+        identityAPI.getMyInternalId().then(async (id) => {
+            if (id) {
+                setCurrentUserId(id);
+                // For name, we can try to fetch the profile name or keep it fallback
+                const { data: { user } } = await supabase.auth.getUser();
+                setCurrentUserName(user?.user_metadata?.full_name ?? user?.email ?? '');
             }
         });
     }, []);

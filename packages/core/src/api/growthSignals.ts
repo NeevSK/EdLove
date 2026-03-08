@@ -62,6 +62,9 @@ export type GrowthSignalType =
     | 'wisdom_seed_shared'
     | 'lesson_material_created'
     | 'assignment_graded'              // Teacher graded work (with or without written feedback)
+    | 'attendance_marked'              // Specific mark action (Attendance tier)
+    | 'assignment_submitted'           // Student action (Witnessing/Nourishing mix)
+    | 'classroom_created'              // Teacher action (Nourishing/Weaving mix)
     // WITNESSING — absorbing, reflecting, growing inward
     | 'resource_read'
     | 'wisdom_seed_read'
@@ -117,6 +120,9 @@ export const GROWTH_SIGNAL_MAP: Record<GrowthSignalType, GrowthDimension> = {
     wisdom_seed_shared: 'nourishing',
     lesson_material_created: 'nourishing',
     assignment_graded: 'nourishing',
+    attendance_marked: 'presence',
+    assignment_submitted: 'witnessing',
+    classroom_created: 'nourishing',
     // Witnessing
     resource_read: 'witnessing',
     wisdom_seed_read: 'witnessing',

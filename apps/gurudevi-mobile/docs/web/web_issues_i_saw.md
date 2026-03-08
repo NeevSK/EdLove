@@ -1,6 +1,12 @@
 this doc is to list issues in web i saw when manual testing.
+## 08/03/2026 (latest [n])
 
-## 07/03/2026 (latest [n])
+### 4.00 pm
+1. what is the mechanism to handle this? both mobile and web. need to show user to say in {email} already have an accout and please login while user shiuld directed to auth -> login page. https://platform.gurudevi.edlove.org/?error=server_error&error_code=identity_already_exists&error_description=Identity+is+already+linked#error=server_error&error_code=identity_already_exists&error_description=Identity+is+already+linked&sb=
+
+
+
+## 07/03/2026 (previous [n-1])
 
 ### 11.00 pm
 1. remove founder, developer admin rolew from onboarding journey screens in both web (done)

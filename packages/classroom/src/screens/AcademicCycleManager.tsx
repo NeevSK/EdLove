@@ -144,7 +144,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
             <GlobalHeader
                 title={t('principal.cycles.title') || 'Academic Cycles'}
                 onBack={onBack}
-                rightElement={
+                rightAction={
                     <Pressable onPress={() => setShowAddForm(!showAddForm)}>
                         <Plus size={24} color={colors.action} />
                     </Pressable>

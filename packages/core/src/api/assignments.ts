@@ -4,7 +4,7 @@
  * API methods for managing classroom assignments
  */
 
-import { supabase } from '../lib/supabase';
+import { supabase, identityAPI } from '@repo/core';
 import { APIError, Assignment } from './types';
 import { growthSignalsAPI } from './growthSignals';
 
@@ -60,13 +60,11 @@ export const assignmentsAPI = {
         }
 
         // Growth signal: teacher designed work for their students (Nourishing dimension)
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        if (authError || !user) {
-            console.warn('[GrowthSignals] Auth unavailable for assignment signal:', authError?.message);
-        } else {
-            void growthSignalsAPI.emitSignal(user.id, 'assignment_created', {
+        const myId = await identityAPI.getMyInternalId();
+        if (myId) {
+            void growthSignalsAPI.emitSignal(myId, 'assignment_created', {
                 classroom_id: assignment.classroom_id,
-            }).catch(() => {});
+            }).catch(() => { });
         }
 
         return data;

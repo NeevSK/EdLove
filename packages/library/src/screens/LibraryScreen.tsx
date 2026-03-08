@@ -324,7 +324,7 @@ export default function LibraryScreen() {
     }, [handleOpenResource]);
 
     return (
-        <ScreenWrapper scroll={!isSearchMode}>
+        <ScreenWrapper scroll={!isSearchMode} noTopInset={true}>
             <GlobalHeader
                 title={t('tabs.library') || 'Library'}
                 subtitle={t('library.knowledgeSanctuary')}

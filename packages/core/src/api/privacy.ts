@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabase, identityAPI } from '@repo/core';
 
 export interface PrivacyLedgerEntry {
     id: string;
@@ -15,13 +15,13 @@ export const privacyAPI = {
      * Fetch privacy ledger entries for the current user
      */
     async getPrivacyLedger() {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error('Not authenticated');
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new Error('Not authenticated');
 
         const { data, error } = await supabase
             .from('privacy_ledger_entries')
             .select('*')
-            .eq('user_id', user.id)
+            .eq('user_id', myId)
             .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -37,14 +37,14 @@ export const privacyAPI = {
         description: string;
         metadata?: any;
     }) {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error('Not authenticated');
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new Error('Not authenticated');
 
         const { data, error } = await supabase
             .from('privacy_ledger_entries')
             .insert([{
                 ...input,
-                user_id: user.id
+                user_id: myId
             }])
             .select()
             .single();

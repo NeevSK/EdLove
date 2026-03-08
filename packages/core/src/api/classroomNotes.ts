@@ -7,7 +7,7 @@
  * Nothing is ever deleted — old notes scroll back in time.
  */
 
-import { supabase } from '../lib/supabase';
+import { supabase, identityAPI } from '@repo/core';
 import { APIError } from './types';
 import type { ClassroomNote } from '../types/ClassroomNote';
 
@@ -19,8 +19,8 @@ export const classroomNotesAPI = {
      * Returns: own private notes + all class-visible notes, newest first.
      */
     async getAll(classroomId: string): Promise<ClassroomNote[]> {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
         const { data, error } = await supabase
             .from('classroom_notes')
@@ -42,12 +42,12 @@ export const classroomNotesAPI = {
         note_type: ClassroomNote['note_type'];
         visibility: ClassroomNote['visibility'];
     }): Promise<ClassroomNote> {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
         const { data, error } = await supabase
             .from('classroom_notes')
-            .insert([{ ...note, author_id: user.id, is_pinned: false }])
+            .insert([{ ...note, author_id: myId, is_pinned: false }])
             .select('*, author:users(full_name, role)')
             .single();
 

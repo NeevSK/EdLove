@@ -7,6 +7,7 @@
 
 import { supabase } from '../lib/supabase';
 import { useStore } from '../store/useStore';
+import { identityAPI } from '../api/identity';
 import { UserRole } from '../types';
 import { SchoolType } from '../constants/SriLankanSchools';
 
@@ -35,17 +36,19 @@ export function useUserRole(): UseUserRoleReturn & { refresh: () => Promise<void
 
 
     const refresh = async () => {
-        if (!user?.id) return;
         try {
+            const internalId = await identityAPI.getMyInternalId();
+            if (!internalId) return;
+
             const { data: profile } = await supabase
                 .from('users')
                 .select('role, school_id')
-                .eq('id', user.id)
+                .eq('id', internalId)
                 .maybeSingle();
 
             if (profile) {
                 // Convergence: Update store if server has different info
-                if (profile.role !== role || profile.school_id !== user.school_id) {
+                if (profile.role !== role || (user && profile.school_id !== user.school_id)) {
                     setUser({ ...user, ...profile } as any);
 
                     // Fetch school type if school_id changed

@@ -1,4 +1,4 @@
-import { SafeZustandStorage, supabase, useStore, GuestDataManager, authAPI } from '@repo/core';
+import { SafeZustandStorage, supabase, useStore, GuestDataManager, authAPI, identityAPI } from '@repo/core';
 import { useState, useEffect, useCallback } from 'react';
 
 const TIMETABLE_CACHE_KEY = 'gurudevi-timetable-cache';
@@ -130,12 +130,12 @@ export const useTimetable = (activeDay: number) => {
                 } : p));
             } else {
                 // Authenticated mode: Save to Supabase
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) throw new Error("Not authenticated");
+                const myId = await identityAPI.getMyInternalId();
+                if (!myId) throw new Error("Not authenticated");
 
                 const { data, error } = await supabase
                     .from('timetable')
-                    .insert([{ ...period, user_id: user.id }])
+                    .insert([{ ...period, user_id: myId }])
                     .select()
                     .single();
 

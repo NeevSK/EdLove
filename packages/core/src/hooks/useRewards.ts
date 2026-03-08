@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { rewardsAPI } from '../api/rewards';
-import { supabase } from '../lib/supabase';
+import { supabase, identityAPI } from '@repo/core';
 import { useEffect, useState } from 'react';
 
 /**
@@ -13,8 +13,8 @@ export function useRewards() {
 
     useEffect(() => {
         const getUserId = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) setUserId(user.id);
+            const internalId = await identityAPI.getMyInternalId();
+            if (internalId) setUserId(internalId);
         };
         getUserId();
     }, []);

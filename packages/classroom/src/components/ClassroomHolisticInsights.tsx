@@ -39,11 +39,11 @@ export default function ClassroomHolisticInsights({ classroomId }: ClassroomHoli
     const fetchData = async () => {
         try {
             setIsLoading(true);
-            const today = new Date().toISOString().split('T')[0];
+            const today = new Date().toISOString().split('T')[0] ?? '';
             const [attData, gradeData, obsData] = await Promise.all([
-                api.attendance.getByDate(classroomId, today),
-                api.grading.getClassroomGrades(classroomId),
-                api.studentObservations.getForClassroom(classroomId)
+                api.attendance.getByDate(classroomId ?? '', today),
+                api.grading.getClassroomGrades(classroomId ?? ''),
+                api.studentObservations.getForClassroom(classroomId ?? '')
             ]);
 
             setData({

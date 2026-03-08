@@ -4,7 +4,7 @@
  * CRUD for qualitative teacher observations about students.
  */
 
-import { supabase } from '../lib/supabase';
+import { supabase, identityAPI } from '@repo/core';
 import { APIError } from './types';
 
 export interface StudentObservation {
@@ -97,15 +97,15 @@ export const studentObservationsAPI = {
      * Create a new observation
      */
     async create(observation: Omit<StudentObservation, 'id' | 'created_at' | 'updated_at' | 'author_id'>): Promise<StudentObservation> {
-        const user = await supabase.auth.getUser();
-        if (!user.data.user) throw new APIError('Authentication required');
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new APIError('Authentication required');
 
         const { data, error } = await supabase
             .from('student_observations')
             .insert([
                 {
                     ...observation,
-                    author_id: user.data.user.id
+                    author_id: myId
                 }
             ])
             .select()

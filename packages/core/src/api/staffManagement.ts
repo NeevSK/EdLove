@@ -270,8 +270,9 @@ export const staffManagementAPI = {
           is_read: false,
           reference_id: leaveId,
           reference_type: 'staff_leave',
-        }).then(() => {}).catch((err: any) =>
-          console.warn('[staffManagement] leave notification failed:', err?.message)
+        }).then(
+          () => { },
+          (err: any) => console.warn('[staffManagement] leave notification failed:', err?.message)
         );
       }
 

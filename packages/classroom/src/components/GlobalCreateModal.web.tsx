@@ -164,7 +164,7 @@ export default function GlobalCreateModal({
                 void growthSignalsAPI.emitSignal(user.id, 'classroom_created', {
                     classroom_id: result.id,
                     school_id: selectedSchoolId,
-                }).catch(() => {});
+                }).catch(() => { });
             }
             onSuccess(type, result);
             handleClose();
@@ -184,7 +184,7 @@ export default function GlobalCreateModal({
                 isOpen={isOpen}
                 onClose={handleClose}
                 title="Ecosystem Creation"
-                width={500} // Slightly wider for web
+                size="lg" // Use size for web layout
                 footer={
                     <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
                         <Button
@@ -194,7 +194,7 @@ export default function GlobalCreateModal({
                             sx={{
                                 flex: 1,
                                 borderColor: colors.border,
-                                '&:hover': { backgroundColor: colors.tertiary }
+                                _hover: { backgroundColor: colors.tertiary }
                             }}
                             isDisabled={isSubmitting}
                         >
@@ -206,7 +206,7 @@ export default function GlobalCreateModal({
                             sx={{
                                 flex: 2, // Larger primary button
                                 backgroundColor: Theme.colors.sanctuarySaffron,
-                                '&:hover': { opacity: 0.9 }
+                                _hover: { opacity: 0.9 }
                             }}
                             isDisabled={isSubmitting || !name.trim()}
                         >
@@ -273,7 +273,7 @@ export default function GlobalCreateModal({
                                         backgroundColor: colors.tertiary,
                                         height: 52,
                                         borderRadius: 12,
-                                        '&:hover': { borderColor: Theme.colors.sanctuarySaffron }
+                                        _hover: { borderColor: Theme.colors.sanctuarySaffron }
                                     }}
                                 >
                                     <HStack sx={{ gap: 8, alignItems: 'center' }}>
@@ -298,7 +298,7 @@ export default function GlobalCreateModal({
                                 backgroundColor: colors.tertiary,
                                 borderColor: colors.border,
                                 borderRadius: 12,
-                                '&:focus': { borderColor: Theme.colors.sanctuarySaffron }
+                                _focus: { borderColor: Theme.colors.sanctuarySaffron }
                             }}>
                                 <InputField
                                     value={name}
@@ -328,7 +328,7 @@ export default function GlobalCreateModal({
                                                 borderRadius: 22,
                                                 backgroundColor: schoolType === t ? Theme.colors.sanctuarySaffron : 'transparent',
                                                 borderColor: schoolType === t ? Theme.colors.sanctuarySaffron : colors.border,
-                                                '&:hover': { opacity: 0.9 }
+                                                _hover: { opacity: 0.9 }
                                             }}
                                         >
                                             <ButtonText color={schoolType === t ? '#fff' : colors.textSecondary} sx={{ fontSize: 13 }}>
@@ -346,10 +346,6 @@ export default function GlobalCreateModal({
                                     <FormControlLabelText color={colors.textSecondary}>Intent & Purpose</FormControlLabelText>
                                 </FormControlLabel>
                                 <Textarea
-                                    value={description}
-                                    onChangeText={setDescription}
-                                    color={colors.text}
-                                    placeholder="Describe the heart and intent of this sanctuary space..."
                                     sx={{
                                         minHeight: 120,
                                         backgroundColor: colors.tertiary,
@@ -357,7 +353,14 @@ export default function GlobalCreateModal({
                                         borderRadius: 16,
                                         padding: 12
                                     }}
-                                />
+                                >
+                                    <InputField
+                                        value={description}
+                                        onChangeText={setDescription}
+                                        placeholder="Describe the heart and intent of this sanctuary space..."
+                                        multiline
+                                    />
+                                </Textarea>
                             </FormControl>
                         )}
                     </VStack>
@@ -387,7 +390,7 @@ export default function GlobalCreateModal({
                                 sx={{
                                     borderRadius: 12,
                                     marginVertical: 4,
-                                    '&:hover': { backgroundColor: colors.tertiary }
+                                    _hover: { backgroundColor: colors.tertiary }
                                 }}
                             >
                                 <HStack sx={{ gap: 12, alignItems: 'center' }}>
@@ -398,7 +401,7 @@ export default function GlobalCreateModal({
                         ))}
                     </VStack>
                 </ActionsheetContent>
-            </Actionsheet>
+            </Actionsheet >
         </>
     );
 }
@@ -417,7 +420,7 @@ function TypeButton({ active, onPress, label, icon }: { active: boolean, onPress
                 borderRadius: 16,
                 backgroundColor: active ? Theme.colors.sanctuarySaffron : 'transparent',
                 borderColor: active ? Theme.colors.sanctuarySaffron : colors.border,
-                '&:hover': { backgroundColor: active ? Theme.colors.sanctuarySaffron : colors.tertiary }
+                _hover: { backgroundColor: active ? Theme.colors.sanctuarySaffron : colors.tertiary }
             }}
         >
             <Box sx={{ marginBottom: 4 }}>

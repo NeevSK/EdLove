@@ -89,8 +89,8 @@
           "organization": "intuitui-labs",
           "uploadNativeSymbols": false,
           "autoUploadNativeSymbols": false,
-          "autoUpload": true,
-          "uploadSourceMaps": true
+          "autoUpload": false,
+          "uploadSourceMaps": false
         }
       ],
       "expo-web-browser"

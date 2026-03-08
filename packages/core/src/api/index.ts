@@ -1,4 +1,5 @@
 import { authAPI } from './auth';
+import { identityAPI } from './identity';
 import { rewardsAPI } from './rewards';
 import { trackingAPI } from './tracking';
 import { tasksAPI, notesAPI } from './teacher';
@@ -63,6 +64,7 @@ export * from './privacy';
 // Simplified named exports for direct access
 export {
     authAPI,
+    identityAPI,
     lessonsAPI,
     studentsAPI,
     tasksAPI,
@@ -112,6 +114,7 @@ export {
  */
 export const api = {
     auth: authAPI,
+    identity: identityAPI,
     tasks: tasksAPI,
     notes: notesAPI,
     lessons: lessonsAPI,

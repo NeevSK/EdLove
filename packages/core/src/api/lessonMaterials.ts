@@ -4,7 +4,7 @@
  * API methods for managing academic materials (PDFs, Links, Notes)
  */
 
-import { supabase } from '../lib/supabase';
+import { supabase, identityAPI } from '@repo/core';
 import { APIError, LessonMaterial } from './types';
 import { growthSignalsAPI } from './growthSignals';
 
@@ -63,14 +63,12 @@ export const lessonMaterialsAPI = {
 
         // Growth signal: teacher prepared materials for students (Nourishing dimension)
         // Also triggers the 'first_offering' Whispered Moment check
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        if (authError || !user) {
-            console.warn('[GrowthSignals] Auth unavailable for lesson material signal:', authError?.message);
-        } else {
-            void growthSignalsAPI.emitSignal(user.id, 'lesson_material_created', {
+        const myId = await identityAPI.getMyInternalId();
+        if (myId) {
+            void growthSignalsAPI.emitSignal(myId, 'lesson_material_created', {
                 classroom_id: material.classroom_id,
                 material_type: material.type,
-            }).catch(() => {});
+            }).catch(() => { });
         }
 
         return data;

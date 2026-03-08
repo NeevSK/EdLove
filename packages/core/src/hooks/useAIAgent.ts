@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useStore } from '../store/useStore';
-import { supabase } from '../lib/supabase';
+import { supabase, identityAPI } from '@repo/core';
 import { TimetableScheduler, CoordinationGap } from '../api/agents';
 import { moonPhaseAPI } from '../api/moonPhase';
 
@@ -55,8 +55,8 @@ export function useAIAgent() {
      * Falls back to empty array on any error — non-fatal.
      */
     const refreshStatus = useCallback(async () => {
-        const { data: { user: authUser } } = await supabase.auth.getUser().catch(() => ({ data: { user: null } }));
-        if (!authUser) {
+        const myId = await identityAPI.getMyInternalId().catch(() => null);
+        if (!myId) {
             setActiveGaps([]);
             return [];
         }
@@ -69,7 +69,7 @@ export function useAIAgent() {
             const { data: classrooms } = await supabase
                 .from('classrooms')
                 .select('id, name')
-                .eq('teacher_id', authUser.id)
+                .eq('teacher_id', myId)
                 .limit(5);
 
             if (classrooms?.length) {
@@ -168,7 +168,7 @@ export function useAIAgent() {
         let moonPhase: string | undefined;
         try {
             const moonData = moonPhaseAPI.getCurrentMoonPhase();
-            moonPhase = moonData.phase;
+            moonPhase = moonData.name;
         } catch { /* non-fatal */ }
 
         // Fetch school name if available (best-effort)
@@ -278,5 +278,5 @@ function generateLocalFallback(input: string, role: string | null): string {
         'Reflection is the first step toward transformation. What else do you see in this situation?',
         'That sounds significant. How does this align with your deeper values?',
     ];
-    return reflections[Math.floor(Math.random() * reflections.length)];
+    return reflections[Math.floor(Math.random() * reflections.length)] ?? reflections[0]!;
 }

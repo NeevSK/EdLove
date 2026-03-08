@@ -76,7 +76,19 @@ export function useEcosystemStats() {
                     total_teachers: 150,
                     total_classrooms: 48,
                     active_communities: 24,
-                    ecosystem_health: 95
+                    ecosystem_health: 95,
+                    total_principals: 12,
+                    active_users_7d: 850,
+                    mood_checkins_7d: 320,
+                    avg_mood_score_7d: 4.2,
+                    total_library_resources: 120,
+                    verified_resources: 95,
+                    total_bookmarks: 450,
+                    total_community_posts: 1200,
+                    posts_7d: 156,
+                    attendance_records: 4500,
+                    attendance_records_7d: 840,
+                    growth_signals_7d: 3200
                 };
                 setStats(mockStats);
                 setSchools([]); // Demo mode usually handles specific school data elsewhere

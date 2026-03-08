@@ -22,9 +22,9 @@ export function hexToRgb(hex: string): [number, number, number] {
   }
   if (h.length === 3 || h.length === 4) {
     return [
-      parseInt(h[0] + h[0], 16),
-      parseInt(h[1] + h[1], 16),
-      parseInt(h[2] + h[2], 16),
+      parseInt(h[0]! + h[0]!, 16),
+      parseInt(h[1]! + h[1]!, 16),
+      parseInt(h[2]! + h[2]!, 16),
     ];
   }
   return [
@@ -58,7 +58,7 @@ export function getRelativeLuminance(hex: string): number {
     const s = c / 255;
     return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
   });
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return 0.2126 * (r!) + 0.7152 * (g!) + 0.0722 * (b!);
 }
 
 /**

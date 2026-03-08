@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { APIError } from './types';
+import { identityAPI } from './identity';
 
 export const authAPI = {
     /**
@@ -159,6 +160,7 @@ export const authAPI = {
      * Sign out
      */
     async signOut() {
+        identityAPI.clearCache();
         const { error } = await supabase.auth.signOut();
 
         if (error) {
