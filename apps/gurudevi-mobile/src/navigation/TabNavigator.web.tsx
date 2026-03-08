@@ -34,15 +34,13 @@ const SelfStackNavigatorWeb = React.lazy(
 const LibraryStackNavigatorWeb = React.lazy(
   () => import("./LibraryStackNavigator.web"),
 );
-// In-shell overlay screens — lazy loaded
+// In-shell panel screens — lazy loaded (rendered as Tab.Screen for URL-native navigation)
 const NotificationsScreenWeb = React.lazy(
   () => import("../screens/NotificationsScreen.web"),
 );
 const AppSettingsScreenWeb = React.lazy(
   () => import("../screens/AppSettingsScreen.web"),
 );
-
-type SubView = "none" | "notifications" | "settings";
 
 const Tab = createBottomTabNavigator();
 
@@ -98,7 +96,6 @@ export default function TabNavigator({
   // Mobile/tablet: < 1024px (aligns with CSS @media max-width: 1023px)
   const [isMobileView, setIsMobileView] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("Self");
-  const [activeSubView, setActiveSubView] = React.useState<SubView>("none");
   const [showCelebration, setShowCelebration] = React.useState(false);
   const [currentAchievement, setCurrentAchievement] = React.useState("");
 
@@ -182,17 +179,17 @@ export default function TabNavigator({
     };
   }, [isMobileView, isSidebarExpanded, closeSidebar]);
 
-  // ── DOCUMENT TITLE: update on tab/subview change ────────────────────────
+  // ── DOCUMENT TITLE: update on tab change ───────────────────────────────
   React.useEffect(() => {
     const base = t("webNav.brandName");
-    if (activeSubView === "notifications") {
+    if (activeTab === "NotificationsPanel") {
       document.title = `${t("webNav.notifications")} — ${base}`;
-    } else if (activeSubView === "settings") {
+    } else if (activeTab === "SettingsPanel") {
       document.title = `${t("webNav.settings")} — ${base}`;
     } else {
       document.title = activeTab ? `${activeTab} — ${base}` : base;
     }
-  }, [activeTab, activeSubView, t]);
+  }, [activeTab, t]);
 
   const getClassroomLabel = () => {
     if (role === "principal") return t("tabs.mySchool");
@@ -323,15 +320,13 @@ export default function TabNavigator({
 
           <nav className="sidebar-nav" aria-label="Main navigation">
             {TAB_CONFIG.map((conf) => {
-              const isActive =
-                activeTab === conf.name && activeSubView === "none";
+              const isActive = activeTab === conf.name;
               const Icon = conf.icon;
               return (
                 <button
                   key={conf.name}
                   className={`sidebar-item ${isActive ? "active" : ""}`}
                   onClick={() => {
-                    setActiveSubView("none");
                     (navigation.navigate as any)("Main", { screen: conf.name });
                     if (isMobileView) closeSidebar();
                   }}
@@ -355,12 +350,12 @@ export default function TabNavigator({
           <div className="sidebar-footer">
             <div className="sidebar-divider" />
             <button
-              className={`sidebar-item ${activeSubView === "notifications" ? "active" : ""}`}
+              className={`sidebar-item ${activeTab === "NotificationsPanel" ? "active" : ""}`}
               title={t("common.notifications")}
               onClick={() => {
-                setActiveSubView(
-                  activeSubView === "notifications" ? "none" : "notifications",
-                );
+                (navigation.navigate as any)("Main", {
+                  screen: activeTab === "NotificationsPanel" ? "Self" : "NotificationsPanel",
+                });
                 if (isMobileView) closeSidebar();
               }}
             >
@@ -368,7 +363,7 @@ export default function TabNavigator({
                 <Bell
                   size={20}
                   color={
-                    activeSubView === "notifications"
+                    activeTab === "NotificationsPanel"
                       ? "var(--water)"
                       : "var(--ink-ghost)"
                   }
@@ -381,12 +376,12 @@ export default function TabNavigator({
             </button>
 
             <button
-              className={`sidebar-profile-btn ${activeSubView === "settings" ? "active" : ""}`}
+              className={`sidebar-profile-btn ${activeTab === "SettingsPanel" ? "active" : ""}`}
               title={t("common.settings")}
               onClick={() => {
-                setActiveSubView(
-                  activeSubView === "settings" ? "none" : "settings",
-                );
+                (navigation.navigate as any)("Main", {
+                  screen: activeTab === "SettingsPanel" ? "Self" : "SettingsPanel",
+                });
                 if (isMobileView) closeSidebar();
               }}
             >
@@ -409,27 +404,6 @@ export default function TabNavigator({
 
         {/* ── MAIN CONTENT CANVAS ── */}
         <main className="main-content-canvas">
-          <React.Suspense
-            fallback={
-              <div
-                style={{
-                  padding: "40px",
-                  textAlign: "center",
-                  color: "var(--ink-ghost)",
-                  fontStyle: "italic",
-                  fontFamily: "var(--font-body)",
-                }}
-              >
-                {t("common.loading")}
-              </div>
-            }
-          >
-            {activeSubView === "notifications" && <NotificationsScreenWeb />}
-            {activeSubView === "settings" && <AppSettingsScreenWeb />}
-          </React.Suspense>
-          <div
-            style={{ display: activeSubView === "none" ? "contents" : "none" }}
-          >
             <Tab.Navigator
               id="MainTabs"
               initialRouteName="Self"
@@ -447,7 +421,11 @@ export default function TabNavigator({
                   const routeName = s.routes[s.index]?.name;
                   if (routeName) {
                     setActiveTab(routeName);
-                    onTabChange?.(routeName.toLowerCase());
+                    // Only report main tabs to parent (not panel screens)
+                    const mainTabs = ["Self", "Community", "Classroom", "Library", "Profile"];
+                    if (mainTabs.includes(routeName)) {
+                      onTabChange?.(routeName.toLowerCase());
+                    }
                   }
                 },
               }}
@@ -508,8 +486,30 @@ export default function TabNavigator({
                   </ErrorBoundary>
                 )}
               </Tab.Screen>
+              {/* Panel screens — rendered within shell, URL-native via React Navigation */}
+              <Tab.Screen name="NotificationsPanel">
+                {() => (
+                  <ErrorBoundary name="Notifications">
+                    <React.Suspense
+                      fallback={<div style={{ minHeight: "100vh" }} />}
+                    >
+                      <NotificationsScreenWeb />
+                    </React.Suspense>
+                  </ErrorBoundary>
+                )}
+              </Tab.Screen>
+              <Tab.Screen name="SettingsPanel">
+                {() => (
+                  <ErrorBoundary name="Settings">
+                    <React.Suspense
+                      fallback={<div style={{ minHeight: "100vh" }} />}
+                    >
+                      <AppSettingsScreenWeb />
+                    </React.Suspense>
+                  </ErrorBoundary>
+                )}
+              </Tab.Screen>
             </Tab.Navigator>
-          </div>
         </main>
       </div>
 
@@ -523,15 +523,13 @@ export default function TabNavigator({
           aria-label={t("webNav.tabNavigation")}
         >
           {TAB_CONFIG.map((conf) => {
-            const isActive =
-              activeTab === conf.name && activeSubView === "none";
+            const isActive = activeTab === conf.name;
             const Icon = conf.icon;
             return (
               <button
                 key={conf.name}
                 className={`mobile-nav-item ${isActive ? "active" : ""}`}
                 onClick={() => {
-                  setActiveSubView("none");
                   (navigation.navigate as any)("Main", { screen: conf.name });
                 }}
                 aria-current={isActive ? "page" : undefined}
@@ -547,21 +545,19 @@ export default function TabNavigator({
             );
           })}
           <button
-            className={`mobile-nav-item ${activeSubView === "notifications" ? "active" : ""}`}
+            className={`mobile-nav-item ${activeTab === "NotificationsPanel" ? "active" : ""}`}
             onClick={() =>
-              setActiveSubView(
-                activeSubView === "notifications" ? "none" : "notifications",
-              )
+              (navigation.navigate as any)("Main", {
+                screen: activeTab === "NotificationsPanel" ? "Self" : "NotificationsPanel",
+              })
             }
-            aria-current={
-              activeSubView === "notifications" ? "page" : undefined
-            }
+            aria-current={activeTab === "NotificationsPanel" ? "page" : undefined}
           >
             <div style={{ position: "relative" }}>
               <Bell
                 size={22}
                 color={
-                  activeSubView === "notifications"
+                  activeTab === "NotificationsPanel"
                     ? "var(--water)"
                     : "var(--ink-ghost)"
                 }

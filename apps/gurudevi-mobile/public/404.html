@@ -20,10 +20,7 @@
       // Keep the full path so React Navigation can deep-link after mount
       var path = l.pathname + l.search + l.hash;
       // Redirect to root, passing the original path as query param
-      l.replace(
-        l.protocol + '//' + l.host + l.pathname.split('/').slice(0, 1).join('/') +
-        '/?p=' + encodeURIComponent(path)
-      );
+      l.replace(l.protocol + '//' + l.host + '/?p=' + encodeURIComponent(path));
     </script>
   </head>
   <body>

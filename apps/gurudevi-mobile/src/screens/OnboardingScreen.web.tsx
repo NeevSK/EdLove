@@ -50,8 +50,16 @@ const ROLES = [
     { value: 'principal', emoji: '🏫', descKey: 'onboarding.roleDesc.principal', descFallback: 'Oversee school operations & staff' },
 ];
 
-const STEP_LABELS = ['Name', 'Role', 'Values', 'Tour', '', '', '', '', 'Account'];
 const TOTAL_STEPS = 9;
+
+// Visible steps for the left-panel progress tracker (explicit indices, no fragile array lookups)
+const TRACKED_STEPS = [
+    { idx: 0, label: 'Name' },
+    { idx: 1, label: 'Role' },
+    { idx: 2, label: 'Values' },
+    { idx: 3, label: 'Tour' },
+    { idx: 8, label: 'Account' },
+] as const;
 
 // ─────────────────────────────────────────────
 // Props
@@ -358,19 +366,15 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
 
                             {/* Step progress tracker */}
                             <div className="ob-tracker">
-                                {STEP_LABELS.filter(Boolean).map((label, i) => {
-                                    // Map visible labels back to actual step indices
-                                    const stepIdx = STEP_LABELS.indexOf(label, i === 3 ? 3 : 0);
-                                    return (
-                                        <div
-                                            key={label}
-                                            className={`ob-tracker-row ${currentStep > stepIdx ? 'done' : ''} ${currentStep === stepIdx ? 'current' : ''}`}
-                                        >
-                                            <div className="ob-tracker-dot" />
-                                            <span className="ob-tracker-label">{label}</span>
-                                        </div>
-                                    );
-                                })}
+                                {TRACKED_STEPS.map((s) => (
+                                    <div
+                                        key={s.idx}
+                                        className={`ob-tracker-row ${currentStep > s.idx ? 'done' : ''} ${currentStep === s.idx ? 'current' : ''}`}
+                                    >
+                                        <div className="ob-tracker-dot" />
+                                        <span className="ob-tracker-label">{s.label}</span>
+                                    </div>
+                                ))}
                             </div>
 
                             {/* Language picker */}

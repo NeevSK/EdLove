@@ -453,6 +453,9 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                           LibraryMap: 'map',
                         }
                       },
+                      // In-shell panel screens — proper URLs for browser history & deep linking
+                      NotificationsPanel: 'notifications',
+                      SettingsPanel: 'settings',
                     },
                   },
                 },
