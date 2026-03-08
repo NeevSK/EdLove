@@ -559,9 +559,9 @@
     },
     "empty": {
       "title": "The silence is waiting for your resonance.",
-      "desc": "Desc",
-      "button": "Button",
-      "joinFirst": "Join First"
+      "desc": "There’s nothing here yet. Share something to begin the conversation.",
+      "button": "Create Post",
+      "joinFirst": "Join a circle first to start sharing."
     },
     "students": "Students",
     "members": "Members",
