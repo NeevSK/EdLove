@@ -136,7 +136,8 @@
     "profile": "Profile",
     "grade": "Grade",
     "platform": "Platform",
-    "class": "Class"
+    "class": "Class",
+    "school": "School"
   },
   "self": {
     "goodMorning": "Good Morning!",
@@ -285,7 +286,9 @@
     "learningReflectionDesc": "Reflect on what you learned today",
     "myProgress": "My Progress",
     "myProgressDesc": "Track your learning journey and achievements",
-    "noGradesYet": "No grades yet ΓÇö keep going! ≡ƒî▒",
+
+    "noGradesYet": "No grades yet — keep going! 🌱",
+
     "unknownAssignment": "Assignment",
     "goalsComingSoon": "Goal Setting Arriving Soon",
     "goalsComingSoonDesc": "We are building a beautiful space for your daily aspirations.",
@@ -1053,7 +1056,8 @@
     "living_theme": {
       "title": "Living Theme",
       "on": "Phase-aware colors shift with the time of day",
-      "off": "Classic calm ΓÇö simple static appearance"
+
+      "off": "Classic calm — simple static appearance"
     },
     "explorer": {
       "title": "Explorer Mode",
