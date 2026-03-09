@@ -120,7 +120,12 @@ export const authAPI = {
             throw new APIError('Failed to link anonymous account', updateError.code, updateError);
         }
 
-        // Update the profile in public.users
+        // Update the profile in public.users using the internal user ID
+        const internalId = await identityAPI.getMyInternalId();
+        if (!internalId) {
+            throw new APIError('Cannot resolve user identity after linking', 'IDENTITY_ERROR');
+        }
+
         const { error: profileError } = await supabase
             .from('users')
             .update({
@@ -131,7 +136,7 @@ export const authAPI = {
                 onboarding_completed: true,
                 onboarding_completed_at: new Date().toISOString(),
             })
-            .eq('id', updateData.user?.id);
+            .eq('id', internalId);
 
         if (profileError) {
             throw new APIError('Failed to update profile', profileError.code, profileError);
