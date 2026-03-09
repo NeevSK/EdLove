@@ -146,13 +146,10 @@ jobs:
           echo "Output: /tmp/sentry-artifacts/"
           echo ""
 
-          # IMPORTANT: Run from workspace root, not from apps/gurudevi-mobile.
-          # Metro resolves the entry file relative to --project-root.
-          # When run from the monorepo root, passing the full relative path works.
+          cd apps/gurudevi-mobile
           pnpm exec expo export:embed \
             --platform android \
-            --project-root apps/gurudevi-mobile \
-            --entry-file apps/gurudevi-mobile/index.ts \
+            --entry-file index.ts \
             --bundle-output /tmp/sentry-artifacts/index.android.bundle \
             --sourcemap-output /tmp/sentry-artifacts/index.android.bundle.map \
             --dev false \
