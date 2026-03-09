@@ -302,6 +302,17 @@ jobs:
           echo "=== Restored artifacts on build runner ==="
           ls -lah /tmp/sentry-artifacts/ || echo "(nothing restored)"
 
+      - name: 🔍 Debug — Verify sentry.properties after prebuild
+        if: github.event.inputs.build_method == 'local'
+        run: |
+          echo "=== Searching for sentry.properties in workspace ==="
+          find $GITHUB_WORKSPACE -name "sentry.properties" 2>/dev/null || echo "(none found yet — prebuild hasn't run)"
+          echo ""
+          echo "=== Note ==="
+          echo "sentry.properties is generated during EAS prebuild inside /tmp/runner/..."
+          echo "The plugin console logs above (in the build output) are the real verification."
+          echo "Look for the ╔══╗ banner in the [PREBUILD] section of the build log."
+
       - name: 🚀 Build App
         env:
           EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
