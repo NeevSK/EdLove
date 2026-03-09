@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUserRole, useStore, staffManagementAPI, StaffPresenceSummary, TeacherCarouselItem, StudentAttendancePulse, StaffLeaveDTO } from '@repo/core';
+import { useUserRole, useStore, staffManagementAPI, supabase, StaffPresenceSummary, TeacherCarouselItem, StudentAttendancePulse, StaffLeaveDTO } from '@repo/core';
 import { useSchoolStats, CreateClassroomModal, AddStudentModal } from '@repo/classroom';
 import { useSchoolPulse } from '@repo/profile';
 import { SkeletonCard, SandboxBanner, getInitialsFromName } from '@repo/ui';
@@ -20,6 +20,8 @@ import {
     Activity,
     UserPlus,
     Share2,
+    MessageSquare,
+    Heart,
 } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -62,6 +64,47 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?
     const [showCreateClassroom, setShowCreateClassroom] = useState(false);
     const [showAddTeacher, setShowAddTeacher] = useState(false);
     const [processingLeave, setProcessingLeave] = useState<string | null>(null);
+
+    // ── Echo / Feedback from teachers ─────────────────────────────────────
+    const [echoItems, setEchoItems] = useState<Array<{
+        id: string; source: string; category: string; content: string;
+        priority: string; is_read: boolean; created_at: string;
+    }>>([]);
+    const [echoLoading, setEchoLoading] = useState(true);
+
+    useEffect(() => {
+        if (!effectiveSchoolId) return;
+        let mounted = true;
+        const loadEcho = async () => {
+            setEchoLoading(true);
+            try {
+                const { data, error } = await supabase
+                    .from('school_echo_feedback')
+                    .select('*')
+                    .eq('school_id', effectiveSchoolId)
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (!mounted) return;
+                if (error || !data?.length) {
+                    // Sandbox fallback — same mock used by the native DashboardEcho
+                    setEchoItems([
+                        { id: 'e1', source: 'teacher', category: 'support',     content: 'Need guidance on the 2026 Mathematics syllabus transition for Grade 6.', priority: 'high',   is_read: false, created_at: new Date().toISOString() },
+                        { id: 'e2', source: 'student', category: 'morale',      content: 'The new common area is great! Everyone is enjoying the study space.',      priority: 'low',    is_read: true,  created_at: new Date(Date.now() - 3600000).toISOString() },
+                        { id: 'e3', source: 'teacher', category: 'facility',    content: 'Multimedia projector in Room 4 is flickering intermittently.',              priority: 'medium', is_read: false, created_at: new Date(Date.now() - 86400000).toISOString() },
+                    ]);
+                } else {
+                    setEchoItems(data);
+                }
+            } catch {
+                setEchoItems([]);
+            } finally {
+                if (mounted) setEchoLoading(false);
+            }
+        };
+        loadEcho();
+        return () => { mounted = false; };
+    }, [effectiveSchoolId]);
 
     useEffect(() => {
         if (!effectiveSchoolId) return;
@@ -440,6 +483,62 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?
                                 </div>
                             </div>
                         )}
+
+                        {/* ─── Dashboard Echo (teacher/student feedback) ── */}
+                        <div className="sanctuary-card" style={{ padding: '24px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                                <div>
+                                    <h3 style={{ margin: '0 0 4px', fontSize: '14px', fontWeight: '800' }}>{t('principal.echo.title') || 'Echo Chamber'}</h3>
+                                    <p style={{ margin: 0, fontSize: '11px', color: 'var(--ink-ghost)' }}>{t('principal.echo.subtitle') || 'Feedback from your staff & students'}</p>
+                                </div>
+                            </div>
+                            {echoLoading ? (
+                                <SkeletonCard />
+                            ) : echoItems.length === 0 ? (
+                                <p style={{ color: 'var(--ink-ghost)', fontSize: '13px', fontStyle: 'italic', textAlign: 'center', padding: '16px 0' }}>
+                                    {t('principal.echo.empty') || 'No feedback yet.'}
+                                </p>
+                            ) : (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                    {echoItems.map(item => {
+                                        const CategoryIcon = item.category === 'morale' ? Heart
+                                            : item.category === 'facility' ? AlertTriangle
+                                            : item.category === 'recognition' ? CheckCircle2
+                                            : MessageSquare;
+                                        const borderColor = item.priority === 'high' ? 'var(--ember)' : 'var(--lotus)';
+                                        return (
+                                            <div key={item.id} style={{
+                                                padding: '14px',
+                                                background: item.is_read ? 'var(--background-alt)' : 'var(--background)',
+                                                border: '1px solid var(--border-light)',
+                                                borderLeft: `4px solid ${borderColor}`,
+                                                borderRadius: '10px',
+                                                display: 'flex',
+                                                gap: '12px',
+                                                alignItems: 'flex-start',
+                                            }}>
+                                                <div style={{ padding: '8px', background: 'var(--background-alt)', borderRadius: '8px', flexShrink: 0 }}>
+                                                    <CategoryIcon size={16} color="var(--lotus)" />
+                                                </div>
+                                                <div style={{ flex: 1, minWidth: 0 }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                                        <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>
+                                                            {item.source} · {item.category}
+                                                        </span>
+                                                        <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>
+                                                            {new Date(item.created_at).toLocaleDateString()}
+                                                        </span>
+                                                    </div>
+                                                    <p style={{ margin: 0, fontSize: '13px', lineHeight: '1.5', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>
+                                                        {item.content}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

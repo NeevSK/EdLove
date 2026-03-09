@@ -356,7 +356,12 @@
         "monthlyComingSoon": "Architect of Growth",
         "monthlyComingSoonDesc": "A deep reflection module for your monthly milestones is on its way.",
         "sandboxDescription": "தளம் எவ்வாறு செயல்படுகிறது என்பதை அறிய இந்த மாதிரி பள்ளித் தரவை ஆராயுங்கள்.",
-        "establishSchool": "உங்கள் பள்ளியை நிறுவுங்கள்"
+        "establishSchool": "உங்கள் பள்ளியை நிறுவுங்கள்",
+        "echo": {
+            "title": "எதிரொலி அறை",
+            "subtitle": "உங்கள் ஊழியர்கள் மற்றும் மாணவர்களிடமிருந்து கருத்துக்கள்",
+            "empty": "இன்னும் கருத்துக்கள் இல்லை — ஆசிரியர்கள் Principal Echo மூலம் கருத்துகளை அனுப்பலாம்."
+        }
     },
     "admin": {
         "systemOperations": "அமைப்பு செயல்பாடுகள்",

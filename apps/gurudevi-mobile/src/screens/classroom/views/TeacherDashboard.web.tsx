@@ -21,6 +21,8 @@ import {
     School,
     Archive,
     ClipboardList,
+    MessageCircle,
+    X,
 } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -33,6 +35,11 @@ export default function TeacherDashboardWeb() {
     const [classrooms, setClassrooms] = useState<(Classroom & { student_count?: number; last_activity?: string })[]>([]);
     const [classroomsLoading, setClassroomsLoading] = useState(true);
     const [showCreateClassroom, setShowCreateClassroom] = useState(false);
+    const [showEchoModal, setShowEchoModal] = useState(false);
+    const [echoCategory, setEchoCategory] = useState('support');
+    const [echoPriority, setEchoPriority] = useState<'low' | 'medium' | 'high'>('medium');
+    const [echoContent, setEchoContent] = useState('');
+    const [echoSubmitting, setEchoSubmitting] = useState(false);
     const { data: roleData } = useClassroomRoleData();
 
     // Fetch real classrooms from Supabase
@@ -122,6 +129,14 @@ export default function TeacherDashboardWeb() {
                         <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <ScanLine size={18} />
                             Scan QR
+                        </button>
+                        <button
+                            className="secondary-button"
+                            style={{ display: 'flex', alignItems: 'center', gap: '8px', borderColor: 'var(--ember)', color: 'var(--ember)' }}
+                            onClick={() => setShowEchoModal(true)}
+                        >
+                            <MessageCircle size={18} />
+                            {t('teacher.actions.principalEcho') || 'Principal Echo'}
                         </button>
                     </div>
                 </div>
@@ -259,6 +274,124 @@ export default function TeacherDashboardWeb() {
                     setShowCreateClassroom(false);
                 }}
             />
+
+            {/* ── Principal Echo Modal ──────────────────────────── */}
+            {showEchoModal && (
+                <div style={{
+                    position: 'fixed', inset: 0, zIndex: 9999,
+                    background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }} onClick={() => setShowEchoModal(false)}>
+                    <div style={{
+                        background: 'var(--background)', borderRadius: '16px', padding: '32px',
+                        width: '100%', maxWidth: '480px', margin: '16px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+                    }} onClick={e => e.stopPropagation()}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                            <div>
+                                <h2 style={{ margin: '0 0 4px', fontSize: '20px', fontWeight: '800' }}>
+                                    {t('teacher.feedback.title') || 'Principal Echo'}
+                                </h2>
+                                <p style={{ margin: 0, fontSize: '13px', color: 'var(--ink-ghost)' }}>
+                                    {t('teacher.feedback.subtitle') || 'Send a reflection or request to your principal'}
+                                </p>
+                            </div>
+                            <button onClick={() => setShowEchoModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', padding: '4px' }}>
+                                <X size={22} />
+                            </button>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            {/* Category */}
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--ink-ghost)', display: 'block', marginBottom: '8px' }}>
+                                    {t('teacher.feedback.category') || 'Category'}
+                                </label>
+                                <select
+                                    value={echoCategory}
+                                    onChange={e => setEchoCategory(e.target.value)}
+                                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--background-alt)', fontSize: '14px', color: 'var(--ink)' }}
+                                >
+                                    <option value="support">Teaching Support</option>
+                                    <option value="morale">Staff Morale</option>
+                                    <option value="facility">Facility / Resource Alert</option>
+                                    <option value="recognition">Recognition / Positive Note</option>
+                                </select>
+                            </div>
+
+                            {/* Priority */}
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--ink-ghost)', display: 'block', marginBottom: '8px' }}>
+                                    {t('teacher.feedback.priority') || 'Priority'}
+                                </label>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    {(['low', 'medium', 'high'] as const).map(p => (
+                                        <button
+                                            key={p}
+                                            onClick={() => setEchoPriority(p)}
+                                            style={{
+                                                flex: 1, padding: '8px', borderRadius: '8px', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', cursor: 'pointer',
+                                                background: echoPriority === p ? (p === 'high' ? 'var(--ember)' : 'var(--lotus)') : 'var(--background-alt)',
+                                                color: echoPriority === p ? '#fff' : 'var(--ink-ghost)',
+                                                border: `1px solid ${p === 'high' ? 'var(--ember)' : 'var(--border)'}`,
+                                            }}
+                                        >
+                                            {p}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Content */}
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--ink-ghost)', display: 'block', marginBottom: '8px' }}>
+                                    {t('teacher.feedback.content') || 'Your Message'}
+                                </label>
+                                <textarea
+                                    value={echoContent}
+                                    onChange={e => setEchoContent(e.target.value)}
+                                    placeholder={t('teacher.feedback.placeholder') || 'Share your thoughts with the principal…'}
+                                    rows={4}
+                                    style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--background-alt)', fontSize: '14px', color: 'var(--ink)', resize: 'vertical', boxSizing: 'border-box' }}
+                                />
+                            </div>
+
+                            {/* Actions */}
+                            <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+                                <button className="secondary-button" style={{ flex: 1 }} onClick={() => setShowEchoModal(false)}>
+                                    {t('common.cancel') || 'Cancel'}
+                                </button>
+                                <button
+                                    className="premium-button"
+                                    style={{ flex: 2, background: 'var(--lotus)', opacity: echoSubmitting || !echoContent.trim() ? 0.6 : 1, cursor: echoSubmitting || !echoContent.trim() ? 'not-allowed' : 'pointer' }}
+                                    disabled={echoSubmitting || !echoContent.trim()}
+                                    onClick={async () => {
+                                        if (!echoContent.trim() || !user?.school_id) return;
+                                        setEchoSubmitting(true);
+                                        try {
+                                            await supabase.from('school_echo_feedback').insert({
+                                                school_id: user.school_id,
+                                                teacher_id: userId,
+                                                source: 'teacher',
+                                                category: echoCategory,
+                                                content: echoContent.trim(),
+                                                priority: echoPriority,
+                                                is_read: false,
+                                            });
+                                            setEchoContent('');
+                                            setShowEchoModal(false);
+                                        } catch (err) {
+                                            console.error('[PrincipalEcho] submit error', err);
+                                        } finally {
+                                            setEchoSubmitting(false);
+                                        }
+                                    }}
+                                >
+                                    {echoSubmitting ? '…' : (t('common.send') || 'Send')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 }

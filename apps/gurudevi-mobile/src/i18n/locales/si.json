@@ -442,7 +442,12 @@
         "monthlyComingSoon": "Architect of Growth",
         "monthlyComingSoonDesc": "A deep reflection module for your monthly milestones is on its way.",
         "sandboxDescription": "ප්ලැට්ෆෝම් ක්‍රියා කරන ආකාරය බැලීමට මෙම ආදර්ශ පාසල් දත්ත ගවේෂණය කරන්න.",
-        "establishSchool": "ඔබේ පාසල ස්ථාපිත කරන්න"
+        "establishSchool": "ඔබේ පාසල ස්ථාපිත කරන්න",
+        "echo": {
+            "title": "ශ්‍රවණ කාමරය",
+            "subtitle": "ඔබේ කාර්ය මණ්ඩලය හා සිසුන්ගේ ප්‍රතිචාර",
+            "empty": "තවම ප්‍රතිචාර නොමැත — ගුරුවරු Principal Echo හරහා ප්‍රතිචාර යැවිය හැක."
+        }
     },
     "admin": {
         "systemOperations": "පද්ධති මෙහෙයුම්",
