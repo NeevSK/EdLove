@@ -12,7 +12,7 @@ import { config } from "./gluestack-ui.config";
 import { Home, School, Users, Library, User, Sparkles } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
 import * as Font from 'expo-font';
-import { supabase, useStore, UserRole, SchoolType, initSentry, initPostHog, trackEvent, identifyUser } from '@repo/core';
+import { supabase, useStore, UserRole, SchoolType, initSentry, initPostHog, trackEvent, identifyUser, identityAPI } from '@repo/core';
 import { Platform } from 'react-native';
 import * as Linking from 'expo-linking';
 import { PostHogProvider } from 'posthog-react-native';
@@ -150,7 +150,11 @@ function App() {
           if (session) {
             setShowWelcome(false);
             if (session.user) {
-              fetchAndSetUserProfile(session.user.id);
+              identityAPI.getMyInternalId()
+                .then((internalId) => {
+                  if (internalId) fetchAndSetUserProfile(internalId);
+                })
+                .catch((err) => console.warn('⚠️ App: Identity resolution failed on startup:', err));
             }
           }
         }
@@ -168,8 +172,13 @@ function App() {
       setSession(session);
 
       if (session?.user) {
-        fetchAndSetUserProfile(session.user.id);
+        identityAPI.getMyInternalId()
+          .then((internalId) => {
+            if (internalId) fetchAndSetUserProfile(internalId);
+          })
+          .catch((err) => console.warn('⚠️ App: Identity resolution failed on auth change:', err));
       } else {
+        identityAPI.clearCache();
         const { setUserRole, setSchoolType, setTeacherName, setOnboardingCompleted } = useStore.getState();
         setUserRole(null);
         setSchoolType(null);

@@ -4,7 +4,7 @@ import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Theme } from '@repo/ui';
-import { UserRole, supabase, useStore, identityAPI } from '@repo/core';
+import { UserRole, supabase, identityAPI } from '@repo/core';
 import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
@@ -32,9 +32,11 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
     // fetch name and jump to Role step (Step 1).
     React.useEffect(() => {
         const checkExistingAuth = async () => {
-            const userId = await identityAPI.getMyInternalId();
-            if (user) {
-                const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || '';
+            const internalId = await identityAPI.getMyInternalId();
+            if (!internalId) return;
+            const { data: { user: authUser } } = await supabase.auth.getUser();
+            if (authUser) {
+                const displayName = authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || '';
                 if (displayName) {
                     setName(displayName);
                     // If we have a name but no role, jump to Role selection
@@ -105,8 +107,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
         setIsCompleting(true);
         try {
             const internalId = await identityAPI.getMyInternalId();
-            const userId = await identityAPI.getMyInternalId();
-            if (!internalId || !user) throw new Error('No identity found');
+            if (!internalId) throw new Error('No identity found');
 
             hapticSuccess();
 
@@ -134,7 +135,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                 .from('users')
                 .upsert({
                     id: internalId,
-                    full_name: name || user.user_metadata?.full_name || 'Sanctuary User',
+                    full_name: name || 'Sanctuary User',
                     role: role,
                     school_id: schoolId,
                     onboarding_completed: true,

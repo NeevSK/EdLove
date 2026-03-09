@@ -133,8 +133,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
         setIsCompleting(true);
         try {
             const internalId = await identityAPI.getMyInternalId();
-            const userId = await identityAPI.getMyInternalId();
-            if (!internalId || !user) throw new Error('No identity found');
+            if (!internalId) throw new Error('No identity found');
 
             const { data: existingProfile } = await supabase
                 .from('users')
@@ -158,7 +157,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                 .from('users')
                 .upsert({
                     id: internalId,
-                    full_name: name || user.user_metadata?.full_name || 'Gurudevi User',
+                    full_name: name || 'Gurudevi User',
                     role,
                     school_id: schoolId,
                     onboarding_completed: true,
