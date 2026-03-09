@@ -373,7 +373,9 @@
         "wisdomComingSoon": "Leadership Treasury",
         "wisdomComingSoonDesc": "A curated library of leadership philosophies is being assembled.",
         "monthlyComingSoon": "Architect of Growth",
-        "monthlyComingSoonDesc": "A deep reflection module for your monthly milestones is on its way."
+        "monthlyComingSoonDesc": "A deep reflection module for your monthly milestones is on its way.",
+        "sandboxDescription": "Explore this demo school data to see how the platform works.",
+        "establishSchool": "Establish Your School"
     },
     "founder": {
         "platformVision": "Platform Vision",

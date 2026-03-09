@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore, supabase } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { Classroom } from '@repo/core';
-import { SkeletonCard } from '@repo/ui';
+import { SkeletonCard, SandboxBanner } from '@repo/ui';
 import { useClassroomRoleData, CreateClassroomModal } from '@repo/classroom';
 import {
     Plus,
@@ -27,7 +27,7 @@ import { formatDistanceToNow } from 'date-fns';
 export default function TeacherDashboardWeb() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const { user } = useStore();
+    const { user, isDemoMode } = useStore();
     const { role, userId } = useUserRole();
     const [searchQuery, setSearchQuery] = useState('');
     const [classrooms, setClassrooms] = useState<(Classroom & { student_count?: number; last_activity?: string })[]>([]);
@@ -95,6 +95,7 @@ export default function TeacherDashboardWeb() {
 
     return (
         <>
+            {isDemoMode && <SandboxBanner />}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                 {/* Header & Quick Actions */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
@@ -128,10 +129,10 @@ export default function TeacherDashboardWeb() {
                 {/* Performance Stats */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '24px' }}>
                     {[
-                        { label: 'Active Classes', value: classroomsLoading ? '—' : String(classrooms.length), icon: School, color: 'var(--lotus)' },
-                        { label: 'Total Students', value: classroomsLoading ? '—' : String(totalStudents), icon: UserPlus, color: 'var(--water)' },
-                        { label: 'Avg. Attendance', value: '—', icon: CheckCircle2, color: 'var(--moss)' },
-                        { label: 'Engagement', value: '—', icon: BarChart3, color: 'var(--sanctuary-saffron)' },
+                        { label: t('classroom.activeClasses') || 'Active Classes', value: classroomsLoading ? '—' : String(classrooms.length), icon: School, color: 'var(--lotus)' },
+                        { label: t('classroom.totalStudents') || 'Total Students', value: classroomsLoading ? '—' : String(totalStudents), icon: UserPlus, color: 'var(--water)' },
+                        { label: t('classroom.avgAttendance') || 'Avg. Attendance', value: '—', icon: CheckCircle2, color: 'var(--moss)' },
+                        { label: t('classroom.engagement') || 'Engagement', value: '—', icon: BarChart3, color: 'var(--sanctuary-saffron)' },
                     ].map((stat, i) => (
                         <div key={i} className="sanctuary-card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '20px' }}>
                             <div style={{ padding: '12px', background: 'var(--background-alt)', borderRadius: '12px', color: stat.color }}>
@@ -139,7 +140,9 @@ export default function TeacherDashboardWeb() {
                             </div>
                             <div>
                                 <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>{stat.label}</div>
-                                <div style={{ fontSize: '24px', fontWeight: '800' }}>{stat.value}</div>
+                                <div style={{ fontSize: '24px', fontWeight: '800' }}>
+                                    {stat.value}{isDemoMode && stat.value !== '—' && <span style={{ fontSize: '14px', color: 'var(--sanctuary-saffron)', marginLeft: 4 }}>*</span>}
+                                </div>
                             </div>
                         </div>
                     ))}

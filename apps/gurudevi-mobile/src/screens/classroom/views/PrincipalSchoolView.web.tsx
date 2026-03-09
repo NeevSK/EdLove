@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore, staffManagementAPI, StaffPresenceSummary, TeacherCarouselItem, StudentAttendancePulse, StaffLeaveDTO } from '@repo/core';
 import { useSchoolStats, CreateClassroomModal, AddStudentModal } from '@repo/classroom';
 import { useSchoolPulse } from '@repo/profile';
-import { SkeletonCard, getInitialsFromName } from '@repo/ui';
+import { SkeletonCard, SandboxBanner, getInitialsFromName } from '@repo/ui';
 import {
     Users,
     Shield,
@@ -47,7 +47,7 @@ function presenceColor(present: number, total: number): string {
 
 export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?: string; userId?: string }) {
     const { t } = useTranslation();
-    const { user } = useStore();
+    const { user, isDemoMode } = useStore();
     const effectiveSchoolId = schoolId || user?.school_id || '';
     const effectiveUserId = userId || user?.id || '';
 
@@ -95,7 +95,31 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?
 
     return (
         <>
+            {isDemoMode && <SandboxBanner />}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+
+                {/* ─── VISIONARY SANDBOX BANNER (ghost data) ─────── */}
+                {(schoolStats as any)?.is_sample && (
+                    <div style={{
+                        background: 'rgba(245,158,11,0.1)',
+                        border: '1px solid var(--amber-glow)',
+                        borderRadius: '12px',
+                        padding: '20px 24px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '12px',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--amber-glow)', fontWeight: '800', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                            <Zap size={16} fill="var(--amber-glow)" />
+                            {t('demoMode.sandboxPerspective')}
+                        </div>
+                        <p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '14px' }}>
+                            {t('principal.sandboxDescription')}
+                        </p>
+                    </div>
+                )}
 
                 {/* ─── 1. COMMAND HEADER ─────────────────────────── */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
