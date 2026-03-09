@@ -62,17 +62,18 @@ interface AuthScreenProps {
     isAnonymous?: boolean;
     onContinueAsGuest?: () => void;
     onSuccess?: () => void;
+    onBack?: () => void;
     /** Start the auth screen in login mode (vs default sign-up) */
     initialMode?: 'login' | 'signup';
 }
 
-export default function AuthScreen({ onboardingData, isAnonymous = false, onContinueAsGuest, onSuccess, initialMode }: AuthScreenProps) {
+export default function AuthScreen({ onboardingData, isAnonymous = false, onContinueAsGuest, onSuccess, onBack, initialMode }: AuthScreenProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [showEmailAuth, setShowEmailAuth] = useState(false);
+    const [showEmailAuth, setShowEmailAuth] = useState(initialMode === 'login');
     // Issue 3.1 fix: new unauthenticated visitors should land on Sign Up, not Login.
     // But if initialMode='login' is passed (e.g. from identity_already_exists redirect), start on Login.
     const [isSignUp, setIsSignUp] = useState(initialMode !== 'login');
@@ -84,9 +85,17 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
     const toast = useToast();
     const passwordRef = useRef<TextInput>(null);
 
+    // Load current user from public.users via the internal identity (new architecture pattern).
+    // This gives us email + is_anonymous from our own DB, not raw Supabase auth.
     React.useEffect(() => {
-        identityAPI.getMyInternalId().then((userId) => {
-            setCurrentUser(userId ? { id: userId } : null);
+        identityAPI.getMyInternalId().then(async (internalId) => {
+            if (!internalId) { setCurrentUser(null); return; }
+            const { data } = await supabase
+                .from('users')
+                .select('id, email, is_anonymous, full_name')
+                .eq('id', internalId)
+                .maybeSingle();
+            setCurrentUser(data ?? null);
         });
     }, []);
 
@@ -139,7 +148,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [t]);
 
-    const isRealUser = currentUser && currentUser.email && !currentUser.email.includes('anonymous');
+    const isRealUser = currentUser && currentUser.email && !currentUser.is_anonymous;
     const shouldHideGeneralAuth = onboardingData && isRealUser;
 
     // ─── Native redirect URI (used by expo-auth-session) ───────────────────────
@@ -332,22 +341,32 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                         data: {
                             full_name: onboardingData?.name || 'Gurudevi User',
                             role: onboardingData?.role || 'teacher',
+                            is_anonymous: false,
                         }
                     });
                     if (error) throw error;
+
+                    // Also update the public.users row (Supabase auth update alone doesn't touch it)
+                    const internalId = await identityAPI.getMyInternalId();
+                    if (internalId) {
+                        await supabase.from('users').update({
+                            email,
+                            full_name: onboardingData?.name || 'Gurudevi User',
+                            role: onboardingData?.role || 'teacher',
+                            is_anonymous: false,
+                            onboarding_completed: true,
+                            onboarding_completed_at: new Date().toISOString(),
+                        }).eq('id', internalId);
+                    }
+
                     hapticSuccess();
                     showToast(t('auth.signupSuccess'), "success");
 
                     // Check for guest data to sync
                     const hasGuestData = await GuestDataSync.hasGuestData();
-                    if (hasGuestData) {
-                        const internalId = await identityAPI.getMyInternalId();
-                        if (internalId) {
-                            setNewUserId(internalId);
-                            setShowSyncModal(true);
-                        } else {
-                            if (onSuccess) onSuccess();
-                        }
+                    if (hasGuestData && internalId) {
+                        setNewUserId(internalId);
+                        setShowSyncModal(true);
                     } else {
                         if (onSuccess) onSuccess();
                     }
@@ -445,7 +464,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
 
                     {!showEmailAuth && !shouldHideGeneralAuth && (
                         <BreathAnimation delay={400}>
-                            <VStack space="xl">
+                            <VStack space="md">
                                 <Button
                                     size="xl"
                                     onPress={() => handleOAuthSignIn('google')}
@@ -467,6 +486,34 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                                         </ButtonText>
                                     </HStack>
                                 </Button>
+
+                                {/* Email auth entry point */}
+                                <Button
+                                    size="lg"
+                                    variant="outline"
+                                    onPress={() => { hapticLight(); setShowEmailAuth(true); }}
+                                    isDisabled={loading}
+                                    sx={{ borderColor: colors.border, borderRadius: Theme.corners.comfortable, height: 52 }}
+                                >
+                                    <HStack space="sm" alignItems="center">
+                                        <Mail size={18} color={colors.text} />
+                                        <ButtonText color={colors.text} fontWeight="$medium">
+                                            {isSignUp ? t('auth.signUpWithEmail') || 'Sign up with email' : t('auth.signInWithEmail') || 'Sign in with email'}
+                                        </ButtonText>
+                                    </HStack>
+                                </Button>
+
+                                {/* Sign-in / Sign-up toggle */}
+                                <HStack justifyContent="center" space="xs" mt="$1">
+                                    <Text color={colors.textSecondary} size="sm">
+                                        {isSignUp ? t('auth.alreadyHaveAccount') || 'Already have an account?' : t('auth.noAccount') || "Don't have an account?"}
+                                    </Text>
+                                    <Button variant="link" size="sm" onPress={() => { hapticLight(); setIsSignUp(v => !v); }}>
+                                        <ButtonText color={colors.action} fontWeight="$bold" size="sm">
+                                            {isSignUp ? t('auth.login') || 'Sign In' : t('auth.signup') || 'Sign Up'}
+                                        </ButtonText>
+                                    </Button>
+                                </HStack>
                             </VStack>
                         </BreathAnimation>
                     )}
@@ -540,7 +587,19 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                                         </ButtonText>
                                     </Button>
 
-                                    <Button variant="link" onPress={() => setShowEmailAuth(false)}>
+                                    {/* Sign-in / Sign-up toggle inside email form */}
+                                    <HStack justifyContent="center" space="xs">
+                                        <Text color={colors.textSecondary} size="sm">
+                                            {isSignUp ? t('auth.alreadyHaveAccount') || 'Already have an account?' : t('auth.noAccount') || "Don't have an account?"}
+                                        </Text>
+                                        <Button variant="link" size="sm" onPress={() => { hapticLight(); setIsSignUp(v => !v); setErrors({}); }}>
+                                            <ButtonText color={colors.action} fontWeight="$bold" size="sm">
+                                                {isSignUp ? t('auth.login') || 'Sign In' : t('auth.signup') || 'Sign Up'}
+                                            </ButtonText>
+                                        </Button>
+                                    </HStack>
+
+                                    <Button variant="link" onPress={() => { setShowEmailAuth(false); setErrors({}); }}>
                                         <ButtonText color={colors.textTertiary}>{t('auth.backToGoogle')}</ButtonText>
                                     </Button>
                                 </VStack>

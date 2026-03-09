@@ -38,6 +38,9 @@ export async function requireAuth() {
         } as any;
     }
 
+    // getSession() here is correct: used only to verify a session exists and extract
+    // session.user.email for the returned object. The actual user ID is resolved below
+    // via identityAPI.getMyInternalId() (internal users.id, not session.user.id).
     const { data: { session }, error } = await supabase.auth.getSession();
     if (error || !session) {
         throw new APIError('Not authenticated', 'UNAUTHENTICATED');
@@ -48,11 +51,13 @@ export async function requireAuth() {
         throw new APIError('Identity resolution failed', 'UNAUTHENTICATED');
     }
 
-    // Return a minimal user-like object with the internal ID
+    // Return a minimal user-like object with the internal ID.
+    // NOTE: `supabase_auth_uid` is the raw Supabase auth UUID — kept only for reference/logging.
+    //       All application logic must use `id` (the internal users.id).
     return {
         id: internalId,
         email: session.user.email,
-        session_id: session.user.id // Keep the auth ID for reference if needed
+        supabase_auth_uid: session.user.id,
     } as any;
 }
 

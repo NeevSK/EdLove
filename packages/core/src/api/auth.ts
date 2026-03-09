@@ -4,7 +4,9 @@ import { identityAPI } from './identity';
 
 export const authAPI = {
     /**
-     * Get current user session
+     * Get current auth session.
+     * NOTE: This returns the Supabase auth session (JWT, is_anonymous, email, etc.).
+     * Do NOT use session.user.id for DB queries — use identityAPI.getMyInternalId() instead.
      */
     async getSession() {
         const { data, error } = await supabase.auth.getSession();
@@ -17,7 +19,9 @@ export const authAPI = {
     },
 
     /**
-     * Get current user
+     * Get current Supabase auth user object.
+     * NOTE: Returns the auth layer user. Do NOT use user.id for DB queries —
+     * use identityAPI.getMyInternalId() to get the internal users.id instead.
      */
     async getUser() {
         const { data, error } = await supabase.auth.getUser();
@@ -120,7 +124,12 @@ export const authAPI = {
             throw new APIError('Failed to link anonymous account', updateError.code, updateError);
         }
 
-        // Update the profile in public.users
+        // Update the profile in public.users using the internal user ID
+        const internalId = await identityAPI.getMyInternalId();
+        if (!internalId) {
+            throw new APIError('Cannot resolve user identity after linking', 'IDENTITY_ERROR');
+        }
+
         const { error: profileError } = await supabase
             .from('users')
             .update({
@@ -131,7 +140,7 @@ export const authAPI = {
                 onboarding_completed: true,
                 onboarding_completed_at: new Date().toISOString(),
             })
-            .eq('id', updateData.user?.id);
+            .eq('id', internalId);
 
         if (profileError) {
             throw new APIError('Failed to update profile', profileError.code, profileError);

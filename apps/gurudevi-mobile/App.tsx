@@ -12,7 +12,7 @@ import { config } from "./gluestack-ui.config";
 import { Home, School, Users, Library, User, Sparkles } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
 import * as Font from 'expo-font';
-import { supabase, useStore, UserRole, SchoolType, initSentry, initPostHog, trackEvent, identifyUser } from '@repo/core';
+import { supabase, useStore, UserRole, SchoolType, initSentry, initPostHog, trackEvent, identifyUser, identityAPI } from '@repo/core';
 import { Platform } from 'react-native';
 import * as Linking from 'expo-linking';
 import { PostHogProvider } from 'posthog-react-native';
@@ -57,6 +57,7 @@ function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [currentTab, setCurrentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
   const onboardingCompleted = useStore((state) => state.onboardingCompleted);
+  const storeUser = useStore((state) => state.user);
   const [showWelcome, setShowWelcome] = useState(true);
   const toast = useStore((state) => state.toast);
   const hideToast = useStore((state) => state.hideToast);
@@ -81,7 +82,7 @@ function App() {
     try {
       const { data: userProfile, error } = await supabase
         .from('users')
-        .select('role, school_id, onboarding_completed')
+        .select('id, role, school_id, onboarding_completed, full_name, email, avatar_url, is_anonymous, profile_completed')
         .eq('id', userId)
         .maybeSingle();
 
@@ -91,9 +92,11 @@ function App() {
       }
 
       if (userProfile) {
-        const { setUserRole, setOnboardingCompleted } = useStore.getState();
-        setUserRole(userProfile.role as UserRole | null);
-        setOnboardingCompleted(!!userProfile.onboarding_completed);
+        const store = useStore.getState();
+        // Populate the full user object so useUserRole().userId works everywhere
+        store.setUser(userProfile as any);
+        store.setUserRole(userProfile.role as UserRole | null);
+        store.setOnboardingCompleted(!!userProfile.onboarding_completed);
 
         if (userProfile.school_id) {
           const { data: schoolData } = await supabase
@@ -103,10 +106,10 @@ function App() {
             .single();
 
           if (schoolData) {
-            useStore.getState().setSchoolType(schoolData.type as SchoolType | null);
+            store.setSchoolType(schoolData.type as SchoolType | null);
           }
         } else {
-          useStore.getState().setSchoolType(null);
+          store.setSchoolType(null);
         }
       }
     } catch (error) {
@@ -150,7 +153,11 @@ function App() {
           if (session) {
             setShowWelcome(false);
             if (session.user) {
-              fetchAndSetUserProfile(session.user.id);
+              identityAPI.getMyInternalId()
+                .then((internalId) => {
+                  if (internalId) fetchAndSetUserProfile(internalId);
+                })
+                .catch((err) => console.warn('⚠️ App: Identity resolution failed on startup:', err));
             }
           }
         }
@@ -168,13 +175,19 @@ function App() {
       setSession(session);
 
       if (session?.user) {
-        fetchAndSetUserProfile(session.user.id);
+        identityAPI.getMyInternalId()
+          .then((internalId) => {
+            if (internalId) fetchAndSetUserProfile(internalId);
+          })
+          .catch((err) => console.warn('⚠️ App: Identity resolution failed on auth change:', err));
       } else {
-        const { setUserRole, setSchoolType, setTeacherName, setOnboardingCompleted } = useStore.getState();
-        setUserRole(null);
-        setSchoolType(null);
-        setTeacherName('Gurudevi');
-        setOnboardingCompleted(false);
+        identityAPI.clearCache();
+        const store = useStore.getState();
+        store.setUser(null);
+        store.setUserRole(null);
+        store.setSchoolType(null);
+        store.setTeacherName('Gurudevi');
+        store.setOnboardingCompleted(false);
       }
     });
 
@@ -533,7 +546,12 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                       {() => (
                         <ErrorBoundary name="Onboarding Screen">
                           <OnboardingScreen
-                            isAnonymous={session?.user?.email?.includes('anonymous') || !session?.user?.email}
+                            isAnonymous={
+                              // Use store's loaded profile (most accurate) with session as fallback
+                              storeUser?.is_anonymous === true ||
+                              session?.user?.is_anonymous === true ||
+                              !session?.user?.email
+                            }
                             onComplete={(name: string, role: any, wantsAccount?: boolean) => {
                               console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
                               const store = useStore.getState();
@@ -541,11 +559,24 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                               if (role) store.setUserRole(role);
                               store.setOnboardingCompleted(true);
                               store.setJustFinishedOnboarding(true);
+                              // Refresh full profile from DB so store.user.school_id etc. are current
+                              identityAPI.getMyInternalId()
+                                .then((internalId) => { if (internalId) fetchAndSetUserProfile(internalId); })
+                                .catch(() => {/* silent */});
                             }}
                           />
                         </ErrorBoundary>
                       )}
                     </RootStack.Screen>
+                    {/* Deep-link screens accessible before onboarding completes */}
+                    <RootStack.Screen
+                      name="InvitationWelcome"
+                      component={InvitationWelcomeScreen}
+                      options={{
+                        presentation: 'modal',
+                        animation: 'fade_from_bottom',
+                      }}
+                    />
                   </>
                 ) : (
                   <>
@@ -571,9 +602,20 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                     />
                     <RootStack.Screen
                       name="Auth"
-                      component={AuthScreen}
                       options={{ presentation: 'modal' }}
-                    />
+                    >
+                      {(props: any) => (
+                        <AuthScreen
+                          onSuccess={() => {
+                            // Reload full profile so store reflects the newly linked account
+                            identityAPI.getMyInternalId()
+                              .then((internalId) => { if (internalId) fetchAndSetUserProfile(internalId); })
+                              .catch(() => {/* silent */});
+                            props.navigation.goBack();
+                          }}
+                        />
+                      )}
+                    </RootStack.Screen>
                     <RootStack.Screen
                       name="QRHandler"
                       component={QRHandlerScreen}

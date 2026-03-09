@@ -4,7 +4,7 @@ import { useUserRole, useStore, naturePathsAPI } from '@repo/core';
 import type { BanyanStage } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { SkeletonCard } from '@repo/ui';
-import { useMoodLogs, useJournalEntries, useEnergyForecast, VoiceJournaling } from '@repo/self';
+import { useMoodLogs, useJournalEntries, useEnergyForecast, VoiceJournaling, FireJournal, MoodLotus, DailyRhythm, DailyContentCard, SleepTracker, BreathGuide, EnergyForecast, TomorrowPrep, GratitudeGlimmers, JoyJar, CommunityPresence, RemindersManager, ShadowAgentDrawer, WelcomeModal } from '@repo/self';
 import {
     Activity,
     MessageSquare,
@@ -30,8 +30,11 @@ export default function TeacherSelfViewWeb() {
     const navigation = useNavigation<any>();
     const { user } = useStore();
     const { userId } = useUserRole();
+    const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
+    const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
     const [journalDraft, setJournalDraft] = React.useState('');
     const [showJournalForm, setShowJournalForm] = React.useState(false);
+    const [savingJournal, setSavingJournal] = React.useState(false);
     const [showMoodPicker, setShowMoodPicker] = React.useState(false);
     const [savingMood, setSavingMood] = React.useState(false);
 
@@ -60,6 +63,11 @@ export default function TeacherSelfViewWeb() {
     // ── Personal Layer: The core sanctuary ──────────────────────────────────
     const personalLayer = (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            {/* Daily Content — motivational spark */}
+            <div className="sanctuary-card" style={{ padding: '4px' }}>
+                <DailyContentCard type="motivation" />
+            </div>
+
             {/* Energy Pulse Visualizer */}
             <div className="sanctuary-card" style={{ padding: '40px', background: 'var(--background-alt)' }}>
                 <h2 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '8px' }}>Energy Pulse</h2>
@@ -106,24 +114,60 @@ export default function TeacherSelfViewWeb() {
                             />
                             <button
                                 className="sidebar-item"
-                                style={{ background: 'var(--water)', color: '#fff', marginTop: '10px' }}
+                                style={{ background: 'var(--water)', color: '#fff', marginTop: '10px', opacity: savingJournal ? 0.6 : 1, cursor: savingJournal ? 'wait' : 'pointer' }}
+                                disabled={savingJournal || !journalDraft.trim()}
                                 onClick={async () => {
                                     if (journalDraft.trim()) {
-                                        await addJournalEntry(journalDraft.trim());
-                                        setJournalDraft('');
-                                        setShowJournalForm(false);
+                                        setSavingJournal(true);
+                                        try {
+                                            await addJournalEntry(journalDraft.trim());
+                                            setJournalDraft('');
+                                            setShowJournalForm(false);
+                                        } finally {
+                                            setSavingJournal(false);
+                                        }
                                     }
                                 }}
                             >
-                                Save Entry
+                                {savingJournal ? 'Saving…' : 'Save Entry'}
                             </button>
                         </div>
                     )}
                 </div>
 
                 <div className="sanctuary-card interactive" style={{ padding: '32px' }}>
-                    <VoiceJournaling userId={userId} onComplete={() => { }} />
+                    <VoiceJournaling userId={userId ?? undefined} onComplete={() => { }} />
                 </div>
+            </div>
+
+            {/* Mood Lotus — bloom visualizer + breath guide */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <MoodLotus userId={userId ?? undefined} />
+            </div>
+
+            {/* Fire Journal — cathartic release */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <FireJournal userId={userId ?? undefined} />
+            </div>
+
+            {/* Sleep Tracker — morning check-in */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <SleepTracker userId={userId ?? undefined} />
+            </div>
+
+            {/* Breath Guide — centered presence before teaching */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <BreathGuide />
+            </div>
+
+            {/* Gratitude Glimmers — notice the good */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <GratitudeGlimmers userId={userId ?? undefined} />
+            </div>
+
+            {/* Joy Jar — capture classroom breakthrough moments */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <JoyJar userId={userId ?? undefined} />
             </div>
         </div>
     );
@@ -134,6 +178,13 @@ export default function TeacherSelfViewWeb() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Flame size={16} color="var(--ink-ghost)" />
                 <h2 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>Professional Resonance</h2>
+            </div>
+
+            {/* Daily Rhythm — weekly timetable */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <DailyRhythm />
+                </div>
             </div>
 
             {/* Nature Path — Banyan badge */}
@@ -158,6 +209,20 @@ export default function TeacherSelfViewWeb() {
                     </div>
                 </div>
             )}
+
+            {/* Energy Forecast — log today's teaching energy */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <EnergyForecast userId={userId ?? undefined} />
+                </div>
+            </div>
+
+            {/* Tomorrow Prep — set intentions for tomorrow's classes */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <TomorrowPrep userId={userId ?? undefined} />
+                </div>
+            </div>
         </div>
     );
 
@@ -187,9 +252,9 @@ export default function TeacherSelfViewWeb() {
             <div className="sanctuary-card" style={{ padding: '24px' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '16px' }}>Professional Ecology</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <button className="sidebar-item"><Users size={16} /> <span>Educational Ecology</span></button>
-                    <button className="sidebar-item"><Activity size={16} /> <span>Systemic Health</span></button>
-                    <button className="sidebar-item"><MessageSquare size={16} /> <span>Faculty Resonance</span></button>
+                    <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Classroom' })}><Users size={16} /> <span>Educational Ecology</span></button>
+                    <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Classroom' })}><Activity size={16} /> <span>Systemic Health</span></button>
+                    <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Community' })}><MessageSquare size={16} /> <span>Faculty Resonance</span></button>
                 </div>
             </div>
 
@@ -228,16 +293,39 @@ export default function TeacherSelfViewWeb() {
 
             {/* Warm Mirror */}
             <WarmMirrorCard text={warmMirrorText} />
+
+            {/* Community Presence — feel the faculty pulse */}
+            {userId && (
+                <div className="sanctuary-card">
+                    <div className="card-body-inner">
+                        <CommunityPresence userId={userId} userRole="teacher" compact />
+                    </div>
+                </div>
+            )}
+
+            {/* Reminders — hydration, breaks, personal nudges */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <RemindersManager userId={userId ?? undefined} />
+                </div>
+            </div>
         </>
     );
 
     return (
-        <BaseSelfView
-            role="teacher"
-            personalLayer={personalLayer}
-            workingLayer={workingLayer}
-            sideBar={sideBar}
-            description={t('self.teacherDesc', "Radiate clarity from the center of your instructional practice.")}
-        />
+        <>
+            <BaseSelfView
+                role="teacher"
+                personalLayer={personalLayer}
+                workingLayer={workingLayer}
+                sideBar={sideBar}
+                description={t('self.teacherDesc', "Radiate clarity from the center of your instructional practice.")}
+            />
+            <ShadowAgentDrawer />
+            <WelcomeModal
+                isOpen={justFinishedOnboarding}
+                onClose={() => setJustFinishedOnboarding(false)}
+            />
+        </>
     );
 }

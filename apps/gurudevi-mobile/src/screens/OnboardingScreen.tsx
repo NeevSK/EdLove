@@ -4,7 +4,7 @@ import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Theme } from '@repo/ui';
-import { UserRole, supabase, useStore, identityAPI } from '@repo/core';
+import { UserRole, supabase, identityAPI } from '@repo/core';
 import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
@@ -21,28 +21,52 @@ interface OnboardingScreenProps {
 export default function OnboardingScreen({ onComplete, isAnonymous = false }: OnboardingScreenProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
-    const [currentStep, setCurrentStep] = useState(0); // 0: Name, 1: Role, 2: Orientation (optional), 3-7: Tour, 8: Auth
+    const [currentStep, setCurrentStep] = useState(0); // 0: Name, 1: Role, 2: Orientation, 3-7: Tour, 8: Auth
     const [name, setName] = useState('');
     const [role, setRole] = useState<UserRole>('teacher');
     const [orientationSeeds, setOrientationSeeds] = useState<OrientationSeeds | null>(null);
     const [isCompleting, setIsCompleting] = useState(false);
     const toast = useToast();
 
-    // Onboarding Sentinel: If already authenticated (e.g. via Google), 
-    // fetch name and jump to Role step (Step 1).
+    // ── Restore saved progress or pre-fill from existing auth ─────────────
     React.useEffect(() => {
-        const checkExistingAuth = async () => {
-            const userId = await identityAPI.getMyInternalId();
-            if (user) {
-                const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || '';
-                if (displayName) {
-                    setName(displayName);
-                    // If we have a name but no role, jump to Role selection
-                    setCurrentStep(1);
+        const initOnboarding = async () => {
+            const internalId = await identityAPI.getMyInternalId();
+
+            // Try to restore mid-flow progress for this user
+            try {
+                const saved = await AsyncStorage.getItem('onboarding_progress');
+                if (saved) {
+                    const progress = JSON.parse(saved);
+                    if (!internalId || progress.userId === internalId) {
+                        if (progress.name) setName(progress.name);
+                        if (progress.role) setRole(progress.role as UserRole);
+                        if (progress.orientationSeeds) setOrientationSeeds(progress.orientationSeeds);
+                        if (typeof progress.step === 'number' && progress.step > 0 && progress.step < 8) {
+                            setCurrentStep(progress.step);
+                            return; // Skip auth pre-fill — progress takes priority
+                        }
+                    }
                 }
+            } catch { /* ignore corrupt storage */ }
+
+            // No saved progress — pre-fill for verified (non-anonymous) users with a real name
+            if (!internalId) return;
+            const { data: profile } = await supabase
+                .from('users')
+                .select('full_name, is_anonymous, role')
+                .eq('id', internalId)
+                .maybeSingle();
+            if (!profile) return;
+
+            const PLACEHOLDER_NAMES = ['Guest User', 'Gurudevi User', 'Sanctuary User'];
+            if (!profile.is_anonymous && profile.full_name && !PLACEHOLDER_NAMES.includes(profile.full_name)) {
+                setName(profile.full_name);
+                if (profile.role) setRole(profile.role as UserRole);
+                setCurrentStep(1);
             }
         };
-        checkExistingAuth();
+        initOnboarding();
     }, []);
 
     const tourScreens = useMemo(() => [
@@ -78,13 +102,23 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
         }
     ], [t]);
 
-    // Steps Logic
-    // Step 0: Name (Required)
-    // Step 1: Role (Required, default Teacher)
-    // Step 2-6: Tour
-    // Step 7: Auth Upgrade (or Continue as Guest)
+    // Steps: 0-Name, 1-Role, 2-Orientation, 3-7-Tour, 8-Auth
 
     const canProceed = currentStep === 0 ? name.trim().length > 0 : true;
+
+    // Save progress whenever step/name/role/seeds change (so app-close resumes correctly)
+    React.useEffect(() => {
+        if (currentStep === 0 && !name) return; // Nothing to save yet
+        identityAPI.getMyInternalId().then((userId) => {
+            AsyncStorage.setItem('onboarding_progress', JSON.stringify({
+                userId,
+                step: currentStep,
+                name,
+                role,
+                orientationSeeds,
+            })).catch(() => {/* silent */});
+        });
+    }, [currentStep, name, role, orientationSeeds]);
 
     const handleNext = () => {
         if (!canProceed) return;
@@ -105,8 +139,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
         setIsCompleting(true);
         try {
             const internalId = await identityAPI.getMyInternalId();
-            const userId = await identityAPI.getMyInternalId();
-            if (!internalId || !user) throw new Error('No identity found');
+            if (!internalId) throw new Error('Failed to resolve internal user ID during onboarding completion');
 
             hapticSuccess();
 
@@ -134,7 +167,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                 .from('users')
                 .upsert({
                     id: internalId,
-                    full_name: name || user.user_metadata?.full_name || 'Sanctuary User',
+                    full_name: name || 'Gurudevi User',
                     role: role,
                     school_id: schoolId,
                     onboarding_completed: true,
@@ -273,6 +306,8 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             onboardingData={{ name, role }}
             isAnonymous={isAnonymous}
             onContinueAsGuest={handleCompleteOnboarding}
+            onSuccess={handleCompleteOnboarding}
+            onBack={() => setCurrentStep(7)}
         />
     );
 

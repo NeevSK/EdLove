@@ -186,6 +186,8 @@ export function useAIAgent() {
         }
 
         try {
+            // getSession() here is correct: we only need the JWT access_token to call
+            // the edge function — NOT session.user.id for any DB query.
             const { data: sessionData } = await supabase.auth.getSession();
             const token = sessionData?.session?.access_token;
 

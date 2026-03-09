@@ -61,30 +61,35 @@ export const identityAPI = {
 
     /**
      * Resolves the current logged-in user's internal ID.
-     * This is a critical helper for the new architecture.
+     * This is the ONLY place in the codebase that legitimately calls supabase.auth.getUser()
+     * to extract user.id — solely to look it up in auth_identities and return the
+     * internal users.id. All other code must call this method, never auth.getUser() directly.
      */
     async getMyInternalId(): Promise<string | null> {
         if (cachedInternalId) return cachedInternalId;
 
+        // auth.getUser() here is the bootstrap step only — we extract the Supabase auth UID
+        // and immediately resolve it to the internal users.id via auth_identities.
         const { data } = await supabase.auth.getUser();
         const user = data?.user;
         if (!user) return null;
-        const userId = user.id;
+        const authUid = user.id; // Supabase auth UID — NOT used for DB queries directly
 
-        // Try to resolve from auth_identities
-        const internalId = await this.resolveInternalId('supabase', userId);
+        // Resolve auth UID → internal users.id via auth_identities mapping table
+        const internalId = await this.resolveInternalId('supabase', authUid);
 
-        // Fallback: If not found in auth_identities, check if public.users has it (legacy sync)
+        // Fallback: If not found in auth_identities, check if public.users has it (legacy sync).
+        // This heals legacy users whose auth_identities row was never created.
         if (!internalId) {
             const { data: legacyUser } = await supabase
                 .from('users')
                 .select('id')
-                .eq('id', userId)
+                .eq('id', authUid)
                 .maybeSingle();
 
             if (legacyUser) {
                 // Proactively heal the state by creating the missing identity mapping
-                await this.linkIdentity(legacyUser.id, 'supabase', userId);
+                await this.linkIdentity(legacyUser.id, 'supabase', authUid);
                 cachedInternalId = legacyUser.id;
                 return legacyUser.id;
             }
