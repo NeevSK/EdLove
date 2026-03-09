@@ -32,6 +32,7 @@ export default function TeacherSelfViewWeb() {
     const { userId } = useUserRole();
     const [journalDraft, setJournalDraft] = React.useState('');
     const [showJournalForm, setShowJournalForm] = React.useState(false);
+    const [savingJournal, setSavingJournal] = React.useState(false);
     const [showMoodPicker, setShowMoodPicker] = React.useState(false);
     const [savingMood, setSavingMood] = React.useState(false);
 
@@ -106,23 +107,29 @@ export default function TeacherSelfViewWeb() {
                             />
                             <button
                                 className="sidebar-item"
-                                style={{ background: 'var(--water)', color: '#fff', marginTop: '10px' }}
+                                style={{ background: 'var(--water)', color: '#fff', marginTop: '10px', opacity: savingJournal ? 0.6 : 1, cursor: savingJournal ? 'wait' : 'pointer' }}
+                                disabled={savingJournal || !journalDraft.trim()}
                                 onClick={async () => {
                                     if (journalDraft.trim()) {
-                                        await addJournalEntry(journalDraft.trim());
-                                        setJournalDraft('');
-                                        setShowJournalForm(false);
+                                        setSavingJournal(true);
+                                        try {
+                                            await addJournalEntry(journalDraft.trim());
+                                            setJournalDraft('');
+                                            setShowJournalForm(false);
+                                        } finally {
+                                            setSavingJournal(false);
+                                        }
                                     }
                                 }}
                             >
-                                Save Entry
+                                {savingJournal ? 'Saving…' : 'Save Entry'}
                             </button>
                         </div>
                     )}
                 </div>
 
                 <div className="sanctuary-card interactive" style={{ padding: '32px' }}>
-                    <VoiceJournaling userId={userId} onComplete={() => { }} />
+                    <VoiceJournaling userId={userId ?? undefined} onComplete={() => { }} />
                 </div>
             </div>
         </div>

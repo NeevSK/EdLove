@@ -119,7 +119,7 @@ export default function PrincipalSelfViewWeb() {
                 <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginBottom: '20px' }}>
                     Speak the truths that you can't share in the boardroom. A private space for your internal voice.
                 </p>
-                <VoiceJournaling userId={userId} onComplete={() => { }} />
+                <VoiceJournaling userId={userId ?? undefined} onComplete={() => { }} />
             </div>
         </div>
     );

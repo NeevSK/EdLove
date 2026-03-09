@@ -61,7 +61,7 @@ export default function FounderSelfViewWeb() {
         if (!userId || !visionText.trim()) return;
         setSavingVision(true);
         try {
-            await supabase.from('users').update({ description: visionText.trim() }).eq('id', userId);
+            await supabase.from('users').update({ bio: visionText.trim() }).eq('id', userId);
             setVisionSaved(true);
             setTimeout(() => setVisionSaved(false), 2500);
         } catch (e) {
