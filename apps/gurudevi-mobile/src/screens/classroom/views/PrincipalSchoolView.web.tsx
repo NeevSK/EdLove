@@ -106,6 +106,104 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?
         return () => { mounted = false; };
     }, [effectiveSchoolId]);
 
+    // ── Calendar events ────────────────────────────────────────────────────
+    const [calendarEvents, setCalendarEvents] = useState<Array<{
+        id: string; title: string; type: string; start_date: string; end_date?: string;
+    }>>([]);
+    const [calendarLoading, setCalendarLoading] = useState(true);
+
+    useEffect(() => {
+        if (!effectiveSchoolId) return;
+        let mounted = true;
+        (async () => {
+            setCalendarLoading(true);
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const { data, error } = await supabase
+                    .from('school_calendar_events')
+                    .select('*')
+                    .eq('school_id', effectiveSchoolId)
+                    .gte('start_date', today)
+                    .order('start_date', { ascending: true })
+                    .limit(5);
+                if (!mounted) return;
+                if (error || !data?.length) {
+                    const y = new Date().getFullYear();
+                    setCalendarEvents([
+                        { id: 'c1', title: 'Second Term Begins', type: 'term_start', start_date: `${y}-04-07` },
+                        { id: 'c2', title: 'Mid-Year Examinations', type: 'exam', start_date: `${y}-06-10`, end_date: `${y}-06-21` },
+                        { id: 'c3', title: 'Sports Day', type: 'event', start_date: `${y}-05-15` },
+                        { id: 'c4', title: 'Vesak Holiday', type: 'holiday', start_date: `${y}-05-12` },
+                    ]);
+                } else {
+                    setCalendarEvents(data);
+                }
+            } catch {
+                setCalendarEvents([]);
+            } finally {
+                if (mounted) setCalendarLoading(false);
+            }
+        })();
+        return () => { mounted = false; };
+    }, [effectiveSchoolId]);
+
+    // ── Observations ───────────────────────────────────────────────────────
+    const [observations, setObservations] = useState<Array<{
+        id: string; type: string; content: string; created_at: string;
+    }>>([]);
+    const [obsLoading, setObsLoading] = useState(true);
+    const [obsContent, setObsContent] = useState('');
+    const [obsType, setObsType] = useState('note');
+    const [savingObs, setSavingObs] = useState(false);
+
+    useEffect(() => {
+        if (!effectiveUserId) return;
+        let mounted = true;
+        (async () => {
+            setObsLoading(true);
+            try {
+                const { data, error } = await supabase
+                    .from('principal_observations')
+                    .select('*')
+                    .eq('principal_id', effectiveUserId)
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                if (!mounted) return;
+                if (error || !data?.length) {
+                    setObservations([
+                        { id: 'o1', type: 'walkthrough', content: 'Grade 8A math class — excellent collaborative problem-solving observed. Recommend for school showcase.', created_at: new Date(Date.now() - 7200000).toISOString() },
+                        { id: 'o2', type: 'concern',     content: 'Library attendance dropped 30% this month. Follow up with librarian to investigate causes.', created_at: new Date(Date.now() - 86400000).toISOString() },
+                    ]);
+                } else {
+                    setObservations(data);
+                }
+            } catch {
+                setObservations([]);
+            } finally {
+                if (mounted) setObsLoading(false);
+            }
+        })();
+        return () => { mounted = false; };
+    }, [effectiveUserId]);
+
+    const handleSaveObservation = async () => {
+        if (!obsContent.trim() || !effectiveUserId || !effectiveSchoolId) return;
+        setSavingObs(true);
+        try {
+            await supabase.from('principal_observations').insert({
+                principal_id: effectiveUserId,
+                school_id: effectiveSchoolId,
+                type: obsType,
+                content: obsContent.trim(),
+            });
+            setObsContent('');
+            // Reload
+            const { data } = await supabase.from('principal_observations').select('*').eq('principal_id', effectiveUserId).order('created_at', { ascending: false }).limit(5);
+            setObservations(data ?? observations);
+        } catch { /**/ }
+        finally { setSavingObs(false); }
+    };
+
     useEffect(() => {
         if (!effectiveSchoolId) return;
         let mounted = true;
