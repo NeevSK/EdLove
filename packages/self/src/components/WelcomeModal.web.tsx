@@ -16,7 +16,7 @@ interface WelcomeModalProps {
 export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
     const { t } = useTranslation();
 
-    // Trap focus & close on Escape
+    // Close on Escape (focus trap would require cycling focusable elements)
     useEffect(() => {
         if (!isOpen) return;
         const handler = (e: KeyboardEvent) => {
@@ -41,7 +41,7 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
             <div
                 role="dialog"
                 aria-modal="true"
-                aria-label={t('welcome.title') || 'Welcome Home'}
+                aria-label={t('welcome.title')}
                 style={{
                     background: 'var(--glass-surface, #fff)',
                     borderRadius: '24px',
@@ -62,22 +62,21 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
                     color: 'var(--ink, #1a1a2e)', marginBottom: '16px',
                     fontFamily: 'var(--font-heading, serif)',
                 }}>
-                    {t('welcome.title') || 'Welcome Home'}
+                    {t('welcome.title')}
                 </h2>
 
                 <p style={{
                     fontSize: '16px', lineHeight: '1.7',
                     color: 'var(--ink-soft, #4a4a6a)', marginBottom: '12px',
                 }}>
-                    {t('welcome.message') || 'Your sanctuary awaits.'}
+                    {t('welcome.message')}
                 </p>
 
                 <p style={{
                     fontSize: '14px', lineHeight: '1.6',
                     color: 'var(--ink-ghost, #8a8aaa)', marginBottom: '36px',
                 }}>
-                    {t('welcome.description') ||
-                        'Here you can reflect, grow, and connect with your educational ecology.'}
+                    {t('welcome.description')}
                 </p>
 
                 <button
@@ -99,7 +98,7 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
                     onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
                     onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                 >
-                    {t('welcome.start') || 'Begin Journey'}
+                    {t('welcome.start')}
                 </button>
             </div>
 

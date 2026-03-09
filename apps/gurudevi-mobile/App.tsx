@@ -53,12 +53,12 @@ const RootStack = createNativeStackNavigator();
 
 // Module-level so AppContent can call it without prop-drilling.
 // Uses useStore.getState() (not a hook) — safe to call outside React render.
-const fetchAndSetUserProfile = async (userId: string) => {
+const fetchAndSetUserProfile = async (internalUserId: string) => {
     try {
       const { data: userProfile, error } = await supabase
         .from('users')
         .select('id, role, school_id, onboarding_completed, full_name, email, avatar_url, is_anonymous, profile_completed')
-        .eq('id', userId)
+        .eq('id', internalUserId)
         .maybeSingle();
 
       if (error) {

@@ -6,7 +6,7 @@
  * HTML checkboxes and the same Supabase backend.
  * Metro resolves this over TomorrowPrep.tsx on the web platform.
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '@repo/core';
 import { useTomorrowPrep } from '../hooks/useTomorrowPrep';
 import type { DailyPrepItem } from '../types';
@@ -16,11 +16,11 @@ interface TomorrowPrepProps {
     userId?: string;
 }
 
-const tomorrow = (() => {
+const getTomorrow = () => {
     const d = new Date();
     d.setDate(d.getDate() + 1);
     return d.toISOString().split('T')[0];
-})();
+};
 
 export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
     const { prepItems, isLoading, setPrepItems, refreshData } = useTomorrowPrep(userId);
@@ -29,6 +29,16 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
     const [saving, setSaving] = useState(false);
     const [toggling, setToggling] = useState<string | null>(null);
     const [deleting, setDeleting] = useState<string | null>(null);
+
+    // Recomputes at midnight so date stays correct if the app stays open overnight
+    const [tomorrow, setTomorrow] = useState<string>(getTomorrow);
+    useEffect(() => {
+        const now = new Date();
+        const msUntilMidnight =
+            new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() - now.getTime();
+        const timer = setTimeout(() => setTomorrow(getTomorrow()), msUntilMidnight);
+        return () => clearTimeout(timer);
+    }, [tomorrow]);
 
     const tomorrowItems = prepItems.filter(i => i.prep_date === tomorrow);
     const completedCount = tomorrowItems.filter(i => i.is_completed).length;

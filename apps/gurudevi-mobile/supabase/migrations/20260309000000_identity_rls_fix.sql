@@ -179,32 +179,34 @@ CREATE POLICY "group_messages_member_insert"
     );
 
 -- ── direct_messages ────────────────────────────────────────────────
--- The direct_messaging migration uses author_id = auth.uid()
+-- Drop the loose insert policy; the stricter direct_messages_insert policy
+-- (with conversation membership + block checks) is added below at line ~455.
+-- Having both with OR semantics would allow blocked users to bypass the block.
 DROP POLICY IF EXISTS "Users can insert their own messages" ON public.direct_messages;
-CREATE POLICY "Users can insert their own messages"
-    ON public.direct_messages FOR INSERT TO authenticated
-    WITH CHECK (author_id = get_my_id());
 
 DROP POLICY IF EXISTS "Users can read messages in their conversations" ON public.direct_messages;
 CREATE POLICY "Users can read messages in their conversations"
     ON public.direct_messages FOR SELECT TO authenticated
     USING (
         EXISTS (
-            SELECT 1 FROM public.conversations c
+            SELECT 1 FROM public.direct_conversations c
             WHERE c.id = conversation_id
             AND (c.user1_id = get_my_id() OR c.user2_id = get_my_id())
         )
     );
 
--- ── conversations ──────────────────────────────────────────────────
-DROP POLICY IF EXISTS "Users can view their own conversations" ON public.conversations;
+-- ── direct_conversations ────────────────────────────────────────────
+-- Policies for direct_conversations are handled at line ~436.
+-- The legacy policies below referencing public.conversations are removed
+-- because public.conversations does not exist in the schema.
+DROP POLICY IF EXISTS "Users can view their own conversations" ON public.direct_conversations;
 CREATE POLICY "Users can view their own conversations"
-    ON public.conversations FOR SELECT TO authenticated
+    ON public.direct_conversations FOR SELECT TO authenticated
     USING (user1_id = get_my_id() OR user2_id = get_my_id());
 
-DROP POLICY IF EXISTS "Users can create conversations" ON public.conversations;
+DROP POLICY IF EXISTS "Users can create conversations" ON public.direct_conversations;
 CREATE POLICY "Users can create conversations"
-    ON public.conversations FOR INSERT TO authenticated
+    ON public.direct_conversations FOR INSERT TO authenticated
     WITH CHECK (user1_id = get_my_id() OR user2_id = get_my_id());
 
 -- ── staff_attendance ───────────────────────────────────────────────
@@ -593,10 +595,24 @@ CREATE POLICY "Students can view their own visible observations"
 
 -- ── community_group_members ────────────────────────────────────────
 DROP POLICY IF EXISTS "group_members_management_v2" ON public.community_group_members;
-CREATE POLICY "group_members_management_v2"
-    ON public.community_group_members FOR ALL
+
+-- Admins can perform all operations; regular members can read and manage their own
+-- non-sensitive membership fields (e.g., status). Only admins may change role.
+CREATE POLICY "group_members_read"
+    ON public.community_group_members FOR SELECT
     USING (
-        -- Admin of the group can manage
+        EXISTS (
+            SELECT 1 FROM public.community_group_members m
+            WHERE m.group_id = community_group_members.group_id
+              AND m.user_id = get_my_id()
+              AND m.status = 'active'
+        )
+    );
+
+CREATE POLICY "group_members_insert"
+    ON public.community_group_members FOR INSERT
+    WITH CHECK (
+        -- Admins can add anyone
         EXISTS (
             SELECT 1 FROM public.community_group_members a
             WHERE a.group_id = community_group_members.group_id
@@ -604,9 +620,44 @@ CREATE POLICY "group_members_management_v2"
               AND a.role = 'admin'
               AND a.status = 'active'
         )
-        -- OR the user is managing their own membership
+        -- Users can insert their own row only with a non-admin role
+        OR (
+            community_group_members.user_id = get_my_id()
+            AND community_group_members.role != 'admin'
+        )
+    );
+
+CREATE POLICY "group_members_delete"
+    ON public.community_group_members FOR DELETE
+    USING (
+        -- Admins can remove any member
+        EXISTS (
+            SELECT 1 FROM public.community_group_members a
+            WHERE a.group_id = community_group_members.group_id
+              AND a.user_id = get_my_id()
+              AND a.role = 'admin'
+              AND a.status = 'active'
+        )
+        -- Users can remove (leave) their own membership
+        OR community_group_members.user_id = get_my_id()
+    );
+
+CREATE POLICY "group_members_update"
+    ON public.community_group_members FOR UPDATE
+    USING (
+        -- Admins can update any member
+        EXISTS (
+            SELECT 1 FROM public.community_group_members a
+            WHERE a.group_id = community_group_members.group_id
+              AND a.user_id = get_my_id()
+              AND a.role = 'admin'
+              AND a.status = 'active'
+        )
+        -- Non-admin users can only update their own membership row
         OR community_group_members.user_id = get_my_id()
     )
+    -- Non-admins may only update their own row; they cannot self-promote to admin
+    -- or reassign their membership to another user_id
     WITH CHECK (
         EXISTS (
             SELECT 1 FROM public.community_group_members a
@@ -615,7 +666,10 @@ CREATE POLICY "group_members_management_v2"
               AND a.role = 'admin'
               AND a.status = 'active'
         )
-        OR community_group_members.user_id = get_my_id()
+        OR (
+            community_group_members.user_id = get_my_id()
+            AND community_group_members.role != 'admin'
+        )
     );
 
 -- ── classrooms ─────────────────────────────────────────────────────

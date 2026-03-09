@@ -94,7 +94,7 @@ export default function FounderSelfViewWeb() {
         setSavingWisdom(true);
         try {
             const { data, error } = await supabase
-                .from('user_wisdom')
+                .from('wisdom_notes')
                 .insert({ user_id: userId, insight: wisdomDraft.trim(), tags: [] })
                 .select()
                 .single();
@@ -223,7 +223,7 @@ export default function FounderSelfViewWeb() {
                 </div>
             </div>
         </div>
-    ); // mood picker, energy snapshot, mirrors, context nudge ─────────────────
+    ); // workingLayer: vision, philosophy tabs, resonance, energy, tomorrow prep
     const sideBar = (
         <>
             <MoodPickerCard

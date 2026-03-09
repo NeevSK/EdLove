@@ -109,7 +109,10 @@
     "identityAlreadyExists": "This account already exists. Please sign in instead.",
     "acceptTermsRequired": "Please accept the terms to continue.",
     "signUpWithEmail": "Sign up with email",
-    "noAccount": "Don't have an account?"
+    "noAccount": "Don't have an account?",
+    "alreadyLinkedDesc": "This Google account is already linked to another sanctuary soul. Please sign in instead.",
+    "alreadyRegisteredDesc": "You already have an account! Switching to log in…",
+    "signUpWithGoogle": "Sign Up with Google"
   },
   "welcome": {
     "title": "Gurudevi",
@@ -122,7 +125,8 @@
     "guestSubtext": "No account needed ΓÇó Full access",
     "openingSanctuary": "Initializing Sanctuary...",
     "description": "Your AI-powered educational companion.",
-    "start": "Get Started"
+    "start": "Get Started",
+    "message": "Welcome to Gurudevi"
   },
   "tabs": {
     "self": "Self",
