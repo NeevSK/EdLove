@@ -2,7 +2,7 @@
  * MyGradesView
  *
  * Student-facing grade summary: shows graded submissions ordered by most recent.
- * Queries `submissions` where student_id = auth.uid() and grade IS NOT NULL.
+ * Queries `submissions` where `student_id = userId` (internal users.id) and grade IS NOT NULL.
  * RLS: students can read their own rows (migration 20260301_submissions_rls.sql).
  */
 

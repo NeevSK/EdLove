@@ -4,7 +4,9 @@ import { identityAPI } from './identity';
 
 export const authAPI = {
     /**
-     * Get current user session
+     * Get current auth session.
+     * NOTE: This returns the Supabase auth session (JWT, is_anonymous, email, etc.).
+     * Do NOT use session.user.id for DB queries — use identityAPI.getMyInternalId() instead.
      */
     async getSession() {
         const { data, error } = await supabase.auth.getSession();
@@ -17,7 +19,9 @@ export const authAPI = {
     },
 
     /**
-     * Get current user
+     * Get current Supabase auth user object.
+     * NOTE: Returns the auth layer user. Do NOT use user.id for DB queries —
+     * use identityAPI.getMyInternalId() to get the internal users.id instead.
      */
     async getUser() {
         const { data, error } = await supabase.auth.getUser();
