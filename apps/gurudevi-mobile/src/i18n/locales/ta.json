@@ -23,7 +23,6 @@
     "sampleDismissed": "மாதிரி நிராகரிக்கப்பட்டது",
     "sampleDismissedDesc": "இந்த மாதிரி சரணாலயம் உங்கள் பார்வையில் இருந்து அகற்றப்பட்டது.",
     "initialize": "தொடங்கு",
-
     "notifications": "Notifications",
     "settings": "Settings",
     "close": "Close",
@@ -44,7 +43,6 @@
   },
   "greeting": {
     "ayubowan": "ஆயுபோவன்!",
-
     "morning": "Morning",
     "afternoon": "Afternoon",
     "evening": "Evening"
@@ -112,7 +110,9 @@
     "identityAlreadyExists": "இந்த கணக்கு ஏற்கனவே உள்ளது. தயவுசெய்து உள்நுழைக.",
     "tagline": "உங்கள் கற்றல் பயணத்திற்கு துணை நிற்கும் குருதேவி.",
     "signInEmail": "உங்கள் மின்னஞ்சலில் உள்நுழைக",
-    "acceptTermsRequired": "தொடர, நிபந்தனைகள் மற்றும் தனியுரிமைக் கொள்கையை ஏற்கவும்."
+    "acceptTermsRequired": "தொடர, நிபந்தனைகள் மற்றும் தனியுரிமைக் கொள்கையை ஏற்கவும்.",
+    "signUpWithEmail": "மின்னஞ்சல் மூலம் பதிவு செய்யவும்",
+    "noAccount": "கணக்கு இல்லையா?"
   },
   "tabs": {
     "self": "சுய",
@@ -127,7 +127,6 @@
     "library": "நூலகம்",
     "profile": "சுயவிவரம்",
     "grade": "வகுப்பு நிலை",
-
     "school": "School",
     "classroom": "Classroom"
   },
@@ -217,7 +216,6 @@
     "threeGentleThings": "நாளை மென்மையாக்கும் 3 விஷயங்கள் என்ன? 🌙",
     "insightPlaceholder": "இன்று நீங்கள் கண்டுபிடித்த கற்பித்தல் நுண்ணறிவு என்ன?",
     "momentDescriptionPlaceholder": "மாயா இன்று பின்னங்களை புரிந்து கொண்டாள்! 🎉",
-
     "inhale": "Inhale",
     "hold": "Hold",
     "exhale": "Exhale",
@@ -275,7 +273,6 @@
     "myProgress": "என் முன்னேற்றம்",
     "myProgressDesc": "உங்கள் கற்றல் பயணம் மற்றும் சாதனைகளை கண்காணிக்கவும்",
     "noGradesYet": "No grades yet — keep going! 🌱",
-
     "unknownAssignment": "Assignment",
     "goalsComingSoon": "Goal Setting Arriving Soon",
     "goalsComingSoonDesc": "We are building a beautiful space for your daily aspirations.",
@@ -365,7 +362,6 @@
     "activeSessions": "செயலில் உள்ள அமர்வுகள்",
     "securityAlerts": "பாதுகாப்பு விழிப்பூட்டல்கள்",
     "infraSummary": "{{name}} க்கான உள்கட்டமைப்பு சுருக்கம்",
-
     "balance": "Balance",
     "balanceComingSoon": "System Pulse Arriving",
     "balanceComingSoonDesc": "A dashboard for operational harmony is being calibrated."
@@ -381,7 +377,6 @@
     "visionaryInsights": "தொலைநோக்கு நுண்ணறிவுகள்",
     "wellnessIndex": "நல்வாழ்வு குறியீடு",
     "wellnessIncrease": "கடந்த சுழற்சியிலிருந்து +{{percent}}%",
-
     "visionComingSoon": "Architecting the Future",
     "visionComingSoonDesc": "The vision alignment dashboard is currently being synthesized."
   },
@@ -457,7 +452,6 @@
     "description": "ஆசிரியர் சமூகத்துடன் இணைக",
     "announcements": "அறிவிப்புகள்",
     "postAnnouncement": "அறிவிப்பை இடுகையிடு",
-
     "filters": {
       "allUpdates": "All Updates"
     },
@@ -538,7 +532,6 @@
     "free": "இலவசம்",
     "pro": "ப்ரோ",
     "premium": "பிரீமியம்",
-
     "deleteAccount": "Delete Account",
     "viewEditProfile": "View or Edit Profile",
     "account": {
@@ -778,7 +771,6 @@
       "light_full": "பகல் நேர பயன்பாட்டிற்கு பிரகாசமான மற்றும் தெளிவான",
       "dark_full": "குறைந்த வெளிச்சத்தில் கண்களுக்கு எளிதானது",
       "hint": "நாளின் நேரத்தின் அடிப்படையில் ஒளி, இருள் அல்லது தானியங்கு தீம் தேர்வு செய்யவும்",
-
       "system": "System Default",
       "system_full": "Follows your device theme settings"
     },
@@ -787,7 +779,6 @@
       "day": "செயலில் வேலை (காலை 8 - மாலை 5)",
       "evening": "ஓய்வுக்கு செல்லுதல் (மாலை 5-8)",
       "night": "ஓய்வு (இரவு 8 - காலை 5)",
-
       "predawn": "Deep quiet (4-6 AM)",
       "morning": "Active start (9 AM-12 PM)",
       "afternoon": "Full energy (12-5 PM)",
@@ -838,7 +829,6 @@
     "living_theme": {
       "title": "Living Theme",
       "on": "Phase-aware colors shift with the time of day",
-
       "off": "Classic calm — simple static appearance"
     },
     "explorer": {
@@ -1058,13 +1048,11 @@
     "title": "சமூக மையம்",
     "subtitle": "உங்கள் விருப்பமான இணைப்புகளை நிர்வகிக்கவும்",
     "selectPlatform": "தளத்தை தேர்வு செய்யவும்",
-
     "platforms": {
       "whatsapp": "WhatsApp",
       "linkedin": "LinkedIn",
       "instagram": "Instagram",
       "portfolio": "Portfolio",
-
       "email": "மின்னஞ்சல்"
     },
     "handleOrLink": "ஹேண்டில் அல்லது இணைப்பு",
