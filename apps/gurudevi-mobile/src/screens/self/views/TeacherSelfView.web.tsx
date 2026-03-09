@@ -187,9 +187,9 @@ export default function TeacherSelfViewWeb() {
             <div className="sanctuary-card" style={{ padding: '24px' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '16px' }}>Professional Ecology</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <button className="sidebar-item"><Users size={16} /> <span>Educational Ecology</span></button>
-                    <button className="sidebar-item"><Activity size={16} /> <span>Systemic Health</span></button>
-                    <button className="sidebar-item"><MessageSquare size={16} /> <span>Faculty Resonance</span></button>
+                    <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Classroom' })}><Users size={16} /> <span>Educational Ecology</span></button>
+                    <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Classroom' })}><Activity size={16} /> <span>Systemic Health</span></button>
+                    <button className="sidebar-item" onClick={() => navigation.navigate('Main', { screen: 'Community' })}><MessageSquare size={16} /> <span>Faculty Resonance</span></button>
                 </div>
             </div>
 
