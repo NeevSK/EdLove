@@ -73,6 +73,17 @@ const fetchAndSetUserProfile = async (internalUserId: string) => {
         store.setUserRole(userProfile.role as UserRole | null);
         store.setOnboardingCompleted(!!userProfile.onboarding_completed);
 
+        // If the user has a valid session but hasn't completed onboarding, send them
+        // directly to Onboarding (skip the Welcome screen they've presumably already seen).
+        if (!userProfile.onboarding_completed && navigationRef.isReady()) {
+          const rootState = navigationRef.current?.getRootState();
+          const currentRoute = rootState?.routes[rootState.index]?.name;
+          if (currentRoute === 'Welcome') {
+            console.log('🧭 App: Authenticated user has incomplete onboarding — navigating to Onboarding');
+            navigationRef.navigate('Onboarding' as never);
+          }
+        }
+
         if (userProfile.school_id) {
           const { data: schoolData } = await supabase
             .from('schools')
@@ -524,7 +535,14 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
               }}
               autocapture={false}
             >
-              <RootStack.Navigator screenOptions={{ headerShown: false }}>
+              <RootStack.Navigator
+                screenOptions={{ headerShown: false }}
+                initialRouteName={
+                  // Skip Welcome entirely if the user already has a session but hasn't
+                  // finished onboarding — start them at Onboarding to resume the flow.
+                  (!onboardingCompleted && session) ? 'Onboarding' : 'Welcome'
+                }
+              >
                 {!onboardingCompleted ? (
                   <>
                     <RootStack.Screen name="Welcome">

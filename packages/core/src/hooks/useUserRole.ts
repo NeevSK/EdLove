@@ -56,6 +56,9 @@ export function useUserRole(): UseUserRoleReturn & { refresh: () => Promise<void
                         profile.organization_name !== user.organization_name
                     ))
                 ) {
+                    // `id: internalId` is placed last so that spreads of `user`/`profile`
+                    // (which may carry a Supabase auth UID) cannot overwrite the canonical
+                    // internal users.id that the rest of the app relies on.
                     setUser({ ...user, ...profile, id: internalId } as any);
 
                     // Fetch school type if school_id changed
