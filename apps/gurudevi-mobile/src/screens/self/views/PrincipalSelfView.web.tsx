@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore, supabase, schoolForestAPI } from '@repo/core';
 import type { SchoolForestState } from '@repo/core';
 import { useSchoolPulse } from '@repo/profile';
-import { useMoodLogs, useEnergyForecast, useDecisionJournal, useWisdom, VoiceJournaling, ResonancePatternCard } from '@repo/self';
+import { useMoodLogs, useEnergyForecast, useDecisionJournal, useWisdom, VoiceJournaling, ResonancePatternCard, DailyContentCard, SleepTracker, BreathGuide, EnergyForecast, TomorrowPrep, GratitudeGlimmers, JoyJar, CommunityPresence, RemindersManager, ShadowAgentDrawer, WelcomeModal } from '@repo/self';
 import { SkeletonCard } from '@repo/ui';
 import {
     Battery,
@@ -40,8 +40,8 @@ export default function PrincipalSelfViewWeb() {
     const { user } = useStore();
     const { userId } = useUserRole();
     const schoolId = user?.school_id ?? '';
-
-    const [activePanel, setActivePanel] = useState<ActivePanel>('pulse');
+    const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
+    const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
     const [newDecision, setNewDecision] = useState('');
     const [addingDecision, setAddingDecision] = useState(false);
     const [forest, setForest] = useState<SchoolForestState | null>(null);
@@ -99,6 +99,11 @@ export default function PrincipalSelfViewWeb() {
     // ── Personal Layer: The core sanctuary for the person ────────────────
     const personalLayer = (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            {/* Daily Content — leadership insight of the day */}
+            <div className="sanctuary-card" style={{ padding: '4px' }}>
+                <DailyContentCard type="did_you_know" />
+            </div>
+
             {/* Energy Pulse Visualizer */}
             <div className="sanctuary-card" style={{ padding: '40px', background: 'var(--background-alt)' }}>
                 <h2 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '8px' }}>Energy Pulse</h2>
@@ -120,6 +125,26 @@ export default function PrincipalSelfViewWeb() {
                     Speak the truths that you can't share in the boardroom. A private space for your internal voice.
                 </p>
                 <VoiceJournaling userId={userId ?? undefined} onComplete={() => { }} />
+            </div>
+
+            {/* Sleep Tracker — morning check-in for leadership capacity */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <SleepTracker userId={userId ?? undefined} />
+            </div>
+
+            {/* Breath Guide — center before meetings and decisions */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <BreathGuide />
+            </div>
+
+            {/* Gratitude Glimmers — notice moments of connection */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <GratitudeGlimmers userId={userId ?? undefined} />
+            </div>
+
+            {/* Joy Jar — collect leadership wins */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <JoyJar userId={userId ?? undefined} />
             </div>
         </div>
     );
@@ -163,6 +188,20 @@ export default function PrincipalSelfViewWeb() {
                 moodLogs={moodHistory}
                 energyForecasts={forecasts}
             />
+
+            {/* Energy Forecast — log leadership energy for the day */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <EnergyForecast userId={userId ?? undefined} />
+                </div>
+            </div>
+
+            {/* Tomorrow Prep — leadership priorities for tomorrow */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <TomorrowPrep userId={userId ?? undefined} />
+                </div>
+            </div>
         </div>
     );
 
@@ -214,17 +253,40 @@ export default function PrincipalSelfViewWeb() {
 
             {/* Warm Mirror */}
             <WarmMirrorCard text={warmMirrorText} />
+
+            {/* Community Presence — school pulse at a glance */}
+            {userId && (
+                <div className="sanctuary-card">
+                    <div className="card-body-inner">
+                        <CommunityPresence userId={userId} userRole="principal" compact />
+                    </div>
+                </div>
+            )}
+
+            {/* Reminders — leadership reminders */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <RemindersManager userId={userId ?? undefined} />
+                </div>
+            </div>
         </>
     );
 
     return (
-        <BaseSelfView
-            role="principal"
-            personalLayer={personalLayer}
-            workingLayer={workingLayer}
-            sideBar={sideBar}
-            description={t('principal.sanctuaryDesc', "Your wellbeing is the foundation of your school's wellbeing.")}
-        />
+        <>
+            <BaseSelfView
+                role="principal"
+                personalLayer={personalLayer}
+                workingLayer={workingLayer}
+                sideBar={sideBar}
+                description={t('principal.sanctuaryDesc', "Your wellbeing is the foundation of your school's wellbeing.")}
+            />
+            <ShadowAgentDrawer />
+            <WelcomeModal
+                isOpen={justFinishedOnboarding}
+                onClose={() => setJustFinishedOnboarding(false)}
+            />
+        </>
     );
 }
 

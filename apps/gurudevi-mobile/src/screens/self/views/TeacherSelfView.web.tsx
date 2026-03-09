@@ -4,7 +4,7 @@ import { useUserRole, useStore, naturePathsAPI } from '@repo/core';
 import type { BanyanStage } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { SkeletonCard } from '@repo/ui';
-import { useMoodLogs, useJournalEntries, useEnergyForecast, VoiceJournaling, FireJournal, MoodLotus, DailyRhythm } from '@repo/self';
+import { useMoodLogs, useJournalEntries, useEnergyForecast, VoiceJournaling, FireJournal, MoodLotus, DailyRhythm, DailyContentCard, SleepTracker, BreathGuide, EnergyForecast, TomorrowPrep, GratitudeGlimmers, JoyJar, CommunityPresence, RemindersManager, ShadowAgentDrawer, WelcomeModal } from '@repo/self';
 import {
     Activity,
     MessageSquare,
@@ -30,6 +30,8 @@ export default function TeacherSelfViewWeb() {
     const navigation = useNavigation<any>();
     const { user } = useStore();
     const { userId } = useUserRole();
+    const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
+    const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
     const [journalDraft, setJournalDraft] = React.useState('');
     const [showJournalForm, setShowJournalForm] = React.useState(false);
     const [savingJournal, setSavingJournal] = React.useState(false);
@@ -61,6 +63,11 @@ export default function TeacherSelfViewWeb() {
     // ── Personal Layer: The core sanctuary ──────────────────────────────────
     const personalLayer = (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            {/* Daily Content — motivational spark */}
+            <div className="sanctuary-card" style={{ padding: '4px' }}>
+                <DailyContentCard type="motivation" />
+            </div>
+
             {/* Energy Pulse Visualizer */}
             <div className="sanctuary-card" style={{ padding: '40px', background: 'var(--background-alt)' }}>
                 <h2 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '8px' }}>Energy Pulse</h2>
@@ -142,6 +149,26 @@ export default function TeacherSelfViewWeb() {
             <div className="sanctuary-card" style={{ padding: '28px' }}>
                 <FireJournal userId={userId ?? undefined} />
             </div>
+
+            {/* Sleep Tracker — morning check-in */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <SleepTracker userId={userId ?? undefined} />
+            </div>
+
+            {/* Breath Guide — centered presence before teaching */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <BreathGuide />
+            </div>
+
+            {/* Gratitude Glimmers — notice the good */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <GratitudeGlimmers userId={userId ?? undefined} />
+            </div>
+
+            {/* Joy Jar — capture classroom breakthrough moments */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <JoyJar userId={userId ?? undefined} />
+            </div>
         </div>
     );
 
@@ -182,6 +209,20 @@ export default function TeacherSelfViewWeb() {
                     </div>
                 </div>
             )}
+
+            {/* Energy Forecast — log today's teaching energy */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <EnergyForecast userId={userId ?? undefined} />
+                </div>
+            </div>
+
+            {/* Tomorrow Prep — set intentions for tomorrow's classes */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <TomorrowPrep userId={userId ?? undefined} />
+                </div>
+            </div>
         </div>
     );
 
@@ -252,16 +293,39 @@ export default function TeacherSelfViewWeb() {
 
             {/* Warm Mirror */}
             <WarmMirrorCard text={warmMirrorText} />
+
+            {/* Community Presence — feel the faculty pulse */}
+            {userId && (
+                <div className="sanctuary-card">
+                    <div className="card-body-inner">
+                        <CommunityPresence userId={userId} userRole="teacher" compact />
+                    </div>
+                </div>
+            )}
+
+            {/* Reminders — hydration, breaks, personal nudges */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <RemindersManager userId={userId ?? undefined} />
+                </div>
+            </div>
         </>
     );
 
     return (
-        <BaseSelfView
-            role="teacher"
-            personalLayer={personalLayer}
-            workingLayer={workingLayer}
-            sideBar={sideBar}
-            description={t('self.teacherDesc', "Radiate clarity from the center of your instructional practice.")}
-        />
+        <>
+            <BaseSelfView
+                role="teacher"
+                personalLayer={personalLayer}
+                workingLayer={workingLayer}
+                sideBar={sideBar}
+                description={t('self.teacherDesc', "Radiate clarity from the center of your instructional practice.")}
+            />
+            <ShadowAgentDrawer />
+            <WelcomeModal
+                isOpen={justFinishedOnboarding}
+                onClose={() => setJustFinishedOnboarding(false)}
+            />
+        </>
     );
 }

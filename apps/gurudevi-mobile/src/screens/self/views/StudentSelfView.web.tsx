@@ -18,9 +18,19 @@ import {
     VoiceJournaling,
     MoodLotus,
     WisdomSeeds,
+    DailyRhythm,
     ProgressTree,
     MyGradesView,
     WindDownRitual,
+    DailyContentCard,
+    SleepTracker,
+    BreathGuide,
+    EnergyForecast,
+    TomorrowPrep,
+    CommunityPresence,
+    RemindersManager,
+    ShadowAgentDrawer,
+    WelcomeModal,
 } from '@repo/self';
 import type { Goal } from '@repo/self';
 import { useNavigation } from '@react-navigation/native';
@@ -45,6 +55,8 @@ export default function StudentSelfViewWeb() {
     const navigation = useNavigation<any>();
     const { user } = useStore();
     const { userId } = useUserRole();
+    const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
+    const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
 
     // ── Wellbeing hooks ──────────────────────────────────────────────────
     const { moodHistory, isLoading: moodLoading, addMoodLog } = useMoodLogs(userId ?? undefined);
@@ -139,6 +151,11 @@ export default function StudentSelfViewWeb() {
                 </p>
             </div>
 
+            {/* Daily Content — motivation spark to start the day */}
+            <div className="sanctuary-card" style={{ padding: '4px' }}>
+                <DailyContentCard type="motivation" />
+            </div>
+
             {/* Energy Pulse */}
             <div className="sanctuary-card" style={{ padding: '32px', background: 'var(--background-alt)' }}>
                 <h2 style={{ fontSize: '16px', fontWeight: '800', marginBottom: '20px' }}>Energy Pulse</h2>
@@ -153,6 +170,21 @@ export default function StudentSelfViewWeb() {
             {/* Wisdom Seeds */}
             <div className="sanctuary-card" style={{ padding: '28px' }}>
                 <WisdomSeeds userId={userId ?? undefined} />
+            </div>
+
+            {/* Energy Forecast — log today's energy level */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <EnergyForecast userId={userId ?? undefined} />
+            </div>
+
+            {/* Sleep Tracker — morning reflection on last night's rest */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <SleepTracker userId={userId ?? undefined} />
+            </div>
+
+            {/* Breath Guide — paced breathing for calm focus */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <BreathGuide />
             </div>
 
             {/* Reflective Journal */}
@@ -291,6 +323,13 @@ export default function StudentSelfViewWeb() {
                 </div>
             )}
 
+            {/* Daily Rhythm — personal weekly timetable (matches native workingLayer) */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <DailyRhythm />
+                </div>
+            </div>
+
             {/* Progress Tree — organic growth milestones */}
             <div className="sanctuary-card" style={{ padding: '4px' }}>
                 <ProgressTree userId={userId ?? undefined} />
@@ -303,6 +342,13 @@ export default function StudentSelfViewWeb() {
                         📋 Grades
                     </h2>
                     <MyGradesView userId={userId ?? undefined} />
+                </div>
+            </div>
+
+            {/* Tomorrow Prep — plan the day ahead */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <TomorrowPrep userId={userId ?? undefined} />
                 </div>
             </div>
         </div>
@@ -356,6 +402,22 @@ export default function StudentSelfViewWeb() {
                 </div>
             </div>
 
+            {/* Community Presence — see who's learning alongside you */}
+            {userId && (
+                <div className="sanctuary-card">
+                    <div className="card-body-inner">
+                        <CommunityPresence userId={userId} userRole="student" compact />
+                    </div>
+                </div>
+            )}
+
+            {/* Reminders — personal nudges */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <RemindersManager userId={userId ?? undefined} />
+                </div>
+            </div>
+
             {/* Library quick-jumps */}
             <div className="sanctuary-card">
                 <div className="card-body-inner">
@@ -377,13 +439,20 @@ export default function StudentSelfViewWeb() {
     );
 
     return (
-        <BaseSelfView
-            role="student"
-            description={t('self.studentDesc', 'A steady space to grow your mind and heart.')}
-            personalLayer={personalLayer}
-            workingLayer={workingLayer}
-            sideBar={sideBar}
-        />
+        <>
+            <BaseSelfView
+                role="student"
+                description={t('self.studentDesc', 'A steady space to grow your mind and heart.')}
+                personalLayer={personalLayer}
+                workingLayer={workingLayer}
+                sideBar={sideBar}
+            />
+            <ShadowAgentDrawer />
+            <WelcomeModal
+                isOpen={justFinishedOnboarding}
+                onClose={() => setJustFinishedOnboarding(false)}
+            />
+        </>
     );
 }
 

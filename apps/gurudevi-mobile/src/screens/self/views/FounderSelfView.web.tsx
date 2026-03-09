@@ -26,6 +26,15 @@ import {
     ENERGY_COLORS,
     MoodLotus,
     ResonancePatternCard,
+    DailyContentCard,
+    SleepTracker,
+    BreathGuide,
+    EnergyForecast,
+    TomorrowPrep,
+    CommunityPresence,
+    RemindersManager,
+    ShadowAgentDrawer,
+    WelcomeModal,
 } from '@repo/self';
 import {
     Compass,
@@ -44,6 +53,8 @@ export default function FounderSelfViewWeb() {
     const { t } = useTranslation();
     const { user } = useStore();
     const { userId } = useUserRole();
+    const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
+    const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
 
     const [activePanel, setActivePanel] = useState<ActivePanel>('vision');
     const [showMoodPicker, setShowMoodPicker] = useState(false);
@@ -131,6 +142,11 @@ export default function FounderSelfViewWeb() {
                 </p>
             </div>
 
+            {/* Daily Content — founder-level insight */}
+            <div className="sanctuary-card" style={{ padding: '4px' }}>
+                <DailyContentCard type="motivation" />
+            </div>
+
             {/* Energy Pulse */}
             <div className="sanctuary-card" style={{ padding: '32px', background: 'var(--background-alt)' }}>
                 <h2 style={{ fontSize: '16px', fontWeight: '800', marginBottom: '20px' }}>Energy Pulse</h2>
@@ -140,6 +156,16 @@ export default function FounderSelfViewWeb() {
             {/* Mood Lotus — bloom visualizer + breath guide */}
             <div className="sanctuary-card" style={{ padding: '28px' }}>
                 <MoodLotus userId={userId ?? undefined} />
+            </div>
+
+            {/* Sleep Tracker — restore the dreamer */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <SleepTracker userId={userId ?? undefined} />
+            </div>
+
+            {/* Breath Guide — return to stillness */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <BreathGuide />
             </div>
         </div>
     );
@@ -182,6 +208,20 @@ export default function FounderSelfViewWeb() {
                 moodLogs={moodHistory}
                 energyForecasts={forecasts}
             />
+
+            {/* Energy Forecast — log your creative energy */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <EnergyForecast userId={userId ?? undefined} />
+                </div>
+            </div>
+
+            {/* Tomorrow Prep — plant seeds for tomorrow */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <TomorrowPrep userId={userId ?? undefined} />
+                </div>
+            </div>
         </div>
     );: mood picker, energy snapshot, mirrors, context nudge ────
     const sideBar = (
@@ -238,6 +278,22 @@ export default function FounderSelfViewWeb() {
             <WarmMirrorCard text={warmMirrorText} />
             <ImpactRipplesCard ripples={ripples} />
 
+            {/* Community Presence — your ecosystem pulse */}
+            {userId && (
+                <div className="sanctuary-card">
+                    <div className="card-body-inner">
+                        <CommunityPresence userId={userId} userRole="founder" compact />
+                    </div>
+                </div>
+            )}
+
+            {/* Reminders — personal nudges */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <RemindersManager userId={userId ?? undefined} />
+                </div>
+            </div>
+
             {/* Ecological reminder */}
             <div className="sanctuary-card" style={{ background: 'var(--background-alt)', border: 'none' }}>
                 <div className="card-body-inner">
@@ -256,13 +312,20 @@ export default function FounderSelfViewWeb() {
     );
 
     return (
-        <BaseSelfView
-            role="founder"
-            description={t('self.founderDesc', 'Your personal sanctuary — away from the platform, inside yourself.')}
-            personalLayer={personalLayer}
-            workingLayer={workingLayer}
-            sideBar={sideBar}
-        />
+        <>
+            <BaseSelfView
+                role="founder"
+                description={t('self.founderDesc', 'Your personal sanctuary — away from the platform, inside yourself.')}
+                personalLayer={personalLayer}
+                workingLayer={workingLayer}
+                sideBar={sideBar}
+            />
+            <ShadowAgentDrawer />
+            <WelcomeModal
+                isOpen={justFinishedOnboarding}
+                onClose={() => setJustFinishedOnboarding(false)}
+            />
+        </>
     );
 }
 function VisionPanel({
