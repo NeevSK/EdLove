@@ -42,13 +42,20 @@ export function useUserRole(): UseUserRoleReturn & { refresh: () => Promise<void
 
             const { data: profile } = await supabase
                 .from('users')
-                .select('role, school_id')
+                .select('role, school_id, orientation_seeds, organization_name')
                 .eq('id', internalId)
                 .maybeSingle();
 
             if (profile) {
                 // Convergence: Update store if server has different info
-                if (profile.role !== role || (user && profile.school_id !== user.school_id)) {
+                if (
+                    profile.role !== role ||
+                    (user && (
+                        profile.school_id !== user.school_id ||
+                        JSON.stringify(profile.orientation_seeds) !== JSON.stringify(user.orientation_seeds) ||
+                        profile.organization_name !== user.organization_name
+                    ))
+                ) {
                     setUser({ ...user, ...profile } as any);
 
                     // Fetch school type if school_id changed

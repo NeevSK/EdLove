@@ -85,8 +85,8 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
     const passwordRef = useRef<TextInput>(null);
 
     React.useEffect(() => {
-        supabase.auth.getUser().then(({ data: { user } }) => {
-            setCurrentUser(user);
+        identityAPI.getMyInternalId().then((userId) => {
+            setCurrentUser(userId ? { id: userId } : null);
         });
     }, []);
 
@@ -136,7 +136,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                 window.history.replaceState(null, '', cleanUrl);
             } catch (_) { /* ignore */ }
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [t]);
 
     const isRealUser = currentUser && currentUser.email && !currentUser.email.includes('anonymous');
@@ -269,9 +269,9 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
             } else {
                 hapticSuccess();
                 // Proactively check for pending invitations or onboarding data
-                const user = (await supabase.auth.getUser()).data.user;
-                if (user) {
-                    const internalId = await identityAPI.getMyInternalId();
+                const userId = await identityAPI.getMyInternalId();
+                if (userId) {
+                    const internalId = userId;
                     const pendingInvite = await AsyncStorage.getItem('pending_invite');
                     if (pendingInvite && internalId) {
                         try {

@@ -14,6 +14,7 @@
     "i18n:audit": "node scripts/i18n/audit-keys.mjs",
     "i18n:no-inline-fallbacks": "node scripts/i18n/check-inline-fallbacks.js",
     "i18n:check": "pnpm run i18n:audit && pnpm run i18n:no-inline-fallbacks",
+    "identity:check": "node scripts/check-identity-alignment.mjs",
     "prepare": "husky"
   },
   "devDependencies": {

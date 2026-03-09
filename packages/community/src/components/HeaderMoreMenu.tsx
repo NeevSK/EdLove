@@ -11,7 +11,7 @@ import {
 import { MoreVertical, BellOff, Bell, UserX, ShieldAlert } from 'lucide-react-native';
 import { useSocialShield } from '../hooks/useSocialShield';
 import SocialShieldModal from './SocialShieldModal';
-import { supabase } from '@repo/core';
+import { supabase, identityAPI } from '@repo/core';
 
 interface HeaderMoreMenuProps {
     conversationId?: string;
@@ -35,13 +35,13 @@ export default function HeaderMoreMenu({
     // Fetch initial mute state
     useEffect(() => {
         async function fetchMuteState() {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+            const userId = await identityAPI.getMyInternalId();
+            if (!userId) return;
 
             const { data } = await supabase
                 .from('conversation_settings')
                 .select('is_muted')
-                .eq('user_id', user.id)
+                .eq('user_id', userId)
                 .match({
                     conversation_id: conversationId || null,
                     group_id: groupId || null

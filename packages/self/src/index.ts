@@ -1,6 +1,8 @@
 export * from './types';
 export * from './api/self';
 export * from './api/dailyContent';
+export * from './constants/wellbeing';
+export * from './constants/selfRegistry';
 
 // Hooks
 export * from './hooks/useTimetable';
@@ -15,9 +17,16 @@ export * from './hooks/useSleepTracker';
 export * from './hooks/useFireJournal';
 export * from './hooks/useTomorrowPrep';
 export * from './hooks/useStudentGoals';
+export * from './hooks/useStudentGoals';
 export * from './hooks/useOrientationInference';
+export * from './hooks/useWellbeingEnrichment';
 
 // Components
+export { BaseSelfView } from './components/BaseSelfView';
+export { EnergyBarChart } from './components/EnergyBarChart';
+export { WarmMirrorCard } from './components/WarmMirrorCard';
+export { ImpactRipplesCard } from './components/ImpactRipplesCard';
+export { MoodPickerCard } from './components/MoodPickerCard';
 export { default as CommunityPresence } from './components/CommunityPresence';
 export { default as BreathGuide } from './components/BreathGuide';
 export { default as DailyContentCard } from './components/DailyContentCard';

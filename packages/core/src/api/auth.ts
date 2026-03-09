@@ -131,7 +131,7 @@ export const authAPI = {
                 onboarding_completed: true,
                 onboarding_completed_at: new Date().toISOString(),
             })
-            .eq('id', updateData.user.id);
+            .eq('id', updateData.user?.id);
 
         if (profileError) {
             throw new APIError('Failed to update profile', profileError.code, profileError);
@@ -144,13 +144,13 @@ export const authAPI = {
      * Check if current user is anonymous
      */
     async isAnonymous(): Promise<boolean> {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return false;
+        const userId = await identityAPI.getMyInternalId();
+        if (!userId) return false;
 
         const { data: profile } = await supabase
             .from('users')
             .select('is_anonymous')
-            .eq('id', user.id)
+            .eq('id', userId)
             .single();
 
         return profile?.is_anonymous ?? false;

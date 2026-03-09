@@ -39,7 +39,7 @@ import {
     TrendingUp
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { api, supabase } from '@repo/core';
+import { api, supabase, identityAPI } from '@repo/core';
 import type { Classroom } from '@repo/core';
 import { StudentList, GradebookTable, AttendanceView, InventoryView, ResourcesView, StudentPulseSection, ClassroomHolisticInsights } from '../components';
 import ClassroomNotes from '../components/ClassroomNotes';
@@ -97,12 +97,12 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
     const fetchInitialData = async () => {
         try {
             setLoading(true);
-            const [classData, { data: authData }] = await Promise.all([
+            const [classData, internalId] = await Promise.all([
                 api.classrooms.getById(classroomId),
-                supabase.auth.getUser()
+                identityAPI.getMyInternalId()
             ]);
             setClassroom(classData);
-            setCurrentUserId(authData?.user?.id || null);
+            setCurrentUserId(internalId);
         } catch (error) {
             console.error('Error fetching classroom details:', error);
         } finally {

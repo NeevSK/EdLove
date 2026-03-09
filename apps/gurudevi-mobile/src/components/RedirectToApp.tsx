@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Platform, Linking } from 'react-native';
 import { Button, ButtonText, VStack, Text, Box, Theme, hapticLight } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@repo/core';
+import { supabase, identityAPI } from '@repo/core';
 
 /**
  * RedirectToApp component
@@ -15,8 +15,8 @@ export const RedirectToApp = () => {
 
     useEffect(() => {
         if (Platform.OS === 'web') {
-            supabase.auth.getSession().then(({ data: { session: s } }) => {
-                setSession(s);
+            identityAPI.getMyInternalId().then(id => {
+                setSession(id ? { user: { id } } : null);
             });
         }
     }, []);

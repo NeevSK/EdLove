@@ -20,7 +20,7 @@ import React, { useState, useMemo } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserRole, supabase } from '@repo/core';
+import { UserRole, supabase, identityAPI } from '@repo/core';
 import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
 import { OrientationCaptureStep } from '@repo/self';
 import type { OrientationSeeds } from '@repo/profile';
@@ -132,13 +132,14 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
     const handleCompleteOnboarding = async () => {
         setIsCompleting(true);
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) throw new Error('No user found');
+            const internalId = await identityAPI.getMyInternalId();
+            const userId = await identityAPI.getMyInternalId();
+            if (!internalId || !user) throw new Error('No identity found');
 
             const { data: existingProfile } = await supabase
                 .from('users')
                 .select('school_id')
-                .eq('id', user.id)
+                .eq('id', internalId)
                 .single();
 
             let schoolId = existingProfile?.school_id;
@@ -146,7 +147,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                 const schoolName = `${name}'s Workspace`;
                 const { data: schoolData, error: schoolError } = await supabase
                     .from('schools')
-                    .insert({ name: schoolName, type: 'personal_workspace', created_by: user.id })
+                    .insert({ name: schoolName, type: 'personal_workspace', created_by: internalId })
                     .select()
                     .single();
                 if (schoolError) console.warn('Workspace creation failed:', schoolError);
@@ -156,7 +157,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
             const { error: profileError } = await supabase
                 .from('users')
                 .upsert({
-                    id: user.id,
+                    id: internalId,
                     full_name: name || user.user_metadata?.full_name || 'Gurudevi User',
                     role,
                     school_id: schoolId,

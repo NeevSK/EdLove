@@ -19,7 +19,7 @@ import {
 import { Box, Text, Heading, VStack, HStack } from '@repo/ui';
 import { BookOpen, Users, ChevronRight, ClipboardCheck, Plus, Zap, Trash2, Edit2 } from 'lucide-react-native';
 import { Theme, typography } from '@repo/ui';
-import { api, Classroom, MOCK_CLASSROOMS } from '@repo/core';
+import { api, Classroom, MOCK_CLASSROOMS, identityAPI } from '@repo/core';
 import { useUserRole, useStore, supabase } from '@repo/core';
 import { useToast, Toast, ToastTitle, ToastDescription } from '@repo/ui';
 import { hapticLight, hapticSuccess } from '@repo/ui';
@@ -140,20 +140,27 @@ export default function ClassroomList({
                     }
                     setHasMore(false);
                 } else {
-                    const { data: { user } } = await supabase.auth.getUser();
-                    if (!user) {
-                        throw new Error('No authenticated user');
+                    const userId = await identityAPI.getMyInternalId();
+                    if (!userId) {
+                        throw new Error('No internal identity found');
                     }
 
                     const pagination = { limit: PAGE_SIZE, offset: 0 };
                     let realData: Classroom[] = [];
 
                     if (role === 'teacher') {
-                        realData = await api.classrooms.getByTeacher(user.id, pagination);
+                        realData = await api.classrooms.getByTeacher(userId, pagination);
                     } else if (role === 'student') {
-                        realData = await api.classrooms.getByStudent(user.id, pagination);
+                        realData = await api.classrooms.getByStudent(userId, pagination);
                     } else if (role === 'principal') {
-                        const schoolId = user.user_metadata?.school_id;
+                        // Principals check their school_id from their own user record in 'users' table
+                        const { data: userData } = await supabase
+                            .from('users')
+                            .select('school_id')
+                            .eq('id', userId)
+                            .single();
+
+                        const schoolId = userData?.school_id;
                         if (schoolId) {
                             realData = await api.classrooms.getBySchool(schoolId, pagination);
                         }
@@ -214,18 +221,24 @@ export default function ClassroomList({
 
         try {
             setIsFetchingMore(true);
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+            const userId = await identityAPI.getMyInternalId();
+            if (!userId) return;
 
             const pagination = { limit: PAGE_SIZE, offset: page * PAGE_SIZE };
             let newData: Classroom[] = [];
 
             if (role === 'teacher') {
-                newData = await api.classrooms.getByTeacher(user.id, pagination);
+                newData = await api.classrooms.getByTeacher(userId, pagination);
             } else if (role === 'student') {
-                newData = await api.classrooms.getByStudent(user.id, pagination);
+                newData = await api.classrooms.getByStudent(userId, pagination);
             } else if (role === 'principal') {
-                const schoolId = user.user_metadata?.school_id;
+                const { data: userData } = await supabase
+                    .from('users')
+                    .select('school_id')
+                    .eq('id', userId)
+                    .single();
+
+                const schoolId = userData?.school_id;
                 if (schoolId) {
                     newData = await api.classrooms.getBySchool(schoolId, pagination);
                 }

@@ -20,6 +20,7 @@ export interface User {
     role_label?: string;         // Personalized role label (e.g. "Physics Teacher")
     index_number?: string;       // Mandatory for students
     nic_number?: string;         // Mandatory for teachers
+    organization_name?: string;  // Name of the user's organization/school
     onboarding_completed?: boolean; // Flag indicating if user has completed onboarding
     onboarding_completed_at?: string; // Timestamp when onboarding was completed
     public_profile?: boolean;      // Visibility flag for community profile (optional — defaults to false if absent)

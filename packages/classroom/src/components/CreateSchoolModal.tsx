@@ -32,7 +32,7 @@ import {
 } from '@repo/ui';
 import { ChevronDown } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
-import { api, supabase } from '@repo/core';
+import { api, supabase, identityAPI } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import { hapticLight, hapticSuccess } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
@@ -66,14 +66,14 @@ export default function CreateSchoolModal({
         hapticLight();
 
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) throw new Error('Not authenticated');
+            const userId = await identityAPI.getMyInternalId();
+            if (!userId) throw new Error('Not authenticated');
 
             // Call real API
             const newSchool = await api.school.create({
                 name: name.trim(),
                 type,
-                created_by: user.id
+                created_by: userId
             });
 
             hapticSuccess();

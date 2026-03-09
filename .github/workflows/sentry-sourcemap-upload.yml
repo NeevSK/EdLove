@@ -1,0 +1,163 @@
+name: Sentry Sourcemap Upload
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'App version (1.0.2)'
+        required: true
+      version_code:
+        description: 'Android versionCode (30)'
+        required: true
+
+jobs:
+  sentry-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🏗 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: 📦 Install dependencies
+        run: pnpm install --fetch-timeout 100000
+
+      # ── Metro bundle (JS only, no Android build) ──────────────────────────
+      - name: 📦 Metro bundle
+        id: metro
+        continue-on-error: true
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          EXPO_PUBLIC_POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+          EXPO_PUBLIC_POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
+          NODE_ENV: production
+        run: |
+          mkdir -p /tmp/sentry-artifacts
+          echo "=== Starting Metro bundle ==="
+          echo "No Android build — JS only"
+          echo ""
+
+          cd apps/gurudevi-mobile
+
+          pnpm exec expo export:embed \
+            --platform android \
+            --entry-file index.ts \
+            --bundle-output /tmp/sentry-artifacts/index.android.bundle \
+            --sourcemap-output /tmp/sentry-artifacts/index.android.bundle.map \
+            --dev false \
+            --minify true \
+            2>&1
+
+          METRO_EXIT=$?
+          echo "metro_exit=$METRO_EXIT" >> $GITHUB_OUTPUT
+
+          echo ""
+          echo "=== Metro exit code: $METRO_EXIT ==="
+
+      # ── Verify output ──────────────────────────────────────────────────────
+      - name: 🔍 Verify bundle and sourcemap
+        id: verify
+        if: always()
+        run: |
+          echo "=== /tmp/sentry-artifacts contents ==="
+          ls -lah /tmp/sentry-artifacts/ 2>/dev/null || echo "(directory missing)"
+          echo ""
+
+          BUNDLE="/tmp/sentry-artifacts/index.android.bundle"
+          MAP="/tmp/sentry-artifacts/index.android.bundle.map"
+
+          if [ -f "$BUNDLE" ] && [ -f "$MAP" ]; then
+            echo "✅ Bundle : $(wc -c < $BUNDLE) bytes"
+            echo "✅ Map    : $(wc -c < $MAP) bytes"
+            echo "available=true" >> $GITHUB_OUTPUT
+          else
+            [ ! -f "$BUNDLE" ] && echo "❌ Bundle not found"
+            [ ! -f "$MAP" ]    && echo "❌ Sourcemap not found"
+            echo "available=false" >> $GITHUB_OUTPUT
+          fi
+
+      # ── Sentry upload ──────────────────────────────────────────────────────
+      - name: 🔍 Debug — sentry-cli auth check
+        if: steps.verify.outputs.available == 'true'
+        continue-on-error: true
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: intuitui-labs
+          SENTRY_PROJECT: gurudevi-mobile
+        run: |
+          echo "=== sentry-cli check ==="
+
+          if [ -z "$SENTRY_AUTH_TOKEN" ]; then
+            echo "❌ SENTRY_AUTH_TOKEN not set"
+          else
+            LEN=${#SENTRY_AUTH_TOKEN}
+            PREVIEW="${SENTRY_AUTH_TOKEN:0:4}...${SENTRY_AUTH_TOKEN: -4}"
+            echo "✅ Token present (length=$LEN, preview=$PREVIEW)"
+          fi
+
+          echo ""
+          cd apps/gurudevi-mobile
+          pnpm exec sentry-cli --version 2>&1 || echo "❌ sentry-cli not available"
+          echo ""
+          pnpm exec sentry-cli info 2>&1 || echo "⚠️ auth check failed"
+
+      - name: 🚀 Sentry sourcemap upload
+        if: steps.verify.outputs.available == 'true'
+        continue-on-error: true
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: intuitui-labs
+          SENTRY_PROJECT: gurudevi-mobile
+        run: |
+          if [ -z "$SENTRY_AUTH_TOKEN" ]; then
+            echo "❌ SENTRY_AUTH_TOKEN not set — skipping"
+            exit 0
+          fi
+
+          VERSION="${{ github.event.inputs.version }}"
+          VERSION_CODE="${{ github.event.inputs.version_code }}"
+          RELEASE="org.edlove.gurudevi@${VERSION}+${VERSION_CODE}"
+
+          echo "=== Sentry sourcemap upload ==="
+          echo "   Org     : intuitui-labs"
+          echo "   Project : gurudevi-mobile"
+          echo "   Release : $RELEASE"
+          echo "   Dist    : $VERSION_CODE"
+          echo ""
+
+          cd apps/gurudevi-mobile
+          pnpm exec sentry-cli sourcemaps upload \
+            --release "$RELEASE" \
+            --dist "$VERSION_CODE" \
+            /tmp/sentry-artifacts/index.android.bundle \
+            /tmp/sentry-artifacts/index.android.bundle.map \
+            2>&1
+
+          UPLOAD_EXIT=$?
+          echo ""
+          if [ $UPLOAD_EXIT -eq 0 ]; then
+            echo "✅ Upload complete"
+          else
+            echo "⚠️ Upload failed with exit code $UPLOAD_EXIT"
+          fi
+
+      # ── Summary ───────────────────────────────────────────────────────────
+      - name: 📋 Summary
+        if: always()
+        run: |
+          echo "=== Summary ==="
+          echo "Version      : ${{ github.event.inputs.version }}"
+          echo "versionCode  : ${{ github.event.inputs.version_code }}"
+          echo "Metro bundle : ${{ steps.metro.outcome }}"
+          echo "Artifacts    : ${{ steps.verify.outputs.available }}"
+          echo "Sentry upload: ${{ steps.sentry-upload.outcome }}"

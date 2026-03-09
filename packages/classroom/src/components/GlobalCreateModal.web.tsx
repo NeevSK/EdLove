@@ -25,13 +25,7 @@ import {
     Icon,
     Textarea
 } from '@repo/ui';
-import {
-    api,
-    supabase,
-    School,
-    handleAPIError,
-    growthSignalsAPI,
-} from '@repo/core';
+import { api, supabase, School, handleAPIError, growthSignalsAPI, identityAPI } from '@repo/core';
 import { communityAPI } from '@repo/community';
 import { useTranslation } from 'react-i18next';
 import {
@@ -106,8 +100,8 @@ export default function GlobalCreateModal({
         setError(null);
 
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) throw new Error('Not authenticated');
+            const userId = await identityAPI.getMyInternalId();
+            if (!userId) throw new Error('Not authenticated');
 
             let result;
             if (type === 'school') {
@@ -115,7 +109,7 @@ export default function GlobalCreateModal({
                 result = await api.founder.createSchool({
                     name: name.trim(),
                     type: schoolType,
-                    created_by: user.id
+                    created_by: userId
                 });
 
                 // 2. Create the Primary Sanctuary Group for this school
@@ -126,7 +120,7 @@ export default function GlobalCreateModal({
                         group_type: 'school',
                         join_policy: 'open',
                         school_id: result.id
-                    }, user.id);
+                    }, userId);
                 }
             } else if (type === 'classroom') {
                 // 1. Create the classroom
@@ -134,7 +128,7 @@ export default function GlobalCreateModal({
                     school_id: selectedSchoolId,
                     name: name.trim(),
                     grade_number: 1, // Default to 1
-                    created_by: user.id
+                    created_by: userId
                 });
 
                 // 2. Create the Class Sanctuary Group
@@ -146,7 +140,7 @@ export default function GlobalCreateModal({
                         join_policy: 'restricted',
                         school_id: selectedSchoolId,
                         classroom_id: result.id
-                    }, user.id);
+                    }, userId);
                 }
             } else if (type === 'group') {
                 // Use standard community logic to ensure owner assignment
@@ -156,12 +150,12 @@ export default function GlobalCreateModal({
                     school_id: selectedSchoolId,
                     group_type: 'general',
                     join_policy: 'open'
-                }, user.id);
+                }, userId);
             }
 
             // Growth signals — fire-and-forget
             if (type === 'classroom' && result) {
-                void growthSignalsAPI.emitSignal(user.id, 'classroom_created', {
+                void growthSignalsAPI.emitSignal(userId, 'classroom_created', {
                     classroom_id: result.id,
                     school_id: selectedSchoolId,
                 }).catch(() => { });

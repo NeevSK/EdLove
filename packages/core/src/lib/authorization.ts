@@ -12,6 +12,7 @@
  */
 
 import { supabase } from './supabase';
+import { identityAPI } from '../api/identity';
 import { APIError } from '../api/types';
 import { isDemo } from '../api/demo';
 
@@ -38,12 +39,21 @@ export async function requireAuth() {
     }
 
     const { data: { session }, error } = await supabase.auth.getSession();
-
     if (error || !session) {
         throw new APIError('Not authenticated', 'UNAUTHENTICATED');
     }
 
-    return session.user;
+    const internalId = await identityAPI.getMyInternalId();
+    if (!internalId) {
+        throw new APIError('Identity resolution failed', 'UNAUTHENTICATED');
+    }
+
+    // Return a minimal user-like object with the internal ID
+    return {
+        id: internalId,
+        email: session.user.email,
+        session_id: session.user.id // Keep the auth ID for reference if needed
+    } as any;
 }
 
 /**

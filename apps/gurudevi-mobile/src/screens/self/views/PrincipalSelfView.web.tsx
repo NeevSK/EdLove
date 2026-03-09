@@ -1,20 +1,10 @@
-/**
- * PrincipalSelfView.web.tsx
- *
- * Personal wellbeing sanctuary for principals on web.
- * Scope: Mood · Energy · Decision Journal · Leadership Wisdom
- *
- * Institutional features (school pulse, staff wellbeing) live in
- * PrincipalSchoolView (Classroom section) — not here.
- */
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore, supabase, schoolForestAPI } from '@repo/core';
 import type { SchoolForestState } from '@repo/core';
 import { useSchoolPulse } from '@repo/profile';
-import { useMoodLogs, useEnergyForecast, useDecisionJournal, useWisdom } from '@repo/self';
+import { useMoodLogs, useEnergyForecast, useDecisionJournal, useWisdom, VoiceJournaling } from '@repo/self';
 import { SkeletonCard } from '@repo/ui';
-import { useNavigation } from '@react-navigation/native';
 import {
     Battery,
     Activity,
@@ -24,19 +14,22 @@ import {
     Zap,
     TrendingUp,
     Heart,
-    Plus,
+    MessageSquare,
+    Users,
     Building
 } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
 import {
-    MOOD_LABELS,
-    MOOD_COLORS,
-    ENERGY_COLORS,
     EnergyBarChart,
     WarmMirrorCard,
     ImpactRipplesCard,
     useWellbeingEnrichment,
-} from './selfViewShared';
+    BaseSelfView,
+    MoodPickerCard,
+    MOOD_COLORS,
+    ENERGY_COLORS,
+    MOOD_LABELS
+} from '@repo/self';
 import { SanctuaryTabBar } from '../../../components/web/SanctuaryTabBar';
 import type { SanctuaryTab } from '../../../components/web/SanctuaryTabBar';
 
@@ -44,7 +37,6 @@ type ActivePanel = 'pulse' | 'energy' | 'decisions' | 'wisdom' | 'monthly';
 
 export default function PrincipalSelfViewWeb() {
     const { t } = useTranslation();
-    const navigation = useNavigation<any>();
     const { user } = useStore();
     const { userId } = useUserRole();
     const schoolId = user?.school_id ?? '';
@@ -53,30 +45,29 @@ export default function PrincipalSelfViewWeb() {
     const [newDecision, setNewDecision] = useState('');
     const [addingDecision, setAddingDecision] = useState(false);
     const [forest, setForest] = useState<SchoolForestState | null>(null);
+    const [showMoodPicker, setShowMoodPicker] = useState(false);
+    const [savingMood, setSavingMood] = useState(false);
 
     // Warm Mirror + Impact Ripples via shared hook
     const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
 
     // ── Personal wellbeing hooks ─────────────────────────────────────────
-    const { moodHistory, isLoading: moodLoading } = useMoodLogs(userId ?? undefined);
+    const { moodHistory, isLoading: moodLoading, addMoodLog } = useMoodLogs(userId ?? undefined);
     const { forecasts, isLoading: energyLoading } = useEnergyForecast(userId ?? undefined);
     const { decisions, isLoading: decisionLoading, refreshData: refreshDecisions } = useDecisionJournal(userId ?? undefined);
     const { notes: wisdomNotes, isLoading: wisdomLoading } = useWisdom(userId ?? undefined);
 
-    // School pulse — lightweight contextual nudge only, not full school view
+    // School pulse — lightweight contextual nudge only
     const { pulse, loading: pulseLoading } = useSchoolPulse(schoolId || undefined);
 
     const latestMood = moodHistory[0];
-    const todayForecast = forecasts[0];
+    const energyBars = forecasts.slice(0, 7).reverse();
 
     // School Forest — compassionate overview of teacher tree health
     React.useEffect(() => {
         if (!schoolId) return;
-        schoolForestAPI.getForestOverview(schoolId).then(f => setForest(f)).catch(() => {});
+        schoolForestAPI.getForestOverview(schoolId).then(f => setForest(f)).catch(() => { });
     }, [schoolId]);
-
-    // Warm Mirror — weekly narrative for the principal
-    // (now handled by useWellbeingEnrichment above — no separate useEffect needed)
 
     const handleAddDecision = async () => {
         if (!newDecision.trim() || !userId) return;
@@ -97,217 +88,140 @@ export default function PrincipalSelfViewWeb() {
         }
     };
 
-    // ── Feature tabs ─────────────────────────────────────────────────────
     const TABS: SanctuaryTab<ActivePanel>[] = [
-        { id: 'pulse',     icon: Activity,  label: 'Personal Pulse' },
-        { id: 'energy',    icon: Battery,   label: 'Energy' },
-        { id: 'decisions', icon: BookOpen,  label: 'Decisions' },
-        { id: 'wisdom',    icon: Lightbulb, label: 'Wisdom' },
-        { id: 'monthly',   icon: Calendar,  label: 'Reflection' },
+        { id: 'pulse', icon: Activity, label: 'Personal Pulse' },
+        { id: 'energy', icon: Battery, label: 'Energy' },
+        { id: 'decisions', icon: BookOpen, label: 'Decisions' },
+        { id: 'wisdom', icon: Lightbulb, label: 'Wisdom' },
+        { id: 'monthly', icon: Calendar, label: 'Reflection' },
     ];
 
-    return (
-        <div className="sub-view-container">
-            {/* ── LEFT: Main Content ─────────────────────────── */}
-            <div className="content-scroll-area">
-                {/* Greeting */}
-                <div className="greeting" style={{ marginBottom: '32px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                        <div style={{ padding: '8px', background: 'var(--moss-soft)', borderRadius: '8px', color: 'var(--moss)' }}>
-                            <Building size={18} />
-                        </div>
-                        <span style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--ink-ghost)' }}>
-                            Personal Sanctuary
-                        </span>
-                    </div>
-                    <h1 className="greeting-main">
-                        Leadership <span style={{ color: 'var(--moss)' }}>Resonance</span>.
-                    </h1>
-                    <p className="greeting-note">
-                        {user?.full_name
-                            ? `${user.full_name.split(' ')[0]}, your wellbeing is the foundation of your school's wellbeing.`
-                            : "Your wellbeing is the foundation of your school's wellbeing."}
-                    </p>
-                </div>
-
-                {/* Feature Tabs */}
-                <SanctuaryTabBar tabs={TABS} activeId={activePanel} onSelect={setActivePanel} />
-
-                {/* Active Panel */}
-                <div className="sanctuary-card">
-                    <div className="card-body-inner">
-                        {activePanel === 'pulse' && <PulsePanel latestMood={latestMood} moodLoading={moodLoading} />}
-                        {activePanel === 'energy' && <EnergyPanel forecasts={forecasts} energyLoading={energyLoading} />}
-                        {activePanel === 'decisions' && (
-                            <DecisionsPanel
-                                decisions={decisions}
-                                decisionLoading={decisionLoading}
-                                newDecision={newDecision}
-                                setNewDecision={setNewDecision}
-                                onAdd={handleAddDecision}
-                                addingDecision={addingDecision}
-                            />
-                        )}
-                        {activePanel === 'wisdom' && <WisdomPanel notes={wisdomNotes} wisdomLoading={wisdomLoading} />}
-                        {activePanel === 'monthly' && <MonthlyPanel moodHistory={moodHistory} decisions={decisions} />}
-                    </div>
-                </div>
+    // ── Personal Layer: The core sanctuary for the person ────────────────
+    const personalLayer = (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            {/* Energy Pulse Visualizer */}
+            <div className="sanctuary-card" style={{ padding: '40px', background: 'var(--background-alt)' }}>
+                <h2 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '8px' }}>Energy Pulse</h2>
+                <p style={{ fontSize: '14px', color: 'var(--ink-ghost)', marginBottom: '24px' }}>
+                    Your personal leadership capacity — the foundation of your impact.
+                </p>
+                {energyLoading ? (
+                    <SkeletonCard />
+                ) : (
+                    <EnergyBarChart bars={energyBars} colors={MOOD_COLORS} />
+                )}
             </div>
 
-            {/* ── RIGHT: Status Sidebar ──────────────────────── */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                {/* Today's State Card */}
-                <div className="sanctuary-card" style={{ background: 'var(--moss)', color: 'white' }}>
-                    <div className="card-body-inner">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                            <Heart size={18} />
-                            <h3 style={{ fontSize: '14px', fontWeight: '800', margin: 0, textTransform: 'uppercase', letterSpacing: '1px' }}>Today's State</h3>
-                        </div>
-                        {moodLoading ? (
-                            <p style={{ fontSize: '13px', opacity: 0.8 }}>Loading…</p>
-                        ) : latestMood ? (
-                            <>
-                                <div style={{ fontSize: '32px', fontWeight: '800', marginBottom: '4px' }}>
-                                    {MOOD_LABELS[latestMood.mood_score]}
-                                </div>
-                                <div style={{ fontSize: '13px', opacity: 0.8, marginBottom: '8px' }}>{latestMood.mood_score}/5 energy</div>
-                                {latestMood.note && (
-                                    <p style={{ fontSize: '12px', opacity: 0.7, lineHeight: '1.5', fontStyle: 'italic', marginBottom: '8px' }}>
-                                        "{latestMood.note}"
-                                    </p>
-                                )}
-                                <div style={{ fontSize: '10px', opacity: 0.5 }}>
-                                    {formatDistanceToNow(new Date(latestMood.created_at), { addSuffix: true })}
-                                </div>
-                            </>
-                        ) : (
-                            <p style={{ fontSize: '13px', opacity: 0.8 }}>No mood logged today yet.</p>
-                        )}
-                    </div>
-                </div>
-
-                {/* School Resonance Nudge — lightweight reference only */}
-                {!pulseLoading && pulse && (
-                    <div className="sanctuary-card">
-                        <div className="card-body-inner">
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-                                <TrendingUp size={16} color="var(--lotus)" />
-                                <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', margin: 0 }}>
-                                    School Resonance
-                                </h3>
-                            </div>
-                            <div style={{ fontSize: '28px', fontWeight: '800', marginBottom: '4px' }}>
-                                {Math.round(pulse.resonance_score)}%
-                            </div>
-                            <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', textTransform: 'capitalize', marginBottom: '12px' }}>
-                                {pulse.trend} · {pulse.aggregated_mood}
-                            </div>
-                            <div style={{ height: '4px', background: 'var(--border)', borderRadius: '2px' }}>
-                                <div style={{ width: `${pulse.resonance_score}%`, height: '100%', background: 'var(--lotus)', borderRadius: '2px', transition: 'width 0.6s' }} />
-                            </div>
-                            <p style={{ fontSize: '11px', color: 'var(--ink-ghost)', marginTop: '8px' }}>
-                                Visit <strong>Classroom</strong> for the full institutional view.
-                            </p>
-                        </div>
-                    </div>
-                )}
-
-                {/* Today's Energy */}
-                {!energyLoading && todayForecast && (
-                    <div className="sanctuary-card">
-                        <div className="card-body-inner">
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-                                <Zap size={16} color={ENERGY_COLORS[todayForecast.energy_level ?? 3]} />
-                                <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', margin: 0 }}>
-                                    Energy Today
-                                </h3>
-                            </div>
-                            <div style={{ fontSize: '28px', fontWeight: '800', color: ENERGY_COLORS[todayForecast.energy_level ?? 3], marginBottom: '8px' }}>
-                                {todayForecast.energy_level ?? '—'}/5
-                            </div>
-                            {todayForecast.notes && (
-                                <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.5', fontStyle: 'italic' }}>
-                                    "{todayForecast.notes}"
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {/* Quick Decision Log */}
-                <div className="sanctuary-card">
-                    <div className="card-body-inner">
-                        <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '12px' }}>
-                            Quick Decision
-                        </h3>
-                        <textarea
-                            value={newDecision}
-                            onChange={e => setNewDecision(e.target.value)}
-                            placeholder="Record a key decision…"
-                            style={{ width: '100%', minHeight: '80px', borderRadius: '10px', border: '1px solid var(--border)', padding: '10px 12px', fontSize: '13px', resize: 'vertical', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'inherit', boxSizing: 'border-box' }}
-                        />
-                        <button
-                            onClick={handleAddDecision}
-                            disabled={addingDecision || !newDecision.trim()}
-                            style={{ marginTop: '10px', padding: '8px 16px', borderRadius: '8px', background: 'var(--moss)', color: 'white', border: 'none', fontWeight: '700', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', opacity: addingDecision || !newDecision.trim() ? 0.6 : 1 }}
-                        >
-                            <Plus size={14} /> {addingDecision ? 'Logging…' : 'Log Decision'}
-                        </button>
-                    </div>
-                </div>
-
-                {/* School Forest — compassionate teacher tree health */}
-                {forest && forest.trees.length > 0 && (
-                    <div className="sanctuary-card">
-                        <div className="card-body-inner">
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                                <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>
-                                    School Forest 🌳
-                                </h3>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <span style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>
-                                        {forest.forest_weather === 'radiant' ? '☀️' : forest.forest_weather === 'lush' ? '🌿' : forest.forest_weather === 'resting' ? '🌙' : forest.forest_weather === 'steady' ? '⛅' : forest.forest_weather === 'quiet' ? '🌫️' : '🌤'} {forest.forest_weather}
-                                    </span>
-                                    <button
-                                        onClick={() => navigation.navigate('SchoolForest')}
-                                        style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', fontWeight: '700', color: 'var(--moss)', fontFamily: 'var(--font-body)', padding: 0 }}
-                                    >
-                                        View all →
-                                    </button>
-                                </div>
-                            </div>
-                            <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginBottom: '12px', lineHeight: '1.5' }}>
-                                {forest.forest_narrative_en}
-                            </p>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                {forest.trees.slice(0, 6).map(tree => {
-                                    const healthEmoji: Record<string, string> = {
-                                        seedling: '🌱', growing: '🌿', flourishing: '🌳', flowering: '🌸', ancient: '🪵'
-                                    };
-                                    return (
-                                        <div key={tree.user_id} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', padding: '6px 10px', borderRadius: '8px', background: tree.needs_rain ? 'rgba(231,76,60,0.06)' : 'var(--background-alt)', border: tree.needs_rain ? '1px solid rgba(231,76,60,0.2)' : 'none' }}>
-                                            <span style={{ fontSize: '16px' }}>{healthEmoji[tree.tree_health] ?? '🌱'}</span>
-                                            <span style={{ flex: 1, color: 'var(--ink)' }}>{tree.tree_health}</span>
-                                            {tree.needs_rain && <span style={{ fontSize: '10px', color: '#c0392b' }}>needs care</span>}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Impact Ripples */}
-                <ImpactRipplesCard ripples={ripples} />
-
-                {/* Warm Mirror */}
-                <WarmMirrorCard text={warmMirrorText} />
+            {/* Voice Journaling — RESTORED to Principal for self-care */}
+            <div className="sanctuary-card interactive" style={{ padding: '32px' }}>
+                <div style={{ marginBottom: '16px', color: 'var(--lotus)' }}><MessageSquare size={24} /></div>
+                <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px' }}>Leadership Unburdening</h3>
+                <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginBottom: '20px' }}>
+                    Speak the truths that you can't share in the boardroom. A private space for your internal voice.
+                </p>
+                <VoiceJournaling userId={userId} onComplete={() => { }} />
             </div>
         </div>
     );
+
+    // ── Working Layer: Leadership reflections (The Porch) ──────────────────
+    const workingLayer = (
+        <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
+                <Building size={16} color="var(--ink-ghost)" />
+                <h2 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>leadership Resonance</h2>
+            </div>
+
+            <SanctuaryTabBar
+                tabs={TABS}
+                activeId={activePanel}
+                onSelect={(id) => setActivePanel(id as ActivePanel)}
+            />
+
+            <div className="sanctuary-card" style={{ marginTop: '24px' }}>
+                <div style={{ padding: '32px' }}>
+                    {activePanel === 'pulse' && <PulsePanel latestMood={latestMood} moodLoading={moodLoading} />}
+                    {activePanel === 'energy' && <EnergyPanel forecasts={forecasts} energyLoading={energyLoading} />}
+                    {activePanel === 'decisions' && (
+                        <DecisionsPanel
+                            decisions={decisions}
+                            decisionLoading={decisionLoading}
+                            newDecision={newDecision}
+                            setNewDecision={setNewDecision}
+                            onAdd={handleAddDecision}
+                            addingDecision={addingDecision}
+                        />
+                    )}
+                    {activePanel === 'wisdom' && <WisdomPanel notes={wisdomNotes} wisdomLoading={wisdomLoading} />}
+                    {activePanel === 'monthly' && <MonthlyPanel moodHistory={moodHistory} decisions={decisions} />}
+                </div>
+            </div>
+        </div>
+    );
+
+    // ── Sidebar: Mirrors of Impact ──────────────────────────────────────────
+    const sideBar = (
+        <>
+            {/* Mood Resonance */}
+            <MoodPickerCard
+                isOpen={showMoodPicker}
+                onToggle={() => setShowMoodPicker(v => !v)}
+                onSelect={async (mood, note) => {
+                    setSavingMood(true);
+                    try {
+                        await addMoodLog(mood, note || undefined);
+                        setShowMoodPicker(false);
+                    } finally {
+                        setSavingMood(false);
+                    }
+                }}
+                isSaving={savingMood}
+                latestMood={latestMood}
+                isLoading={moodLoading}
+                accent="dark"
+            />
+
+            {/* School Resonance Nudge — Relational Mirror */}
+            {!pulseLoading && pulse && (
+                <div className="sanctuary-card" style={{ padding: '24px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                        <TrendingUp size={16} color="var(--lotus)" />
+                        <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', margin: 0 }}>
+                            Relational Pulse
+                        </h3>
+                    </div>
+                    <div style={{ fontSize: '28px', fontWeight: '800', marginBottom: '4px' }}>
+                        {Math.round(pulse.resonance_score)}%
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', textTransform: 'capitalize', marginBottom: '12px' }}>
+                        {pulse.trend} · {pulse.aggregated_mood}
+                    </div>
+                    <div style={{ height: '4px', background: 'var(--border)', borderRadius: '2px' }}>
+                        <div style={{ width: `${pulse.resonance_score}%`, height: '100%', background: 'var(--lotus)', borderRadius: '2px', transition: 'width 0.6s' }} />
+                    </div>
+                </div>
+            )}
+
+            {/* Impact Ripples */}
+            <ImpactRipplesCard ripples={ripples} />
+
+            {/* Warm Mirror */}
+            <WarmMirrorCard text={warmMirrorText} />
+        </>
+    );
+
+    return (
+        <BaseSelfView
+            role="principal"
+            personalLayer={personalLayer}
+            workingLayer={workingLayer}
+            sideBar={sideBar}
+            description={t('principal.sanctuaryDesc', "Your wellbeing is the foundation of your school's wellbeing.")}
+        />
+    );
 }
 
-// ── Sub-panels ───────────────────────────────────────────────────────────────
+// ── Sub-panels (Extracted from original for cleanliness) ──────────────────────
 
 function PulsePanel({ latestMood, moodLoading }: { latestMood: any; moodLoading: boolean }) {
     if (moodLoading) return <SkeletonCard />;
@@ -332,7 +246,7 @@ function PulsePanel({ latestMood, moodLoading }: { latestMood: any; moodLoading:
                     )}
                 </div>
             ) : (
-                <p style={{ color: 'var(--ink-ghost)', fontSize: '14px' }}>No mood logged yet. Use the mobile app to log your first check-in.</p>
+                <p style={{ color: 'var(--ink-ghost)', fontSize: '14px' }}>No mood logged yet.</p>
             )}
         </div>
     );
@@ -343,11 +257,8 @@ function EnergyPanel({ forecasts, energyLoading }: { forecasts: any[]; energyLoa
     return (
         <div>
             <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px' }}>Energy Forecast</h2>
-            <p style={{ fontSize: '14px', color: 'var(--ink-ghost)', marginBottom: '24px' }}>
-                Your personal energy rhythm — know when you are at peak leadership capacity.
-            </p>
             {forecasts.length === 0 ? (
-                <p style={{ color: 'var(--ink-ghost)', fontSize: '14px' }}>No energy data yet. Log your energy levels in the mobile app.</p>
+                <p style={{ color: 'var(--ink-ghost)', fontSize: '14px' }}>No energy data yet.</p>
             ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     {forecasts.slice(0, 7).map((f: any) => (
@@ -370,7 +281,6 @@ function EnergyPanel({ forecasts, energyLoading }: { forecasts: any[]; energyLoa
 }
 
 function DecisionsPanel({ decisions, decisionLoading, newDecision, setNewDecision, onAdd, addingDecision }: { decisions: any[]; decisionLoading: boolean; newDecision: string; setNewDecision: (v: string) => void; onAdd: () => void; addingDecision: boolean }) {
-    if (decisionLoading) return <SkeletonCard />;
     return (
         <div>
             <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px' }}>Decision Journal</h2>
@@ -391,7 +301,7 @@ function DecisionsPanel({ decisions, decisionLoading, newDecision, setNewDecisio
                     {addingDecision ? '…' : 'Log'}
                 </button>
             </div>
-            {decisions.length === 0 ? (
+            {decisionLoading ? <SkeletonCard /> : decisions.length === 0 ? (
                 <p style={{ color: 'var(--ink-ghost)', fontSize: '14px' }}>No decisions logged yet.</p>
             ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -400,7 +310,6 @@ function DecisionsPanel({ decisions, decisionLoading, newDecision, setNewDecisio
                             <div style={{ fontSize: '14px', lineHeight: '1.6', marginBottom: '6px' }}>{d.decision_text}</div>
                             <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>
                                 {formatDistanceToNow(new Date(d.created_at), { addSuffix: true })}
-                                {d.context && <span style={{ marginLeft: '8px', padding: '2px 8px', background: 'var(--border)', borderRadius: '4px' }}>{d.context}</span>}
                             </div>
                         </div>
                     ))}
@@ -415,21 +324,13 @@ function WisdomPanel({ notes, wisdomLoading }: { notes: any[]; wisdomLoading: bo
     return (
         <div>
             <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px' }}>Leadership Wisdom</h2>
-            <p style={{ fontSize: '14px', color: 'var(--ink-ghost)', marginBottom: '24px' }}>Your curated treasury of insights, principles, and leadership philosophy.</p>
             {notes.length === 0 ? (
-                <p style={{ color: 'var(--ink-ghost)', fontSize: '14px' }}>No wisdom notes yet. Add your first insight from the mobile app.</p>
+                <p style={{ color: 'var(--ink-ghost)', fontSize: '14px' }}>No wisdom notes yet.</p>
             ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(240px, 100%), 1fr))', gap: '16px' }}>
                     {notes.slice(0, 6).map((note: any) => (
                         <div key={note.id} style={{ padding: '20px 24px', background: 'var(--background-alt)', borderRadius: '14px' }}>
-                            <p style={{ fontSize: '14px', fontStyle: 'italic', lineHeight: '1.6', margin: '0 0 8px' }}>"{note.insight}"</p>
-                            {note.tags && note.tags.length > 0 && (
-                                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                                    {note.tags.map((tag: string) => (
-                                        <span key={tag} style={{ padding: '2px 8px', background: 'var(--border)', borderRadius: '4px', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--ink-ghost)' }}>{tag}</span>
-                                    ))}
-                                </div>
-                            )}
+                            <p style={{ fontSize: '14px', fontStyle: 'italic', lineHeight: '1.6', margin: '0' }}>"{note.insight}"</p>
                         </div>
                     ))}
                 </div>
@@ -452,7 +353,6 @@ function MonthlyPanel({ moodHistory, decisions }: { moodHistory: any[]; decision
     return (
         <div>
             <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px' }}>Monthly Reflection — {thisMonth}</h2>
-            <p style={{ fontSize: '14px', color: 'var(--ink-ghost)', marginBottom: '24px' }}>A bird's-eye view of your personal leadership month.</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
                 {[
                     { label: 'Mood Check-ins', value: String(monthMoods.length), color: 'var(--lotus)' },
@@ -465,18 +365,6 @@ function MonthlyPanel({ moodHistory, decisions }: { moodHistory: any[]; decision
                     </div>
                 ))}
             </div>
-            {monthDecisions.length > 0 && (
-                <div>
-                    <h3 style={{ fontSize: '13px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '12px' }}>This Month's Decisions</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        {monthDecisions.slice(0, 5).map((d: any) => (
-                            <div key={d.id} style={{ padding: '12px 16px', background: 'var(--background-alt)', borderRadius: '10px', fontSize: '13px', lineHeight: '1.5' }}>
-                                {d.decision_text}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

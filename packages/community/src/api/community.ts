@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core';
+import { supabase, identityAPI } from '@repo/core';
 import { CommunityPost, CommunityGroup, Group, Post, Comment } from '../types';
 
 /**
@@ -232,12 +232,12 @@ export const communityAPI = {
      * Send a message to a group chat.
      */
     async sendGroupMessage(groupId: string, content: string) {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error('Not authenticated');
+        const userId = await identityAPI.getMyInternalId();
+        if (!userId) throw new Error('Not authenticated');
 
         const { data, error } = await supabase
             .from('group_messages')
-            .insert([{ group_id: groupId, author_id: user.id, content: content.trim() }])
+            .insert([{ group_id: groupId, author_id: userId, content: content.trim() }])
             .select('*, author:users!group_messages_author_id_fkey(full_name, avatar_url)')
             .single();
 
@@ -419,8 +419,8 @@ export const communityAPI = {
      * Get all active direct conversations for the current user.
      */
     async getDirectConversations() {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error('Not authenticated');
+        const userId = await identityAPI.getMyInternalId();
+        if (!userId) throw new Error('Not authenticated');
 
         const { data, error } = await supabase
             .from('direct_conversations')
@@ -429,14 +429,14 @@ export const communityAPI = {
                 user1:users!direct_conversations_user1_id_fkey(full_name, avatar_url),
                 user2:users!direct_conversations_user2_id_fkey(full_name, avatar_url)
             `)
-            .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
+            .or(`user1_id.eq.${userId},user2_id.eq.${userId}`)
             .order('updated_at', { ascending: false });
 
         if (error) throw error;
 
         // Transform to return the "other" participant's info easily
         return (data || []).map((conv: any) => {
-            const otherUser = conv.user1_id === user.id ? conv.user2 : conv.user1;
+            const otherUser = conv.user1_id === userId ? conv.user2 : conv.user1;
             return {
                 ...conv,
                 other_user_name: otherUser?.full_name || 'Anonymous User',
@@ -477,14 +477,14 @@ export const communityAPI = {
      * Send a direct message.
      */
     async sendDirectMessage(conversationId: string, content: string) {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error('Not authenticated');
+        const userId = await identityAPI.getMyInternalId();
+        if (!userId) throw new Error('Not authenticated');
 
         const { data, error } = await supabase
             .from('direct_messages')
             .insert([{
                 conversation_id: conversationId,
-                author_id: user.id,
+                author_id: userId,
                 content: content.trim()
             }])
             .select('*, author:users!direct_messages_author_id_fkey(full_name, avatar_url)')

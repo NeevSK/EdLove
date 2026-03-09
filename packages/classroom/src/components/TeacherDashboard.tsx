@@ -32,7 +32,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { useFeatureAccess, useStore, ClassroomStackParamList, api, supabase, onboardingAPI, FlowResolver } from '@repo/core';
+import { useFeatureAccess, useStore, ClassroomStackParamList, api, supabase, onboardingAPI, FlowResolver, identityAPI } from '@repo/core';
 import ClassroomList from './ClassroomList';
 import CreateClassroomModal from './CreateClassroomModal';
 import { ScannerModal, resolveQR } from '@repo/scanner-kit';
@@ -100,12 +100,12 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
         const { payload } = result;
 
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+            const userId = await identityAPI.getMyInternalId();
+            if (!userId) return;
 
             if (payload.action === 'join_class') {
                 // Use FlowResolver to safely join (role-aware, no ownership overwrite)
-                const flowResult = await FlowResolver.resolveQR(payload, user.id);
+                const flowResult = await FlowResolver.resolveQR(payload, userId);
                 if (flowResult.outcome === 'success') {
                     setRefreshTrigger(prev => prev + 1);
                     showToast({ message: 'Joined classroom!', type: 'success' });

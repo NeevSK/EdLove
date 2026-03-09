@@ -83,7 +83,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
             if (id) {
                 setCurrentUserId(id);
                 // For name, we can try to fetch the profile name or keep it fallback
-                const { data: { user } } = await supabase.auth.getUser();
+                const userId = await identityAPI.getMyInternalId();
                 setCurrentUserName(user?.user_metadata?.full_name ?? user?.email ?? '');
             }
         });

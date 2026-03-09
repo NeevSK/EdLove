@@ -17,13 +17,7 @@ import {
     useTheme,
 } from '@repo/ui';
 import { Theme } from '@repo/ui';
-import {
-    api,
-    supabase,
-    SRI_LANKAN_SUBJECTS_BY_LEVEL,
-    SYLLABUS_VERSIONS,
-    CLASSROOM_THEMES
-} from '@repo/core';
+import { api, supabase, SRI_LANKAN_SUBJECTS_BY_LEVEL, SYLLABUS_VERSIONS, CLASSROOM_THEMES, identityAPI } from '@repo/core';
 import { communityAPI } from '@repo/community';
 import { useTranslation } from 'react-i18next';
 import { hapticLight, hapticSuccess, Textarea } from '@repo/ui';
@@ -111,13 +105,13 @@ export default function CreateClassroomModal({
 
     const fetchInitialData = async () => {
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+            const userId = await identityAPI.getMyInternalId();
+            if (!userId) return;
 
             const { data: userData } = await supabase
                 .from('users')
                 .select('school_id')
-                .eq('id', user.id)
+                .eq('id', userId)
                 .single();
 
             if (userData?.school_id) {
@@ -196,8 +190,8 @@ export default function CreateClassroomModal({
         hapticLight();
 
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) throw new Error('Not authenticated');
+            const userId = await identityAPI.getMyInternalId();
+            if (!userId) throw new Error('Not authenticated');
 
             let result;
             if (mode === 'join') {
@@ -207,14 +201,14 @@ export default function CreateClassroomModal({
                     return;
                 }
                 result = await api.classrooms.update(selectedClassroomId, {
-                    teacher_id: user.id
+                    teacher_id: userId
                 });
             } else {
                 result = await api.classrooms.create({
                     name: name.trim(),
                     subject: subject.trim(),
                     school_id: schoolId,
-                    teacher_id: user.id,
+                    teacher_id: userId,
                     grade_id: selectedGradeId || null,
                     section_id: selectedSectionId || null,
                     color_theme: themeId,
@@ -231,7 +225,7 @@ export default function CreateClassroomModal({
                         join_policy: 'approval_required',
                         school_id: schoolId,
                         classroom_id: result.id
-                    }, user.id);
+                    }, userId);
                 }
             }
 

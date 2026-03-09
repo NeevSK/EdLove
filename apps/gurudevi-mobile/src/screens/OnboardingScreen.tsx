@@ -32,7 +32,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
     // fetch name and jump to Role step (Step 1).
     React.useEffect(() => {
         const checkExistingAuth = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
+            const userId = await identityAPI.getMyInternalId();
             if (user) {
                 const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || '';
                 if (displayName) {
@@ -105,7 +105,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
         setIsCompleting(true);
         try {
             const internalId = await identityAPI.getMyInternalId();
-            const { data: { user } } = await supabase.auth.getUser();
+            const userId = await identityAPI.getMyInternalId();
             if (!internalId || !user) throw new Error('No identity found');
 
             hapticSuccess();

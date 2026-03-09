@@ -1,6 +1,6 @@
 import { VStack, Heading, Text, Button, ButtonText, Box, useToast, Toast, ToastTitle, ToastDescription } from '@repo/ui';
 import { useThemedColors, Theme } from '@repo/ui';
-import { supabase } from '@repo/core';
+import { supabase, identityAPI } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
@@ -22,9 +22,9 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
 
     const handleJoin = async () => {
         try {
-            const { data: { session } } = await supabase.auth.getSession();
+            const userId = await identityAPI.getMyInternalId();
 
-            if (session?.user) {
+            if (userId) {
                 // In a real app, we would update the user's role in the database
                 const { error } = await supabase
                     .from('users')
@@ -34,7 +34,7 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
                         onboarding_completed: true,
                         onboarding_completed_at: new Date().toISOString()
                     })
-                    .eq('id', session.user.id);
+                    .eq('id', userId);
 
                 if (error) {
                     console.error('Database update error:', error);

@@ -66,23 +66,25 @@ export const identityAPI = {
     async getMyInternalId(): Promise<string | null> {
         if (cachedInternalId) return cachedInternalId;
 
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data } = await supabase.auth.getUser();
+        const user = data?.user;
         if (!user) return null;
+        const userId = user.id;
 
         // Try to resolve from auth_identities
-        const internalId = await this.resolveInternalId('supabase', user.id);
+        const internalId = await this.resolveInternalId('supabase', userId);
 
         // Fallback: If not found in auth_identities, check if public.users has it (legacy sync)
         if (!internalId) {
             const { data: legacyUser } = await supabase
                 .from('users')
                 .select('id')
-                .eq('id', user.id)
+                .eq('id', userId)
                 .maybeSingle();
 
             if (legacyUser) {
                 // Proactively heal the state by creating the missing identity mapping
-                await this.linkIdentity(legacyUser.id, 'supabase', user.id);
+                await this.linkIdentity(legacyUser.id, 'supabase', userId);
                 cachedInternalId = legacyUser.id;
                 return legacyUser.id;
             }
