@@ -24,6 +24,8 @@ import {
     MOOD_LABELS,
     MOOD_COLORS,
     ENERGY_COLORS,
+    MoodLotus,
+    ResonancePatternCard,
 } from '@repo/self';
 import {
     Compass,
@@ -134,12 +136,18 @@ export default function FounderSelfViewWeb() {
                 <h2 style={{ fontSize: '16px', fontWeight: '800', marginBottom: '20px' }}>Energy Pulse</h2>
                 {energyLoading ? <SkeletonCard /> : <EnergyBarChart bars={energyBars} colors={MOOD_COLORS} />}
             </div>
+
+            {/* Mood Lotus — bloom visualizer + breath guide */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <MoodLotus userId={userId ?? undefined} />
+            </div>
         </div>
     );
 
-    // ── workingLayer: vision alignment, philosophy, tabbed exploration ───
+    // ── workingLayer: vision alignment, philosophy, tabbed exploration + resonance ───
     const workingLayer = (
-        <div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+            <div>
             <SanctuaryTabBar tabs={TABS} activeId={activePanel} onSelect={setActivePanel} />
             <div className="sanctuary-card" style={{ marginTop: '24px' }}>
                 <div className="card-body-inner">
@@ -166,10 +174,16 @@ export default function FounderSelfViewWeb() {
                     )}
                 </div>
             </div>
-        </div>
-    );
+            </div>
 
-    // ── sideBar: mood picker, energy snapshot, mirrors, context nudge ────
+            {/* Resonance Pattern — behavioral fingerprint */}
+            <ResonancePatternCard
+                orientationSeeds={(user as any)?.orientation_seeds ?? null}
+                moodLogs={moodHistory}
+                energyForecasts={forecasts}
+            />
+        </div>
+    );: mood picker, energy snapshot, mirrors, context nudge ────
     const sideBar = (
         <>
             <MoodPickerCard

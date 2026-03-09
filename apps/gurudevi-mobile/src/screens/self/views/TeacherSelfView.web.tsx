@@ -4,7 +4,7 @@ import { useUserRole, useStore, naturePathsAPI } from '@repo/core';
 import type { BanyanStage } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { SkeletonCard } from '@repo/ui';
-import { useMoodLogs, useJournalEntries, useEnergyForecast, VoiceJournaling } from '@repo/self';
+import { useMoodLogs, useJournalEntries, useEnergyForecast, VoiceJournaling, FireJournal, MoodLotus, DailyRhythm } from '@repo/self';
 import {
     Activity,
     MessageSquare,
@@ -132,6 +132,16 @@ export default function TeacherSelfViewWeb() {
                     <VoiceJournaling userId={userId ?? undefined} onComplete={() => { }} />
                 </div>
             </div>
+
+            {/* Mood Lotus — bloom visualizer + breath guide */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <MoodLotus userId={userId ?? undefined} />
+            </div>
+
+            {/* Fire Journal — cathartic release */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <FireJournal userId={userId ?? undefined} />
+            </div>
         </div>
     );
 
@@ -141,6 +151,13 @@ export default function TeacherSelfViewWeb() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Flame size={16} color="var(--ink-ghost)" />
                 <h2 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>Professional Resonance</h2>
+            </div>
+
+            {/* Daily Rhythm — weekly timetable */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <DailyRhythm />
+                </div>
             </div>
 
             {/* Nature Path — Banyan badge */}

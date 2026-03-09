@@ -16,6 +16,11 @@ import {
     ImpactRipplesCard,
     MOOD_COLORS,
     VoiceJournaling,
+    MoodLotus,
+    WisdomSeeds,
+    ProgressTree,
+    MyGradesView,
+    WindDownRitual,
 } from '@repo/self';
 import type { Goal } from '@repo/self';
 import { useNavigation } from '@react-navigation/native';
@@ -138,6 +143,16 @@ export default function StudentSelfViewWeb() {
             <div className="sanctuary-card" style={{ padding: '32px', background: 'var(--background-alt)' }}>
                 <h2 style={{ fontSize: '16px', fontWeight: '800', marginBottom: '20px' }}>Energy Pulse</h2>
                 {energyLoading ? <SkeletonCard /> : <EnergyBarChart bars={energyBars} colors={MOOD_COLORS} />}
+            </div>
+
+            {/* Mood Lotus — bloom visualizer + breath guide */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <MoodLotus userId={userId ?? undefined} />
+            </div>
+
+            {/* Wisdom Seeds */}
+            <div className="sanctuary-card" style={{ padding: '28px' }}>
+                <WisdomSeeds userId={userId ?? undefined} />
             </div>
 
             {/* Reflective Journal */}
@@ -275,6 +290,21 @@ export default function StudentSelfViewWeb() {
                     </div>
                 </div>
             )}
+
+            {/* Progress Tree — organic growth milestones */}
+            <div className="sanctuary-card" style={{ padding: '4px' }}>
+                <ProgressTree userId={userId ?? undefined} />
+            </div>
+
+            {/* My Grades */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <h2 style={{ fontSize: '16px', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        📋 Grades
+                    </h2>
+                    <MyGradesView userId={userId ?? undefined} />
+                </div>
+            </div>
         </div>
     );
 
@@ -314,6 +344,17 @@ export default function StudentSelfViewWeb() {
             {/* Mirrors */}
             <WarmMirrorCard text={warmMirrorText} />
             <ImpactRipplesCard ripples={ripples} />
+
+            {/* Wind-Down Ritual — evening sanctuary */}
+            <div className="sanctuary-card">
+                <div className="card-body-inner">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                        <span style={{ fontSize: '18px' }}>🌙</span>
+                        <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '1px', margin: 0 }}>Evening Wind-Down</h3>
+                    </div>
+                    <WindDownRitual userId={userId ?? undefined} />
+                </div>
+            </div>
 
             {/* Library quick-jumps */}
             <div className="sanctuary-card">

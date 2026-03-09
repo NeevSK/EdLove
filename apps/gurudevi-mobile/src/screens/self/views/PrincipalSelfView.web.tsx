@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore, supabase, schoolForestAPI } from '@repo/core';
 import type { SchoolForestState } from '@repo/core';
 import { useSchoolPulse } from '@repo/profile';
-import { useMoodLogs, useEnergyForecast, useDecisionJournal, useWisdom, VoiceJournaling } from '@repo/self';
+import { useMoodLogs, useEnergyForecast, useDecisionJournal, useWisdom, VoiceJournaling, ResonancePatternCard } from '@repo/self';
 import { SkeletonCard } from '@repo/ui';
 import {
     Battery,
@@ -156,6 +156,13 @@ export default function PrincipalSelfViewWeb() {
                     {activePanel === 'monthly' && <MonthlyPanel moodHistory={moodHistory} decisions={decisions} />}
                 </div>
             </div>
+
+            {/* Resonance Pattern Card — behavioral fingerprint */}
+            <ResonancePatternCard
+                orientationSeeds={(user as any)?.orientation_seeds ?? null}
+                moodLogs={moodHistory}
+                energyForecasts={forecasts}
+            />
         </div>
     );
 
