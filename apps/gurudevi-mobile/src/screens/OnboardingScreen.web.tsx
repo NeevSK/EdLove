@@ -45,9 +45,9 @@ const PILLARS = [
 ];
 
 const ROLES = [
-    { value: 'teacher', emoji: '🧑‍🏫', descKey: 'onboarding.roleDesc.teacher', descFallback: 'Manage classrooms & student wellbeing' },
-    { value: 'student', emoji: '🎒', descKey: 'onboarding.roleDesc.student', descFallback: 'Track learning & personal growth' },
-    { value: 'principal', emoji: '🏫', descKey: 'onboarding.roleDesc.principal', descFallback: 'Oversee school operations & staff' },
+    { value: 'teacher', emoji: '🧑‍🏫', descKey: 'onboarding.roleDesc.teacher' },
+    { value: 'student', emoji: '🎒', descKey: 'onboarding.roleDesc.student' },
+    { value: 'principal', emoji: '🏫', descKey: 'onboarding.roleDesc.principal' },
 ];
 
 const TOTAL_STEPS = 9;
@@ -260,15 +260,15 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                 <div className="ob-step">
                     <div className="ob-step-icon">👋</div>
                     <h2 className="ob-step-title">
-                        {t('onboarding.nameTitle') || 'Welcome! What should we call you?'}
+                        {t('onboarding.nameTitle')}
                     </h2>
                     <p className="ob-step-subtitle">
-                        {t('onboarding.nameSubtitle') || "Let's begin your sanctuary journey with a name."}
+                        {t('onboarding.nameSubtitle')}
                     </p>
                     <input
                         className="ob-input"
                         type="text"
-                        placeholder={t('onboarding.namePlaceholder') || 'Your name…'}
+                        placeholder={t('onboarding.namePlaceholder')}
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter' && name.trim()) handleNext(); }}
@@ -281,7 +281,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                             onClick={handleNext}
                             disabled={!name.trim()}
                         >
-                            {t('onboarding.continue') || 'Continue'} →
+                            {t('onboarding.continue')} →
                         </button>
                     </div>
                 </div>
@@ -294,10 +294,10 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                 <div className="ob-step">
                     <div className="ob-step-icon">🎯</div>
                     <h2 className="ob-step-title">
-                        {t('onboarding.roleTitle') || 'What is your role?'}
+                        {t('onboarding.roleTitle')}
                     </h2>
                     <p className="ob-step-subtitle">
-                        {t('onboarding.roleSubtitle') || 'Choose the role that fits your journey in the sanctuary.'}
+                        {t('onboarding.roleSubtitle')}
                     </p>
                     <div className="ob-role-grid">
                         {ROLES.map((r) => (
@@ -307,17 +307,17 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                                 onClick={() => { setRole(r.value as UserRole); hapticLight(); }}
                             >
                                 <span className="ob-role-emoji">{r.emoji}</span>
-                                <span className="ob-role-name">{t(`role.${r.value}`) || r.value}</span>
-                                <span className="ob-role-desc">{t(r.descKey) || r.descFallback}</span>
+                                <span className="ob-role-name">{t(`role.${r.value}`)}</span>
+                                <span className="ob-role-desc">{t(r.descKey)}</span>
                             </button>
                         ))}
                     </div>
                     <div className="ob-actions">
                         <button className="ob-btn-secondary" onClick={handleBack}>
-                            ← {t('onboarding.back') || 'Back'}
+                            ← {t('onboarding.back')}
                         </button>
                         <button className="ob-btn-primary" onClick={handleNext}>
-                            {t('onboarding.continue') || 'Continue'} →
+                            {t('onboarding.continue')} →
                         </button>
                     </div>
                 </div>
@@ -353,14 +353,14 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                     <div className="ob-tour-content">{screen.content}</div>
                     <div className="ob-actions">
                         <button className="ob-btn-secondary" onClick={handleBack}>
-                            ← {t('onboarding.back') || 'Back'}
+                            ← {t('onboarding.back')}
                         </button>
                         <button className="ob-btn-primary" onClick={handleNext}>
-                            {t('onboarding.next') || 'Next'} →
+                            {t('onboarding.next')} →
                         </button>
                     </div>
                     <button className="ob-btn-link" onClick={handleSkipTour}>
-                        {t('onboarding.skip') || 'Skip tour'}
+                        {t('onboarding.skip')}
                     </button>
                 </div>
             );

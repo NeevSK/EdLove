@@ -71,15 +71,21 @@ const fetchAndSetUserProfile = async (internalUserId: string) => {
         // Populate the full user object so useUserRole().userId works everywhere
         store.setUser(userProfile as any);
         store.setUserRole(userProfile.role as UserRole | null);
-        store.setOnboardingCompleted(!!userProfile.onboarding_completed);
 
-        // If the user has a valid session but hasn't completed onboarding, send them
-        // directly to Onboarding (skip the Welcome screen they've presumably already seen).
-        if (!userProfile.onboarding_completed && navigationRef.isReady()) {
+        // A user is only considered "effectively onboarded" when they have both
+        // completed the onboarding wizard AND have a role assigned.  A missing role
+        // means onboarding data was never fully submitted — route them back to fix it.
+        const isEffectivelyOnboarded = !!userProfile.onboarding_completed && !!userProfile.role;
+        store.setOnboardingCompleted(isEffectivelyOnboarded);
+
+        // If the user has a valid session but hasn't effectively completed onboarding,
+        // send them directly to Onboarding (skip the Welcome screen).
+        // The AppContent effect below handles the case where this runs while on Main.
+        if (!isEffectivelyOnboarded && navigationRef.isReady()) {
           const rootState = navigationRef.current?.getRootState();
           const currentRoute = rootState?.routes[rootState.index]?.name;
           if (currentRoute === 'Welcome') {
-            console.log('🧭 App: Authenticated user has incomplete onboarding — navigating to Onboarding');
+            console.log('🧭 App: Authenticated user has no role or incomplete onboarding — navigating to Onboarding');
             navigationRef.navigate('Onboarding' as never);
           }
         }
@@ -448,6 +454,22 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
       (navigationRef as any).navigate('Main', { screen: tabName });
     }
   }, [onboardingCompleted, session]);
+
+  // When a session exists but onboarding isn't effectively complete (e.g. role
+  // was stripped from DB), navigate to Onboarding so the user can fill in their
+  // role.  This effect covers the case where fetchAndSetUserProfile sets
+  // onboardingCompleted=false while the user is already on the Main screen
+  // (the state change switches the navigator to Welcome; this then advances them
+  // straight to Onboarding instead of leaving them on the Welcome splash).
+  useEffect(() => {
+    if (!session || onboardingCompleted || !navigationRef.isReady()) return;
+    const rootState = navigationRef.current?.getRootState();
+    const currentRoute = rootState?.routes[rootState.index]?.name;
+    if (currentRoute === 'Welcome') {
+      console.log('🧭 AppContent: Session exists, no effective onboarding — advancing to Onboarding');
+      navigationRef.navigate('Onboarding' as never);
+    }
+  }, [session, onboardingCompleted]);
 
   return (
 

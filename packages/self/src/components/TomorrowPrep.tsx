@@ -27,6 +27,12 @@ interface TomorrowPrepProps {
   userId?: string;
 }
 
+const getTomorrowDate = () => {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().split('T')[0];
+};
+
 export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
@@ -37,9 +43,17 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
   const [showForm, setShowForm] = useState(false);
 
   const [itemText, setItemText] = useState('');
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowDate = tomorrow.toISOString().split('T')[0];
+
+  // Recomputes at midnight so the date stays correct if the component stays
+  // mounted overnight (same pattern as TomorrowPrep.web.tsx).
+  const [tomorrowDate, setTomorrowDate] = useState<string>(getTomorrowDate);
+  useEffect(() => {
+    const now = new Date();
+    const msUntilMidnight =
+      new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() - now.getTime();
+    const timer = setTimeout(() => setTomorrowDate(getTomorrowDate()), msUntilMidnight);
+    return () => clearTimeout(timer);
+  }, [tomorrowDate]);
 
   // Removed manual loadItems as it's handled by the hook
 

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Box, VStack, HStack, Input, InputField, Button, ButtonText, Text, Heading, useToast, Toast, ToastTitle, Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectDragIndicatorWrapper, SelectDragIndicator, SelectItem } from '@repo/ui';
-import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react-native';
+import { Box, Pressable, VStack, HStack, Input, InputField, Button, ButtonText, Text, Heading, useToast, Toast, ToastTitle } from '@repo/ui';
+import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Theme } from '@repo/ui';
@@ -220,26 +220,71 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
         </VStack>
     );
 
+    const ROLE_OPTIONS: Array<{ value: UserRole; emoji: string; descKey: string }> = [
+        { value: 'teacher',   emoji: '🧑‍🏫', descKey: 'onboarding.roleDesc.teacher'   },
+        { value: 'student',   emoji: '🎒',  descKey: 'onboarding.roleDesc.student'   },
+        { value: 'principal', emoji: '🏫',  descKey: 'onboarding.roleDesc.principal' },
+    ];
+
     const renderRoleStep = () => (
         <VStack space="xl" mt="$8" px="$6">
             <ProgressIndicator currentStep={1} totalSteps={9} />
             <Heading size="2xl" color={colors.action} textAlign="center">
-                {t('onboarding.roleTitle') || 'What is your role?'}
+                {t('onboarding.roleTitle')}
             </Heading>
-            <Select selectedValue={role} onValueChange={(val) => setRole(val as UserRole)}>
-                <SelectTrigger variant="outline" size="xl" sx={{ borderRadius: Theme.corners.comfortable }}>
-                    <SelectInput placeholder="Select your role" />
-                    <SelectIcon mr="$2" as={ChevronDown} />
-                </SelectTrigger>
-                <SelectPortal>
-                    <SelectBackdrop />
-                    <SelectContent>
-                        <SelectItem label={t('role.teacher')} value="teacher" />
-                        <SelectItem label={t('role.student')} value="student" />
-                        <SelectItem label={t('role.principal')} value="principal" />
-                    </SelectContent>
-                </SelectPortal>
-            </Select>
+            <Text size="md" color={colors.textSecondary} textAlign="center">
+                {t('onboarding.roleSubtitle')}
+            </Text>
+            <VStack space="md">
+                {ROLE_OPTIONS.map((r) => {
+                    const selected = role === r.value;
+                    return (
+                        <Pressable
+                            key={r.value}
+                            onPress={() => { setRole(r.value); hapticLight(); }}
+                            accessibilityRole="radio"
+                            accessibilityState={{ selected }}
+                            sx={{
+                                borderWidth: 2,
+                                borderColor: selected ? colors.action : colors.border,
+                                borderRadius: Theme.corners.comfortable,
+                                backgroundColor: selected ? colors.action + '12' : colors.secondary,
+                                padding: 16,
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <Text size="2xl" mr="$3">{r.emoji}</Text>
+                            <VStack flex={1}>
+                                <Text
+                                    size="md"
+                                    fontWeight="$bold"
+                                    color={selected ? colors.action : colors.text}
+                                >
+                                    {t(`role.${r.value}`)}
+                                </Text>
+                                <Text size="sm" color={colors.textSecondary}>
+                                    {t(r.descKey)}
+                                </Text>
+                            </VStack>
+                            {selected && (
+                                <Box
+                                    sx={{
+                                        width: 22,
+                                        height: 22,
+                                        borderRadius: 11,
+                                        backgroundColor: colors.action,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
+                                >
+                                    <Text size="xs" color={Theme.colors.sacredWhite}>✓</Text>
+                                </Box>
+                            )}
+                        </Pressable>
+                    );
+                })}
+            </VStack>
             <HStack space="md" mt="$6">
                 <Button variant="outline" onPress={handleBack} sx={{ flex: 1 }}>
                     <ButtonText color={colors.text}>{t('onboarding.back')}</ButtonText>
