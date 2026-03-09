@@ -93,7 +93,6 @@
           "uploadSourceMaps": false
         }
       ],
-      "./plugins/withSentryUploadDisabled",
       "expo-web-browser"
     ],
     "owner": "neevsk",
