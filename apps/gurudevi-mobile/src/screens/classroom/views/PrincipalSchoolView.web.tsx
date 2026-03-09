@@ -22,6 +22,8 @@ import {
     Share2,
     MessageSquare,
     Heart,
+    CalendarCheck,
+    NotebookPen,
 } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -631,6 +633,99 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?
                                                         {item.content}
                                                     </p>
                                                 </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* ─── Institutional Calendar ─────────────────── */}
+                        <div className="sanctuary-card" style={{ padding: '24px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <CalendarCheck size={16} color="var(--water)" /> Upcoming Events
+                                </h3>
+                            </div>
+                            {calendarLoading ? (
+                                <SkeletonCard />
+                            ) : calendarEvents.length === 0 ? (
+                                <p style={{ color: 'var(--ink-ghost)', fontSize: '13px', fontStyle: 'italic', textAlign: 'center', padding: '12px 0' }}>No upcoming events.</p>
+                            ) : (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    {calendarEvents.slice(0, 4).map(evt => {
+                                        const typeColors: Record<string, string> = { term_start: 'var(--water)', exam: 'var(--ember)', holiday: 'var(--moss)', event: 'var(--sanctuary-saffron)', other: 'var(--ink-ghost)' };
+                                        const color = typeColors[evt.type] ?? 'var(--ink-ghost)';
+                                        return (
+                                            <div key={evt.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', background: 'var(--background-alt)' }}>
+                                                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: color, flexShrink: 0 }} />
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ fontSize: '13px', fontWeight: '700' }}>{evt.title}</div>
+                                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>
+                                                        {new Date(evt.start_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                                                        {evt.end_date && ` – ${new Date(evt.end_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`}
+                                                    </div>
+                                                </div>
+                                                <span style={{ padding: '2px 6px', background: `${color}22`, borderRadius: '4px', fontSize: '10px', fontWeight: '700', color, textTransform: 'uppercase' }}>
+                                                    {evt.type.replace('_', ' ')}
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* ─── Principal Observations ─────────────────── */}
+                        <div className="sanctuary-card" style={{ padding: '24px' }}>
+                            <h3 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <NotebookPen size={16} color="var(--sanctuary-saffron)" /> My Observations
+                            </h3>
+
+                            {/* Quick-add form */}
+                            <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <div style={{ display: 'flex', gap: '6px' }}>
+                                    {(['walkthrough', 'note', 'concern', 'praise'] as const).map(type => (
+                                        <button
+                                            key={type}
+                                            onClick={() => setObsType(type)}
+                                            style={{ flex: 1, padding: '6px 4px', borderRadius: '8px', border: `1px solid ${obsType === type ? 'var(--sanctuary-saffron)' : 'var(--border)'}`, background: obsType === type ? 'rgba(245,158,11,0.08)' : 'var(--background-alt)', color: obsType === type ? 'var(--sanctuary-saffron)' : 'var(--ink-ghost)', fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: '700', cursor: 'pointer', textTransform: 'uppercase' }}
+                                        >
+                                            {type}
+                                        </button>
+                                    ))}
+                                </div>
+                                <textarea
+                                    value={obsContent}
+                                    onChange={(e: any) => setObsContent(e.target.value)}
+                                    placeholder="Quick observation…"
+                                    rows={2}
+                                    style={{ padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px', width: '100%', boxSizing: 'border-box' as const, resize: 'vertical' as const }}
+                                />
+                                <button
+                                    className="premium-button"
+                                    style={{ alignSelf: 'flex-end', fontSize: '12px', padding: '6px 14px', background: 'var(--sanctuary-saffron)' }}
+                                    onClick={handleSaveObservation}
+                                    disabled={!obsContent.trim() || savingObs}
+                                >
+                                    {savingObs ? '⏳' : '+ Log'}
+                                </button>
+                            </div>
+
+                            {obsLoading ? (
+                                <SkeletonCard />
+                            ) : (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    {observations.map(obs => {
+                                        const obsColors: Record<string, string> = { walkthrough: 'var(--water)', note: 'var(--ink-ghost)', concern: 'var(--ember)', praise: 'var(--moss)' };
+                                        const color = obsColors[obs.type] ?? 'var(--ink-ghost)';
+                                        return (
+                                            <div key={obs.id} style={{ padding: '12px', borderRadius: '10px', borderLeft: `3px solid ${color}`, background: 'var(--background-alt)' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                                                    <span style={{ fontSize: '10px', fontWeight: '800', color, textTransform: 'uppercase' }}>{obs.type}</span>
+                                                    <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{new Date(obs.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
+                                                </div>
+                                                <p style={{ margin: 0, fontSize: '12px', lineHeight: '1.5', color: 'var(--ink)' }}>{obs.content}</p>
                                             </div>
                                         );
                                     })}
