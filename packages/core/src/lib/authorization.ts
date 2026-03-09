@@ -52,12 +52,12 @@ export async function requireAuth() {
     }
 
     // Return a minimal user-like object with the internal ID.
-    // NOTE: `auth_uid` is the raw Supabase auth UUID — kept only for reference/logging.
+    // NOTE: `supabase_auth_uid` is the raw Supabase auth UUID — kept only for reference/logging.
     //       All application logic must use `id` (the internal users.id).
     return {
         id: internalId,
         email: session.user.email,
-        auth_uid: session.user.id,
+        supabase_auth_uid: session.user.id,
     } as any;
 }
 

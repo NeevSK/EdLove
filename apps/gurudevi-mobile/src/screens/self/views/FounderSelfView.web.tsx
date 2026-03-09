@@ -10,8 +10,21 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore } from '@repo/core';
-import { useMoodLogs, useEnergyForecast, useWisdom } from '@repo/self';
 import { SkeletonCard } from '@repo/ui';
+import {
+    useMoodLogs,
+    useEnergyForecast,
+    useWisdom,
+    useWellbeingEnrichment,
+    BaseSelfView,
+    MoodPickerCard,
+    EnergyBarChart,
+    WarmMirrorCard,
+    ImpactRipplesCard,
+    MOOD_LABELS,
+    MOOD_COLORS,
+    ENERGY_COLORS,
+} from '@repo/self';
 import {
     Compass,
     Sparkles,
@@ -20,13 +33,6 @@ import {
     Network,
 } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
-import {
-    MOOD_LABELS,
-    MOOD_COLORS,
-    ENERGY_COLORS,
-    MoodPickerCard,
-    EnergyBarChart,
-} from './selfViewShared';
 import { SanctuaryTabBar } from '../../../components/web/SanctuaryTabBar';
 import type { SanctuaryTab } from '../../../components/web/SanctuaryTabBar';
 
@@ -38,145 +44,148 @@ export default function FounderSelfViewWeb() {
     const { userId } = useUserRole();
 
     const [activePanel, setActivePanel] = useState<ActivePanel>('vision');
-    const [showMoodPicker, setShowMoodPicker] = React.useState(false);
-    const [savingMood, setSavingMood] = React.useState(false);
+    const [showMoodPicker, setShowMoodPicker] = useState(false);
+    const [savingMood, setSavingMood] = useState(false);
 
     // ── Personal wellbeing hooks ─────────────────────────────────────────
     const { moodHistory, isLoading: moodLoading, addMoodLog } = useMoodLogs(userId ?? undefined);
     const { forecasts, isLoading: energyLoading } = useEnergyForecast(userId ?? undefined);
     const { notes: wisdomNotes, isLoading: wisdomLoading } = useWisdom(userId ?? undefined);
+    const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
 
     const latestMood = moodHistory[0];
     const todayForecast = forecasts[0];
+    const energyBars = forecasts.slice(0, 7).reverse();
 
     const TABS: SanctuaryTab<ActivePanel>[] = [
-        // vision uses the phase accent (--sanctuary-saffron) which can be any luminance,
-        // so we use --text-on-action for WCAG-safe adaptive text.
-        { id: 'vision',     icon: Compass,    label: 'Vision',       activeColor: 'var(--sanctuary-saffron)', activeTextColor: 'var(--text-on-action)' },
-        // water (#3a7a9a), lotus (#c05878), ink (very dark) — all pass AA with white/vellum
-        { id: 'mood',       icon: Sparkles,   label: 'Mood Lotus',   activeColor: 'var(--water)',             activeTextColor: '#FCF9F2' },
-        { id: 'energy',     icon: Zap,        label: 'Energy',       activeColor: 'var(--lotus)',             activeTextColor: '#FCF9F2' },
-        { id: 'philosophy', icon: Lightbulb,  label: 'Philosophy',   activeColor: 'var(--ink)',               activeTextColor: '#FCF9F2' },
+        { id: 'vision',     icon: Compass,   label: 'Vision',     activeColor: 'var(--sanctuary-saffron)', activeTextColor: 'var(--text-on-action)' },
+        { id: 'mood',       icon: Sparkles,  label: 'Mood Lotus', activeColor: 'var(--water)',             activeTextColor: '#FCF9F2' },
+        { id: 'energy',     icon: Zap,       label: 'Energy',     activeColor: 'var(--lotus)',             activeTextColor: '#FCF9F2' },
+        { id: 'philosophy', icon: Lightbulb, label: 'Philosophy', activeColor: 'var(--ink)',               activeTextColor: '#FCF9F2' },
     ];
 
-    return (
-        <div className="sub-view-container">
-            {/* ── LEFT: Main Content ─────────────────────────── */}
-            <div className="content-scroll-area">
-                {/* Greeting */}
-                <div className="greeting" style={{ marginBottom: '32px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                        <div style={{ padding: '8px', background: 'rgba(255,166,0,0.1)', borderRadius: '8px', color: 'var(--sanctuary-saffron)' }}>
-                            <Compass size={20} />
-                        </div>
-                        <span style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--ink-ghost)' }}>
-                            Original Intent
-                        </span>
+    // ── personalLayer: the inner life — mood, energy pulse ──────────────
+    const personalLayer = (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            {/* Greeting */}
+            <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                    <div style={{ padding: '8px', background: 'rgba(255,166,0,0.1)', borderRadius: '8px', color: 'var(--sanctuary-saffron)' }}>
+                        <Compass size={20} />
                     </div>
-                    <h1 className="greeting-main">
-                        The Dream <span style={{ color: 'var(--sanctuary-saffron)' }}>Recursive</span>.
-                    </h1>
-                    <p className="greeting-note">
-                        {user?.full_name ? `${user.full_name.split(' ')[0]}, your personal sanctuary — away from the platform, inside yourself.` : 'Your personal sanctuary — away from the platform, inside yourself.'}
-                    </p>
+                    <span style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--ink-ghost)' }}>Original Intent</span>
                 </div>
-
-                {/* Feature Tabs */}
-                <SanctuaryTabBar tabs={TABS} activeId={activePanel} onSelect={setActivePanel} />
-
-                {/* Active Panel */}
-                <div className="sanctuary-card">
-                    <div className="card-body-inner">
-                        {activePanel === 'vision' && <VisionPanel />}
-                        {activePanel === 'mood' && <MoodPanel moodHistory={moodHistory} moodLoading={moodLoading} />}
-                        {activePanel === 'energy' && <EnergyPanel forecasts={forecasts} energyLoading={energyLoading} />}
-                        {activePanel === 'philosophy' && <PhilosophyPanel notes={wisdomNotes} wisdomLoading={wisdomLoading} />}
-                    </div>
-                </div>
+                <h1 className="greeting-main">The Dream <span style={{ color: 'var(--sanctuary-saffron)' }}>Recursive</span>.</h1>
+                <p className="greeting-note">
+                    {user?.full_name ? `${user.full_name.split(' ')[0]}, your personal sanctuary — away from the platform, inside yourself.` : 'Your personal sanctuary — away from the platform, inside yourself.'}
+                </p>
             </div>
 
-            {/* ── RIGHT: Status Sidebar ──────────────────────── */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                {/* Mood Card */}
-                <MoodPickerCard
-                    isOpen={showMoodPicker}
-                    onToggle={() => setShowMoodPicker(v => !v)}
-                    onSelect={async (mood, note) => {
-                        setSavingMood(true);
-                        try {
-                            await addMoodLog(mood, note || undefined);
-                            setShowMoodPicker(false);
-                        } finally {
-                            setSavingMood(false);
-                        }
-                    }}
-                    isSaving={savingMood}
-                    latestMood={latestMood}
-                    isLoading={moodLoading}
-                    accent="dark"
-                />
+            {/* Energy Pulse */}
+            <div className="sanctuary-card" style={{ padding: '32px', background: 'var(--background-alt)' }}>
+                <h2 style={{ fontSize: '16px', fontWeight: '800', marginBottom: '20px' }}>Energy Pulse</h2>
+                {energyLoading ? <SkeletonCard /> : <EnergyBarChart bars={energyBars} colors={MOOD_COLORS} />}
+            </div>
+        </div>
+    );
 
-                {/* Energy Snapshot */}
-                {!energyLoading && todayForecast && (
-                    <div className="sanctuary-card">
-                        <div className="card-body-inner">
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-                                <Zap size={16} color={ENERGY_COLORS[todayForecast.energy_level ?? 3]} />
-                                <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', margin: 0 }}>
-                                    Energy Today
-                                </h3>
-                            </div>
-                            <div style={{ fontSize: '28px', fontWeight: '800', color: ENERGY_COLORS[todayForecast.energy_level ?? 3] }}>
-                                {todayForecast.energy_level ?? '—'}/5
-                            </div>
-                            {todayForecast.notes && (
-                                <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.5', fontStyle: 'italic', marginTop: '8px' }}>
-                                    "{todayForecast.notes}"
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {/* Wisdom Count */}
-                {!wisdomLoading && wisdomNotes.length > 0 && (
-                    <div className="sanctuary-card">
-                        <div className="card-body-inner">
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-                                <Lightbulb size={16} color="var(--sanctuary-saffron)" />
-                                <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', margin: 0 }}>
-                                    Wisdom Seeds
-                                </h3>
-                            </div>
-                            <div style={{ fontSize: '28px', fontWeight: '800' }}>{wisdomNotes.length}</div>
-                            <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>Insights cultivated</div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Ecological Reminder — points to Classroom */}
-                <div className="sanctuary-card" style={{ background: 'var(--background-alt)', border: 'none' }}>
-                    <div className="card-body-inner">
-                        <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '8px' }}>
-                            <Network size={100} color="var(--ink)" style={{ position: 'absolute', bottom: '-20px', right: '-20px', opacity: 0.05 }} />
-                            <div style={{ position: 'relative', zIndex: 1 }}>
-                                <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '8px' }}>
-                                    Ecosystem Lives in Classroom
-                                </div>
-                                <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.5' }}>
-                                    Platform stats, school gallery, and executive oversight are in the <strong>Classroom</strong> section — keeping this sanctuary purely personal.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+    // ── workingLayer: vision alignment, philosophy, tabbed exploration ───
+    const workingLayer = (
+        <div>
+            <SanctuaryTabBar tabs={TABS} activeId={activePanel} onSelect={setActivePanel} />
+            <div className="sanctuary-card" style={{ marginTop: '24px' }}>
+                <div className="card-body-inner">
+                    {activePanel === 'vision'     && <VisionPanel />}
+                    {activePanel === 'mood'       && <MoodPanel moodHistory={moodHistory} moodLoading={moodLoading} />}
+                    {activePanel === 'energy'     && <EnergyPanel forecasts={forecasts} energyLoading={energyLoading} />}
+                    {activePanel === 'philosophy' && <PhilosophyPanel notes={wisdomNotes} wisdomLoading={wisdomLoading} />}
                 </div>
             </div>
         </div>
     );
+
+    // ── sideBar: mood picker, energy snapshot, mirrors, context nudge ────
+    const sideBar = (
+        <>
+            <MoodPickerCard
+                isOpen={showMoodPicker}
+                onToggle={() => setShowMoodPicker(v => !v)}
+                onSelect={async (mood, note) => {
+                    setSavingMood(true);
+                    try { await addMoodLog(mood, note || undefined); setShowMoodPicker(false); }
+                    finally { setSavingMood(false); }
+                }}
+                isSaving={savingMood}
+                latestMood={latestMood}
+                isLoading={moodLoading}
+                accent="dark"
+            />
+
+            {/* Energy snapshot */}
+            {!energyLoading && todayForecast && (
+                <div className="sanctuary-card">
+                    <div className="card-body-inner">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                            <Zap size={16} color={ENERGY_COLORS[todayForecast.energy_level ?? 3]} />
+                            <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', margin: 0 }}>Energy Today</h3>
+                        </div>
+                        <div style={{ fontSize: '28px', fontWeight: '800', color: ENERGY_COLORS[todayForecast.energy_level ?? 3] }}>
+                            {todayForecast.energy_level ?? '—'}/5
+                        </div>
+                        {todayForecast.notes && (
+                            <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.5', fontStyle: 'italic', marginTop: '8px' }}>
+                                "{todayForecast.notes}"
+                            </p>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Wisdom count */}
+            {!wisdomLoading && wisdomNotes.length > 0 && (
+                <div className="sanctuary-card">
+                    <div className="card-body-inner">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                            <Lightbulb size={16} color="var(--sanctuary-saffron)" />
+                            <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', margin: 0 }}>Wisdom Seeds</h3>
+                        </div>
+                        <div style={{ fontSize: '28px', fontWeight: '800' }}>{wisdomNotes.length}</div>
+                        <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>Insights cultivated</div>
+                    </div>
+                </div>
+            )}
+
+            {/* Mirrors */}
+            <WarmMirrorCard text={warmMirrorText} />
+            <ImpactRipplesCard ripples={ripples} />
+
+            {/* Ecological reminder */}
+            <div className="sanctuary-card" style={{ background: 'var(--background-alt)', border: 'none' }}>
+                <div className="card-body-inner">
+                    <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '8px' }}>
+                        <Network size={100} color="var(--ink)" style={{ position: 'absolute', bottom: '-20px', right: '-20px', opacity: 0.05 }} />
+                        <div style={{ position: 'relative', zIndex: 1 }}>
+                            <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '8px' }}>Ecosystem Lives in Classroom</div>
+                            <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.5' }}>
+                                Platform stats, school gallery, and executive oversight are in the <strong>Classroom</strong> section — keeping this sanctuary purely personal.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+
+    return (
+        <BaseSelfView
+            role="founder"
+            description={t('self.founderDesc', 'Your personal sanctuary — away from the platform, inside yourself.')}
+            personalLayer={personalLayer}
+            workingLayer={workingLayer}
+            sideBar={sideBar}
+        />
+    );
 }
-
-// ── Sub-panels ───────────────────────────────────────────────────────────────
-
 function VisionPanel() {
     return (
         <div>
