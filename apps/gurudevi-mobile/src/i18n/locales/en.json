@@ -107,9 +107,7 @@
     "alreadyLinked": "Already Linked",
     "alreadyRegistered": "Already Registered",
     "identityAlreadyExists": "This account already exists. Please sign in instead.",
-    "acceptTermsRequired": "Please accept the terms to continue.",
-    "signUpWithEmail": "Sign up with email",
-    "noAccount": "Don't have an account?"
+    "acceptTermsRequired": "Please accept the terms to continue."
   },
   "welcome": {
     "title": "Gurudevi",
@@ -289,7 +287,9 @@
     "learningReflectionDesc": "Reflect on what you learned today",
     "myProgress": "My Progress",
     "myProgressDesc": "Track your learning journey and achievements",
+
     "noGradesYet": "No grades yet — keep going! 🌱",
+
     "unknownAssignment": "Assignment",
     "goalsComingSoon": "Goal Setting Arriving Soon",
     "goalsComingSoonDesc": "We are building a beautiful space for your daily aspirations.",
@@ -1057,6 +1057,7 @@
     "living_theme": {
       "title": "Living Theme",
       "on": "Phase-aware colors shift with the time of day",
+
       "off": "Classic calm — simple static appearance"
     },
     "explorer": {

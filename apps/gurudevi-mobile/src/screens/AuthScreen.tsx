@@ -444,19 +444,6 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
         <ScreenWrapper scroll>
             <Center sx={{ flex: 1, paddingVertical: 40, paddingHorizontal: 24, backgroundColor: colors.primary }}>
                 <VStack space="4xl" sx={{ width: '100%', maxWidth: 400 }}>
-
-                    {/* Back button row */}
-                    {onBack && (
-                        <Box sx={{ alignSelf: 'flex-start' }}>
-                            <Button variant="link" onPress={onBack} sx={{ pl: 0 }}>
-                                <HStack space="xs" alignItems="center">
-                                    <Text color={colors.textSecondary} size="lg">←</Text>
-                                    <ButtonText color={colors.textSecondary} size="sm">Back</ButtonText>
-                                </HStack>
-                            </Button>
-                        </Box>
-                    )}
-
                     <VStack space="md" alignItems="center">
                         <BreathAnimation delay={100}>
                             <LivingGlow active size={120} glowColor={colors.glow} style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -474,57 +461,6 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                         </BreathAnimation>
                     </VStack>
 
-                    {/* Pill toggle: Sign Up | Log In */}
-                    {!shouldHideGeneralAuth && (
-                        <Box sx={{
-                            backgroundColor: colors.secondary,
-                            borderRadius: 50,
-                            padding: 4,
-                            flexDirection: 'row',
-                            alignSelf: 'center',
-                            borderWidth: 1,
-                            borderColor: colors.border,
-                        }}>
-                            <Pressable
-                                onPress={() => { hapticLight(); setIsSignUp(true); setShowEmailAuth(false); setErrors({}); }}
-                                sx={{
-                                    paddingHorizontal: 24,
-                                    paddingVertical: 10,
-                                    borderRadius: 50,
-                                    backgroundColor: isSignUp ? colors.action : 'transparent',
-                                }}
-                                accessibilityRole="button"
-                                accessibilityState={{ selected: isSignUp }}
-                            >
-                                <Text
-                                    size="sm"
-                                    fontWeight={isSignUp ? '$bold' : '$medium'}
-                                    color={isSignUp ? Theme.colors.sacredWhite : colors.textSecondary}
-                                >
-                                    {t('auth.signup') || 'Sign Up'}
-                                </Text>
-                            </Pressable>
-                            <Pressable
-                                onPress={() => { hapticLight(); setIsSignUp(false); setShowEmailAuth(false); setErrors({}); }}
-                                sx={{
-                                    paddingHorizontal: 24,
-                                    paddingVertical: 10,
-                                    borderRadius: 50,
-                                    backgroundColor: !isSignUp ? colors.action : 'transparent',
-                                }}
-                                accessibilityRole="button"
-                                accessibilityState={{ selected: !isSignUp }}
-                            >
-                                <Text
-                                    size="sm"
-                                    fontWeight={!isSignUp ? '$bold' : '$medium'}
-                                    color={!isSignUp ? Theme.colors.sacredWhite : colors.textSecondary}
-                                >
-                                    {t('auth.login') || 'Log In'}
-                                </Text>
-                            </Pressable>
-                        </Box>
-                    )}
 
                     {!showEmailAuth && !shouldHideGeneralAuth && (
                         <BreathAnimation delay={400}>
@@ -566,6 +502,18 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                                         </ButtonText>
                                     </HStack>
                                 </Button>
+
+                                {/* Sign-in / Sign-up toggle */}
+                                <HStack justifyContent="center" space="xs" mt="$1">
+                                    <Text color={colors.textSecondary} size="sm">
+                                        {isSignUp ? t('auth.alreadyHaveAccount') || 'Already have an account?' : t('auth.noAccount') || "Don't have an account?"}
+                                    </Text>
+                                    <Button variant="link" size="sm" onPress={() => { hapticLight(); setIsSignUp(v => !v); }}>
+                                        <ButtonText color={colors.action} fontWeight="$bold" size="sm">
+                                            {isSignUp ? t('auth.login') || 'Sign In' : t('auth.signup') || 'Sign Up'}
+                                        </ButtonText>
+                                    </Button>
+                                </HStack>
                             </VStack>
                         </BreathAnimation>
                     )}
@@ -638,6 +586,18 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                                             {loading ? t('auth.processing') : (isSignUp ? t('auth.signup') : t('auth.login'))}
                                         </ButtonText>
                                     </Button>
+
+                                    {/* Sign-in / Sign-up toggle inside email form */}
+                                    <HStack justifyContent="center" space="xs">
+                                        <Text color={colors.textSecondary} size="sm">
+                                            {isSignUp ? t('auth.alreadyHaveAccount') || 'Already have an account?' : t('auth.noAccount') || "Don't have an account?"}
+                                        </Text>
+                                        <Button variant="link" size="sm" onPress={() => { hapticLight(); setIsSignUp(v => !v); setErrors({}); }}>
+                                            <ButtonText color={colors.action} fontWeight="$bold" size="sm">
+                                                {isSignUp ? t('auth.login') || 'Sign In' : t('auth.signup') || 'Sign Up'}
+                                            </ButtonText>
+                                        </Button>
+                                    </HStack>
 
                                     <Button variant="link" onPress={() => { setShowEmailAuth(false); setErrors({}); }}>
                                         <ButtonText color={colors.textTertiary}>{t('auth.backToGoogle')}</ButtonText>

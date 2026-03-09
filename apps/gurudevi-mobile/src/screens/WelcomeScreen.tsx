@@ -105,7 +105,6 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
                 onSuccess={() => {
                     onNext?.();
                 }}
-                onBack={() => setShowAuth(false)}
             />
         );
     }

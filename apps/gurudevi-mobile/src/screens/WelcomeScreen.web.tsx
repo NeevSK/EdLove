@@ -391,7 +391,6 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
                 initialMode={urlErrorMode ?? 'signup'}
                 onContinueAsGuest={handleStartExploring}
                 onSuccess={() => { onNext?.(); }}
-                onBack={() => setShowAuth(false)}
             />
         );
     }
