@@ -1,19 +1,20 @@
 /**
  * ClassroomScreen.web.tsx
  *
- * Three clear paths:
+ * Four clear paths:
  *
- *  1. Guest WITH role  (anonymous user, role set by onboarding, no school_id)
- *     → Shows their own-role demo + prominent sign-up / join-school CTAs.
- *     → No way to reach this with no role — onboarding always assigns one.
+ *  1. No role set yet (edge case / mid-onboarding) → redirect to Auth.
  *
- *  2. Authenticated user (has school_id)
- *     → Always sees real data for their role.
- *     → A subtle "Try Demo" button in the header opens DemoPlaygroundPanel,
- *       which overlays the main content under the topbar+sidebar.
+ *  2. Guest WITH role (anonymous, role set by onboarding, no school_id, no user)
+ *     → Show own-role demo + sign-up / join-school CTAs.
  *
- *  3. No role at all (edge case / mid-onboarding redirect)
- *     → Redirects to Auth screen.
+ *  3. Authenticated NEW user (user exists, role set, but NO school_id yet)
+ *     → Role-aware setup: principal → Create School;
+ *                         teacher   → Create OR Join School;
+ *                         student   → Join Class.
+ *
+ *  4. Authenticated WITH school (fully set up)
+ *     → Real data for their role + subtle "Try Demo" overlay button.
  */
 
 import React, { useState } from 'react';
@@ -29,6 +30,9 @@ import StudentDashboard from './classroom/views/StudentDashboard.web';
 import TeacherDashboard from './classroom/views/TeacherDashboard.web';
 import PrincipalSchoolView from './classroom/views/PrincipalSchoolView.web';
 import FounderDashboard from './classroom/views/FounderDashboard.web';
+
+// New authenticated user — no school yet
+import NoSchoolView from './classroom/NoSchoolView.web';
 
 // Demo overlay (authenticated users only)
 import DemoPlaygroundPanel from './classroom/DemoPlaygroundPanel.web';
@@ -214,10 +218,13 @@ function AuthRoleView({ role, schoolId, userId }: { role: string; schoolId: stri
 // ── Root export ────────────────────────────────────────────────────────────
 
 export default function ClassroomScreenWeb() {
-    const { role, isGuest, userId } = useUserRole();
+    const { role, userId } = useUserRole();
     const { user } = useStore();
     const navigation = useNavigation<any>();
-    const schoolId = user?.school_id || '';
+
+    const isAnonymous   = !user;                           // no supabase user at all
+    const hasSchool     = !!(user?.school_id);             // authenticated + has school
+    const isNewAuthUser = !!user && !hasSchool;            // authenticated but no school yet
 
     // Edge case: no role set at all — shouldn't happen after onboarding
     if (!role) {
@@ -245,14 +252,17 @@ export default function ClassroomScreenWeb() {
     return (
         <div className="sanctuary-screen">
             <div className="sanctuary-container">
-                {/* Path 1: Guest with role — show own-role demo + conversion CTAs */}
-                {isGuest && <GuestDemoView role={role} />}
+                {/* Path 1: Anonymous guest with role → own-role demo + sign-up CTAs */}
+                {isAnonymous && <GuestDemoView role={role} />}
 
-                {/* Path 2: Authenticated — show real data + "Try Demo" button */}
-                {!isGuest && (
+                {/* Path 2: Authenticated, no school yet → role-specific setup wizard */}
+                {isNewAuthUser && <NoSchoolView />}
+
+                {/* Path 3: Authenticated with school → real data + "Try Demo" overlay */}
+                {hasSchool && (
                     <AuthRoleView
                         role={role}
-                        schoolId={schoolId}
+                        schoolId={user!.school_id!}
                         userId={userId || ''}
                     />
                 )}

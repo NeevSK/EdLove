@@ -216,6 +216,22 @@ export default function ClassroomDetailScreenWeb() {
         finally { setSavingNote(false); }
     };
 
+    const handleTogglePin = async (r: ClassroomResource) => {
+        try {
+            await supabase.from('classroom_resources')
+                .update({ is_pinned: !r.is_pinned })
+                .eq('id', r.id);
+            loadResources();
+        } catch { /**/ }
+    };
+
+    const handleDeleteResource = async (id: string) => {
+        try {
+            await supabase.from('classroom_resources').delete().eq('id', id);
+            loadResources();
+        } catch { /**/ }
+    };
+
     const toggleMonth = (title: string) => setExpandedMonths(prev => {
         const n = new Set(prev); n.has(title) ? n.delete(title) : n.add(title); return n;
     });
