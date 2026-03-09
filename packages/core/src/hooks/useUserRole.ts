@@ -56,7 +56,7 @@ export function useUserRole(): UseUserRoleReturn & { refresh: () => Promise<void
                         profile.organization_name !== user.organization_name
                     ))
                 ) {
-                    setUser({ ...user, ...profile } as any);
+                    setUser({ id: internalId, ...user, ...profile } as any);
 
                     // Fetch school type if school_id changed
                     if (profile.school_id) {

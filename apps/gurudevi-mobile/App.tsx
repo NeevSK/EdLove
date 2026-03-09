@@ -81,7 +81,7 @@ function App() {
     try {
       const { data: userProfile, error } = await supabase
         .from('users')
-        .select('role, school_id, onboarding_completed')
+        .select('id, role, school_id, onboarding_completed, full_name, email, avatar_url, is_anonymous, profile_completed')
         .eq('id', userId)
         .maybeSingle();
 
@@ -91,9 +91,11 @@ function App() {
       }
 
       if (userProfile) {
-        const { setUserRole, setOnboardingCompleted } = useStore.getState();
-        setUserRole(userProfile.role as UserRole | null);
-        setOnboardingCompleted(!!userProfile.onboarding_completed);
+        const store = useStore.getState();
+        // Populate the full user object so useUserRole().userId works everywhere
+        store.setUser(userProfile as any);
+        store.setUserRole(userProfile.role as UserRole | null);
+        store.setOnboardingCompleted(!!userProfile.onboarding_completed);
 
         if (userProfile.school_id) {
           const { data: schoolData } = await supabase
@@ -103,10 +105,10 @@ function App() {
             .single();
 
           if (schoolData) {
-            useStore.getState().setSchoolType(schoolData.type as SchoolType | null);
+            store.setSchoolType(schoolData.type as SchoolType | null);
           }
         } else {
-          useStore.getState().setSchoolType(null);
+          store.setSchoolType(null);
         }
       }
     } catch (error) {
@@ -179,11 +181,12 @@ function App() {
           .catch((err) => console.warn('⚠️ App: Identity resolution failed on auth change:', err));
       } else {
         identityAPI.clearCache();
-        const { setUserRole, setSchoolType, setTeacherName, setOnboardingCompleted } = useStore.getState();
-        setUserRole(null);
-        setSchoolType(null);
-        setTeacherName('Gurudevi');
-        setOnboardingCompleted(false);
+        const store = useStore.getState();
+        store.setUser(null);
+        store.setUserRole(null);
+        store.setSchoolType(null);
+        store.setTeacherName('Gurudevi');
+        store.setOnboardingCompleted(false);
       }
     });
 

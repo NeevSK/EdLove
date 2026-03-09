@@ -6,7 +6,7 @@ export type { UserRole };
  * Represents a Gurudevi user with role and school context
  */
 export interface User {
-    id: string;                  // UUID from Supabase auth
+    id: string;                  // Internal Gurudevi User UUID (from public.users, resolved via auth_identities)
     email: string;               // User's email address
     full_name: string;           // Display name
     role: UserRole;              // User's role in the system

@@ -346,7 +346,7 @@ export default function StudentSelfViewWeb() {
                             </button>
                         </div>
                         {showVoiceJournal ? (
-                            <VoiceJournaling userId={user?.id} onComplete={() => setShowVoiceJournal(false)} />
+                            <VoiceJournaling userId={userId ?? undefined} onComplete={() => setShowVoiceJournal(false)} />
                         ) : (
                             <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', margin: 0, lineHeight: '1.5' }}>
                                 Capture your thoughts and reflections with your voice.
