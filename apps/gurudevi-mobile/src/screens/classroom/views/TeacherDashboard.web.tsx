@@ -49,11 +49,13 @@ const DEMO_RECENT_ASSIGNMENTS = [
     { id: 'da3', title: 'Short Story Composition', classroom: 'Grade 10 - English', due_date: new Date(Date.now() + 7 * 86400000).toISOString(), submissions: 0, total: 22 },
 ];
 
-export default function TeacherDashboardWeb() {
+export default function TeacherDashboardWeb({ forceDemo }: { forceDemo?: boolean } = {}) {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const { user, isDemoMode } = useStore();
+    const { user } = useStore();
     const { role, userId } = useUserRole();
+    // forceDemo takes precedence; falls back to false for real users
+    const isDemo = forceDemo === true;
     const [searchQuery, setSearchQuery] = useState('');
     const [classrooms, setClassrooms] = useState<(Classroom & { student_count?: number; last_activity?: string })[]>([]);
     const [classroomsLoading, setClassroomsLoading] = useState(true);
@@ -67,7 +69,7 @@ export default function TeacherDashboardWeb() {
 
     useEffect(() => {
         // ── Demo mode: show mock classrooms instantly ─────────────────────
-        if (isDemoMode) {
+        if (isDemo) {
             setClassrooms(DEMO_CLASSROOMS as any);
             setClassroomsLoading(false);
             return;
@@ -107,7 +109,7 @@ export default function TeacherDashboardWeb() {
             }
         };
         fetchClassrooms();
-    }, [userId, role, user?.school_id, isDemoMode]);
+    }, [userId, role, user?.school_id, isDemo]);
 
     const filtered = classrooms.filter(cls =>
         cls.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -116,13 +118,12 @@ export default function TeacherDashboardWeb() {
 
     const totalStudents = classrooms.reduce((acc, cls) => acc + (cls.student_count ?? 0), 0);
 
-    // Attendance rate demo stat
-    const attendanceRate = isDemoMode ? '94%' : '—';
-    const engagementScore = isDemoMode ? '87%' : '—';
+    const attendanceRate = isDemo ? '94%' : '—';
+    const engagementScore = isDemo ? '87%' : '—';
 
     return (
         <>
-            {isDemoMode && <SandboxBanner />}
+            {isDemo && <SandboxBanner />}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                 {/* Header & Quick Actions */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
@@ -137,12 +138,12 @@ export default function TeacherDashboardWeb() {
                         </div>
                         <h1 style={{ fontSize: '36px', fontWeight: '800', margin: 0 }}>Registry & <span style={{ color: 'var(--sanctuary-saffron)' }}>Resonance</span>.</h1>
                         <p style={{ color: 'var(--ink-ghost)', marginTop: '8px', fontSize: '14px' }}>
-                            {isDemoMode ? 'Demo view — Sanduni Perera · Gurudevi Life School' : `Welcome back, ${user?.full_name?.split(' ')[0] ?? 'Teacher'}`}
+                            {isDemo ? 'Demo view — Sanduni Perera · Gurudevi Life School' : `Welcome back, ${user?.full_name?.split(' ')[0] ?? 'Teacher'}`}
                         </p>
                     </div>
 
                     <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                        <button className="premium-button" style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => { if (isDemoMode) return; setShowCreateClassroom(true); }}>
+                        <button className="premium-button" style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => { if (isDemo) return; setShowCreateClassroom(true); }}>
                             <Plus size={18} />
                             Create Classroom
                         </button>
@@ -179,7 +180,7 @@ export default function TeacherDashboardWeb() {
                             <div>
                                 <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>{stat.label}</div>
                                 <div style={{ fontSize: '24px', fontWeight: '800' }}>
-                                    {stat.value}{isDemoMode && stat.value !== '—' && <span style={{ fontSize: '14px', color: 'var(--sanctuary-saffron)', marginLeft: 4 }}>✦</span>}
+                                    {stat.value}{isDemo && stat.value !== '—' && <span style={{ fontSize: '14px', color: 'var(--sanctuary-saffron)', marginLeft: 4 }}>✦</span>}
                                 </div>
                             </div>
                         </div>
@@ -297,7 +298,7 @@ export default function TeacherDashboardWeb() {
                             <h4 style={{ margin: '0 0 16px', fontSize: '13px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)', letterSpacing: '1px' }}>
                                 Recent Assignments
                             </h4>
-                            {isDemoMode ? (
+                            {isDemo ? (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                     {DEMO_RECENT_ASSIGNMENTS.map(a => (
                                         <div key={a.id} style={{ padding: '12px', background: 'var(--background-alt)', borderRadius: '10px' }}>
@@ -347,7 +348,7 @@ export default function TeacherDashboardWeb() {
                         </div>
 
                         {/* Student count summary */}
-                        {isDemoMode && (
+                        {isDemo && (
                             <div className="sanctuary-card" style={{ padding: '20px' }}>
                                 <h4 style={{ margin: '0 0 14px', fontSize: '13px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)', letterSpacing: '1px' }}>
                                     Student Snapshot

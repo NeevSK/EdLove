@@ -1,197 +1,162 @@
+/**
+ * ClassroomScreen.web.tsx
+ *
+ * Three clear paths:
+ *
+ *  1. Guest WITH role  (anonymous user, role set by onboarding, no school_id)
+ *     → Shows their own-role demo + prominent sign-up / join-school CTAs.
+ *     → No way to reach this with no role — onboarding always assigns one.
+ *
+ *  2. Authenticated user (has school_id)
+ *     → Always sees real data for their role.
+ *     → A subtle "Try Demo" button in the header opens DemoPlaygroundPanel,
+ *       which overlays the main content under the topbar+sidebar.
+ *
+ *  3. No role at all (edge case / mid-onboarding redirect)
+ *     → Redirects to Auth screen.
+ */
+
 import React, { useState } from 'react';
 import { useUserRole, useStore } from '@repo/core';
-import { LotusPetalFAB, SandboxBanner } from '@repo/ui';
+import { LotusPetalFAB } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 import {
-    BookOpen, Users, Shield, GraduationCap, Zap, ArrowRight
+    BookOpen, Users, Shield, GraduationCap, Zap, ArrowRight, Plus, LogIn,
 } from 'lucide-react-native';
 
-// High-Fidelity Role Sub-Views
+// Real role views (always show live data)
 import StudentDashboard from './classroom/views/StudentDashboard.web';
 import TeacherDashboard from './classroom/views/TeacherDashboard.web';
 import PrincipalSchoolView from './classroom/views/PrincipalSchoolView.web';
 import FounderDashboard from './classroom/views/FounderDashboard.web';
 
-/** Shown to guests / users with no school yet — lets them explore a demo role view */
-function DemoExplorerView() {
+// Demo overlay (authenticated users only)
+import DemoPlaygroundPanel from './classroom/DemoPlaygroundPanel.web';
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+type DemoRole = 'teacher' | 'principal' | 'student';
+
+const ROLE_META: Record<DemoRole, { emoji: string; title: string; color: string }> = {
+    teacher:   { emoji: '📚', title: 'Teacher',   color: 'var(--sanctuary-saffron)' },
+    principal: { emoji: '��️', title: 'Principal', color: 'var(--lotus)'             },
+    student:   { emoji: '🌱', title: 'Student',   color: 'var(--moss)'              },
+};
+
+function roleToDemo(role: string | null): DemoRole {
+    if (role === 'principal' || role === 'founder' || role === 'admin' || role === 'developer') return 'principal';
+    if (role === 'student') return 'student';
+    return 'teacher'; // teacher / grade_head / section_head / any unknown
+}
+
+// ── Path 1: Guest with role ────────────────────────────────────────────────
+
+function GuestDemoView({ role }: { role: string }) {
     const navigation = useNavigation<any>();
-    const { isDemoMode, setDemoMode } = useStore();
-    const [demoRole, setDemoRole] = useState<'teacher' | 'principal' | 'student' | null>(null);
-
-    const DEMO_ROLES = [
-        {
-            id: 'teacher' as const,
-            emoji: '📚',
-            title: 'Teacher',
-            desc: 'Manage classrooms, assignments, attendance & gradebook.',
-            color: 'var(--sanctuary-saffron)',
-            bg: 'rgba(245,158,11,0.08)',
-        },
-        {
-            id: 'principal' as const,
-            emoji: '🏛️',
-            title: 'Principal',
-            desc: 'School-wide oversight: staff presence, leave approvals & echo.',
-            color: 'var(--lotus)',
-            bg: 'rgba(139,92,246,0.08)',
-        },
-        {
-            id: 'student' as const,
-            emoji: '🌱',
-            title: 'Student',
-            desc: 'Your sanctuaries, upcoming assignments & learning goals.',
-            color: 'var(--moss)',
-            bg: 'rgba(34,197,94,0.08)',
-        },
-    ];
-
-    const enterDemo = (role: typeof demoRole) => {
-        setDemoMode(true);
-        setDemoRole(role);
-    };
-
-    const exitDemo = () => {
-        setDemoMode(false);
-        setDemoRole(null);
-    };
-
-    if (demoRole === 'teacher')  return <><DemoExitBanner onExit={exitDemo} /><TeacherDashboard /></>;
-    if (demoRole === 'principal') return <><DemoExitBanner onExit={exitDemo} /><PrincipalSchoolView schoolId="mock-school" userId="mock-principal" /></>;
-    if (demoRole === 'student')  return <><DemoExitBanner onExit={exitDemo} /><StudentDashboard /></>;
+    const demoRole = roleToDemo(role);
+    const meta = ROLE_META[demoRole];
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '48px', padding: '8px 0' } as any}>
-            {/* Hero */}
-            <div style={{ textAlign: 'center', padding: '0 16px' }}>
-                <div style={{ fontSize: '48px', marginBottom: '16px' }}>🌿</div>
-                <h1 style={{ fontSize: '36px', fontWeight: '800', margin: '0 0 12px' }}>
-                    Welcome to <span style={{ color: 'var(--sanctuary-saffron)' }}>Gurudevi</span>
-                </h1>
-                <p style={{ fontSize: '16px', color: 'var(--ink-ghost)', maxWidth: '520px', margin: '0 auto 28px', lineHeight: '1.6' }}>
-                    A living classroom ecosystem for teachers, principals and students.
-                    Explore any role below — no account required.
-                </p>
-                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+            {/* Conversion banner */}
+            <div style={{
+                background: 'linear-gradient(135deg, rgba(212,132,58,0.12), rgba(212,132,58,0.06))',
+                border: '1px solid rgba(212,132,58,0.25)',
+                borderRadius: '16px',
+                padding: '24px 28px',
+                marginBottom: '28px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '16px',
+            }}>
+                <div>
+                    <div style={{
+                        display: 'flex', alignItems: 'center', gap: '8px',
+                        fontSize: '11px', fontWeight: '800', textTransform: 'uppercase',
+                        letterSpacing: '1.5px', color: 'var(--sanctuary-saffron)', marginBottom: '8px',
+                    }}>
+                        <Zap size={13} fill="var(--sanctuary-saffron)" />
+                        Demo Mode — {meta.emoji} {meta.title} Preview
+                    </div>
+                    <p style={{ margin: 0, fontSize: '15px', fontWeight: '600', color: 'var(--ink)' }}>
+                        You're exploring with simulated data.
+                    </p>
+                    <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--ink-ghost)' }}>
+                        Sign up or sign in to access your real {demoRole === 'teacher' ? 'classrooms' : demoRole === 'principal' ? 'school dashboard' : 'learning journey'}.
+                    </p>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                     <button
                         className="premium-button"
                         style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '8px' }}
                         onClick={() => navigation.navigate('Auth')}
                     >
-                        Get started <ArrowRight size={16} />
+                        <Plus size={15} />
+                        {demoRole === 'teacher' ? 'Create my classroom' : demoRole === 'principal' ? 'Set up my school' : 'Join my school'}
                     </button>
-                    <button className="secondary-button" onClick={() => navigation.navigate('Auth')}>
+                    <button
+                        className="secondary-button"
+                        style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                        onClick={() => navigation.navigate('Auth')}
+                    >
+                        <LogIn size={15} />
                         Sign in
                     </button>
                 </div>
             </div>
 
-            {/* Role Explorer */}
-            <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-                    <Zap size={16} color="var(--sanctuary-saffron)" fill="var(--sanctuary-saffron)" />
-                    <span style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--ink-ghost)' }}>
-                        Explore Demo
-                    </span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
-                    {DEMO_ROLES.map(r => (
-                        <button
-                            key={r.id}
-                            onClick={() => enterDemo(r.id)}
-                            style={{
-                                background: r.bg,
-                                border: `1.5px solid ${r.color}44`,
-                                borderRadius: '16px',
-                                padding: '24px',
-                                textAlign: 'left',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '12px',
-                                transition: 'transform 0.15s, box-shadow 0.15s',
-                            }}
-                            onMouseOver={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 24px rgba(0,0,0,0.1)'; }}
-                            onMouseOut={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = ''; }}
-                        >
-                            <span style={{ fontSize: '32px' }}>{r.emoji}</span>
-                            <div>
-                                <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--ink)', marginBottom: '6px' }}>{r.title}</div>
-                                <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', lineHeight: '1.5' }}>{r.desc}</div>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '700', color: r.color, marginTop: '4px' }}>
-                                Explore as {r.title} <ArrowRight size={14} />
-                            </div>
-                        </button>
-                    ))}
-                </div>
+            {/* Feature teaser strip */}
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                gap: '12px',
+                marginBottom: '28px',
+            }}>
+                {(demoRole === 'teacher' ? [
+                    { icon: BookOpen,    text: 'Create & manage classrooms'  },
+                    { icon: Users,       text: 'Mark attendance instantly'   },
+                    { icon: GraduationCap, text: 'Gradebook & assignments'   },
+                ] : demoRole === 'principal' ? [
+                    { icon: Shield,      text: 'School-wide staff presence'  },
+                    { icon: Users,       text: 'Leave approvals & echo'      },
+                    { icon: BookOpen,    text: 'Classroom & student pulse'   },
+                ] : [
+                    { icon: BookOpen,    text: 'Your enrolled classrooms'    },
+                    { icon: Zap,         text: 'Goals & growth points'       },
+                    { icon: GraduationCap, text: 'Assignments & submissions' },
+                ]).map((item, i) => (
+                    <div key={i} style={{
+                        padding: '14px 16px',
+                        background: 'var(--glass-surface)',
+                        borderRadius: '10px',
+                        border: '1px solid var(--border-light)',
+                        display: 'flex', alignItems: 'center', gap: '10px',
+                        fontSize: '12px', fontWeight: '600', color: 'var(--ink-ghost)',
+                    }}>
+                        <item.icon size={15} color={meta.color} />
+                        {item.text}
+                    </div>
+                ))}
             </div>
 
-            {/* Feature highlights */}
-            <div>
-                <div style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--ink-ghost)', marginBottom: '20px' }}>
-                    What you can do
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-                    {[
-                        { icon: BookOpen, label: 'Classroom Management', desc: 'Create, organise and run classrooms with lessons, resources and gradebooks.' },
-                        { icon: Users, label: 'Attendance & Pulse', desc: 'Mark attendance, track trends and spot at-risk students in seconds.' },
-                        { icon: Shield, label: 'Principal Oversight', desc: 'Staff presence, leave approvals, echo chamber and school-wide analytics.' },
-                        { icon: GraduationCap, label: 'Student Journey', desc: 'Goals, assignments, growth points and personal reflections — all in one place.' },
-                    ].map((f, i) => (
-                        <div key={i} className="sanctuary-card" style={{ padding: '20px', display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                            <div style={{ padding: '10px', background: 'var(--background-alt)', borderRadius: '10px', flexShrink: 0 }}>
-                                <f.icon size={20} color="var(--action)" />
-                            </div>
-                            <div>
-                                <div style={{ fontSize: '14px', fontWeight: '700', marginBottom: '4px' }}>{f.label}</div>
-                                <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.5' }}>{f.desc}</div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            {/* Role demo — forceDemo isolates mock data from real session */}
+            {demoRole === 'teacher'   && <TeacherDashboard   forceDemo />}
+            {demoRole === 'principal' && <PrincipalSchoolView schoolId="mock-school" userId="mock-principal" forceDemo />}
+            {demoRole === 'student'   && <StudentDashboard   forceDemo />}
         </div>
     );
 }
 
-function DemoExitBanner({ onExit }: { onExit: () => void }) {
-    return (
-        <div style={{
-            background: 'rgba(245,158,11,0.1)',
-            border: '1px solid var(--amber-glow)',
-            borderRadius: '12px',
-            padding: '14px 20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '12px',
-            marginBottom: '24px',
-            flexWrap: 'wrap',
-        }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--amber-glow)', fontWeight: '700' }}>
-                <Zap size={15} fill="var(--amber-glow)" />
-                You are exploring a demo view — data is simulated.
-            </div>
-            <button onClick={onExit} className="secondary-button" style={{ fontSize: '12px', padding: '6px 14px' }}>
-                ← Exit demo
-            </button>
-        </div>
-    );
-}
+// ── Path 2: Authenticated real view with "Try Demo" button ─────────────────
 
-export default function ClassroomScreenWeb() {
-    const { role, isGuest } = useUserRole();
-    const { user, isDemoMode } = useStore();
+function AuthRoleView({ role, schoolId, userId }: { role: string; schoolId: string; userId: string }) {
+    const [showDemo, setShowDemo] = useState(false);
+    const demoRole = roleToDemo(role);
+    const meta = ROLE_META[demoRole];
 
-    const renderRoleView = () => {
-        const schoolId = user?.school_id || '';
-        const userId = user?.id;
-
-        // Guest or user without school: show the explorer landing
-        if (isGuest || !role) {
-            return <DemoExplorerView />;
-        }
-
+    const RealView = () => {
         switch (role) {
             case 'student':
                 return <StudentDashboard />;
@@ -200,21 +165,97 @@ export default function ClassroomScreenWeb() {
             case 'grade_head':
                 return <TeacherDashboard />;
             case 'principal':
-                return <PrincipalSchoolView schoolId={schoolId} userId={userId || ''} />;
+                return <PrincipalSchoolView schoolId={schoolId} userId={userId} />;
             case 'founder':
             case 'admin':
             case 'developer':
                 return <FounderDashboard />;
             default:
-                return <DemoExplorerView />;
+                return <TeacherDashboard />;
         }
     };
 
     return (
+        <>
+            {/* Try Demo button — lives in-flow above the real dashboard */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
+                <button
+                    onClick={() => setShowDemo(true)}
+                    style={{
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                        padding: '6px 14px', borderRadius: '8px',
+                        border: '1px solid var(--border)',
+                        background: 'var(--glass-surface)',
+                        cursor: 'pointer',
+                        fontSize: '12px', fontWeight: '700',
+                        color: 'var(--ink-ghost)',
+                        fontFamily: 'var(--font-body)',
+                    }}
+                    title={`Preview ${meta.title} demo`}
+                >
+                    <Zap size={13} color="var(--sanctuary-saffron)" />
+                    Try {meta.emoji} Demo
+                </button>
+            </div>
+
+            <RealView />
+
+            {/* Demo overlay — renders under topbar + sidebar via fixed positioning */}
+            {showDemo && (
+                <DemoPlaygroundPanel
+                    role={demoRole}
+                    onClose={() => setShowDemo(false)}
+                />
+            )}
+        </>
+    );
+}
+
+// ── Root export ────────────────────────────────────────────────────────────
+
+export default function ClassroomScreenWeb() {
+    const { role, isGuest, userId } = useUserRole();
+    const { user } = useStore();
+    const navigation = useNavigation<any>();
+    const schoolId = user?.school_id || '';
+
+    // Edge case: no role set at all — shouldn't happen after onboarding
+    if (!role) {
+        return (
+            <div className="sanctuary-screen">
+                <div className="sanctuary-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '20px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '48px' }}>🌿</div>
+                    <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '800' }}>Welcome to Gurudevi</h2>
+                    <p style={{ color: 'var(--ink-ghost)', maxWidth: '400px', margin: 0 }}>
+                        Let's get you set up. Choose your role to get started.
+                    </p>
+                    <button
+                        className="premium-button"
+                        style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '8px' }}
+                        onClick={() => navigation.navigate('Auth')}
+                    >
+                        Get started <ArrowRight size={16} />
+                    </button>
+                </div>
+                <LotusPetalFAB />
+            </div>
+        );
+    }
+
+    return (
         <div className="sanctuary-screen">
             <div className="sanctuary-container">
-                {isDemoMode && <SandboxBanner />}
-                {renderRoleView()}
+                {/* Path 1: Guest with role — show own-role demo + conversion CTAs */}
+                {isGuest && <GuestDemoView role={role} />}
+
+                {/* Path 2: Authenticated — show real data + "Try Demo" button */}
+                {!isGuest && (
+                    <AuthRoleView
+                        role={role}
+                        schoolId={schoolId}
+                        userId={userId || ''}
+                    />
+                )}
             </div>
             <LotusPetalFAB />
         </div>

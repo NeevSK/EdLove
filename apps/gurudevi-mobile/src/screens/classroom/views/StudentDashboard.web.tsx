@@ -37,15 +37,16 @@ const DEMO_GOALS = [
     { id: 'g3', text: 'Read one library resource daily', progress: 80 },
 ];
 
-export default function StudentDashboardWeb() {
+export default function StudentDashboardWeb({ forceDemo }: { forceDemo?: boolean } = {}) {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const { user, isDemoMode } = useStore();
+    const { user } = useStore();
     const { userId } = useUserRole();
+    const isDemo = forceDemo === true;
     const { rewards, isLoading: rewardsLoading } = useRewards();
     const { data: roleData, loading: roleLoading } = useClassroomRoleData();
 
-    const { goals: realGoals, isLoading: goalsLoading } = useStudentGoals(isDemoMode ? undefined : (userId ?? undefined));
+    const { goals: realGoals, isLoading: goalsLoading } = useStudentGoals(isDemo ? undefined : (userId ?? undefined));
     const [classrooms, setClassrooms] = useState<Classroom[]>([]);
     const [assignments, setAssignments] = useState<any[]>([]);
     const [submissionModal, setSubmissionModal] = useState<{ open: boolean; assignment: any | null }>({ open: false, assignment: null });
@@ -54,7 +55,7 @@ export default function StudentDashboardWeb() {
 
     useEffect(() => {
         // ── Demo mode: show mock data instantly ───────────────────────────
-        if (isDemoMode) {
+        if (isDemo) {
             setClassrooms(DEMO_CLASSROOMS as any);
             setAssignments(DEMO_ASSIGNMENTS);
             setClassroomsLoading(false);
@@ -93,23 +94,23 @@ export default function StudentDashboardWeb() {
             }
         };
         fetchClassrooms();
-    }, [userId, user?.school_id, isDemoMode]);
+    }, [userId, user?.school_id, isDemo]);
 
-    const goals = isDemoMode ? DEMO_GOALS : realGoals;
-    const displayGoalsLoading = isDemoMode ? false : goalsLoading;
-    const growthPoints = isDemoMode ? 340 : (rewards?.points ?? 0);
+    const goals = isDemo ? DEMO_GOALS : realGoals;
+    const displayGoalsLoading = isDemo ? false : goalsLoading;
+    const growthPoints = isDemo ? 340 : (rewards?.points ?? 0);
 
     const stats = [
         { label: 'Active Sanctuaries', value: classroomsLoading ? '—' : String(classrooms.length), icon: BookOpen, color: 'var(--water)' },
         { label: 'Goals Set', value: displayGoalsLoading ? '—' : String(goals.length), icon: Zap, color: 'var(--amber-glow)' },
-        { label: 'Growth Points', value: rewardsLoading && !isDemoMode ? '—' : String(growthPoints), icon: Trophy, color: 'var(--sanctuary-saffron)' },
+        { label: 'Growth Points', value: rewardsLoading && !isDemo ? '—' : String(growthPoints), icon: Trophy, color: 'var(--sanctuary-saffron)' },
     ];
 
     const pendingAssignments = assignments.filter((a: any) => !a.submitted);
 
     return (
         <>
-            {isDemoMode && <SandboxBanner />}
+            {isDemo && <SandboxBanner />}
             <div className="sub-view-container">
                 {/* 1. LEARNING PORTAL (Center) */}
                 <div className="content-scroll-area">
@@ -123,9 +124,9 @@ export default function StudentDashboardWeb() {
                             </span>
                         </div>
                         <h1 style={{ fontSize: '42px', fontWeight: '800', lineHeight: '1.2', margin: 0, color: 'var(--ink)' }}>
-                            Radiate <span style={{ color: 'var(--water)' }}>Curiosity</span>{isDemoMode ? ', Amara' : (user?.full_name ? `, ${user.full_name.split(' ')[0]}` : '')}.
+                            Radiate <span style={{ color: 'var(--water)' }}>Curiosity</span>{isDemo ? ', Amara' : (user?.full_name ? `, ${user.full_name.split(' ')[0]}` : '')}.
                         </h1>
-                        {isDemoMode && (
+                        {isDemo && (
                             <p style={{ color: 'var(--ink-ghost)', marginTop: '8px', fontSize: '14px' }}>
                                 Demo view — Amara Jayasinghe · Grade 10 · Gurudevi Life School
                             </p>
@@ -139,7 +140,7 @@ export default function StudentDashboardWeb() {
                                 <stat.icon size={20} color={stat.color} />
                                 <div>
                                     <div style={{ fontSize: '32px', fontWeight: '800' }}>
-                                        {stat.value}{isDemoMode && stat.value !== '—' && <span style={{ fontSize: '14px', color: 'var(--sanctuary-saffron)', marginLeft: 4 }}>✦</span>}
+                                        {stat.value}{isDemo && stat.value !== '—' && <span style={{ fontSize: '14px', color: 'var(--sanctuary-saffron)', marginLeft: 4 }}>✦</span>}
                                     </div>
                                     <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>{stat.label}</div>
                                 </div>
@@ -203,7 +204,7 @@ export default function StudentDashboardWeb() {
                     )}
 
                     {/* Upcoming / Pending Assignments */}
-                    {(assignments.length > 0 || isDemoMode) && (
+                    {(assignments.length > 0 || isDemo) && (
                         <div style={{ marginTop: '40px' }}>
                             <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <CheckCircle2 size={18} color="var(--moss)" />
@@ -227,7 +228,7 @@ export default function StudentDashboardWeb() {
                                                 <span>Due {typeof a.due_date === 'string' ? a.due_date : new Date(a.due_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
                                             </div>
                                         </div>
-                                        {!a.submitted && !isDemoMode && (
+                                        {!a.submitted && !isDemo && (
                                             <button
                                                 className="premium-button"
                                                 style={{ fontSize: '11px', padding: '6px 12px' }}
@@ -280,7 +281,7 @@ export default function StudentDashboardWeb() {
                     </div>
 
                     {/* Growth Points Card */}
-                    {isDemoMode && (
+                    {isDemo && (
                         <div className="sanctuary-card" style={{ padding: '24px', background: 'linear-gradient(135deg, rgba(245,158,11,0.05), rgba(245,158,11,0.12))', borderColor: 'rgba(245,158,11,0.2)' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                                 <Trophy size={20} color="var(--sanctuary-saffron)" />

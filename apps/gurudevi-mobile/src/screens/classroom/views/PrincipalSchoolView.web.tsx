@@ -49,9 +49,10 @@ function presenceColor(present: number, total: number): string {
     return 'var(--ember)';
 }
 
-export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?: string; userId?: string }) {
+export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: { schoolId?: string; userId?: string; forceDemo?: boolean }) {
     const { t } = useTranslation();
     const { user, isDemoMode } = useStore();
+    const isDemo = forceDemo === true || isDemoMode;
     const effectiveSchoolId = schoolId || user?.school_id || '';
     const effectiveUserId = userId || user?.id || '';
 
@@ -238,7 +239,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId }: { schoolId?
 
     return (
         <>
-            {isDemoMode && <SandboxBanner />}
+            {isDemo && <SandboxBanner />}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
 
                 {/* ─── VISIONARY SANDBOX BANNER (ghost data) ─────── */}
