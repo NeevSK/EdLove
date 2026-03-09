@@ -28,20 +28,26 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
     const [isCompleting, setIsCompleting] = useState(false);
     const toast = useToast();
 
-    // Onboarding Sentinel: If already authenticated (e.g. via Google), 
-    // fetch name and jump to Role step (Step 1).
+    // Onboarding Sentinel: If a verified (non-anonymous) user re-enters onboarding
+    // (e.g. via Google sign-in), pre-fill their name and skip the Name step.
+    // Anonymous users always start at step 0 so they can enter their real name.
     React.useEffect(() => {
         const checkExistingAuth = async () => {
             const internalId = await identityAPI.getMyInternalId();
             if (!internalId) return;
-            const { data: { user: authUser } } = await supabase.auth.getUser();
-            if (authUser) {
-                const displayName = authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || '';
-                if (displayName) {
-                    setName(displayName);
-                    // If we have a name but no role, jump to Role selection
-                    setCurrentStep(1);
-                }
+            const { data: profile } = await supabase
+                .from('users')
+                .select('full_name, is_anonymous, role')
+                .eq('id', internalId)
+                .maybeSingle();
+            if (!profile) return;
+
+            // Only pre-fill for real (non-anonymous) users with a genuine name
+            const PLACEHOLDER_NAMES = ['Guest User', 'Gurudevi User', 'Sanctuary User'];
+            if (!profile.is_anonymous && profile.full_name && !PLACEHOLDER_NAMES.includes(profile.full_name)) {
+                setName(profile.full_name);
+                if (profile.role) setRole(profile.role as UserRole);
+                setCurrentStep(1); // Skip Name step, land on Role selection
             }
         };
         checkExistingAuth();
@@ -107,7 +113,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
         setIsCompleting(true);
         try {
             const internalId = await identityAPI.getMyInternalId();
-            if (!internalId) throw new Error('No identity found');
+            if (!internalId) throw new Error('Failed to resolve internal user ID during onboarding completion');
 
             hapticSuccess();
 
@@ -135,7 +141,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                 .from('users')
                 .upsert({
                     id: internalId,
-                    full_name: name || 'Sanctuary User',
+                    full_name: name || 'Gurudevi User',
                     role: role,
                     school_id: schoolId,
                     onboarding_completed: true,
@@ -274,6 +280,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             onboardingData={{ name, role }}
             isAnonymous={isAnonymous}
             onContinueAsGuest={handleCompleteOnboarding}
+            onSuccess={handleCompleteOnboarding}
         />
     );
 

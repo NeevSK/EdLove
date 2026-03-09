@@ -16,7 +16,7 @@
  * Roles: teacher · student · principal (NOT founder / admin / developer).
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -84,6 +84,31 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
 
     const isNarrow = width < 900;
 
+    // ── Onboarding Sentinel ───────────────────────────────────────────────
+    // For verified (non-anonymous) users (e.g. Google sign-in), pre-fill
+    // their name and skip the Name step.  Anonymous users always start at
+    // step 0 so they can enter their real name.
+    useEffect(() => {
+        const checkExistingAuth = async () => {
+            const internalId = await identityAPI.getMyInternalId();
+            if (!internalId) return;
+            const { data: profile } = await supabase
+                .from('users')
+                .select('full_name, is_anonymous, role')
+                .eq('id', internalId)
+                .maybeSingle();
+            if (!profile) return;
+
+            const PLACEHOLDER_NAMES = ['Guest User', 'Gurudevi User', 'Sanctuary User'];
+            if (!profile.is_anonymous && profile.full_name && !PLACEHOLDER_NAMES.includes(profile.full_name)) {
+                setName(profile.full_name);
+                if (profile.role) setRole(profile.role as UserRole);
+                setCurrentStep(1);
+            }
+        };
+        checkExistingAuth();
+    }, []);
+
     // ── Tour content ──────────────────────────────────────────────────────
     const tourScreens = useMemo(() => [
         {
@@ -133,7 +158,10 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
         setIsCompleting(true);
         try {
             const internalId = await identityAPI.getMyInternalId();
-            if (!internalId) throw new Error('No identity found');
+            if (!internalId) {
+                console.error('[OnboardingScreen.web] No internal user ID — anonymous session may not have been created yet.');
+                throw new Error('Failed to resolve internal user ID during onboarding completion');
+            }
 
             const { data: existingProfile } = await supabase
                 .from('users')
@@ -185,6 +213,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                 onboardingData={{ name, role }}
                 isAnonymous={isAnonymous}
                 onContinueAsGuest={handleCompleteOnboarding}
+                onSuccess={handleCompleteOnboarding}
             />
         );
     }
