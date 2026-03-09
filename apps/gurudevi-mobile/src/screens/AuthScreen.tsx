@@ -62,11 +62,12 @@ interface AuthScreenProps {
     isAnonymous?: boolean;
     onContinueAsGuest?: () => void;
     onSuccess?: () => void;
+    onBack?: () => void;
     /** Start the auth screen in login mode (vs default sign-up) */
     initialMode?: 'login' | 'signup';
 }
 
-export default function AuthScreen({ onboardingData, isAnonymous = false, onContinueAsGuest, onSuccess, initialMode }: AuthScreenProps) {
+export default function AuthScreen({ onboardingData, isAnonymous = false, onContinueAsGuest, onSuccess, onBack, initialMode }: AuthScreenProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
     const [email, setEmail] = useState('');

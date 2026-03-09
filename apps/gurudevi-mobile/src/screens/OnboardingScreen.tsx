@@ -21,19 +21,36 @@ interface OnboardingScreenProps {
 export default function OnboardingScreen({ onComplete, isAnonymous = false }: OnboardingScreenProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
-    const [currentStep, setCurrentStep] = useState(0); // 0: Name, 1: Role, 2: Orientation (optional), 3-7: Tour, 8: Auth
+    const [currentStep, setCurrentStep] = useState(0); // 0: Name, 1: Role, 2: Orientation, 3-7: Tour, 8: Auth
     const [name, setName] = useState('');
     const [role, setRole] = useState<UserRole>('teacher');
     const [orientationSeeds, setOrientationSeeds] = useState<OrientationSeeds | null>(null);
     const [isCompleting, setIsCompleting] = useState(false);
     const toast = useToast();
 
-    // Onboarding Sentinel: If a verified (non-anonymous) user re-enters onboarding
-    // (e.g. via Google sign-in), pre-fill their name and skip the Name step.
-    // Anonymous users always start at step 0 so they can enter their real name.
+    // ── Restore saved progress or pre-fill from existing auth ─────────────
     React.useEffect(() => {
-        const checkExistingAuth = async () => {
+        const initOnboarding = async () => {
             const internalId = await identityAPI.getMyInternalId();
+
+            // Try to restore mid-flow progress for this user
+            try {
+                const saved = await AsyncStorage.getItem('onboarding_progress');
+                if (saved) {
+                    const progress = JSON.parse(saved);
+                    if (!internalId || progress.userId === internalId) {
+                        if (progress.name) setName(progress.name);
+                        if (progress.role) setRole(progress.role as UserRole);
+                        if (progress.orientationSeeds) setOrientationSeeds(progress.orientationSeeds);
+                        if (typeof progress.step === 'number' && progress.step > 0 && progress.step < 8) {
+                            setCurrentStep(progress.step);
+                            return; // Skip auth pre-fill — progress takes priority
+                        }
+                    }
+                }
+            } catch { /* ignore corrupt storage */ }
+
+            // No saved progress — pre-fill for verified (non-anonymous) users with a real name
             if (!internalId) return;
             const { data: profile } = await supabase
                 .from('users')
@@ -42,15 +59,14 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                 .maybeSingle();
             if (!profile) return;
 
-            // Only pre-fill for real (non-anonymous) users with a genuine name
             const PLACEHOLDER_NAMES = ['Guest User', 'Gurudevi User', 'Sanctuary User'];
             if (!profile.is_anonymous && profile.full_name && !PLACEHOLDER_NAMES.includes(profile.full_name)) {
                 setName(profile.full_name);
                 if (profile.role) setRole(profile.role as UserRole);
-                setCurrentStep(1); // Skip Name step, land on Role selection
+                setCurrentStep(1);
             }
         };
-        checkExistingAuth();
+        initOnboarding();
     }, []);
 
     const tourScreens = useMemo(() => [
@@ -86,13 +102,23 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
         }
     ], [t]);
 
-    // Steps Logic
-    // Step 0: Name (Required)
-    // Step 1: Role (Required, default Teacher)
-    // Step 2-6: Tour
-    // Step 7: Auth Upgrade (or Continue as Guest)
+    // Steps: 0-Name, 1-Role, 2-Orientation, 3-7-Tour, 8-Auth
 
     const canProceed = currentStep === 0 ? name.trim().length > 0 : true;
+
+    // Save progress whenever step/name/role/seeds change (so app-close resumes correctly)
+    React.useEffect(() => {
+        if (currentStep === 0 && !name) return; // Nothing to save yet
+        identityAPI.getMyInternalId().then((userId) => {
+            AsyncStorage.setItem('onboarding_progress', JSON.stringify({
+                userId,
+                step: currentStep,
+                name,
+                role,
+                orientationSeeds,
+            })).catch(() => {/* silent */});
+        });
+    }, [currentStep, name, role, orientationSeeds]);
 
     const handleNext = () => {
         if (!canProceed) return;
@@ -281,6 +307,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             isAnonymous={isAnonymous}
             onContinueAsGuest={handleCompleteOnboarding}
             onSuccess={handleCompleteOnboarding}
+            onBack={() => setCurrentStep(7)}
         />
     );
 
