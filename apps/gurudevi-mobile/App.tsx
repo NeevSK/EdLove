@@ -51,34 +51,9 @@ export { navigationRef } from './src/navigation/navigationRef';
 // Root Stack for Modals
 const RootStack = createNativeStackNavigator();
 
-function App() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [currentTab, setCurrentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
-  const onboardingCompleted = useStore((state) => state.onboardingCompleted);
-  const storeUser = useStore((state) => state.user);
-  const [showWelcome, setShowWelcome] = useState(true);
-  const toast = useStore((state) => state.toast);
-  const hideToast = useStore((state) => state.hideToast);
-
-  // Initialize analytics inside App component to avoid HMRClient setup issues at startup
-  useEffect(() => {
-    initSentry();
-    initPostHog().then(() => {
-      trackEvent('app_initialized', { platform: Platform.OS });
-    });
-  }, []);
-
-  const { i18n } = useTranslation();
-
-  // Load saved language preference
-  useEffect(() => {
-    LanguageUtils.init();
-  }, []);
-
-  // Extract user profile fetching logic
-  const fetchAndSetUserProfile = async (userId: string) => {
+// Module-level so AppContent can call it without prop-drilling.
+// Uses useStore.getState() (not a hook) — safe to call outside React render.
+const fetchAndSetUserProfile = async (userId: string) => {
     try {
       const { data: userProfile, error } = await supabase
         .from('users')
@@ -117,7 +92,33 @@ function App() {
       const { handleAPIError } = require('@repo/core');
       handleAPIError(error);
     }
-  };
+};
+
+function App() {
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [currentTab, setCurrentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
+  const onboardingCompleted = useStore((state) => state.onboardingCompleted);
+  const storeUser = useStore((state) => state.user);
+  const [showWelcome, setShowWelcome] = useState(true);
+  const toast = useStore((state) => state.toast);
+  const hideToast = useStore((state) => state.hideToast);
+
+  // Initialize analytics inside App component to avoid HMRClient setup issues at startup
+  useEffect(() => {
+    initSentry();
+    initPostHog().then(() => {
+      trackEvent('app_initialized', { platform: Platform.OS });
+    });
+  }, []);
+
+  const { i18n } = useTranslation();
+
+  // Load saved language preference
+  useEffect(() => {
+    LanguageUtils.init();
+  }, []);
 
   // Load custom fonts
   useEffect(() => {
@@ -385,7 +386,7 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
 
       // If web and not onboarded/session, and trying to hit anything other than Welcome/Auth/QR
       // Allow access for authenticated users (including anonymous guests) and specific routes
-      const allowedRoutes = ['Welcome', 'Auth', 'QRHandler'];
+      const allowedRoutes = ['Welcome', 'Onboarding', 'Auth', 'QRHandler', 'InvitationWelcome'];
       const hasValidSession = !!session;
 
       if (!hasValidSession && !onboardingCompleted && !allowedRoutes.includes(currentRoute || '')) {

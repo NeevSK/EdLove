@@ -23,7 +23,6 @@
     "initialize": "ආරම්භ කරන්න",
     "guidesAndSamples": "මාර්ගෝපදේශ සහ නියැදි",
     "skip": "මඟ හරින්න",
-
     "notifications": "Notifications",
     "settings": "Settings",
     "close": "Close",
@@ -44,7 +43,6 @@
   },
   "greeting": {
     "ayubowan": "ආයුබෝවන්!",
-
     "morning": "Morning",
     "afternoon": "Afternoon",
     "evening": "Evening"
@@ -197,7 +195,9 @@
     "identityAlreadyExists": "මෙම ගිණුම දැනටමත් පවතී. කරුණාකර ඒ වෙනුවට ලොග් ඉන් කරන්න.",
     "tagline": "ඔබගේ ඉගෙනුම් ගමන එකම ස්ථානයකින්",
     "signInEmail": "ඊමේල් මගින් පිවිසෙන්න",
-    "acceptTermsRequired": "ඉදිරියට යාමට කරුණාකර නියම සහ කොන්දේසි සහිත ගිවුම පිළිගන්න."
+    "acceptTermsRequired": "ඉදිරියට යාමට කරුණාකර නියම සහ කොන්දේසි සහිත ගිවුම පිළිගන්න.",
+    "signUpWithEmail": "ඊමේල් මගින් ලියාපදිංචි වන්න",
+    "noAccount": "ගිණුමක් නැද්ද?"
   },
   "tabs": {
     "self": "මම",
@@ -301,7 +301,6 @@
     "threeGentleThings": "හෙට මෘදු කරන දේවල් 3ක් කුමක්ද? 🌙",
     "insightPlaceholder": "අද ඔබ සොයාගත් ඉගැන්වීම් අවබෝධය කුමක්ද?",
     "momentDescriptionPlaceholder": "මායා අද භින්නාංක අවබෝධ කර ගත්තා! 🎉",
-
     "inhale": "Inhale",
     "hold": "Hold",
     "exhale": "Exhale",
@@ -359,7 +358,6 @@
     "myProgress": "මගේ ප්‍රගතිය",
     "myProgressDesc": "ඔබේ ඉගෙනීම් ගමන සහ ජයග්‍රහණ නිරීක්ෂණය කරන්න",
     "noGradesYet": "No grades yet — keep going! 🌱",
-
     "unknownAssignment": "Assignment",
     "goalsComingSoon": "Goal Setting Arriving Soon",
     "goalsComingSoonDesc": "We are building a beautiful space for your daily aspirations.",
@@ -450,7 +448,6 @@
     "activeSessions": "සක්‍රීය සැසියන්",
     "securityAlerts": "ආරක්ෂක අනතුරු ඇඟවීම්",
     "infraSummary": "{{name}} සඳහා යටිතල පහසුකම් සාරාංශය",
-
     "balance": "Balance",
     "balanceComingSoon": "System Pulse Arriving",
     "balanceComingSoonDesc": "A dashboard for operational harmony is being calibrated."
@@ -466,7 +463,6 @@
     "visionaryInsights": "විචක්ෂණශීලී අවබෝධයන්",
     "wellnessIndex": "යහපැවැත්මේ දර්ශකය",
     "wellnessIncrease": "පසුගිය චක්‍රයේ සිට +{{percent}}%",
-
     "visionComingSoon": "Architecting the Future",
     "visionComingSoonDesc": "The vision alignment dashboard is currently being synthesized."
   },
@@ -475,7 +471,6 @@
     "description": "ගුරු ප්‍රජාව සමඟ සම්බන්ධ වන්න",
     "announcements": "නිවේදන",
     "postAnnouncement": "නිවේදනයක් පළ කරන්න",
-
     "filters": {
       "allUpdates": "All Updates"
     },
@@ -556,7 +551,6 @@
     "free": "නොමිලේ",
     "pro": "ප්‍රෝ",
     "premium": "ප්‍රීමියම්",
-
     "deleteAccount": "Delete Account",
     "viewEditProfile": "View or Edit Profile",
     "account": {
@@ -771,7 +765,6 @@
       "light_full": "දිවා කාලය සඳහා දීප්තිමත් සහ පැහැදිලි",
       "dark_full": "අඩු ආලෝකයේදී ඇස්වලට පහසු",
       "hint": "දවසේ කාලය මත පදනම්ව ආලෝකමත්, අඳුරු හෝ ස්වයංක්‍රීය තේමාව තෝරන්න",
-
       "system": "System Default",
       "system_full": "Follows your device theme settings"
     },
@@ -780,7 +773,6 @@
       "day": "ක්‍රියාකාරී වැඩ (උදේ 8 - සවස 5)",
       "evening": "නිදිමත යාම (සවස 5-8)",
       "night": "විවේකය (රාත්‍රී 8 - උදේ 5)",
-
       "predawn": "Deep quiet (4-6 AM)",
       "morning": "Active start (9 AM-12 PM)",
       "afternoon": "Full energy (12-5 PM)",
@@ -831,7 +823,6 @@
     "living_theme": {
       "title": "Living Theme",
       "on": "Phase-aware colors shift with the time of day",
-
       "off": "Classic calm — simple static appearance"
     },
     "explorer": {
@@ -1084,13 +1075,11 @@
     "title": "සමාජ මධ්‍යස්ථානය",
     "subtitle": "ඔබේ සම්බන්ධතා සකස් කරන්න",
     "selectPlatform": "වේදිකාව තෝරන්න",
-
     "platforms": {
       "whatsapp": "WhatsApp",
       "linkedin": "LinkedIn",
       "instagram": "Instagram",
       "portfolio": "Portfolio",
-
       "email": "ඊමේල්"
     },
     "handleOrLink": "ලිංකය හෝ හෑන්ඩල්ය",
