@@ -4,6 +4,12 @@ this doc is to list issues in web i saw when manual testing.
 ### 2.00 pm
 1. https://platform.gurudevi.edlove.org/?error=server_error&error_code=unexpected_failure&error_description=Database+error+saving+new+user#error=server_error&error_code=unexpected_failure&error_description=Database+error+saving+new+user&sb=
 2. explore as guest not wroking - seems we had some plans but didnt continued in other hand we changed identityapi and users recently.
+3. loading shimmers are very small and ugly not aligned with screen size.
+4. lazy loading seems making everything slow. is that a issue or only because local build?
+
+
+
+
 
 ## 08/03/2026 (latest [n-1])
 

@@ -95,10 +95,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: Theme.spacing.lg,
         paddingVertical: Theme.spacing.md,
         borderTopWidth: 1,
-        shadowColor: Theme.colors.shadowViolet,
-        shadowOffset: { width: 0, height: -4 },
-        shadowOpacity: 0.12,
-        shadowRadius: 12,
+        boxShadow: `0 -4px 12px ${Theme.colors.shadowViolet}1F`, // 1F is roughly 0.12 opacity
         zIndex: 999,
     },
     left: {

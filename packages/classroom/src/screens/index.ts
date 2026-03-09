@@ -1,13 +1,29 @@
-export { default as PrincipalSchoolView } from './PrincipalSchoolView';
-export { default as SectionHeadView } from './SectionHeadView';
-export { default as GradeHeadView } from './GradeHeadView';
-export { default as FounderSchoolView } from './FounderSchoolView';
-export { default as FounderDashboard } from './FounderDashboard';
-export { default as ContentLibrary } from './ContentLibrary';
-export { default as LessonFeed } from './LessonFeed';
-export { default as ClassroomScreen } from './ClassroomScreen';
-export { default as ClassroomDetailsScreen } from './ClassroomDetailsScreen';
-export { default as AttendanceScreen } from './AttendanceScreen';
-export { default as GradebookScreen } from './GradebookScreen';
-export { default as ClassroomDashboard } from './ClassroomDashboard';
-export { default as StudentProfileScreen } from './StudentProfileScreen';
+import PrincipalSchoolView from './PrincipalSchoolView';
+import SectionHeadView from './SectionHeadView';
+import GradeHeadView from './GradeHeadView';
+import FounderSchoolView from './FounderSchoolView';
+import FounderDashboard from './FounderDashboard';
+import ContentLibrary from './ContentLibrary';
+import LessonFeed from './LessonFeed';
+import ClassroomScreen from './ClassroomScreen';
+import ClassroomDetailsScreen from './ClassroomDetailsScreen';
+import AttendanceScreen from './AttendanceScreen';
+import GradebookScreen from './GradebookScreen';
+import ClassroomDashboard from './ClassroomDashboard';
+import StudentProfileScreen from './StudentProfileScreen';
+
+export {
+    PrincipalSchoolView,
+    SectionHeadView,
+    GradeHeadView,
+    FounderSchoolView,
+    FounderDashboard,
+    ContentLibrary,
+    LessonFeed,
+    ClassroomScreen,
+    ClassroomDetailsScreen,
+    AttendanceScreen,
+    GradebookScreen,
+    ClassroomDashboard,
+    StudentProfileScreen,
+};

@@ -119,10 +119,10 @@ export default function FounderSelfViewWeb() {
     const energyBars = forecasts.slice(0, 7).reverse();
 
     const TABS: SanctuaryTab<ActivePanel>[] = [
-        { id: 'vision',     icon: Compass,   label: 'Vision',     activeColor: 'var(--sanctuary-saffron)', activeTextColor: 'var(--text-on-action)' },
-        { id: 'mood',       icon: Sparkles,  label: 'Mood Lotus', activeColor: 'var(--water)',             activeTextColor: '#FCF9F2' },
-        { id: 'energy',     icon: Zap,       label: 'Energy',     activeColor: 'var(--lotus)',             activeTextColor: '#FCF9F2' },
-        { id: 'philosophy', icon: Lightbulb, label: 'Philosophy', activeColor: 'var(--ink)',               activeTextColor: '#FCF9F2' },
+        { id: 'vision', icon: Compass, label: 'Vision', activeColor: 'var(--sanctuary-saffron)', activeTextColor: 'var(--text-on-action)' },
+        { id: 'mood', icon: Sparkles, label: 'Mood Lotus', activeColor: 'var(--water)', activeTextColor: '#FCF9F2' },
+        { id: 'energy', icon: Zap, label: 'Energy', activeColor: 'var(--lotus)', activeTextColor: '#FCF9F2' },
+        { id: 'philosophy', icon: Lightbulb, label: 'Philosophy', activeColor: 'var(--ink)', activeTextColor: '#FCF9F2' },
     ];
 
     // ── personalLayer: the inner life — mood, energy pulse ──────────────
@@ -174,32 +174,32 @@ export default function FounderSelfViewWeb() {
     const workingLayer = (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
             <div>
-            <SanctuaryTabBar tabs={TABS} activeId={activePanel} onSelect={setActivePanel} />
-            <div className="sanctuary-card" style={{ marginTop: '24px' }}>
-                <div className="card-body-inner">
-                    {activePanel === 'vision'     && (
-                        <VisionPanel
-                            visionText={visionText}
-                            onVisionChange={setVisionText}
-                            onSave={handleSaveVision}
-                            saving={savingVision}
-                            saved={visionSaved}
-                        />
-                    )}
-                    {activePanel === 'mood'       && <MoodPanel moodHistory={moodHistory} moodLoading={moodLoading} />}
-                    {activePanel === 'energy'     && <EnergyPanel forecasts={forecasts} energyLoading={energyLoading} />}
-                    {activePanel === 'philosophy' && (
-                        <PhilosophyPanel
-                            notes={wisdomNotes}
-                            wisdomLoading={wisdomLoading}
-                            draft={wisdomDraft}
-                            onDraftChange={setWisdomDraft}
-                            onAdd={handleAddWisdom}
-                            saving={savingWisdom}
-                        />
-                    )}
+                <SanctuaryTabBar tabs={TABS} activeId={activePanel} onSelect={(id) => setActivePanel(id as ActivePanel)} />
+                <div className="sanctuary-card" style={{ marginTop: '24px' }}>
+                    <div className="card-body-inner">
+                        {activePanel === 'vision' && (
+                            <VisionPanel
+                                visionText={visionText}
+                                onVisionChange={setVisionText}
+                                onSave={handleSaveVision}
+                                saving={savingVision}
+                                saved={visionSaved}
+                            />
+                        )}
+                        {activePanel === 'mood' && <MoodPanel moodHistory={moodHistory} moodLoading={moodLoading} />}
+                        {activePanel === 'energy' && <EnergyPanel forecasts={forecasts} energyLoading={energyLoading} />}
+                        {activePanel === 'philosophy' && (
+                            <PhilosophyPanel
+                                notes={wisdomNotes}
+                                wisdomLoading={wisdomLoading}
+                                draft={wisdomDraft}
+                                onDraftChange={setWisdomDraft}
+                                onAdd={handleAddWisdom}
+                                saving={savingWisdom}
+                            />
+                        )}
+                    </div>
                 </div>
-            </div>
             </div>
 
             {/* Resonance Pattern — behavioral fingerprint */}
@@ -223,7 +223,7 @@ export default function FounderSelfViewWeb() {
                 </div>
             </div>
         </div>
-    );: mood picker, energy snapshot, mirrors, context nudge ────
+    ); // mood picker, energy snapshot, mirrors, context nudge ─────────────────
     const sideBar = (
         <>
             <MoodPickerCard
@@ -298,7 +298,7 @@ export default function FounderSelfViewWeb() {
             <div className="sanctuary-card" style={{ background: 'var(--background-alt)', border: 'none' }}>
                 <div className="card-body-inner">
                     <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '8px' }}>
-                        <Network size={100} color="var(--ink)" style={{ position: 'absolute', bottom: '-20px', right: '-20px', opacity: 0.05 }} />
+                        <Network size={100} color="var(--ink)" style={{ position: 'absolute', bottom: -20, right: -20, opacity: 0.05 }} />
                         <div style={{ position: 'relative', zIndex: 1 }}>
                             <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '8px' }}>Ecosystem Lives in Classroom</div>
                             <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.5' }}>
@@ -491,7 +491,7 @@ function PhilosophyPanel({
 
             {notes.length === 0 ? (
                 <div style={{ padding: '32px', background: 'var(--background-alt)', borderRadius: '16px', textAlign: 'center' }}>
-                    <Lightbulb size={32} color="var(--ink-ghost)" style={{ marginBottom: '12px' }} />
+                    <Lightbulb size={32} color="var(--ink-ghost)" style={{ marginBottom: 12 }} />
                     <p style={{ color: 'var(--ink-ghost)', fontSize: '14px', margin: 0 }}>No wisdom seeds yet. Plant your first insight above.</p>
                 </div>
             ) : (

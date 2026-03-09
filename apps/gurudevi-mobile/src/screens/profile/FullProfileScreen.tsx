@@ -21,7 +21,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { MapPin, Mail, Phone, Shield, Edit3, Check, X, User as UserIcon, FileText, Fingerprint, Briefcase, GraduationCap, BookOpen, School } from 'lucide-react-native';
 import { hapticLight, hapticError } from '@repo/ui';
-import { supabase, identityAPI } from '@repo/core';
+import { useStore, identityAPI } from '@repo/core';
 import {
     IdentityCard,
     AddSocialLinkModal,
@@ -48,6 +48,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
     const { updateField } = useProfile();
     const { t } = useTranslation();
     const colors = useThemedColors();
+    const { user } = useStore();
     const bottomPadding = useBottomTabPadding();
     const [profile, setProfile] = useState<any>(initialProfile);
     const { role } = useEnvironment();
@@ -79,15 +80,15 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
 
     // Resolve current session user
     useEffect(() => {
-        identityAPI.getMyInternalId().then(async (id) => {
-            if (id) {
-                setCurrentUserId(id);
-                // For name, we can try to fetch the profile name or keep it fallback
-                const userId = await identityAPI.getMyInternalId();
-                setCurrentUserName(user?.user_metadata?.full_name ?? user?.email ?? '');
-            }
-        });
-    }, []);
+        if (user) {
+            setCurrentUserId(user.id);
+            setCurrentUserName(user.full_name || user.email || '');
+        } else {
+            identityAPI.getMyInternalId().then((id) => {
+                if (id) setCurrentUserId(id);
+            });
+        }
+    }, [user]);
 
     // Clear all pending dismiss timers when the screen unmounts
     useEffect(() => {

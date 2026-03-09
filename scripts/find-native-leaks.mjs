@@ -9,12 +9,25 @@ const KNOWN_NATIVE_PACKAGES = [
     'expo-sqlite',
     'expo-file-system',
     'expo-sharing',
+    'expo-haptics',
+    'expo-camera',
+    'expo-image-picker',
+    'expo-location',
+    'expo-secure-store',
+    'expo-application',
+    'expo-device',
+    'expo-updates',
     '@sentry/react-native',
     'posthog-react-native',
     '@react-native-ml-kit/text-recognition',
     '@react-native-ml-kit/barcode-scanning',
+    'react-native-mmkv',
+    'react-native-nitro-modules',
+    'react-native-worklets',
     'react-native-get-random-values',
-    'react-native-url-polyfill/auto'
+    'react-native-url-polyfill/auto',
+    '@react-native-community/netinfo',
+    '@shopify/react-native-skia'
 ];
 
 // Read metro.config.js to find what's already shimmed

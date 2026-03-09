@@ -132,20 +132,26 @@ DROP POLICY IF EXISTS "Teachers can read submissions in their classrooms" ON pub
 CREATE POLICY "Teachers can read submissions in their classrooms"
     ON public.submissions FOR SELECT TO authenticated
     USING (EXISTS (
-        SELECT 1 FROM public.classrooms
-        WHERE id = classroom_id AND teacher_id = get_my_id()
+        SELECT 1 FROM public.assignments a
+        JOIN public.classrooms c ON c.id = a.classroom_id
+        WHERE a.id = public.submissions.assignment_id
+          AND c.teacher_id = get_my_id()
     ));
 
 DROP POLICY IF EXISTS "Teachers can grade submissions in their classrooms" ON public.submissions;
 CREATE POLICY "Teachers can grade submissions in their classrooms"
     ON public.submissions FOR UPDATE TO authenticated
     USING (EXISTS (
-        SELECT 1 FROM public.classrooms
-        WHERE id = classroom_id AND teacher_id = get_my_id()
+        SELECT 1 FROM public.assignments a
+        JOIN public.classrooms c ON c.id = a.classroom_id
+        WHERE a.id = public.submissions.assignment_id
+          AND c.teacher_id = get_my_id()
     ))
     WITH CHECK (EXISTS (
-        SELECT 1 FROM public.classrooms
-        WHERE id = classroom_id AND teacher_id = get_my_id()
+        SELECT 1 FROM public.assignments a
+        JOIN public.classrooms c ON c.id = a.classroom_id
+        WHERE a.id = public.submissions.assignment_id
+          AND c.teacher_id = get_my_id()
     ));
 
 -- ── group_messages ─────────────────────────────────────────────────

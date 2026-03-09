@@ -42,13 +42,13 @@ const win = (typeof window !== 'undefined' ? window : null) as Window | null;
 
 // ─── Icons (inline SVG paths rendered as Text glyphs for zero extra deps) ─────
 const GLYPHS: Record<string, string> = {
-    Self:        '♥',
-    Classroom:   '🏫',
-    Community:   '🤝',
-    Library:     '📚',
-    Profile:     '👤',
+    Self: '♥',
+    Classroom: '🏫',
+    Community: '🤝',
+    Library: '📚',
+    Profile: '👤',
     AIAssistant: '✦',
-    QRScanner:   '⊞',
+    QRScanner: '⊞',
 };
 
 // ─── Command definitions ───────────────────────────────────────────────────────
@@ -197,10 +197,10 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
     // Filter by query
     const filtered = query.trim()
         ? commands.filter(
-              (c) =>
-                  c.label.toLowerCase().includes(query.toLowerCase()) ||
-                  (c.subtitle ?? '').toLowerCase().includes(query.toLowerCase()),
-          )
+            (c) =>
+                c.label.toLowerCase().includes(query.toLowerCase()) ||
+                (c.subtitle ?? '').toLowerCase().includes(query.toLowerCase()),
+        )
         : commands;
 
     // Group by section
@@ -311,6 +311,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                             backgroundColor: bg,
                             borderColor: border,
                             shadowColor: Theme.colors.shadowViolet,
+                            boxShadow: `0 16px 40px ${isDark ? 'rgba(0,0,0,0.5)' : 'rgba(107,100,128,0.22)'}`,
                             width: Math.min(580, width - 48),
                         },
                         cardStyle,
@@ -478,9 +479,6 @@ const styles = StyleSheet.create({
     card: {
         borderRadius: 20,
         borderWidth: 1,
-        shadowOpacity: 0.22,
-        shadowRadius: 40,
-        shadowOffset: { width: 0, height: 16 },
         elevation: 24,
         maxHeight: 520,
         overflow: 'hidden',

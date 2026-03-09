@@ -11,9 +11,9 @@
  */
 
 const CACHE_VERSION = 'gurudevi-v1';
-const SHELL_CACHE   = `${CACHE_VERSION}-shell`;
-const FONT_CACHE    = `${CACHE_VERSION}-fonts`;
-const IMAGE_CACHE   = `${CACHE_VERSION}-images`;
+const SHELL_CACHE = `${CACHE_VERSION}-shell`;
+const FONT_CACHE = `${CACHE_VERSION}-fonts`;
+const IMAGE_CACHE = `${CACHE_VERSION}-images`;
 
 const SHELL_ASSETS = [
   '/',
@@ -36,7 +36,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then(keys =>
       Promise.all(
         keys.filter(k => k.startsWith('gurudevi-') && k !== SHELL_CACHE && k !== FONT_CACHE && k !== IMAGE_CACHE)
-            .map(k => caches.delete(k))
+          .map(k => caches.delete(k))
       )
     )
   );
@@ -86,7 +86,10 @@ async function cacheFirst(cacheName, request) {
   const cached = await caches.match(request);
   if (cached) return cached;
   const response = await fetch(request);
-  if (response.ok) {
+
+  // Only cache successful http/https requests
+  const url = new URL(request.url);
+  if (response.ok && (url.protocol === 'http:' || url.protocol === 'https:')) {
     const cache = await caches.open(cacheName);
     cache.put(request, response.clone());
   }
@@ -97,7 +100,10 @@ async function staleWhileRevalidate(cacheName, request) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
   const networkFetch = fetch(request).then(response => {
-    if (response.ok) cache.put(request, response.clone());
+    const url = new URL(request.url);
+    if (response.ok && (url.protocol === 'http:' || url.protocol === 'https:')) {
+      cache.put(request, response.clone());
+    }
     return response;
   });
   return cached || networkFetch;

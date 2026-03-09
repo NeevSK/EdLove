@@ -1,40 +1,33 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Theme, useTheme } from '@repo/ui';
-import { StackFallback } from '../components/web/WebScreenShimmer';
+import { Theme, useThemedColors } from '@repo/ui';
 import { ProfileStackParamList } from '@repo/core';
+import { StackFallback } from '../components/web/WebScreenShimmer';
 
-// Web-specific screens — lazy loaded for code splitting
-const ProfileScreenWeb = React.lazy(() => import('../screens/ProfileScreen.web'));
-const AppSettingsScreenWeb = React.lazy(() => import('../screens/AppSettingsScreen.web'));
-const FullProfileScreen = React.lazy(() => import('../screens/profile/FullProfileScreen'));
-const PrivacyLedgerScreen = React.lazy(() =>
-    import('@repo/self').then(m => ({ default: m.PrivacyLedgerScreen }))
-);
+// Static imports instead of React.lazy for stability on web
+import ProfileScreenWeb from '../screens/ProfileScreen.web';
+import AppSettingsScreenWeb from '../screens/AppSettingsScreen.web';
+import FullProfileScreen from '../screens/profile/FullProfileScreen';
+import { PrivacyLedgerScreen } from '@repo/self';
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
-function ScreenFallback() {
-    return <StackFallback variant="profile" />;
-}
-
 export default function ProfileStackNavigatorWeb() {
-    const { gradientNodes } = useTheme();
+    const colors = useThemedColors();
 
     return (
-        <React.Suspense fallback={<ScreenFallback />}>
         <Stack.Navigator
             id="ProfileStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: gradientNodes[0] },
+                contentStyle: { backgroundColor: colors.primary },
+                animation: 'slide_from_right',
             }}
         >
             <Stack.Screen name="ProfileMain" component={ProfileScreenWeb} />
-            <Stack.Screen name="AppSettings" component={AppSettingsScreenWeb} />
             <Stack.Screen name="FullProfile" component={FullProfileScreen} />
+            <Stack.Screen name="AppSettings" component={AppSettingsScreenWeb} />
             <Stack.Screen name="PrivacyLedger" component={PrivacyLedgerScreen} />
         </Stack.Navigator>
-        </React.Suspense>
     );
 }

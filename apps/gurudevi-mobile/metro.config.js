@@ -84,6 +84,17 @@ const WEB_SHIMS = {
     'expo-av': path.resolve(projectRoot, 'src/shims/expo-av-web.js'),
     'expo-video': path.resolve(projectRoot, 'src/shims/expo-video-web.js'),
     'expo-audio': path.resolve(projectRoot, 'src/shims/expo-audio-web.js'),
+    'expo-haptics': path.resolve(projectRoot, 'src/shims/expo-haptics-web.js'),
+    'expo-device': path.resolve(projectRoot, 'src/shims/expo-device-web.js'),
+    'expo-image-picker': path.resolve(projectRoot, 'src/shims/expo-image-picker-web.js'),
+    'expo-location': path.resolve(projectRoot, 'src/shims/expo-location-web.js'),
+    'expo-secure-store': path.resolve(projectRoot, 'src/shims/expo-secure-store-web.js'),
+    'expo-application': path.resolve(projectRoot, 'src/shims/expo-application-web.js'),
+    'expo-updates': path.resolve(projectRoot, 'src/shims/expo-updates-web.js'),
+    'react-native-mmkv': path.resolve(projectRoot, 'src/shims/mmkv-web.js'),
+    'react-native-nitro-modules': path.resolve(projectRoot, 'src/shims/nitro-modules-web.js'),
+    '@react-native-community/netinfo': path.resolve(projectRoot, 'src/shims/netinfo-web.js'),
+    '@shopify/react-native-skia': path.resolve(projectRoot, 'src/shims/skia-web.js'),
 };
 
 const defaultResolveRequest = config.resolver.resolveRequest;
