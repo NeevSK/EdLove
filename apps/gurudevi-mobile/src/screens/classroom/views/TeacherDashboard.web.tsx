@@ -327,15 +327,16 @@ export default function TeacherDashboardWeb({ forceDemo }: { forceDemo?: boolean
                             </h4>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                                 {[
-                                    { icon: FileText, label: 'Reports', color: 'var(--water)' },
-                                    { icon: Calendar, label: 'Schedule', color: 'var(--sanctuary-saffron)' },
-                                    { icon: ClipboardList, label: 'Attendance', color: 'var(--moss)' },
-                                    { icon: CheckSquare, label: 'Grades', color: 'var(--lotus)' },
-                                    { icon: ArrowRightLeft, label: 'Relief', color: 'var(--ember)' },
-                                    { icon: DollarSign, label: 'Fees', color: 'var(--amber-glow)' },
+                                    { icon: FileText, label: 'Reports', color: 'var(--water)', action: () => classrooms[0] && navigation.navigate('ClassroomDetails', { classroomId: classrooms[0].id, classroomName: classrooms[0].name }) },
+                                    { icon: Calendar, label: 'Schedule', color: 'var(--sanctuary-saffron)', action: () => navigation.navigate('Timetable', {}) },
+                                    { icon: ClipboardList, label: 'Attendance', color: 'var(--moss)', action: () => classrooms[0] && navigation.navigate('Attendance', { classroomId: classrooms[0].id, classroomName: classrooms[0].name }) },
+                                    { icon: CheckSquare, label: 'Grades', color: 'var(--lotus)', action: () => classrooms[0] && navigation.navigate('Gradebook', { classroomId: classrooms[0].id, classroomName: classrooms[0].name }) },
+                                    { icon: ArrowRightLeft, label: 'Relief', color: 'var(--ember)', action: () => {} },
+                                    { icon: DollarSign, label: 'Fees', color: 'var(--amber-glow)', action: () => {} },
                                 ].map((item, i) => (
                                     <button
                                         key={i}
+                                        onClick={item.action}
                                         style={{ padding: '12px 8px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', fontFamily: 'var(--font-body)' }}
                                     >
                                         <div style={{ padding: '6px', background: `${item.color}22`, borderRadius: '6px' }}>

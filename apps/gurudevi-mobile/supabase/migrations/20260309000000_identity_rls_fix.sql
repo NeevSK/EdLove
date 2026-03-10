@@ -652,8 +652,9 @@ CREATE POLICY "group_members_delete"
 
 CREATE POLICY "group_members_update"
     ON public.community_group_members FOR UPDATE
+    -- USING: determines which rows the current user may target for update.
     USING (
-        -- Admins can update any member
+        -- Admins can update any member in groups they administer
         EXISTS (
             SELECT 1 FROM public.community_group_members a
             WHERE a.group_id = community_group_members.group_id
@@ -661,13 +662,15 @@ CREATE POLICY "group_members_update"
               AND a.role = 'admin'
               AND a.status = 'active'
         )
-        -- Non-admin users can only update their own membership row
+        -- Non-admin users can only target their own membership row
         OR community_group_members.user_id = get_my_id()
     )
-    -- Admins may change any field.
-    -- Non-admins: cannot self-promote to admin, cannot change group_id or user_id
-    -- (pins them to the row they already own).
+    -- WITH CHECK (UPDATE only): validates the *new* row value after the update.
+    -- community_group_members here is the proposed NEW row.
+    -- The subquery reads the PRE-update state (PostgreSQL reads old row),
+    -- so (new group_id = old group_id) correctly blocks group reassignment.
     WITH CHECK (
+        -- Admins may change any field (role, status, etc.)
         EXISTS (
             SELECT 1 FROM public.community_group_members a
             WHERE a.group_id = community_group_members.group_id
@@ -676,12 +679,18 @@ CREATE POLICY "group_members_update"
               AND a.status = 'active'
         )
         OR (
+            -- Non-admins: must still own the row, cannot self-promote to admin,
+            -- and cannot reassign their membership to a different group.
             community_group_members.user_id = get_my_id()
             AND community_group_members.role != 'admin'
-            -- Prevent moving membership to a different group or different user
             AND community_group_members.group_id = (
-                SELECT m.group_id FROM public.community_group_members m
-                WHERE m.id = community_group_members.id AND m.user_id = get_my_id()
+                -- Read the pre-update group_id from the existing row.
+                -- This is valid for UPDATE because the row exists;
+                -- this policy never fires during plain INSERT operations.
+                SELECT m.group_id
+                FROM public.community_group_members m
+                WHERE m.id = community_group_members.id
+                  AND m.user_id = get_my_id()
             )
         )
     );

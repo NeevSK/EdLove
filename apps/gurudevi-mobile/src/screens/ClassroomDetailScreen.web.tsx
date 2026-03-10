@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useStore, supabase, assignmentsAPI, useUserRole, api } from '@repo/core';
+import { useInventory } from '@repo/classroom';
 import {
     ArrowLeft, Users, BookOpen, Clock, ClipboardList, Plus, CheckCircle2,
     FileText, ExternalLink, NotebookPen, UserPlus, Pin, Trash2,
+    TrendingUp, Calendar, Eye, AlertTriangle, Package, Layers,
 } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
 import { StackFallback } from '../components/web/WebScreenShimmer';
@@ -40,7 +42,7 @@ export default function ClassroomDetailScreenWeb() {
     const [classroom, setClassroom] = useState<any>(null);
     const [students, setStudents] = useState<Student[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'students' | 'assignments' | 'lessons' | 'resources' | 'notes'>('students');
+    const [activeTab, setActiveTab] = useState<'students' | 'assignments' | 'lessons' | 'resources' | 'notes' | 'insights' | 'inventory'>('students');
 
     // Assignments
     const [assignments, setAssignments] = useState<any[]>([]);
@@ -69,6 +71,24 @@ export default function ClassroomDetailScreenWeb() {
     const [notesLoading, setNotesLoading] = useState(false);
     const [noteContent, setNoteContent] = useState('');
     const [savingNote, setSavingNote] = useState(false);
+
+    // Insights (HolisticInsights)
+    const [insightsLoading, setInsightsLoading] = useState(false);
+    const [insightsGrades, setInsightsGrades] = useState<any[]>([]);
+    const [insightsAttendance, setInsightsAttendance] = useState<any[]>([]);
+    const [insightsObservations, setInsightsObservations] = useState<any[]>([]);
+
+    // Groups (GroupManager)
+    const [groups, setGroups] = useState<Array<{ id: string; name: string; color: string; studentIds: string[]; description?: string }>>([]);
+    const [showGroupsPanel, setShowGroupsPanel] = useState(false);
+    const [editingGroup, setEditingGroup] = useState<typeof groups[0] | null>(null);
+    const [groupName, setGroupName] = useState('');
+    const [groupDesc, setGroupDesc] = useState('');
+    const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
+    const [savingGroup, setSavingGroup] = useState(false);
+
+    // Inventory
+    const { items: inventoryItems, isLoading: inventoryLoading } = useInventory(classroomId ?? '');
 
     const isTeacher = role === 'teacher' || role === 'principal' || role === 'developer' || role === 'grade_head';
 
@@ -137,6 +157,31 @@ export default function ClassroomDetailScreenWeb() {
         finally { setNotesLoading(false); }
     }, [classroomId]);
 
+    const loadInsights = useCallback(async () => {
+        if (!classroomId) return;
+        setInsightsLoading(true);
+        try {
+            const today = new Date().toISOString().split('T')[0];
+            const [grades, attendance, observations] = await Promise.all([
+                api.grading.getClassroomGrades(classroomId).catch(() => []),
+                api.attendance.getByDate(classroomId, today).catch(() => []),
+                api.studentObservations.getForClassroom(classroomId).catch(() => []),
+            ]);
+            setInsightsGrades(grades as any[]);
+            setInsightsAttendance(attendance as any[]);
+            setInsightsObservations(observations as any[]);
+        } catch { /**/ }
+        finally { setInsightsLoading(false); }
+    }, [classroomId]);
+
+    const loadGroups = useCallback(async () => {
+        if (!classroomId) return;
+        try {
+            const { data } = await supabase.from('classroom_groups').select('*').eq('classroom_id', classroomId).order('created_at', { ascending: false });
+            if (data) setGroups(data.map((g: any) => ({ id: g.id, name: g.name, color: g.color ?? 'var(--water)', description: g.description, studentIds: g.student_ids ?? [] })));
+        } catch { /**/ }
+    }, [classroomId]);
+
     useEffect(() => {
         if (!classroomId) return;
         (async () => {
@@ -168,7 +213,8 @@ export default function ClassroomDetailScreenWeb() {
         if (activeTab === 'lessons') loadLessons();
         if (activeTab === 'resources') loadResources();
         if (activeTab === 'notes') loadNotes();
-    }, [activeTab, loadAssignments, loadLessons, loadResources, loadNotes]);
+        if (activeTab === 'insights') loadInsights();
+    }, [activeTab, loadAssignments, loadLessons, loadResources, loadNotes, loadInsights]);
 
     // ── Handlers ────────────────────────────────────────────────────────────
 
@@ -236,6 +282,42 @@ export default function ClassroomDetailScreenWeb() {
         const n = new Set(prev); n.has(title) ? n.delete(title) : n.add(title); return n;
     });
 
+    // ── Group helpers ───────────────────────────────────────────────────────
+
+    const GROUP_COLORS = ['var(--water)', 'var(--moss)', 'var(--sanctuary-saffron)', 'var(--lotus)', 'var(--amber-glow)', 'var(--ember)'];
+
+    const openCreateGroup = () => {
+        setEditingGroup(null); setGroupName(''); setGroupDesc(''); setSelectedStudentIds([]);
+        setShowGroupsPanel(true);
+    };
+
+    const openEditGroup = (g: typeof groups[0]) => {
+        setEditingGroup(g); setGroupName(g.name); setGroupDesc(g.description ?? '');
+        setSelectedStudentIds(g.studentIds); setShowGroupsPanel(true);
+    };
+
+    const toggleGroupStudent = (id: string) =>
+        setSelectedStudentIds(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]);
+
+    const handleSaveGroup = async () => {
+        if (!groupName.trim() || !classroomId) return;
+        setSavingGroup(true);
+        try {
+            const color = GROUP_COLORS[groups.length % GROUP_COLORS.length];
+            if (editingGroup) {
+                await supabase.from('classroom_groups').update({ name: groupName.trim(), description: groupDesc.trim(), student_ids: selectedStudentIds }).eq('id', editingGroup.id);
+            } else {
+                await supabase.from('classroom_groups').insert({ classroom_id: classroomId, name: groupName.trim(), description: groupDesc.trim(), color, student_ids: selectedStudentIds });
+            }
+            setShowGroupsPanel(false); loadGroups();
+        } catch { /**/ }
+        finally { setSavingGroup(false); }
+    };
+
+    const handleDeleteGroup = async (id: string) => {
+        try { await supabase.from('classroom_groups').delete().eq('id', id); loadGroups(); } catch { /**/ }
+    };
+
     if (loading) return <StackFallback variant="list" />;
 
     const TABS = [
@@ -244,6 +326,10 @@ export default function ClassroomDetailScreenWeb() {
         { id: 'lessons' as const, label: '📆 Lessons' },
         { id: 'resources' as const, label: '📂 Resources' },
         { id: 'notes' as const, label: '📝 Notes' },
+        ...(isTeacher ? [
+            { id: 'insights' as const, label: '📊 Insights' },
+            { id: 'inventory' as const, label: '📦 Inventory' },
+        ] : []),
     ];
 
     const INPUT_STYLE: React.CSSProperties = {
@@ -292,33 +378,44 @@ export default function ClassroomDetailScreenWeb() {
 
                 {/* ── Students Tab ── */}
                 {activeTab === 'students' && (
-                    <div className="sanctuary-card" style={{ overflow: 'hidden' }}>
-                        {students.length === 0 ? (
-                            <div style={{ padding: '60px', textAlign: 'center' }}>
-                                <UserPlus size={40} color="var(--ink-ghost)" style={{ opacity: 0.4 }} />
-                                <p style={{ color: 'var(--ink-ghost)', marginTop: '16px', fontStyle: 'italic' }}>No students enrolled yet.</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        {isTeacher && (
+                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}
+                                    onClick={() => { loadGroups(); setEditingGroup(null); setGroupName(''); setGroupDesc(''); setSelectedStudentIds([]); setShowGroupsPanel(true); }}>
+                                    <Layers size={14} /> Manage Groups
+                                    {groups.length > 0 && <span style={{ background: 'var(--water)', color: '#fff', borderRadius: '10px', padding: '1px 7px', fontSize: '11px', fontWeight: '800' }}>{groups.length}</span>}
+                                </button>
                             </div>
-                        ) : (
-                            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                                <thead style={{ background: 'var(--background-alt)', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)' }}>
-                                    <tr><th style={{ padding: '14px 24px' }}>Student</th><th style={{ padding: '14px 24px' }}>Index No.</th><th style={{ padding: '14px 24px' }}>Enrolled</th></tr>
-                                </thead>
-                                <tbody>
-                                    {students.map(s => (
-                                        <tr key={s.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
-                                            <td style={{ padding: '16px 24px' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--background-alt)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '700', color: 'var(--action)', flexShrink: 0 }}>{s.full_name.charAt(0).toUpperCase()}</div>
-                                                    <div><div style={{ fontWeight: '700', fontSize: '14px' }}>{s.full_name}</div>{s.email && <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>{s.email}</div>}</div>
-                                                </div>
-                                            </td>
-                                            <td style={{ padding: '16px 24px', color: 'var(--ink-ghost)', fontSize: '13px' }}>{s.index_number ?? '—'}</td>
-                                            <td style={{ padding: '16px 24px', color: 'var(--ink-ghost)', fontSize: '13px' }}>{formatDistanceToNow(new Date(s.joined_at), { addSuffix: true })}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
                         )}
+                        <div className="sanctuary-card" style={{ overflow: 'hidden' }}>
+                            {students.length === 0 ? (
+                                <div style={{ padding: '60px', textAlign: 'center' }}>
+                                    <UserPlus size={40} color="var(--ink-ghost)" style={{ opacity: 0.4 }} />
+                                    <p style={{ color: 'var(--ink-ghost)', marginTop: '16px', fontStyle: 'italic' }}>No students enrolled yet.</p>
+                                </div>
+                            ) : (
+                                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                                    <thead style={{ background: 'var(--background-alt)', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)' }}>
+                                        <tr><th style={{ padding: '14px 24px' }}>Student</th><th style={{ padding: '14px 24px' }}>Index No.</th><th style={{ padding: '14px 24px' }}>Enrolled</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        {students.map(s => (
+                                            <tr key={s.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
+                                                <td style={{ padding: '16px 24px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--background-alt)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '700', color: 'var(--action)', flexShrink: 0 }}>{s.full_name.charAt(0).toUpperCase()}</div>
+                                                        <div><div style={{ fontWeight: '700', fontSize: '14px' }}>{s.full_name}</div>{s.email && <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>{s.email}</div>}</div>
+                                                    </div>
+                                                </td>
+                                                <td style={{ padding: '16px 24px', color: 'var(--ink-ghost)', fontSize: '13px' }}>{s.index_number ?? '—'}</td>
+                                                <td style={{ padding: '16px 24px', color: 'var(--ink-ghost)', fontSize: '13px' }}>{formatDistanceToNow(new Date(s.joined_at), { addSuffix: true })}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
                     </div>
                 )}
 
@@ -532,7 +629,164 @@ export default function ClassroomDetailScreenWeb() {
                         )}
                     </div>
                 )}
+
+                {/* ── Insights Tab (teacher-only) ── */}
+                {activeTab === 'insights' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                        {insightsLoading ? (
+                            [1,2,3].map(i => <div key={i} style={{ height: '80px', background: 'var(--background-alt)', borderRadius: '12px' }} />)
+                        ) : (
+                            <>
+                                {/* Stat cards */}
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px' }}>
+                                    {(() => {
+                                        const graded = insightsGrades.filter((g: any) => g.marks != null);
+                                        const avgGpa = graded.length > 0 ? (graded.reduce((s: number, g: any) => s + g.marks, 0) / graded.length).toFixed(1) : '—';
+                                        const present = insightsAttendance.filter((a: any) => a.status === 'present').length;
+                                        const total = insightsAttendance.length;
+                                        const attPct = total > 0 ? `${Math.round(present / total * 100)}%` : '—';
+                                        return [
+                                            { icon: TrendingUp, label: 'Avg Marks', value: avgGpa, color: 'var(--action)' },
+                                            { icon: Calendar, label: 'Today Attendance', value: attPct, color: 'var(--moss)' },
+                                            { icon: Eye, label: 'Observations', value: String(insightsObservations.length), color: 'var(--sanctuary-saffron)' },
+                                        ];
+                                    })().map(s => (
+                                        <div key={s.label} className="sanctuary-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                            <div style={{ padding: '10px', background: 'var(--background-alt)', borderRadius: '10px', color: s.color }}><s.icon size={20} /></div>
+                                            <div>
+                                                <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>{s.label}</div>
+                                                <div style={{ fontSize: '22px', fontWeight: '800' }}>{s.value}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                {/* Growth Pulse */}
+                                <div className="sanctuary-card" style={{ padding: '24px' }}>
+                                    <h3 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px' }}>Growth Pulse</h3>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                        {[
+                                            { label: 'Positive Notes', count: insightsObservations.filter((o: any) => o.type === 'positive' || o.type === 'strength').length, color: 'var(--moss)', bg: 'rgba(34,197,94,0.08)' },
+                                            { label: 'Concerns', count: insightsObservations.filter((o: any) => o.type === 'concern' || o.type === 'risk').length, color: 'var(--ember)', bg: 'rgba(239,68,68,0.08)' },
+                                        ].map(p => (
+                                            <div key={p.label} style={{ padding: '20px', background: p.bg, borderRadius: '12px', textAlign: 'center' }}>
+                                                <div style={{ fontSize: '36px', fontWeight: '800', color: p.color }}>{p.count}</div>
+                                                <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)' }}>{p.label}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                {/* Recent Observations */}
+                                <div className="sanctuary-card" style={{ padding: '24px' }}>
+                                    <h3 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px' }}>Recent Activity</h3>
+                                    {insightsObservations.length === 0 ? (
+                                        <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic', fontSize: '13px', margin: 0 }}>No observations recorded yet.</p>
+                                    ) : insightsObservations.slice(0, 4).map((o: any) => (
+                                        <div key={o.id} style={{ padding: '14px 16px', marginBottom: '10px', borderRadius: '10px', border: '1px solid var(--border-light)', borderLeft: `3px solid ${o.type === 'concern' || o.type === 'risk' ? 'var(--ember)' : 'var(--amber-glow)'}` }}>
+                                            <p style={{ margin: '0 0 6px', fontSize: '13px', lineHeight: '1.5' }}>{o.content}</p>
+                                            <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>{formatDistanceToNow(new Date(o.created_at), { addSuffix: true })}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                    </div>
+                )}
+
+                {/* ── Inventory Tab (teacher-only) ── */}
+                {activeTab === 'inventory' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        {inventoryLoading ? (
+                            [1,2,3].map(i => <div key={i} style={{ height: '60px', background: 'var(--background-alt)', borderRadius: '12px' }} />)
+                        ) : inventoryItems.length === 0 ? (
+                            <div className="sanctuary-card" style={{ padding: '60px', textAlign: 'center' }}>
+                                <Package size={40} color="var(--ink-ghost)" style={{ opacity: 0.3 }} />
+                                <p style={{ color: 'var(--ink-ghost)', marginTop: '12px', fontStyle: 'italic' }}>No inventory items recorded for this classroom.</p>
+                            </div>
+                        ) : (
+                            <div className="sanctuary-card" style={{ overflow: 'hidden' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                                    <thead style={{ background: 'var(--background-alt)', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)' }}>
+                                        <tr>
+                                            <th style={{ padding: '12px 20px' }}>Item</th>
+                                            <th style={{ padding: '12px 20px' }}>Qty</th>
+                                            <th style={{ padding: '12px 20px' }}>Condition</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {inventoryItems.map((item: any) => (
+                                            <tr key={item.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
+                                                <td style={{ padding: '14px 20px', fontWeight: '600', fontSize: '14px' }}>{item.name}</td>
+                                                <td style={{ padding: '14px 20px', color: 'var(--ink-ghost)', fontSize: '13px' }}>{item.quantity ?? '—'}</td>
+                                                <td style={{ padding: '14px 20px' }}>
+                                                    <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', background: item.condition === 'good' ? 'rgba(34,197,94,0.1)' : item.condition === 'fair' ? 'rgba(245,158,11,0.1)' : 'rgba(239,68,68,0.1)', color: item.condition === 'good' ? 'var(--moss)' : item.condition === 'fair' ? 'var(--amber-glow)' : 'var(--ember)' }}>
+                                                        {item.condition ?? 'unknown'}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
+
+            {/* ── GroupManager Modal ── */}
+            {showGroupsPanel && (
+                <div style={{ position: 'fixed', inset: 0, zIndex: 9000, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}
+                    onClick={e => e.target === e.currentTarget && setShowGroupsPanel(false)}>
+                    <div style={{ background: 'var(--background)', borderRadius: '20px', padding: '28px', width: '100%', maxWidth: '520px', maxHeight: '85vh', overflowY: 'auto' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>Student Groups</h3>
+                            <button onClick={() => setShowGroupsPanel(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', color: 'var(--ink-ghost)' }}>✕</button>
+                        </div>
+
+                        {/* Existing groups */}
+                        {groups.length > 0 && !editingGroup && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+                                {groups.map(g => (
+                                    <div key={g.id} style={{ padding: '14px 16px', borderRadius: '12px', border: `2px solid ${g.color}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div>
+                                            <div style={{ fontWeight: '700', fontSize: '14px' }}>{g.name}</div>
+                                            {g.description && <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>{g.description}</div>}
+                                            <div style={{ fontSize: '11px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{g.studentIds.length} students</div>
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            <button onClick={() => openEditGroup(g)} style={{ padding: '5px 10px', borderRadius: '8px', border: '1px solid var(--border)', background: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: '600' }}>Edit</button>
+                                            <button onClick={() => handleDeleteGroup(g.id)} style={{ padding: '5px 10px', borderRadius: '8px', border: 'none', background: 'rgba(239,68,68,0.1)', color: 'var(--ember)', cursor: 'pointer', fontSize: '12px', fontWeight: '600' }}>Delete</button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Create / Edit form */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                            <h4 style={{ margin: 0, fontSize: '13px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)', letterSpacing: '1px' }}>{editingGroup ? 'Edit Group' : 'Create Group'}</h4>
+                            <input value={groupName} onChange={e => setGroupName(e.target.value)} placeholder="Group name (e.g. Team A)" style={INPUT_STYLE} />
+                            <input value={groupDesc} onChange={e => setGroupDesc(e.target.value)} placeholder="Description (optional)" style={INPUT_STYLE} />
+                            <div>
+                                <p style={{ margin: '0 0 8px', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--ink-ghost)' }}>Select Students</p>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '200px', overflowY: 'auto' }}>
+                                    {students.map(s => (
+                                        <label key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', background: selectedStudentIds.includes(s.id) ? 'rgba(59,130,246,0.08)' : 'var(--background-alt)', cursor: 'pointer', border: `1px solid ${selectedStudentIds.includes(s.id) ? 'var(--water)' : 'transparent'}` }}>
+                                            <input type="checkbox" checked={selectedStudentIds.includes(s.id)} onChange={() => toggleGroupStudent(s.id)} style={{ cursor: 'pointer' }} />
+                                            <span style={{ fontSize: '14px', fontWeight: '600' }}>{s.full_name}</span>
+                                            {s.index_number && <span style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>#{s.index_number}</span>}
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                {editingGroup && <button onClick={() => { setEditingGroup(null); setGroupName(''); setGroupDesc(''); setSelectedStudentIds([]); }} className="secondary-button" style={{ flex: 1 }}>Cancel Edit</button>}
+                                <button onClick={openCreateGroup} className="secondary-button" style={{ flex: 1 }}>New Group</button>
+                                <button onClick={handleSaveGroup} className="premium-button" disabled={!groupName.trim() || savingGroup} style={{ flex: 2, background: 'var(--water)' }}>{savingGroup ? '⏳' : editingGroup ? '💾 Update' : '➕ Create Group'}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
