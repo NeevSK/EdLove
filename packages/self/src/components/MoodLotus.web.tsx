@@ -6,7 +6,7 @@
  * slider with a lotus bloom visual and an optional breath guide — using pure
  * HTML/CSS. Metro picks this file over MoodLotus.tsx on the web platform.
  */
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { supabase, useStore } from '@repo/core';
 import { useMoodLogs } from '../hooks/useMoodLogs';
 import { MOOD_COLORS, MOOD_LABELS } from '../constants/wellbeing';
@@ -32,6 +32,14 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
     const [showBreath, setShowBreath] = useState(false);
     const [breathStep, setBreathStep] = useState(0);
     const [breathActive, setBreathActive] = useState(false);
+    const breathTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // Clean up timer on unmount
+    useEffect(() => {
+        return () => {
+            if (breathTimerRef.current) clearTimeout(breathTimerRef.current);
+        };
+    }, []);
 
     const latestScore = moodHistory[0]?.mood_score ?? null;
     const displayScore = selected ?? latestScore;
@@ -68,19 +76,20 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
         const durations = [4000, 4000, 6000];
         let i = 0;
         const cycle = () => {
-            const t = setTimeout(() => {
+            breathTimerRef.current = setTimeout(() => {
                 advance();
                 i = (i + 1) % 3;
                 cycle();
             }, durations[i]);
-            // store on window so we can cancel
-            (window as any).__breathTimer = t;
         };
         cycle();
     };
 
     const stopBreath = () => {
-        clearTimeout((window as any).__breathTimer);
+        if (breathTimerRef.current) {
+            clearTimeout(breathTimerRef.current);
+            breathTimerRef.current = null;
+        }
         setBreathActive(false);
         setBreathStep(0);
     };
@@ -100,7 +109,7 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
                     </div>
                 </div>
                 <button
-                    onClick={() => { setShowBreath(v => !v); if (!showBreath) stopBreath(); }}
+                    onClick={() => { if (showBreath) stopBreath(); setShowBreath(v => !v); }}
                     style={{ fontSize: '11px', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', color: 'var(--ink-ghost)' }}
                 >
                     🌬 Breath

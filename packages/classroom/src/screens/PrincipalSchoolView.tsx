@@ -217,11 +217,11 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                                     <HStack sx={{ alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: Theme.spacing.sm }}>
                                         <Zap size={16} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} />
                                         <Text sx={{ fontSize: 13, color: Theme.colors.amberGlow, fontWeight: '700' }}>
-                                            {t('demoMode.sandboxPerspective') || "VISIONARY SANDBOX: Institution Patterns"}
+                                            {t('demoMode.sandboxPerspective')}
                                         </Text>
                                     </HStack>
                                     <Text color={colors.textSecondary} sx={{ fontSize: 13, textAlign: 'center', marginBottom: Theme.spacing.md }}>
-                                        Play around with this demo school data to see how the platform works.
+                                        {t('principal.sandboxDescription')}
                                     </Text>
                                     <SanctuaryButton
                                         onPress={() => navigation.navigate('SchoolCreation')}
@@ -229,7 +229,7 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                                         size="lg"
                                         fullWidth
                                     >
-                                        Establish Your School
+                                        {t('principal.establishSchool')}
                                     </SanctuaryButton>
                                 </Box>
                             )}

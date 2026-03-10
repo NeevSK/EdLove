@@ -54,7 +54,7 @@ export function useClassroomRoleData(refreshTrigger: number = 0) {
                 const serverUser = profileCheck.data;
                 if (serverUser.profile_completed !== localUser?.profile_completed || serverUser.school_id !== localUser?.school_id) {
                     console.log('🔄 useClassroomRoleData: Syncing user data from server');
-                    setUser({ id: userId, ...localUser, ...serverUser } as any);
+                    setUser({ ...localUser, ...serverUser, id: userId } as any);
                 }
             }
 

@@ -37,6 +37,19 @@ interface StudentDashboardProps {
 
 const MS_PER_DAY = 86_400_000;
 
+// ── Demo mock data ────────────────────────────────────────────────────────────
+const DEMO_STATS = { enrolledClasses: 3, pendingAssignments: 2, unlockedRewards: 5 };
+const DEMO_ASSIGNMENTS = [
+    { title: 'Wave Function Practice', classroom: 'Grade 10 Mathematics', daysLeft: 3 },
+    { title: 'Lab Report: Photosynthesis', classroom: 'Grade 11 Science',  daysLeft: 5 },
+];
+const DEMO_GOALS = [
+    { text: 'Complete all pending assignments this week', progress: 65 },
+    { text: 'Improve mathematics score to A grade',       progress: 40 },
+    { text: 'Read one library resource daily',            progress: 80 },
+];
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function StudentDashboard({ onRefresh, schoolId, userId }: StudentDashboardProps) {
     const { t } = useTranslation();
     const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
@@ -44,13 +57,11 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
     const showToast = useStore(state => state.showToast);
     const { isGuest } = useFeatureAccess();
     const [refreshTrigger, setRefreshTrigger] = useState(0);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(!isDemoMode);
     const colors = useThemedColors();
-    const [stats, setStats] = useState({
-        enrolledClasses: 0,
-        pendingAssignments: 0,
-        unlockedRewards: 0
-    });
+    const [stats, setStats] = useState(
+        isDemoMode ? DEMO_STATS : { enrolledClasses: 0, pendingAssignments: 0, unlockedRewards: 0 }
+    );
 
     // Fetch pending (unsubmitted, not-yet-due or overdue) assignments for this student
     const fetchPendingAssignments = async (classroomIds: string[]) => {
@@ -84,6 +95,7 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
     };
 
     const handleClassroomsLoaded = (loadedClassrooms: any[]) => {
+        if (isDemoMode) return; // demo: stats already set
         const classroomIds = loadedClassrooms.map((c: any) => c.id);
         setStats(prev => ({
             ...prev,
@@ -275,6 +287,46 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
                         )}
                     </VStack>
                 </Animated.View>
+                {/* Demo: Upcoming Assignments */}
+                {isDemoMode && (
+                    <Animated.View entering={FadeInDown.delay(160)}>
+                        <VStack sx={{ gap: Theme.spacing.sm, marginBottom: Theme.spacing.xl }}>
+                            <Heading color={colors.text} sx={{ fontSize: Theme.typography.fontSize.lg }}>
+                                {'Upcoming Assignments'} 📋
+                            </Heading>
+                            {DEMO_ASSIGNMENTS.map((a, i) => (
+                                <Box key={i} sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, padding: Theme.spacing.md, borderWidth: 1, borderColor: colors.border }}>
+                                    <Text color={colors.text} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.sm }}>{a.title}</Text>
+                                    <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs, marginTop: 2 }}>{a.classroom}</Text>
+                                    <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: Theme.colors.amberGlow, fontWeight: '700', marginTop: 4 }}>
+                                        {`Due in ${a.daysLeft} days`}<Zap size={10} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} />
+                                    </Text>
+                                </Box>
+                            ))}
+                        </VStack>
+                    </Animated.View>
+                )}
+
+                {/* Demo: Learning Goals */}
+                {isDemoMode && (
+                    <Animated.View entering={FadeInDown.delay(200)}>
+                        <VStack sx={{ gap: Theme.spacing.sm, marginBottom: Theme.spacing.xl }}>
+                            <Heading color={colors.text} sx={{ fontSize: Theme.typography.fontSize.lg }}>
+                                {'My Goals'} 🎯
+                            </Heading>
+                            {DEMO_GOALS.map((g, i) => (
+                                <Box key={i} sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, padding: Theme.spacing.md, borderWidth: 1, borderColor: colors.border }}>
+                                    <Text color={colors.text} sx={{ fontSize: Theme.typography.fontSize.sm, marginBottom: 8 }}>{g.text}</Text>
+                                    <Box sx={{ height: 6, backgroundColor: colors.tertiary, borderRadius: 3, overflow: 'hidden' }}>
+                                        <Box sx={{ width: `${g.progress}%` as any, height: 6, backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: 3 }} />
+                                    </Box>
+                                    <Text color={colors.textSecondary} sx={{ fontSize: 10, marginTop: 4, fontWeight: '700' }}>{g.progress}{'% complete'}</Text>
+                                </Box>
+                            ))}
+                        </VStack>
+                    </Animated.View>
+                )}
+
             </ScrollView>
         </VStack>
     );

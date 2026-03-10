@@ -8,13 +8,9 @@ import { ClassroomStackParamList } from '@repo/core';
 const ClassroomScreenWeb = React.lazy(() => import('../screens/ClassroomScreen.web'));
 const ClassroomDetailScreenWeb = React.lazy(() => import('../screens/ClassroomDetailScreen.web'));
 
-// Package classroom screens (Metro resolves .web.tsx automatically where available)
-const AttendanceScreen = React.lazy(() =>
-    import('@repo/classroom').then(m => ({ default: m.AttendanceScreen }))
-);
-const GradebookScreen = React.lazy(() =>
-    import('@repo/classroom').then(m => ({ default: m.GradebookScreen }))
-);
+// Web-native attendance and gradebook (HTML/CSS, no RN gesture handlers)
+const AttendanceScreen = React.lazy(() => import('../screens/AttendanceScreen.web'));
+const GradebookScreen  = React.lazy(() => import('../screens/GradebookScreen.web'));
 const StudentProfileScreen = React.lazy(() =>
     import('@repo/classroom').then(m => ({ default: m.StudentProfileScreen }))
 );

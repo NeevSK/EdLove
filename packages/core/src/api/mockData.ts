@@ -1,4 +1,5 @@
 import { Classroom, Student, ClassroomResource, Lesson, Assignment } from '../types';
+import type { StaffPresenceSummary, TeacherCarouselItem, StudentAttendancePulse, StaffLeaveDTO } from './staffManagement';
 
 export const MOCK_CLASSROOMS: Classroom[] = [
     {
@@ -236,4 +237,56 @@ export const MOCK_ANNOUNCEMENTS: any[] = [
         is_pinned: false,
         created_at: new Date(Date.now() - 86400000).toISOString()
     }
+];
+
+// ── Demo / Sandbox: Staff Management ─────────────────────────────────────────
+
+export const MOCK_STAFF_PRESENCE: StaffPresenceSummary = {
+    present: 38,
+    absent: 4,
+    onLeave: 3,
+    total: 45,
+};
+
+export const MOCK_TEACHER_CAROUSEL: TeacherCarouselItem[] = [
+    { userId: 'mock-t1', fullName: 'Sanduni Perera',   role: 'teacher',    todayStatus: 'present', classroomCount: 3, avatarUrl: null },
+    { userId: 'mock-t2', fullName: 'Nimal Wickrama',   role: 'teacher',    todayStatus: 'present', classroomCount: 2, avatarUrl: null },
+    { userId: 'mock-t3', fullName: 'Amali Fernando',   role: 'grade_head', todayStatus: 'late',    classroomCount: 4, avatarUrl: null },
+    { userId: 'mock-t4', fullName: 'Roshan Silva',     role: 'teacher',    todayStatus: 'absent',  classroomCount: 2, avatarUrl: null },
+    { userId: 'mock-t5', fullName: 'Kavindra Dias',    role: 'teacher',    todayStatus: 'present', classroomCount: 1, avatarUrl: null },
+];
+
+export const MOCK_STUDENT_PULSE: StudentAttendancePulse = {
+    todayRate: 91,
+    yesterdayRate: 88,
+    atRiskCount: 4,
+};
+
+export const MOCK_PENDING_LEAVES: StaffLeaveDTO[] = [
+    {
+        id: 'mock-l1',
+        school_id: 'mock-school',
+        user_id: 'mock-t4',
+        leave_type: 'medical',
+        start_date: new Date().toISOString().split('T')[0],
+        end_date:   new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0],
+        reason: 'Scheduled medical procedure',
+        status: 'pending',
+        reviewed_by: null,
+        reviewed_at: null,
+        created_at: new Date(Date.now() - 3600000).toISOString(),
+    },
+    {
+        id: 'mock-l2',
+        school_id: 'mock-school',
+        user_id: 'mock-t2',
+        leave_type: 'personal',
+        start_date: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
+        end_date:   new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
+        reason: 'Family commitment',
+        status: 'pending',
+        reviewed_by: null,
+        reviewed_at: null,
+        created_at: new Date(Date.now() - 7200000).toISOString(),
+    },
 ];

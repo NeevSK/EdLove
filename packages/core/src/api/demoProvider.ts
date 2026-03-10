@@ -18,6 +18,12 @@ const MOCK_DATA_REGISTRY: Record<string, () => any> = {
     'assignments.getAll': () => MOCK.MOCK_ASSIGNMENTS,
     'resources.getAll': () => MOCK.MOCK_RESOURCES,
 
+    // Staff management (principal demo)
+    'staffManagement.getStaffPresenceSummary': () => MOCK.MOCK_STAFF_PRESENCE,
+    'staffManagement.getTeacherCarousel':       () => MOCK.MOCK_TEACHER_CAROUSEL,
+    'staffManagement.getStudentAttendancePulse': () => MOCK.MOCK_STUDENT_PULSE,
+    'staffManagement.getPendingLeaves':          () => MOCK.MOCK_PENDING_LEAVES,
+
     // Library
     'library.getResources': () => MOCK.MOCK_LIBRARY_RESOURCES,
     'library.getCollections': () => MOCK.MOCK_LIBRARY_COLLECTIONS,

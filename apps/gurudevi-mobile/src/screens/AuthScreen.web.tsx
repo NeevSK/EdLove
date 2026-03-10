@@ -12,8 +12,7 @@
  *  - Plain HTML + scoped CSS (no react-native-web quirks)
  */
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase, UserRole, handleAPIError, GuestDataSync, identityAPI } from '@repo/core';
 import { validators, validateForm } from '../utils/validators';
@@ -126,7 +125,7 @@ export default function AuthScreenWeb({
             });
             if (error) {
                 if (error.message.includes('already linked')) {
-                    showToast(t('auth.alreadyLinked') || 'This Google account is already linked to another sanctuary soul. Please login instead.', 'error');
+                    showToast(t('auth.alreadyLinkedDesc'), 'error');
                 } else {
                     handleAPIError(error);
                 }
@@ -196,7 +195,7 @@ export default function AuthScreenWeb({
                     });
                     if (error) {
                         if (error.message.includes('already registered')) {
-                            showToast(t('auth.alreadyRegistered') || 'You already have an account! Switching to log in…', 'success');
+                            showToast(t('auth.alreadyRegisteredDesc'), 'success');
                             setMode('login');
                             setLoading(false);
                             return;
@@ -314,8 +313,8 @@ export default function AuthScreenWeb({
                         >
                             <span className="as-google-icon">G</span>
                             {mode === 'signup'
-                                ? (t('auth.signup') || 'Sign Up') + ' with Google'
-                                : (t('auth.signInWithGoogle') || 'Sign in with Google')}
+                                ? t('auth.signUpWithGoogle')
+                                : t('auth.signInWithGoogle')}
                         </button>
 
                         {/* Email */}

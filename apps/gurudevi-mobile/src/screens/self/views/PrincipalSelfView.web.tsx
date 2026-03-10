@@ -47,6 +47,7 @@ export default function PrincipalSelfViewWeb() {
     const [forest, setForest] = useState<SchoolForestState | null>(null);
     const [showMoodPicker, setShowMoodPicker] = useState(false);
     const [savingMood, setSavingMood] = useState(false);
+    const [activePanel, setActivePanel] = useState<ActivePanel>('pulse');
 
     // Warm Mirror + Impact Ripples via shared hook
     const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
