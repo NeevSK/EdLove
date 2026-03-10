@@ -39,7 +39,7 @@ export class GuestDataSync {
         errors: string[];
     }> {
         const errors: string[] = [];
-        let synced = {
+        const synced = {
             timetable: 0,
             moodLogs: 0,
             journalEntries: 0,

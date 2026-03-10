@@ -20,7 +20,7 @@ export function createResonantProxy<T extends object>(moduleName: string, target
                     if (intercepted) return intercepted;
 
                     // 2. Execute the real method
-                    let result = await originalMethod.apply(obj, args);
+                    const result = await originalMethod.apply(obj, args);
 
                     // 3. Optional: Post-process results (Ghost Seeding)
                     // if (processGhostData) {

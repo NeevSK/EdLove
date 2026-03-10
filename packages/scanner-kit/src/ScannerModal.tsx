@@ -35,7 +35,7 @@ interface MLKitBarcode {
 }
 let BarcodeScanning: any = null;
 try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+   
   // @ts-ignore - Module may not be available in all environments/configurations
   BarcodeScanning = require("@react-native-ml-kit/barcode-scanning")
     .default as any;
