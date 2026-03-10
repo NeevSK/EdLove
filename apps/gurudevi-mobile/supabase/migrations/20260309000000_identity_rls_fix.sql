@@ -612,7 +612,7 @@ CREATE POLICY "group_members_read"
 CREATE POLICY "group_members_insert"
     ON public.community_group_members FOR INSERT
     WITH CHECK (
-        -- Admins can add anyone
+        -- Admins can add anyone to their group
         EXISTS (
             SELECT 1 FROM public.community_group_members a
             WHERE a.group_id = community_group_members.group_id
@@ -620,10 +620,18 @@ CREATE POLICY "group_members_insert"
               AND a.role = 'admin'
               AND a.status = 'active'
         )
-        -- Users can insert their own row only with a non-admin role
+        -- Users can insert only their own row with a non-admin role,
+        -- only into open groups, and only with pending/active status
+        -- (prevents bypassing invite-only or approval-required join policies)
         OR (
             community_group_members.user_id = get_my_id()
             AND community_group_members.role != 'admin'
+            AND community_group_members.status IN ('pending', 'active')
+            AND EXISTS (
+                SELECT 1 FROM public.community_groups g
+                WHERE g.id = community_group_members.group_id
+                  AND g.join_policy = 'open'
+            )
         )
     );
 
@@ -656,8 +664,9 @@ CREATE POLICY "group_members_update"
         -- Non-admin users can only update their own membership row
         OR community_group_members.user_id = get_my_id()
     )
-    -- Non-admins may only update their own row; they cannot self-promote to admin
-    -- or reassign their membership to another user_id
+    -- Admins may change any field.
+    -- Non-admins: cannot self-promote to admin, cannot change group_id or user_id
+    -- (pins them to the row they already own).
     WITH CHECK (
         EXISTS (
             SELECT 1 FROM public.community_group_members a
@@ -669,6 +678,11 @@ CREATE POLICY "group_members_update"
         OR (
             community_group_members.user_id = get_my_id()
             AND community_group_members.role != 'admin'
+            -- Prevent moving membership to a different group or different user
+            AND community_group_members.group_id = (
+                SELECT m.group_id FROM public.community_group_members m
+                WHERE m.id = community_group_members.id AND m.user_id = get_my_id()
+            )
         )
     );
 

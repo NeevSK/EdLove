@@ -18,11 +18,11 @@ import React, { useState, useCallback } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
     schoolAPI, onboardingAPI, validateInviteCode, incrementInviteCodeUsage,
-    getRoleFromCode, communityAPI, api, useStore, useUserRole, supabase,
+    communityAPI, api, useStore, useUserRole, supabase,
 } from '@repo/core';
 import {
     Building2, BookOpen, Users, Search, Key, CheckCircle2,
-    ArrowRight, ChevronRight, Plus,
+    ArrowRight, ChevronRight,
 } from 'lucide-react-native';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -110,7 +110,6 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
     const { user } = useStore();
     const [step, setStep] = useState<'details' | 'type' | 'done'>('details');
     const [name, setName]   = useState('');
-    const [email, setEmail] = useState('');
     const [type, setType]   = useState<'primary' | 'secondary' | 'mixed'>('mixed');
     const [loading, setLoading]  = useState(false);
     const [error, setError]      = useState('');
@@ -155,7 +154,6 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
             {step === 'details' && (
                 <>
                     <FieldInput label="School Name *" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Gurudevi Life School" />
-                    <FieldInput label="Contact Email" value={email} onChange={e => setEmail(e.target.value)} placeholder="principal@school.lk" type="email" />
                     <button className="premium-button"
                         style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                         onClick={() => setStep('type')} disabled={!name.trim()}>
@@ -205,7 +203,6 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
 
 function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void }) {
     const { user } = useStore();
-    const { role } = useUserRole();
     const [method, setMethod] = useState<'code' | 'search'>('code');
 
     // ── invite code path ──

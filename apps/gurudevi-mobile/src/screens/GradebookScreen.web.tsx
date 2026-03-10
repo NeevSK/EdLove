@@ -98,10 +98,26 @@ function SettingsModal({ current, onSave, onClose }: {
     const [maxMarks, setMaxMarks] = useState(String(current?.max_marks ?? 100));
     const [passing,  setPassing]  = useState(String(current?.passing_marks ?? 50));
     const [saving, setSaving]     = useState(false);
+    const [validationError, setValidationError] = useState('');
 
     const handleSave = async () => {
+        const max = Number(maxMarks);
+        const pass = Number(passing);
+        if (!Number.isFinite(max) || max <= 0) {
+            setValidationError('Max marks must be greater than 0.');
+            return;
+        }
+        if (!Number.isFinite(pass) || pass < 0) {
+            setValidationError('Passing marks cannot be negative.');
+            return;
+        }
+        if (pass > max) {
+            setValidationError('Passing marks cannot exceed max marks.');
+            return;
+        }
+        setValidationError('');
         setSaving(true);
-        try { await onSave({ max_marks: Number(maxMarks), passing_marks: Number(passing) }); onClose(); }
+        try { await onSave({ max_marks: max, passing_marks: pass }); onClose(); }
         catch { setSaving(false); }
     };
 
@@ -116,10 +132,13 @@ function SettingsModal({ current, onSave, onClose }: {
                 ].map(f => (
                     <div key={f.label} style={{ marginBottom: '14px' }}>
                         <label style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--ink-ghost)', display: 'block', marginBottom: '6px' }}>{f.label}</label>
-                        <input type="number" value={f.value} onChange={e => f.set(e.target.value)}
+                        <input type="number" value={f.value} onChange={e => { f.set(e.target.value); setValidationError(''); }}
                             style={{ width: '100%', boxSizing: 'border-box' as const, padding: '10px 14px', borderRadius: '10px', border: '1.5px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: '700' }} />
                     </div>
                 ))}
+                {validationError && (
+                    <p style={{ margin: '0 0 12px', fontSize: '12px', color: 'var(--ember)', fontWeight: '600' }}>{validationError}</p>
+                )}
                 <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
                     <button onClick={onClose} className="secondary-button" style={{ flex: 1 }}>Cancel</button>
                     <button onClick={handleSave} className="premium-button"
@@ -234,7 +253,8 @@ export default function GradebookScreenWeb() {
                                     {sortedGrades.map((g, i) => {
                                         const pct = maxMarks > 0 ? (g.marks / maxMarks) * 100 : 0;
                                         const passing = gradingSettings?.passing_marks ?? 50;
-                                        const color = pct >= 80 ? 'var(--moss)' : pct >= passing / maxMarks * 100 ? 'var(--amber-glow)' : 'var(--ember)';
+                                        const passingPct = maxMarks > 0 ? (passing / maxMarks) * 100 : 50;
+                                        const color = pct >= 80 ? 'var(--moss)' : pct >= passingPct ? 'var(--amber-glow)' : 'var(--ember)';
                                         return (
                                             <div key={g.student_id} style={{
                                                 display: 'grid', gridTemplateColumns: '40px 1fr 80px 80px 80px 44px',

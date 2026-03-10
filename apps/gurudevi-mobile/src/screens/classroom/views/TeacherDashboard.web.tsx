@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUserRole, useStore, supabase, MOCK_CLASSROOMS, MOCK_STUDENTS, MOCK_ASSIGNMENTS } from '@repo/core';
+import { useUserRole, useStore, supabase, MOCK_CLASSROOMS } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { Classroom } from '@repo/core';
 import { SkeletonCard, SandboxBanner } from '@repo/ui';
@@ -30,7 +30,7 @@ import {
     CheckSquare,
     DollarSign,
 } from 'lucide-react-native';
-import { formatDistanceToNow } from 'date-fns';
+
 
 // ── Mock data enriched for demo teacher view ─────────────────────────────────
 const DEMO_CLASSROOMS = MOCK_CLASSROOMS.filter(c => !(c as any).is_school).map((c, i) => ({

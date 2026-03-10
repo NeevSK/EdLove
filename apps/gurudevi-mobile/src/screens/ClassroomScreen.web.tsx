@@ -43,7 +43,7 @@ type DemoRole = 'teacher' | 'principal' | 'student';
 
 const ROLE_META: Record<DemoRole, { emoji: string; title: string; color: string }> = {
     teacher:   { emoji: '📚', title: 'Teacher',   color: 'var(--sanctuary-saffron)' },
-    principal: { emoji: '��️', title: 'Principal', color: 'var(--lotus)'             },
+    principal: { emoji: '🏛️', title: 'Principal', color: 'var(--lotus)'             },
     student:   { emoji: '🌱', title: 'Student',   color: 'var(--moss)'              },
 };
 

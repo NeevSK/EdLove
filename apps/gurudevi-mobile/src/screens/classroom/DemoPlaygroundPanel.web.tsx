@@ -12,8 +12,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { X, Zap, ArrowRight } from 'lucide-react-native';
+import { X, Zap } from 'lucide-react-native';
 
 import TeacherDashboard from '../classroom/views/TeacherDashboard.web';
 import StudentDashboard from '../classroom/views/StudentDashboard.web';

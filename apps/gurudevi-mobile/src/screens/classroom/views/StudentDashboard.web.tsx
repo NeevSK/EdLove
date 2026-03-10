@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUserRole, useStore, supabase, useRewards, assignmentsAPI, growthSignalsAPI, MOCK_CLASSROOMS, MOCK_ASSIGNMENTS } from '@repo/core';
+import { useUserRole, useStore, supabase, useRewards, growthSignalsAPI, MOCK_CLASSROOMS } from '@repo/core';
 import { Classroom } from '@repo/core';
 import { SkeletonCard, SandboxBanner } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
@@ -20,7 +20,7 @@ import {
     Target,
     TrendingUp,
 } from 'lucide-react-native';
-import { formatDistanceToNow } from 'date-fns';
+
 
 // ── Mock data for student demo ────────────────────────────────────────────────
 const DEMO_CLASSROOMS = MOCK_CLASSROOMS.filter(c => !(c as any).is_school).slice(0, 3);
