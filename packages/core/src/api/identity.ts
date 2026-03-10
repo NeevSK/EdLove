@@ -66,17 +66,26 @@ export const identityAPI = {
      * internal users.id. All other code must call this method, never auth.getUser() directly.
      */
     async getMyInternalId(): Promise<string | null> {
-        if (cachedInternalId) return cachedInternalId;
-
-        // auth.getUser() here is the bootstrap step only — we extract the Supabase auth UID
+        // auth.getUser() is the bootstrap step — we extract the Supabase auth UID
         // and immediately resolve it to the internal users.id via auth_identities.
         const { data } = await supabase.auth.getUser();
         const user = data?.user;
-        if (!user) return null;
-        const authUid = user.id; // Supabase auth UID — NOT used for DB queries directly
+        if (!user) {
+            cachedInternalId = null;
+            return null;
+        }
+        const authUid = user.id;
+
+        // If we have a cached ID but it was for a different Supabase UID, clear it
+        if (cachedInternalId && (this as any)._cachedAuthUid !== authUid) {
+            cachedInternalId = null;
+        }
+
+        if (cachedInternalId) return cachedInternalId;
 
         // Resolve auth UID → internal users.id via auth_identities mapping table
         const internalId = await this.resolveInternalId('supabase', authUid);
+        (this as any)._cachedAuthUid = authUid;
 
         // Fallback: If not found in auth_identities, check if public.users has it (legacy sync).
         // This heals legacy users whose auth_identities row was never created.

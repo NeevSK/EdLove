@@ -139,15 +139,21 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
         });
     }, [currentStep, name, role, orientationSeeds]);
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (!canProceed) return;
         hapticLight();
 
         // Short-circuit: If user is already authenticated (not anonymous) and just chose a role,
         // we skip Orientation (2) and Tour (3-7) and go straight to completion.
-        if (currentStep === 1 && !isAnonymous) {
-            handleCompleteOnboarding();
-            return;
+        // Double check the session directly in case props are stale during the transition.
+        if (currentStep === 1) {
+            const { data: { session: currentSession } } = await supabase.auth.getSession();
+            const actuallyAnon = currentSession?.user?.is_anonymous ?? true;
+            if (!actuallyAnon) {
+                console.log('🚀 Onboarding: User is verified, finishing on role confirmation...');
+                handleCompleteOnboarding();
+                return;
+            }
         }
 
         setCurrentStep(prev => prev + 1);

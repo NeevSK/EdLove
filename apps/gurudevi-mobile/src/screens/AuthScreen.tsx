@@ -26,8 +26,8 @@ import {
 import { Mail } from 'lucide-react-native';
 import { Platform, type TextInput } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { supabase, UserRole, handleAPIError, GuestDataSync, identityAPI } from '@repo/core';
 import { Theme, BreathAnimation, GlassCard, LivingGlow } from '@repo/ui';
+import { useStore, supabase, UserRole, handleAPIError, GuestDataSync, identityAPI } from '@repo/core';
 import { validators, validateForm } from '../utils/validators';
 import { ScannerModal, resolveQR } from '@repo/scanner-kit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -305,6 +305,12 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                                 onboarding_completed_at: new Date().toISOString(),
                                 is_anonymous: false
                             }).eq('id', internalId);
+
+                            // Proactively sync the store so navigation is immediate and solid
+                            const store = useStore.getState();
+                            store.setOnboardingCompleted(true);
+                            if (onboardingData.name) store.setTeacherName(onboardingData.name);
+                            if (onboardingData.role) store.setUserRole(onboardingData.role);
                         } catch (e) {
                             console.error('Failed to apply onboarding data', e);
                         }
@@ -360,6 +366,12 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                             onboarding_completed: true,
                             onboarding_completed_at: new Date().toISOString(),
                         }).eq('id', internalId);
+
+                        // Proactively sync the store so navigation is immediate and solid
+                        const store = useStore.getState();
+                        store.setOnboardingCompleted(true);
+                        if (onboardingData?.name) store.setTeacherName(onboardingData.name);
+                        if (onboardingData?.role) store.setUserRole(onboardingData.role);
                     }
 
                     hapticSuccess();

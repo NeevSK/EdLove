@@ -219,7 +219,10 @@ function App() {
             if (internalId) fetchAndSetUserProfile(internalId);
           })
           .catch((err) => console.warn('⚠️ App: Identity resolution failed on auth change:', err));
-      } else {
+      } else if (event === 'SIGNED_OUT') {
+        // Only clear cache and reset store on explicit logout.
+        // This prevents the 'loop' if session is momentarily null during transitions.
+        console.log('🚪 App: User signed out. Clearing identity cache and resetting store.');
         identityAPI.clearCache();
         const store = useStore.getState();
         store.setUser(null);
