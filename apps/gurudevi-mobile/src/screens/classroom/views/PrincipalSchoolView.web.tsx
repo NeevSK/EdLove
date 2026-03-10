@@ -111,8 +111,12 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
     const [echoItems, setEchoItems] = useState<Array<{
         id: string; source: string; category: string; content: string;
         priority: string; is_read: boolean; created_at: string;
+        principal_response?: string; responded_at?: string;
     }>>([]);
     const [echoLoading, setEchoLoading] = useState(true);
+    const [replyingTo, setReplyingTo] = useState<string | null>(null);
+    const [replyText, setReplyText] = useState('');
+    const [savingReply, setSavingReply] = useState(false);
 
     useEffect(() => {
         if (!effectiveSchoolId) return;
@@ -330,6 +334,33 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
         if (view === 'invites') loadInviteCodes();
         if (view === 'cycles') loadAcademicCycles();
         if (view === 'hierarchy') loadSections();
+    };
+
+    const handleMarkEchoRead = async (id: string) => {
+        try {
+            await supabase.from('school_echo_feedback').update({ is_read: true }).eq('id', id);
+            setEchoItems(prev => prev.map(e => e.id === id ? { ...e, is_read: true } : e));
+        } catch { /**/ }
+    };
+
+    const handleSendEchoReply = async (id: string) => {
+        if (!replyText.trim() || !effectiveUserId) return;
+        setSavingReply(true);
+        try {
+            const now = new Date().toISOString();
+            await supabase.from('school_echo_feedback').update({
+                principal_response: replyText.trim(),
+                responded_by: effectiveUserId,
+                responded_at: now,
+                is_read: true,
+            }).eq('id', id);
+            setEchoItems(prev => prev.map(e =>
+                e.id === id ? { ...e, principal_response: replyText.trim(), responded_at: now, is_read: true } : e
+            ));
+            setReplyingTo(null);
+            setReplyText('');
+        } catch { /**/ }
+        finally { setSavingReply(false); }
     };
 
     const handleGenerateCode = async () => {
@@ -867,7 +898,14 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                         <div className="sanctuary-card" style={{ padding: '24px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                                 <div>
-                                    <h3 style={{ margin: '0 0 4px', fontSize: '14px', fontWeight: '800' }}>{t('principal.echo.title') || 'Echo Chamber'}</h3>
+                                    <h3 style={{ margin: '0 0 4px', fontSize: '14px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        {t('principal.echo.title') || 'Echo Chamber'}
+                                        {echoItems.filter(e => !e.is_read).length > 0 && (
+                                            <span style={{ background: 'var(--ember)', color: '#fff', borderRadius: '10px', padding: '1px 7px', fontSize: '10px', fontWeight: '800' }}>
+                                                {echoItems.filter(e => !e.is_read).length} new
+                                            </span>
+                                        )}
+                                    </h3>
                                     <p style={{ margin: 0, fontSize: '11px', color: 'var(--ink-ghost)' }}>{t('principal.echo.subtitle') || 'Feedback from your staff & students'}</p>
                                 </div>
                             </div>
@@ -885,6 +923,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                                             : item.category === 'recognition' ? CheckCircle2
                                             : MessageSquare;
                                         const borderColor = item.priority === 'high' ? 'var(--ember)' : 'var(--lotus)';
+                                        const isExpanded = replyingTo === item.id;
                                         return (
                                             <div key={item.id} style={{
                                                 padding: '14px',
@@ -892,26 +931,69 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                                                 border: '1px solid var(--border-light)',
                                                 borderLeft: `4px solid ${borderColor}`,
                                                 borderRadius: '10px',
-                                                display: 'flex',
-                                                gap: '12px',
-                                                alignItems: 'flex-start',
                                             }}>
-                                                <div style={{ padding: '8px', background: 'var(--background-alt)', borderRadius: '8px', flexShrink: 0 }}>
-                                                    <CategoryIcon size={16} color="var(--lotus)" />
-                                                </div>
-                                                <div style={{ flex: 1, minWidth: 0 }}>
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                                                        <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>
-                                                            {item.source} · {item.category}
-                                                        </span>
-                                                        <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>
-                                                            {new Date(item.created_at).toLocaleDateString()}
-                                                        </span>
+                                                <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                                                    <div style={{ padding: '8px', background: 'var(--background-alt)', borderRadius: '8px', flexShrink: 0 }}>
+                                                        <CategoryIcon size={16} color="var(--lotus)" />
                                                     </div>
-                                                    <p style={{ margin: 0, fontSize: '13px', lineHeight: '1.5', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>
-                                                        {item.content}
-                                                    </p>
+                                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                                            <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>
+                                                                {item.source} · {item.category}
+                                                                {!item.is_read && <span style={{ marginLeft: '6px', color: 'var(--ember)' }}>● unread</span>}
+                                                            </span>
+                                                            <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>
+                                                                {new Date(item.created_at).toLocaleDateString()}
+                                                            </span>
+                                                        </div>
+                                                        <p style={{ margin: '0 0 8px', fontSize: '13px', lineHeight: '1.5' }}>
+                                                            {item.content}
+                                                        </p>
+                                                        {/* Principal response (if already sent) */}
+                                                        {item.principal_response && (
+                                                            <div style={{ marginTop: '8px', padding: '10px 12px', background: 'rgba(212,132,58,0.08)', borderRadius: '8px', borderLeft: '3px solid var(--sanctuary-saffron)' }}>
+                                                                <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--sanctuary-saffron)', textTransform: 'uppercase', marginBottom: '4px' }}>Your Reply</div>
+                                                                <p style={{ margin: 0, fontSize: '12px', lineHeight: '1.5' }}>{item.principal_response}</p>
+                                                                {item.responded_at && <div style={{ fontSize: '10px', color: 'var(--ink-ghost)', marginTop: '4px' }}>{formatDistanceToNow(new Date(item.responded_at), { addSuffix: true })}</div>}
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
+                                                {/* Action row */}
+                                                <div style={{ display: 'flex', gap: '8px', marginTop: '10px', justifyContent: 'flex-end' }}>
+                                                    {!item.is_read && (
+                                                        <button onClick={() => handleMarkEchoRead(item.id)} style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'none', cursor: 'pointer', fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', fontFamily: 'var(--font-body)' }}>
+                                                            ✓ Mark read
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        onClick={() => {
+                                                            if (isExpanded) { setReplyingTo(null); setReplyText(''); }
+                                                            else { setReplyingTo(item.id); setReplyText(item.principal_response ?? ''); }
+                                                        }}
+                                                        style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--lotus)', background: isExpanded ? 'var(--lotus-soft)' : 'none', cursor: 'pointer', fontSize: '11px', fontWeight: '700', color: 'var(--lotus)', fontFamily: 'var(--font-body)' }}
+                                                    >
+                                                        {item.principal_response ? '✏️ Edit reply' : '↩ Reply'}
+                                                    </button>
+                                                </div>
+                                                {/* Inline reply input */}
+                                                {isExpanded && (
+                                                    <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                        <textarea
+                                                            value={replyText}
+                                                            onChange={e => setReplyText(e.target.value)}
+                                                            placeholder="Write your response to this feedback…"
+                                                            rows={2}
+                                                            style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--lotus)', background: 'var(--background)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px', resize: 'vertical' as const, width: '100%', boxSizing: 'border-box' as const }}
+                                                        />
+                                                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                                            <button onClick={() => { setReplyingTo(null); setReplyText(''); }} style={{ padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'none', cursor: 'pointer', fontSize: '12px', fontFamily: 'var(--font-body)' }}>Cancel</button>
+                                                            <button onClick={() => handleSendEchoReply(item.id)} disabled={!replyText.trim() || savingReply} style={{ padding: '6px 12px', borderRadius: '8px', border: 'none', background: 'var(--lotus)', color: '#fff', cursor: replyText.trim() && !savingReply ? 'pointer' : 'not-allowed', opacity: replyText.trim() && !savingReply ? 1 : 0.6, fontSize: '12px', fontWeight: '700', fontFamily: 'var(--font-body)' }}>
+                                                                {savingReply ? '⏳' : '↩ Send Reply'}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                         );
                                     })}

@@ -65,6 +65,14 @@ export default function TeacherDashboardWeb({ forceDemo }: { forceDemo?: boolean
     const [echoPriority, setEchoPriority] = useState<'low' | 'medium' | 'high'>('medium');
     const [echoContent, setEchoContent] = useState('');
     const [echoSubmitting, setEchoSubmitting] = useState(false);
+
+    // Echo history (teacher's sent echoes + principal responses)
+    const [sentEchoes, setSentEchoes] = useState<Array<{
+        id: string; category: string; content: string; priority: string;
+        is_read: boolean; principal_response?: string; responded_at?: string; created_at: string;
+    }>>([]);
+    const [sentEchoesLoading, setSentEchoesLoading] = useState(false);
+    const [showEchoHistory, setShowEchoHistory] = useState(false);
     const { data: roleData } = useClassroomRoleData();
 
     useEffect(() => {
@@ -110,6 +118,21 @@ export default function TeacherDashboardWeb({ forceDemo }: { forceDemo?: boolean
         };
         fetchClassrooms();
     }, [userId, role, user?.school_id, isDemo]);
+
+    const loadSentEchoes = async () => {
+        if (!userId) return;
+        setSentEchoesLoading(true);
+        try {
+            const { data } = await supabase
+                .from('school_echo_feedback')
+                .select('id, category, content, priority, is_read, principal_response, responded_at, created_at')
+                .eq('teacher_id', userId)
+                .order('created_at', { ascending: false })
+                .limit(10);
+            setSentEchoes(data ?? []);
+        } catch { /**/ }
+        finally { setSentEchoesLoading(false); }
+    };
 
     const filtered = classrooms.filter(cls =>
         cls.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -161,6 +184,19 @@ export default function TeacherDashboardWeb({ forceDemo }: { forceDemo?: boolean
                         >
                             <MessageCircle size={18} />
                             {t('teacher.actions.principalEcho') || 'Principal Echo'}
+                        </button>
+                        <button
+                            className="secondary-button"
+                            style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}
+                            onClick={() => { setShowEchoHistory(h => !h); if (!showEchoHistory) loadSentEchoes(); }}
+                        >
+                            <ClipboardList size={18} />
+                            My Echoes
+                            {sentEchoes.filter(e => e.principal_response && !e.is_read).length > 0 && (
+                                <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: 'var(--moss)', color: '#fff', borderRadius: '50%', width: '16px', height: '16px', fontSize: '9px', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    {sentEchoes.filter(e => e.principal_response && !e.is_read).length}
+                                </span>
+                            )}
                         </button>
                     </div>
                 </div>
@@ -487,6 +523,8 @@ export default function TeacherDashboardWeb({ forceDemo }: { forceDemo?: boolean
                                             });
                                             setEchoContent('');
                                             setShowEchoModal(false);
+                                            // Refresh history if panel is open
+                                            if (showEchoHistory) loadSentEchoes();
                                         } catch (err) {
                                             console.error('[PrincipalEcho] submit error', err);
                                         } finally {
@@ -498,6 +536,50 @@ export default function TeacherDashboardWeb({ forceDemo }: { forceDemo?: boolean
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── My Echo History Panel ─────────────────────────── */}
+            {showEchoHistory && (
+                <div style={{ position: 'fixed', inset: 0, zIndex: 8000, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+                    onClick={e => e.target === e.currentTarget && setShowEchoHistory(false)}>
+                    <div style={{ background: 'var(--background)', borderRadius: '20px 20px 0 0', padding: '28px', width: '100%', maxWidth: '640px', maxHeight: '70vh', overflowY: 'auto' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>My Feedback History</h3>
+                            <button onClick={() => setShowEchoHistory(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', color: 'var(--ink-ghost)' }}>✕</button>
+                        </div>
+                        {sentEchoesLoading ? (
+                            [1,2,3].map(i => <div key={i} style={{ height: '60px', background: 'var(--background-alt)', borderRadius: '10px', marginBottom: '10px' }} />)
+                        ) : sentEchoes.length === 0 ? (
+                            <div style={{ textAlign: 'center', padding: '32px', color: 'var(--ink-ghost)', fontStyle: 'italic' }}>
+                                No echoes sent yet. Use the "Principal Echo" button to share feedback.
+                            </div>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                {sentEchoes.map(e => (
+                                    <div key={e.id} style={{ padding: '14px 16px', borderRadius: '12px', border: '1px solid var(--border-light)', borderLeft: `4px solid ${e.priority === 'high' ? 'var(--ember)' : 'var(--lotus)'}` }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                            <span style={{ fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)' }}>
+                                                {e.category} · {e.priority}
+                                                {e.is_read && <span style={{ marginLeft: '6px', color: 'var(--moss)' }}>✓ read</span>}
+                                            </span>
+                                            <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{new Date(e.created_at).toLocaleDateString()}</span>
+                                        </div>
+                                        <p style={{ margin: '0 0 6px', fontSize: '13px', lineHeight: '1.5' }}>{e.content}</p>
+                                        {e.principal_response ? (
+                                            <div style={{ marginTop: '8px', padding: '10px 12px', background: 'rgba(212,132,58,0.08)', borderRadius: '8px', borderLeft: '3px solid var(--sanctuary-saffron)' }}>
+                                                <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--sanctuary-saffron)', textTransform: 'uppercase', marginBottom: '4px' }}>Principal's Reply</div>
+                                                <p style={{ margin: 0, fontSize: '12px', lineHeight: '1.5' }}>{e.principal_response}</p>
+                                                {e.responded_at && <div style={{ fontSize: '10px', color: 'var(--ink-ghost)', marginTop: '4px' }}>{formatDistanceToNow(new Date(e.responded_at), { addSuffix: true })}</div>}
+                                            </div>
+                                        ) : (
+                                            <div style={{ fontSize: '11px', color: 'var(--ink-ghost)', fontStyle: 'italic', marginTop: '4px' }}>Awaiting principal response…</div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

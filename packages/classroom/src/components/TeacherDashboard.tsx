@@ -26,7 +26,10 @@ import {
     Users,
     BookOpen,
     School,
-    ScanLine
+    ScanLine,
+    ClipboardList,
+    ChevronDown,
+    ChevronUp,
 } from 'lucide-react-native';
 
 import { useNavigation } from '@react-navigation/native';
@@ -56,6 +59,29 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
     const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+
+    // Echo history — teacher's sent echoes with principal responses
+    const [sentEchoes, setSentEchoes] = useState<Array<{
+        id: string; category: string; content: string; priority: string;
+        is_read: boolean; principal_response?: string; responded_at?: string; created_at: string;
+    }>>([]);
+    const [echoHistoryLoading, setEchoHistoryLoading] = useState(false);
+    const [showEchoHistory, setShowEchoHistory] = useState(false);
+
+    const loadSentEchoes = async () => {
+        if (!userId) return;
+        setEchoHistoryLoading(true);
+        try {
+            const { data } = await supabase
+                .from('school_echo_feedback')
+                .select('id, category, content, priority, is_read, principal_response, responded_at, created_at')
+                .eq('teacher_id', userId)
+                .order('created_at', { ascending: false })
+                .limit(10);
+            setSentEchoes(data ?? []);
+        } catch { /**/ }
+        finally { setEchoHistoryLoading(false); }
+    };
     const [isScannerOpen, setIsScannerOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'create' | 'join'>('create');
     const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -278,6 +304,12 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                             onPress={() => setIsFeedbackModalOpen(true)}
                             color={Theme.colors.emberRed}
                         />
+                        <QuickAction
+                            icon={ClipboardList}
+                            label="My Echoes"
+                            onPress={() => { setShowEchoHistory(true); loadSentEchoes(); }}
+                            color={Theme.colors.water ?? Theme.colors.action}
+                        />
                     </HStack>
                 </Animated.View>
 
@@ -361,10 +393,59 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
 
             <TeacherFeedbackModal
                 isOpen={isFeedbackModalOpen}
-                onClose={() => setIsFeedbackModalOpen(false)}
+                onClose={() => { setIsFeedbackModalOpen(false); if (showEchoHistory) loadSentEchoes(); }}
                 schoolId={schoolId || ''}
                 teacherId={userId || ''}
             />
+
+            {/* My Echo History — collapsible section showing sent echoes + principal replies */}
+            <Modal
+                visible={showEchoHistory}
+                animationType="slide"
+                presentationStyle="pageSheet"
+                onRequestClose={() => setShowEchoHistory(false)}
+            >
+                <Box flex={1} sx={{ backgroundColor: colors.primary }}>
+                    <Box sx={{ paddingTop: 50, paddingBottom: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, borderBottomWidth: 1, borderBottomColor: colors.border }}>
+                        <HStack justifyContent="space-between" alignItems="center">
+                            <Heading size="lg" color={colors.text}>My Feedback History</Heading>
+                            <TouchableOpacity onPress={() => setShowEchoHistory(false)}>
+                                <X size={24} color={colors.textTertiary} />
+                            </TouchableOpacity>
+                        </HStack>
+                    </Box>
+                    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, gap: 12 }}>
+                        {echoHistoryLoading ? (
+                            <SkeletonCard />
+                        ) : sentEchoes.length === 0 ? (
+                            <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}>
+                                <Text color={colors.textTertiary} style={{ fontStyle: 'italic', textAlign: 'center' }}>
+                                    No echoes sent yet. Use the "Principal Echo" button to share feedback.
+                                </Text>
+                            </Box>
+                        ) : sentEchoes.map(e => (
+                            <Box key={e.id} sx={{ padding: Theme.spacing.md, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable, borderLeftWidth: 4, borderLeftColor: e.priority === 'high' ? Theme.colors.emberRed : colors.action, marginBottom: Theme.spacing.sm }}>
+                                <HStack justifyContent="space-between" style={{ marginBottom: 4 }}>
+                                    <Text style={{ fontSize: 10, fontWeight: '800', textTransform: 'uppercase', color: colors.textSecondary }}>
+                                        {e.category} · {e.priority}
+                                        {e.is_read ? '  ✓ read' : '  ● pending'}
+                                    </Text>
+                                    <Text style={{ fontSize: 10, color: colors.textTertiary }}>{new Date(e.created_at).toLocaleDateString()}</Text>
+                                </HStack>
+                                <Text color={colors.text} style={{ fontSize: 13, lineHeight: 20, marginBottom: 6 }}>{e.content}</Text>
+                                {e.principal_response ? (
+                                    <Box sx={{ padding: Theme.spacing.sm, backgroundColor: colors.primary, borderRadius: Theme.corners.comfortable, borderLeftWidth: 3, borderLeftColor: colors.action }}>
+                                        <Text style={{ fontSize: 10, fontWeight: '800', color: colors.action, marginBottom: 2 }}>Principal's Reply</Text>
+                                        <Text color={colors.text} style={{ fontSize: 12 }}>{e.principal_response}</Text>
+                                    </Box>
+                                ) : (
+                                    <Text color={colors.textTertiary} style={{ fontSize: 11, fontStyle: 'italic' }}>Awaiting principal response…</Text>
+                                )}
+                            </Box>
+                        ))}
+                    </ScrollView>
+                </Box>
+            </Modal>
 
             {/* Admin Portal Modal */}
             <Modal
