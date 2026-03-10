@@ -12,15 +12,13 @@ import {
     useUserRole
 } from '@repo/core';
 
-// Kernel Imports from @repo/self
-import {
-    BaseSelfView,
-    MoodPickerCard,
-    EnergyBarChart,
-    WarmMirrorCard,
-    ImpactRipplesCard,
-    useWellbeingEnrichment,
-} from '../../index';
+// Kernel Imports from @repo/self (Breaking require cycle)
+import { BaseSelfView } from '../../components/BaseSelfView';
+import { MoodPickerCard } from '../../components/MoodPickerCard';
+import { EnergyBarChart } from '../../components/EnergyBarChart';
+import { WarmMirrorCard } from '../../components/WarmMirrorCard';
+import { ImpactRipplesCard } from '../../components/ImpactRipplesCard';
+import { useWellbeingEnrichment } from '../../hooks/useWellbeingEnrichment';
 
 // Role Components
 import ShadowAgentDrawer from '../../components/ShadowAgentDrawer';
@@ -30,6 +28,8 @@ import { useEnergyForecast } from '../../hooks/useEnergyForecast';
 import VoiceJournaling from '../../components/VoiceJournaling';
 import DecisionJournalSection from '../../components/DecisionJournalSection';
 import ResonancePatternCard from '../../components/ResonancePatternCard';
+
+import { PulseDashboard } from '../../components/PulseDashboard';
 
 export default function PrincipalSelfView() {
     const { t } = useTranslation();
@@ -68,46 +68,79 @@ export default function PrincipalSelfView() {
                 role="principal"
                 description={t('self.principalDescription', 'A restorative space for leadership clarity and personal rhythm.')}
                 voiceJournal={<VoiceJournaling userId={userId ?? undefined} />}
-                personalLayer={
-                    <VStack space="xl">
-                        {/* Mood Resonance (Kernel Component) */}
-                        <MoodPickerCard
-                            isOpen={isMoodPickerOpen}
-                            onToggle={() => setIsMoodPickerOpen(!isMoodPickerOpen)}
-                            onSelect={handleMoodSelect}
-                            isSaving={isSavingMood}
-                            latestMood={latestMood}
-                            isLoading={loadingMoods}
-                            accent="water" // Water accent for Principal's sanctuary
-                        />
-
-                        {/* Energy Pulse (Kernel Component) */}
-                        <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
-                            <EnergyBarChart
-                                bars={forecasts.slice().reverse()}
-                                height={80}
-                            />
-                        </Box>
-                    </VStack>
-                }
-                workingLayer={
-                    <VStack space="xl">
-                        {/* Leadership Wisdom & Reflections */}
-                        <DecisionJournalSection userId={userId} colors={colors} t={t} />
-
-                        {/* Resonance Pattern (Native Specific) */}
-                        {user && (
-                            <ResonancePatternCard
-                                orientationSeeds={(user as any).orientation_seeds}
-                                moodLogs={moodHistory}
-                                energyForecasts={forecasts}
-                            />
-                        )}
-                    </VStack>
-                }
+                domains={[
+                    {
+                        id: 'pulse',
+                        title: 'Inner Pulse',
+                        accentColor: '#8B5CF6',
+                        features: [
+                            {
+                                id: 'pulse',
+                                label: 'Daily Pulse',
+                                content: <PulseDashboard onEnterDetails={() => { }} />
+                            }
+                        ]
+                    },
+                    {
+                        id: 'physical',
+                        title: 'Physical Sanctuary',
+                        accentColor: '#3B82F6', // Water/Blue
+                        features: [
+                            {
+                                id: 'mood-picker',
+                                label: 'Mood Tracking',
+                                content: (
+                                    <MoodPickerCard
+                                        isOpen={isMoodPickerOpen}
+                                        onToggle={() => setIsMoodPickerOpen(!isMoodPickerOpen)}
+                                        onSelect={handleMoodSelect}
+                                        isSaving={isSavingMood}
+                                        latestMood={latestMood}
+                                        isLoading={loadingMoods}
+                                        accent="water"
+                                    />
+                                )
+                            },
+                            {
+                                id: 'energy-forecast',
+                                label: 'Energy Rhythm',
+                                content: (
+                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
+                                        <EnergyBarChart
+                                            bars={forecasts.slice().reverse()}
+                                            height={80}
+                                        />
+                                    </Box>
+                                )
+                            }
+                        ]
+                    },
+                    {
+                        id: 'working',
+                        title: 'Working Rhythm',
+                        accentColor: '#10B981', // Moss/Teal
+                        features: [
+                            {
+                                id: 'decisions',
+                                label: 'Decision Journal',
+                                content: <DecisionJournalSection userId={userId} colors={colors} t={t} />
+                            },
+                            {
+                                id: 'resonance',
+                                label: 'Resonance Patterns',
+                                content: user ? (
+                                    <ResonancePatternCard
+                                        orientationSeeds={(user as any).orientation_seeds}
+                                        moodLogs={moodHistory}
+                                        energyForecasts={forecasts}
+                                    />
+                                ) : null
+                            }
+                        ]
+                    }
+                ]}
                 sideBar={
                     <VStack space="lg">
-                        {/* Mirrors (Kernel Components) */}
                         <WarmMirrorCard text={warmMirrorText} />
                         <ImpactRipplesCard ripples={ripples} />
                     </VStack>

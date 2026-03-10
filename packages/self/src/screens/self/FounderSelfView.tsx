@@ -12,15 +12,13 @@ import {
     useUserRole
 } from '@repo/core';
 
-// Kernel Imports from @repo/self
-import {
-    BaseSelfView,
-    MoodPickerCard,
-    EnergyBarChart,
-    WarmMirrorCard,
-    ImpactRipplesCard,
-    useWellbeingEnrichment,
-} from '../../index';
+// Kernel Imports from @repo/self (Breaking require cycle)
+import { BaseSelfView } from '../../components/BaseSelfView';
+import { MoodPickerCard } from '../../components/MoodPickerCard';
+import { EnergyBarChart } from '../../components/EnergyBarChart';
+import { WarmMirrorCard } from '../../components/WarmMirrorCard';
+import { ImpactRipplesCard } from '../../components/ImpactRipplesCard';
+import { useWellbeingEnrichment } from '../../hooks/useWellbeingEnrichment';
 
 // Role Components
 import MoodLotus from '../../components/MoodLotus';
@@ -29,6 +27,8 @@ import WelcomeModal from '../../components/WelcomeModal';
 import { useMoodLogs } from '../../hooks/useMoodLogs';
 import { useEnergyForecast } from '../../hooks/useEnergyForecast';
 import WisdomSeeds from '../../components/WisdomSeeds';
+
+import { PulseDashboard } from '../../components/PulseDashboard';
 
 export default function FounderSelfView() {
     const { t } = useTranslation();
@@ -65,39 +65,66 @@ export default function FounderSelfView() {
             <BaseSelfView
                 role="founder"
                 description={t('self.founderDescription', 'The steady eye of the hurricane - a space for vision and personal pulse.')}
-                personalLayer={
-                    <VStack space="xl">
-                        {/* Mood Resonance (Kernel Component) */}
-                        <MoodPickerCard
-                            isOpen={isMoodPickerOpen}
-                            onToggle={() => setIsMoodPickerOpen(!isMoodPickerOpen)}
-                            onSelect={handleMoodSelect}
-                            isSaving={isSavingMood}
-                            latestMood={latestMood}
-                            isLoading={loadingMoods}
-                            accent="fire" // Dynamic fire accent for the founder
-                        />
-
-                        {/* Energy Pulse (Kernel Component) */}
-                        <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
-                            <EnergyBarChart
-                                bars={forecasts.slice().reverse()}
-                                height={80}
-                            />
-                        </Box>
-
-                        <MoodLotus userId={userId ?? undefined} />
-                        <WisdomSeeds userId={userId ?? undefined} />
-                    </VStack>
-                }
-                workingLayer={
-                    <VStack space="xl">
-                        {/* Vision alignment and other high-level philosophy tools would go here */}
-                    </VStack>
-                }
+                domains={[
+                    {
+                        id: 'pulse',
+                        title: 'Inner Pulse',
+                        accentColor: '#8B5CF6',
+                        features: [
+                            {
+                                id: 'pulse',
+                                label: 'Daily Pulse',
+                                content: <PulseDashboard onEnterDetails={() => { }} />
+                            },
+                            {
+                                id: 'mood-lotus',
+                                label: 'Mood Lotus',
+                                content: <MoodLotus userId={userId ?? undefined} />
+                            },
+                            {
+                                id: 'wisdom',
+                                label: 'Wisdom Seeds',
+                                content: <WisdomSeeds userId={userId ?? undefined} />
+                            }
+                        ]
+                    },
+                    {
+                        id: 'physical',
+                        title: 'Physical Sanctuary',
+                        accentColor: '#EF4444', // Fire/Crimson
+                        features: [
+                            {
+                                id: 'mood-picker',
+                                label: 'Mood Tracking',
+                                content: (
+                                    <MoodPickerCard
+                                        isOpen={isMoodPickerOpen}
+                                        onToggle={() => setIsMoodPickerOpen(!isMoodPickerOpen)}
+                                        onSelect={handleMoodSelect}
+                                        isSaving={isSavingMood}
+                                        latestMood={latestMood}
+                                        isLoading={loadingMoods}
+                                        accent="fire"
+                                    />
+                                )
+                            },
+                            {
+                                id: 'energy-forecast',
+                                label: 'Energy Rhythm',
+                                content: (
+                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
+                                        <EnergyBarChart
+                                            bars={forecasts.slice().reverse()}
+                                            height={80}
+                                        />
+                                    </Box>
+                                )
+                            }
+                        ]
+                    }
+                ]}
                 sideBar={
                     <VStack space="lg">
-                        {/* Mirrors (Kernel Components) */}
                         <WarmMirrorCard text={warmMirrorText} />
                         <ImpactRipplesCard ripples={ripples} />
                     </VStack>

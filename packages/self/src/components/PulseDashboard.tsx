@@ -25,7 +25,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
  * PulseDashboard - The "Entrance" to the Daily Sanctuary
  * Provides high-level briefings, context, and daily motivation.
  */
-export default function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void }) {
+export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void }) {
     const { t } = useTranslation();
     const { role } = useUserRole();
     const user = useStore((state) => state.user);

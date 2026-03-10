@@ -5,7 +5,7 @@ import { Theme } from '../theme/Theme';
 export interface SanctuaryCarouselProps<T> {
     data: T[];
     renderItem: (item: T, index: number) => React.ReactNode;
-    keyExtractor: (item: T) => string;
+    keyExtractor: (item: T, index: number) => string;
     /** Space between each item */
     gap?: number;
     /** Padding on leading and trailing edges */
@@ -27,7 +27,7 @@ export function SanctuaryCarousel<T>({
         <FlatList
             horizontal
             data={data}
-            keyExtractor={keyExtractor}
+            keyExtractor={(item, index) => keyExtractor(item, index)}
             renderItem={({ item, index }) => (
                 <View style={{ marginRight: index < data.length - 1 ? gap : 0 }}>
                     {renderItem(item, index)}

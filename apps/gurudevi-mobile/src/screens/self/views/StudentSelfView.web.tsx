@@ -88,7 +88,7 @@ export default function StudentSelfViewWeb() {
         if (!userId) return;
         naturePathsAPI.getStudentPathState(userId).then(state => {
             if (state) setStudentPaths(state);
-        }).catch(() => {});
+        }).catch(() => { });
     }, [userId]);
 
     const latestMood = moodHistory[0];
@@ -119,7 +119,7 @@ export default function StudentSelfViewWeb() {
                 .single();
             if (!error && data) {
                 setGoals((prev: Goal[]) => [data, ...prev]);
-                void growthSignalsAPI.emitSignal(userId, 'goal_set').catch(() => {});
+                void growthSignalsAPI.emitSignal(userId, 'goal_set').catch(() => { });
             }
             setGoalDraft('');
             setShowGoalForm(false);
@@ -230,9 +230,9 @@ export default function StudentSelfViewWeb() {
 
     // workingLayer: goals, grades, rhythm — the learning self
     const studyStats = [
-        { id: '1', label: 'Goals Active',     value: goalsLoading   ? '—' : String(goals.length),         icon: Target,       color: 'var(--water)'  },
-        { id: '2', label: 'Goals Completed',  value: goalsLoading   ? '—' : String(completedGoals),        icon: CheckCircle2, color: 'var(--lotus)'  },
-        { id: '3', label: 'Journal Entries',  value: journalLoading ? '—' : String(journalEntries.length), icon: Sparkles,     color: 'var(--moss)'   },
+        { id: '1', label: 'Goals Active', value: goalsLoading ? '—' : String(goals.length), icon: Target, color: 'var(--water)' },
+        { id: '2', label: 'Goals Completed', value: goalsLoading ? '—' : String(completedGoals), icon: CheckCircle2, color: 'var(--lotus)' },
+        { id: '3', label: 'Journal Entries', value: journalLoading ? '—' : String(journalEntries.length), icon: Sparkles, color: 'var(--moss)' },
     ];
 
     const workingLayer = (
@@ -424,9 +424,9 @@ export default function StudentSelfViewWeb() {
                     <h3 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px' }}>Library Quick-Jump</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {[
-                            { icon: Library,      label: 'Monastery Library',     screen: 'Library'   as const },
-                            { icon: BookOpen,     label: 'Bookmarked Seeds',       screen: 'Library'   as const },
-                            { icon: MessageSquare, label: 'Resonant Discussions',  screen: 'Community' as const },
+                            { icon: Library, label: 'Monastery Library', screen: 'Library' as const },
+                            { icon: BookOpen, label: 'Bookmarked Seeds', screen: 'Library' as const },
+                            { icon: MessageSquare, label: 'Resonant Discussions', screen: 'Community' as const },
                         ].map((item, idx) => (
                             <button key={idx} className="sidebar-item" style={{ margin: 0 }} onClick={() => navigation.navigate('Main', { screen: item.screen })}>
                                 <item.icon size={16} /> <span>{item.label}</span>
@@ -443,8 +443,20 @@ export default function StudentSelfViewWeb() {
             <BaseSelfView
                 role="student"
                 description={t('self.studentDesc', 'A steady space to grow your mind and heart.')}
-                personalLayer={personalLayer}
-                workingLayer={workingLayer}
+                domains={[
+                    {
+                        id: 'personal',
+                        title: 'Inner Sanctuary',
+                        accentColor: '#3B82F6', // Water/Blue
+                        content: personalLayer
+                    },
+                    {
+                        id: 'working',
+                        title: 'Growth Dashboard',
+                        accentColor: '#10B981', // Moss/Teal
+                        content: workingLayer
+                    }
+                ]}
                 sideBar={sideBar}
             />
             <ShadowAgentDrawer />

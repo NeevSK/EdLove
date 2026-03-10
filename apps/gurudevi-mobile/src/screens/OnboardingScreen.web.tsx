@@ -93,11 +93,14 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                 const saved = await AsyncStorage.getItem('onboarding_progress');
                 if (saved) {
                     const progress = JSON.parse(saved);
-                    if (!internalId || progress.userId === internalId) {
+                    // Allow recovering progress even if the userId changed (e.g. Guest -> Google Auth)
+                    // as long as it's the same device and a recent session switch.
+                    if (progress.userId === internalId || !progress.userId || isAnonymous) {
                         if (progress.name) setName(progress.name);
                         if (progress.role) setRole(progress.role as UserRole);
                         if (progress.orientationSeeds) setOrientationSeeds(progress.orientationSeeds);
-                        if (typeof progress.step === 'number' && progress.step > 0 && progress.step < 8) {
+
+                        if (typeof progress.step === 'number' && progress.step >= 0 && progress.step < 8) {
                             setCurrentStep(progress.step);
                             return;
                         }
@@ -168,7 +171,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
         identityAPI.getMyInternalId().then((userId) => {
             AsyncStorage.setItem('onboarding_progress', JSON.stringify({
                 userId, step: currentStep, name, role, orientationSeeds,
-            })).catch(() => {/* silent */});
+            })).catch(() => {/* silent */ });
         });
     }, [currentStep, name, role, orientationSeeds]);
 
@@ -316,8 +319,18 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                         <button className="ob-btn-secondary" onClick={handleBack}>
                             ← {t('onboarding.back')}
                         </button>
-                        <button className="ob-btn-primary" onClick={handleNext}>
-                            {t('onboarding.continue')} →
+                        <button
+                            className="ob-btn-primary"
+                            onClick={async () => {
+                                if (!isAnonymous && role) {
+                                    // If already signed in (Google), jump straight to finish after picking role
+                                    handleCompleteOnboarding();
+                                } else {
+                                    handleNext();
+                                }
+                            }}
+                        >
+                            {(!isAnonymous && role) ? t('onboarding.complete') : t('onboarding.continue')} →
                         </button>
                     </div>
                 </div>

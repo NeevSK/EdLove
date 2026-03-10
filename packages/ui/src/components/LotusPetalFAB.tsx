@@ -27,6 +27,7 @@ import { useAccessibility } from '../hooks/useAccessibility';
 import { X } from 'lucide-react-native';
 import { Box, VStack, HStack, Text } from '../gluestack';
 import { UniversalModal } from './UniversalModal';
+import { useBottomTabPadding } from './ScreenWrapper';
 
 // ============================================================================
 // TYPES
@@ -62,14 +63,14 @@ const ACTION_DRAWER_HEIGHT = Dimensions.get('window').height * 0.4;
 type IconComponentType = React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
 
 const fabConfig: Record<TabType, { emoji: string; label: string }> = {
-    self: { emoji: 'ðŸª·', label: 'Reflection' },
-    classroom: { emoji: 'âž•', label: 'Add' },
-    community: { emoji: 'ðŸ’¬', label: 'Community' },
-    library: { emoji: 'ðŸ“š', label: 'Library' },
-    profile: { emoji: 'ðŸ‘¤', label: 'Profile' },
-    section: { emoji: 'ðŸ¢', label: 'Section' },
-    grade: { emoji: 'ðŸ«', label: 'Grade' },
-    principal: { emoji: 'ðŸ‘‘', label: 'Management' }
+    self: { emoji: '🪷', label: 'Reflection' },
+    classroom: { emoji: '➕', label: 'Add' },
+    community: { emoji: '💬', label: 'Community' },
+    library: { emoji: '📚', label: 'Library' },
+    profile: { emoji: '👤', label: 'Profile' },
+    section: { emoji: '🏢', label: 'Section' },
+    grade: { emoji: '🏫', label: 'Grade' },
+    principal: { emoji: '👑', label: 'Management' }
 };
 
 // ============================================================================
@@ -88,6 +89,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     gapPriority = 'low',
 }) => {
     const { isReduceMotionEnabled, announce } = useAccessibility();
+    const bottomTabPadding = useBottomTabPadding();
 
     const colors = useThemedColors();
     const { glow, accent } = useTheme();
@@ -147,7 +149,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         <>
             <Pressable
                 onPress={handlePress}
-                style={[styles.container, { bottom: bottomInset }]}
+                style={[styles.container, { bottom: bottomInset + bottomTabPadding }]}
                 disabled={disabled}
                 accessible={true}
                 accessibilityRole="button"
@@ -175,7 +177,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                             elevation: 10,
                         }}
                     >
-                        <Text style={styles.emojiText}>{hasActiveGaps ? 'â—' : config.emoji}</Text>
+                        <Text style={styles.emojiText}>{hasActiveGaps ? '❗' : config.emoji}</Text>
                     </Box>
                 </Animated.View>
             </Pressable>
@@ -283,4 +285,3 @@ const styles = StyleSheet.create({
 });
 
 export default LotusPetalFAB;
-

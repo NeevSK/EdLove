@@ -315,9 +315,21 @@ export default function FounderSelfViewWeb() {
         <>
             <BaseSelfView
                 role="founder"
-                description={t('self.founderDesc', 'Your personal sanctuary — away from the platform, inside yourself.')}
-                personalLayer={personalLayer}
-                workingLayer={workingLayer}
+                description={t('founder.description', 'A sanctuary for the visionary mind to find steady ground.')}
+                domains={[
+                    {
+                        id: 'personal',
+                        title: 'Personal Sanctuary',
+                        accentColor: '#8B5CF6', // Lotus/Purple
+                        content: personalLayer
+                    },
+                    {
+                        id: 'working',
+                        title: 'Vision Alignment',
+                        accentColor: '#3B82F6', // Water/Blue
+                        content: workingLayer
+                    }
+                ]}
                 sideBar={sideBar}
             />
             <ShadowAgentDrawer />

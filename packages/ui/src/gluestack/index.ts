@@ -160,9 +160,8 @@ export const TabContent = BaseTabsTabPanel as any;
 export const ChevronLeftIcon = ChevronLeft;
 export const ChevronRightIcon = ChevronRight;
 
-export {
-    Card
-} from '@gluestack-ui/themed/build/components/Card';
+import { Card as BaseCard } from '@gluestack-ui/themed/build/components/Card';
+export const Card = BaseCard as any;
 
 // ============================================================================
 // Modal Components
@@ -188,9 +187,10 @@ export const ModalCloseButton = BaseModalCloseButton as any;
 import { Icon as BaseIcon, CloseIcon as BaseCloseIcon } from '@gluestack-ui/themed/build/components/Icons';
 export const Icon = BaseIcon as any;
 export const CloseIcon = BaseCloseIcon as any;
-import { ChevronLeft, ChevronRight, Check } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, Check, ArrowLeft } from 'lucide-react-native';
 export { ChevronLeft, ChevronRight };
 export const CheckIcon = Check;
+export const ArrowLeftIcon = ArrowLeft;
 
 import { Image as BaseImage } from '@gluestack-ui/themed/build/components/Image';
 export const Image = BaseImage as any;
@@ -207,6 +207,14 @@ export {
     CheckboxLabel,
     CheckboxGroup,
 } from '@gluestack-ui/themed/build/components/Checkbox';
+
+import {
+    Link as BaseLink,
+    LinkText as BaseLinkText,
+} from '@gluestack-ui/themed/build/components/Link';
+
+export const Link = BaseLink as any;
+export const LinkText = BaseLinkText as any;
 
 // Radio with relaxed types
 // Radio with relaxed types

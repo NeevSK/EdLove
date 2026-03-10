@@ -316,10 +316,22 @@ export default function TeacherSelfViewWeb() {
         <>
             <BaseSelfView
                 role="teacher"
-                personalLayer={personalLayer}
-                workingLayer={workingLayer}
-                sideBar={sideBar}
                 description={t('self.teacherDesc', "Radiate clarity from the center of your instructional practice.")}
+                domains={[
+                    {
+                        id: 'personal',
+                        title: 'Physical Sanctuary',
+                        accentColor: '#F59E0B', // Amber
+                        content: personalLayer
+                    },
+                    {
+                        id: 'working',
+                        title: 'Professional Resonance',
+                        accentColor: '#10B981', // Moss/Teal
+                        content: workingLayer
+                    }
+                ]}
+                sideBar={sideBar}
             />
             <ShadowAgentDrawer />
             <WelcomeModal

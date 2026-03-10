@@ -1,6 +1,6 @@
 import { useStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
-import { api, School, SchoolStats, SafeZustandStorage, MOCK_SCHOOL_STATS } from '@repo/core';
+import { api, School, SchoolStats, SafeZustandStorage, MOCK_SCHOOL_STATS, useFeatureAccess } from '@repo/core';
 
 const SCHOOL_STATS_CACHE_KEY = 'gurudevi-school-stats-cache';
 const SCHOOL_INFO_CACHE_KEY = 'gurudevi-school-info-cache';
@@ -16,6 +16,7 @@ const SCHOOL_INFO_CACHE_KEY = 'gurudevi-school-info-cache';
 export function useSchoolStats(schoolId: string) {
     const isOnline = useStore(state => state.isOnline);
     const isDemoMode = useStore(state => state.isDemoMode);
+    const { isGuest } = useFeatureAccess();
     const [stats, setStats] = useState<SchoolStats | null>(null);
     const [school, setSchool] = useState<School | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -49,7 +50,7 @@ export function useSchoolStats(schoolId: string) {
     const refreshData = useCallback(async () => {
         // If no schoolId and not in demo mode (or explicitly guest), we still want to show SOMETHING
         // Let's assume if schoolId is missing, we check if we should show mock data
-        if (!schoolId && !isDemoMode) {
+        if (!schoolId && !isDemoMode && !isGuest) {
             setIsLoading(false);
             return;
         }
@@ -58,7 +59,7 @@ export function useSchoolStats(schoolId: string) {
             let schoolData: School;
             let statsData: SchoolStats;
 
-            if (isDemoMode || !schoolId) {
+            if (isDemoMode || isGuest || !schoolId) {
                 // Return mock data for demo/guest flow
                 schoolData = {
                     id: 'sample-school',

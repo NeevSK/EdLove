@@ -12,15 +12,13 @@ import {
     useUserRole
 } from '@repo/core';
 
-// Kernel Imports from @repo/self
-import {
-    BaseSelfView,
-    MoodPickerCard,
-    EnergyBarChart,
-    WarmMirrorCard,
-    ImpactRipplesCard,
-    useWellbeingEnrichment,
-} from '../../index';
+// Kernel Imports from @repo/self (Breaking require cycle)
+import { BaseSelfView } from '../../components/BaseSelfView';
+import { MoodPickerCard } from '../../components/MoodPickerCard';
+import { EnergyBarChart } from '../../components/EnergyBarChart';
+import { WarmMirrorCard } from '../../components/WarmMirrorCard';
+import { ImpactRipplesCard } from '../../components/ImpactRipplesCard';
+import { useWellbeingEnrichment } from '../../hooks/useWellbeingEnrichment';
 
 // Role Components
 import MoodLotus from '../../components/MoodLotus';
@@ -33,6 +31,7 @@ import WindDownRitual from '../../components/WindDownRitual';
 import WisdomSeeds from '../../components/WisdomSeeds';
 import ProgressTree from '../../components/ProgressTree';
 import MyGradesView from '../../components/MyGradesView';
+import { PulseDashboard } from '../../components/PulseDashboard';
 
 export default function StudentSelfView() {
     const { t } = useTranslation();
@@ -69,42 +68,93 @@ export default function StudentSelfView() {
             <BaseSelfView
                 role="student"
                 description={t('self.studentDescription', 'A steady space to grow your mind and heart.')}
-                personalLayer={
-                    <VStack space="xl">
-                        {/* Mood Resonance (Kernel Component) */}
-                        <MoodPickerCard
-                            isOpen={isMoodPickerOpen}
-                            onToggle={() => setIsMoodPickerOpen(!isMoodPickerOpen)}
-                            onSelect={handleMoodSelect}
-                            isSaving={isSavingMood}
-                            latestMood={latestMood}
-                            isLoading={loadingMoods}
-                            accent="light" // Softer light accent for students
-                        />
-
-                        {/* Energy Pulse (Kernel Component) */}
-                        <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
-                            <EnergyBarChart
-                                bars={forecasts.slice().reverse()}
-                                height={80}
-                            />
-                        </Box>
-
-                        <MoodLotus userId={userId ?? undefined} />
-                        <WisdomSeeds userId={userId ?? undefined} />
-                    </VStack>
-                }
-                sleepTracker={<WindDownRitual userId={userId ?? undefined} />}
-                workingLayer={
-                    <VStack space="xl">
-                        <DailyRhythm />
-                        <ProgressTree userId={userId ?? undefined} />
-                        <MyGradesView userId={userId ?? undefined} />
-                    </VStack>
-                }
+                domains={[
+                    {
+                        id: 'pulse',
+                        title: 'Inner Pulse',
+                        accentColor: '#8B5CF6',
+                        features: [
+                            {
+                                id: 'pulse',
+                                label: 'Daily Pulse',
+                                content: <PulseDashboard onEnterDetails={() => { }} />
+                            },
+                            {
+                                id: 'mood-lotus',
+                                label: 'Mood Lotus',
+                                content: <MoodLotus userId={userId ?? undefined} />
+                            },
+                            {
+                                id: 'wisdom',
+                                label: 'Wisdom Seeds',
+                                content: <WisdomSeeds userId={userId ?? undefined} />
+                            }
+                        ]
+                    },
+                    {
+                        id: 'physical',
+                        title: 'Physical Sanctuary',
+                        accentColor: '#F59E0B',
+                        features: [
+                            {
+                                id: 'mood-picker',
+                                label: 'Mood Tracking',
+                                content: (
+                                    <MoodPickerCard
+                                        isOpen={isMoodPickerOpen}
+                                        onToggle={() => setIsMoodPickerOpen(!isMoodPickerOpen)}
+                                        onSelect={handleMoodSelect}
+                                        isSaving={isSavingMood}
+                                        latestMood={latestMood}
+                                        isLoading={loadingMoods}
+                                        accent="light"
+                                    />
+                                )
+                            },
+                            {
+                                id: 'energy-forecast',
+                                label: 'Energy Rhythm',
+                                content: (
+                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
+                                        <EnergyBarChart
+                                            bars={forecasts.slice().reverse()}
+                                            height={80}
+                                        />
+                                    </Box>
+                                )
+                            },
+                            {
+                                id: 'wind-down',
+                                label: 'Restorative Ritual',
+                                content: <WindDownRitual userId={userId ?? undefined} />
+                            }
+                        ]
+                    },
+                    {
+                        id: 'working',
+                        title: 'Working Rhythm',
+                        accentColor: '#10B981',
+                        features: [
+                            {
+                                id: 'daily-rhythm',
+                                label: 'Working Pace',
+                                content: <DailyRhythm />
+                            },
+                            {
+                                id: 'progress',
+                                label: 'Growth Tree',
+                                content: <ProgressTree userId={userId ?? undefined} />
+                            },
+                            {
+                                id: 'grades',
+                                label: 'Academic Mirror',
+                                content: <MyGradesView userId={userId ?? undefined} />
+                            }
+                        ]
+                    }
+                ]}
                 sideBar={
                     <VStack space="lg">
-                        {/* Mirrors (Kernel Components) */}
                         <WarmMirrorCard text={warmMirrorText} />
                         <ImpactRipplesCard ripples={ripples} />
                     </VStack>

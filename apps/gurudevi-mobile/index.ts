@@ -1,4 +1,5 @@
 import 'react-native-reanimated';
+import 'react-native-worklets';
 import 'react-native-get-random-values';
 import { registerRootComponent } from 'expo';
 

@@ -16,25 +16,27 @@ import {
     useUserRole
 } from '@repo/core';
 
-// Kernel Imports from @repo/self
-import {
-    BaseSelfView,
-    MoodPickerCard,
-    EnergyBarChart,
-    WarmMirrorCard,
-    ImpactRipplesCard,
-    useWellbeingEnrichment,
-} from '../../index';
+// Kernel Imports from @repo/self (Breaking require cycle)
+import { BaseSelfView } from '../../components/BaseSelfView';
+import { MoodPickerCard } from '../../components/MoodPickerCard';
+import { EnergyBarChart } from '../../components/EnergyBarChart';
+import { WarmMirrorCard } from '../../components/WarmMirrorCard';
+import { ImpactRipplesCard } from '../../components/ImpactRipplesCard';
+import { useWellbeingEnrichment } from '../../hooks/useWellbeingEnrichment';
 
 // Legacy/Role Components
 import MoodLotus from '../../components/MoodLotus';
 import FireJournal from '../../components/FireJournal';
 import DailyRhythm from '../../components/DailyRhythm';
+import WindDownRitual from '../../components/WindDownRitual';
+import WisdomSeeds from '../../components/WisdomSeeds';
 import ShadowAgentDrawer from '../../components/ShadowAgentDrawer';
 import WelcomeModal from '../../components/WelcomeModal';
 import { useMoodLogs } from '../../hooks/useMoodLogs';
 import { useEnergyForecast } from '../../hooks/useEnergyForecast';
 import VoiceJournaling from '../../components/VoiceJournaling';
+
+import { PulseDashboard } from '../../components/PulseDashboard';
 
 export default function TeacherSelfView() {
     const { t } = useTranslation();
@@ -53,6 +55,7 @@ export default function TeacherSelfView() {
     // UI State
     const [isMoodPickerOpen, setIsMoodPickerOpen] = useState(false);
     const [isSavingMood, setIsSavingMood] = useState(false);
+    const [isPulseDashboardOpen, setIsPulseDashboardOpen] = useState(true);
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
 
@@ -70,54 +73,104 @@ export default function TeacherSelfView() {
         <ScreenWrapper scroll={false} noTopInset={true}>
             <BaseSelfView
                 role="teacher"
-                description={t('self.teacherDescription', 'Your inner room for presence and classroom resonance.')}
-                personalLayer={
-                    <VStack space="xl">
-                        {/* Mood Resonance (Kernel Component) */}
-                        <MoodPickerCard
-                            isOpen={isMoodPickerOpen}
-                            onToggle={() => setIsMoodPickerOpen(!isMoodPickerOpen)}
-                            onSelect={handleMoodSelect}
-                            isSaving={isSavingMood}
-                            latestMood={latestMood}
-                            isLoading={loadingMoods}
-                            accent="dark"
-                        />
-
-                        {/* Energy Pulse (Kernel Component) */}
-                        <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
-                            <EnergyBarChart
-                                bars={forecasts.slice().reverse()} // oldest to newest
-                                height={80}
-                            />
-                        </Box>
-
-                        {/* Traditional Tools */}
-                        <MoodLotus userId={userId ?? undefined} />
-                    </VStack>
-                }
-                fireJournal={<FireJournal userId={userId ?? undefined} />}
-                voiceJournal={<VoiceJournaling userId={userId ?? undefined} />}
-                workingLayer={
-                    <VStack space="xl">
-                        <DailyRhythm />
-                        {/* Future Banyan Path integration will go here */}
-                    </VStack>
-                }
-                sideBar={
-                    <VStack space="lg">
-                        {/* Mirrors (Kernel Components) */}
-                        <WarmMirrorCard text={warmMirrorText} />
-                        <ImpactRipplesCard ripples={ripples} />
-                        <ShadowAgentDrawer />
-                    </VStack>
-                }
+                description={t('self.teacherDescription', 'Refine your craft, nurture your spirit.')}
+                domains={[
+                    {
+                        id: 'pulse',
+                        title: 'Inner Pulse',
+                        accentColor: '#8B5CF6',
+                        features: [
+                            {
+                                id: 'pulse',
+                                label: 'Daily Pulse',
+                                content: <PulseDashboard onEnterDetails={() => { }} />
+                            },
+                            {
+                                id: 'mood-lotus',
+                                label: 'Mood Lotus',
+                                content: <MoodLotus userId={userId ?? undefined} />
+                            },
+                            {
+                                id: 'wisdom',
+                                label: 'Wisdom Seeds',
+                                content: <WisdomSeeds userId={userId ?? undefined} />
+                            }
+                        ]
+                    },
+                    {
+                        id: 'physical',
+                        title: 'Physical Sanctuary',
+                        accentColor: '#F59E0B',
+                        features: [
+                            {
+                                id: 'mood-picker',
+                                label: 'Mood Tracking',
+                                content: (
+                                    <MoodPickerCard
+                                        isOpen={isMoodPickerOpen}
+                                        onToggle={() => setIsMoodPickerOpen(!isMoodPickerOpen)}
+                                        onSelect={handleMoodSelect}
+                                        isSaving={isSavingMood}
+                                        latestMood={latestMood}
+                                        isLoading={loadingMoods}
+                                    />
+                                )
+                            },
+                            {
+                                id: 'energy-forecast',
+                                label: 'Energy Rhythm',
+                                content: (
+                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
+                                        <EnergyBarChart
+                                            bars={forecasts.slice().reverse()}
+                                            height={80}
+                                        />
+                                    </Box>
+                                )
+                            },
+                            {
+                                id: 'wind-down',
+                                label: 'Restorative Ritual',
+                                content: <WindDownRitual userId={userId ?? undefined} />
+                            }
+                        ]
+                    },
+                    {
+                        id: 'working',
+                        title: 'Working Rhythm',
+                        accentColor: '#10B981',
+                        features: [
+                            {
+                                id: 'daily-rhythm',
+                                label: 'Working Pace',
+                                content: <DailyRhythm />
+                            }
+                        ]
+                    }
+                ]}
+                sideBar={<TeacherMirrorView userId={userId ?? undefined} />}
+                reminders={<RipplesOfImpact userId={userId ?? undefined} />}
             />
 
+            <ShadowAgentDrawer />
             <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
             />
         </ScreenWrapper>
     );
+}
+
+// Sub-components for cleaner mapping (can be moved to separate files later)
+function TeacherMirrorView({ userId }: { userId?: string }) {
+    return (
+        <VStack space="lg">
+            <WarmMirrorCard text="Reflecting on your impact today..." />
+            <ImpactRipplesCard ripples={[]} />
+        </VStack>
+    );
+}
+
+function RipplesOfImpact({ userId }: { userId?: string }) {
+    return <ImpactRipplesCard ripples={[]} />;
 }

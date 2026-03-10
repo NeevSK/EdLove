@@ -1,257 +1,270 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Dimensions } from 'react-native';
+import { VStack, GlobalHeader } from '@repo/ui';
+import { BaseSelfViewProps } from './BaseSelfView.types';
+import { Theme } from '@repo/ui';
 
 /**
- * Two-Layer Harmonic Architecture Registry
- * Defines the core structure for every educator's 'Self' section.
+ * Emoji mapping for common features to add soul to the UI.
  */
-export interface BaseSelfViewProps {
-    role: 'teacher' | 'principal' | 'founder' | 'admin' | 'student' | 'guest';
-    description?: string;
-
-    // Core Layers
-    personalLayer: React.ReactNode;  // The Pulse (Original: Mood/Energy)
-    workingLayer: React.ReactNode;   // The Rhythm (Role-specific)
-    sideBar: React.ReactNode;        // The Mirror (Social/Narrative)
-
-    // Exhaustive Base Expansion (Universal)
-    sleepTracker?: React.ReactNode;
-    voiceJournal?: React.ReactNode;
-    fireJournal?: React.ReactNode;
-    joyJar?: React.ReactNode;
-    tomorrowPrep?: React.ReactNode;
-    reminders?: React.ReactNode;
-    breathGuide?: React.ReactNode;
-
-    /** Optional accent for the entire view */
-    accentColor?: string;
-}
+const FEATURE_EMOJIS: Record<string, string> = {
+    'pulse': '💜',
+    'dashboard': '💜',
+    'mood-lotus': '🪷',
+    'wisdom': '🌱',
+    'mood-picker': '🎭',
+    'energy-forecast': '⚡',
+    'wind-down': '🏮',
+    'daily-rhythm': '⏳',
+    'progress': '🌳',
+    'grades': '📜',
+    'decisions': '⚖️',
+    'resonance': '🌀',
+    'voice': '🎙️',
+};
 
 /**
- * BaseSelfView - The architectural kernel for GuruDevi Self sections.
- * This component enforces the separation of 'Personal Sanctuary' and 'Working Self'.
+ * BaseSelfView - The architectural kernel for GuruDevi Self sections on Mobile.
+ * This component implements the "Discovery Hub" with circular feature icons.
  */
 export function BaseSelfView({
     role,
     description,
-    personalLayer,
-    workingLayer,
+    domains,
     sideBar,
-    sleepTracker,
-    voiceJournal,
-    fireJournal,
-    joyJar,
-    tomorrowPrep,
     reminders,
-    breathGuide,
+    morningRitual,
+    nightRitual,
+    voiceJournal,
 }: BaseSelfViewProps) {
-    const isWeb = Platform.OS === 'web';
-    const hour = new Date().getHours();
-    const isMorning = hour >= 5 && hour < 11;
-    const isNight = hour >= 20 || hour < 5;
+    // Default background based on role
+    const surfaceBg = role === 'student' ? '#F5F3FF' : '#FFF7ED';
 
-    // Sanctuary Surface (Warm/Lavender) vs Working Surface (Teal/Cool)
-    const sanctuaryBg = role === 'student' ? '#F5F3FF' : '#FFF7ED';
-    const workingBg = '#F0FDFA';
+    const allFeatures = [
+        ...domains.flatMap(domain =>
+            domain.features.map(feature => ({
+                ...feature,
+                domainId: domain.id,
+                domainColor: domain.accentColor
+            }))
+        ),
+        // Inject Mirrors as "Reflections" if provided
+        ...(sideBar ? [{
+            id: 'mirrors',
+            label: 'Reflections',
+            content: sideBar,
+            domainId: 'reflections',
+            domainColor: '#8B5CF6' // Purple for deep reflection
+        }] : []),
+        // Inject Reminders if provided
+        ...(reminders ? [{
+            id: 'reminders',
+            label: 'Reminders',
+            content: reminders,
+            domainId: 'reminders',
+            domainColor: '#F59E0B' // Amber for attention
+        }] : [])
+    ];
 
-    if (isWeb) {
-        return (
-            <View style={[webStyles.container, { backgroundColor: sanctuaryBg }]}>
-                {/* Main Content (65%) */}
-                <ScrollView
-                    style={webStyles.contentArea}
-                    contentContainerStyle={webStyles.scrollContent}
-                    showsVerticalScrollIndicator={false}
-                >
-                    <View style={webStyles.header}>
-                        <Text style={webStyles.roleTag}>{role.toUpperCase()}</Text>
-                        <Text style={webStyles.description}>{description}</Text>
-                    </View>
+    const [activeFeatureId, setActiveFeatureId] = React.useState(
+        allFeatures.find(f => f.id === 'pulse' || f.id === 'dashboard')?.id || allFeatures[0]?.id
+    );
 
-                    {/* Dynamic Time-Based Prioritization */}
-                    {isMorning && tomorrowPrep && (
-                        <View style={webStyles.layerSpacer}>{tomorrowPrep}</View>
-                    )}
+    const activeFeature = allFeatures.find(f => f.id === activeFeatureId) || allFeatures[0];
 
-                    <View style={webStyles.layerSpacer}>
-                        <View style={styles.sanctuaryCard}>
-                            <Text style={styles.sectionHeading}>Personal Sanctuary</Text>
-                            {personalLayer}
-                            {breathGuide}
-                            {voiceJournal}
-                            {fireJournal}
-                        </View>
-                    </View>
+    const getEmoji = (feature: any) => {
+        if (feature.id === 'mirrors') return '🪞';
+        if (feature.id === 'reminders') return '🔔';
+        return FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || '✨';
+    };
 
-                    <View style={webStyles.layerSpacer}>
-                        <View style={styles.workingCard}>
-                            <Text style={styles.sectionHeading}>Working Self</Text>
-                            {workingLayer}
-                        </View>
-                    </View>
-
-                    {isNight && (sleepTracker || joyJar) && (
-                        <View style={webStyles.layerSpacer}>
-                            {sleepTracker}
-                            {joyJar}
-                        </View>
-                    )}
-                </ScrollView>
-
-                {/* Sidebar (35%) */}
-                <View style={[webStyles.sideBarArea, { backgroundColor: 'transparent' }]}>
-                    <ScrollView
-                        showsVerticalScrollIndicator={false}
-                        contentContainerStyle={webStyles.sideBarContent}
-                    >
-                        {sideBar}
-                        {reminders}
-                    </ScrollView>
-                </View>
-            </View>
-        );
-    }
-
-    // Native implementation (Mobile) - Enhanced with logic and color surfaces
     return (
-        <ScrollView style={[nativeStyles.container, { backgroundColor: sanctuaryBg }]} showsVerticalScrollIndicator={false}>
-            <View style={nativeStyles.header}>
-                <Text style={nativeStyles.roleTag}>{role.toUpperCase()}</Text>
-                <Text style={nativeStyles.description}>{description}</Text>
-            </View>
+        <VStack style={[nativeStyles.container, { backgroundColor: surfaceBg }]}>
+            {/* Global Header Restored */}
+            <GlobalHeader
+                isSelfView={true}
+                subtitle={role.toUpperCase()}
+                title="Sadhana"
+            />
 
-            {/* Layer 1: Personal Sanctuary (Warm Surface) */}
-            <View style={[nativeStyles.section, { backgroundColor: 'rgba(255,255,255,0.7)', borderRadius: 24, margin: 12 }]}>
-                <Text style={[nativeStyles.sectionTitle, { color: '#C2410C' }]}>Personal Sanctuary</Text>
-
-                {/* Morning Prioritization */}
-                {isMorning && tomorrowPrep}
-
-                {personalLayer}
-                {breathGuide}
-                {voiceJournal}
-                {fireJournal}
-
-                {/* Night Rituals */}
-                {isNight && (
-                    <View style={{ marginTop: 16 }}>
-                        {sleepTracker}
-                        {joyJar}
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+                {voiceJournal && (
+                    <View style={nativeStyles.ritualWrapper}>
+                        {voiceJournal}
                     </View>
                 )}
-            </View>
 
-            {/* Layer 2: Working Self (Cool Surface) */}
-            <View style={[nativeStyles.section, { backgroundColor: workingBg, borderRadius: 24, margin: 12 }]}>
-                <Text style={[nativeStyles.sectionTitle, { color: '#0D9488' }]}>Working Self</Text>
-                {workingLayer}
-            </View>
+                {morningRitual && (
+                    <View style={nativeStyles.ritualWrapper}>
+                        {morningRitual}
+                    </View>
+                )}
 
-            {/* Layer 3: Mirror Surface */}
-            <View style={nativeStyles.section}>
-                <Text style={nativeStyles.sectionTitle}>Mirrors & Reminders</Text>
-                {sideBar}
-                {reminders}
-            </View>
-        </ScrollView>
+                {/* Horizontal Circular Carousel with Domain Rings */}
+                <View style={nativeStyles.carouselContainer}>
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={nativeStyles.carouselContent}
+                    >
+                        {allFeatures.map((feature) => {
+                            const isActive = activeFeatureId === feature.id;
+                            const isInsight = feature.id === 'mirrors' || feature.id === 'reminders';
+
+                            return (
+                                <Pressable
+                                    key={feature.id}
+                                    onPress={() => setActiveFeatureId(feature.id)}
+                                    style={nativeStyles.circleItem}
+                                >
+                                    <View
+                                        style={[
+                                            nativeStyles.circleRing,
+                                            {
+                                                borderColor: isActive ? feature.domainColor : 'rgba(0,0,0,0.05)',
+                                                borderWidth: 2,
+                                                // Insights get a subtle dash or glow if needed
+                                                borderStyle: isInsight && !isActive ? 'dashed' : 'solid',
+                                            }
+                                        ]}
+                                    >
+                                        <View
+                                            style={[
+                                                nativeStyles.circle,
+                                                {
+                                                    backgroundColor: isActive ? 'white' : 'white',
+                                                    shadowColor: feature.domainColor,
+                                                    shadowOpacity: isActive ? 0.3 : 0.05,
+                                                }
+                                            ]}
+                                        >
+                                            <Text style={nativeStyles.circleIcon}>
+                                                {getEmoji(feature)}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    <View style={[
+                                        nativeStyles.activeIndicator,
+                                        { backgroundColor: isActive ? feature.domainColor : 'transparent' }
+                                    ]} />
+                                    <Text
+                                        numberOfLines={1}
+                                        style={[
+                                            nativeStyles.circleLabel,
+                                            {
+                                                color: isActive ? '#000' : 'rgba(0,0,0,0.4)',
+                                                fontWeight: isActive ? '800' : '600'
+                                            }
+                                        ]}
+                                    >
+                                        {feature.label}
+                                    </Text>
+                                </Pressable>
+                            );
+                        })}
+                    </ScrollView>
+                </View>
+
+                {/* Active Feature Content */}
+                <View style={nativeStyles.activeFeatureContainer}>
+                    {activeFeature ? activeFeature.content : null}
+                </View>
+
+                {nightRitual && (
+                    <View style={nativeStyles.ritualWrapper}>
+                        {nightRitual}
+                    </View>
+                )}
+            </ScrollView>
+        </VStack>
     );
 }
-
-const webStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: 'row',
-        height: '100%',
-    } as any,
-    contentArea: {
-        flex: 0.65,
-        height: '100%',
-    } as any,
-    scrollContent: {
-        padding: 40,
-        paddingRight: 60,
-    } as any,
-    sideBarArea: {
-        flex: 0.35,
-        height: '100%',
-        borderLeftWidth: 1,
-        borderLeftColor: 'rgba(255,255,255,0.08)',
-    } as any,
-    sideBarContent: {
-        padding: 40,
-        gap: 32,
-    } as any,
-    header: {
-        marginBottom: 48,
-    },
-    roleTag: {
-        fontSize: 12,
-        fontWeight: '900',
-        letterSpacing: 2,
-        color: 'rgba(0,0,0,0.4)',
-        marginBottom: 8,
-    },
-    description: {
-        fontSize: 14,
-        color: 'rgba(0,0,0,0.6)',
-        maxWidth: 500,
-        lineHeight: 22,
-    },
-    layerSpacer: {
-        marginBottom: 64,
-    }
-});
 
 const nativeStyles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    header: {
-        padding: 24,
-        paddingTop: 10,
+    ritualWrapper: {
+        paddingHorizontal: 20,
+        paddingTop: 8,
     },
-    roleTag: {
-        fontSize: 10,
-        fontWeight: '800',
-        letterSpacing: 2,
-        color: 'rgba(0,0,0,0.3)',
+    carouselContainer: {
+        paddingVertical: 16,
+        backgroundColor: 'transparent',
+    },
+    carouselContent: {
+        paddingHorizontal: 20,
+        gap: 12,
+    } as any,
+    circleItem: {
+        alignItems: 'center',
+        width: 72,
+    },
+    circleRing: {
+        width: 64,
+        height: 64,
+        borderRadius: 32,
+        padding: 3,
+        justifyContent: 'center',
+        alignItems: 'center',
         marginBottom: 4,
     },
-    description: {
-        fontSize: 13,
-        color: 'rgba(0,0,0,0.5)',
-        lineHeight: 18,
+    circle: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 30,
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 4,
+        elevation: 3,
     },
-    section: {
-        padding: 20,
-        marginBottom: 16,
+    circleIcon: {
+        fontSize: 24,
     },
-    sectionTitle: {
-        fontSize: 11,
-        fontWeight: '800',
+    activeIndicator: {
+        width: 4,
+        height: 4,
+        borderRadius: 2,
+        marginBottom: 4,
+    },
+    circleLabel: {
+        fontSize: 9,
+        textAlign: 'center',
         textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    activeFeatureContainer: {
+        paddingHorizontal: 16,
+        paddingTop: 12,
+        minHeight: 400,
+    },
+    insightsSection: {
+        marginTop: 40,
+        paddingHorizontal: 20,
+        paddingBottom: 40,
+    },
+    insightsHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
         marginBottom: 20,
-        letterSpacing: 1.5,
-    }
-});
-
-const styles = StyleSheet.create({
-    sanctuaryCard: {
-        backgroundColor: 'rgba(255,255,255,0.5)',
-        borderRadius: 24,
-        padding: 24,
     },
-    workingCard: {
-        backgroundColor: '#F0FDFA',
-        borderRadius: 24,
-        padding: 24,
+    insightsLine: {
+        flex: 1,
+        height: 1,
+        opacity: 0.2,
     },
-    sectionHeading: {
-        fontSize: 12,
+    insightsTitle: {
+        marginHorizontal: 12,
+        fontSize: 10,
         fontWeight: '800',
-        letterSpacing: 1,
-        color: 'rgba(0,0,0,0.2)',
+        letterSpacing: 1.5,
         textTransform: 'uppercase',
-        marginBottom: 24,
-    }
+        color: '#8B5CF6',
+        opacity: 0.6,
+    },
+    insightsContent: {
+        gap: 16,
+    } as any
 });

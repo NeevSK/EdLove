@@ -27,7 +27,6 @@ import { useTheme } from '@repo/ui';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import TabNavigator from './src/navigation/TabNavigator';
-import TabNavigatorWeb from './src/navigation/TabNavigator.web';
 import { AIAssistantScreen, AuthScreen, AppSettingsScreen, NotificationsScreen } from './src/screens';
 import QRHandlerScreen from './src/screens/QRHandlerScreen';
 import ThuthimalClaimScreen from './src/screens/ThuthimalClaimScreen';
@@ -81,7 +80,12 @@ const fetchAndSetUserProfile = async (internalUserId: string) => {
       // explicitly completed the onboarding wizard (onboarding_completed=true).
       // A null/guest role means they still need to go through Onboarding to pick a role.
       const isEffectivelyOnboarded = !!userProfile.onboarding_completed && !!normalizedRole;
-      store.setOnboardingCompleted(isEffectivelyOnboarded);
+
+      // CRITICAL: If the store says onboarding is done, we don't let a (potentially stale)
+      // DB fetch flip it back to false during the transition to Main.
+      if (isEffectivelyOnboarded || !store.onboardingCompleted) {
+        store.setOnboardingCompleted(isEffectivelyOnboarded);
+      }
 
       // If authenticated but not effectively onboarded, direct them to the Onboarding screen.
       // This fires when: (a) brand-new anon user just signed in, (b) returning user whose
@@ -640,11 +644,7 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                     <RootStack.Screen name="Main">
                       {() => (
                         <ErrorBoundary name="Main Tabs">
-                          {Platform.OS === 'web' ? (
-                            <TabNavigatorWeb onTabChange={(tab: any) => setCurrentTab(tab)} />
-                          ) : (
-                            <TabNavigator onTabChange={(tab: any) => setCurrentTab(tab)} />
-                          )}
+                          <TabNavigator onTabChange={(tab: any) => setCurrentTab(tab)} />
                         </ErrorBoundary>
                       )}
                     </RootStack.Screen>

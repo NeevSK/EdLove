@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
-import { useUserRole, useStore, staffManagementAPI, supabase, api, schoolAPI, StaffPresenceSummary, TeacherCarouselItem, StudentAttendancePulse, StaffLeaveDTO } from '@repo/core';
+import { useUserRole, useStore, staffManagementAPI, supabase, api, schoolAPI, StaffPresenceSummary, TeacherCarouselItem, StudentAttendancePulse, StaffLeaveDTO, useFeatureAccess } from '@repo/core';
 import { useSchoolStats, CreateClassroomModal, AddStudentModal } from '@repo/classroom';
 import { useSchoolPulse } from '@repo/profile';
-import { SkeletonCard, SandboxBanner, getInitialsFromName } from '@repo/ui';
+import { SkeletonCard, SandboxBanner, getInitialsFromName, PositiveInvitation } from '@repo/ui';
 import {
     Users,
+    FileText,
     Shield,
     TrendingUp,
     Plus,
@@ -79,6 +80,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
     const [showCreateClassroom, setShowCreateClassroom] = useState(false);
     const [showAddTeacher, setShowAddTeacher] = useState(false);
     const [processingLeave, setProcessingLeave] = useState<string | null>(null);
+    const { isGuest } = useFeatureAccess();
 
     // ── Sub-view navigation (ManagementStation) ───────────────────────────
     type PrincipalView = 'main' | 'hierarchy' | 'invites' | 'log' | 'cycles';
@@ -641,6 +643,71 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                         </div>
                     </div>
 
+                    {/* ─── NEW: Command Center (Topological Parity) ───── */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)', letterSpacing: '1px' }}>
+                            Command Center 🏛️
+                        </h3>
+                        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                            {[
+                                { icon: Users, label: t('principal.actions.hierarchy') || 'Hierarchy', color: 'var(--lotus)', onPress: () => setActiveView('hierarchy') },
+                                { icon: FileText, label: t('principal.actions.invites') || 'Invites', color: 'var(--moss)', onPress: () => setActiveView('invites') },
+                                { icon: CalendarCheck, label: t('principal.actions.timetable') || 'Timetable', color: 'var(--water)', isAgentic: true, onPress: () => { } },
+                                { icon: NotebookPen, label: t('principal.actions.notes') || 'Logbook', color: 'var(--sanctuary-saffron)', onPress: () => setActiveView('log') },
+                            ].map((action, i) => (
+                                <button
+                                    key={i}
+                                    onClick={action.onPress}
+                                    style={{
+                                        flex: 1,
+                                        minWidth: '200px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '16px',
+                                        padding: '16px 20px',
+                                        cursor: 'pointer',
+                                        textAlign: 'left',
+                                        border: '1px solid var(--border-light)',
+                                        background: 'var(--glass-surface)',
+                                        borderRadius: '16px',
+                                        transition: 'all 0.2s ease',
+                                        position: 'relative',
+                                        fontFamily: 'inherit'
+                                    }}
+                                    className="hover-lift"
+                                >
+                                    <div style={{
+                                        padding: '10px',
+                                        borderRadius: '12px',
+                                        background: 'var(--background-alt)',
+                                        color: action.color,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}>
+                                        <action.icon size={20} />
+                                        {action.isAgentic && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                top: '12px',
+                                                left: '32px',
+                                                padding: '2px',
+                                                borderRadius: '10px',
+                                                background: 'var(--water)',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}>
+                                                <Zap size={8} color="white" fill="white" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <span style={{ fontSize: '13px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--ink)' }}>{action.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
                     {/* ─── 2. MORNING BRIEF BANNER ───────────────────── */}
                     <div className="sanctuary-card" style={{ padding: '32px', background: 'var(--lotus-soft)', border: '1px solid var(--lotus-soft)' }}>
                         {statsLoading || staffLoading ? (
@@ -1137,6 +1204,18 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                             </div>
                         </div>
                     </div>
+                    {/* Guest Invitation */}
+                    {isGuest && (
+                        <div style={{ padding: '40px 0 100px', display: 'flex', justifyContent: 'center' }}>
+                            <div style={{ maxWidth: '800px', width: '100%' }}>
+                                <PositiveInvitation
+                                    type="guest"
+                                    context="classroom"
+                                    onAction={() => navigation.navigate('Auth')}
+                                />
+                            </div>
+                        </div>
+                    )}
                 </>}
             </div>
 

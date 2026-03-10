@@ -2,13 +2,20 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 
-const TARGET_PACKAGES = [
-    {
-        name: '@repo/core',
-        dir: 'packages/core/src',
-        ignore: ['index.ts']
-    }
-];
+const PACKAGES_DIR = path.resolve(process.cwd(), 'packages');
+const TARGET_PACKAGES = fs.readdirSync(PACKAGES_DIR)
+    .filter(dir => fs.statSync(path.join(PACKAGES_DIR, dir)).isDirectory())
+    .map(dir => {
+        const pkgJsonPath = path.join(PACKAGES_DIR, dir, 'package.json');
+        if (!fs.existsSync(pkgJsonPath)) return null;
+        const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
+        return {
+            name: pkgJson.name,
+            dir: path.join('packages', dir, 'src'),
+            ignore: ['index.ts', 'index.tsx']
+        };
+    })
+    .filter(pkg => pkg && fs.existsSync(path.resolve(process.cwd(), pkg.dir)));
 
 let hasErrors = false;
 

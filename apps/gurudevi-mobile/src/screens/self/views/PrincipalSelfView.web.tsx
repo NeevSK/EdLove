@@ -277,10 +277,22 @@ export default function PrincipalSelfViewWeb() {
         <>
             <BaseSelfView
                 role="principal"
-                personalLayer={personalLayer}
-                workingLayer={workingLayer}
-                sideBar={sideBar}
                 description={t('principal.sanctuaryDesc', "Your wellbeing is the foundation of your school's wellbeing.")}
+                domains={[
+                    {
+                        id: 'personal',
+                        title: 'Personal Pulse',
+                        accentColor: '#8B5CF6', // Lotus/Purple
+                        content: personalLayer
+                    },
+                    {
+                        id: 'working',
+                        title: 'Leadership Resonance',
+                        accentColor: '#10B981', // Moss/Teal
+                        content: workingLayer
+                    }
+                ]}
+                sideBar={sideBar}
             />
             <ShadowAgentDrawer />
             <WelcomeModal
