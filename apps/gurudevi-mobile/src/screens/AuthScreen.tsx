@@ -300,7 +300,10 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                             await supabase.from('users').update({
                                 full_name: onboardingData.name,
                                 role: onboardingData.role,
-                                profile_completed: true
+                                profile_completed: true,
+                                onboarding_completed: true,
+                                onboarding_completed_at: new Date().toISOString(),
+                                is_anonymous: false
                             }).eq('id', internalId);
                         } catch (e) {
                             console.error('Failed to apply onboarding data', e);

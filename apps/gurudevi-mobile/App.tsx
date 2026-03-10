@@ -83,8 +83,20 @@ const fetchAndSetUserProfile = async (internalUserId: string) => {
 
       // CRITICAL: If the store says onboarding is done, we don't let a (potentially stale)
       // DB fetch flip it back to false during the transition to Main.
-      if (isEffectivelyOnboarded || !store.onboardingCompleted) {
-        store.setOnboardingCompleted(isEffectivelyOnboarded);
+      if (isEffectivelyOnboarded) {
+        if (!store.onboardingCompleted) {
+          console.log('✅ Profile: User is fully onboarded (DB). Syncing store...');
+          store.setOnboardingCompleted(true);
+        }
+      } else {
+        // Only flip to false if the store doesn't already think we are done.
+        // This prevents the "flash" back to onboarding during the narrow window
+        // after the user clicks 'Finish' but before the DB update completes.
+        if (!store.onboardingCompleted) {
+          console.log('⏳ Profile: User still needs onboarding (DB + Store).');
+        } else {
+          console.log('🛡️ Profile: DB says user needs onboarding, but Store says they are done. Keeping Store status.');
+        }
       }
 
       // If authenticated but not effectively onboarded, direct them to the Onboarding screen.

@@ -56,16 +56,33 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             if (!internalId) return;
             const { data: profile } = await supabase
                 .from('users')
-                .select('full_name, is_anonymous, role')
+                .select('full_name, is_anonymous, role, onboarding_completed')
                 .eq('id', internalId)
                 .maybeSingle();
+
             if (!profile) return;
+
+            // Step 1.1: If already onboarded in DB, just finish locally
+            if (profile.onboarding_completed && profile.role) {
+                console.log('✅ Onboarding: Profile already marked as completed in DB, finalizing...');
+                setName(profile.full_name || '');
+                setRole(profile.role as UserRole);
+                onComplete(profile.full_name || '', profile.role as UserRole, false);
+                return;
+            }
 
             const PLACEHOLDER_NAMES = ['Guest User', 'Gurudevi User', 'Sanctuary User'];
             if (!profile.is_anonymous && profile.full_name && !PLACEHOLDER_NAMES.includes(profile.full_name)) {
                 setName(profile.full_name);
-                if (profile.role) setRole(profile.role as UserRole);
-                setCurrentStep(1);
+                if (profile.role) {
+                    setRole(profile.role as UserRole);
+                    // If we have a role and name, and we're not anonymous, maybe we just finished auth?
+                    // Let's go to step 1 so they can confirm/see it, OR if it's a re-mount,
+                    // they can just click continue.
+                    setCurrentStep(1);
+                } else {
+                    setCurrentStep(1);
+                }
             }
         };
         initOnboarding();
@@ -173,6 +190,10 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             }
 
             // 2. Update user profile
+            // Check current auth status instead of relying on the potentially stale isAnonymous prop
+            const { data: { session: currentSession } } = await supabase.auth.getSession();
+            const actuallyAnonymous = currentSession?.user?.is_anonymous ?? true;
+
             const { error: profileError } = await supabase
                 .from('users')
                 .upsert({
@@ -182,7 +203,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                     school_id: schoolId,
                     onboarding_completed: true,
                     onboarding_completed_at: new Date().toISOString(),
-                    is_anonymous: isAnonymous,
+                    is_anonymous: actuallyAnonymous,
                     ...(orientationSeeds ? { orientation_seeds: orientationSeeds } : {}),
                 });
 
