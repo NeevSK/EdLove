@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useStore, supabase, assignmentsAPI, useUserRole, api } from '@repo/core';
-import { useInventory } from '@repo/classroom';
+import { useInventory, AddStudentModal } from '@repo/classroom';
 import {
     ArrowLeft, Users, BookOpen, Clock, ClipboardList, Plus, CheckCircle2,
     FileText, ExternalLink, NotebookPen, UserPlus, Pin, Trash2,
     TrendingUp, Calendar, Eye, AlertTriangle, Package, Layers,
+    Edit2, UserX, MessageCircle, ShieldAlert, Send, Filter,
 } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
 import { StackFallback } from '../components/web/WebScreenShimmer';
@@ -13,6 +14,8 @@ import { StackFallback } from '../components/web/WebScreenShimmer';
 interface Student {
     id: string; full_name: string; email?: string;
     avatar_url?: string; index_number?: string; joined_at: string;
+    classroomStudentId: string; // enrollment row id — required for StudentProfile
+    recentAbsences?: number;    // derived attendance flag for at-risk badge
 }
 
 interface LessonMaterial {
@@ -42,7 +45,7 @@ export default function ClassroomDetailScreenWeb() {
     const [classroom, setClassroom] = useState<any>(null);
     const [students, setStudents] = useState<Student[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'students' | 'assignments' | 'lessons' | 'resources' | 'notes' | 'insights' | 'inventory'>('students');
+    const [activeTab, setActiveTab] = useState<'students' | 'assignments' | 'lessons' | 'resources' | 'notes' | 'insights' | 'inventory' | 'observations'>('students');
 
     // Assignments
     const [assignments, setAssignments] = useState<any[]>([]);
@@ -89,6 +92,27 @@ export default function ClassroomDetailScreenWeb() {
 
     // Inventory
     const { items: inventoryItems, isLoading: inventoryLoading } = useInventory(classroomId ?? '');
+    const [showInventoryRequest, setShowInventoryRequest] = useState(false);
+    const [reqItemName, setReqItemName] = useState('');
+    const [reqQty, setReqQty] = useState('1');
+    const [reqNote, setReqNote] = useState('');
+    const [submittingReq, setSubmittingReq] = useState(false);
+
+    // Student edit / remove
+    const [studentToEdit, setStudentToEdit] = useState<Student | null>(null);
+    const [showAddStudentModal, setShowAddStudentModal] = useState(false);
+    const [deletingStudentId, setDeletingStudentId] = useState<string | null>(null);
+
+    // Per-student Observations CRUD (Observations tab)
+    const [allObservations, setAllObservations] = useState<any[]>([]);
+    const [obsTabLoading, setObsTabLoading] = useState(false);
+    const [showObsForm, setShowObsForm] = useState(false);
+    const [obsStudent, setObsStudent] = useState<Student | null>(null);
+    const [obsContent, setObsContent] = useState('');
+    const [obsType, setObsType] = useState<'positive' | 'growth' | 'neutral' | 'concern'>('neutral');
+    const [obsVisibility, setObsVisibility] = useState<'private' | 'student_visible'>('private');
+    const [savingObs, setSavingObs] = useState(false);
+    const [obsFilter, setObsFilter] = useState<string>('all');
 
     const isTeacher = role === 'teacher' || role === 'principal' || role === 'developer' || role === 'grade_head';
 
@@ -182,6 +206,88 @@ export default function ClassroomDetailScreenWeb() {
         } catch { /**/ }
     }, [classroomId]);
 
+    // ── Student CRUD ──────────────────────────────────────────────────────────
+    const handleDeleteStudent = async (s: Student) => {
+        if (!classroomId) return;
+        setDeletingStudentId(s.id);
+        try {
+            await supabase.from('classroom_students').delete().eq('id', s.classroomStudentId);
+            setStudents(prev => prev.filter(x => x.id !== s.id));
+        } catch { /**/ }
+        finally { setDeletingStudentId(null); }
+    };
+
+    const openEditStudent = (s: Student) => {
+        setStudentToEdit(s);
+        setShowAddStudentModal(true);
+    };
+
+    const openObserveStudent = (s: Student) => {
+        setObsStudent(s);
+        setObsContent('');
+        setObsType('neutral');
+        setObsVisibility('private');
+        setShowObsForm(true);
+        setActiveTab('observations');
+    };
+
+    // ── Observations CRUD ──────────────────────────────────────────────────────
+    const loadObservations = useCallback(async () => {
+        if (!classroomId) return;
+        setObsTabLoading(true);
+        try {
+            const data = await api.studentObservations.getForClassroom(classroomId);
+            setAllObservations(data as any[]);
+        } catch { /**/ }
+        finally { setObsTabLoading(false); }
+    }, [classroomId]);
+
+    const handleCreateObservation = async () => {
+        if (!obsContent.trim() || !userId || !classroomId) return;
+        setSavingObs(true);
+        try {
+            await api.studentObservations.create({
+                classroom_id: classroomId,
+                classroom_student_id: obsStudent?.classroomStudentId ?? '',
+                student_id: obsStudent?.id ?? '',
+                author_id: userId,
+                content: obsContent.trim(),
+                observation_type: obsType,
+                visibility: obsVisibility,
+            } as any);
+            setObsContent('');
+            setObsStudent(null);
+            setShowObsForm(false);
+            loadObservations();
+        } catch { /**/ }
+        finally { setSavingObs(false); }
+    };
+
+    const handleDeleteObservation = async (id: string) => {
+        try {
+            await api.studentObservations.delete(id);
+            setAllObservations(prev => prev.filter(o => o.id !== id));
+        } catch { /**/ }
+    };
+
+    // ── Inventory request ─────────────────────────────────────────────────────
+    const handleInventoryRequest = async () => {
+        if (!reqItemName.trim() || !classroomId) return;
+        setSubmittingReq(true);
+        try {
+            await api.inventory.createRequest({
+                classroom_id: classroomId,
+                school_id: students[0] ? undefined as any : undefined as any,
+                item_name: reqItemName.trim(),
+                quantity: parseInt(reqQty) || 1,
+                notes: reqNote.trim() || undefined,
+            } as any);
+            setReqItemName(''); setReqQty('1'); setReqNote('');
+            setShowInventoryRequest(false);
+        } catch { /**/ }
+        finally { setSubmittingReq(false); }
+    };
+
     useEffect(() => {
         if (!classroomId) return;
         (async () => {
@@ -191,11 +297,12 @@ export default function ClassroomDetailScreenWeb() {
                 if (cls) setClassroom(cls);
                 const { data: enr } = await supabase
                     .from('classroom_students')
-                    .select('student_id, joined_at, user_profiles!student_id(id, full_name, email, avatar_url, index_number)')
+                    .select('id, student_id, joined_at, user_profiles!student_id(id, full_name, email, avatar_url, index_number)')
                     .eq('classroom_id', classroomId);
                 if (enr) {
                     setStudents(enr.map((e: any) => ({
                         id: e.student_id,
+                        classroomStudentId: e.id,
                         full_name: e.user_profiles?.full_name ?? 'Unknown',
                         email: e.user_profiles?.email,
                         avatar_url: e.user_profiles?.avatar_url,
@@ -214,7 +321,8 @@ export default function ClassroomDetailScreenWeb() {
         if (activeTab === 'resources') loadResources();
         if (activeTab === 'notes') loadNotes();
         if (activeTab === 'insights') loadInsights();
-    }, [activeTab, loadAssignments, loadLessons, loadResources, loadNotes, loadInsights]);
+        if (activeTab === 'observations') loadObservations();
+    }, [activeTab, loadAssignments, loadLessons, loadResources, loadNotes, loadInsights, loadObservations]);
 
     // ── Handlers ────────────────────────────────────────────────────────────
 
@@ -327,6 +435,7 @@ export default function ClassroomDetailScreenWeb() {
         { id: 'resources' as const, label: '📂 Resources' },
         { id: 'notes' as const, label: '📝 Notes' },
         ...(isTeacher ? [
+            { id: 'observations' as const, label: `🔍 Observations${allObservations.length > 0 ? ` (${allObservations.length})` : ''}` },
             { id: 'insights' as const, label: '📊 Insights' },
             { id: 'inventory' as const, label: '📦 Inventory' },
         ] : []),
@@ -380,7 +489,11 @@ export default function ClassroomDetailScreenWeb() {
                 {activeTab === 'students' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         {isTeacher && (
-                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                                <button className="premium-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                                    onClick={() => { setStudentToEdit(null); setShowAddStudentModal(true); }}>
+                                    <UserPlus size={15} /> Add Student
+                                </button>
                                 <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}
                                     onClick={() => { loadGroups(); setEditingGroup(null); setGroupName(''); setGroupDesc(''); setSelectedStudentIds([]); setShowGroupsPanel(true); }}>
                                     <Layers size={14} /> Manage Groups
@@ -397,19 +510,45 @@ export default function ClassroomDetailScreenWeb() {
                             ) : (
                                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                                     <thead style={{ background: 'var(--background-alt)', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)' }}>
-                                        <tr><th style={{ padding: '14px 24px' }}>Student</th><th style={{ padding: '14px 24px' }}>Index No.</th><th style={{ padding: '14px 24px' }}>Enrolled</th></tr>
+                                        <tr>
+                                            <th style={{ padding: '14px 20px' }}>Student</th>
+                                            <th style={{ padding: '14px 20px' }}>Index No.</th>
+                                            <th style={{ padding: '14px 20px' }}>Enrolled</th>
+                                            {isTeacher && <th style={{ padding: '14px 20px' }}>Actions</th>}
+                                        </tr>
                                     </thead>
                                     <tbody>
                                         {students.map(s => (
-                                            <tr key={s.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
-                                                <td style={{ padding: '16px 24px' }}>
+                                            <tr key={s.id} style={{ borderBottom: '1px solid var(--border-light)', cursor: 'pointer' }}
+                                                onClick={() => navigation.navigate('StudentProfile' as any, { studentId: s.id, classroomId: classroomId!, studentName: s.full_name, classroomStudentId: s.classroomStudentId })}
+                                                onMouseOver={e => (e.currentTarget as HTMLElement).style.background = 'var(--background-alt)'}
+                                                onMouseOut={e => (e.currentTarget as HTMLElement).style.background = ''}>
+                                                <td style={{ padding: '14px 20px' }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--background-alt)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '700', color: 'var(--action)', flexShrink: 0 }}>{s.full_name.charAt(0).toUpperCase()}</div>
-                                                        <div><div style={{ fontWeight: '700', fontSize: '14px' }}>{s.full_name}</div>{s.email && <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>{s.email}</div>}</div>
+                                                        <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'var(--background-alt)', border: '2px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '700', color: 'var(--action)', flexShrink: 0 }}>{s.full_name.charAt(0).toUpperCase()}</div>
+                                                        <div>
+                                                            <div style={{ fontWeight: '700', fontSize: '14px' }}>{s.full_name}</div>
+                                                            {s.email && <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>{s.email}</div>}
+                                                        </div>
                                                     </div>
                                                 </td>
-                                                <td style={{ padding: '16px 24px', color: 'var(--ink-ghost)', fontSize: '13px' }}>{s.index_number ?? '—'}</td>
-                                                <td style={{ padding: '16px 24px', color: 'var(--ink-ghost)', fontSize: '13px' }}>{formatDistanceToNow(new Date(s.joined_at), { addSuffix: true })}</td>
+                                                <td style={{ padding: '14px 20px', color: 'var(--ink-ghost)', fontSize: '13px' }}>{s.index_number ?? '—'}</td>
+                                                <td style={{ padding: '14px 20px', color: 'var(--ink-ghost)', fontSize: '13px' }}>{formatDistanceToNow(new Date(s.joined_at), { addSuffix: true })}</td>
+                                                {isTeacher && (
+                                                    <td style={{ padding: '14px 20px' }} onClick={e => e.stopPropagation()}>
+                                                        <div style={{ display: 'flex', gap: '6px' }}>
+                                                            <button title="Write observation" onClick={() => openObserveStudent(s)} style={{ padding: '5px 8px', borderRadius: '8px', border: '1px solid var(--border)', background: 'none', cursor: 'pointer', color: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: '700' }}>
+                                                                <MessageCircle size={13} /> Observe
+                                                            </button>
+                                                            <button title="Edit student" onClick={() => openEditStudent(s)} style={{ padding: '5px 8px', borderRadius: '8px', border: '1px solid var(--border)', background: 'none', cursor: 'pointer', color: 'var(--ink-ghost)' }}>
+                                                                <Edit2 size={13} />
+                                                            </button>
+                                                            <button title="Remove from classroom" onClick={() => handleDeleteStudent(s)} disabled={deletingStudentId === s.id} style={{ padding: '5px 8px', borderRadius: '8px', border: 'none', background: 'rgba(239,68,68,0.08)', cursor: 'pointer', color: 'var(--ember)', opacity: deletingStudentId === s.id ? 0.5 : 1 }}>
+                                                                {deletingStudentId === s.id ? '⏳' : <UserX size={13} />}
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                )}
                                             </tr>
                                         ))}
                                     </tbody>
@@ -630,6 +769,106 @@ export default function ClassroomDetailScreenWeb() {
                     </div>
                 )}
 
+                {/* ── Observations Tab (teacher-only) ── */}
+                {activeTab === 'observations' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        {/* Create observation form */}
+                        {showObsForm ? (
+                            <div className="sanctuary-card" style={{ padding: '20px', border: '2px solid var(--lotus)' }}>
+                                <h4 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: '800' }}>
+                                    {obsStudent ? `Observation for ${obsStudent.full_name}` : 'New Observation'}
+                                </h4>
+                                {/* Student picker (if not pre-selected) */}
+                                {!obsStudent && (
+                                    <div style={{ marginBottom: '12px' }}>
+                                        <label style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', display: 'block', marginBottom: '6px' }}>Student</label>
+                                        <select onChange={e => { const s = students.find(x => x.id === e.target.value); setObsStudent(s ?? null); }} defaultValue="" style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--background)', width: '100%', fontFamily: 'var(--font-body)', fontSize: '13px' }}>
+                                            <option value="" disabled>Select a student…</option>
+                                            {students.map(s => <option key={s.id} value={s.id}>{s.full_name}</option>)}
+                                        </select>
+                                    </div>
+                                )}
+                                {/* Type */}
+                                <div style={{ marginBottom: '12px' }}>
+                                    <label style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', display: 'block', marginBottom: '6px' }}>Type</label>
+                                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                                        {(['positive','growth','neutral','concern'] as const).map(t => (
+                                            <button key={t} onClick={() => setObsType(t)} style={{ padding: '5px 12px', borderRadius: '8px', border: `1px solid ${obsType === t ? (t === 'positive' ? 'var(--moss)' : t === 'concern' ? 'var(--ember)' : t === 'growth' ? 'var(--water)' : 'var(--border)') : 'var(--border)'}`, background: obsType === t ? (t === 'positive' ? 'rgba(88,147,99,0.12)' : t === 'concern' ? 'rgba(239,68,68,0.08)' : 'var(--background-alt)') : 'none', cursor: 'pointer', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: obsType === t ? (t === 'positive' ? 'var(--moss)' : t === 'concern' ? 'var(--ember)' : 'var(--ink)') : 'var(--ink-ghost)', fontFamily: 'var(--font-body)' }}>
+                                                {t}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                {/* Visibility */}
+                                <div style={{ marginBottom: '12px' }}>
+                                    <label style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', display: 'block', marginBottom: '6px' }}>Visibility</label>
+                                    <div style={{ display: 'flex', gap: '6px' }}>
+                                        {(['private','student_visible'] as const).map(v => (
+                                            <button key={v} onClick={() => setObsVisibility(v)} style={{ padding: '5px 12px', borderRadius: '8px', border: `1px solid ${obsVisibility === v ? 'var(--lotus)' : 'var(--border)'}`, background: obsVisibility === v ? 'rgba(199,132,174,0.1)' : 'none', cursor: 'pointer', fontSize: '11px', fontWeight: '700', color: obsVisibility === v ? 'var(--lotus)' : 'var(--ink-ghost)', fontFamily: 'var(--font-body)' }}>
+                                                {v === 'private' ? '🔒 Private' : '👁️ Visible to student'}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                {/* Content */}
+                                <textarea value={obsContent} onChange={e => setObsContent(e.target.value)} placeholder="Describe what you observed — behaviour, academic progress, welfare concern, achievement…" rows={3} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--background)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px', resize: 'vertical' as const, boxSizing: 'border-box' as const, marginBottom: '12px' }} />
+                                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                    <button className="secondary-button" onClick={() => { setShowObsForm(false); setObsStudent(null); setObsContent(''); }}>Cancel</button>
+                                    <button className="premium-button" style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--lotus)' }} onClick={handleCreateObservation} disabled={!obsContent.trim() || savingObs}>
+                                        <Send size={13} /> {savingObs ? 'Saving…' : 'Save Observation'}
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                                <button className="premium-button" style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--lotus)' }} onClick={() => { setObsStudent(null); setShowObsForm(true); }}>
+                                    <Plus size={15} /> New Observation
+                                </button>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <Filter size={14} color="var(--ink-ghost)" />
+                                    <select value={obsFilter} onChange={e => setObsFilter(e.target.value)} style={{ padding: '6px 10px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--background)', fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink)' }}>
+                                        <option value="all">All students</option>
+                                        {students.map(s => <option key={s.id} value={s.id}>{s.full_name}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+                        )}
+                        {/* Observations list */}
+                        {obsTabLoading ? (
+                            [1,2,3].map(i => <div key={i} style={{ height: '70px', background: 'var(--background-alt)', borderRadius: '10px', animation: 'pulse 1.5s infinite' }} />)
+                        ) : allObservations.filter(o => obsFilter === 'all' || o.student_id === obsFilter).length === 0 ? (
+                            <div className="sanctuary-card" style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-ghost)', fontStyle: 'italic' }}>
+                                No observations yet. Use the button above to record your first one.
+                            </div>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                {allObservations
+                                    .filter(o => obsFilter === 'all' || o.student_id === obsFilter)
+                                    .map((o: any) => {
+                                        const typeColor = o.observation_type === 'positive' ? 'var(--moss)' : o.observation_type === 'concern' ? 'var(--ember)' : o.observation_type === 'growth' ? 'var(--water)' : 'var(--ink-ghost)';
+                                        const studentName = students.find(s => s.id === o.student_id)?.full_name ?? 'Unknown student';
+                                        return (
+                                            <div key={o.id} style={{ padding: '14px 16px', borderRadius: '10px', border: '1px solid var(--border-light)', borderLeft: `4px solid ${typeColor}`, background: 'var(--background-alt)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' }}>
+                                                        <span style={{ fontWeight: '700', fontSize: '13px', color: 'var(--ink)' }}>{studentName}</span>
+                                                        <span style={{ fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', color: typeColor, padding: '2px 7px', borderRadius: '6px', border: `1px solid ${typeColor}` }}>{o.observation_type}</span>
+                                                        <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{o.visibility === 'private' ? '🔒' : '👁️'} {o.visibility === 'private' ? 'Private' : 'Student visible'}</span>
+                                                        <span style={{ fontSize: '10px', color: 'var(--ink-ghost)', marginLeft: 'auto' }}>{formatDistanceToNow(new Date(o.created_at), { addSuffix: true })}</span>
+                                                    </div>
+                                                    <p style={{ margin: 0, fontSize: '13px', lineHeight: '1.5', color: 'var(--ink)' }}>{o.content}</p>
+                                                </div>
+                                                <button title="Delete observation" onClick={() => handleDeleteObservation(o.id)} style={{ padding: '4px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ember)', flexShrink: 0 }}>
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {/* ── Insights Tab (teacher-only) ── */}
                 {activeTab === 'insights' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -695,12 +934,34 @@ export default function ClassroomDetailScreenWeb() {
                 {/* ── Inventory Tab (teacher-only) ── */}
                 {activeTab === 'inventory' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        {/* Request new item form */}
+                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }} onClick={() => setShowInventoryRequest(r => !r)}>
+                                <Plus size={14} /> Request Item
+                            </button>
+                        </div>
+                        {showInventoryRequest && (
+                            <div className="sanctuary-card" style={{ padding: '18px', border: '2px solid var(--water)' }}>
+                                <h4 style={{ margin: '0 0 12px', fontSize: '13px', fontWeight: '800' }}>Request New Item / Replenishment</h4>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '10px', marginBottom: '10px' }}>
+                                    <input value={reqItemName} onChange={e => setReqItemName(e.target.value)} placeholder="Item name (e.g. Whiteboard markers)" style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--background)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px' }} />
+                                    <input type="number" min="1" value={reqQty} onChange={e => setReqQty(e.target.value)} style={{ padding: '8px 10px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--background)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px', width: '70px' }} />
+                                </div>
+                                <textarea value={reqNote} onChange={e => setReqNote(e.target.value)} placeholder="Additional notes (optional)" rows={2} style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--background)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px', resize: 'vertical' as const, boxSizing: 'border-box' as const, marginBottom: '10px' }} />
+                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                                    <button className="secondary-button" onClick={() => setShowInventoryRequest(false)}>Cancel</button>
+                                    <button className="premium-button" style={{ background: 'var(--water)', display: 'flex', alignItems: 'center', gap: '6px' }} disabled={!reqItemName.trim() || submittingReq} onClick={handleInventoryRequest}>
+                                        <Send size={13} /> {submittingReq ? 'Sending…' : 'Submit Request'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                         {inventoryLoading ? (
                             [1,2,3].map(i => <div key={i} style={{ height: '60px', background: 'var(--background-alt)', borderRadius: '12px' }} />)
                         ) : inventoryItems.length === 0 ? (
                             <div className="sanctuary-card" style={{ padding: '60px', textAlign: 'center' }}>
                                 <Package size={40} color="var(--ink-ghost)" style={{ opacity: 0.3 }} />
-                                <p style={{ color: 'var(--ink-ghost)', marginTop: '12px', fontStyle: 'italic' }}>No inventory items recorded for this classroom.</p>
+                                <p style={{ color: 'var(--ink-ghost)', marginTop: '12px', fontStyle: 'italic' }}>No inventory items recorded. Use "Request Item" above to log what your classroom needs.</p>
                             </div>
                         ) : (
                             <div className="sanctuary-card" style={{ overflow: 'hidden' }}>
@@ -731,6 +992,32 @@ export default function ClassroomDetailScreenWeb() {
                     </div>
                 )}
             </div>
+
+            {/* ── AddStudentModal (add + edit) ── */}
+            {showAddStudentModal && classroomId && (
+                <AddStudentModal
+                    isOpen={showAddStudentModal}
+                    onClose={() => { setShowAddStudentModal(false); setStudentToEdit(null); }}
+                    onSuccess={() => {
+                        setShowAddStudentModal(false);
+                        setStudentToEdit(null);
+                        // Re-fetch roster
+                        supabase.from('classroom_students')
+                            .select('id, student_id, joined_at, user_profiles!student_id(id, full_name, email, avatar_url, index_number)')
+                            .eq('classroom_id', classroomId)
+                            .then(({ data: enr }) => {
+                                if (enr) setStudents(enr.map((e: any) => ({
+                                    id: e.student_id, classroomStudentId: e.id,
+                                    full_name: e.user_profiles?.full_name ?? 'Unknown',
+                                    email: e.user_profiles?.email, avatar_url: e.user_profiles?.avatar_url,
+                                    index_number: e.user_profiles?.index_number, joined_at: e.joined_at,
+                                })));
+                            });
+                    }}
+                    classroomId={classroomId}
+                    studentToEdit={studentToEdit as any}
+                />
+            )}
 
             {/* ── GroupManager Modal ── */}
             {showGroupsPanel && (

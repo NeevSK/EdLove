@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 import { useUserRole, useStore, staffManagementAPI, supabase, api, schoolAPI, StaffPresenceSummary, TeacherCarouselItem, StudentAttendancePulse, StaffLeaveDTO } from '@repo/core';
 import { useSchoolStats, CreateClassroomModal, AddStudentModal } from '@repo/classroom';
 import { useSchoolPulse } from '@repo/profile';
@@ -69,6 +70,10 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
     const [presence, setPresence] = useState<StaffPresenceSummary | null>(null);
     const [teachers, setTeachers] = useState<TeacherCarouselItem[]>([]);
     const [studentPulse, setStudentPulse] = useState<StudentAttendancePulse | null>(null);
+    const [showAtRiskPanel, setShowAtRiskPanel] = useState(false);
+    const [atRiskStudents, setAtRiskStudents] = useState<Array<{ id: string; full_name: string; classroom_name: string; }>>([]);
+    const [atRiskLoading, setAtRiskLoading] = useState(false);
+    const navigation = useNavigation<any>();
     const [pendingLeaves, setPendingLeaves] = useState<StaffLeaveDTO[]>([]);
     const [staffLoading, setStaffLoading] = useState(true);
     const [showCreateClassroom, setShowCreateClassroom] = useState(false);
@@ -363,7 +368,33 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
         finally { setSavingReply(false); }
     };
 
-    const handleGenerateCode = async () => {
+    const loadAtRiskStudents = async () => {
+        if (!effectiveSchoolId) return;
+        setAtRiskLoading(true);
+        try {
+            // At-risk = absent on both today and yesterday across any classroom in this school
+            const today = new Date().toISOString().slice(0, 10);
+            const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+            const { data } = await supabase
+                .from('attendance')
+                .select('student_id, classroom_id, date, classrooms!classroom_id(name, school_id), user_profiles!student_id(full_name)')
+                .in('date', [today, yesterday])
+                .eq('status', 'absent')
+                .eq('classrooms.school_id', effectiveSchoolId);
+            if (!data) { setAtRiskStudents([]); return; }
+            // Count absences per student
+            const counts: Record<string, { count: number; full_name: string; classroom_name: string }> = {};
+            data.forEach((r: any) => {
+                if (!r.student_id) return;
+                if (!counts[r.student_id]) counts[r.student_id] = { count: 0, full_name: r.user_profiles?.full_name ?? 'Unknown', classroom_name: (r.classrooms as any)?.name ?? '—' };
+                counts[r.student_id].count++;
+            });
+            setAtRiskStudents(Object.entries(counts)
+                .filter(([, v]) => v.count >= 2)
+                .map(([id, v]) => ({ id, full_name: v.full_name, classroom_name: v.classroom_name })));
+        } catch { setAtRiskStudents([]); }
+        finally { setAtRiskLoading(false); }
+    };
         if (!effectiveSchoolId || !effectiveUserId) return;
         setGeneratingCode(true);
         try {
@@ -726,7 +757,8 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                                             value: String(studentPulse.atRiskCount),
                                             icon: AlertTriangle,
                                             color: studentPulse.atRiskCount > 0 ? 'var(--ember)' : 'var(--moss)',
-                                            sub: studentPulse.atRiskCount > 0 ? 'Needs attention' : 'All on track'
+                                            sub: studentPulse.atRiskCount > 0 ? 'Tap to view names ↗' : 'All on track',
+                                            onClick: studentPulse.atRiskCount > 0 ? () => { setShowAtRiskPanel(true); loadAtRiskStudents(); } : undefined,
                                         },
                                         {
                                             label: 'Total Students',
@@ -735,14 +767,16 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                                             color: 'var(--water)',
                                             sub: schoolStats?.total_classrooms != null ? `Across ${schoolStats.total_classrooms} classes` : ''
                                         },
-                                    ].map((item, i) => (
-                                        <div key={i} style={{ padding: '20px', background: 'var(--background-alt)', borderRadius: '16px' }}>
+                                    ].map((item: any, i) => (
+                                        <div key={i} onClick={item.onClick} style={{ padding: '20px', background: 'var(--background-alt)', borderRadius: '16px', cursor: item.onClick ? 'pointer' : 'default', border: item.onClick ? '2px solid transparent' : '1px solid transparent', transition: 'border-color 0.15s' }}
+                                            onMouseOver={e => { if (item.onClick) (e.currentTarget as HTMLElement).style.borderColor = 'var(--ember)'; }}
+                                            onMouseOut={e => { (e.currentTarget as HTMLElement).style.borderColor = 'transparent'; }}>
                                             <div style={{ color: item.color, marginBottom: '12px' }}>
                                                 <item.icon size={20} />
                                             </div>
                                             <div style={{ fontSize: '24px', fontWeight: '800', marginBottom: '4px' }}>{item.value}</div>
                                             <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '4px' }}>{item.label}</div>
-                                            {item.sub && <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>{item.sub}</div>}
+                                            {item.sub && <div style={{ fontSize: '11px', color: item.onClick ? item.color : 'var(--ink-ghost)' }}>{item.sub}</div>}
                                         </div>
                                     ))}
                                 </div>
@@ -1186,6 +1220,41 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                 classroomId=""
                 studentToEdit={null}
             />
+
+            {/* ── At-Risk Students Panel ───────────────────────── */}
+            {showAtRiskPanel && (
+                <div style={{ position: 'fixed', inset: 0, zIndex: 9500, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+                    onClick={e => e.target === e.currentTarget && setShowAtRiskPanel(false)}>
+                    <div style={{ background: 'var(--background)', borderRadius: '20px 20px 0 0', padding: '28px', width: '100%', maxWidth: '600px', maxHeight: '60vh', overflowY: 'auto' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                            <div>
+                                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: 'var(--ember)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    ⚠️ At-Risk Students
+                                </h3>
+                                <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--ink-ghost)' }}>Absent both today and yesterday</p>
+                            </div>
+                            <button onClick={() => setShowAtRiskPanel(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px', color: 'var(--ink-ghost)' }}>✕</button>
+                        </div>
+                        {atRiskLoading ? (
+                            [1,2,3].map(i => <div key={i} style={{ height: '50px', background: 'var(--background-alt)', borderRadius: '10px', marginBottom: '8px' }} />)
+                        ) : atRiskStudents.length === 0 ? (
+                            <div style={{ textAlign: 'center', padding: '32px', color: 'var(--ink-ghost)', fontStyle: 'italic' }}>
+                                No at-risk students found in the last 2 days.
+                            </div>
+                        ) : atRiskStudents.map(s => (
+                            <div key={s.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: '10px', border: '1px solid var(--ember)', background: 'rgba(239,68,68,0.04)', marginBottom: '8px' }}>
+                                <div>
+                                    <div style={{ fontWeight: '700', fontSize: '14px' }}>{s.full_name}</div>
+                                    <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>{s.classroom_name}</div>
+                                </div>
+                                <button onClick={() => { setShowAtRiskPanel(false); navigation.navigate('ClassroomList'); }} style={{ padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--ember)', background: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: '700', color: 'var(--ember)', fontFamily: 'var(--font-body)' }}>
+                                    View Classroom →
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </>
     );
 }
