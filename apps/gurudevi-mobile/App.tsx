@@ -52,7 +52,7 @@ const RootStack = createNativeStackNavigator();
 
 // Module-level so AppContent can call it without prop-drilling.
 // Uses useStore.getState() (not a hook) — safe to call outside React render.
-const fetchAndSetUserProfile = async (internalUserId: string) => {
+const fetchAndSetUserProfile = async (internalUserId: string, onComplete?: () => void) => {
   try {
     const { data: userProfile, error } = await supabase
       .from('users')
@@ -62,6 +62,7 @@ const fetchAndSetUserProfile = async (internalUserId: string) => {
 
     if (error) {
       console.warn('⚠️ Profile: Table fetch returned error:', error.message);
+      if (onComplete) onComplete();
       return;
     }
 
@@ -130,12 +131,15 @@ const fetchAndSetUserProfile = async (internalUserId: string) => {
     console.warn('❌ Profile: Fetching encountered an error:', error);
     const { handleAPIError } = require('@repo/core');
     handleAPIError(error);
+  } finally {
+    if (onComplete) onComplete();
   }
 };
 
 function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [currentTab, setCurrentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
   const onboardingCompleted = useStore((state) => state.onboardingCompleted);
@@ -192,11 +196,19 @@ function App() {
           if (session) {
             setShowWelcome(false);
             if (session.user) {
+              setIsProfileLoading(true);
               identityAPI.getMyInternalId()
                 .then((internalId) => {
-                  if (internalId) fetchAndSetUserProfile(internalId);
+                  if (internalId) {
+                    fetchAndSetUserProfile(internalId, () => setIsProfileLoading(false));
+                  } else {
+                    setIsProfileLoading(false);
+                  }
                 })
-                .catch((err) => console.warn('⚠️ App: Identity resolution failed on startup:', err));
+                .catch((err) => {
+                  console.warn('⚠️ App: Identity resolution failed on startup:', err);
+                  setIsProfileLoading(false);
+                });
             }
           }
         }
@@ -214,12 +226,21 @@ function App() {
       setSession(session);
 
       if (session?.user) {
+        setIsProfileLoading(true);
         identityAPI.getMyInternalId()
           .then((internalId) => {
-            if (internalId) fetchAndSetUserProfile(internalId);
+            if (internalId) {
+              fetchAndSetUserProfile(internalId, () => setIsProfileLoading(false));
+            } else {
+              setIsProfileLoading(false);
+            }
           })
-          .catch((err) => console.warn('⚠️ App: Identity resolution failed on auth change:', err));
+          .catch((err) => {
+            console.warn('⚠️ App: Identity resolution failed on auth change:', err);
+            setIsProfileLoading(false);
+          });
       } else if (event === 'SIGNED_OUT') {
+        setIsProfileLoading(false);
         // Only clear cache and reset store on explicit logout.
         // This prevents the 'loop' if session is momentarily null during transitions.
         console.log('🚪 App: User signed out. Clearing identity cache and resetting store.');
@@ -406,6 +427,7 @@ function App() {
             session={session}
             needsWelcome={needsWelcome}
             onboardingCompleted={onboardingCompleted}
+            isProfileLoading={isProfileLoading}
             showWelcome={showWelcome}
             setShowWelcome={setShowWelcome}
             toast={toast}
@@ -447,7 +469,7 @@ function OnboardingWrapper({ session }: { session: any }) {
 }
 
 // Main Content Component to access Theme/Context
-function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardingCompleted, showWelcome, setShowWelcome, toast, hideToast }: any) {
+function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardingCompleted, isProfileLoading, showWelcome, setShowWelcome, toast, hideToast }: any) {
   // Web Auth Guard: Prevent direct URL access to /app/* if not onboarded
 
   useEffect(() => {
@@ -516,6 +538,11 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
   // (the state change switches the navigator to Welcome; this then advances them
   // straight to Onboarding instead of leaving them on the Welcome splash).
   useEffect(() => {
+    // CRITICAL: We MUST wait for the profile fetch to finish before deciding
+    // if the user needs to be kicked to Onboarding. If we jump the gun, we'll
+    // flash the onboarding screen for already-onboarded users.
+    if (isProfileLoading) return;
+
     if (!session || onboardingCompleted || !navigationRef.isReady()) return;
     const rootState = navigationRef.current?.getRootState();
     const currentRoute = rootState?.routes[rootState.index]?.name;
@@ -523,7 +550,7 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
       console.log('🧭 AppContent: Session exists, no effective onboarding — advancing to Onboarding');
       navigationRef.navigate('Onboarding' as never);
     }
-  }, [session, onboardingCompleted]);
+  }, [session, onboardingCompleted, isProfileLoading]);
 
   return (
 
