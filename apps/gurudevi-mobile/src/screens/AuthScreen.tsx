@@ -75,8 +75,8 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
     const [loading, setLoading] = useState(false);
     const [showEmailAuth, setShowEmailAuth] = useState(initialMode === 'login');
     // Issue 3.1 fix: new unauthenticated visitors should land on Sign Up, not Login.
-    // But if initialMode='login' is passed (e.g. from identity_already_exists redirect), start on Login.
-    const [isSignUp, setIsSignUp] = useState(initialMode !== 'login');
+    // If isAnonymous is true (from onboarding), we definitely want Sign Up.
+    const [isSignUp, setIsSignUp] = useState(initialMode !== 'login' || (isAnonymous && !initialMode));
     const [showScanner, setShowScanner] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [currentUser, setCurrentUser] = useState<any>(null);
@@ -382,7 +382,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                         }
                     });
                     if (error) {
-                        if (error.message.includes('already registered')) {
+                        if (error.message.includes('already registered') || error.message.includes('Email already in use') || (error as any).status === 422) {
                             showToast(t('auth.alreadyRegistered') || "You already have a sanctuary soul! Switching to login...", "success");
                             setIsSignUp(false);
                             setLoading(false);
@@ -400,12 +400,35 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                 const { data, error } = await supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
 
-                // Proactively check for pending invitations
-                const user = data.user;
-                if (user) {
-                    const internalId = await identityAPI.getMyInternalId();
+                hapticSuccess();
+                const internalId = await identityAPI.getMyInternalId();
+                if (internalId) {
+                    // 1. Apply onboarding data if present and user has no role
+                    if (onboardingData) {
+                        try {
+                            const { data: profile } = await supabase
+                                .from('users')
+                                .select('role')
+                                .eq('id', internalId)
+                                .maybeSingle();
+
+                            if (!profile?.role) {
+                                await supabase.from('users').update({
+                                    full_name: onboardingData.name,
+                                    role: onboardingData.role,
+                                    profile_completed: true,
+                                    onboarding_completed: true,
+                                    onboarding_completed_at: new Date().toISOString(),
+                                }).eq('id', internalId);
+                            }
+                        } catch (e) {
+                            console.error('Failed to apply onboarding data after login', e);
+                        }
+                    }
+
+                    // 2. Proactively check for pending invitations
                     const pendingInvite = await AsyncStorage.getItem('pending_invite');
-                    if (pendingInvite && internalId) {
+                    if (pendingInvite) {
                         try {
                             const invite = JSON.parse(pendingInvite);
                             if (invite.school_id) {
@@ -418,8 +441,6 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                         }
                     }
                 }
-
-                hapticSuccess();
                 if (onSuccess) onSuccess();
             }
         } catch (error: any) {

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Box, Pressable, VStack, HStack, Input, InputField, Button, ButtonText, Text, Heading, useToast, Toast, ToastTitle } from '@repo/ui';
+import { useNavigation } from '@react-navigation/native';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -20,6 +21,7 @@ interface OnboardingScreenProps {
 
 export default function OnboardingScreen({ onComplete, isAnonymous = false }: OnboardingScreenProps) {
     const { t } = useTranslation();
+    const navigation = useNavigation<any>();
     const colors = useThemedColors();
     const [currentStep, setCurrentStep] = useState(0); // 0: Name, 1: Role, 2: Orientation, 3-7: Tour, 8: Auth
     const [name, setName] = useState('');
@@ -116,13 +118,21 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                 name,
                 role,
                 orientationSeeds,
-            })).catch(() => {/* silent */});
+            })).catch(() => {/* silent */ });
         });
     }, [currentStep, name, role, orientationSeeds]);
 
     const handleNext = () => {
         if (!canProceed) return;
         hapticLight();
+
+        // Short-circuit: If user is already authenticated (not anonymous) and just chose a role,
+        // we skip Orientation (2) and Tour (3-7) and go straight to completion.
+        if (currentStep === 1 && !isAnonymous) {
+            handleCompleteOnboarding();
+            return;
+        }
+
         setCurrentStep(prev => prev + 1);
     };
 
@@ -217,13 +227,31 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             <Button size="lg" onPress={handleNext} isDisabled={!canProceed} sx={{ backgroundColor: colors.action, mt: '$6' }}>
                 <ButtonText color={Theme.colors.sacredWhite}>{t('onboarding.continue')}</ButtonText>
             </Button>
+            <Button
+                variant="link"
+                onPress={() => {
+                    hapticLight();
+                    if (navigation.canGoBack()) {
+                        navigation.goBack();
+                    } else {
+                        // Fallback in case of deep linking directly to onboarding
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: 'Welcome' }],
+                        });
+                    }
+                }}
+                sx={{ mt: '$2' }}
+            >
+                <ButtonText color={colors.textTertiary}>{t('onboarding.backToWelcome') || 'Back to Welcome'}</ButtonText>
+            </Button>
         </VStack>
     );
 
     const ROLE_OPTIONS: Array<{ value: UserRole; emoji: string; descKey: string }> = [
-        { value: 'teacher',   emoji: '🧑‍🏫', descKey: 'onboarding.roleDesc.teacher'   },
-        { value: 'student',   emoji: '🎒',  descKey: 'onboarding.roleDesc.student'   },
-        { value: 'principal', emoji: '🏫',  descKey: 'onboarding.roleDesc.principal' },
+        { value: 'teacher', emoji: '🧑‍🏫', descKey: 'onboarding.roleDesc.teacher' },
+        { value: 'student', emoji: '🎒', descKey: 'onboarding.roleDesc.student' },
+        { value: 'principal', emoji: '🏫', descKey: 'onboarding.roleDesc.principal' },
     ];
 
     const renderRoleStep = () => (
