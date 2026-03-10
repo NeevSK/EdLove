@@ -41,8 +41,10 @@ function Spin({ size = 16 }: { size?: number }) {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
     return (
-        <p style={{ margin: '0 0 8px', fontSize: '11px', fontWeight: '800',
-            textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--ink-ghost)' }}>
+        <p style={{
+            margin: '0 0 8px', fontSize: '11px', fontWeight: '800',
+            textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--ink-ghost)'
+        }}>
             {children}
         </p>
     );
@@ -78,8 +80,10 @@ function SuccessCard({ emoji, title, body, cta, onCta }: {
 }) {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '24px 16px', textAlign: 'center' }}>
-            <div style={{ width: '64px', height: '64px', borderRadius: '50%',
-                background: 'rgba(34,197,94,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{
+                width: '64px', height: '64px', borderRadius: '50%',
+                background: 'rgba(34,197,94,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
                 <CheckCircle2 size={32} color="var(--moss)" />
             </div>
             <div style={{ fontSize: '28px' }}>{emoji}</div>
@@ -101,18 +105,18 @@ function SuccessCard({ emoji, title, body, cta, onCta }: {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const SCHOOL_TYPES = [
-    { value: 'primary',   label: 'Primary School',    emoji: '🏫', desc: 'Grades 1–5'    },
-    { value: 'secondary', label: 'Secondary School',  emoji: '🎓', desc: 'Grades 6–13'   },
-    { value: 'mixed',     label: 'Mixed / All Grades', emoji: '🌿', desc: 'All grade levels' },
+    { value: 'primary', label: 'Primary School', emoji: '🏫', desc: 'Grades 1–5' },
+    { value: 'secondary', label: 'Secondary School', emoji: '🎓', desc: 'Grades 6–13' },
+    { value: 'mixed', label: 'Mixed / All Grades', emoji: '🌿', desc: 'All grade levels' },
 ] as const;
 
 function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
     const { user } = useStore();
     const [step, setStep] = useState<'details' | 'type' | 'done'>('details');
-    const [name, setName]   = useState('');
-    const [type, setType]   = useState<'primary' | 'secondary' | 'mixed'>('mixed');
-    const [loading, setLoading]  = useState(false);
-    const [error, setError]      = useState('');
+    const [name, setName] = useState('');
+    const [type, setType] = useState<'primary' | 'secondary' | 'mixed'>('mixed');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
     const [schoolName, setSchoolName] = useState('');
 
     const handleCreate = async () => {
@@ -206,7 +210,7 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
     const [method, setMethod] = useState<'code' | 'search'>('code');
 
     // ── invite code path ──
-    const [code, setCode]   = useState('');
+    const [code, setCode] = useState('');
     const [codeErr, setCodeErr] = useState('');
     const [codeLoading, setCodeLoading] = useState(false);
 
@@ -238,7 +242,7 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
     };
 
     // ── search path ──
-    const [query, setQuery]     = useState('');
+    const [query, setQuery] = useState('');
     const [results, setResults] = useState<any[]>([]);
     const [searching, setSearching] = useState(false);
     const [requesting, setRequesting] = useState<string | null>(null);
@@ -348,10 +352,10 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
 function TeacherCreateStandaloneClassroom({ onSuccess }: { onSuccess: () => void }) {
     const { user } = useStore();
     const { userId } = useUserRole();
-    const [name, setName]       = useState('');
+    const [name, setName] = useState('');
     const [subject, setSubject] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError]     = useState('');
+    const [error, setError] = useState('');
     const [created, setCreated] = useState<{ name: string } | null>(null);
 
     const handleCreate = async () => {
@@ -412,8 +416,8 @@ function TeacherFlow({ onSuccess }: { onSuccess: () => void }) {
     const [joinedSchoolId, setJoinedSchoolId] = useState<string | null>(null);
 
     const TABS: { id: TeacherTab; label: string; icon: React.ReactNode }[] = [
-        { id: 'join_school', label: 'Join a School',             icon: <Building2 size={14} /> },
-        { id: 'standalone',  label: 'Personal Classroom',        icon: <BookOpen size={14} />  },
+        { id: 'join_school', label: 'Join a School', icon: <Building2 size={14} /> },
+        { id: 'standalone', label: 'Personal Classroom', icon: <BookOpen size={14} /> },
     ];
 
     return (
@@ -443,7 +447,7 @@ function TeacherFlow({ onSuccess }: { onSuccess: () => void }) {
                         body="You've been added to the school. Go ahead and create your classroom."
                         cta="Continue"
                         onCta={onSuccess}
-                      />
+                    />
                     : <TeacherJoinSchool onJoined={id => { setJoinedSchoolId(id); onSuccess(); }} />
             )}
 
@@ -459,10 +463,10 @@ function TeacherFlow({ onSuccess }: { onSuccess: () => void }) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
-    const [code, setCode]     = useState('');
+    const [code, setCode] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError]   = useState('');
-    const [done, setDone]     = useState(false);
+    const [error, setError] = useState('');
+    const [done, setDone] = useState(false);
 
     const handleClaim = async () => {
         if (!code.trim()) return;
@@ -490,7 +494,7 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ padding: '12px 16px', background: 'rgba(59,130,246,0.06)', borderRadius: '10px', border: '1px solid rgba(59,130,246,0.15)', fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.6' }}>
-                <Users size={13} color="var(--water)" style={{ marginRight: 6, verticalAlign: 'middle' }} />
+                <Users size={13} color="var(--water)" style={{ marginRight: 6 }} />
                 Ask your teacher for your classroom invite code.
                 It's typically 8 characters, like <code style={{ fontWeight: '800', letterSpacing: '1px' }}>a1b2c3d4</code>.
             </div>
@@ -532,8 +536,8 @@ export default function NoSchoolView() {
     const navigation = useNavigation<any>();
 
     const isPrincipal = role === 'principal' || role === 'founder' || role === 'admin';
-    const isTeacher   = role === 'teacher' || role === 'grade_head' || role === 'section_head';
-    const isStudent   = role === 'student';
+    const isTeacher = role === 'teacher' || role === 'grade_head' || role === 'section_head';
+    const isStudent = role === 'student';
 
     const handleSuccess = () => {
         // Navigate back to classroom tab — router reloads and picks up new school_id
@@ -543,8 +547,8 @@ export default function NoSchoolView() {
     const META = isPrincipal
         ? { emoji: '🏛️', heading: 'Create your school', sub: 'Set up your school sanctuary. Invite teachers and students once ready.' }
         : isTeacher
-        ? { emoji: '📚', heading: 'Set up your classroom', sub: 'Join a school, or create a standalone personal classroom right away.' }
-        : { emoji: '🌱', heading: 'Join your classroom', sub: 'Enter the invite code your teacher gave you to link your account.' };
+            ? { emoji: '📚', heading: 'Set up your classroom', sub: 'Join a school, or create a standalone personal classroom right away.' }
+            : { emoji: '🌱', heading: 'Join your classroom', sub: 'Enter the invite code your teacher gave you to link your account.' };
 
     return (
         <div style={{ maxWidth: '520px', margin: '0 auto', padding: '8px 0 48px' }}>
@@ -559,8 +563,8 @@ export default function NoSchoolView() {
 
             <div className="sanctuary-card" style={{ padding: '28px 32px' }}>
                 {isPrincipal && <PrincipalCreateSchool onSuccess={handleSuccess} />}
-                {isTeacher   && <TeacherFlow           onSuccess={handleSuccess} />}
-                {isStudent   && <StudentJoinClassroom  onSuccess={handleSuccess} />}
+                {isTeacher && <TeacherFlow onSuccess={handleSuccess} />}
+                {isStudent && <StudentJoinClassroom onSuccess={handleSuccess} />}
             </div>
         </div>
     );

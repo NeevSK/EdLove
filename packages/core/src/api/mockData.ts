@@ -249,11 +249,11 @@ export const MOCK_STAFF_PRESENCE: StaffPresenceSummary = {
 };
 
 export const MOCK_TEACHER_CAROUSEL: TeacherCarouselItem[] = [
-    { userId: 'mock-t1', fullName: 'Sanduni Perera',   role: 'teacher',    todayStatus: 'present', classroomCount: 3, avatarUrl: null },
-    { userId: 'mock-t2', fullName: 'Nimal Wickrama',   role: 'teacher',    todayStatus: 'present', classroomCount: 2, avatarUrl: null },
-    { userId: 'mock-t3', fullName: 'Amali Fernando',   role: 'grade_head', todayStatus: 'late',    classroomCount: 4, avatarUrl: null },
-    { userId: 'mock-t4', fullName: 'Roshan Silva',     role: 'teacher',    todayStatus: 'absent',  classroomCount: 2, avatarUrl: null },
-    { userId: 'mock-t5', fullName: 'Kavindra Dias',    role: 'teacher',    todayStatus: 'present', classroomCount: 1, avatarUrl: null },
+    { userId: 'mock-t1', fullName: 'Sanduni Perera', role: 'teacher', todayStatus: 'present', classroomCount: 3, avatarUrl: null },
+    { userId: 'mock-t2', fullName: 'Nimal Wickrama', role: 'teacher', todayStatus: 'present', classroomCount: 2, avatarUrl: null },
+    { userId: 'mock-t3', fullName: 'Amali Fernando', role: 'grade_head', todayStatus: 'late', classroomCount: 4, avatarUrl: null },
+    { userId: 'mock-t4', fullName: 'Roshan Silva', role: 'teacher', todayStatus: 'absent', classroomCount: 2, avatarUrl: null },
+    { userId: 'mock-t5', fullName: 'Kavindra Dias', role: 'teacher', todayStatus: 'present', classroomCount: 1, avatarUrl: null },
 ];
 
 export const MOCK_STUDENT_PULSE: StudentAttendancePulse = {
@@ -268,8 +268,8 @@ export const MOCK_PENDING_LEAVES: StaffLeaveDTO[] = [
         school_id: 'mock-school',
         user_id: 'mock-t4',
         leave_type: 'medical',
-        start_date: new Date().toISOString().split('T')[0],
-        end_date:   new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0],
+        start_date: new Date().toISOString().split('T')[0] || '',
+        end_date: new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0] || '',
         reason: 'Scheduled medical procedure',
         status: 'pending',
         reviewed_by: null,
@@ -281,8 +281,8 @@ export const MOCK_PENDING_LEAVES: StaffLeaveDTO[] = [
         school_id: 'mock-school',
         user_id: 'mock-t2',
         leave_type: 'personal',
-        start_date: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
-        end_date:   new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
+        start_date: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0] || '',
+        end_date: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0] || '',
         reason: 'Family commitment',
         status: 'pending',
         reviewed_by: null,

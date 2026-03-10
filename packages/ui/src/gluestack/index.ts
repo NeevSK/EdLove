@@ -157,6 +157,9 @@ export const TabTrigger = BaseTabsTab as any;
 export const TabTitle = BaseTabsTabTitle as any;
 export const TabContent = BaseTabsTabPanel as any;
 
+export const ChevronLeftIcon = ChevronLeft;
+export const ChevronRightIcon = ChevronRight;
+
 export {
     Card
 } from '@gluestack-ui/themed/build/components/Card';
@@ -185,14 +188,8 @@ export const ModalCloseButton = BaseModalCloseButton as any;
 import { Icon as BaseIcon, CloseIcon as BaseCloseIcon } from '@gluestack-ui/themed/build/components/Icons';
 export const Icon = BaseIcon as any;
 export const CloseIcon = BaseCloseIcon as any;
-export { ChevronLeftIcon, ChevronRightIcon, ArrowLeftIcon } from '@gluestack-ui/themed/build/components/Icons';
-
-// Link with relaxed types
-import { Link as BaseLink, LinkText as BaseLinkText } from '@gluestack-ui/themed/build/components/Link';
-export const Link = BaseLink as any;
-export const LinkText = BaseLinkText as any;
-
-import { Check } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, Check } from 'lucide-react-native';
+export { ChevronLeft, ChevronRight };
 export const CheckIcon = Check;
 
 import { Image as BaseImage } from '@gluestack-ui/themed/build/components/Image';

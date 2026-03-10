@@ -140,9 +140,9 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                 if (error || !data?.length) {
                     // Sandbox fallback — same mock used by the native DashboardEcho
                     setEchoItems([
-                        { id: 'e1', source: 'teacher', category: 'support',     content: 'Need guidance on the 2026 Mathematics syllabus transition for Grade 6.', priority: 'high',   is_read: false, created_at: new Date().toISOString() },
-                        { id: 'e2', source: 'student', category: 'morale',      content: 'The new common area is great! Everyone is enjoying the study space.',      priority: 'low',    is_read: true,  created_at: new Date(Date.now() - 3600000).toISOString() },
-                        { id: 'e3', source: 'teacher', category: 'facility',    content: 'Multimedia projector in Room 4 is flickering intermittently.',              priority: 'medium', is_read: false, created_at: new Date(Date.now() - 86400000).toISOString() },
+                        { id: 'e1', source: 'teacher', category: 'support', content: 'Need guidance on the 2026 Mathematics syllabus transition for Grade 6.', priority: 'high', is_read: false, created_at: new Date().toISOString() },
+                        { id: 'e2', source: 'student', category: 'morale', content: 'The new common area is great! Everyone is enjoying the study space.', priority: 'low', is_read: true, created_at: new Date(Date.now() - 3600000).toISOString() },
+                        { id: 'e3', source: 'teacher', category: 'facility', content: 'Multimedia projector in Room 4 is flickering intermittently.', priority: 'medium', is_read: false, created_at: new Date(Date.now() - 86400000).toISOString() },
                     ]);
                 } else {
                     setEchoItems(data);
@@ -223,7 +223,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                 if (error || !data?.length) {
                     setObservations([
                         { id: 'o1', type: 'walkthrough', content: 'Grade 8A math class — excellent collaborative problem-solving observed. Recommend for school showcase.', created_at: new Date(Date.now() - 7200000).toISOString() },
-                        { id: 'o2', type: 'concern',     content: 'Library attendance dropped 30% this month. Follow up with librarian to investigate causes.', created_at: new Date(Date.now() - 86400000).toISOString() },
+                        { id: 'o2', type: 'concern', content: 'Library attendance dropped 30% this month. Follow up with librarian to investigate causes.', created_at: new Date(Date.now() - 86400000).toISOString() },
                     ]);
                 } else {
                     setObservations(data);
@@ -282,13 +282,12 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
         return () => { mounted = false; };
     }, [effectiveSchoolId]);
 
-    // ── Load curriculum progress ─────────────────────────────────────────
     useEffect(() => {
         if (!effectiveSchoolId) return;
-        setCurriculumLoading(true);
-        supabase.from('curriculum_progress').select('*').eq('school_id', effectiveSchoolId)
-            .order('grade', { ascending: true })
-            .then(({ data }) => {
+        const fetchProgress = async () => {
+            setCurriculumLoading(true);
+            try {
+                const { data } = await supabase.from('curriculum_progress').select('*').eq('school_id', effectiveSchoolId).order('grade', { ascending: true });
                 if (data && data.length > 0) {
                     setCurriculumProgress(data);
                 } else {
@@ -300,17 +299,24 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                         { grade: 'Grade 9', coverage: 40, topics_done: 8, topics_total: 20 },
                     ]);
                 }
-                setCurriculumLoading(false);
-            }).catch(() => setCurriculumLoading(false));
+            } catch { /**/ }
+            finally { setCurriculumLoading(false); }
+        };
+        fetchProgress();
     }, [effectiveSchoolId]);
 
     // ── Load resource needs ───────────────────────────────────────────────
     useEffect(() => {
         if (!effectiveSchoolId) return;
-        setResourceNeedsLoading(true);
-        api.inventory.getSchoolResourceNeeds(effectiveSchoolId)
-            .then(data => { setResourceNeeds(data ?? []); setResourceNeedsLoading(false); })
-            .catch(() => setResourceNeedsLoading(false));
+        const fetchResources = async () => {
+            setResourceNeedsLoading(true);
+            try {
+                const data = await api.inventory.getSchoolResourceNeeds(effectiveSchoolId);
+                setResourceNeeds(data ?? []);
+            } catch { /**/ }
+            finally { setResourceNeedsLoading(false); }
+        };
+        fetchResources();
     }, [effectiveSchoolId]);
 
     // ── Sub-view loaders ─────────────────────────────────────────────────
@@ -395,6 +401,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
         } catch { setAtRiskStudents([]); }
         finally { setAtRiskLoading(false); }
     };
+    const handleGenerateCode = async () => {
         if (!effectiveSchoolId || !effectiveUserId) return;
         setGeneratingCode(true);
         try {
@@ -403,6 +410,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
         } catch { /**/ }
         finally { setGeneratingCode(false); }
     };
+
 
     const handleCreateCycle = async () => {
         if (!newCycleName.trim() || !newCycleStart || !effectiveSchoolId) return;
@@ -515,7 +523,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                         <p style={{ margin: '0 0 24px', color: 'var(--ink-ghost)', fontSize: '14px' }}>Your daily operational notes and walkthroughs.</p>
                         <div className="sanctuary-card" style={{ padding: '24px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             <select value={obsType} onChange={e => setObsType(e.target.value)} style={{ padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px' }}>
-                                {['walkthrough','note','concern','commendation'].map(t => <option key={t} value={t}>{t.charAt(0).toUpperCase()+t.slice(1)}</option>)}
+                                {['walkthrough', 'note', 'concern', 'commendation'].map(t => <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
                             </select>
                             <textarea value={obsContent} onChange={e => setObsContent(e.target.value)} placeholder="Write your observation or note…" rows={3} style={{ padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', resize: 'vertical' as const }} />
                             <button onClick={handleSaveObservation} disabled={!obsContent.trim() || savingObs} className="premium-button" style={{ alignSelf: 'flex-start', background: 'var(--sanctuary-saffron)' }}>
@@ -582,629 +590,554 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                 {/* ── MAIN VIEW ──────────────────────────────────────── */}
                 {activeView === 'main' && <>
 
-                {/* ─── VISIONARY SANDBOX BANNER (ghost data) ─────── */}
-                {(schoolStats as any)?.is_sample && (
-                    <div style={{
-                        background: 'rgba(245,158,11,0.1)',
-                        border: '1px solid var(--amber-glow)',
-                        borderRadius: '12px',
-                        padding: '20px 24px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '12px',
-                        alignItems: 'center',
-                        textAlign: 'center',
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--amber-glow)', fontWeight: '800', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                            <Zap size={16} fill="var(--amber-glow)" />
-                            {t('demoMode.sandboxPerspective')}
-                        </div>
-                        <p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '14px' }}>
-                            {t('principal.sandboxDescription')}
-                        </p>
-                    </div>
-                )}
-
-                {/* ─── 1. COMMAND HEADER ─────────────────────────── */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
-                    <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                            <div style={{ padding: '8px', background: 'var(--lotus-soft)', borderRadius: '8px', color: 'var(--lotus)' }}>
-                                <Shield size={20} />
+                    {/* ─── VISIONARY SANDBOX BANNER (ghost data) ─────── */}
+                    {(schoolStats as any)?.is_sample && (
+                        <div style={{
+                            background: 'rgba(245,158,11,0.1)',
+                            border: '1px solid var(--amber-glow)',
+                            borderRadius: '12px',
+                            padding: '20px 24px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '12px',
+                            alignItems: 'center',
+                            textAlign: 'center',
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--amber-glow)', fontWeight: '800', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                <Zap size={16} fill="var(--amber-glow)" />
+                                {t('demoMode.sandboxPerspective')}
                             </div>
-                            <span style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--ink-ghost)' }}>
-                                {school?.name || 'School Ecosystem'}
-                            </span>
-                        </div>
-                        <h1 style={{ fontSize: '40px', fontWeight: '800', margin: 0 }}>
-                            School <span style={{ color: 'var(--lotus)' }}>Ecosystem</span>.
-                        </h1>
-                        <p style={{ color: 'var(--ink-ghost)', marginTop: '8px', fontSize: '14px' }}>
-                            Welcome back, {user?.full_name?.split(' ')[0] || 'Principal'}. Here is your situational brief.
-                        </p>
-                    </div>
-                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                        <button className="premium-button" style={{ background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowCreateClassroom(true)}>
-                            <Plus size={18} /> Establish Hierarchy
-                        </button>
-                        <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowAddTeacher(true)}>
-                            <Users size={18} /> Invite Staff
-                        </button>
-                    </div>
-                </div>
-
-                {/* ─── 2. MORNING BRIEF BANNER ───────────────────── */}
-                <div className="sanctuary-card" style={{ padding: '32px', background: 'var(--lotus-soft)', border: '1px solid var(--lotus-soft)' }}>
-                    {statsLoading || staffLoading ? (
-                        <SkeletonCard />
-                    ) : (
-                        <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', alignItems: 'center' }}>
-                            <div style={{ flex: 1, minWidth: '200px' }}>
-                                <h3 style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--lotus)', marginBottom: '12px' }}>Morning Briefing</h3>
-                                <p style={{ fontSize: '15px', fontWeight: '600', lineHeight: '1.6', margin: 0 }}>
-                                    {presence && presence.total > 0
-                                        ? `${presence.present} of ${presence.total} staff present today. `
-                                        : 'Staff presence data loading. '}
-                                    {pendingLeaves.length > 0
-                                        ? `${pendingLeaves.length} leave request${pendingLeaves.length > 1 ? 's' : ''} await your approval.`
-                                        : 'No pending leave requests.'}
-                                </p>
-                            </div>
-                            <div style={{ display: 'flex', gap: '32px', flexShrink: 0, flexWrap: 'wrap' }}>
-                                <div style={{ textAlign: 'center' }}>
-                                    <div style={{ fontSize: '28px', fontWeight: '800', color: presenceColor(attendancePct, 100) }}>
-                                        {attendancePct > 0 ? `${Math.round(attendancePct)}%` : '—'}
-                                    </div>
-                                    <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--ink-ghost)' }}>STUDENT ATTENDANCE</div>
-                                </div>
-                                {!pulseLoading && pulse && (
-                                    <div style={{ textAlign: 'center' }}>
-                                        <div style={{ fontSize: '28px', fontWeight: '800', color: resonanceScore >= 70 ? 'var(--moss)' : resonanceScore >= 40 ? 'var(--amber-glow)' : 'var(--ember)' }}>
-                                            {Math.round(resonanceScore)}%
-                                        </div>
-                                        <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--ink-ghost)' }}>RESONANCE</div>
-                                    </div>
-                                )}
-                                {schoolStats && (
-                                    <div style={{ textAlign: 'center' }}>
-                                        <div style={{ fontSize: '28px', fontWeight: '800' }}>
-                                            {schoolStats.total_classrooms ?? '—'}
-                                        </div>
-                                        <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--ink-ghost)' }}>CLASSROOMS</div>
-                                    </div>
-                                )}
-                            </div>
+                            <p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '14px' }}>
+                                {t('principal.sandboxDescription')}
+                            </p>
                         </div>
                     )}
-                </div>
 
-                {/* ─── 3. MAIN GRID ──────────────────────────────── */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.5fr) minmax(0, 1fr)', gap: '32px' }}>
-
-                    {/* LEFT: Faculty & Student Pulse */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-
-                        {/* Faculty Carousel */}
-                        <div className="sanctuary-card" style={{ padding: '24px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '800' }}>
-                                    Faculty Overview
-                                    {presence && (
-                                        <span style={{ marginLeft: '10px', fontSize: '12px', color: presenceColor(presence.present, presence.total), fontWeight: '700' }}>
-                                            {presence.present}/{presence.total} present
-                                        </span>
-                                    )}
-                                </h3>
-                                <button style={{ color: 'var(--lotus)', background: 'transparent', border: 'none', fontWeight: '800', fontSize: '12px', cursor: 'pointer' }} onClick={() => setShowCreateClassroom(true)}>+ New Classroom</button>
-                            </div>
-                            {staffLoading ? (
-                                <SkeletonCard />
-                            ) : teachers.length === 0 ? (
-                                <p style={{ color: 'var(--ink-ghost)', fontSize: '14px' }}>No teachers enrolled yet.</p>
-                            ) : (
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '16px' }}>
-                                    {teachers.slice(0, 6).map(teacher => (
-                                        <div key={teacher.userId} style={{ padding: '16px', background: 'var(--background-alt)', borderRadius: '16px' }}>
-                                            <div style={{
-                                                width: '36px', height: '36px', borderRadius: '18px',
-                                                background: 'var(--water)',
-                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                marginBottom: '12px', color: 'white', fontWeight: '800', fontSize: '13px'
-                                            }}>
-                                                {getInitialsFromName(teacher.fullName)}
-                                            </div>
-                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                                                <div style={{ fontSize: '13px', fontWeight: '700' }}>{teacher.fullName.split(' ')[0]}</div>
-                                                <div style={{
-                                                    width: '8px', height: '8px', borderRadius: '4px',
-                                                    background: PRESENCE_STATUS_COLORS[teacher.todayStatus ?? ''] ?? 'var(--border)',
-                                                    flexShrink: 0
-                                                }} title={teacher.todayStatus ?? 'Unknown'} />
-                                            </div>
-                                            <div style={{ fontSize: '11px', color: 'var(--ink-ghost)', marginBottom: '8px', textTransform: 'capitalize' }}>
-                                                {teacher.role.replace(/_/g, ' ')}
-                                            </div>
-                                            <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--water)', textTransform: 'uppercase' }}>
-                                                {teacher.classroomCount} class{teacher.classroomCount !== 1 ? 'es' : ''}
-                                            </div>
-                                        </div>
-                                    ))}
+                    {/* ─── 1. COMMAND HEADER ─────────────────────────── */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+                        <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                                <div style={{ padding: '8px', background: 'var(--lotus-soft)', borderRadius: '8px', color: 'var(--lotus)' }}>
+                                    <Shield size={20} />
                                 </div>
-                            )}
+                                <span style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--ink-ghost)' }}>
+                                    {school?.name || 'School Ecosystem'}
+                                </span>
+                            </div>
+                            <h1 style={{ fontSize: '40px', fontWeight: '800', margin: 0 }}>
+                                School <span style={{ color: 'var(--lotus)' }}>Ecosystem</span>.
+                            </h1>
+                            <p style={{ color: 'var(--ink-ghost)', marginTop: '8px', fontSize: '14px' }}>
+                                Welcome back, {user?.full_name?.split(' ')[0] || 'Principal'}. Here is your situational brief.
+                            </p>
                         </div>
-
-                        {/* Student Pulse */}
-                        <div className="sanctuary-card" style={{ padding: '24px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '800' }}>Student Pulse</h3>
-                            </div>
-                            {staffLoading ? (
-                                <SkeletonCard />
-                            ) : studentPulse ? (
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-                                    {[
-                                        {
-                                            label: 'Today\'s Attendance',
-                                            value: studentPulse.todayRate > 0 ? `${Math.round(studentPulse.todayRate)}%` : '—',
-                                            icon: CheckCircle2,
-                                            color: attendancePct >= 90 ? 'var(--moss)' : attendancePct >= 75 ? 'var(--amber-glow)' : 'var(--ember)',
-                                            sub: studentPulse.yesterdayRate > 0
-                                                ? `Yesterday: ${Math.round(studentPulse.yesterdayRate)}%`
-                                                : 'No data for yesterday'
-                                        },
-                                        {
-                                            label: 'At-Risk Students',
-                                            value: String(studentPulse.atRiskCount),
-                                            icon: AlertTriangle,
-                                            color: studentPulse.atRiskCount > 0 ? 'var(--ember)' : 'var(--moss)',
-                                            sub: studentPulse.atRiskCount > 0 ? 'Tap to view names ↗' : 'All on track',
-                                            onClick: studentPulse.atRiskCount > 0 ? () => { setShowAtRiskPanel(true); loadAtRiskStudents(); } : undefined,
-                                        },
-                                        {
-                                            label: 'Total Students',
-                                            value: schoolStats?.total_students != null ? String(schoolStats.total_students) : '—',
-                                            icon: GraduationCap,
-                                            color: 'var(--water)',
-                                            sub: schoolStats?.total_classrooms != null ? `Across ${schoolStats.total_classrooms} classes` : ''
-                                        },
-                                    ].map((item: any, i) => (
-                                        <div key={i} onClick={item.onClick} style={{ padding: '20px', background: 'var(--background-alt)', borderRadius: '16px', cursor: item.onClick ? 'pointer' : 'default', border: item.onClick ? '2px solid transparent' : '1px solid transparent', transition: 'border-color 0.15s' }}
-                                            onMouseOver={e => { if (item.onClick) (e.currentTarget as HTMLElement).style.borderColor = 'var(--ember)'; }}
-                                            onMouseOut={e => { (e.currentTarget as HTMLElement).style.borderColor = 'transparent'; }}>
-                                            <div style={{ color: item.color, marginBottom: '12px' }}>
-                                                <item.icon size={20} />
-                                            </div>
-                                            <div style={{ fontSize: '24px', fontWeight: '800', marginBottom: '4px' }}>{item.value}</div>
-                                            <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '4px' }}>{item.label}</div>
-                                            {item.sub && <div style={{ fontSize: '11px', color: item.onClick ? item.color : 'var(--ink-ghost)' }}>{item.sub}</div>}
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p style={{ color: 'var(--ink-ghost)', fontSize: '14px' }}>No student data available yet.</p>
-                            )}
+                        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                            <button className="premium-button" style={{ background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowCreateClassroom(true)}>
+                                <Plus size={18} /> Establish Hierarchy
+                            </button>
+                            <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowAddTeacher(true)}>
+                                <Users size={18} /> Invite Staff
+                            </button>
                         </div>
                     </div>
 
-                    {/* RIGHT: Approvals & Ecosystem Pulse */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-
-                        {/* Pending Leave Approvals */}
-                        <div className="sanctuary-card" style={{ padding: '24px' }}>
-                            <h3 style={{ margin: '0 0 20px', fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)' }}>
-                                Pending Approvals
-                                {pendingLeaves.length > 0 && (
-                                    <span style={{ marginLeft: '8px', padding: '3px 8px', background: 'var(--amber-glow)', color: 'white', borderRadius: '6px', fontSize: '11px' }}>
-                                        {pendingLeaves.length}
-                                    </span>
-                                )}
-                            </h3>
-                            {staffLoading ? (
-                                <SkeletonCard />
-                            ) : pendingLeaves.length === 0 ? (
-                                <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                                    <CheckCircle2 size={24} color="var(--moss)" style={{ marginBottom: 8 }} />
-                                    <p style={{ color: 'var(--ink-ghost)', fontSize: '13px', margin: 0 }}>No pending leave requests.</p>
+                    {/* ─── 2. MORNING BRIEF BANNER ───────────────────── */}
+                    <div className="sanctuary-card" style={{ padding: '32px', background: 'var(--lotus-soft)', border: '1px solid var(--lotus-soft)' }}>
+                        {statsLoading || staffLoading ? (
+                            <SkeletonCard />
+                        ) : (
+                            <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', alignItems: 'center' }}>
+                                <div style={{ flex: 1, minWidth: '200px' }}>
+                                    <h3 style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--lotus)', marginBottom: '12px' }}>Morning Briefing</h3>
+                                    <p style={{ fontSize: '15px', fontWeight: '600', lineHeight: '1.6', margin: 0 }}>
+                                        {presence && presence.total > 0
+                                            ? `${presence.present} of ${presence.total} staff present today. `
+                                            : 'Staff presence data loading. '}
+                                        {pendingLeaves.length > 0
+                                            ? `${pendingLeaves.length} leave request${pendingLeaves.length > 1 ? 's' : ''} await your approval.`
+                                            : 'No pending leave requests.'}
+                                    </p>
                                 </div>
-                            ) : (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                    {pendingLeaves.map(leave => (
-                                        <div key={leave.id} style={{ padding: '14px', borderRadius: '12px', border: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <div>
-                                                <div style={{ fontSize: '13px', fontWeight: '700', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                    <CalendarOff size={14} />
-                                                    {leave.leave_type.charAt(0).toUpperCase() + leave.leave_type.slice(1)} Leave
-                                                </div>
-                                                <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>
-                                                    {new Date(leave.start_date).toLocaleDateString()} — {new Date(leave.end_date).toLocaleDateString()}
-                                                </div>
-                                                {leave.created_at && (
-                                                    <div style={{ fontSize: '10px', color: 'var(--ink-ghost)', marginTop: '2px' }}>
-                                                        {formatDistanceToNow(new Date(leave.created_at), { addSuffix: true })}
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div style={{ display: 'flex', gap: '8px' }}>
-                                                <button
-                                                    disabled={processingLeave === leave.id}
-                                                    onClick={async () => {
-                                                        setProcessingLeave(leave.id);
-                                                        const ok = await staffManagementAPI.approveLeave(leave.id, effectiveUserId, true);
-                                                        if (ok) setPendingLeaves(prev => prev.filter(l => l.id !== leave.id));
-                                                        setProcessingLeave(null);
-                                                    }}
-                                                    style={{ padding: '6px 12px', borderRadius: '8px', background: 'var(--moss-soft)', color: 'var(--moss)', border: 'none', fontWeight: '700', fontSize: '11px', cursor: 'pointer', opacity: processingLeave === leave.id ? 0.5 : 1 }}
-                                                >
-                                                    {processingLeave === leave.id ? '…' : 'Approve'}
-                                                </button>
-                                                <button
-                                                    disabled={processingLeave === leave.id}
-                                                    onClick={async () => {
-                                                        setProcessingLeave(leave.id);
-                                                        const ok = await staffManagementAPI.approveLeave(leave.id, effectiveUserId, false);
-                                                        if (ok) setPendingLeaves(prev => prev.filter(l => l.id !== leave.id));
-                                                        setProcessingLeave(null);
-                                                    }}
-                                                    style={{ padding: '6px 12px', borderRadius: '8px', background: 'var(--background-alt)', color: 'var(--ink-ghost)', border: 'none', fontWeight: '700', fontSize: '11px', cursor: 'pointer', opacity: processingLeave === leave.id ? 0.5 : 1 }}
-                                                >
-                                                    Reject
-                                                </button>
-                                            </div>
+                                <div style={{ display: 'flex', gap: '32px', flexShrink: 0, flexWrap: 'wrap' }}>
+                                    <div style={{ textAlign: 'center' }}>
+                                        <div style={{ fontSize: '28px', fontWeight: '800', color: presenceColor(attendancePct, 100) }}>
+                                            {attendancePct > 0 ? `${Math.round(attendancePct)}%` : '—'}
                                         </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Ecosystem Pulse */}
-                        {!pulseLoading && pulse && (
-                            <div className="sanctuary-card" style={{ padding: '24px' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                                    <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800' }}>Ecosystem Pulse</h3>
-                                    <Activity size={16} color={pulse.trend === 'rising' ? 'var(--moss)' : pulse.trend === 'failing' ? 'var(--ember)' : 'var(--water)'} />
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                    <div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px', fontWeight: '600' }}>
-                                            <span>Resonance Score</span>
-                                            <span style={{ color: resonanceScore >= 70 ? 'var(--moss)' : resonanceScore >= 40 ? 'var(--amber-glow)' : 'var(--ember)' }}>
+                                        <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--ink-ghost)' }}>STUDENT ATTENDANCE</div>
+                                    </div>
+                                    {!pulseLoading && pulse && (
+                                        <div style={{ textAlign: 'center' }}>
+                                            <div style={{ fontSize: '28px', fontWeight: '800', color: resonanceScore >= 70 ? 'var(--moss)' : resonanceScore >= 40 ? 'var(--amber-glow)' : 'var(--ember)' }}>
                                                 {Math.round(resonanceScore)}%
-                                            </span>
-                                        </div>
-                                        <div style={{ height: '6px', background: 'var(--border)', borderRadius: '3px', overflow: 'hidden' }}>
-                                            <div style={{ width: `${resonanceScore}%`, height: '100%', background: 'var(--lotus)', borderRadius: '3px', transition: 'width 0.6s ease' }} />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px', fontWeight: '600' }}>
-                                            <span>Participation Rate</span>
-                                            <span style={{ color: 'var(--water)' }}>{Math.round(pulse.participation_rate)}%</span>
-                                        </div>
-                                        <div style={{ height: '6px', background: 'var(--border)', borderRadius: '3px', overflow: 'hidden' }}>
-                                            <div style={{ width: `${pulse.participation_rate}%`, height: '100%', background: 'var(--water)', borderRadius: '3px', transition: 'width 0.6s ease' }} />
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <TrendingUp size={14} color={pulse.trend === 'rising' ? 'var(--moss)' : 'var(--ink-ghost)'} />
-                                        <span style={{ fontSize: '12px', color: 'var(--ink-ghost)', textTransform: 'capitalize' }}>
-                                            Trend: {pulse.trend}
-                                        </span>
-                                    </div>
-                                    {pulse.top_subjects.length > 0 && (
-                                        <div>
-                                            <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '8px' }}>Top Subjects</div>
-                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                                                {pulse.top_subjects.slice(0, 4).map(s => (
-                                                    <span key={s} style={{ padding: '3px 10px', background: 'var(--background-alt)', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>
-                                                        {s}
-                                                    </span>
-                                                ))}
                                             </div>
+                                            <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--ink-ghost)' }}>RESONANCE</div>
+                                        </div>
+                                    )}
+                                    {schoolStats && (
+                                        <div style={{ textAlign: 'center' }}>
+                                            <div style={{ fontSize: '28px', fontWeight: '800' }}>
+                                                {schoolStats.total_classrooms ?? '—'}
+                                            </div>
+                                            <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--ink-ghost)' }}>CLASSROOMS</div>
                                         </div>
                                     )}
                                 </div>
                             </div>
                         )}
+                    </div>
 
-                        {/* School Stats quick view */}
-                        {schoolStats && (
+                    {/* ─── 3. MAIN GRID ──────────────────────────────── */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.5fr) minmax(0, 1fr)', gap: '32px' }}>
+
+                        {/* LEFT: Faculty & Student Pulse */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+
+                            {/* Faculty Carousel */}
                             <div className="sanctuary-card" style={{ padding: '24px' }}>
-                                <h3 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: '800' }}>School Overview</h3>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                    {[
-                                        { label: 'Teachers', value: String(schoolStats.total_teachers ?? 0), icon: UserCheck },
-                                        { label: 'Classrooms', value: String(schoolStats.total_classrooms ?? 0), icon: BookOpen },
-                                        { label: 'Students', value: String(schoolStats.total_students ?? 0), icon: GraduationCap },
-                                    ].map((item, i) => (
-                                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'var(--background-alt)', borderRadius: '10px' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', fontWeight: '600' }}>
-                                                <item.icon size={16} color="var(--ink-ghost)" />
-                                                {item.label}
-                                            </div>
-                                            <span style={{ fontSize: '16px', fontWeight: '800' }}>{item.value}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* ─── Dashboard Echo (teacher/student feedback) ── */}
-                        <div className="sanctuary-card" style={{ padding: '24px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                                <div>
-                                    <h3 style={{ margin: '0 0 4px', fontSize: '14px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        {t('principal.echo.title') || 'Echo Chamber'}
-                                        {echoItems.filter(e => !e.is_read).length > 0 && (
-                                            <span style={{ background: 'var(--ember)', color: '#fff', borderRadius: '10px', padding: '1px 7px', fontSize: '10px', fontWeight: '800' }}>
-                                                {echoItems.filter(e => !e.is_read).length} new
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '800' }}>
+                                        Faculty Overview
+                                        {presence && (
+                                            <span style={{ marginLeft: '10px', fontSize: '12px', color: presenceColor(presence.present, presence.total), fontWeight: '700' }}>
+                                                {presence.present}/{presence.total} present
                                             </span>
                                         )}
                                     </h3>
-                                    <p style={{ margin: 0, fontSize: '11px', color: 'var(--ink-ghost)' }}>{t('principal.echo.subtitle') || 'Feedback from your staff & students'}</p>
+                                    <button style={{ color: 'var(--lotus)', background: 'transparent', border: 'none', fontWeight: '800', fontSize: '12px', cursor: 'pointer' }} onClick={() => setShowCreateClassroom(true)}>+ New Classroom</button>
                                 </div>
-                            </div>
-                            {echoLoading ? (
-                                <SkeletonCard />
-                            ) : echoItems.length === 0 ? (
-                                <p style={{ color: 'var(--ink-ghost)', fontSize: '13px', fontStyle: 'italic', textAlign: 'center', padding: '16px 0' }}>
-                                    {t('principal.echo.empty') || 'No feedback yet.'}
-                                </p>
-                            ) : (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                    {echoItems.map(item => {
-                                        const CategoryIcon = item.category === 'morale' ? Heart
-                                            : item.category === 'facility' ? AlertTriangle
-                                            : item.category === 'recognition' ? CheckCircle2
-                                            : MessageSquare;
-                                        const borderColor = item.priority === 'high' ? 'var(--ember)' : 'var(--lotus)';
-                                        const isExpanded = replyingTo === item.id;
-                                        return (
-                                            <div key={item.id} style={{
-                                                padding: '14px',
-                                                background: item.is_read ? 'var(--background-alt)' : 'var(--background)',
-                                                border: '1px solid var(--border-light)',
-                                                borderLeft: `4px solid ${borderColor}`,
-                                                borderRadius: '10px',
-                                            }}>
-                                                <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                                                    <div style={{ padding: '8px', background: 'var(--background-alt)', borderRadius: '8px', flexShrink: 0 }}>
-                                                        <CategoryIcon size={16} color="var(--lotus)" />
-                                                    </div>
-                                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                                                            <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>
-                                                                {item.source} · {item.category}
-                                                                {!item.is_read && <span style={{ marginLeft: '6px', color: 'var(--ember)' }}>● unread</span>}
-                                                            </span>
-                                                            <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>
-                                                                {new Date(item.created_at).toLocaleDateString()}
-                                                            </span>
-                                                        </div>
-                                                        <p style={{ margin: '0 0 8px', fontSize: '13px', lineHeight: '1.5' }}>
-                                                            {item.content}
-                                                        </p>
-                                                        {/* Principal response (if already sent) */}
-                                                        {item.principal_response && (
-                                                            <div style={{ marginTop: '8px', padding: '10px 12px', background: 'rgba(212,132,58,0.08)', borderRadius: '8px', borderLeft: '3px solid var(--sanctuary-saffron)' }}>
-                                                                <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--sanctuary-saffron)', textTransform: 'uppercase', marginBottom: '4px' }}>Your Reply</div>
-                                                                <p style={{ margin: 0, fontSize: '12px', lineHeight: '1.5' }}>{item.principal_response}</p>
-                                                                {item.responded_at && <div style={{ fontSize: '10px', color: 'var(--ink-ghost)', marginTop: '4px' }}>{formatDistanceToNow(new Date(item.responded_at), { addSuffix: true })}</div>}
-                                                            </div>
-                                                        )}
-                                                    </div>
+                                {staffLoading ? (
+                                    <SkeletonCard />
+                                ) : teachers.length === 0 ? (
+                                    <p style={{ color: 'var(--ink-ghost)', fontSize: '14px' }}>No teachers enrolled yet.</p>
+                                ) : (
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '16px' }}>
+                                        {teachers.slice(0, 6).map(teacher => (
+                                            <div key={teacher.userId} style={{ padding: '16px', background: 'var(--background-alt)', borderRadius: '16px' }}>
+                                                <div style={{
+                                                    width: '36px', height: '36px', borderRadius: '18px',
+                                                    background: 'var(--water)',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    marginBottom: '12px', color: 'white', fontWeight: '800', fontSize: '13px'
+                                                }}>
+                                                    {getInitialsFromName(teacher.fullName)}
                                                 </div>
-                                                {/* Action row */}
-                                                <div style={{ display: 'flex', gap: '8px', marginTop: '10px', justifyContent: 'flex-end' }}>
-                                                    {!item.is_read && (
-                                                        <button onClick={() => handleMarkEchoRead(item.id)} style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'none', cursor: 'pointer', fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', fontFamily: 'var(--font-body)' }}>
-                                                            ✓ Mark read
-                                                        </button>
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                                    <div style={{ fontSize: '13px', fontWeight: '700' }}>{teacher.fullName.split(' ')[0]}</div>
+                                                    <div style={{
+                                                        width: '8px', height: '8px', borderRadius: '4px',
+                                                        background: PRESENCE_STATUS_COLORS[teacher.todayStatus ?? ''] ?? 'var(--border)',
+                                                        flexShrink: 0
+                                                    }} title={teacher.todayStatus ?? 'Unknown'} />
+                                                </div>
+                                                <div style={{ fontSize: '11px', color: 'var(--ink-ghost)', marginBottom: '8px', textTransform: 'capitalize' }}>
+                                                    {teacher.role.replace(/_/g, ' ')}
+                                                </div>
+                                                <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--water)', textTransform: 'uppercase' }}>
+                                                    {teacher.classroomCount} class{teacher.classroomCount !== 1 ? 'es' : ''}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Student Pulse */}
+                            <div className="sanctuary-card" style={{ padding: '24px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '800' }}>Student Pulse</h3>
+                                </div>
+                                {staffLoading ? (
+                                    <SkeletonCard />
+                                ) : studentPulse ? (
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+                                        {[
+                                            {
+                                                label: 'Today\'s Attendance',
+                                                value: studentPulse.todayRate > 0 ? `${Math.round(studentPulse.todayRate)}%` : '—',
+                                                icon: CheckCircle2,
+                                                color: attendancePct >= 90 ? 'var(--moss)' : attendancePct >= 75 ? 'var(--amber-glow)' : 'var(--ember)',
+                                                sub: studentPulse.yesterdayRate > 0
+                                                    ? `Yesterday: ${Math.round(studentPulse.yesterdayRate)}%`
+                                                    : 'No data for yesterday'
+                                            },
+                                            {
+                                                label: 'At-Risk Students',
+                                                value: String(studentPulse.atRiskCount),
+                                                icon: AlertTriangle,
+                                                color: studentPulse.atRiskCount > 0 ? 'var(--ember)' : 'var(--moss)',
+                                                sub: studentPulse.atRiskCount > 0 ? 'Tap to view names ↗' : 'All on track',
+                                                onClick: studentPulse.atRiskCount > 0 ? () => { setShowAtRiskPanel(true); loadAtRiskStudents(); } : undefined,
+                                            },
+                                            {
+                                                label: 'Total Students',
+                                                value: schoolStats?.total_students != null ? String(schoolStats.total_students) : '—',
+                                                icon: GraduationCap,
+                                                color: 'var(--water)',
+                                                sub: schoolStats?.total_classrooms != null ? `Across ${schoolStats.total_classrooms} classes` : ''
+                                            },
+                                        ].map((item: any, i) => (
+                                            <div key={i} onClick={item.onClick} style={{ padding: '20px', background: 'var(--background-alt)', borderRadius: '16px', cursor: item.onClick ? 'pointer' : 'default', border: item.onClick ? '2px solid transparent' : '1px solid transparent', transition: 'border-color 0.15s' }}
+                                                onMouseOver={e => { if (item.onClick) (e.currentTarget as HTMLElement).style.borderColor = 'var(--ember)'; }}
+                                                onMouseOut={e => { (e.currentTarget as HTMLElement).style.borderColor = 'transparent'; }}>
+                                                <div style={{ color: item.color, marginBottom: '12px' }}>
+                                                    <item.icon size={20} />
+                                                </div>
+                                                <div style={{ fontSize: '24px', fontWeight: '800', marginBottom: '4px' }}>{item.value}</div>
+                                                <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '4px' }}>{item.label}</div>
+                                                {item.sub && <div style={{ fontSize: '11px', color: item.onClick ? item.color : 'var(--ink-ghost)' }}>{item.sub}</div>}
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p style={{ color: 'var(--ink-ghost)', fontSize: '14px' }}>No student data available yet.</p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* RIGHT: Approvals & Ecosystem Pulse */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+
+                            {/* Pending Leave Approvals */}
+                            <div className="sanctuary-card" style={{ padding: '24px' }}>
+                                <h3 style={{ margin: '0 0 20px', fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)' }}>
+                                    Pending Approvals
+                                    {pendingLeaves.length > 0 && (
+                                        <span style={{ marginLeft: '8px', padding: '3px 8px', background: 'var(--amber-glow)', color: 'white', borderRadius: '6px', fontSize: '11px' }}>
+                                            {pendingLeaves.length}
+                                        </span>
+                                    )}
+                                </h3>
+                                {staffLoading ? (
+                                    <SkeletonCard />
+                                ) : pendingLeaves.length === 0 ? (
+                                    <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                                        <CheckCircle2 size={24} color="var(--moss)" style={{ marginBottom: 8 }} />
+                                        <p style={{ color: 'var(--ink-ghost)', fontSize: '13px', margin: 0 }}>No pending leave requests.</p>
+                                    </div>
+                                ) : (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                        {pendingLeaves.map(leave => (
+                                            <div key={leave.id} style={{ padding: '14px', borderRadius: '12px', border: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <div>
+                                                    <div style={{ fontSize: '13px', fontWeight: '700', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <CalendarOff size={14} />
+                                                        {leave.leave_type.charAt(0).toUpperCase() + leave.leave_type.slice(1)} Leave
+                                                    </div>
+                                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>
+                                                        {new Date(leave.start_date).toLocaleDateString()} — {new Date(leave.end_date).toLocaleDateString()}
+                                                    </div>
+                                                    {leave.created_at && (
+                                                        <div style={{ fontSize: '10px', color: 'var(--ink-ghost)', marginTop: '2px' }}>
+                                                            {formatDistanceToNow(new Date(leave.created_at), { addSuffix: true })}
+                                                        </div>
                                                     )}
+                                                </div>
+                                                <div style={{ display: 'flex', gap: '8px' }}>
                                                     <button
-                                                        onClick={() => {
-                                                            if (isExpanded) { setReplyingTo(null); setReplyText(''); }
-                                                            else { setReplyingTo(item.id); setReplyText(item.principal_response ?? ''); }
+                                                        disabled={processingLeave === leave.id}
+                                                        onClick={async () => {
+                                                            setProcessingLeave(leave.id);
+                                                            const ok = await staffManagementAPI.approveLeave(leave.id, effectiveUserId, true);
+                                                            if (ok) setPendingLeaves(prev => prev.filter(l => l.id !== leave.id));
+                                                            setProcessingLeave(null);
                                                         }}
-                                                        style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--lotus)', background: isExpanded ? 'var(--lotus-soft)' : 'none', cursor: 'pointer', fontSize: '11px', fontWeight: '700', color: 'var(--lotus)', fontFamily: 'var(--font-body)' }}
+                                                        style={{ padding: '6px 12px', borderRadius: '8px', background: 'var(--moss-soft)', color: 'var(--moss)', border: 'none', fontWeight: '700', fontSize: '11px', cursor: 'pointer', opacity: processingLeave === leave.id ? 0.5 : 1 }}
                                                     >
-                                                        {item.principal_response ? '✏️ Edit reply' : '↩ Reply'}
+                                                        {processingLeave === leave.id ? '…' : 'Approve'}
+                                                    </button>
+                                                    <button
+                                                        disabled={processingLeave === leave.id}
+                                                        onClick={async () => {
+                                                            setProcessingLeave(leave.id);
+                                                            const ok = await staffManagementAPI.approveLeave(leave.id, effectiveUserId, false);
+                                                            if (ok) setPendingLeaves(prev => prev.filter(l => l.id !== leave.id));
+                                                            setProcessingLeave(null);
+                                                        }}
+                                                        style={{ padding: '6px 12px', borderRadius: '8px', background: 'var(--background-alt)', color: 'var(--ink-ghost)', border: 'none', fontWeight: '700', fontSize: '11px', cursor: 'pointer', opacity: processingLeave === leave.id ? 0.5 : 1 }}
+                                                    >
+                                                        Reject
                                                     </button>
                                                 </div>
-                                                {/* Inline reply input */}
-                                                {isExpanded && (
-                                                    <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                                        <textarea
-                                                            value={replyText}
-                                                            onChange={e => setReplyText(e.target.value)}
-                                                            placeholder="Write your response to this feedback…"
-                                                            rows={2}
-                                                            style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--lotus)', background: 'var(--background)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px', resize: 'vertical' as const, width: '100%', boxSizing: 'border-box' as const }}
-                                                        />
-                                                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                                                            <button onClick={() => { setReplyingTo(null); setReplyText(''); }} style={{ padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'none', cursor: 'pointer', fontSize: '12px', fontFamily: 'var(--font-body)' }}>Cancel</button>
-                                                            <button onClick={() => handleSendEchoReply(item.id)} disabled={!replyText.trim() || savingReply} style={{ padding: '6px 12px', borderRadius: '8px', border: 'none', background: 'var(--lotus)', color: '#fff', cursor: replyText.trim() && !savingReply ? 'pointer' : 'not-allowed', opacity: replyText.trim() && !savingReply ? 1 : 0.6, fontSize: '12px', fontWeight: '700', fontFamily: 'var(--font-body)' }}>
-                                                                {savingReply ? '⏳' : '↩ Send Reply'}
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                )}
                                             </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* ─── Institutional Calendar ─────────────────── */}
-                        <div className="sanctuary-card" style={{ padding: '24px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <CalendarCheck size={16} color="var(--water)" /> Upcoming Events
-                                </h3>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                            {calendarLoading ? (
-                                <SkeletonCard />
-                            ) : calendarEvents.length === 0 ? (
-                                <p style={{ color: 'var(--ink-ghost)', fontSize: '13px', fontStyle: 'italic', textAlign: 'center', padding: '12px 0' }}>No upcoming events.</p>
-                            ) : (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                    {calendarEvents.slice(0, 4).map(evt => {
-                                        const typeColors: Record<string, string> = { term_start: 'var(--water)', exam: 'var(--ember)', holiday: 'var(--moss)', event: 'var(--sanctuary-saffron)', other: 'var(--ink-ghost)' };
-                                        const color = typeColors[evt.type] ?? 'var(--ink-ghost)';
-                                        return (
-                                            <div key={evt.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', background: 'var(--background-alt)' }}>
-                                                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: color, flexShrink: 0 }} />
-                                                <div style={{ flex: 1 }}>
-                                                    <div style={{ fontSize: '13px', fontWeight: '700' }}>{evt.title}</div>
-                                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>
-                                                        {new Date(evt.start_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                                                        {evt.end_date && ` – ${new Date(evt.end_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`}
-                                                    </div>
-                                                </div>
-                                                <span style={{ padding: '2px 6px', background: `${color}22`, borderRadius: '4px', fontSize: '10px', fontWeight: '700', color, textTransform: 'uppercase' }}>
-                                                    {evt.type.replace('_', ' ')}
+
+                            {/* Ecosystem Pulse */}
+                            {!pulseLoading && pulse && (
+                                <div className="sanctuary-card" style={{ padding: '24px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                                        <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800' }}>Ecosystem Pulse</h3>
+                                        <Activity size={16} color={pulse.trend === 'rising' ? 'var(--moss)' : pulse.trend === 'failing' ? 'var(--ember)' : 'var(--water)'} />
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                        <div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px', fontWeight: '600' }}>
+                                                <span>Resonance Score</span>
+                                                <span style={{ color: resonanceScore >= 70 ? 'var(--moss)' : resonanceScore >= 40 ? 'var(--amber-glow)' : 'var(--ember)' }}>
+                                                    {Math.round(resonanceScore)}%
                                                 </span>
                                             </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* ─── Principal Observations ─────────────────── */}
-                        <div className="sanctuary-card" style={{ padding: '24px' }}>
-                            <h3 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <NotebookPen size={16} color="var(--sanctuary-saffron)" /> My Observations
-                            </h3>
-
-                            {/* Quick-add form */}
-                            <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                <div style={{ display: 'flex', gap: '6px' }}>
-                                    {(['walkthrough', 'note', 'concern', 'praise'] as const).map(type => (
-                                        <button
-                                            key={type}
-                                            onClick={() => setObsType(type)}
-                                            style={{ flex: 1, padding: '6px 4px', borderRadius: '8px', border: `1px solid ${obsType === type ? 'var(--sanctuary-saffron)' : 'var(--border)'}`, background: obsType === type ? 'rgba(245,158,11,0.08)' : 'var(--background-alt)', color: obsType === type ? 'var(--sanctuary-saffron)' : 'var(--ink-ghost)', fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: '700', cursor: 'pointer', textTransform: 'uppercase' }}
-                                        >
-                                            {type}
-                                        </button>
-                                    ))}
-                                </div>
-                                <textarea
-                                    value={obsContent}
-                                    onChange={(e: any) => setObsContent(e.target.value)}
-                                    placeholder="Quick observation…"
-                                    rows={2}
-                                    style={{ padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px', width: '100%', boxSizing: 'border-box' as const, resize: 'vertical' as const }}
-                                />
-                                <button
-                                    className="premium-button"
-                                    style={{ alignSelf: 'flex-end', fontSize: '12px', padding: '6px 14px', background: 'var(--sanctuary-saffron)' }}
-                                    onClick={handleSaveObservation}
-                                    disabled={!obsContent.trim() || savingObs}
-                                >
-                                    {savingObs ? '⏳' : '+ Log'}
-                                </button>
-                            </div>
-
-                            {obsLoading ? (
-                                <SkeletonCard />
-                            ) : (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                    {observations.map(obs => {
-                                        const obsColors: Record<string, string> = { walkthrough: 'var(--water)', note: 'var(--ink-ghost)', concern: 'var(--ember)', praise: 'var(--moss)' };
-                                        const color = obsColors[obs.type] ?? 'var(--ink-ghost)';
-                                        return (
-                                            <div key={obs.id} style={{ padding: '12px', borderRadius: '10px', borderLeft: `3px solid ${color}`, background: 'var(--background-alt)' }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                                                    <span style={{ fontSize: '10px', fontWeight: '800', color, textTransform: 'uppercase' }}>{obs.type}</span>
-                                                    <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{new Date(obs.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
-                                                </div>
-                                                <p style={{ margin: 0, fontSize: '12px', lineHeight: '1.5', color: 'var(--ink)' }}>{obs.content}</p>
+                                            <div style={{ height: '6px', background: 'var(--border)', borderRadius: '3px', overflow: 'hidden' }}>
+                                                <div style={{ width: `${resonanceScore}%`, height: '100%', background: 'var(--lotus)', borderRadius: '3px', transition: 'width 0.6s ease' }} />
                                             </div>
-                                        );
-                                    })}
+                                        </div>
+                                        <div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px', fontWeight: '600' }}>
+                                                <span>Participation Rate</span>
+                                                <span style={{ color: 'var(--water)' }}>{Math.round(pulse.participation_rate)}%</span>
+                                            </div>
+                                            <div style={{ height: '6px', background: 'var(--border)', borderRadius: '3px', overflow: 'hidden' }}>
+                                                <div style={{ width: `${pulse.participation_rate}%`, height: '100%', background: 'var(--water)', borderRadius: '3px', transition: 'width 0.6s ease' }} />
+                                            </div>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <TrendingUp size={14} color={pulse.trend === 'rising' ? 'var(--moss)' : 'var(--ink-ghost)'} />
+                                            <span style={{ fontSize: '12px', color: 'var(--ink-ghost)', textTransform: 'capitalize' }}>
+                                                Trend: {pulse.trend}
+                                            </span>
+                                        </div>
+                                        {pulse.top_subjects.length > 0 && (
+                                            <div>
+                                                <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '8px' }}>Top Subjects</div>
+                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                                                    {pulse.top_subjects.slice(0, 4).map(s => (
+                                                        <span key={s} style={{ padding: '3px 10px', background: 'var(--background-alt)', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>
+                                                            {s}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             )}
-                        </div>
-                    </div>
-                </div>
-                </div>
 
-                {/* ─── 4. MANAGEMENT STATION ─────────────────────── */}
-                <div className="sanctuary-card" style={{ padding: '24px' }}>
-                    <h3 style={{ margin: '0 0 20px', fontSize: '16px', fontWeight: '800' }}>⚙️ Management Station</h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-                        {[
-                            { id: 'hierarchy' as const, icon: LayoutGrid, label: 'System Hierarchy', desc: 'Grades, Sections & Structure', color: 'var(--lotus)' },
-                            { id: 'invites' as const, icon: UserPlus, label: 'Governance Invites', desc: 'Invite Principals & Teachers', color: 'var(--water)' },
-                            { id: 'log' as const, icon: NotebookPen, label: 'Institutional Log', desc: 'Daily operational observations', color: 'var(--sanctuary-saffron)' },
-                            { id: 'cycles' as const, icon: Milestone, label: 'Academic Cycles', desc: 'Define terms & semesters', color: 'var(--moss)' },
-                        ].map(action => (
-                            <button key={action.id} onClick={() => handleNavigateTo(action.id)} style={{ padding: '18px 20px', borderRadius: '14px', border: '1px solid var(--border)', background: 'var(--background-alt)', cursor: 'pointer', textAlign: 'left' as const, fontFamily: 'var(--font-body)', display: 'flex', flexDirection: 'column', gap: '10px', transition: 'border-color 0.15s, box-shadow 0.15s' }}
-                                onMouseOver={e => { (e.currentTarget as HTMLElement).style.borderColor = action.color; (e.currentTarget as HTMLElement).style.boxShadow = `0 0 0 2px ${action.color}22`; }}
-                                onMouseOut={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}>
-                                <div style={{ padding: '8px', background: `${action.color}18`, borderRadius: '8px', display: 'inline-flex', color: action.color }}>
-                                    <action.icon size={18} />
+                            {/* School Stats quick view */}
+                            {schoolStats && (
+                                <div className="sanctuary-card" style={{ padding: '24px' }}>
+                                    <h3 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: '800' }}>School Overview</h3>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                        {[
+                                            { label: 'Teachers', value: String(schoolStats.total_teachers ?? 0), icon: UserCheck },
+                                            { label: 'Classrooms', value: String(schoolStats.total_classrooms ?? 0), icon: BookOpen },
+                                            { label: 'Students', value: String(schoolStats.total_students ?? 0), icon: GraduationCap },
+                                        ].map((item, i) => (
+                                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'var(--background-alt)', borderRadius: '10px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', fontWeight: '600' }}>
+                                                    <item.icon size={16} color="var(--ink-ghost)" />
+                                                    {item.label}
+                                                </div>
+                                                <span style={{ fontSize: '16px', fontWeight: '800' }}>{item.value}</span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                                <div>
-                                    <div style={{ fontWeight: '800', fontSize: '14px', color: 'var(--ink)' }}>{action.label}</div>
-                                    <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{action.desc}</div>
-                                </div>
-                            </button>
-                        ))}
-                    </div>
-                </div>
+                            )}
 
-                {/* ─── 5. CURRICULUM PULSE ─────────────────────────── */}
-                <div className="sanctuary-card" style={{ padding: '24px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                        <BarChart3 size={18} color="var(--action)" />
-                        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '800' }}>Curriculum Pulse</h3>
-                    </div>
-                    {curriculumLoading ? <SkeletonCard /> : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                            {curriculumProgress.map(g => (
-                                <div key={g.grade}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                                        <span style={{ fontSize: '13px', fontWeight: '700' }}>{g.grade}</span>
-                                        <span style={{ fontSize: '13px', fontWeight: '800', color: g.coverage >= 75 ? 'var(--moss)' : g.coverage >= 50 ? 'var(--amber-glow)' : 'var(--ember)' }}>{g.coverage}%</span>
+                            {/* ─── Dashboard Echo (teacher/student feedback) ── */}
+                            <div className="sanctuary-card" style={{ padding: '24px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                                    <div>
+                                        <h3 style={{ margin: '0 0 4px', fontSize: '14px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            {t('principal.echo.title') || 'Echo Chamber'}
+                                            {echoItems.filter(e => !e.is_read).length > 0 && (
+                                                <span style={{ background: 'var(--ember)', color: '#fff', borderRadius: '10px', padding: '1px 7px', fontSize: '10px', fontWeight: '800' }}>
+                                                    {echoItems.filter(e => !e.is_read).length} new
+                                                </span>
+                                            )}
+                                        </h3>
+                                        <p style={{ margin: 0, fontSize: '11px', color: 'var(--ink-ghost)' }}>{t('principal.echo.subtitle') || 'Feedback from your staff & students'}</p>
                                     </div>
-                                    <div style={{ height: '7px', background: 'var(--border)', borderRadius: '4px', overflow: 'hidden' }}>
-                                        <div style={{ width: `${g.coverage}%`, height: '100%', background: g.coverage >= 75 ? 'var(--moss)' : g.coverage >= 50 ? 'var(--amber-glow)' : 'var(--ember)', borderRadius: '4px', transition: 'width 0.6s ease' }} />
-                                    </div>
-                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)', marginTop: '3px' }}>{g.topics_done} / {g.topics_total} topics covered</div>
                                 </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                {/* ─── 6. RESOURCE NEEDS ───────────────────────────── */}
-                {(resourceNeedsLoading || resourceNeeds.length > 0) && (
-                    <div className="sanctuary-card" style={{ padding: '24px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                            <Package size={18} color="var(--ember)" />
-                            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '800' }}>Resource Needs</h3>
-                        </div>
-                        {resourceNeedsLoading ? <SkeletonCard /> : (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                {resourceNeeds.map((need: any, i: number) => (
-                                    <div key={need.id ?? i} style={{ padding: '14px 16px', borderRadius: '10px', border: '1px solid var(--border-light)', borderLeft: `3px solid ${need.priority === 'high' ? 'var(--ember)' : need.priority === 'medium' ? 'var(--amber-glow)' : 'var(--water)'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div>
-                                            <div style={{ fontWeight: '700', fontSize: '14px' }}>{need.item_name ?? need.name}</div>
-                                            {need.classroom_name && <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{need.classroom_name}</div>}
-                                        </div>
-                                        <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', background: need.priority === 'high' ? 'rgba(239,68,68,0.1)' : 'rgba(245,158,11,0.1)', color: need.priority === 'high' ? 'var(--ember)' : 'var(--amber-glow)' }}>{need.priority ?? 'normal'}</span>
+                                {echoLoading ? (
+                                    <SkeletonCard />
+                                ) : echoItems.length === 0 ? (
+                                    <p style={{ color: 'var(--ink-ghost)', fontSize: '13px', fontStyle: 'italic', textAlign: 'center', padding: '16px 0' }}>
+                                        {t('principal.echo.empty') || 'No feedback yet.'}
+                                    </p>
+                                ) : (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                        {echoItems.map(item => {
+                                            const CategoryIcon = item.category === 'morale' ? Heart
+                                                : item.category === 'facility' ? AlertTriangle
+                                                    : item.category === 'recognition' ? CheckCircle2
+                                                        : MessageSquare;
+                                            const borderColor = item.priority === 'high' ? 'var(--ember)' : 'var(--lotus)';
+                                            const isExpanded = replyingTo === item.id;
+                                            return (
+                                                <div key={item.id} style={{
+                                                    padding: '14px',
+                                                    background: item.is_read ? 'var(--background-alt)' : 'var(--background)',
+                                                    border: '1px solid var(--border-light)',
+                                                    borderLeft: `4px solid ${borderColor}`,
+                                                    borderRadius: '10px',
+                                                }}>
+                                                    <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                                                        <div style={{ padding: '8px', background: 'var(--background-alt)', borderRadius: '8px', flexShrink: 0 }}>
+                                                            <CategoryIcon size={16} color="var(--lotus)" />
+                                                        </div>
+                                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                                                <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>
+                                                                    {item.source} · {item.category}
+                                                                    {!item.is_read && <span style={{ marginLeft: '6px', color: 'var(--ember)' }}>● unread</span>}
+                                                                </span>
+                                                                <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>
+                                                                    {new Date(item.created_at).toLocaleDateString()}
+                                                                </span>
+                                                            </div>
+                                                            <p style={{ margin: '0 0 8px', fontSize: '13px', lineHeight: '1.5' }}>
+                                                                {item.content}
+                                                            </p>
+                                                            {/* Principal response (if already sent) */}
+                                                            {item.principal_response && (
+                                                                <div style={{ marginTop: '8px', padding: '10px 12px', background: 'rgba(212,132,58,0.08)', borderRadius: '8px', borderLeft: '3px solid var(--sanctuary-saffron)' }}>
+                                                                    <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--sanctuary-saffron)', textTransform: 'uppercase', marginBottom: '4px' }}>Your Reply</div>
+                                                                    <p style={{ margin: 0, fontSize: '12px', lineHeight: '1.5' }}>{item.principal_response}</p>
+                                                                    {item.responded_at && <div style={{ fontSize: '10px', color: 'var(--ink-ghost)', marginTop: '4px' }}>{formatDistanceToNow(new Date(item.responded_at), { addSuffix: true })}</div>}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    {/* Action row */}
+                                                    <div style={{ display: 'flex', gap: '8px', marginTop: '10px', justifyContent: 'flex-end' }}>
+                                                        {!item.is_read && (
+                                                            <button onClick={() => handleMarkEchoRead(item.id)} style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'none', cursor: 'pointer', fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', fontFamily: 'var(--font-body)' }}>
+                                                                ✓ Mark read
+                                                            </button>
+                                                        )}
+                                                        <button
+                                                            onClick={() => {
+                                                                if (isExpanded) { setReplyingTo(null); setReplyText(''); }
+                                                                else { setReplyingTo(item.id); setReplyText(item.principal_response ?? ''); }
+                                                            }}
+                                                            style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--lotus)', background: isExpanded ? 'var(--lotus-soft)' : 'none', cursor: 'pointer', fontSize: '11px', fontWeight: '700', color: 'var(--lotus)', fontFamily: 'var(--font-body)' }}
+                                                        >
+                                                            {item.principal_response ? '✏️ Edit reply' : '↩ Reply'}
+                                                        </button>
+                                                    </div>
+                                                    {/* Inline reply input */}
+                                                    {isExpanded && (
+                                                        <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                            <textarea
+                                                                value={replyText}
+                                                                onChange={e => setReplyText(e.target.value)}
+                                                                placeholder="Write your response to this feedback…"
+                                                                rows={2}
+                                                                style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--lotus)', background: 'var(--background)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px', resize: 'vertical' as const, width: '100%', boxSizing: 'border-box' as const }}
+                                                            />
+                                                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                                                <button onClick={() => { setReplyingTo(null); setReplyText(''); }} style={{ padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'none', cursor: 'pointer', fontSize: '12px', fontFamily: 'var(--font-body)' }}>Cancel</button>
+                                                                <button onClick={() => handleSendEchoReply(item.id)} disabled={!replyText.trim() || savingReply} style={{ padding: '6px 12px', borderRadius: '8px', border: 'none', background: 'var(--lotus)', color: '#fff', cursor: replyText.trim() && !savingReply ? 'pointer' : 'not-allowed', opacity: replyText.trim() && !savingReply ? 1 : 0.6, fontSize: '12px', fontWeight: '700', fontFamily: 'var(--font-body)' }}>
+                                                                    {savingReply ? '⏳' : '↩ Send Reply'}
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
                                     </div>
-                                ))}
+                                )}
                             </div>
-                        )}
+
+                            {/* ─── Institutional Calendar ─────────────────── */}
+                            <div className="sanctuary-card" style={{ padding: '24px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                                    <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <CalendarCheck size={16} color="var(--water)" /> Upcoming Events
+                                    </h3>
+                                </div>
+                                {calendarLoading ? (
+                                    <SkeletonCard />
+                                ) : calendarEvents.length === 0 ? (
+                                    <p style={{ color: 'var(--ink-ghost)', fontSize: '13px', fontStyle: 'italic', textAlign: 'center', padding: '12px 0' }}>No upcoming events.</p>
+                                ) : (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                        {calendarEvents.slice(0, 4).map(evt => {
+                                            const typeColors: Record<string, string> = { term_start: 'var(--water)', exam: 'var(--ember)', holiday: 'var(--moss)', event: 'var(--sanctuary-saffron)', other: 'var(--ink-ghost)' };
+                                            const color = typeColors[evt.type] ?? 'var(--ink-ghost)';
+                                            return (
+                                                <div key={evt.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', background: 'var(--background-alt)' }}>
+                                                    <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: color, flexShrink: 0 }} />
+                                                    <div style={{ flex: 1 }}>
+                                                        <div style={{ fontSize: '13px', fontWeight: '700' }}>{evt.title}</div>
+                                                        <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>
+                                                            {new Date(evt.start_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                                                            {evt.end_date && ` – ${new Date(evt.end_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`}
+                                                        </div>
+                                                    </div>
+                                                    <span style={{ padding: '2px 6px', background: `${color}22`, borderRadius: '4px', fontSize: '10px', fontWeight: '700', color, textTransform: 'uppercase' }}>
+                                                        {evt.type.replace('_', ' ')}
+                                                    </span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* ─── Principal Observations ─────────────────── */}
+                            <div className="sanctuary-card" style={{ padding: '24px' }}>
+                                <h3 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <NotebookPen size={16} color="var(--sanctuary-saffron)" /> My Observations
+                                </h3>
+
+                                {/* Quick-add form */}
+                                <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    <div style={{ display: 'flex', gap: '6px' }}>
+                                        {(['walkthrough', 'note', 'concern', 'praise'] as const).map(type => (
+                                            <button
+                                                key={type}
+                                                onClick={() => setObsType(type)}
+                                                style={{ flex: 1, padding: '6px 4px', borderRadius: '8px', border: `1px solid ${obsType === type ? 'var(--sanctuary-saffron)' : 'var(--border)'}`, background: obsType === type ? 'rgba(245,158,11,0.08)' : 'var(--background-alt)', color: obsType === type ? 'var(--sanctuary-saffron)' : 'var(--ink-ghost)', fontFamily: 'var(--font-body)', fontSize: '10px', fontWeight: '700', cursor: 'pointer', textTransform: 'uppercase' }}
+                                            >
+                                                {type}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <textarea
+                                        value={obsContent}
+                                        onChange={(e: any) => setObsContent(e.target.value)}
+                                        placeholder="Quick observation…"
+                                        rows={2}
+                                        style={{ padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px', width: '100%', boxSizing: 'border-box' as const, resize: 'vertical' as const }}
+                                    />
+                                    <button
+                                        className="premium-button"
+                                        style={{ alignSelf: 'flex-end', fontSize: '12px', padding: '6px 14px', background: 'var(--sanctuary-saffron)' }}
+                                        onClick={handleSaveObservation}
+                                        disabled={!obsContent.trim() || savingObs}
+                                    >
+                                        {savingObs ? '⏳' : '+ Log'}
+                                    </button>
+                                </div>
+
+                                {obsLoading ? (
+                                    <SkeletonCard />
+                                ) : (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                        {observations.map(obs => {
+                                            const obsColors: Record<string, string> = { walkthrough: 'var(--water)', note: 'var(--ink-ghost)', concern: 'var(--ember)', praise: 'var(--moss)' };
+                                            const color = obsColors[obs.type] ?? 'var(--ink-ghost)';
+                                            return (
+                                                <div key={obs.id} style={{ padding: '12px', borderRadius: '10px', borderLeft: `3px solid ${color}`, background: 'var(--background-alt)' }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                                                        <span style={{ fontSize: '10px', fontWeight: '800', color, textTransform: 'uppercase' }}>{obs.type}</span>
+                                                        <span style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{new Date(obs.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
+                                                    </div>
+                                                    <p style={{ margin: 0, fontSize: '12px', lineHeight: '1.5', color: 'var(--ink)' }}>{obs.content}</p>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                )}
-
-                </>}  {/* end activeView === 'main' */}
-
+                </>}
             </div>
 
             {/* ── Modals ──────────────────────────────────────── */}
@@ -1223,8 +1156,10 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
 
             {/* ── At-Risk Students Panel ───────────────────────── */}
             {showAtRiskPanel && (
-                <div style={{ position: 'fixed', inset: 0, zIndex: 9500, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
-                    onClick={e => e.target === e.currentTarget && setShowAtRiskPanel(false)}>
+                <div
+                    style={{ position: 'fixed', inset: 0, zIndex: 9500, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+                    onClick={e => e.target === e.currentTarget && setShowAtRiskPanel(false)}
+                >
                     <div style={{ background: 'var(--background)', borderRadius: '20px 20px 0 0', padding: '28px', width: '100%', maxWidth: '600px', maxHeight: '60vh', overflowY: 'auto' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                             <div>
@@ -1236,7 +1171,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                             <button onClick={() => setShowAtRiskPanel(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px', color: 'var(--ink-ghost)' }}>✕</button>
                         </div>
                         {atRiskLoading ? (
-                            [1,2,3].map(i => <div key={i} style={{ height: '50px', background: 'var(--background-alt)', borderRadius: '10px', marginBottom: '8px' }} />)
+                            [1, 2, 3].map(i => <div key={i} style={{ height: '50px', background: 'var(--background-alt)', borderRadius: '10px', marginBottom: '8px' }} />)
                         ) : atRiskStudents.length === 0 ? (
                             <div style={{ textAlign: 'center', padding: '32px', color: 'var(--ink-ghost)', fontStyle: 'italic' }}>
                                 No at-risk students found in the last 2 days.
@@ -1247,7 +1182,13 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                                     <div style={{ fontWeight: '700', fontSize: '14px' }}>{s.full_name}</div>
                                     <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>{s.classroom_name}</div>
                                 </div>
-                                <button onClick={() => { setShowAtRiskPanel(false); navigation.navigate('ClassroomList'); }} style={{ padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--ember)', background: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: '700', color: 'var(--ember)', fontFamily: 'var(--font-body)' }}>
+                                <button
+                                    onClick={() => {
+                                        setShowAtRiskPanel(false);
+                                        navigation.navigate('ClassroomList');
+                                    }}
+                                    style={{ padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--ember)', background: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: '700', color: 'var(--ember)', fontFamily: 'var(--font-body)' }}
+                                >
                                     View Classroom →
                                 </button>
                             </div>

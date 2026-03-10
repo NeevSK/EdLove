@@ -121,9 +121,9 @@ export const communityAPI = {
     },
 
     /**
-     * Create a new group
+     * Create a new group and immediately add the creator as owner
      */
-    async createGroup(group: any, userId: string, userRole: string) {
+    async createGroupWithOwner(group: any, userId: string) {
         const { data, error } = await supabase
             .from('community_groups')
             .insert([{
@@ -135,6 +135,16 @@ export const communityAPI = {
             .single();
 
         if (error) throw error;
+
+        // Add creator as owner in group_members
+        await supabase
+            .from('group_members')
+            .insert([{
+                group_id: data.id,
+                user_id: userId,
+                role: 'owner',
+                status: 'active'
+            }]);
 
         // Growth signal: teacher started a community circle (Weaving — Banyan path)
         void growthSignalsAPI.emitSignal(userId, 'circle_facilitated', {

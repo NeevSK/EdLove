@@ -11,22 +11,22 @@ import { Check, X, Clock, ChevronLeft, Save } from 'lucide-react-native';
 type Status = 'present' | 'absent' | 'late';
 
 const STATUS_CONFIG: Record<Status, { label: string; color: string; bg: string; Icon: React.ComponentType<{ size?: number; color?: string }> }> = {
-    present: { label: 'Present', color: '#16a34a', bg: 'rgba(34,197,94,0.10)', Icon: Check  },
-    late:    { label: 'Late',    color: '#d97706', bg: 'rgba(245,158,11,0.10)', Icon: Clock  },
-    absent:  { label: 'Absent',  color: '#dc2626', bg: 'rgba(239,68,68,0.10)',  Icon: X      },
+    present: { label: 'Present', color: '#16a34a', bg: 'rgba(34,197,94,0.10)', Icon: Check },
+    late: { label: 'Late', color: '#d97706', bg: 'rgba(245,158,11,0.10)', Icon: Clock },
+    absent: { label: 'Absent', color: '#dc2626', bg: 'rgba(239,68,68,0.10)', Icon: X },
 };
 
 export default function AttendanceScreenWeb() {
-    const route      = useRoute<any>();
+    const route = useRoute<any>();
     const navigation = useNavigation<any>();
     const { classroomId, classroomName } = route.params ?? {};
     const { user } = useStore();
 
     const [students, setStudents] = useState<StudentAttendance[]>([]);
-    const [loading,  setLoading]  = useState(true);
-    const [saving,   setSaving]   = useState(false);
-    const [saved,    setSaved]    = useState(false);
-    const [error,    setError]    = useState('');
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [saved, setSaved] = useState(false);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         if (!classroomId) return;
@@ -69,12 +69,12 @@ export default function AttendanceScreenWeb() {
         try {
             await api.attendance.batchRecord(students.map(s => ({
                 classroom_id: classroomId,
-                student_id:   s.student_id,
-                status:       s.status,
-                date:         new Date().toISOString().split('T')[0],
+                student_id: s.student_id,
+                status: s.status,
+                date: new Date().toISOString().split('T')[0],
             })));
             if (user?.id) {
-                growthSignalsAPI.emitSignal(user.id, 'attendance_marked', { classroom_id: classroomId }).catch(() => {});
+                growthSignalsAPI.emitSignal(user.id, 'attendance_marked', { classroom_id: classroomId }).catch(() => { });
             }
             setSaved(true);
         } catch (e: any) {
@@ -119,18 +119,21 @@ export default function AttendanceScreenWeb() {
                     <>
                         {/* Summary bar */}
                         <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
-                            {(Object.keys(STATUS_CONFIG) as Status[]).map(s => (
-                                <div key={s} style={{
-                                    display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px',
-                                    borderRadius: '100px', background: STATUS_CONFIG[s].bg,
-                                    border: `1px solid ${STATUS_CONFIG[s].color}33`,
-                                }}>
-                                    <STATUS_CONFIG[s].Icon size={13} color={STATUS_CONFIG[s].color} />
-                                    <span style={{ fontSize: '13px', fontWeight: '700', color: STATUS_CONFIG[s].color }}>
-                                        {counts[s] ?? 0} {STATUS_CONFIG[s].label}
-                                    </span>
-                                </div>
-                            ))}
+                            {(Object.keys(STATUS_CONFIG) as Status[]).map(s => {
+                                const Icon = STATUS_CONFIG[s].Icon;
+                                return (
+                                    <div key={s} style={{
+                                        display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px',
+                                        borderRadius: '100px', background: STATUS_CONFIG[s].bg,
+                                        border: `1px solid ${STATUS_CONFIG[s].color}33`,
+                                    }}>
+                                        <Icon size={13} color={STATUS_CONFIG[s].color} />
+                                        <span style={{ fontSize: '13px', fontWeight: '700', color: STATUS_CONFIG[s].color }}>
+                                            {counts[s] ?? 0} {STATUS_CONFIG[s].label}
+                                        </span>
+                                    </div>
+                                );
+                            })}
                             <span style={{ marginLeft: 'auto', fontSize: '12px', color: 'var(--ink-ghost)', alignSelf: 'center' }}>
                                 {students.length} students total
                             </span>
@@ -196,12 +199,12 @@ export default function AttendanceScreenWeb() {
                         {saved
                             ? <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center', padding: '14px', borderRadius: '12px', background: 'rgba(34,197,94,0.10)', color: 'var(--moss)', fontWeight: '700', fontSize: '14px' }}>
                                 <Check size={18} /> Attendance saved for today
-                              </div>
+                            </div>
                             : <button className="premium-button"
                                 style={{ width: '100%', background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px' }}
                                 onClick={handleSave} disabled={saving}>
                                 {saving ? '⏳ Saving…' : <><Save size={15} /> Complete Marking</>}
-                              </button>
+                            </button>
                         }
                     </>
                 )}

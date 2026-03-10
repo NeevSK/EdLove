@@ -54,61 +54,67 @@ const RootStack = createNativeStackNavigator();
 // Module-level so AppContent can call it without prop-drilling.
 // Uses useStore.getState() (not a hook) — safe to call outside React render.
 const fetchAndSetUserProfile = async (internalUserId: string) => {
-    try {
-      const { data: userProfile, error } = await supabase
-        .from('users')
-        .select('id, role, school_id, onboarding_completed, full_name, email, avatar_url, is_anonymous, profile_completed')
-        .eq('id', internalUserId)
-        .maybeSingle();
+  try {
+    const { data: userProfile, error } = await supabase
+      .from('users')
+      .select('id, role, school_id, onboarding_completed, full_name, email, avatar_url, is_anonymous, profile_completed')
+      .eq('id', internalUserId)
+      .maybeSingle();
 
-      if (error) {
-        console.warn('⚠️ Profile: Table fetch returned error:', error.message);
-        return;
-      }
-
-      if (userProfile) {
-        const store = useStore.getState();
-        // Populate the full user object so useUserRole().userId works everywhere
-        store.setUser(userProfile as any);
-        store.setUserRole(userProfile.role as UserRole | null);
-
-        // A user is only considered "effectively onboarded" when they have both
-        // completed the onboarding wizard AND have a role assigned.  A missing role
-        // means onboarding data was never fully submitted — route them back to fix it.
-        const isEffectivelyOnboarded = !!userProfile.onboarding_completed && !!userProfile.role;
-        store.setOnboardingCompleted(isEffectivelyOnboarded);
-
-        // If the user has a valid session but hasn't effectively completed onboarding,
-        // send them directly to Onboarding (skip the Welcome screen).
-        // The AppContent effect below handles the case where this runs while on Main.
-        if (!isEffectivelyOnboarded && navigationRef.isReady()) {
-          const rootState = navigationRef.current?.getRootState();
-          const currentRoute = rootState?.routes[rootState.index]?.name;
-          if (currentRoute === 'Welcome') {
-            console.log('🧭 App: Authenticated user has no role or incomplete onboarding — navigating to Onboarding');
-            navigationRef.navigate('Onboarding' as never);
-          }
-        }
-
-        if (userProfile.school_id) {
-          const { data: schoolData } = await supabase
-            .from('schools')
-            .select('type')
-            .eq('id', userProfile.school_id)
-            .single();
-
-          if (schoolData) {
-            store.setSchoolType(schoolData.type as SchoolType | null);
-          }
-        } else {
-          store.setSchoolType(null);
-        }
-      }
-    } catch (error) {
-      console.warn('❌ Profile: Fetching encountered an error:', error);
-      const { handleAPIError } = require('@repo/core');
-      handleAPIError(error);
+    if (error) {
+      console.warn('⚠️ Profile: Table fetch returned error:', error.message);
+      return;
     }
+
+    if (userProfile) {
+      const store = useStore.getState();
+
+      // Normalize legacy 'guest' role (not a valid UserRole) to null.
+      // Anonymous users now get role=null from the DB trigger.
+      const normalizedRole = (userProfile.role === 'guest' ? null : userProfile.role) as UserRole | null;
+
+      // Populate the full user object so useUserRole().userId works everywhere
+      store.setUser({ ...userProfile, role: normalizedRole } as any);
+      store.setUserRole(normalizedRole);
+
+      // A user is only considered "effectively onboarded" when they have
+      // explicitly completed the onboarding wizard (onboarding_completed=true).
+      // A null/guest role means they still need to go through Onboarding to pick a role.
+      const isEffectivelyOnboarded = !!userProfile.onboarding_completed && !!normalizedRole;
+      store.setOnboardingCompleted(isEffectivelyOnboarded);
+
+      // If authenticated but not effectively onboarded, direct them to the Onboarding screen.
+      // This fires when: (a) brand-new anon user just signed in, (b) returning user whose
+      // role was cleared, or (c) user who completed auth but skipped the role selection step.
+      if (!isEffectivelyOnboarded && navigationRef.isReady()) {
+        const rootState = navigationRef.current?.getRootState();
+        const currentRoute = rootState?.routes[rootState.index]?.name;
+        if (currentRoute === 'Welcome') {
+          console.log('🧭 App: Authenticated user needs onboarding — navigating from Welcome to Onboarding');
+          navigationRef.navigate('Onboarding' as never);
+        }
+        // If already on Onboarding, do nothing — let the user complete the flow.
+      }
+
+      if (userProfile.school_id) {
+        const { data: schoolData } = await supabase
+          .from('schools')
+          .select('type')
+          .eq('id', userProfile.school_id)
+          .single();
+
+        if (schoolData) {
+          store.setSchoolType(schoolData.type as SchoolType | null);
+        }
+      } else {
+        store.setSchoolType(null);
+      }
+    }
+  } catch (error) {
+    console.warn('❌ Profile: Fetching encountered an error:', error);
+    const { handleAPIError } = require('@repo/core');
+    handleAPIError(error);
+  }
 };
 
 function App() {
@@ -117,7 +123,6 @@ function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [currentTab, setCurrentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
   const onboardingCompleted = useStore((state) => state.onboardingCompleted);
-  const storeUser = useStore((state) => state.user);
   const [showWelcome, setShowWelcome] = useState(true);
   const toast = useStore((state) => state.toast);
   const hideToast = useStore((state) => state.hideToast);
@@ -393,9 +398,39 @@ function App() {
   );
 }
 
+// ── OnboardingWrapper ─────────────────────────────────────────────────────────
+// A proper named React component so useStore can be called at component level,
+// avoiding the closure-capture issues that produced "storeUser is not defined".
+function OnboardingWrapper({ session }: { session: any }) {
+  const storeUser = useStore((state) => state.user);
+  return (
+    <OnboardingScreen
+      isAnonymous={
+        // Use store's loaded profile (most accurate) with session as fallback
+        storeUser?.is_anonymous === true ||
+        session?.user?.is_anonymous === true ||
+        !session?.user?.email
+      }
+      onComplete={(name: string, role: any, wantsAccount?: boolean) => {
+        console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
+        const store = useStore.getState();
+        if (name) store.setTeacherName(name);
+        if (role) store.setUserRole(role);
+        store.setOnboardingCompleted(true);
+        store.setJustFinishedOnboarding(true);
+        // Refresh full profile from DB so store.user.school_id etc. are current
+        identityAPI.getMyInternalId()
+          .then((internalId) => { if (internalId) fetchAndSetUserProfile(internalId); })
+          .catch(() => {/* silent */ });
+      }}
+    />
+  );
+}
+
 // Main Content Component to access Theme/Context
 function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardingCompleted, showWelcome, setShowWelcome, toast, hideToast }: any) {
   // Web Auth Guard: Prevent direct URL access to /app/* if not onboarded
+
   useEffect(() => {
     if (Platform.OS === 'web' && navigationRef.isReady()) {
       const state = navigationRef.current?.getRootState();
@@ -560,9 +595,9 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
               <RootStack.Navigator
                 screenOptions={{ headerShown: false }}
                 initialRouteName={
-                  // Skip Welcome entirely if the user already has a session but hasn't
-                  // finished onboarding — start them at Onboarding to resume the flow.
-                  (!onboardingCompleted && session) ? 'Onboarding' : 'Welcome'
+                  // If onboarding is done, start at Main.
+                  // Otherwise, if they have a session, skip Welcome and go to Onboarding.
+                  onboardingCompleted ? 'Main' : (session ? 'Onboarding' : 'Welcome')
                 }
               >
                 {!onboardingCompleted ? (
@@ -586,26 +621,7 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                     <RootStack.Screen name="Onboarding">
                       {() => (
                         <ErrorBoundary name="Onboarding Screen">
-                          <OnboardingScreen
-                            isAnonymous={
-                              // Use store's loaded profile (most accurate) with session as fallback
-                              storeUser?.is_anonymous === true ||
-                              session?.user?.is_anonymous === true ||
-                              !session?.user?.email
-                            }
-                            onComplete={(name: string, role: any, wantsAccount?: boolean) => {
-                              console.log('🚀 App: Onboarding complete', { name, role, wantsAccount });
-                              const store = useStore.getState();
-                              if (name) store.setTeacherName(name);
-                              if (role) store.setUserRole(role);
-                              store.setOnboardingCompleted(true);
-                              store.setJustFinishedOnboarding(true);
-                              // Refresh full profile from DB so store.user.school_id etc. are current
-                              identityAPI.getMyInternalId()
-                                .then((internalId) => { if (internalId) fetchAndSetUserProfile(internalId); })
-                                .catch(() => {/* silent */});
-                            }}
-                          />
+                          <OnboardingWrapper session={session} />
                         </ErrorBoundary>
                       )}
                     </RootStack.Screen>
@@ -651,7 +667,7 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                             // Reload full profile so store reflects the newly linked account
                             identityAPI.getMyInternalId()
                               .then((internalId) => { if (internalId) fetchAndSetUserProfile(internalId); })
-                              .catch(() => {/* silent */});
+                              .catch(() => {/* silent */ });
                             props.navigation.goBack();
                           }}
                         />

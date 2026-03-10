@@ -46,7 +46,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
 
   // Recomputes at midnight so the date stays correct if the component stays
   // mounted overnight (same pattern as TomorrowPrep.web.tsx).
-  const [tomorrowDate, setTomorrowDate] = useState<string>(getTomorrowDate);
+  const [tomorrowDate, setTomorrowDate] = useState<string>(getTomorrowDate());
   useEffect(() => {
     const now = new Date();
     const msUntilMidnight =
