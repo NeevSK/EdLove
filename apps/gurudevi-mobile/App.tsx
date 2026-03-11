@@ -74,8 +74,15 @@ const fetchAndSetUserProfile = async (internalUserId: string, onComplete?: () =>
       const normalizedRole = (userProfile.role === 'guest' ? null : userProfile.role) as UserRole | null;
 
       // Populate the full user object so useUserRole().userId works everywhere
-      store.setUser({ ...userProfile, role: normalizedRole } as any);
-      store.setUserRole(normalizedRole);
+      // PROTECTIVE GUARD: If the store says we are already onboarded, don't let 
+      // a null role from the DB (due to eventual consistency delays) wipe out the 
+      // role the user just picked.
+      if (normalizedRole || !store.onboardingCompleted) {
+        store.setUser({ ...userProfile, role: normalizedRole } as any);
+        store.setUserRole(normalizedRole);
+      } else {
+        console.log('🛡️ Profile: DB returned null role for onboarded user. Keeping Store role to prevent flash.');
+      }
 
       // A user is only considered "effectively onboarded" when they have
       // explicitly completed the onboarding wizard (onboarding_completed=true).

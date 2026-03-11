@@ -16,7 +16,7 @@ module.exports = {
         // so the negative lookahead always sees the bare package name in both cases.
         'node_modules/(?!(\\.pnpm/[^/]*/node_modules/)?(?:(jest-)?react-native|@react-native(-community)?|expo[^/]*|@expo[^/]*/|@expo-google-fonts/|react-navigation|@react-navigation/|@unimodules/|unimodules|sentry-expo|native-base|react-native-svg|@gluestack-ui/|@gluestack-style/|lucide-react-native|moti|@motify/|react-native-mmkv|react-native-nitro-modules|react-native-web|uuid|fbjs|@tanstack/|@testing-library/))',
     ],
-    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+    moduleFileExtensions: ['ts', 'tsx', 'native.js', 'native.ts', 'native.tsx', 'js', 'jsx', 'json', 'node'],
     testMatch: ['**/__tests__/**/*.test.[jt]s?(x)'],
     moduleNameMapper: {
         // @repo/* packages resolve directly from workspace sources

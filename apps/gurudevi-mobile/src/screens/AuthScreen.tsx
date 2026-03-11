@@ -265,6 +265,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
             const refresh_token = hashParams.get('refresh_token');
 
             if (!access_token || !refresh_token) {
+                console.warn('⚠️ Auth: Missing tokens in callback URL. Params:', Array.from(hashParams.keys()));
                 throw new Error('Missing tokens in callback URL');
             }
 

@@ -213,7 +213,12 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                     ...(orientationSeeds ? { orientation_seeds: orientationSeeds } : {}),
                 });
 
-            if (profileError) throw profileError;
+            if (profileError) {
+                console.error('❌ Onboarding: Profile upsert failed:', profileError.message);
+                throw profileError;
+            }
+            
+            console.log('✅ Onboarding: Profile successfully synced to DB.');
 
             await AsyncStorage.removeItem('onboarding_progress');
             onComplete(name, role, false);

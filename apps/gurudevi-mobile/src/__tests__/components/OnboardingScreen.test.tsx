@@ -44,17 +44,39 @@ jest.mock('react-i18next', () => ({
 
 jest.mock('@repo/core', () => ({
     UserRole: {},
-    useStore: jest.fn(),
+    useStore: Object.assign(jest.fn(), {
+        getState: () => ({
+            onboardingCompleted: false,
+            setTeacherName: jest.fn(),
+            setUserRole: jest.fn(),
+            setOnboardingCompleted: jest.fn(),
+            setJustFinishedOnboarding: jest.fn(),
+        }),
+    }),
     supabase: {
         auth: {
             getUser: () => Promise.resolve({ data: { user: { id: 'test-user-id' } }, error: null }),
+            getSession: () => Promise.resolve({ data: { session: { user: { is_anonymous: true } } }, error: null }),
         },
         from: () => ({
             insert: () => ({ select: () => ({ single: () => Promise.resolve({ data: { id: 'school-id' }, error: null }) }) }),
             upsert: () => Promise.resolve({ error: null }),
-            select: () => ({ eq: () => ({ single: () => Promise.resolve({ data: null, error: null }) }) }),
+            update: () => ({ eq: () => Promise.resolve({ error: null }) }),
+            select: () => ({ 
+                select: () => ({ eq: () => ({ maybeSingle: () => Promise.resolve({ data: null, error: null }) }) }),
+                eq: () => ({ 
+                    maybeSingle: () => Promise.resolve({ data: null, error: null }),
+                    single: () => Promise.resolve({ data: null, error: null }),
+                }) 
+            }),
         }),
     },
+    identityAPI: {
+        getMyInternalId: jest.fn().mockResolvedValue('test-internal-id'),
+    },
+    hapticLight: jest.fn(),
+    hapticSuccess: jest.fn(),
+    hapticError: jest.fn(),
 }));
 
 jest.mock('expo-haptics', () => ({
