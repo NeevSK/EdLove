@@ -188,6 +188,6 @@ export const authAPI = {
         }
 
         // Also sign out locally just in case
-        await supabase.auth.signOut();
+        await this.signOut();
     },
 };

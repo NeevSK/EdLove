@@ -9,7 +9,7 @@ import {
     DeleteAccountModal,
     LogoutModal
 } from '@repo/ui';
-import { useUserRole, useStore, useAccountDeletion } from '@repo/core';
+import { useUserRole, useStore, useAccountDeletion, authAPI } from '@repo/core';
 import { useEnvironment } from '@repo/ui';
 import {
     Sun,
@@ -88,8 +88,15 @@ export default function AppSettingsScreenWeb() {
         enableLivingTheme, setEnableLivingTheme
     } = useEnvironment();
 
-    const { isDemoMode, setDemoMode, showToast } = useStore();
-    const { logout } = useStore((state) => ({ logout: () => state.setUser(null) }));
+    const { isDemoMode, setDemoMode, showToast, setUser } = useStore();
+    const logout = async () => {
+        try {
+            await authAPI.signOut();
+            setUser(null);
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    };
     const { deleteAccount, isDeleting } = useAccountDeletion();
 
     const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);

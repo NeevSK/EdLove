@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useUserRole, useRewards, handleAPIError, useMutationQueue, supabase, identityAPI } from '@repo/core';
+import { useUserRole, useRewards, handleAPIError, useMutationQueue, supabase, identityAPI, authAPI } from '@repo/core';
 import { profileAPI } from '../api/profile';
 import { UserProfile } from '../types';
 import { ProfileValidator } from '../lib/validator';
@@ -87,7 +87,7 @@ export function useProfile() {
     };
 
     const logout = useCallback(async () => {
-        await supabase.auth.signOut();
+        await authAPI.signOut();
     }, []);
 
     return {

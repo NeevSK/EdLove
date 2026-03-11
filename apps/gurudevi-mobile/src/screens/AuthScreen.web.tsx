@@ -126,6 +126,7 @@ export default function AuthScreenWeb({
                 }
                 setLoading(false);
             }
+            // Note: linkIdentity will trigger a redirect.
             return;
         }
 
@@ -155,13 +156,36 @@ export default function AuthScreenWeb({
                 const { data: { session: cur } } = await supabase.auth.getSession();
                 const isAnon = cur?.user?.is_anonymous || !cur?.user?.email;
 
-                if (isAnon && cur?.user) {
+                // Even if anonymous, we should call signUp to convert the user in Supabase Auth.
+                // Supabase handles the conversion automatically if a session exists.
+                const { data, error } = await supabase.auth.signUp({
+                    email, password,
+                });
+
+                if (error) {
+                    if (error.message.includes('already registered')) {
+                        showToast(t('auth.alreadyRegisteredDesc'), 'success');
+                        setMode('login');
+                        setLoading(false);
+                        return;
+                    }
+                    throw error;
+                }
+
+                if (data.user) {
+                    // Refresh identity cache and locally stored state
+                    identityAPI.clearCache();
                     const internalId = await identityAPI.getMyInternalId();
+                    
                     if (internalId) {
-                        await supabase.from('users').update({
-                            email,
-                            is_anonymous: false,
-                        }).eq('id', internalId);
+                        // The database trigger will handle setting is_anonymous = false,
+                        // but we can proactively refresh our local currentUser state.
+                        const { data: profile } = await supabase
+                            .from('users')
+                            .select('id, email, is_anonymous, full_name')
+                            .eq('id', internalId)
+                            .maybeSingle();
+                        setCurrentUser(profile);
                     }
 
                     showToast(t('auth.signupSuccess') || 'Account created!', 'success');
@@ -171,21 +195,10 @@ export default function AuthScreenWeb({
                         setNewUserId(internalId);
                         setShowSyncModal(true);
                     } else {
-                        onSuccess?.();
+                        // Small delay to let DB triggers finish
+                        setTimeout(() => onSuccess?.(), 500);
                     }
                 } else {
-                    const { error } = await supabase.auth.signUp({
-                        email, password,
-                    });
-                    if (error) {
-                        if (error.message.includes('already registered')) {
-                            showToast(t('auth.alreadyRegisteredDesc'), 'success');
-                            setMode('login');
-                            setLoading(false);
-                            return;
-                        }
-                        throw error;
-                    }
                     showToast(t('auth.checkEmail') || 'Check your email for a confirmation link!', 'success');
                 }
             } else {
@@ -193,6 +206,7 @@ export default function AuthScreenWeb({
                 if (error) throw error;
 
                 if (data.user) {
+                    identityAPI.clearCache();
                     const internalId = await identityAPI.getMyInternalId();
                     const pendingInvite = await AsyncStorage.getItem('pending_invite');
                     if (pendingInvite && internalId) {
