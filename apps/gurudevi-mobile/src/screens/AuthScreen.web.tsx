@@ -23,8 +23,6 @@ import { GuestDataSyncModal } from '@repo/ui';
 WebBrowser.maybeCompleteAuthSession();
 
 interface AuthScreenProps {
-    onboardingData?: { name: string; role: UserRole };
-    isAnonymous?: boolean;
     onContinueAsGuest?: () => void;
     onSuccess?: () => void;
     onBack?: () => void;
@@ -32,8 +30,6 @@ interface AuthScreenProps {
 }
 
 export default function AuthScreenWeb({
-    onboardingData,
-    isAnonymous = false,
     onContinueAsGuest,
     onSuccess,
     onBack,
@@ -108,7 +104,6 @@ export default function AuthScreenWeb({
     }
 
     const isRealUser = currentUser?.email && !currentUser?.is_anonymous;
-    const shouldHideGeneralAuth = onboardingData && isRealUser;
 
     // ── Google OAuth ──────────────────────────────────────────────────────
     async function handleGoogleSignIn() {
@@ -161,21 +156,11 @@ export default function AuthScreenWeb({
                 const isAnon = cur?.user?.is_anonymous || !cur?.user?.email;
 
                 if (isAnon && cur?.user) {
-                    const { error } = await supabase.auth.updateUser({
-                        email, password,
-                        data: { full_name: onboardingData?.name || 'Gurudevi User', role: onboardingData?.role || 'teacher', is_anonymous: false },
-                    });
-                    if (error) throw error;
-
                     const internalId = await identityAPI.getMyInternalId();
                     if (internalId) {
                         await supabase.from('users').update({
                             email,
-                            full_name: onboardingData?.name || 'Gurudevi User',
-                            role: onboardingData?.role || 'teacher',
                             is_anonymous: false,
-                            onboarding_completed: true,
-                            onboarding_completed_at: new Date().toISOString(),
                         }).eq('id', internalId);
                     }
 
@@ -191,7 +176,6 @@ export default function AuthScreenWeb({
                 } else {
                     const { error } = await supabase.auth.signUp({
                         email, password,
-                        options: { data: { full_name: onboardingData?.name || 'Gurudevi User', role: onboardingData?.role || 'teacher' } },
                     });
                     if (error) {
                         if (error.message.includes('already registered')) {
@@ -260,50 +244,31 @@ export default function AuthScreenWeb({
                 {/* Logo + title */}
                 <div className="as-header">
                     <div className="as-logo">🪷</div>
-                    <h1 className="as-title">
-                        {onboardingData ? (t('auth.saveSanctuary') || 'Save Your Sanctuary') : 'Gurudevi'}
-                    </h1>
+                    <h1 className="as-title">Gurudevi</h1>
                     <p className="as-subtitle">
-                        {onboardingData
-                            ? (t('auth.upgradePrompt') || 'Create an account to save your progress.')
-                            : (t('auth.tagline') || 'Education born from love, built with love.')}
+                        {t('auth.tagline') || 'Education born from love, built with love.'}
                     </p>
                 </div>
 
                 {/* Pill toggle */}
-                {!shouldHideGeneralAuth && (
-                    <div className="as-pill-row" role="tablist" aria-label="Sign Up or Log In">
-                        <button
-                            role="tab"
-                            aria-selected={mode === 'signup'}
-                            className={`as-pill ${mode === 'signup' ? 'active' : ''}`}
-                            onClick={() => switchMode('signup')}
-                        >
-                            {t('auth.signup') || 'Sign Up'}
-                        </button>
-                        <button
-                            role="tab"
-                            aria-selected={mode === 'login'}
-                            className={`as-pill ${mode === 'login' ? 'active' : ''}`}
-                            onClick={() => switchMode('login')}
-                        >
-                            {t('auth.login') || 'Log In'}
-                        </button>
-                    </div>
-                )}
-
-                {/* Already signed in (real user in onboarding context) */}
-                {shouldHideGeneralAuth && onContinueAsGuest && (
-                    <div className="as-already-signed">
-                        <button className="as-btn-primary" onClick={onContinueAsGuest} disabled={loading}>
-                            Finish Setup
-                        </button>
-                        <p className="as-muted">Signed in as {currentUser?.email}</p>
-                    </div>
-                )}
-
-                {/* Auth buttons — shown when pill is active and email form is hidden */}
-                {!shouldHideGeneralAuth && !showEmailForm && (
+                <div className="as-pill-row" role="tablist" aria-label="Sign Up or Log In">
+                    <button
+                        role="tab"
+                        aria-selected={mode === 'signup'}
+                        className={`as-pill ${mode === 'signup' ? 'active' : ''}`}
+                        onClick={() => switchMode('signup')}
+                    >
+                        {t('auth.signup') || 'Sign Up'}
+                    </button>
+                    <button
+                        role="tab"
+                        aria-selected={mode === 'login'}
+                        className={`as-pill ${mode === 'login' ? 'active' : ''}`}
+                        onClick={() => switchMode('login')}
+                    >
+                        {t('auth.login') || 'Log In'}
+                    </button>
+                </div>
                     <div className="as-methods">
                         {/* Google */}
                         <button
@@ -328,10 +293,9 @@ export default function AuthScreenWeb({
                                 : (t('auth.signInWithEmail') || 'Sign in with email')}
                         </button>
                     </div>
-                )}
 
                 {/* Email form */}
-                {!shouldHideGeneralAuth && showEmailForm && (
+                {showEmailForm && (
                     <form className="as-form" onSubmit={handleEmailAuth} noValidate>
                         <h2 className="as-form-title">
                             {mode === 'signup'
@@ -383,7 +347,7 @@ export default function AuthScreenWeb({
                 )}
 
                 {/* Continue as guest */}
-                {(!currentUser || currentUser?.is_anonymous) && isAnonymous && onContinueAsGuest && (
+                {(!currentUser || currentUser?.is_anonymous) && onContinueAsGuest && (
                     <div className="as-guest-row">
                         <div className="as-divider" />
                         <button

@@ -11,7 +11,8 @@ export interface SelfViewDomain {
     id: string;
     title: string;
     accentColor: string; // The "vibe" color (e.g., Amber, Lotus, Teal)
-    features: SelfViewFeature[];
+    features?: SelfViewFeature[];
+    content?: React.ReactNode;
     description?: string;
 }
 

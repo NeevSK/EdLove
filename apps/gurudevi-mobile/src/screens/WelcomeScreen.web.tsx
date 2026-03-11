@@ -34,8 +34,8 @@ import { useTheme } from '@repo/ui';
 import { authAPI, handleAPIError } from '@repo/core';
 import { hapticLight, hapticSuccess, hapticError, openExternalURL } from '@repo/ui';
 import { LanguageUtils } from '../utils/LanguageUtils';
-import AuthScreen from './AuthScreen';
 import { RedirectToApp } from '../components/RedirectToApp';
+import { useRouter } from 'expo-router';
 
 // ─────────────────────────────────────────────
 // Constants
@@ -318,38 +318,17 @@ function RightPanel({
     );
 }
 
-// ─────────────────────────────────────────────
-// WelcomeScreen (web)
-// ─────────────────────────────────────────────
 interface WelcomeScreenProps {
-    onNext?: () => void;
-    initialShowAuth?: boolean;
+    onLogin?: () => void;
+    onGuest?: () => void;
 }
 
-export default function WelcomeScreen({ onNext, initialShowAuth = false }: WelcomeScreenProps) {
+export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) {
     const { t, i18n } = useTranslation();
+    const router = useRouter();
     const { phase, isDark, gradientNodes, text: themeText } = useTheme();
     const { width } = useWindowDimensions();
 
-    // ── Detect Supabase OAuth error params in URL ──────────────────────────
-    // When Supabase redirects back with ?error_code=identity_already_exists, we
-    // automatically open the Auth screen in login mode so the user can sign in.
-    const urlErrorMode = useMemo<'login' | undefined>(() => {
-        try {
-            const getUrlParam = (name: string) => {
-                const fromQuery = new URLSearchParams(window.location.search).get(name);
-                if (fromQuery) return fromQuery;
-                const hashSearch = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-                return hashSearch.get(name);
-            };
-            const code = getUrlParam('error_code');
-            return code === 'identity_already_exists' ? 'login' : undefined;
-        } catch {
-            return undefined;
-        }
-    }, []);
-
-    const [showAuth, setShowAuth] = useState(initialShowAuth || !!urlErrorMode);
     const [acceptedTerms, setAcceptedTerms] = useState(true);
     const [isConnecting, setIsConnecting] = useState(false);
     const [langHover, setLangHover] = useState<string | null>(null);
@@ -370,31 +349,19 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
         setIsConnecting(true);
         try {
             await authAPI.signInAnonymously();
-            onNext?.();
+            if (onGuest) onGuest();
         } catch (err) {
             handleAPIError(err);
             setIsConnecting(false);
         }
     };
 
-    const handleLogin = () => {
+    const handleLoginPress = () => {
         if (!acceptedTerms) { hapticError(); return; }
         hapticLight();
-        setShowAuth(true);
+        if (onLogin) onLogin();
     };
 
-    // ── Auth mode: render AuthScreen full-screen ──────────────────────────
-    if (showAuth) {
-        return (
-            <AuthScreen
-                isAnonymous
-                initialMode={urlErrorMode ?? 'signup'}
-                onContinueAsGuest={handleStartExploring}
-                onSuccess={() => { onNext?.(); }}
-                onBack={() => setShowAuth(false)}
-            />
-        );
-    }
 
     const footer = t('welcome.footer') || 'Part of the EdLove Constellation · Made with 💖 in Sri Lanka';
 
@@ -423,7 +390,7 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
                         btnHover={btnHover}
                         onChangeLanguage={changeLanguage}
                         onStartExploring={handleStartExploring}
-                        onLogin={handleLogin}
+                        onLogin={handleLoginPress}
                         onToggleTerms={() => setAcceptedTerms((v) => !v)}
                         onLangHoverIn={setLangHover}
                         onLangHoverOut={() => setLangHover(null)}
@@ -446,7 +413,7 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
                             btnHover={btnHover}
                             onChangeLanguage={changeLanguage}
                             onStartExploring={handleStartExploring}
-                            onLogin={handleLogin}
+                            onLogin={handleLoginPress}
                             onToggleTerms={() => setAcceptedTerms((v) => !v)}
                             onLangHoverIn={setLangHover}
                             onLangHoverOut={() => setLangHover(null)}

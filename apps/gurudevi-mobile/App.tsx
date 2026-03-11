@@ -649,8 +649,8 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                 screenOptions={{ headerShown: false }}
                 initialRouteName={
                   // If onboarding is done, start at Main.
-                  // Otherwise, if they have a session, skip Welcome and go to Onboarding.
-                  onboardingCompleted ? 'Main' : (session ? 'Onboarding' : 'Welcome')
+                  // Otherwise, always start at Welcome (Identity Phase).
+                  onboardingCompleted ? 'Main' : 'Welcome'
                 }
               >
                 {!onboardingCompleted ? (
@@ -659,10 +659,12 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                       {() => (
                         <ErrorBoundary name="Welcome Screen">
                           <WelcomeScreen
-                            initialShowAuth={onboardingCompleted}
-                            onNext={() => {
-                              console.log('➡️ App: onNext called from WelcomeScreen');
-                              setShowWelcome(false);
+                            onLogin={() => {
+                              if (navigationRef.isReady()) {
+                                navigationRef.navigate('Auth' as never);
+                              }
+                            }}
+                            onGuest={() => {
                               if (navigationRef.isReady()) {
                                 navigationRef.navigate('Onboarding' as never);
                               }
@@ -671,6 +673,32 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                         </ErrorBoundary>
                       )}
                     </RootStack.Screen>
+
+                    <RootStack.Screen
+                      name="Auth"
+                      options={{ presentation: 'card' }}
+                    >
+                      {(props: any) => (
+                        <AuthScreen
+                          onSuccess={() => {
+                            // After identity established, check if personalization needed
+                            identityAPI.getMyInternalId()
+                              .then((internalId) => { 
+                                if (internalId) fetchAndSetUserProfile(internalId); 
+                              })
+                              .catch(() => {/* silent */ });
+                            
+                            // Navigation to Onboarding vs Main is handled by AppContent effects
+                            // or the fallback navigation logic here
+                            if (navigationRef.isReady()) {
+                              navigationRef.navigate('Onboarding' as never);
+                            }
+                          }}
+                          onBack={() => props.navigation.goBack()}
+                        />
+                      )}
+                    </RootStack.Screen>
+
                     <RootStack.Screen name="Onboarding">
                       {() => (
                         <ErrorBoundary name="Onboarding Screen">

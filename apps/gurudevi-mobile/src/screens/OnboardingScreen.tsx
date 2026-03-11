@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Box, Pressable, VStack, HStack, Input, InputField, Button, ButtonText, Text, Heading, useToast, Toast, ToastTitle } from '@repo/ui';
+import { Box, Pressable, VStack, HStack, Input, InputField, Button, ButtonText, Text, Heading, useToast, Toast, ToastTitle, Center } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,6 @@ import { UserRole, supabase, identityAPI } from '@repo/core';
 import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
-import AuthScreen from './AuthScreen';
 import { ProgressIndicator } from '@repo/ui';
 import { OrientationCaptureStep } from '@repo/self';
 import type { OrientationSeeds } from '@repo/profile';
@@ -23,10 +22,9 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const colors = useThemedColors();
-    const [currentStep, setCurrentStep] = useState(0); // 0: Name, 1: Role, 2: Orientation, 3-7: Tour, 8: Auth
+    const [currentStep, setCurrentStep] = useState(0); // 0: Name, 1: Role, 2-6: Tour
     const [name, setName] = useState('');
     const [role, setRole] = useState<UserRole>('teacher');
-    const [orientationSeeds, setOrientationSeeds] = useState<OrientationSeeds | null>(null);
     const [isCompleting, setIsCompleting] = useState(false);
     const toast = useToast();
 
@@ -43,10 +41,9 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                     if (!internalId || progress.userId === internalId) {
                         if (progress.name) setName(progress.name);
                         if (progress.role) setRole(progress.role as UserRole);
-                        if (progress.orientationSeeds) setOrientationSeeds(progress.orientationSeeds);
-                        if (typeof progress.step === 'number' && progress.step > 0 && progress.step < 8) {
+                        if (typeof progress.step === 'number' && progress.step >= 0 && progress.step < 7) {
                             setCurrentStep(progress.step);
-                            return; // Skip auth pre-fill — progress takes priority
+                            return; 
                         }
                     }
                 }
@@ -76,9 +73,6 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                 setName(profile.full_name);
                 if (profile.role) {
                     setRole(profile.role as UserRole);
-                    // If we have a role and name, and we're not anonymous, maybe we just finished auth?
-                    // Let's go to step 1 so they can confirm/see it, OR if it's a re-mount,
-                    // they can just click continue.
                     setCurrentStep(1);
                 } else {
                     setCurrentStep(1);
@@ -121,7 +115,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
         }
     ], [t]);
 
-    // Steps: 0-Name, 1-Role, 2-Orientation, 3-7-Tour, 8-Auth
+    // Steps: 0-Name, 1-Role, 2-6-Tour
 
     const canProceed = currentStep === 0 ? name.trim().length > 0 : true;
 
@@ -134,26 +128,18 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                 step: currentStep,
                 name,
                 role,
-                orientationSeeds,
             })).catch(() => {/* silent */ });
         });
-    }, [currentStep, name, role, orientationSeeds]);
+    }, [currentStep, name, role]);
 
     const handleNext = async () => {
         if (!canProceed) return;
         hapticLight();
 
-        // Short-circuit: If user is already authenticated (not anonymous) and just chose a role,
-        // we skip Orientation (2) and Tour (3-7) and go straight to completion.
-        // Double check the session directly in case props are stale during the transition.
-        if (currentStep === 1) {
-            const { data: { session: currentSession } } = await supabase.auth.getSession();
-            const actuallyAnon = currentSession?.user?.is_anonymous ?? true;
-            if (!actuallyAnon) {
-                console.log('🚀 Onboarding: User is verified, finishing on role confirmation...');
-                handleCompleteOnboarding();
-                return;
-            }
+        // If tour completed, finish onboarding
+        if (currentStep === 6) {
+            handleCompleteOnboarding();
+            return;
         }
 
         setCurrentStep(prev => prev + 1);
@@ -166,8 +152,9 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
 
     const handleSkipTour = () => {
         hapticLight();
-        setCurrentStep(8); // Jump to Auth
+        handleCompleteOnboarding();
     };
+
     const handleCompleteOnboarding = async () => {
         setIsCompleting(true);
         try {
@@ -196,7 +183,6 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             }
 
             // 2. Update user profile
-            // Check current auth status instead of relying on the potentially stale isAnonymous prop
             const { data: { session: currentSession } } = await supabase.auth.getSession();
             const actuallyAnonymous = currentSession?.user?.is_anonymous ?? true;
 
@@ -210,7 +196,6 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                     onboarding_completed: true,
                     onboarding_completed_at: new Date().toISOString(),
                     is_anonymous: actuallyAnonymous,
-                    ...(orientationSeeds ? { orientation_seeds: orientationSeeds } : {}),
                 });
 
             if (profileError) {
@@ -241,7 +226,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
 
     const renderNameStep = () => (
         <VStack space="xl" mt="$8" px="$6">
-            <ProgressIndicator currentStep={0} totalSteps={9} />
+            <ProgressIndicator currentStep={0} totalSteps={7} />
             <Heading size="2xl" color={colors.action} textAlign="center">
                 {t('onboarding.nameTitle') || 'Welcome! What should we call you?'}
             </Heading>
@@ -266,7 +251,6 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                     if (navigation.canGoBack()) {
                         navigation.goBack();
                     } else {
-                        // Fallback in case of deep linking directly to onboarding
                         navigation.reset({
                             index: 0,
                             routes: [{ name: 'Welcome' }],
@@ -288,7 +272,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
 
     const renderRoleStep = () => (
         <VStack space="xl" mt="$8" px="$6">
-            <ProgressIndicator currentStep={1} totalSteps={9} />
+            <ProgressIndicator currentStep={1} totalSteps={7} />
             <Heading size="2xl" color={colors.action} textAlign="center">
                 {t('onboarding.roleTitle')}
             </Heading>
@@ -357,17 +341,17 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
     );
 
     const renderTourStep = (index: number) => {
-        const tourIdx = index - 3; // steps 3-7 map to tour screens 0-4
+        const tourIdx = index - 2; // steps 2-6 map to tour screens 0-4
         const screen = tourScreens[tourIdx];
+        if (!screen) return null;
+
         return (
             <VStack space="xl" mt="$8" px="$6" flex={1}>
-                <ProgressIndicator currentStep={index} totalSteps={9} />
-                {/* Tour content grouped as a single accessible unit */}
+                <ProgressIndicator currentStep={index} totalSteps={7} />
                 <VStack
                     space="md"
                     alignItems="center"
                 >
-                    {/* Emoji Icon - decorative, hidden from screen readers */}
                     <Text
                         size="6xl"
                         textAlign="center"
@@ -395,7 +379,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                             <ButtonText color={colors.text}>{t('onboarding.back')}</ButtonText>
                         </Button>
                         <Button onPress={handleNext} sx={{ backgroundColor: colors.action, flex: 2 }}>
-                            <ButtonText color={Theme.colors.sacredWhite}>{t('onboarding.next')}</ButtonText>
+                            <ButtonText color={Theme.colors.sacredWhite}>{index === 6 ? t('onboarding.finish') : t('onboarding.next')}</ButtonText>
                         </Button>
                     </HStack>
                     <Button variant="link" onPress={handleSkipTour}>
@@ -406,35 +390,20 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
         );
     };
 
-    const renderAuthStep = () => (
-        <AuthScreen
-            onboardingData={{ name, role }}
-            isAnonymous={isAnonymous}
-            onContinueAsGuest={handleCompleteOnboarding}
-            onSuccess={handleCompleteOnboarding}
-            onBack={() => setCurrentStep(7)}
-        />
-    );
-
     return (
         <ScreenWrapper>
             <VStack flex={1}>
-                {currentStep === 0 && renderNameStep()}
-                {currentStep === 1 && renderRoleStep()}
-                {currentStep === 2 && (
-                    <OrientationCaptureStep
-                        currentStep={2}
-                        totalSteps={9}
-                        onComplete={(seeds) => {
-                            setOrientationSeeds(seeds);
-                            setCurrentStep(3);
-                        }}
-                        onSkip={() => setCurrentStep(3)}
-                        onBack={() => setCurrentStep(1)}
-                    />
+                {isCompleting ? (
+                    <Center flex={1}>
+                        <Text color={colors.text}>Finalizing your sanctuary...</Text>
+                    </Center>
+                ) : (
+                    <>
+                        {currentStep === 0 && renderNameStep()}
+                        {currentStep === 1 && renderRoleStep()}
+                        {currentStep >= 2 && currentStep <= 6 && renderTourStep(currentStep)}
+                    </>
                 )}
-                {currentStep >= 3 && currentStep <= 7 && renderTourStep(currentStep)}
-                {currentStep === 8 && renderAuthStep()}
             </VStack>
         </ScreenWrapper>
     );

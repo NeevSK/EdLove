@@ -42,7 +42,7 @@ export function BaseSelfView({
 
     const allFeatures = [
         ...domains.flatMap(domain =>
-            domain.features.map(feature => ({
+            (domain.features || []).map(feature => ({
                 ...feature,
                 domainId: domain.id,
                 domainColor: domain.accentColor

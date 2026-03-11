@@ -58,25 +58,21 @@ const GoogleIcon = ({ size = 20 }: { size?: number }) => (
 );
 
 interface AuthScreenProps {
-    onboardingData?: { name: string; role: UserRole };
-    isAnonymous?: boolean;
-    onContinueAsGuest?: () => void;
     onSuccess?: () => void;
     onBack?: () => void;
     /** Start the auth screen in login mode (vs default sign-up) */
     initialMode?: 'login' | 'signup';
 }
 
-export default function AuthScreen({ onboardingData, isAnonymous = false, onContinueAsGuest, onSuccess, onBack, initialMode }: AuthScreenProps) {
+export default function AuthScreen({ onSuccess, onBack, initialMode }: AuthScreenProps) {
     const { t } = useTranslation();
     const colors = useThemedColors();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [showEmailAuth, setShowEmailAuth] = useState(initialMode === 'login');
-    // Issue 3.1 fix: new unauthenticated visitors should land on Sign Up, not Login.
-    // If isAnonymous is true (from onboarding), we definitely want Sign Up.
-    const [isSignUp, setIsSignUp] = useState(initialMode !== 'login' || (isAnonymous && !initialMode));
+    // Issue 3.1 fix: visitors landing on 'Auth' route from Welcome 'Login' should see Login form.
+    const [isSignUp, setIsSignUp] = useState(initialMode !== 'login');
     const [showScanner, setShowScanner] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [currentUser, setCurrentUser] = useState<any>(null);
@@ -149,7 +145,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
     }, [t]);
 
     const isRealUser = currentUser && currentUser.email && !currentUser.is_anonymous;
-    const shouldHideGeneralAuth = onboardingData && isRealUser;
+    const shouldHideGeneralAuth = isRealUser;
 
     // ─── Native redirect URI (used by expo-auth-session) ───────────────────────
     // On web we keep the existing browser-redirect approach.
@@ -278,7 +274,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                 handleAPIError(sessErr);
             } else {
                 hapticSuccess();
-                // Proactively check for pending invitations or onboarding data
+                // Proactively check for pending invitations
                 const userId = await identityAPI.getMyInternalId();
                 if (userId) {
                     const internalId = userId;
@@ -293,27 +289,6 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                             }
                         } catch (e) {
                             console.error('Failed to apply pending invite', e);
-                        }
-                    }
-
-                    if (onboardingData && internalId) {
-                        try {
-                            await supabase.from('users').update({
-                                full_name: onboardingData.name,
-                                role: onboardingData.role,
-                                profile_completed: true,
-                                onboarding_completed: true,
-                                onboarding_completed_at: new Date().toISOString(),
-                                is_anonymous: false
-                            }).eq('id', internalId);
-
-                            // Proactively sync the store so navigation is immediate and solid
-                            const store = useStore.getState();
-                            store.setOnboardingCompleted(true);
-                            if (onboardingData.name) store.setTeacherName(onboardingData.name);
-                            if (onboardingData.role) store.setUserRole(onboardingData.role);
-                        } catch (e) {
-                            console.error('Failed to apply onboarding data', e);
                         }
                     }
                 }
@@ -349,30 +324,17 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                         email,
                         password,
                         data: {
-                            full_name: onboardingData?.name || 'Gurudevi User',
-                            role: onboardingData?.role || 'teacher',
                             is_anonymous: false,
                         }
                     });
                     if (error) throw error;
 
-                    // Also update the public.users row (Supabase auth update alone doesn't touch it)
                     const internalId = await identityAPI.getMyInternalId();
                     if (internalId) {
                         await supabase.from('users').update({
                             email,
-                            full_name: onboardingData?.name || 'Gurudevi User',
-                            role: onboardingData?.role || 'teacher',
                             is_anonymous: false,
-                            onboarding_completed: true,
-                            onboarding_completed_at: new Date().toISOString(),
                         }).eq('id', internalId);
-
-                        // Proactively sync the store so navigation is immediate and solid
-                        const store = useStore.getState();
-                        store.setOnboardingCompleted(true);
-                        if (onboardingData?.name) store.setTeacherName(onboardingData.name);
-                        if (onboardingData?.role) store.setUserRole(onboardingData.role);
                     }
 
                     hapticSuccess();
@@ -390,12 +352,6 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                     const { data, error } = await supabase.auth.signUp({
                         email,
                         password,
-                        options: {
-                            data: {
-                                full_name: onboardingData?.name || 'Gurudevi User',
-                                role: onboardingData?.role || 'teacher',
-                            }
-                        }
                     });
                     if (error) {
                         if (error.message.includes('already registered') || error.message.includes('Email already in use') || (error as any).status === 422) {
@@ -408,9 +364,6 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                     }
                     hapticSuccess();
                     showToast(t('auth.checkEmail'), "success");
-
-                    // Note: For new signups, sync will happen after email confirmation
-                    // You may want to trigger sync in the email confirmation callback
                 }
             } else {
                 const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -419,30 +372,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                 hapticSuccess();
                 const internalId = await identityAPI.getMyInternalId();
                 if (internalId) {
-                    // 1. Apply onboarding data if present and user has no role
-                    if (onboardingData) {
-                        try {
-                            const { data: profile } = await supabase
-                                .from('users')
-                                .select('role')
-                                .eq('id', internalId)
-                                .maybeSingle();
-
-                            if (!profile?.role) {
-                                await supabase.from('users').update({
-                                    full_name: onboardingData.name,
-                                    role: onboardingData.role,
-                                    profile_completed: true,
-                                    onboarding_completed: true,
-                                    onboarding_completed_at: new Date().toISOString(),
-                                }).eq('id', internalId);
-                            }
-                        } catch (e) {
-                            console.error('Failed to apply onboarding data after login', e);
-                        }
-                    }
-
-                    // 2. Proactively check for pending invitations
+                    // Proactively check for pending invitations
                     const pendingInvite = await AsyncStorage.getItem('pending_invite');
                     if (pendingInvite) {
                         try {
@@ -498,15 +428,13 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                         <BreathAnimation delay={100}>
                             <LivingGlow active size={120} glowColor={colors.glow} style={{ alignItems: 'center', justifyContent: 'center' }}>
                                 <Heading size="3xl" color={colors.action} textAlign="center" sx={{ fontFamily: '$english', fontWeight: '$bold' }}>
-                                    {onboardingData ? t('auth.saveSanctuary') : "Gurudevi"}
+                                    Gurudevi
                                 </Heading>
                             </LivingGlow>
                         </BreathAnimation>
                         <BreathAnimation delay={200}>
                             <Text color={colors.textSecondary} size="md" textAlign="center">
-                                {onboardingData
-                                    ? t('auth.upgradePrompt')
-                                    : t('auth.tagline') || 'Enter the Sanctuary of Learning'}
+                                {t('auth.tagline') || 'Enter the Sanctuary of Learning'}
                             </Text>
                         </BreathAnimation>
                     </VStack>
@@ -607,27 +535,6 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                         </BreathAnimation>
                     )}
 
-                    {isRealUser && onboardingData && onContinueAsGuest && (
-                        <VStack space="xl">
-                            <Button
-                                size="xl"
-                                onPress={onContinueAsGuest}
-                                isDisabled={loading}
-                                sx={{
-                                    backgroundColor: colors.action,
-                                    borderRadius: Theme.corners.comfortable,
-                                    height: 64,
-                                }}
-                            >
-                                <ButtonText color={Theme.colors.sacredWhite} fontWeight="$bold" size="lg">
-                                    Finish Setup
-                                </ButtonText>
-                            </Button>
-                            <Text color={colors.textSecondary} textAlign="center" size="sm">
-                                You are signed in as {currentUser?.email}.
-                            </Text>
-                        </VStack>
-                    )}
 
                     {showEmailAuth && (
                         <BreathAnimation delay={400}>
@@ -684,28 +591,7 @@ export default function AuthScreen({ onboardingData, isAnonymous = false, onCont
                         </BreathAnimation>
                     )}
 
-                    {(!currentUser || currentUser?.is_anonymous) && isAnonymous && onContinueAsGuest && (
-                        <VStack space="md" alignItems="center" mt="$4">
-                            <Divider sx={{ width: '60%', backgroundColor: colors.border, mb: '$4' }} />
-                            <Button
-                                variant="solid"
-                                onPress={() => {
-                                    hapticLight();
-                                    if (onContinueAsGuest) onContinueAsGuest();
-                                }}
-                                sx={{
-                                    backgroundColor: 'transparent',
-                                    borderWidth: 1,
-                                    borderColor: colors.action,
-                                    borderRadius: Theme.corners.comfortable,
-                                    width: '100%',
-                                    height: 50
-                                }}
-                            >
-                                <ButtonText color={colors.action} fontWeight="$bold">{t('auth.continueAsGuest')}</ButtonText>
-                            </Button>
-                        </VStack>
-                    )}
+                    {/* divider if needed */}
                 </VStack>
             </Center>
 

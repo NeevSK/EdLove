@@ -24,7 +24,6 @@ import { Theme, useThemedColors, useEnvironment } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { Image, Dimensions } from 'react-native';
 import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
-import AuthScreen from './AuthScreen';
 import { ScreenWrapper } from '@repo/ui';
 import { authAPI, handleAPIError } from '@repo/core';
 import { LanguageUtils } from '../utils/LanguageUtils';
@@ -39,14 +38,13 @@ const LANGUAGES = [
 ];
 
 interface WelcomeScreenProps {
-    onNext?: () => void;
-    initialShowAuth?: boolean;
+    onLogin?: () => void;
+    onGuest?: () => void;
 }
 
-export default function WelcomeScreen({ onNext, initialShowAuth = false }: WelcomeScreenProps) {
+export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) {
     const { t, i18n } = useTranslation();
     const colors = useThemedColors();
-    const [showAuth, setShowAuth] = useState(initialShowAuth);
     const [acceptedTerms, setAcceptedTerms] = useState(true);
     const [isConnecting, setIsConnecting] = useState(false);
     const toast = useToast();
@@ -80,7 +78,7 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
         setIsConnecting(true);
         try {
             await authAPI.signInAnonymously();
-            if (onNext) onNext();
+            if (onGuest) onGuest();
         } catch (error) {
             handleAPIError(error);
             setIsConnecting(false);
@@ -94,21 +92,9 @@ export default function WelcomeScreen({ onNext, initialShowAuth = false }: Welco
             return;
         }
         hapticLight();
-        setShowAuth(true);
+        // Identity Phase: Navigate to Auth screen
+        if (onLogin) onLogin();
     };
-
-    if (showAuth) {
-        return (
-            <AuthScreen
-                isAnonymous={true}
-                onContinueAsGuest={handleStartExploring}
-                onSuccess={() => {
-                    onNext?.();
-                }}
-                onBack={() => setShowAuth(false)}
-            />
-        );
-    }
 
     return (
         <ScreenWrapper scroll>

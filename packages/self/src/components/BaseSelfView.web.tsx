@@ -37,7 +37,7 @@ export function BaseSelfView({
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={webStyles.categoryTabs}
                 >
-                    {domains.map((domain) => (
+                    {domains?.map((domain) => (
                         <View
                             key={domain.id}
                             onPointerDown={() => {
@@ -88,7 +88,13 @@ export function BaseSelfView({
                         </View>
                     )}
 
-                    {activeDomain && !focusedItemId && (
+                    {activeDomain?.content && !focusedItemId && (
+                        <View style={webStyles.activeDomainContainer}>
+                            {activeDomain.content}
+                        </View>
+                    )}
+
+                    {activeDomain?.features && !focusedItemId && !activeDomain.content && (
                         <View style={webStyles.activeDomainContainer}>
                             <VStack space="xl">
                                 {activeDomain.features.map((feature) => (

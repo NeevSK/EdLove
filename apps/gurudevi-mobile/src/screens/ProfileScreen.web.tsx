@@ -26,6 +26,17 @@ import {
 } from '@repo/profile';
 import { QRCodeGenerator } from '@repo/scanner-kit';
 
+// Safe icon renderer for web
+const SafeIcon = ({ icon: Icon, size = 20, color = 'currentColor', className = '' }: any) => {
+    if (!Icon) return null;
+    try {
+        return <Icon size={size} color={color} className={className} />;
+    } catch (e) {
+        console.warn('Icon render failed:', e);
+        return null;
+    }
+};
+
 export default function ProfileScreenWeb() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
@@ -174,9 +185,21 @@ export default function ProfileScreenWeb() {
                                                 {completionResult.nextHint}
                                             </p>
                                         )}
+                                        <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                                            {completionResult.isComplete ? (
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--success)', fontSize: '14px', fontWeight: 600 }}>
+                                                    <SafeIcon icon={CheckCircle2} size={18} />
+                                                    {t('profile.completion.done')}
+                                                </div>
+                                            ) : (
+                                                <div style={{ padding: '4px 12px', background: 'var(--warning-surface)', color: 'var(--warning)', borderRadius: '100px', fontSize: '12px', fontWeight: 600 }}>
+                                                    {t('profile.completion.incomplete')}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 )}
-                                {completionResult.isComplete && (
+                                {/* Removed: completionResult.isComplete && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                                         <CheckCircle2 size={16} color="var(--moss)" />
                                         <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--moss)' }}>

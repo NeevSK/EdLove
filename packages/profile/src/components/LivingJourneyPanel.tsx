@@ -18,7 +18,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform, ActivityIndicator } from 'react-native';
 import {
     Box,
     VStack,
@@ -294,20 +294,19 @@ export default function LivingJourneyPanel({ userId, role }: LivingJourneyPanelP
         // Growth state requires DB fetch
         Promise.all([
             userGrowthStateAPI.getOrCreateState(userId),
+            // @ts-ignore - moments might be optional or different type
             userGrowthStateAPI.getWhisperedMoments(userId),
         ])
             .then(([state, moments]) => {
                 setGrowthState(state);
                 setWhisperedMoments(moments ?? []);
             })
-            .catch(() => {
+            .catch((err) => {
+                console.error('Error fetching growth journey:', err);
                 // Silent failure — panel shows gracefully with defaults
             })
             .finally(() => setLoading(false));
     }, [userId]);
-
-    const isTeacherRole = ['teacher', 'principal', 'grade_head', 'section_head', 'developer'].includes(role);
-    const isStudentRole = role === 'student';
 
     if (loading) {
         return (
@@ -325,22 +324,38 @@ export default function LivingJourneyPanel({ userId, role }: LivingJourneyPanelP
                     justifyContent: 'center',
                 }}
             >
-                <Text size="sm" color={colors.textTertiary} style={{ fontStyle: 'italic' }}>
-                    {t('journey.loading')}
-                </Text>
+                <ActivityIndicator color={colors.action} />
             </Box>
         );
     }
 
-    const bhumi = growthState?.bhumi_stage ?? 'bijam';
-    const banyan = (growthState?.banyan_stage as BanyanStage | undefined) ?? 'sapling';
-    const river = (growthState?.river_stage as RiverStage | undefined) ?? 'trickle';
-    const crystal = (growthState?.crystal_tier as CrystalTier | undefined) ?? 'spark';
+    // 1. Data Guards (Defensive Coding)
+    if (!growthState) {
+        return (
+            <Box sx={{ p: Theme.spacing.xl, alignItems: 'center' }}>
+                <Text color={colors.textSecondary}>{t('profile.noJourneyData') || 'No journey data found'}</Text>
+            </Box>
+        );
+    }
 
-    const bhumiData = BHUMI_NARRATIVES[bhumi];
+    const bhumi = growthState.bhumi_stage ?? 'bijam'; // Kept original logic for bhumi
+    const banyan = (growthState.banyan_stage as BanyanStage | undefined) ?? 'sapling'; // Kept original logic for banyan
+    const river = (growthState.river_stage as RiverStage | undefined) ?? 'trickle'; // Kept original logic for river
+    const crystal = (growthState.crystal_tier as CrystalTier | undefined) ?? 'spark'; // Kept original logic for crystal
+
+    const bhumiData = BHUMI_NARRATIVES[bhumi]; // This bhumiData is for narratives, not the growthState itself.
+
+    const isTeacherRole = ['teacher', 'principal', 'grade_head', 'section_head', 'developer'].includes(role);
+    const isStudentRole = role === 'student';
+
+    // 2. Animation Gating (Ensuring web-safe defaults)
+    const enteringAnimation = Platform.OS === 'web'
+        ? undefined  // Skip complex entering animations on web if they cause "element" issues
+        : FadeInDown.springify();
+
 
     return (
-        <Animated.View entering={FadeInDown.delay(300).duration(500)}>
+        <Animated.View entering={enteringAnimation}>
             <Box
                 sx={{
                     backgroundColor: colors.secondary,

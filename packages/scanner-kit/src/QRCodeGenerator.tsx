@@ -52,42 +52,40 @@ export default function QRCodeGenerator({
         }
     }, [value, errorCorrectionLevel]);
 
-    if (!matrix) return null;
+    if (!matrix || matrix.size === 0) {
+        return (
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+                <Text>Invalid QR data</Text>
+            </View>
+        );
+    }
 
     const sizeCells = matrix.size;
     const cellSize = size / sizeCells;
 
-    // Build SVG <Rect> elements for each dark module
-    const rects: React.ReactElement[] = [];
-    const data = matrix.data; // Uint8Array, row-major order
-
-    for (let row = 0; row < sizeCells; row++) {
-        for (let col = 0; col < sizeCells; col++) {
-            if (data[row * sizeCells + col]) {
-                rects.push(
-                    <Rect
-                        key={`${row}-${col}`}
-                        x={col * cellSize}
-                        y={row * cellSize}
-                        width={cellSize}
-                        height={cellSize}
-                        fill={color}
-                    />
-                );
-            }
-        }
-    }
-
     return (
-        <View style={styles.center}>
-            <View style={[styles.container, { backgroundColor, borderRadius, padding }]}>
-                <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-                    {/* Background fill */}
-                    <Rect x="0" y="0" width={size} height={size} fill={backgroundColor} />
-                    {/* QR modules */}
-                    {rects}
-                </Svg>
-            </View>
+        <View style={[styles.center, { borderRadius, padding, backgroundColor }]}>
+            <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+                {/* Background fill */}
+                <Rect x="0" y="0" width={size} height={size} fill={backgroundColor} />
+                
+                {/* QR modules */}
+                {[...matrix.data].map((cell, index) => {
+                    if (!cell) return null;
+                    const row = Math.floor(index / sizeCells);
+                    const col = index % sizeCells;
+                    return (
+                        <Rect
+                            key={`${row}-${col}`}
+                            x={col * cellSize}
+                            y={row * cellSize}
+                            width={cellSize}
+                            height={cellSize}
+                            fill={color}
+                        />
+                    );
+                })}
+            </Svg>
             {label && (
                 <Text style={[styles.label, { color }]}>{label}</Text>
             )}

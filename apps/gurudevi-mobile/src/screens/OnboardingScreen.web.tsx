@@ -22,9 +22,6 @@ import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserRole, supabase, identityAPI } from '@repo/core';
 import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
-import { OrientationCaptureStep } from '@repo/self';
-import type { OrientationSeeds } from '@repo/profile';
-import AuthScreen from './AuthScreen';
 import { LanguageUtils } from '../utils/LanguageUtils';
 
 // ─────────────────────────────────────────────
@@ -50,15 +47,13 @@ const ROLES = [
     { value: 'principal', emoji: '🏫', descKey: 'onboarding.roleDesc.principal' },
 ];
 
-const TOTAL_STEPS = 9;
+const TOTAL_STEPS = 7; // 0: Name, 1: Role, 2-6: Tour
 
-// Visible steps for the left-panel progress tracker (explicit indices, no fragile array lookups)
+// Visible steps for the left-panel progress tracker
 const TRACKED_STEPS = [
     { idx: 0, label: 'Name' },
     { idx: 1, label: 'Role' },
-    { idx: 2, label: 'Values' },
-    { idx: 3, label: 'Tour' },
-    { idx: 8, label: 'Account' },
+    { idx: 2, label: 'Tour' },
 ] as const;
 
 // ─────────────────────────────────────────────
@@ -79,7 +74,6 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
     const [currentStep, setCurrentStep] = useState(0);
     const [name, setName] = useState('');
     const [role, setRole] = useState<UserRole>('teacher');
-    const [orientationSeeds, setOrientationSeeds] = useState<OrientationSeeds | null>(null);
     const [isCompleting, setIsCompleting] = useState(false);
     const [completionError, setCompletionError] = useState<string | null>(null);
 
@@ -98,9 +92,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                     if (progress.userId === internalId || !progress.userId || isAnonymous) {
                         if (progress.name) setName(progress.name);
                         if (progress.role) setRole(progress.role as UserRole);
-                        if (progress.orientationSeeds) setOrientationSeeds(progress.orientationSeeds);
-
-                        if (typeof progress.step === 'number' && progress.step >= 0 && progress.step < 8) {
+                        if (typeof progress.step === 'number' && progress.step >= 0 && progress.step < 7) {
                             setCurrentStep(progress.step);
                             return;
                         }
@@ -161,19 +153,26 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
     ], [t]);
 
     // ── Navigation helpers ────────────────────────────────────────────────
-    const handleNext = () => { hapticLight(); setCurrentStep(prev => prev + 1); };
+    const handleNext = () => {
+        if (currentStep === 6) { // Final step (Tour 4)
+            handleCompleteOnboarding();
+        } else {
+            setCurrentStep(prev => prev + 1);
+            hapticLight();
+        }
+    };
     const handleBack = () => { hapticLight(); setCurrentStep(prev => Math.max(0, prev - 1)); };
-    const handleSkipTour = () => { hapticLight(); setCurrentStep(8); };
+    const handleSkipTour = () => { hapticLight(); handleCompleteOnboarding(); };
 
     // Save progress whenever step/name/role/seeds change
     useEffect(() => {
         if (currentStep === 0 && !name) return;
         identityAPI.getMyInternalId().then((userId) => {
             AsyncStorage.setItem('onboarding_progress', JSON.stringify({
-                userId, step: currentStep, name, role, orientationSeeds,
+                userId, step: currentStep, name, role,
             })).catch(() => {/* silent */ });
         });
-    }, [currentStep, name, role, orientationSeeds]);
+    }, [currentStep, name, role]);
 
     const changeLanguage = async (code: string) => {
         hapticLight();
@@ -218,7 +217,6 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                     onboarding_completed: true,
                     onboarding_completed_at: new Date().toISOString(),
                     is_anonymous: isAnonymous,
-                    ...(orientationSeeds ? { orientation_seeds: orientationSeeds } : {}),
                 });
 
             if (profileError) throw profileError;
@@ -234,26 +232,6 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
         }
     };
 
-    // ── Step 8: full-screen Auth ──────────────────────────────────────────
-    if (currentStep === 8) {
-        return (
-            <>
-                {completionError && (
-                    <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '12px 16px', textAlign: 'center', fontSize: 14 }}>
-                        {completionError}
-                        <button onClick={() => setCompletionError(null)} style={{ marginLeft: 12, fontWeight: 'bold', background: 'none', border: 'none', cursor: 'pointer', color: '#991B1B' }}>✕</button>
-                    </div>
-                )}
-                <AuthScreen
-                    onboardingData={{ name, role }}
-                    isAnonymous={isAnonymous}
-                    onContinueAsGuest={handleCompleteOnboarding}
-                    onSuccess={handleCompleteOnboarding}
-                    onBack={() => setCurrentStep(7)}
-                />
-            </>
-        );
-    }
 
     // ── Step content renderer ─────────────────────────────────────────────
     const renderStep = () => {
@@ -337,27 +315,10 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
             );
         }
 
-        // Step 2: Orientation (reuse shared component)
-        if (currentStep === 2) {
-            return (
-                <div className="ob-step ob-step-orientation">
-                    <OrientationCaptureStep
-                        currentStep={2}
-                        totalSteps={TOTAL_STEPS}
-                        onComplete={(seeds) => {
-                            setOrientationSeeds(seeds);
-                            setCurrentStep(3);
-                        }}
-                        onSkip={() => setCurrentStep(3)}
-                        onBack={() => setCurrentStep(1)}
-                    />
-                </div>
-            );
-        }
 
-        // Steps 3–7: Tour slides
-        if (currentStep >= 3 && currentStep <= 7) {
-            const screen = tourScreens[currentStep - 3];
+        // Steps 2–6: Tour slides
+        if (currentStep >= 2 && currentStep <= 6) {
+            const screen = tourScreens[currentStep - 2];
             return (
                 <div className="ob-step">
                     <div className="ob-step-icon">{screen.emoji}</div>
@@ -369,7 +330,7 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                             ← {t('onboarding.back')}
                         </button>
                         <button className="ob-btn-primary" onClick={handleNext}>
-                            {t('onboarding.next')} →
+                            {currentStep === 6 ? t('onboarding.complete') : t('onboarding.next')} →
                         </button>
                     </div>
                     <button className="ob-btn-link" onClick={handleSkipTour}>
