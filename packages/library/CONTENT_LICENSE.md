@@ -14,7 +14,8 @@ the accepted license values, their meanings, and the obligations each imposes.
 | ------------------- | ------------------------------------------------------------------------------ | --------------------- | --------------- | ------------ |
 | `public_domain`     | No copyright; freely usable (Project Gutenberg, US Govt works, pre-1927 texts) | No                    | Yes             | Yes          |
 | `cc_by`             | Creative Commons Attribution 4.0                                               | Yes                   | Yes             | Yes          |
-| `cc_by_sa`          | Creative Commons Attribution-ShareAlike 4.0 (Wikipedia, OpenStreetMap)         | Yes                   | Yes             | SA only      |
+| `cc_by_sa`          | Creative Commons Attribution-ShareAlike 4.0 (Wikipedia)                        | Yes                   | Yes             | SA only      |
+| `odbl`              | Open Database License 1.0 (OpenStreetMap data)                                 | Yes                   | Yes             | SA only (database) |
 | `cc_by_nc`          | Creative Commons Attribution-NonCommercial 4.0                                 | Yes                   | No              | Yes          |
 | `cc_by_nc_sa`       | Creative Commons Attribution-NonCommercial-ShareAlike (Khan Academy, Code.org) | Yes                   | No              | SA only      |
 | `cc_by_nc_nd`       | Creative Commons Attribution-NonCommercial-NoDerivatives (TED-Ed lessons)      | Yes                   | No              | No           |
@@ -30,8 +31,8 @@ the accepted license values, their meanings, and the obligations each imposes.
 - Notice pattern: `"Wikipedia CC BY-SA 4.0. Free to read, share and adapt with attribution."`
 
 ### OpenStreetMap
-- License: `cc_by_sa`
-- Notice pattern: `"© OpenStreetMap contributors. CC BY-SA 2.0. Free to use with attribution."`
+- License: `odbl`
+- Notice pattern: `"© OpenStreetMap contributors. ODbL 1.0. Free to use, share, and adapt the data with attribution and share-alike for derived databases."`
 
 ### Project Gutenberg
 - License: `public_domain`
