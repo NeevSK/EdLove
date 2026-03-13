@@ -362,7 +362,7 @@ INSERT INTO public.nodes (
     true, false, true, true,
     'Architect', 'admin',
     '© Ministry of Education, Sri Lanka',
-    'government_document',
+    'institutional',
     ARRAY['policy','ministry','moe','reform','2024','official'],
     0, 0, 'working'
 );
