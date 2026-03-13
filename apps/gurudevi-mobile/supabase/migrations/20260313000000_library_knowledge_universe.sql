@@ -331,6 +331,14 @@ SECURITY DEFINER
 SET search_path = public, pg_temp
 AS $$
 BEGIN
+    -- Ensure only privileged roles can use this SECURITY DEFINER function.
+    -- The role name 'library_admin' should correspond to a trusted role that
+    -- is allowed to update public.nodes on behalf of other users.
+    IF NOT is_member_of_role(SESSION_USER, 'library_admin') THEN
+        RAISE EXCEPTION 'insufficient_privilege: role % is not allowed to report broken links', SESSION_USER
+            USING ERRCODE = '42501';
+    END IF;
+
     UPDATE public.nodes
     SET
         fail_count  = fail_count + 1,
