@@ -111,7 +111,7 @@ def mkrow(type_num: int, row_num: int, **fields: object) -> str:
     {sarr(fields.get('tags', []))},
     {int(fields.get('views', 0))},
     {int(fields.get('endorsements', 0))},
-    {q(fields.get('link_status', 'working'))}
+    {q(fields.get('link_status', 'unknown'))}
 )"""
 
 
