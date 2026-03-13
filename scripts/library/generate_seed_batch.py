@@ -119,8 +119,6 @@ def validate_sql(content: str) -> list[str]:
     errors: list[str] = []
     if "\u0dce" in content:
         errors.append("Detected forbidden U+0DCE codepoint.")
-    if re.search(r"youtube\\.com/watch\\?v=", content, flags=re.IGNORECASE):
-        errors.append("Detected forbidden youtube.com/watch?v= URL.")
 
     insert_blocks = list(INSERT_BLOCK_PATTERN.finditer(content))
     if not insert_blocks:
