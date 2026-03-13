@@ -273,48 +273,72 @@ BEGIN
         RETURN;
     END IF;
 
-    -- Map layers first (exact name match has priority)
+    -- Map layers first (exact name match has priority), then knowledge nodes,
+    -- enforcing a single overall LIMIT match_count across both sources.
     RETURN QUERY
     SELECT
-        ml.id,
-        ml.name,
-        'layer'::TEXT           AS result_type,
-        ml.layer_type,
-        ml.projection_type,
-        '{}'::TEXT[]            AS subjects,
-        '{}'::TEXT[]            AS tags
-    FROM public.map_layers ml
-    WHERE
-        ml.is_active = true
-        AND (
-            ml.name       ILIKE '%' || safe_query || '%'
-            OR ml.layer_type ILIKE '%' || safe_query || '%'
-            OR ml.description ILIKE '%' || safe_query || '%'
-        )
-    ORDER BY ml.name
-    LIMIT match_count;
+        id,
+        name,
+        result_type,
+        layer_type,
+        projection_type,
+        subjects,
+        tags
+    FROM (
+        -- Map layers have priority and are ordered by name
+        SELECT
+            ml.id,
+            ml.name,
+            'layer'::TEXT           AS result_type,
+            ml.layer_type,
+            ml.projection_type,
+            '{}'::TEXT[]            AS subjects,
+            '{}'::TEXT[]            AS tags,
+            1                       AS sort_group,
+            ml.name                 AS sort_name,
+            NULL::REAL              AS sort_rank,
+            NULL::BIGINT            AS sort_views
+        FROM public.map_layers ml
+        WHERE
+            ml.is_active = true
+            AND (
+                ml.name        ILIKE '%' || safe_query || '%'
+                OR ml.layer_type ILIKE '%' || safe_query || '%'
+                OR ml.description ILIKE '%' || safe_query || '%'
+            )
 
-    -- Knowledge nodes (FTS or title/tag match)
-    RETURN QUERY
-    SELECT
-        n.id,
-        n.title                 AS name,
-        'resource'::TEXT        AS result_type,
-        n.type                  AS layer_type,
-        NULL::TEXT              AS projection_type,
-        n.subjects,
-        n.tags
-    FROM public.nodes n
-    WHERE
-        n.verified = true
-        AND (
-            n.search_vector @@ websearch_to_tsquery('simple', safe_query)
-            OR n.title       ILIKE '%' || safe_query || '%'
-            OR n.description ILIKE '%' || safe_query || '%'
-        )
+        UNION ALL
+
+        -- Knowledge nodes (FTS or title/tag match), ordered by relevance and views
+        SELECT
+            n.id,
+            n.title                 AS name,
+            'resource'::TEXT        AS result_type,
+            n.type                  AS layer_type,
+            NULL::TEXT              AS projection_type,
+            n.subjects,
+            n.tags,
+            2                       AS sort_group,
+            NULL::TEXT              AS sort_name,
+            ts_rank_cd(
+                n.search_vector,
+                websearch_to_tsquery('simple', safe_query)
+            )                       AS sort_rank,
+            n.views                 AS sort_views
+        FROM public.nodes n
+        WHERE
+            n.verified = true
+            AND (
+                n.search_vector @@ websearch_to_tsquery('simple', safe_query)
+                OR n.title       ILIKE '%' || safe_query || '%'
+                OR n.description ILIKE '%' || safe_query || '%'
+            )
+    ) AS combined
     ORDER BY
-        ts_rank_cd(n.search_vector, websearch_to_tsquery('simple', safe_query)) DESC,
-        n.views DESC
+        combined.sort_group,
+        combined.sort_name,
+        combined.sort_rank DESC,
+        combined.sort_views DESC
     LIMIT match_count;
 END;
 $$;
