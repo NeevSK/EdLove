@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { VStack } from '@repo/ui';
+import { VStack, WebScreenHeader } from '@repo/ui';
 import { BaseSelfViewProps } from './BaseSelfView.types';
 
 /**
@@ -9,6 +9,7 @@ import { BaseSelfViewProps } from './BaseSelfView.types';
  */
 export function BaseSelfView({
     role,
+    title = 'Inner Sanctuary',
     description,
     domains,
     sideBar,
@@ -25,12 +26,8 @@ export function BaseSelfView({
 
     return (
         <View style={[webStyles.container, { backgroundColor: surfaceBg }]}>
-            {/* Fixed Control Panel (Top Hub) */}
+            {/* Fixed Control Panel (Top Hub) - Category Navigation */}
             <View style={webStyles.hubHeader}>
-                <View style={webStyles.headerInfo}>
-                    <Text style={webStyles.roleTag}>{role.toUpperCase()}</Text>
-                    <Text style={webStyles.description}>{description}</Text>
-                </View>
 
                 <ScrollView
                     horizontal
@@ -84,13 +81,13 @@ export function BaseSelfView({
                                 </View>
                             </View>
                             {/* Render the selected feature content */}
-                            {activeDomain?.features.find(f => f.id === focusedItemId)?.content || null}
+                            {activeDomain?.features?.find(f => f.id === focusedItemId)?.content || null}
                         </View>
                     )}
 
                     {activeDomain?.content && !focusedItemId && (
                         <View style={webStyles.activeDomainContainer}>
-                            {activeDomain.content}
+                            {activeDomain?.content}
                         </View>
                     )}
 

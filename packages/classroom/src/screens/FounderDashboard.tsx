@@ -38,7 +38,8 @@ import { useTranslation } from 'react-i18next';
 import { useClassroomRoleData } from '../hooks/useClassroomRoleData';
 import { useEcosystemStats } from '../hooks/useEcosystemStats';
 import { GlobalCreateModal } from '../components';
-import { LotusPetalFAB } from '@repo/ui';
+import { hapticLight, useRegisterFAB } from '@repo/ui';
+import { Wind } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -70,6 +71,14 @@ export default function FounderDashboard() {
         console.log(`Successfully created ${type}:`, data);
         refreshData();
     };
+
+    // Register FAB globally
+    useRegisterFAB({
+        tabType: 'founder',
+        onPress: () => setIsCreateModalOpen(true),
+        icon: <Plus size={24} color="#FFF" />,
+        visible: true
+    });
 
     return (
         <ScreenWrapper>
@@ -172,6 +181,22 @@ export default function FounderDashboard() {
                                 />
                             </HStack>
                         )}
+
+                        {/* Quick Actions */}
+                        <HStack sx={{ gap: Theme.spacing.md, marginTop: Theme.spacing.sm }}>
+                            <QuickAction
+                                icon={Wind}
+                                label={t('founder.breathing') || 'Breathing Reset'}
+                                onPress={() => {
+                                    const { setBreathingOpen } = useStore.getState();
+                                    setBreathingOpen(true);
+                                }}
+                                color={Theme.colors.lotusDeepPink}
+                            />
+                            {/* Placeholder for future founder quick actions */}
+                            <Box sx={{ flex: 1 }} />
+                            <Box sx={{ flex: 1 }} />
+                        </HStack>
                     </VStack>
 
                     {/* 2. School Gallery */}
@@ -239,11 +264,39 @@ export default function FounderDashboard() {
                 availableSchools={schools}
             />
 
-            <LotusPetalFAB
-                onPress={() => setIsCreateModalOpen(true)}
-                icon={<Plus size={24} color="#FFF" />}
-            />
         </ScreenWrapper>
+    );
+}
+
+/**
+ * QuickAction Sub-component
+ */
+function QuickAction({ icon: LucideIcon, label, onPress, color }: { icon: any, label: string, onPress: () => void, color: string }) {
+    const colors = useThemedColors();
+    return (
+        <VStack alignItems="center" sx={{ flex: 1, gap: Theme.spacing.xs }}>
+            <TouchableOpacity
+                onPress={() => {
+                    hapticLight();
+                    onPress();
+                }}
+                style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: Theme.corners.comfortable,
+                    backgroundColor: colors.secondary,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderWidth: 1,
+                    borderColor: colors.border
+                }}
+            >
+                <LucideIcon color={color} size={28} />
+            </TouchableOpacity>
+            <Text color={colors.text} sx={{ textAlign: 'center', fontSize: 11, fontWeight: '700' }}>
+                {label}
+            </Text>
+        </VStack>
     );
 }
 

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PrincipalSchoolView Component (Enhanced Dashboard)
  * 
  * School Overview Dashboard for Principals
@@ -23,9 +23,10 @@ import {
     VStack,
     HStack,
     SanctuaryButton,
+    Button,
+    ButtonText,
     ScrollView,
     Icon,
-    LotusPetalFAB,
     ScreenWrapper,
     SandboxBanner,
     SkeletonCard,
@@ -42,7 +43,9 @@ import {
     CalendarCheck,
     AlertCircle,
     NotebookPen,
-    School
+    School,
+    MessageSquare,
+    Wind
 } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
@@ -63,12 +66,21 @@ import {
     InstitutionalCalendarSection,
     PrincipalObservationsSection,
     ManagementStation,
+    CreateSchoolModal,
 } from '../components';
 import PrincipalNotes from '../components/principal/PrincipalNotes';
 import AcademicCycleManager from './AcademicCycleManager';
 import AttendanceReportScreen from './AttendanceReportScreen';
 import RoleInitialState from '../components/RoleInitialState';
-import { api, useUserRole, SchoolStats, StudentAttendancePulse, useFeatureAccess } from '@repo/core';
+import {
+    api,
+    supabase,
+    useUserRole,
+    SchoolStats,
+    StudentAttendancePulse,
+    useFeatureAccess
+} from '@repo/core';
+import { useRegisterFAB } from '@repo/ui';
 
 interface PrincipalSchoolViewProps {
     schoolId: string;
@@ -80,16 +92,41 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
     const { t } = useTranslation();
     const colors = useThemedColors();
     const { isDemoMode } = useStore();
-    const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>(); // Added for navigation
+    const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
 
     // Resilient Hook
     const { school, stats, isLoading, error, refreshData } = useSchoolStats(schoolId);
     const { generateTimetable, isThinking, lastTimetableDraft } = useAIAgent();
     const { isGuest } = useFeatureAccess();
+    const { setBreathingOpen } = useStore();
 
     const [activeView, setActiveView] = useState<
         'main' | 'hierarchy' | 'invites' | 'notes' | 'cycles' | 'attendance_report'
     >('main');
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+    // Register FAB actions globally
+    useRegisterFAB({
+        tabType: 'principal',
+        visible: !isGuest && schoolId !== 'demo-school' && activeView === 'main',
+        actions: [
+            {
+                label: t('principal.actions.hierarchy') || 'Manage Hierarchy',
+                onPress: () => setActiveView('hierarchy'),
+                icon: Users
+            },
+            {
+                label: t('principal.actions.invites') || 'Manage Invites',
+                onPress: () => setActiveView('invites'),
+                icon: FileText
+            },
+            {
+                label: t('principal.actions.notes') || 'School Logbook',
+                onPress: () => setActiveView('notes'),
+                icon: NotebookPen
+            }
+        ]
+    });
 
     if (activeView === 'hierarchy') {
         return (
@@ -230,7 +267,7 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
 
     return (
         <ScreenWrapper scroll={false} noTopInset={true}>
-            {isDemoMode && <SandboxBanner />}
+            {schoolId === 'demo-school' && <SandboxBanner />}
             <GlobalHeader
                 title={t('classroom.schoolManagement') || 'School Management'}
                 subtitle={school?.name}
@@ -283,8 +320,15 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                                 <QuickAction
                                     icon={FileText}
                                     label={t('principal.actions.invites') || 'Invites'}
+                                    onBack={() => setActiveView('main')}
                                     onPress={() => setActiveView('invites')}
                                     color={Theme.colors.sageGreen}
+                                />
+                                <QuickAction
+                                    icon={Wind}
+                                    label={t('principal.actions.breathing') || 'Breathing'}
+                                    onPress={() => setBreathingOpen(true)}
+                                    color={Theme.colors.lotusDeepPink}
                                 />
                                 <QuickAction
                                     icon={CalendarCheck}
@@ -302,6 +346,65 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                             </HStack>
                         </VStack>
                     </Animated.View>
+
+                    {/* Community HQ Quick Link - Only for real schools */}
+                    {schoolId !== 'demo-school' && !isGuest && (
+                        <Animated.View entering={FadeInDown.delay(150)}>
+                            <Box
+                                sx={{
+                                    padding: Theme.spacing.lg,
+                                    backgroundColor: colors.secondary,
+                                    borderRadius: Theme.corners.generous,
+                                    borderWidth: 1,
+                                    borderColor: colors.border,
+                                    marginBottom: Theme.spacing.md
+                                }}
+                            >
+                                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <VStack sx={{ gap: 4, flex: 1 }}>
+                                        <Heading size="sm" color={colors.text}>Community HQ</Heading>
+                                        <Text sx={{ fontSize: 13, color: colors.textSecondary }}>
+                                            Visit the official community group for your sanctuary.
+                                        </Text>
+                                    </VStack>
+                                    <Button
+                                        onPress={async () => {
+                                            try {
+                                                const { data: groups } = await supabase
+                                                    .from('community_groups')
+                                                    .select('id')
+                                                    .eq('school_id', schoolId)
+                                                    .limit(1);
+                                                
+                                                const groupId = groups?.[0]?.id;
+                                                if (groupId) {
+                                                    // @ts-ignore
+                                                    navigation.navigate('CommunityStack', {
+                                                        screen: 'GroupDetails',
+                                                        params: { groupId }
+                                                    });
+                                                } else {
+                                                    // @ts-ignore
+                                                    navigation.navigate('CommunityStack');
+                                                }
+                                            } catch (err) {
+                                                // @ts-ignore
+                                                navigation.navigate('CommunityStack');
+                                            }
+                                        }}
+                                        variant="outline"
+                                        size="sm"
+                                        sx={{ borderColor: colors.border }}
+                                    >
+                                        <HStack sx={{ gap: 8, alignItems: 'center' }}>
+                                            <Icon as={MessageSquare} size="sm" color={colors.textSecondary} />
+                                            <ButtonText color={colors.textSecondary}>Visit HQ</ButtonText>
+                                        </HStack>
+                                    </Button>
+                                </HStack>
+                            </Box>
+                        </Animated.View>
+                    )}
 
                     {/* Stats Dashboard */}
                     <Animated.View entering={FadeInDown.delay(200)}>
@@ -430,16 +533,27 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                         <DashboardEcho schoolId={schoolId} />
                     </Box>
 
-                    {/* Guest Invitation */}
-                    {isGuest && (
-                        <PositiveInvitation
-                            type="guest"
-                            context="classroom"
-                            onAction={() => {
-                                hapticLight();
-                                navigation.navigate('SchoolCreation');
-                            }}
-                        />
+                    {/* School Creation Invitation - Only for guests or those explicitly in demo school */}
+                    {(isGuest || (schoolId === 'demo-school' && !school)) && (
+                        <Box sx={{ marginTop: Theme.spacing.xl, marginBottom: Theme.spacing.xl }}>
+                            <PositiveInvitation
+                                type={isGuest ? 'guest' : 'empty'}
+                                title={isGuest ? 'Ready to lead your own institution? 🏫' : 'Establish your own Sanctuary 🌿'}
+                                description={isGuest 
+                                    ? 'Sign up to create your own school, manage staff, and track student growth with AI-powered insights.'
+                                    : 'You are currently exploring a demo. Ready to build your own digital foundations?'
+                                }
+                                actionLabel={isGuest ? 'Create Your School' : 'Start Creation Flow'}
+                                onAction={() => {
+                                    hapticLight();
+                                    if (isGuest) {
+                                        navigation.navigate('Auth' as any);
+                                    } else {
+                                        setIsCreateModalOpen(true);
+                                    }
+                                }}
+                            />
+                        </Box>
                     )}
 
                     {/* Footer Info */}
@@ -450,12 +564,15 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                 </VStack>
             </ScrollView>
 
-            <LotusPetalFAB
-                currentTab="principal"
-                onPress={() => navigation.navigate('SchoolCreation' as any)}
+            <CreateSchoolModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                onSuccess={(newSchool) => {
+                    if (onRefresh) onRefresh();
+                }}
             />
 
-            {/* CreateSchoolModal removed - now uses SchoolCreationScreen */}
+            {/* School creation is handled via CreateSchoolModal for robust cross-platform experience */}
         </ScreenWrapper >
     );
 }

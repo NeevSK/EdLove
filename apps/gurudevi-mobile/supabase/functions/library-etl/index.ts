@@ -32,23 +32,28 @@ Deno.serve(async (req: Request) => {
         if (action === 'enrich') {
             // 1. Fetch resource
             const { data: resource, error: fetchError } = await supabase
-                .from('library_resources')
+                .from('nodes')
                 .select('*')
                 .eq('id', resourceId)
                 .single();
 
             if (fetchError || !resource) throw new Error('Resource not found');
 
-            // 2. Build text for embedding — title + description + subject + existing topics
+            // 2. Build text for embedding — title + description + subjects + existing topics
+            // Include localized strings for better semantic density
             const textForEmbedding = [
                 resource.title,
+                resource.title_si,
+                resource.title_ta,
                 resource.description ?? '',
-                resource.subject ?? '',
+                resource.description_si ?? '',
+                resource.description_ta ?? '',
+                ...(resource.subjects ?? []),
                 ...(resource.topics ?? []),
             ].filter(Boolean).join(' | ');
 
             let embedding: number[] | null = null;
-            let enrichedTopics: string[] = [...(resource.topics ?? []), resource.subject].filter(Boolean);
+            let enrichedTopics: string[] = [...(resource.topics ?? []), ...(resource.subjects ?? [])].filter(Boolean);
 
             if (openAiKey) {
                 // 3a. Extract topics using GPT-4o-mini (fast, cheap)
@@ -65,7 +70,7 @@ Deno.serve(async (req: Request) => {
                                 },
                                 {
                                     role: 'user',
-                                    content: `Title: ${resource.title}\nDescription: ${resource.description ?? 'N/A'}\nSubject: ${resource.subject ?? 'N/A'}`,
+                                    content: `Title: ${resource.title}\nDescription: ${resource.description ?? 'N/A'}\nSubjects: ${resource.subjects?.join(', ') ?? 'N/A'}`,
                                 },
                             ],
                             max_tokens: 120,
@@ -106,15 +111,15 @@ Deno.serve(async (req: Request) => {
 
             // 4. Update resource with enriched topics + embedding
             const updatePayload: Record<string, any> = {
-                topics: enrichedTopics,
-                verified: false, // Waits for human curator review
+                topics: [...new Set(enrichedTopics)], // dedupe
+                verified: resource.is_community ? false : true, // Auto-verify core nodes, wait for review on community
             };
             if (embedding) {
                 updatePayload.embedding = embedding;
             }
 
             const { error: updateError } = await supabase
-                .from('library_resources')
+                .from('nodes')
                 .update(updatePayload)
                 .eq('id', resourceId);
 

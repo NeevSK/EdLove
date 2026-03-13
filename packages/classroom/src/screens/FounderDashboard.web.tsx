@@ -17,12 +17,12 @@ import { useStore, ClassroomStackParamList, School } from '@repo/core';
 import { SkeletonCard } from '@repo/ui';
 import { useEcosystemStats } from '../hooks/useEcosystemStats';
 import GlobalCreateModal from '../components/GlobalCreateModal.web';
-import { Activity, Building, LayoutGrid, Users, ArrowUpRight, Plus, Globe, Zap, BookOpen, MessageSquare, CheckSquare, TrendingUp } from 'lucide-react-native';
+import { Activity, Building, LayoutGrid, Users, ArrowUpRight, Plus, Globe, Zap, BookOpen, MessageSquare, CheckSquare, TrendingUp, Wind } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 export default function FounderDashboard() {
     const { t } = useTranslation();
-    const { user } = useStore();
+    const { user, setBreathingOpen } = useStore();
     const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
     const { stats, schools, isLoading, refreshData } = useEcosystemStats();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -73,6 +73,12 @@ export default function FounderDashboard() {
                         style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', borderRadius: '12px', border: 'none', background: 'var(--sanctuary-saffron)', color: 'white', fontWeight: '700', cursor: 'pointer', fontSize: '14px' }}
                     >
                         <Plus size={18} /> Initialize New
+                    </button>
+                    <button
+                        onClick={() => setBreathingOpen(true)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--lotus)', background: 'rgba(180,80,100,0.08)', color: 'var(--lotus)', fontWeight: '700', cursor: 'pointer', fontSize: '14px' }}
+                    >
+                        <Wind size={18} /> Breathing Reset
                     </button>
                     <button
                         onClick={refreshData}

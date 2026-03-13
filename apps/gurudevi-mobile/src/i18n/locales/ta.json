@@ -198,6 +198,7 @@
         "windDownCompleteDesc": "நீங்கள் ஆசிரியரிலிருந்து மனிதராக மாறிவிட்டீர்கள். இன்று இரவு நன்றாக ஓய்வெடுங்கள்.",
         "wentWell": "நன்றாக நடந்தது:",
         "tomorrowIntentLabel": "நாளை நோக்கம்:",
+        "breathingReset": "மூச்சு மீட்டமைப்பு",
         "startAnother": "மற்றொரு ஓய்வை தொடங்குங்கள்",
         "step": "படி",
         "stepOf": "இல்",
@@ -1186,5 +1187,15 @@
         "progress": "Progress",
         "completed": "Completed",
         "noGoals": "No Goals"
+    },
+    "webNav": {
+        "menu": "மெனு",
+        "brandName": "குருதேவி சரணாலயம்",
+        "notifications": "அறிவிப்புகள்",
+        "settings": "அமைப்புகள்",
+        "toggleNavigation": "வழிசெலுத்தலை மாற்றவும்",
+        "navigate": "வழிசெலுத்து",
+        "tabNavigation": "தாவல் வழிசெலுத்தல்",
+        "alerts": "எச்சரிக்கைகள்"
     }
 }

@@ -4,7 +4,8 @@ import {
     PositiveInvitation,
     LotusPetalFAB,
     Theme,
-    useThemedColors
+    useThemedColors,
+    WebScreenHeader
 } from '@repo/ui';
 import { useUserRole, useStore } from '@repo/core';
 import {
@@ -88,14 +89,12 @@ export default function CommunityScreen() {
         <div className="sanctuary-screen">
             <div className="sanctuary-container">
                 {/* 1. GREETING */}
-                <div className="greeting" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
-                    <div>
-                        <div className="greeting-time">{isEcosystemRole ? "Architect's Stream" : "Global Resonance"}</div>
-                        <h1 className="greeting-main">The Heart</h1>
-                        <p className="greeting-note">Ecosystem Resonance</p>
-                    </div>
-                    {!isGuest && (
-                        <div style={{ display: 'flex', gap: '10px', paddingBottom: '4px' }}>
+                <WebScreenHeader
+                    title="The Heart"
+                    note="Ecosystem Resonance"
+                    timeText={isEcosystemRole ? "Architect's Stream" : "Global Resonance"}
+                    actions={!isGuest && (
+                        <>
                             <button
                                 className="premium-button"
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}
@@ -112,9 +111,9 @@ export default function CommunityScreen() {
                                 <Plus size={15} />
                                 New Group
                             </button>
-                        </div>
+                        </>
                     )}
-                </div>
+                />
 
                 {/* 2. COMMUNITY GRID */}
                 <div className="community-grid">

@@ -16,7 +16,7 @@ Mapping concepts and pathways using **Cartesian (X/Y)** space.
 - **Visual**: A starry cosmos or "Islands" connected by resonance links.
 
 ## 2. Technical Implementation
-- **Schema**: Resources or nodes have `lat/lng` for Geographic and `pos_x/pos_y` for Abstract.
+- **Schema**: Resources or nodes have `lat/lng` for Geographic and `map_x/map_y` for Abstract.
 - **Layer Switching**: A primary toggle switches the projection from Earth to Cosmos.
 
 ## 3. Data Sources

@@ -3,8 +3,11 @@ import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { Theme, LotusPetalFAB, SanctuaryBackground } from '@repo/ui';
+import { Theme, SanctuaryBackground, UniversalModal, Box, VStack, HStack, Text, hapticLight } from '@repo/ui';
 import { ErrorBoundary, AchievementUnlockOverlay } from '@repo/ui';
+import { Modal, TouchableOpacity } from 'react-native';
+import { X } from 'lucide-react-native';
+import { BreathGuide } from '@repo/self';
 import { BlurView } from 'expo-blur';
 import { useWindowDimensions, StyleSheet } from 'react-native';
 import { useTheme } from '@repo/ui';
@@ -26,7 +29,7 @@ import ProfileStackNavigator from './ProfileStackNavigator';
 import CommunityStackNavigator from './CommunityStackNavigator';
 import LibraryStackNavigator from './LibraryStackNavigator';
 import { useThemedColors } from '@repo/ui';
-import { useUserRole, useRewards, useTracking } from '@repo/core';
+import { useUserRole, useRewards, useTracking, useStore } from '@repo/core';
 
 // Screens
 import {
@@ -54,6 +57,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   const insets = useSafeAreaInsets();
   const { newAchievements } = useRewards();
   const { exploredFeatures } = useTracking();
+  const { isBreathingOpen, setBreathingOpen } = useStore();
   const [showCelebration, setShowCelebration] = React.useState(false);
   const [currentAchievement, setCurrentAchievement] = React.useState('');
 
@@ -226,6 +230,55 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         visible={showCelebration}
         onHide={() => setShowCelebration(false)}
       />
+
+
+      <Modal
+        visible={isBreathingOpen}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setBreathingOpen(false)}
+      >
+        <Box flex={1} sx={{ backgroundColor: colors.primary }}>
+          <Box sx={{
+            paddingTop: 50,
+            paddingBottom: Theme.spacing.md,
+            paddingHorizontal: Theme.spacing.md,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border
+          }}>
+            <HStack justifyContent="space-between" alignItems="center">
+              <VStack>
+                <Text color={colors.text} sx={{ fontSize: '$lg' as any, fontWeight: '700' }}>
+                  {t('self.breathingReset') || 'Breathing Reset'}
+                </Text>
+                <Text color={colors.textSecondary} sx={{ fontSize: '$xs' as any }}>
+                  1 minute of peace
+                </Text>
+              </VStack>
+              <TouchableOpacity
+                onPress={() => {
+                  hapticLight();
+                  setBreathingOpen(false);
+                }}
+                style={{
+                  padding: 8,
+                  borderRadius: Theme.corners.full,
+                  backgroundColor: colors.tertiary,
+                  borderColor: colors.border,
+                  borderWidth: 1,
+                }}
+              >
+                <X size={24} color={colors.text} />
+              </TouchableOpacity>
+            </HStack>
+          </Box>
+          <Box sx={{ flex: 1, justifyContent: 'center' }}>
+            <BreathGuide onComplete={() => {
+              setBreathingOpen(false);
+            }} />
+          </Box>
+        </Box>
+      </Modal>
     </View>
   );
 }

@@ -26,6 +26,7 @@ import {
     ModalFooter,
     Input,
     InputField,
+    useRegisterFAB
 } from '@repo/ui';
 import {
     Users,
@@ -207,6 +208,20 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
             api.classroomStudents.getAll(classroomId).then(setStudents).catch(console.error);
         }
     }, [activeFeature, classroomId]);
+
+    // Register FAB globally for Classroom Details
+    useRegisterFAB({
+        tabType: 'classroom',
+        onPress: () => {
+             if (activeFeature === 'lessons') {
+                 setShowAddMonthModal(true);
+             } else if (activeFeature === 'students') {
+                 // Maybe invite student?
+             }
+        },
+        icon: <Plus size={24} color="#FFF" />,
+        visible: isClassTeacher && (activeFeature === 'lessons')
+    });
 
     const renderFeatureContent = () => {
         switch (activeFeature) {

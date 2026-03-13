@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
     VStack,
@@ -27,6 +27,7 @@ import WelcomeModal from '../../components/WelcomeModal';
 import { useMoodLogs } from '../../hooks/useMoodLogs';
 import { useEnergyForecast } from '../../hooks/useEnergyForecast';
 import ResonancePatternCard from '../../components/ResonancePatternCard';
+import VoiceJournaling from '../../components/VoiceJournaling';
 
 import { PulseDashboard } from '../../components/PulseDashboard';
 
@@ -76,6 +77,11 @@ export default function AdminSelfView() {
                                 id: 'pulse',
                                 label: 'Daily Pulse',
                                 content: <PulseDashboard onEnterDetails={() => { }} />
+                            },
+                            {
+                                id: 'voice',
+                                label: 'Voice Journal',
+                                content: <VoiceJournaling userId={userId ?? undefined} />
                             },
                         ]
                     },

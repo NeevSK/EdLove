@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
     VStack,
@@ -7,10 +7,8 @@ import {
     ScreenWrapper,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import {
-    useStore,
-    useUserRole
-} from '@repo/core';
+import { useStore, useUserRole } from '@repo/core';
+import { hapticLight } from '@repo/ui';
 
 // Kernel Imports from @repo/self (Breaking require cycle)
 import { BaseSelfView } from '../../components/BaseSelfView';
@@ -67,7 +65,6 @@ export default function PrincipalSelfView() {
             <BaseSelfView
                 role="principal"
                 description={t('self.principalDescription', 'A restorative space for leadership clarity and personal rhythm.')}
-                voiceJournal={<VoiceJournaling userId={userId ?? undefined} />}
                 domains={[
                     {
                         id: 'pulse',
@@ -78,6 +75,11 @@ export default function PrincipalSelfView() {
                                 id: 'pulse',
                                 label: 'Daily Pulse',
                                 content: <PulseDashboard onEnterDetails={() => { }} />
+                            },
+                            {
+                                id: 'voice',
+                                label: 'Voice Journal',
+                                content: <VoiceJournaling userId={userId ?? undefined} />
                             }
                         ]
                     },

@@ -21,6 +21,7 @@ const FEATURE_EMOJIS: Record<string, string> = {
     'decisions': '⚖️',
     'resonance': '🌀',
     'voice': '🎙️',
+    'fire-journal': '🔥',
 };
 
 /**

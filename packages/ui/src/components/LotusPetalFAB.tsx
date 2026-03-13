@@ -1,11 +1,5 @@
-﻿/**
- * LOTUS PETAL FAB - Floating Action Button (Sanctuary Version)
- * 
- * A living UI component that represents the Agentic presence.
- */
-
 import React, { FC, useMemo, useEffect, useCallback, useState, useRef } from 'react';
-import { View, Pressable, StyleSheet, PanResponder, Dimensions, Image } from 'react-native';
+import { View, Pressable, StyleSheet, PanResponder, Dimensions, Image, Platform } from 'react-native';
 import Animated, {
     useAnimatedStyle,
     withRepeat,
@@ -18,22 +12,22 @@ import Animated, {
     useSharedValue,
     Easing,
 } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
-import { Theme, typography } from '../theme/Theme';
+import { Theme } from '../theme/Theme';
 import { useThemedColors } from '../hooks/useThemedColors';
 import { useTheme } from '../hooks/useTheme';
 import { hapticLight } from '../utils/haptics';
 import { useAccessibility } from '../hooks/useAccessibility';
-import { X } from 'lucide-react-native';
+import { X, Wind } from 'lucide-react-native';
 import { Box, VStack, HStack, Text } from '../gluestack';
 import { UniversalModal } from './UniversalModal';
 import { useBottomTabPadding } from './ScreenWrapper';
+import { useFAB } from '../context/FABContext';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-export type TabType = 'self' | 'classroom' | 'community' | 'library' | 'profile' | 'section' | 'grade' | 'principal';
+export type TabType = 'self' | 'classroom' | 'community' | 'library' | 'profile' | 'section' | 'grade' | 'principal' | 'founder';
 
 export interface ActionItem {
     label: string;
@@ -49,8 +43,10 @@ interface LotusPetalFABProps {
     scrollY?: SharedValue<number>;
     disabled?: boolean;
     bottomInset?: number;
-    hasActiveGaps?: boolean; // New: Agent has a suggestion
+    hasActiveGaps?: boolean;
     gapPriority?: 'low' | 'medium' | 'high';
+    onBreathingReset?: () => void;
+    useGlobal?: boolean;
 }
 
 // ============================================================================
@@ -60,8 +56,6 @@ interface LotusPetalFABProps {
 const FAB_SIZE = 56;
 const ACTION_DRAWER_HEIGHT = Dimensions.get('window').height * 0.4;
 
-type IconComponentType = React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
-
 const fabConfig: Record<TabType, { emoji: string; label: string }> = {
     self: { emoji: '🪷', label: 'Reflection' },
     classroom: { emoji: '➕', label: 'Add' },
@@ -70,7 +64,8 @@ const fabConfig: Record<TabType, { emoji: string; label: string }> = {
     profile: { emoji: '👤', label: 'Profile' },
     section: { emoji: '🏢', label: 'Section' },
     grade: { emoji: '🏫', label: 'Grade' },
-    principal: { emoji: '👑', label: 'Management' }
+    principal: { emoji: '👑', label: 'Management' },
+    founder: { emoji: '🏛️', label: 'Founder' }
 };
 
 // ============================================================================
@@ -78,18 +73,30 @@ const fabConfig: Record<TabType, { emoji: string; label: string }> = {
 // ============================================================================
 
 export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
-    currentTab = 'self',
-    onPress,
+    currentTab: propTab,
+    onPress: propPress,
     icon: customIcon,
-    actions,
+    actions: propActions,
     scrollY,
     disabled = false,
     bottomInset = Theme.spacing.lg,
-    hasActiveGaps = false,
-    gapPriority = 'low',
+    hasActiveGaps: propGaps,
+    gapPriority: propPriority,
+    onBreathingReset: propReset,
+    useGlobal = true,
 }) => {
+    const { state: globalState } = useFAB();
     const { isReduceMotionEnabled, announce } = useAccessibility();
     const bottomTabPadding = useBottomTabPadding();
+
+    // Reconcile props with global state
+    const currentTab = propTab || globalState.tabType;
+    const actions = propActions || globalState.actions;
+    const hasActiveGaps = propGaps ?? globalState.hasActiveGaps;
+    const onPress = propPress || globalState.onPress;
+    const onBreathingReset = propReset || globalState.onBreathingReset;
+    const isVisible = useGlobal ? globalState.visible : true;
+    const icon = customIcon || globalState.icon;
 
     const colors = useThemedColors();
     const { glow, accent } = useTheme();
@@ -100,9 +107,43 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     const breathingScale = useSharedValue(1);
     const pulseOpacity = useSharedValue(0.4);
 
+    // Position Shared Values for Draggability
+    const translateX = useSharedValue(0);
+    const translateY = useSharedValue(0);
+
     const [isDrawerVisible, setIsDrawerVisible] = useState(false);
 
-    // Breathing Animation (matches ShadowAgent)
+    // PanResponder for Draggability
+    const panResponder = useRef(
+        PanResponder.create({
+            onStartShouldSetPanResponder: () => true,
+            onMoveShouldSetPanResponder: (_, gesture) => {
+                return Math.abs(gesture.dx) > 10 || Math.abs(gesture.dy) > 10;
+            },
+            onPanResponderGrant: () => {
+                pressScale.value = withSpring(1.1);
+                hapticLight();
+            },
+            onPanResponderMove: (_, gesture) => {
+                translateX.value = gesture.dx;
+                translateY.value = gesture.dy;
+            },
+            onPanResponderRelease: (_, gesture) => {
+                pressScale.value = withSpring(1);
+                
+                // If it was a small movement, trigger press
+                if (Math.abs(gesture.dx) < 10 && Math.abs(gesture.dy) < 10) {
+                    handlePress();
+                }
+
+                // Spring back (resolve tension by temporary movement)
+                translateX.value = withSpring(0);
+                translateY.value = withSpring(0);
+            },
+        })
+    ).current;
+
+    // Breathing Animation
     useEffect(() => {
         if (!disabled && !isReduceMotionEnabled) {
             breathingScale.value = withRepeat(
@@ -119,7 +160,11 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     }, [disabled, isReduceMotionEnabled]);
 
     const containerStyle = useAnimatedStyle(() => ({
-        transform: [{ scale: pressScale.value }],
+        transform: [
+            { translateX: translateX.value },
+            { translateY: translateY.value },
+            { scale: pressScale.value }
+        ],
     }));
 
     const breathingStyle = useAnimatedStyle(() => ({
@@ -145,42 +190,51 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         }
     }, [disabled, onPress, actions]);
 
-    return (
-        <>
-            <Pressable
-                onPress={handlePress}
-                style={[styles.container, { bottom: bottomInset + bottomTabPadding }]}
-                disabled={disabled}
-                accessible={true}
-                accessibilityRole="button"
-                accessibilityLabel={hasActiveGaps ? `Agent Insight Available: ${config.label}` : config.label}
-                accessibilityHint={actions && actions.length > 0 ? 'Double tap to open actions' : 'Double tap to activate'}
-                accessibilityState={{ disabled }}
-            >
-                <Animated.View style={[styles.fabWrapper, containerStyle]}>
-                    {/* Breathing Glow */}
-                    <Animated.View style={[styles.glow, breathingStyle, hasActiveGaps && styles.glowActive]} />
+    const handleLongPress = useCallback(() => {
+        if (disabled || !onBreathingReset) return;
+        hapticLight();
+        onBreathingReset();
+    }, [disabled, onBreathingReset]);
 
-                    {/* Simple Circle */}
-                    <Box
-                        sx={{
-                            width: FAB_SIZE,
-                            height: FAB_SIZE,
-                            borderRadius: Theme.corners.full,
-                            backgroundColor: Theme.colors.sanctuarySaffron,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            shadowColor: glow.primary.color,
-                            shadowOpacity: glow.primary.opacity,
-                            shadowRadius: glow.primary.radius,
-                            shadowOffset: { width: 0, height: 0 },
-                            elevation: 10,
-                        }}
-                    >
-                        <Text style={styles.emojiText}>{hasActiveGaps ? '❗' : config.emoji}</Text>
-                    </Box>
-                </Animated.View>
-            </Pressable>
+    if (!isVisible) return null;
+
+    return (
+        <View 
+            style={[styles.container, { bottom: bottomInset + bottomTabPadding }]}
+            pointerEvents="box-none"
+        >
+            <Animated.View 
+                {...panResponder.panHandlers}
+                style={[styles.fabWrapper, containerStyle]}
+            >
+                {/* Breathing Glow */}
+                <Animated.View style={[styles.glow, breathingStyle, hasActiveGaps && styles.glowActive]} />
+
+                {/* Simple Circle */}
+                <Box
+                    sx={{
+                        width: FAB_SIZE,
+                        height: FAB_SIZE,
+                        borderRadius: Theme.corners.full,
+                        backgroundColor: Theme.colors.sanctuarySaffron,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        shadowColor: glow.primary.color,
+                        shadowOpacity: glow.primary.opacity,
+                        shadowRadius: glow.primary.radius,
+                        shadowOffset: { width: 0, height: 0 },
+                        elevation: 10,
+                    }}
+                >
+                    {hasActiveGaps ? (
+                        <Text style={styles.emojiText}>❗</Text>
+                    ) : icon ? (
+                        icon
+                    ) : (
+                        <Text style={styles.emojiText}>{config.emoji}</Text>
+                    )}
+                </Box>
+            </Animated.View>
 
             {/* Simple Action Drawer Integration */}
             <UniversalModal
@@ -216,6 +270,28 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                             <Text color={Theme.colors.sacredWhite} sx={{ fontSize: '$xl' as any, fontWeight: '600', marginBottom: '$2' as any }}>
                                 {config.label} Actions
                             </Text>
+
+                            {onBreathingReset && (
+                                <Pressable
+                                    onPress={() => {
+                                        setIsDrawerVisible(false);
+                                        onBreathingReset();
+                                    }}
+                                    style={({ pressed }) => [
+                                        styles.actionItem,
+                                        { backgroundColor: 'rgba(143, 188, 143, 0.1)' },
+                                        pressed && { backgroundColor: 'rgba(143, 188, 143, 0.2)' }
+                                    ]}
+                                >
+                                    <HStack alignItems="center" sx={{ gap: '$3' as any }}>
+                                        <Wind size={20} color={Theme.colors.sageGreen} strokeWidth={2} />
+                                        <Text color={Theme.colors.sacredWhite} sx={{ fontSize: '$md' as any, fontWeight: '600' }}>
+                                            Breathing Reset
+                                        </Text>
+                                    </HStack>
+                                </Pressable>
+                            )}
+
                             {actions?.map((action, idx) => (
                                 <Pressable
                                     key={idx}
@@ -241,7 +317,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                     </Box>
                 </Pressable>
             </UniversalModal>
-        </>
+        </View>
     );
 };
 

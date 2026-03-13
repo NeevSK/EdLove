@@ -1,4 +1,5 @@
 import { getContrastRatio, getAccessibleTextColor } from '../colorUtils';
+import { checkAccessibility } from '../a11yUtils';
 import { phaseMatrix, resolvePhaseTokens } from '../../theme/Theme';
 import { TemporalPhase } from '../../context/types';
 
@@ -45,6 +46,32 @@ describe('Accessibility Audit - WCAG 2.1 Contrast Ratios', () => {
 
                     const ratio = getContrastRatio(fg, bg);
                     expect(ratio).toBeGreaterThanOrEqual(AA_THRESHOLD);
+                });
+            });
+        });
+    });
+
+    describe('APCA - Perceptual Contrast Audit', () => {
+        phases.forEach(phase => {
+            modes.forEach(mode => {
+                it(`[${phase}/${mode}] primary text meets APCA body text minimum (Lc >= 75)`, () => {
+                    const tokens = resolvePhaseTokens(phase, mode === 'dark');
+                    const bg = tokens.gradientNodes[0];
+                    const fg = tokens.text.primary;
+
+                    const { apca } = checkAccessibility(fg, bg);
+                    // APCA Lc 75 is recommended for body text
+                    expect(Math.abs(apca)).toBeGreaterThanOrEqual(75);
+                });
+
+                it(`[${phase}/${mode}] accent inverse text meets APCA minimum (Lc >= 60)`, () => {
+                    const tokens = resolvePhaseTokens(phase, mode === 'dark');
+                    const bg = tokens.accent.action;
+                    const fg = tokens.text.inverse;
+
+                    const { apca } = checkAccessibility(fg, bg);
+                    // APCA Lc 60 is minimum for large text/headlines
+                    expect(Math.abs(apca)).toBeGreaterThanOrEqual(60);
                 });
             });
         });

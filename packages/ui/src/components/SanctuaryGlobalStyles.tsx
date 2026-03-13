@@ -26,7 +26,7 @@ const STATIC_CSS = `
       -moz-osx-font-smoothing: grayscale;
       background-color: var(--color-background);
     }
-    button { background: none; border: none; cursor: pointer; font-family: inherit; }
+    button { background: none; border: none; cursor: pointer; font-family: inherit; transition: var(--transition-snap); }
 
     /* ── APP SHELL (Flexbox Architecture) ── */
     .vellum-app-shell {
@@ -118,11 +118,12 @@ const STATIC_CSS = `
       -webkit-backdrop-filter: blur(16px);
       border-right: 1px solid rgba(255, 255, 255, 0.2);
     }
-    .sidebar.collapsed { width: 60px; }
-    .sidebar.collapsed .sidebar-item { justify-content: center; padding: 12px 0; gap: 0; }
+    .sidebar.collapsed { width: 64px; }
+    .sidebar.collapsed .sidebar-item { justify-content: center; padding: 12px 0; gap: 0; width: 100%; }
     .sidebar.collapsed .sidebar-header { justify-content: center; padding: 0; }
-    .sidebar.collapsed .sidebar-profile-btn { justify-content: center; padding: 12px 0; border-radius: 50%; width: 44px; margin: 0 auto; }
+    .sidebar.collapsed .sidebar-profile-btn { justify-content: center; padding: 0; border-radius: 50%; width: 48px; height: 48px; margin: 12px auto; }
     .sidebar.collapsed .sidebar-group-label { display: none; }
+    .sidebar.collapsed .sidebar-label { display: none; }
 
     .sidebar-header {
       height: var(--top-bar-h);
@@ -143,11 +144,11 @@ const STATIC_CSS = `
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: var(--ink-soft);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: var(--transition-smooth);
     }
     .sidebar-toggle:hover {
       background: rgba(255, 255, 255, 0.5);
-      transform: scale(1.05);
+      transform: scale(1.1);
     }
 
     .sidebar-group-label {
@@ -174,19 +175,39 @@ const STATIC_CSS = `
       border-radius: 12px;
       font-size: 14px;
       color: var(--ink-ghost);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: var(--transition-smooth);
       width: 100%;
+      position: relative;
     }
     .sidebar-item:hover {
       color: var(--ink-soft);
       background: rgba(255, 255, 255, 0.4);
-      transform: translateX(4px);
+      transform: translateX(8px);
     }
     .sidebar-item.active {
       color: var(--water);
-      background: rgba(255, 255, 255, 0.8);
-      border: 1px solid rgba(90, 154, 186, 0.2);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      background: rgba(255, 255, 255, 0.7);
+      box-shadow: 0 4px 12px rgba(90, 154, 186, 0.08);
+    }
+    .sidebar-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 30%;
+      height: 40%;
+      width: 3px;
+      background: var(--water);
+      border-radius: 0 4px 4px 0;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform: scaleY(0.4);
+    }
+    .sidebar-item.active::before {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+    .sidebar.collapsed .sidebar-item::before {
+      left: 2px;
     }
 
     .sidebar-footer {
@@ -252,7 +273,7 @@ const STATIC_CSS = `
         inset 0 1px 0 rgba(255, 255, 255, 0.5),
         0 4px 24px rgba(0, 0, 0, 0.04),
         0 8px 32px rgba(90, 154, 186, 0.05);
-      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: var(--transition-smooth);
       will-change: transform;
     }
 
@@ -980,6 +1001,10 @@ export function SanctuaryGlobalStyles() {
       --sanctuary-primary-rgb: ${isDark ? '26, 22, 16' : '245, 237, 214'};
       --sanctuary-text-primary: ${text.primary};
       --sanctuary-text-secondary: ${text.secondary};
+
+      /* Motion */
+      --transition-smooth: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      --transition-snap:   all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
   `;
 

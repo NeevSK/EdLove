@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Theme } from '../theme/Theme';
@@ -11,7 +11,7 @@ interface SanctuaryNudgeProps {
     description: string;
     actionLabel: string;
     onAction: () => void;
-    icon?: string;
+    icon?: string | React.ComponentType<any>;
 }
 
 export const SanctuaryNudge: React.FC<SanctuaryNudgeProps> = ({
@@ -19,16 +19,25 @@ export const SanctuaryNudge: React.FC<SanctuaryNudgeProps> = ({
     description,
     actionLabel,
     onAction,
-    icon = 'âœ¨'
+    icon = '✨'
 }) => {
     const colors = useThemedColors();
+
+    const renderIcon = () => {
+        if (!icon) return null;
+        if (typeof icon === 'string') {
+            return <Text style={styles.icon}>{icon}</Text>;
+        }
+        const IconComponent = icon as React.ComponentType<any>;
+        return <IconComponent size={24} color={Theme.colors.sanctuarySaffron} />;
+    };
 
     return (
         <Animated.View entering={FadeInUp.delay(300)} style={styles.container}>
             <BlurView intensity={20} tint="light" style={styles.blur}>
                 <View style={styles.content}>
                     <View style={styles.iconContainer}>
-                        <Text style={styles.icon}>{icon}</Text>
+                        {renderIcon()}
                     </View>
                     <View style={styles.textContainer}>
                         <Text style={styles.title}>{title}</Text>

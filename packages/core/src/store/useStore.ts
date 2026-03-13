@@ -55,6 +55,8 @@ interface AppState {
     setOnline: (isOnline: boolean, quality?: 'excellent' | 'good' | 'fair' | 'poor' | 'offline') => void;
     showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
     hideToast: () => void;
+    isBreathingOpen: boolean;
+    setBreathingOpen: (isOpen: boolean) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -83,6 +85,8 @@ export const useStore = create<AppState>()(
                 dismissedSampleIds: [...state.dismissedSampleIds, id]
             })),
             restoreSamples: () => set({ dismissedSampleIds: [] }),
+            isBreathingOpen: false,
+            setBreathingOpen: (isOpen) => set({ isBreathingOpen: isOpen }),
             isBridging: false,
             setIsBridging: (isBridging) => set({ isBridging }),
             demoLogs: [],

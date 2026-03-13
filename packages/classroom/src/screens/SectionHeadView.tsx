@@ -14,8 +14,8 @@ import {
     VStack,
     Theme,
     SanctuaryButton,
-    LotusPetalFAB,
-    ScreenWrapper
+    ScreenWrapper,
+    useRegisterFAB
 } from '@repo/ui';
 import { useAIAgent, useStore } from '@repo/core';
 import { Calendar, Users, AlertCircle, CheckCircle2, CalendarCheck } from 'lucide-react-native';
@@ -23,6 +23,13 @@ import { Calendar, Users, AlertCircle, CheckCircle2, CalendarCheck } from 'lucid
 export default function SectionHeadView({ schoolId, userId }: { schoolId?: string; userId?: string }) {
     const { activeGaps, refreshStatus, generateTimetable, isThinking, lastTimetableDraft } = useAIAgent();
     const userRole = useStore((state: any) => state.userRole);
+
+    // Register FAB globally
+    useRegisterFAB({
+        tabType: 'section',
+        hasActiveGaps: activeGaps.length > 0,
+        onPress: () => refreshStatus()
+    });
 
     return (
         <ScreenWrapper backgroundColor={Theme.colors.ink}>
@@ -168,11 +175,6 @@ export default function SectionHeadView({ schoolId, userId }: { schoolId?: strin
                 </VStack>
             </ScrollView>
 
-            <LotusPetalFAB
-                currentTab="section"
-                hasActiveGaps={activeGaps.length > 0}
-                onPress={() => refreshStatus()}
-            />
         </ScreenWrapper>
     );
 }

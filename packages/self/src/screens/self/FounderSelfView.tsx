@@ -27,6 +27,7 @@ import WelcomeModal from '../../components/WelcomeModal';
 import { useMoodLogs } from '../../hooks/useMoodLogs';
 import { useEnergyForecast } from '../../hooks/useEnergyForecast';
 import WisdomSeeds from '../../components/WisdomSeeds';
+import VoiceJournaling from '../../components/VoiceJournaling';
 
 import { PulseDashboard } from '../../components/PulseDashboard';
 
@@ -75,6 +76,11 @@ export default function FounderSelfView() {
                                 id: 'pulse',
                                 label: 'Daily Pulse',
                                 content: <PulseDashboard onEnterDetails={() => { }} />
+                            },
+                            {
+                                id: 'voice',
+                                label: 'Voice Journal',
+                                content: <VoiceJournaling userId={userId ?? undefined} />
                             },
                             {
                                 id: 'mood-lotus',

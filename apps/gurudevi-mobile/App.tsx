@@ -7,14 +7,21 @@ import { NavigationContainer, type LinkingOptions } from '@react-navigation/nati
 import { navigationRef } from './src/navigation/navigationRef';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GluestackUIProvider, Spinner, Center, VStack, Text, SanctuaryGlobalStyles } from '@repo/ui';
+import { GluestackUIProvider, Spinner, Center, VStack, Text, SanctuaryGlobalStyles, FABProvider, LotusPetalFAB } from '@repo/ui';
 import { config } from "./gluestack-ui.config";
 import { Home, School, Users, Library, User, Sparkles } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
 import * as Font from 'expo-font';
 import { supabase, useStore, UserRole, SchoolType, initSentry, initPostHog, trackEvent, identifyUser, identityAPI } from '@repo/core';
 import { Platform } from 'react-native';
+import ReactDOM from 'react-dom';
 import * as Linking from 'expo-linking';
+
+// Initialize axe-core for web accessibility auditing in development
+if (Platform.OS === 'web' && process.env.NODE_ENV === 'development') {
+  const axe = require('@axe-core/react');
+  axe(React, ReactDOM, 1000);
+}
 import { PostHogProvider } from 'posthog-react-native';
 import * as Sentry from '@sentry/react-native';
 import { Theme } from '@repo/ui';
@@ -428,18 +435,20 @@ function App() {
       <EnvironmentProvider>
         <GluestackUIProvider config={config}>
           <SanctuaryGlobalStyles />
-          <AppContent
-            currentTab={currentTab}
-            setCurrentTab={setCurrentTab}
-            session={session}
-            needsWelcome={needsWelcome}
-            onboardingCompleted={onboardingCompleted}
-            isProfileLoading={isProfileLoading}
-            showWelcome={showWelcome}
-            setShowWelcome={setShowWelcome}
-            toast={toast}
-            hideToast={hideToast}
-          />
+          <FABProvider>
+            <AppContent
+              currentTab={currentTab}
+              setCurrentTab={setCurrentTab}
+              session={session}
+              needsWelcome={needsWelcome}
+              onboardingCompleted={onboardingCompleted}
+              isProfileLoading={isProfileLoading}
+              showWelcome={showWelcome}
+              setShowWelcome={setShowWelcome}
+              toast={toast}
+              hideToast={hideToast}
+            />
+          </FABProvider>
         </GluestackUIProvider>
       </EnvironmentProvider>
     </QueryClientProvider>
@@ -800,8 +809,9 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
             />
           )}
 
-          {/* PWA Install Banner — web-only; hook guards against native/installed/dismissed */}
           <PWAInstallBanner />
+
+          <LotusPetalFAB useGlobal={true} />
 
           {toast.visible && (
             <SanctuaryToast

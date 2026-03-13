@@ -154,7 +154,7 @@ export default function FounderDashboardWeb() {
                     </div>
                 ) : filteredSchools.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '48px 24px', background: 'var(--background-alt)', borderRadius: '20px' }}>
-                        <Building size={40} color="var(--ink-ghost)" style={{ marginBottom: '16px' }} />
+                        <Building size={40} color="var(--ink-ghost)" style={{ marginBottom: 16 }} />
                         <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '8px' }}>
                             {searchQuery ? 'No matching institutions' : 'No institutions yet'}
                         </h3>

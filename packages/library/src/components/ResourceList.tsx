@@ -207,7 +207,7 @@ function ResourceRow({ resource, onOpen, onFlashPlay, onPullToDesk }: ResourceRo
                     <VStack sx={{ flex: 1, gap: 2 }}>
                         <Text color={colors.text} size="sm" bold numberOfLines={1}>{resource.title}</Text>
                         <HStack space="xs" alignItems="center">
-                            <Text size="xs" color={colors.textSecondary}>{resource.subject}</Text>
+                            <Text size="xs" color={colors.textSecondary}>{resource.subjects?.[0] || ''}</Text>
                             {metaParts.length > 0 && (
                                 <>
                                     <Box sx={{ width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border }} />
@@ -215,18 +215,23 @@ function ResourceRow({ resource, onOpen, onFlashPlay, onPullToDesk }: ResourceRo
                                 </>
                             )}
                         </HStack>
-                        {resource.verified && (
-                            <HStack space="xs" alignItems="center">
+                        <HStack space="xs" alignItems="center">
+                            {resource.verified && (
                                 <Box sx={{ backgroundColor: Theme.colors.sageGreen, borderRadius: 4, paddingHorizontal: 4 }}>
                                     <Text size="2xs" color="white" bold>VERIFIED</Text>
                                 </Box>
-                                {resource.link_status === 'broken' && (
-                                    <Box sx={{ backgroundColor: Theme.colors.emberRed, borderRadius: 4, paddingHorizontal: 4 }}>
-                                        <Text size="2xs" color="white" bold>BROKEN LINK</Text>
-                                    </Box>
-                                )}
-                            </HStack>
-                        )}
+                            )}
+                            {resource.is_community && (
+                                <Box sx={{ backgroundColor: Theme.colors.skyBlue, borderRadius: 4, paddingHorizontal: 4 }}>
+                                    <Text size="2xs" color="white" bold>COMMUNITY</Text>
+                                </Box>
+                            )}
+                            {resource.link_status === 'broken' && (
+                                <Box sx={{ backgroundColor: Theme.colors.emberRed, borderRadius: 4, paddingHorizontal: 4 }}>
+                                    <Text size="2xs" color="white" bold>BROKEN LINK</Text>
+                                </Box>
+                            )}
+                        </HStack>
                     </VStack>
 
                     {/* Actions */}

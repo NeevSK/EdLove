@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore, supabase, useRewards, growthSignalsAPI, MOCK_CLASSROOMS } from '@repo/core';
 import { Classroom } from '@repo/core';
-import { SkeletonCard, SandboxBanner } from '@repo/ui';
+import { SkeletonCard, SandboxBanner, PositiveInvitation, useRegisterFAB } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 import { useClassroomRoleData, SubmissionModal } from '@repo/classroom';
 import { useStudentGoals } from '@repo/self';
@@ -108,6 +108,12 @@ export default function StudentDashboardWeb({ forceDemo }: { forceDemo?: boolean
 
     const pendingAssignments = assignments.filter((a: any) => !a.submitted);
 
+    // Register FAB globally (empty configurations are handled by the system)
+    useRegisterFAB({
+        tabType: 'classroom',
+        visible: false // Student doesn't have FAB actions here currently
+    });
+
     return (
         <>
             {isDemo && <SandboxBanner />}
@@ -163,11 +169,17 @@ export default function StudentDashboardWeb({ forceDemo }: { forceDemo?: boolean
                             {[1, 2].map(i => <SkeletonCard key={i} />)}
                         </div>
                     ) : classrooms.length === 0 ? (
-                        <div style={{ padding: '60px 0', textAlign: 'center' }}>
-                            <Archive size={40} color="var(--ink-ghost)" style={{ opacity: 0.3, marginBottom: 16 }} />
-                            <p style={{ color: 'var(--ink-ghost)', fontSize: '15px', fontWeight: '600' }}>
-                                You are not enrolled in any classrooms yet.
-                            </p>
+                        <div style={{ padding: '40px 0', textAlign: 'center' }}>
+                            <PositiveInvitation
+                                type="empty"
+                                title={isDemo ? "Join Your First Sanctuary" : "No Classrooms found"}
+                                description={isDemo
+                                    ? "Welcome to the student sanctuary. Ready to officially join your classes and begin your quest? Connect with your teachers to get started."
+                                    : "You haven't joined any classrooms yet. Reach out to your teacher for an invite code or search for a sanctuary."
+                                }
+                                actionLabel="Join a Classroom"
+                                onAction={() => navigation.navigate('Main', { screen: 'Community' })}
+                            />
                         </div>
                     ) : (
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(240px, 100%), 1fr))', gap: '24px' }}>

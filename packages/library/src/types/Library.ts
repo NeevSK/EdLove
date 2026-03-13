@@ -39,11 +39,19 @@ export interface LibraryResource {
     file_path?: string;
 
     // Categorization
-    subject: string;
+    subjects: string[];
     topics: string[];
     grades: number[];
     difficulty: ResourceDifficulty;
-    language: ResourceLanguage;
+    language: ResourceLanguage[];
+
+    // Localized content
+    title_si?: string;
+    title_ta?: string;
+    title_en?: string;
+    description_si?: string;
+    description_ta?: string;
+    description_en?: string;
 
     // Permissions
     visibility: ResourceVisibility;
@@ -53,6 +61,7 @@ export interface LibraryResource {
 
     // Quality indicators
     verified: boolean;
+    is_community: boolean;
     verified_by?: string;
     verified_by_name?: string;
     curriculum_aligned: boolean;
@@ -98,7 +107,7 @@ export interface ResourceCollection {
     sequence_order: number[];
 
     // Categorization
-    subject: string;
+    subjects: string[];
     topics: string[];
     grades: number[];
     estimated_duration?: string;
@@ -118,11 +127,12 @@ export interface ResourceCollection {
 
 export interface ResourceFilters {
     type?: ResourceType;
-    subject?: string;
+    subject?: string; // Kept for filtering compat, maps to 'subjects'
+    subjects?: string[];
     topics?: string[];
     grades?: number[];
     difficulty?: ResourceDifficulty;
-    language?: ResourceLanguage;
+    languages?: ResourceLanguage[];
     visibility?: ResourceVisibility;
     verified_only?: boolean;
     creator_role?: UserRole;
@@ -151,10 +161,12 @@ export interface CreateResourceInput {
     url?: string;
     file_path?: string;
     subject: string;
+    subjects?: string[];
     topics?: string[];
     grades: number[];
     difficulty: ResourceDifficulty;
     language: ResourceLanguage;
+    languages?: ResourceLanguage[];
     visibility: ResourceVisibility;
     tags?: string[];
     curriculum_aligned?: boolean;
@@ -164,6 +176,14 @@ export interface CreateResourceInput {
      * infographic, or any externally-hosted content.
      */
     copyright_notice?: string;
+
+    // Optional localized content for creation
+    title_si?: string;
+    title_ta?: string;
+    title_en?: string;
+    description_si?: string;
+    description_ta?: string;
+    description_en?: string;
 }
 
 export interface CreateCollectionInput {
@@ -171,7 +191,8 @@ export interface CreateCollectionInput {
     description: string;
     visibility: ResourceVisibility;
     resource_ids: string[];
-    subject: string;
+    subject: string; // Kept for compat
+    subjects?: string[];
     topics?: string[];
     grades: number[];
     estimated_duration?: string;
@@ -212,4 +233,44 @@ export interface KnowledgeLink {
 export interface KnowledgeTopology {
     nodes: KnowledgeNode[];
     links: KnowledgeLink[];
+}
+
+// ============================================================================
+// GRAPH & JOURNEY TYPES
+// ============================================================================
+
+export type NodeRelationship =
+    | 'prerequisite'
+    | 'related'
+    | 'leads_to'
+    | 'part_of'
+    | 'opposite'
+    | 'example';
+
+export interface LibraryEdge {
+    id: string;
+    from_node_id: string;
+    to_node_id: string;
+    relationship: NodeRelationship;
+    weight: number;
+    is_ai_generated: boolean;
+    is_verified: boolean;
+    created_at: string;
+}
+
+export interface LibraryTag {
+    id: string;
+    name_si?: string;
+    name_ta?: string;
+    name_en: string;
+    category?: string;
+}
+
+export interface UserJourney {
+    id: string;
+    user_id: string;
+    node_id: string;
+    status: 'unlocked' | 'in_progress' | 'completed' | 'mastered';
+    progress_score: number;
+    last_accessed_at: string;
 }

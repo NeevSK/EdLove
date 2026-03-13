@@ -13,6 +13,7 @@ import {
   GlobalHeader,
   SanctuaryCard,
   Button,
+  useRegisterFAB,
 } from '@repo/ui';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from "react-i18next";
@@ -22,7 +23,6 @@ import { communityAPI } from '../api/community';
 import { useStore } from '@repo/core';
 import type { CommunityStackParamList } from '@repo/core';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { LotusPetalFAB } from '@repo/ui';
 import SocialShieldModal from '../components/SocialShieldModal';
 import { useLotusToast } from '@repo/ui';
 
@@ -125,6 +125,8 @@ export default function UserPublicProfileScreen() {
 
   const roleLabel = ROLE_LABELS[user?.role ?? ""] ?? user?.role ?? "";
 
+  const isPrivate = user && user.public_profile === false && currentUserId !== userId;
+
   const handleMessagePress = async () => {
     if (!userId || initiatingDM) return;
     setInitiatingDM(true);
@@ -141,7 +143,13 @@ export default function UserPublicProfileScreen() {
     }
   };
 
-  const isPrivate = user && user.public_profile === false && currentUserId !== userId;
+  // Register FAB globally
+  useRegisterFAB({
+    tabType: 'profile',
+    visible: !loading && !!user && !!currentUserId && currentUserId !== userId,
+    onPress: handleMessagePress,
+    icon: <Send size={24} color="white" />
+  });
 
   return (
     <ScreenWrapper scroll={false} noTopInset={true}>
@@ -296,13 +304,6 @@ export default function UserPublicProfileScreen() {
         </ScrollView>
       )}
 
-      {/* Action Button: Message (only if not viewing self) */}
-      {!loading && user && currentUserId && currentUserId !== userId && (
-        <LotusPetalFAB
-          onPress={handleMessagePress}
-          icon={<Send size={24} color="white" />}
-        />
-      )}
       {/* Social Shield Modal */}
       <SocialShieldModal
         isOpen={showShieldModal}

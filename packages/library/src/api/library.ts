@@ -40,19 +40,29 @@ export const libraryAPI = {
      */
     async getResources(filters: ResourceFilters = {}): Promise<LibraryResource[]> {
         let query = supabase
-            .from('library_resources')
+            .from('nodes')
             .select(`
   *,
-  creator: users!library_resources_creator_id_fkey(full_name),
-    verified_by_user: users!library_resources_verified_by_fkey(full_name)
+  creator: users(full_name),
+  verified_by_user: users(full_name)
       `);
 
         // Apply filters
         if (filters.type) query = query.eq('type', filters.type);
-        if (filters.subject) query = query.eq('subject', filters.subject);
+        if (filters.subject) query = query.contains('subjects', [filters.subject]);
+        if (filters.subjects && filters.subjects.length > 0) {
+            query = query.overlaps('subjects', filters.subjects);
+        }
         if (filters.difficulty) query = query.eq('difficulty', filters.difficulty);
-        if (filters.language) query = query.eq('language', filters.language);
+        if (filters.languages && filters.languages.length > 0) {
+            query = query.overlaps('language', filters.languages);
+        }
         if (filters.visibility) query = query.eq('visibility', filters.visibility);
+ 
+        // Source filtering
+        if (filters.source === 'core') query = query.eq('is_community', false);
+        if (filters.source === 'community') query = query.eq('is_community', true);
+ 
         if (filters.verified_only) query = query.eq('verified', true);
         if (filters.creator_role) query = query.eq('creator_role', filters.creator_role);
         if (filters.tags && filters.tags.length > 0) {
@@ -89,7 +99,7 @@ export const libraryAPI = {
                     [
                         `title.ilike.%${term}%`,
                         `description.ilike.%${term}%`,
-                        `subject.ilike.%${term}%`,
+                        `subjects.cs.{${term}}`,
                         `creator_name.ilike.%${term}%`,
                         `tags.cs.{${term}}`,
                         `topics.cs.{${term}}`,
@@ -160,7 +170,7 @@ export const libraryAPI = {
 
             // Fetch full resource details from Supabase (or eventually from local full-cache)
             const { data, error } = await supabase
-                .from('library_resources')
+                .from('nodes')
                 .select(`
                     *,
                     creator: users!library_resources_creator_id_fkey(full_name),
@@ -202,7 +212,7 @@ export const libraryAPI = {
             query_text: params.query,
             query_embedding: params.embedding,
             filter_type: params.type === 'All' ? null : params.type,
-            filter_subject: params.subject,
+            filter_subjects: params.subject ? [params.subject] : null,
             match_count: params.limit ?? 20
         });
 
@@ -222,7 +232,7 @@ export const libraryAPI = {
      */
     async getResourceById(id: string, userId?: string): Promise<LibraryResource> {
         const { data, error } = await supabase
-            .from('library_resources')
+            .from('nodes')
             .select(`
   *,
   creator: users!library_resources_creator_id_fkey(full_name),
@@ -267,12 +277,13 @@ export const libraryAPI = {
      */
     async createResource(input: CreateResourceInput, creatorId: string, creatorRole: string): Promise<LibraryResource> {
         const { data, error } = await supabase
-            .from('library_resources')
+            .from('nodes')
             .insert([
                 {
                     ...input,
                     creator_id: creatorId,
                     creator_role: creatorRole,
+                    is_community: true, // User-contributed content
                     views: 0,
                     uses_count: 0,
                     endorsements: 0,
@@ -282,7 +293,7 @@ export const libraryAPI = {
             ])
             .select(`
       *,
-      creator: users!library_resources_creator_id_fkey(full_name)
+      creator: users(full_name)
         `)
             .single();
 
@@ -290,12 +301,19 @@ export const libraryAPI = {
             throw new APIError('Failed to create resource', error.code, error);
         }
 
-        // Growth signal: teacher shared their wisdom with the school community (Nourishing dimension)
-        // Also triggers the 'first_offering' Whispered Moment check
+        // Trigger Growth Signals (Whispered Moment & Nourishing dimension)
         void growthSignalsAPI.emitSignal(creatorId, 'resource_uploaded', {
             resource_id: data.id,
             resource_type: input.type,
         }).catch(() => { });
+
+        // Direct Rewards: Add 50 points for contribution
+        try {
+            const { rewardsAPI } = await import('@repo/core');
+            void rewardsAPI.addPoints(creatorId, 50).catch(() => { });
+        } catch (e) {
+            console.warn('Rewards API not available for points', e);
+        }
 
         return {
             ...data,
@@ -308,7 +326,7 @@ export const libraryAPI = {
      */
     async updateResource(id: string, updates: Partial<LibraryResource>): Promise<LibraryResource> {
         const { data, error } = await supabase
-            .from('library_resources')
+            .from('nodes')
             .update(updates)
             .eq('id', id)
             .select(`
@@ -334,7 +352,7 @@ export const libraryAPI = {
      */
     async deleteResource(id: string): Promise<void> {
         const { error } = await supabase
-            .from('library_resources')
+            .from('nodes')
             .delete()
             .eq('id', id);
 
@@ -493,7 +511,7 @@ export const libraryAPI = {
             // Impact Ripple: the resource creator gets a warm echo —
             // "a teacher in your school kept your resource close"
             const { data: resource } = await supabase
-                .from('library_resources')
+                .from('nodes')
                 .select('creator_id')
                 .eq('id', resourceId)
                 .maybeSingle();
@@ -515,7 +533,7 @@ export const libraryAPI = {
      */
     async verifyResource(resourceId: string, verifiedBy: string): Promise<LibraryResource> {
         const { data, error } = await supabase
-            .from('library_resources')
+            .from('nodes')
             .update({
                 verified: true,
                 verified_by: verifiedBy,
@@ -546,7 +564,7 @@ export const libraryAPI = {
         const { data, error } = await supabase
             .from('resource_engagements')
             .select(`
-resource: library_resources!resource_engagements_resource_id_fkey(
+resource: nodes!resource_engagements_resource_id_fkey(
           *,
   creator: users!library_resources_creator_id_fkey(full_name)
 )
@@ -582,7 +600,7 @@ resource: library_resources!resource_engagements_resource_id_fkey(
      */
     async getCollections(filters: CollectionFilters = {}): Promise<ResourceCollection[]> {
         let query = supabase
-            .from('resource_collections')
+            .from('collections')
             .select(`
   *,
   creator: users!resource_collections_creator_id_fkey(full_name)
@@ -617,7 +635,7 @@ resource: library_resources!resource_engagements_resource_id_fkey(
             (data || []).map(async (collection: any) => {
                 if (collection.resource_ids && collection.resource_ids.length > 0) {
                     const { data: resources } = await supabase
-                        .from('library_resources')
+                        .from('nodes')
                         .select('*')
                         .in('id', collection.resource_ids);
 
@@ -644,7 +662,7 @@ resource: library_resources!resource_engagements_resource_id_fkey(
      */
     async getCollectionById(id: string, userId?: string): Promise<ResourceCollection> {
         const { data, error } = await supabase
-            .from('resource_collections')
+            .from('collections')
             .select(`
   *,
   creator: users!resource_collections_creator_id_fkey(full_name)
@@ -660,7 +678,7 @@ resource: library_resources!resource_engagements_resource_id_fkey(
         let resources: LibraryResource[] = [];
         if (data.resource_ids && data.resource_ids.length > 0) {
             const { data: resourcesData } = await supabase
-                .from('library_resources')
+                .from('nodes')
                 .select('*')
                 .in('id', data.resource_ids);
 
@@ -693,7 +711,7 @@ resource: library_resources!resource_engagements_resource_id_fkey(
      */
     async createCollection(input: CreateCollectionInput, creatorId: string): Promise<ResourceCollection> {
         const { data, error } = await supabase
-            .from('resource_collections')
+            .from('collections')
             .insert([
                 {
                     ...input,
@@ -718,7 +736,7 @@ resource: library_resources!resource_engagements_resource_id_fkey(
         let resources: LibraryResource[] = [];
         if (data.resource_ids && data.resource_ids.length > 0) {
             const { data: resourcesData } = await supabase
-                .from('library_resources')
+                .from('nodes')
                 .select('*')
                 .in('id', data.resource_ids);
 
@@ -746,7 +764,7 @@ resource: library_resources!resource_engagements_resource_id_fkey(
      */
     async addToCollection(collectionId: string, resourceId: string): Promise<void> {
         const { data: collection } = await supabase
-            .from('resource_collections')
+            .from('collections')
             .select('resource_ids, sequence_order')
             .eq('id', collectionId)
             .single();
@@ -759,7 +777,7 @@ resource: library_resources!resource_engagements_resource_id_fkey(
         const newSequenceOrder = [...(collection.sequence_order || []), newResourceIds.length - 1];
 
         const { error } = await supabase
-            .from('resource_collections')
+            .from('collections')
             .update({
                 resource_ids: newResourceIds,
                 sequence_order: newSequenceOrder,
@@ -778,7 +796,7 @@ resource: library_resources!resource_engagements_resource_id_fkey(
         const original = await this.getCollectionById(collectionId);
 
         const { data, error } = await supabase
-            .from('resource_collections')
+            .from('collections')
             .insert([
                 {
                     name: `${original.name} (Fork)`,
@@ -787,7 +805,7 @@ resource: library_resources!resource_engagements_resource_id_fkey(
                     visibility: 'private', // Forks start as private
                     resource_ids: original.resource_ids,
                     sequence_order: original.sequence_order,
-                    subject: original.subject,
+                    subjects: original.subjects,
                     topics: original.topics,
                     grades: original.grades,
                     estimated_duration: original.estimated_duration,
@@ -824,7 +842,7 @@ resource: library_resources!resource_engagements_resource_id_fkey(
      */
     async deleteCollection(id: string): Promise<void> {
         const { error } = await supabase
-            .from('resource_collections')
+            .from('collections')
             .delete()
             .eq('id', id);
 
@@ -838,8 +856,8 @@ resource: library_resources!resource_engagements_resource_id_fkey(
      */
     async getMapTopology(): Promise<KnowledgeTopology> {
         const { data: resources, error } = await supabase
-            .from('library_resources')
-            .select('id, title, type, subject, topics, tags, thumbnail_url');
+            .from('nodes')
+            .select('id, title, type, subjects, topics, tags, thumbnail_url');
 
         if (error) throw new APIError('Failed to fetch resource topology', error.code, error);
 
@@ -855,7 +873,7 @@ resource: library_resources!resource_engagements_resource_id_fkey(
                 type: 'resource',
                 group: res.type || 'unknown',
                 metadata: {
-                    subject: res.subject,
+                    subjects: res.subjects,
                     thumbnail: res.thumbnail_url
                 }
             });
@@ -909,14 +927,14 @@ resource: library_resources!resource_engagements_resource_id_fkey(
         try {
             // First fetch the resource to get subject/tags
             const { data: resource, error: fetchError } = await supabase
-                .from('library_resources')
-                .select('subject, tags')
+                .from('nodes')
+                .select('subjects, tags')
                 .eq('id', resourceId)
                 .single();
 
             if (fetchError || !resource) return [];
 
-            const query = `${resource.subject} ${resource.tags?.join(' ') || ''}`;
+            const query = `${resource.subjects?.[0] || ''} ${resource.tags?.join(' ') || ''}`;
             const { data, error } = await supabase.rpc('search_map_universe', {
                 query_text: query,
                 match_count: 3

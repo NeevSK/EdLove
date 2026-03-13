@@ -3,8 +3,9 @@ import { View, Platform } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import { ErrorBoundary, AchievementUnlockOverlay, useTheme } from "@repo/ui";
-import { useUserRole, useRewards, useNotifications } from "@repo/core";
+import { ErrorBoundary, AchievementUnlockOverlay, useTheme, UniversalModal, Box, VStack, HStack, Text, hapticLight, Theme } from "@repo/ui";
+import { BreathGuide } from "@repo/self";
+import { useUserRole, useRewards, useNotifications, useStore } from "@repo/core";
 import {
   User,
   School,
@@ -15,6 +16,7 @@ import {
   ChevronLeft,
   Menu,
   Settings,
+  X,
 } from "lucide-react-native";
 import { StackFallback } from "../components/web/WebScreenShimmer";
 
@@ -140,6 +142,7 @@ export default function TabNavigator({
   const [activeTab, setActiveTab] = React.useState("Self");
   const [showCelebration, setShowCelebration] = React.useState(false);
   const [currentAchievement, setCurrentAchievement] = React.useState("");
+  const { isBreathingOpen, setBreathingOpen } = useStore();
 
   // Ref to the sidebar element — used for focus trap
   const sidebarRef = React.useRef<HTMLElement>(null);
@@ -326,38 +329,42 @@ export default function TabNavigator({
                 : "none",
           }}
         >
-          <div className="sidebar-header" style={{ display: "flex" }}>
-            {isMobileView ? (
-              <button
-                className="sidebar-toggle"
-                onClick={closeSidebar}
-                aria-label="Close navigation"
-              >
-                <ChevronLeft size={16} />
-              </button>
-            ) : (
-              <button
-                className="sidebar-toggle"
-                onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
-                aria-label={
-                  isSidebarExpanded ? "Collapse sidebar" : "Expand sidebar"
-                }
-              >
-                {isSidebarExpanded ? (
-                  <ChevronLeft size={16} />
-                ) : (
-                  <Menu size={16} />
-                )}
-              </button>
-            )}
+          <div className="sidebar-header" style={{ 
+            display: "flex", 
+            justifyContent: isSidebarExpanded ? 'space-between' : 'center', 
+            alignItems: 'center', 
+            padding: isSidebarExpanded ? '0 16px' : '0',
+            height: '60px'
+          }}>
             {(isSidebarExpanded || isMobileView) && (
               <span
                 className="sidebar-group-label"
-                style={{ marginLeft: "12px" }}
+                style={{ marginLeft: "0", fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em', opacity: 0.6 }}
               >
-                {t("webNav.navigate")}
+                {t("webNav.menu") || "MENU"}
               </span>
             )}
+            <button
+              className="sidebar-toggle"
+              onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+              aria-label={
+                isSidebarExpanded ? "Collapse sidebar" : "Expand sidebar"
+              }
+              style={{ 
+                margin: isSidebarExpanded ? '0' : 'auto',
+                padding: '8px',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              {isSidebarExpanded ? (
+                <ChevronLeft size={16} />
+              ) : (
+                <Menu size={16} />
+              )}
+            </button>
           </div>
 
           <nav className="sidebar-nav" aria-label="Main navigation">
@@ -374,6 +381,7 @@ export default function TabNavigator({
                   }}
                   title={getLabel(conf.name, conf.labelKey)}
                   aria-current={isActive ? "page" : undefined}
+                  style={{ justifyContent: isSidebarExpanded ? 'flex-start' : 'center', paddingLeft: isSidebarExpanded ? '16px' : '0' }}
                 >
                   <Icon
                     size={20}
@@ -400,6 +408,7 @@ export default function TabNavigator({
                 });
                 if (isMobileView) closeSidebar();
               }}
+              style={{ justifyContent: isSidebarExpanded ? 'flex-start' : 'center', paddingLeft: isSidebarExpanded ? '16px' : '0' }}
             >
               <div style={{ position: "relative" }}>
                 <Bell
@@ -428,16 +437,17 @@ export default function TabNavigator({
                 });
                 if (isMobileView) closeSidebar();
               }}
+              style={{ justifyContent: isSidebarExpanded ? 'flex-start' : 'center', paddingLeft: isSidebarExpanded ? '16px' : '0' }}
             >
-              <div className="profile-gem">
-                <Settings size={16} color="var(--ink-ghost)" />
+              <div style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Settings size={20} color="var(--ink-ghost)" />
               </div>
               {(isSidebarExpanded || isMobileView) && (
-                <div className="profile-info">
-                  <span className="profile-nm">
+                <div className="profile-info" style={{ marginLeft: '12px' }}>
+                  <span className="profile-nm" style={{ fontSize: '13px', fontWeight: '600', color: 'var(--ink)' }}>
                     {role?.split("_").join(" ") || "Guest"}
                   </span>
-                  <span className="profile-status">
+                  <span className="profile-status" style={{ fontSize: '11px', opacity: 0.6 }}>
                     {t("common.settings")}
                   </span>
                 </div>
@@ -561,7 +571,7 @@ export default function TabNavigator({
       {/* Always visible on mobile — even in notifications/settings subviews so
                 users always have a path back. Tab buttons return to 'none' subview
                 first; Alerts button toggles notifications. */}
-      {isMobileView && (
+      {isMobileView && !isSidebarExpanded && (
         <nav
           className="mobile-bottom-nav"
           aria-label={t("webNav.tabNavigation")}
@@ -620,6 +630,34 @@ export default function TabNavigator({
         visible={showCelebration}
         onHide={() => setShowCelebration(false)}
       />
+
+
+      <UniversalModal
+        isOpen={isBreathingOpen}
+        onClose={() => setBreathingOpen(false)}
+      >
+        <Box sx={{ 
+          backgroundColor: 'var(--background)',
+          borderRadius: '$xl' as any,
+          padding: Theme.spacing.xl, 
+          alignItems: 'center',
+          maxWidth: 600,
+          width: '90%'
+        }}>
+          <HStack justifyContent="space-between" alignItems="center" sx={{ width: '100%', marginBottom: Theme.spacing.md }}>
+            <Text color="var(--ink)" sx={{ fontSize: '$lg' as any, fontWeight: '700' }}>
+              {t('self.breathingReset') || 'Breathing Reset'}
+            </Text>
+            <button 
+              onClick={() => setBreathingOpen(false)}
+              style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)' }}
+            >
+              <X size={24} />
+            </button>
+          </HStack>
+          <BreathGuide onComplete={() => setBreathingOpen(false)} />
+        </Box>
+      </UniversalModal>
     </div>
   );
 }

@@ -82,37 +82,42 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
     // ── Restore saved progress or pre-fill from existing auth ─────────────
     useEffect(() => {
         const initOnboarding = async () => {
-            const internalId = await identityAPI.getMyInternalId();
             try {
-                const saved = await AsyncStorage.getItem('onboarding_progress');
-                if (saved) {
-                    const progress = JSON.parse(saved);
-                    // Allow recovering progress even if the userId changed (e.g. Guest -> Google Auth)
-                    // as long as it's the same device and a recent session switch.
-                    if (progress.userId === internalId || !progress.userId || isAnonymous) {
-                        if (progress.name) setName(progress.name);
-                        if (progress.role) setRole(progress.role as UserRole);
-                        if (typeof progress.step === 'number' && progress.step >= 0 && progress.step < 7) {
-                            setCurrentStep(progress.step);
-                            return;
+                const internalId = await identityAPI.getMyInternalId();
+                try {
+                    const saved = await AsyncStorage.getItem('onboarding_progress');
+                    if (saved) {
+                        const progress = JSON.parse(saved);
+                        if (progress.userId === internalId || !progress.userId || isAnonymous) {
+                            if (progress.name) setName(progress.name);
+                            if (progress.role) setRole(progress.role as UserRole);
+                            if (typeof progress.step === 'number' && progress.step >= 0 && progress.step < 7) {
+                                setCurrentStep(progress.step);
+                                return;
+                            }
                         }
                     }
+                } catch (e) {
+                    console.warn('[Onboarding] Failed to restore progress from storage:', e);
                 }
-            } catch { /* ignore corrupt storage */ }
 
-            if (!internalId) return;
-            const { data: profile } = await supabase
-                .from('users')
-                .select('full_name, is_anonymous, role')
-                .eq('id', internalId)
-                .maybeSingle();
-            if (!profile) return;
+                if (!internalId) return;
+                const { data: profile } = await supabase
+                    .from('users')
+                    .select('full_name, is_anonymous, role')
+                    .eq('id', internalId)
+                    .maybeSingle();
+                
+                if (!profile) return;
 
-            const PLACEHOLDER_NAMES = ['Guest User', 'Gurudevi User', 'Sanctuary User'];
-            if (!profile.is_anonymous && profile.full_name && !PLACEHOLDER_NAMES.includes(profile.full_name)) {
-                setName(profile.full_name);
-                if (profile.role) setRole(profile.role as UserRole);
-                setCurrentStep(1);
+                const PLACEHOLDER_NAMES = ['Guest User', 'Gurudevi User', 'Sanctuary User'];
+                if (!profile.is_anonymous && profile.full_name && !PLACEHOLDER_NAMES.includes(profile.full_name)) {
+                    setName(profile.full_name);
+                    if (profile.role) setRole(profile.role as UserRole);
+                    setCurrentStep(1);
+                }
+            } catch (error) {
+                console.error('[Onboarding] Initialization error:', error);
             }
         };
         initOnboarding();

@@ -16,9 +16,9 @@ export default function WebScreenShimmer({ variant = 'cards' }: { variant?: 'car
     return (
         <div className="wsm-root" role="status" aria-busy="true" aria-label="Loading…">
             {/* Section heading */}
-            <div className="wsm-block" style={{ height: 14, width: '22%', borderRadius: 4, marginBottom: 8 }} />
-            <div className="wsm-block" style={{ height: 36, width: '55%', borderRadius: 8, marginBottom: 6 }} />
-            <div className="wsm-block" style={{ height: 16, width: '40%', borderRadius: 4, marginBottom: 40 }} />
+            <div className="wsm-block" style={{ height: 14, maxWidth: '200px', width: '22%', borderRadius: 4, marginBottom: 8 }} />
+            <div className="wsm-block" style={{ height: 36, maxWidth: '500px', width: '55%', borderRadius: 8, marginBottom: 6 }} />
+            <div className="wsm-block" style={{ height: 16, maxWidth: '300px', width: '40%', borderRadius: 4, marginBottom: 40 }} />
 
             {variant === 'cards' && <CardsShimmer />}
             {variant === 'list' && <ListShimmer />}
@@ -46,14 +46,14 @@ function CardsShimmer() {
                 ))}
             </div>
             {/* Card grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: 24 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(400px, 100%), 1fr))', gap: 32 }}>
                 {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid var(--border, rgba(42,35,24,0.08))' }}>
-                        <div className="wsm-block" style={{ height: 160, borderRadius: 0 }} />
-                        <div style={{ padding: '16px' }}>
-                            <div className="wsm-block" style={{ height: 14, width: '60%', borderRadius: 4, marginBottom: 8 }} />
-                            <div className="wsm-block" style={{ height: 12, width: '80%', borderRadius: 4, marginBottom: 6 }} />
-                            <div className="wsm-block" style={{ height: 12, width: '50%', borderRadius: 4 }} />
+                    <div key={i} style={{ borderRadius: 20, overflow: 'hidden', border: '1px solid var(--border, rgba(42,35,24,0.06))', background: 'var(--card-bg, rgba(255,255,255,0.3))' }}>
+                        <div className="wsm-block" style={{ height: 220, borderRadius: 0 }} />
+                        <div style={{ padding: '24px' }}>
+                            <div className="wsm-block" style={{ height: 18, width: '60%', borderRadius: 6, marginBottom: 12 }} />
+                            <div className="wsm-block" style={{ height: 14, width: '85%', borderRadius: 4, marginBottom: 8 }} />
+                            <div className="wsm-block" style={{ height: 14, width: '40%', borderRadius: 4 }} />
                         </div>
                     </div>
                 ))}
@@ -133,29 +133,40 @@ function FullShimmer() {
 // ── CSS ──────────────────────────────────────────────────────────────────────
 const CSS = `
 .wsm-root {
-    padding: 40px 48px;
-    max-width: 1200px;
+    padding: 40px 48px 60px 48px; /* Matched to .sanctuary-screen padding */
+    max-width: var(--container-width, 1400px);
     margin: 0 auto;
     min-height: 100vh;
 }
+@media (max-width: 1024px) {
+    .wsm-root { padding: 32px 24px; }
+}
 @media (max-width: 768px) {
-    .wsm-root { padding: 24px 20px; }
+    .wsm-root { padding: 20px 14px 88px 14px; }
 }
 
 @keyframes wsmShimmer {
-    0%   { background-position: -400px 0; }
-    100% { background-position: 400px 0; }
+    0%   { background-position: -100% 0; }
+    100% { background-position: 100% 0; }
+}
+@keyframes wsmPulse {
+    0%, 100% { opacity: 0.85; }
+    50%      { opacity: 1; }
 }
 .wsm-block {
     background: linear-gradient(
         90deg,
-        var(--border, rgba(42,35,24,0.09)) 0%,
-        rgba(212,132,58,0.06) 40%,
-        var(--border, rgba(42,35,24,0.09)) 80%
+        var(--border, rgba(42,35,24,0.06)) 25%,
+        rgba(212,132,58,0.04) 37%,
+        rgba(212,132,58,0.08) 50%,
+        rgba(212,132,58,0.04) 63%,
+        var(--border, rgba(42,35,24,0.06)) 75%
     );
-    background-size: 800px 100%;
-    animation: wsmShimmer 1.6s ease-in-out infinite;
-    border-radius: 8px;
+    background-size: 200% 100%;
+    animation: 
+        wsmShimmer 2.5s infinite linear,
+        wsmPulse 3.5s ease-in-out infinite;
+    border-radius: 12px;
 }
 @media (prefers-reduced-motion: reduce) {
     .wsm-block { animation: none; opacity: 0.5; }

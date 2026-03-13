@@ -19,6 +19,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.5",
     "@repo/types-shim": "workspace:*",
     "@testing-library/react-native": "14.0.0-beta.0",
     "husky": "^9.1.7",

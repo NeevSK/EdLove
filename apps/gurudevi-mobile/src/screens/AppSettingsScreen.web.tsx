@@ -7,7 +7,8 @@ import {
     useThemedColors,
     Theme,
     DeleteAccountModal,
-    LogoutModal
+    LogoutModal,
+    WebScreenHeader
 } from '@repo/ui';
 import { useUserRole, useStore, useAccountDeletion, authAPI } from '@repo/core';
 import { useEnvironment } from '@repo/ui';
@@ -92,9 +93,10 @@ export default function AppSettingsScreenWeb() {
     const logout = async () => {
         try {
             await authAPI.signOut();
-            setUser(null);
         } catch (error) {
-            console.error('Logout failed:', error);
+            console.error('[Settings] Remote logout failed, clearing local state anyway:', error);
+        } finally {
+            setUser(null);
         }
     };
     const { deleteAccount, isDeleting } = useAccountDeletion();
@@ -111,11 +113,12 @@ export default function AppSettingsScreenWeb() {
     return (
         <div className="sanctuary-screen">
             <div className="sanctuary-container">
-                <div className="greeting">
-                    <div className="greeting-time">{t('settings.sanctuary_config')}</div>
-                    <h1 className="greeting-main">{t('settings.title')}</h1>
-                    <p className="greeting-note">{t('settings.description')}</p>
-                </div>
+                <WebScreenHeader 
+                    title={t('settings.title')}
+                    note={t('settings.description')}
+                    timeText={t('settings.sanctuary_config')}
+                />
+                <div style={{ marginTop: 24 }} />
 
                 <div className="settings-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(350px, 100%), 1fr))', gap: '24px' }}>
 

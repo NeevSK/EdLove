@@ -17,6 +17,8 @@
     "@gluestack-ui/config": "^1.1.20",
     "@gluestack-ui/themed": "^1.1.73",
     "@repo/core": "workspace:*",
+    "apca-w3": "^0.1.9",
+    "culori": "^4.0.2",
     "lucide-react-native": "^0.563.0"
   },
   "peerDependencies": {

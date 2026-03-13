@@ -99,7 +99,7 @@ export default function SchoolForestScreenWeb() {
                     disabled={refreshing}
                     style={{ background: 'var(--background-alt)', border: 'none', borderRadius: '10px', padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '13px', color: 'var(--ink)', fontFamily: 'var(--font-body)', opacity: refreshing ? 0.6 : 1 }}
                 >
-                    <RefreshCw size={14} style={{ animation: refreshing ? 'spin 1s linear infinite' : undefined }} />
+                    <RefreshCw size={14} />
                     Refresh
                 </button>
             </div>

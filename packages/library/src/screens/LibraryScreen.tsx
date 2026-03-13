@@ -1,4 +1,4 @@
-﻿/**
+/**
  * LibraryScreen â€” Netflix-Style Holistic Digital Library
  */
 
@@ -30,7 +30,7 @@ import {
     CollectionCard,
     LibraryThumbnailCard,
     useBottomTabPadding,
-    LotusPetalFAB,
+    useRegisterFAB,
     FadeInDown,
     HorizontalChipRow,
     openExternalURL,
@@ -302,6 +302,13 @@ export default function LibraryScreen() {
         if (hasNextResources && !isFetchingNextResources) fetchNextResources();
     }, [hasNextResources, isFetchingNextResources, fetchNextResources]);
 
+    // Register FAB globally
+    useRegisterFAB({
+        tabType: 'library',
+        onPress: () => setIsAddModalOpen(true),
+        visible: !loading
+    });
+
     const renderShelf = useCallback((label: string, items: LibraryResource[], onSeeAll?: () => void) => {
         if (items.length === 0) return null;
         return (
@@ -311,7 +318,7 @@ export default function LibraryScreen() {
                         key={res.id}
                         title={res.title}
                         type={res.type}
-                        subject={res.subject}
+                        subject={res.subjects?.[0] || ''}
                         thumbnailUrl={res.media?.url as string | undefined}
                         endorsements={res.endorsements}
                         verified={res.verified}
@@ -435,7 +442,7 @@ export default function LibraryScreen() {
                                         title={col.name}
                                         creator={col.creator_name}
                                         resourceCount={col.resource_ids?.length ?? 0}
-                                        subjectTag={col.subject}
+                                        subjectTag={col.subjects?.[0] || ''}
                                         onPullToDesk={() => { }}
                                     />
                                 ))}
@@ -459,11 +466,6 @@ export default function LibraryScreen() {
                     </Box>
                 </ScrollView>
             )}
-
-            <LotusPetalFAB
-                currentTab="library"
-                onPress={() => setIsAddModalOpen(true)}
-            />
 
             <AddResourceModal
                 isOpen={isAddModalOpen}

@@ -254,17 +254,19 @@ export default function GlobalHeader({
                                 <Box sx={{ position: 'relative' }}>
                                     <Bell size={24} color={text.primary} />
                                     {/* Notification Dot */}
-                                    <Box sx={{
-                                        position: 'absolute',
-                                        top: 0,
-                                        right: 2,
-                                        width: 8,
-                                        height: 8,
-                                        borderRadius: 4,
-                                        backgroundColor: accent.action,
-                                        borderWidth: 1.5,
-                                        borderColor: glass.surface.bg // Matches the Porcelain header background
-                                    }} />
+                                    {unreadCount > 0 && (
+                                        <Box sx={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            right: 2,
+                                            width: 8,
+                                            height: 8,
+                                            borderRadius: 4,
+                                            backgroundColor: accent.action,
+                                            borderWidth: 1.5,
+                                            borderColor: glass.surface.bg // Matches the Porcelain header background
+                                        }} />
+                                    )}
                                 </Box>
                             </TouchableOpacity>
                         )}

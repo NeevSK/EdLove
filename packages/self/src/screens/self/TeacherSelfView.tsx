@@ -98,10 +98,20 @@ export default function TeacherSelfView() {
                         ]
                     },
                     {
-                        id: 'physical',
-                        title: 'Physical Sanctuary',
-                        accentColor: '#F59E0B',
+                        id: 'personal',
+                        title: 'Personal Sanctuary',
+                        accentColor: '#EF4444',
                         features: [
+                            {
+                                id: 'fire-journal',
+                                label: 'Fire Journal',
+                                content: <FireJournal userId={userId ?? undefined} />
+                            },
+                            {
+                                id: 'voice',
+                                label: 'Voice Journal',
+                                content: <VoiceJournaling userId={userId ?? undefined} />
+                            },
                             {
                                 id: 'mood-picker',
                                 label: 'Mood Tracking',
@@ -115,7 +125,14 @@ export default function TeacherSelfView() {
                                         isLoading={loadingMoods}
                                     />
                                 )
-                            },
+                            }
+                        ]
+                    },
+                    {
+                        id: 'physical',
+                        title: 'Physical Rhythm',
+                        accentColor: '#F59E0B',
+                        features: [
                             {
                                 id: 'energy-forecast',
                                 label: 'Energy Rhythm',
@@ -148,8 +165,12 @@ export default function TeacherSelfView() {
                         ]
                     }
                 ]}
-                sideBar={<TeacherMirrorView userId={userId ?? undefined} />}
-                reminders={<RipplesOfImpact userId={userId ?? undefined} />}
+                sideBar={
+                    <VStack space="lg">
+                        <WarmMirrorCard text={warmMirrorText} />
+                        <ImpactRipplesCard ripples={ripples} />
+                    </VStack>
+                }
             />
 
             <ShadowAgentDrawer />
@@ -159,18 +180,4 @@ export default function TeacherSelfView() {
             />
         </ScreenWrapper>
     );
-}
-
-// Sub-components for cleaner mapping (can be moved to separate files later)
-function TeacherMirrorView({ userId }: { userId?: string }) {
-    return (
-        <VStack space="lg">
-            <WarmMirrorCard text="Reflecting on your impact today..." />
-            <ImpactRipplesCard ripples={[]} />
-        </VStack>
-    );
-}
-
-function RipplesOfImpact({ userId }: { userId?: string }) {
-    return <ImpactRipplesCard ripples={[]} />;
 }

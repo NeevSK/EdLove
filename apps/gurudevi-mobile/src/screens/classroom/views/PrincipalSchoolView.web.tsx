@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useUserRole, useStore, staffManagementAPI, supabase, api, schoolAPI, StaffPresenceSummary, TeacherCarouselItem, StudentAttendancePulse, StaffLeaveDTO, useFeatureAccess } from '@repo/core';
 import { useSchoolStats, CreateClassroomModal, AddStudentModal } from '@repo/classroom';
 import { useSchoolPulse } from '@repo/profile';
-import { SkeletonCard, SandboxBanner, getInitialsFromName, PositiveInvitation } from '@repo/ui';
+import { SkeletonCard, SandboxBanner, getInitialsFromName, PositiveInvitation, hapticLight, WebScreenHeader } from '@repo/ui';
 import {
     Users,
     FileText,
@@ -33,8 +33,10 @@ import {
     BarChart3,
     Package,
     ArrowLeft,
+    PlusCircle,
 } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
+import { CreateSchoolModal } from '@repo/classroom';
 
 const LEAVE_STATUS_COLORS: Record<string, string> = {
     pending: 'var(--amber-glow)',
@@ -58,12 +60,14 @@ function presenceColor(present: number, total: number): string {
     return 'var(--ember)';
 }
 
-export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: { schoolId?: string; userId?: string; forceDemo?: boolean }) {
+export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, onRefresh }: { schoolId?: string; userId?: string; forceDemo?: boolean; onRefresh?: () => void }) {
     const { t } = useTranslation();
     const { user } = useStore();
-    const isDemo = forceDemo === true;
+    const { isGuest } = useFeatureAccess();
+    
     const effectiveSchoolId = schoolId || user?.school_id || '';
     const effectiveUserId = userId || user?.id || '';
+    const isDemo = forceDemo === true || (!effectiveSchoolId && !isGuest);
 
     const { stats: schoolStats, school, isLoading: statsLoading } = useSchoolStats(effectiveSchoolId);
     const { pulse, loading: pulseLoading } = useSchoolPulse(effectiveSchoolId);
@@ -80,7 +84,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
     const [showCreateClassroom, setShowCreateClassroom] = useState(false);
     const [showAddTeacher, setShowAddTeacher] = useState(false);
     const [processingLeave, setProcessingLeave] = useState<string | null>(null);
-    const { isGuest } = useFeatureAccess();
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     // ── Sub-view navigation (ManagementStation) ───────────────────────────
     type PrincipalView = 'main' | 'hierarchy' | 'invites' | 'log' | 'cycles';
@@ -126,9 +130,17 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
     const [savingReply, setSavingReply] = useState(false);
 
     useEffect(() => {
-        if (!effectiveSchoolId) return;
         let mounted = true;
         const loadEcho = async () => {
+            if (!effectiveSchoolId) {
+                setEchoItems([
+                    { id: 'e1', source: 'teacher', category: 'support', content: 'Need guidance on the 2026 Mathematics syllabus transition for Grade 6.', priority: 'high', is_read: false, created_at: new Date().toISOString() },
+                    { id: 'e2', source: 'student', category: 'morale', content: 'The new common area is great! Everyone is enjoying the study space.', priority: 'low', is_read: true, created_at: new Date(Date.now() - 3600000).toISOString() },
+                    { id: 'e3', source: 'teacher', category: 'facility', content: 'Multimedia projector in Room 4 is flickering intermittently.', priority: 'medium', is_read: false, created_at: new Date(Date.now() - 86400000).toISOString() },
+                ]);
+                setEchoLoading(false);
+                return;
+            }
             setEchoLoading(true);
             try {
                 const { data, error } = await supabase
@@ -166,9 +178,19 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
     const [calendarLoading, setCalendarLoading] = useState(true);
 
     useEffect(() => {
-        if (!effectiveSchoolId) return;
         let mounted = true;
         (async () => {
+            if (!effectiveSchoolId) {
+                const y = new Date().getFullYear();
+                setCalendarEvents([
+                    { id: 'c1', title: 'Second Term Begins', type: 'term_start', start_date: `${y}-04-07` },
+                    { id: 'c2', title: 'Mid-Year Examinations', type: 'exam', start_date: `${y}-06-10`, end_date: `${y}-06-21` },
+                    { id: 'c3', title: 'Sports Day', type: 'event', start_date: `${y}-05-15` },
+                    { id: 'c4', title: 'Vesak Holiday', type: 'holiday', start_date: `${y}-05-12` },
+                ]);
+                setCalendarLoading(false);
+                return;
+            }
             setCalendarLoading(true);
             try {
                 const today = new Date().toISOString().split('T')[0];
@@ -258,9 +280,21 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
     };
 
     useEffect(() => {
-        if (!effectiveSchoolId) return;
         let mounted = true;
         const loadStaffData = async () => {
+            if (!effectiveSchoolId) {
+                // Demo fallback for staff/student pulse
+                setPresence({ present: 18, total: 20, on_leave: 1, late: 1 } as any);
+                setTeachers([
+                    { id: 't1', full_name: 'Dr. Aruni Silva', role: 'Head of Mathematics', classroomCount: 4, todayStatus: 'present' },
+                    { id: 't2', full_name: 'Mr. Rohan Perera', role: 'Science Lead', classroomCount: 3, todayStatus: 'present' },
+                    { id: 't3', full_name: 'Ms. Nilanthi Gooneratne', role: 'Language Specialist', classroomCount: 5, todayStatus: 'on_leave' },
+                ] as any);
+                setStudentPulse({ todayRate: 94, yesterdayRate: 91, atRiskCount: 2 } as any);
+                setPendingLeaves([]);
+                setStaffLoading(false);
+                return;
+            }
             setStaffLoading(true);
             try {
                 const [pres, teacherList, pulse, leaves] = await Promise.all([
@@ -285,8 +319,17 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
     }, [effectiveSchoolId]);
 
     useEffect(() => {
-        if (!effectiveSchoolId) return;
         const fetchProgress = async () => {
+            if (!effectiveSchoolId) {
+                setCurriculumProgress([
+                    { grade: 'Grade 6', coverage: 72, topics_done: 18, topics_total: 25 },
+                    { grade: 'Grade 7', coverage: 55, topics_done: 11, topics_total: 20 },
+                    { grade: 'Grade 8', coverage: 88, topics_done: 22, topics_total: 25 },
+                    { grade: 'Grade 9', coverage: 40, topics_done: 8, topics_total: 20 },
+                ]);
+                setCurriculumLoading(false);
+                return;
+            }
             setCurriculumLoading(true);
             try {
                 const { data } = await supabase.from('curriculum_progress').select('*').eq('school_id', effectiveSchoolId).order('grade', { ascending: true });
@@ -616,32 +659,28 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                     )}
 
                     {/* ─── 1. COMMAND HEADER ─────────────────────────── */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
-                        <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                                <div style={{ padding: '8px', background: 'var(--lotus-soft)', borderRadius: '8px', color: 'var(--lotus)' }}>
-                                    <Shield size={20} />
-                                </div>
-                                <span style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--ink-ghost)' }}>
-                                    {school?.name || 'School Ecosystem'}
-                                </span>
+                    {/* ─── 1. COMMAND HEADER ─────────────────────────── */}
+                    <WebScreenHeader
+                        title={<>School <span style={{ color: 'var(--lotus)' }}>Ecosystem</span>.</>}
+                        note={`Welcome back, ${user?.full_name?.split(' ')[0] || 'Principal'}. Here is your situational brief.`}
+                        timeText={school?.name || 'School Ecosystem'}
+                        actions={(
+                            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                <button className="premium-button" style={{ background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowCreateClassroom(true)}>
+                                    <Plus size={18} /> Establish Hierarchy
+                                </button>
+                                <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowAddTeacher(true)}>
+                                    <Users size={18} /> Invite Staff
+                                </button>
+                                <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => navigation.navigate('SchoolProfile', { schoolId: effectiveSchoolId })}>
+                                    <Building size={18} /> School Profile
+                                </button>
+                                <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--water)', borderColor: 'var(--water)' }} onClick={() => navigation.navigate('Main', { screen: 'Community' })}>
+                                    <Share2 size={18} /> Open Commons
+                                </button>
                             </div>
-                            <h1 style={{ fontSize: '40px', fontWeight: '800', margin: 0 }}>
-                                School <span style={{ color: 'var(--lotus)' }}>Ecosystem</span>.
-                            </h1>
-                            <p style={{ color: 'var(--ink-ghost)', marginTop: '8px', fontSize: '14px' }}>
-                                Welcome back, {user?.full_name?.split(' ')[0] || 'Principal'}. Here is your situational brief.
-                            </p>
-                        </div>
-                        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                            <button className="premium-button" style={{ background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowCreateClassroom(true)}>
-                                <Plus size={18} /> Establish Hierarchy
-                            </button>
-                            <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowAddTeacher(true)}>
-                                <Users size={18} /> Invite Staff
-                            </button>
-                        </div>
-                    </div>
+                        )}
+                    />
 
                     {/* ─── NEW: Command Center (Topological Parity) ───── */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -1216,6 +1255,20 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                             </div>
                         </div>
                     )}
+
+                    {(!effectiveSchoolId && !isGuest) && (
+                        <div style={{ padding: '40px 0 100px', display: 'flex', justifyContent: 'center' }}>
+                            <div style={{ maxWidth: '800px', width: '100%' }}>
+                                <PositiveInvitation
+                                    type="empty"
+                                    title="Establish your own Sanctuary"
+                                    description="You're currently viewing a demo. Ready to bring your own vision to life? Create your official school profile now and start your journey."
+                                    actionLabel="Create Your School"
+                                    onAction={() => setIsCreateModalOpen(true)}
+                                />
+                            </div>
+                        </div>
+                    )}
                 </>}
             </div>
 
@@ -1275,6 +1328,15 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo }: 
                     </div>
                 </div>
             )}
+
+            <CreateSchoolModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                onSuccess={(newSchool) => {
+                    setIsCreateModalOpen(false);
+                    onRefresh?.();
+                }}
+            />
         </>
     );
 }

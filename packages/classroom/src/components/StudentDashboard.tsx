@@ -11,7 +11,8 @@ import {
     useThemedColors,
     PositiveInvitation,
     SandboxBanner,
-    hapticLight
+    hapticLight,
+    useRegisterFAB
 } from '@repo/ui';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native';
@@ -21,7 +22,8 @@ import {
     ClipboardCheck,
     MessageSquare,
     Star,
-    Layout
+    Layout,
+    Wind
 } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -104,6 +106,12 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
         fetchPendingAssignments(classroomIds);
         setIsLoading(false);
     };
+
+    // Register FAB globally for Student (hidden or specific action)
+    useRegisterFAB({
+        tabType: 'classroom',
+        visible: false
+    });
 
     const QuickAction = ({ icon: LucideIcon, label, onPress, color }: any) => (
         <VStack
@@ -211,6 +219,16 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
                             }}
                             color={Theme.colors.sageGreen}
                         />
+                        <QuickAction
+                            icon={Wind}
+                            label={t('student.breathing') || 'Breathing'}
+                            onPress={() => {
+                                hapticLight();
+                                const { setBreathingOpen } = useStore.getState();
+                                setBreathingOpen(true);
+                            }}
+                            color={Theme.colors.lotusDeepPink}
+                        />
                     </HStack>
                 </Animated.View>
 
@@ -269,7 +287,10 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
                             emptyContent={
                                 <PositiveInvitation
                                     context="classroom"
-                                    onAction={() => { }} // Handled by ClassroomScreen usually
+                                    title={isDemoMode ? "Join Your First Sanctuary" : undefined}
+                                    description={isDemoMode ? "Welcome to the student sanctuary. Ready to officially join your classes and begin your quest? Connect with your teachers to get started." : undefined}
+                                    actionLabel={isDemoMode ? "Join a Classroom" : undefined}
+                                    onAction={() => navigation.navigate('Community' as any)}
                                 />
                             }
                         />

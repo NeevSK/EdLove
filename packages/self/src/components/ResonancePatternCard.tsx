@@ -32,6 +32,15 @@ import {
     Theme,
     useThemedColors,
 } from '@repo/ui';
+import {
+    Canvas,
+    Circle,
+    Group,
+    Line,
+    Path,
+    Skia,
+    vec,
+} from '@shopify/react-native-skia';
 import { Sparkles } from 'lucide-react-native';
 import type { OrientationSeeds } from '@repo/profile';
 import type { MoodLog, EnergyForecast } from '../types/Wellbeing';
@@ -97,85 +106,96 @@ function buildPoints(seeds: Record<string, number>): { x: number; y: number }[] 
 // ============================================================================
 
 function RadarChart({ points, color }: { points: { x: number; y: number }[]; color: string }) {
-    // Build a CSS-like polygon clip path equivalent using absolute positioned lines
-    // We render the polygon as a filled View using border tricks, with axis lines
-
     // Grid circles
     const gridRadii = [MAX_RADIUS * 0.33, MAX_RADIUS * 0.66, MAX_RADIUS];
 
+    // Build path for the polygon
+    const polygonPath = useMemo(() => {
+        const path = Skia.Path.Make();
+        if (!points || points.length === 0 || !points[0]) return path;
+
+        path.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+            const pt = points[i];
+            if (pt) {
+                path.lineTo(pt.x, pt.y);
+            }
+        }
+        path.close();
+        return path;
+    }, [points]);
+
+    const centerVec = vec(CENTER, CENTER);
+
     return (
         <View style={{ width: CHART_SIZE, height: CHART_SIZE }}>
-            {/* Grid circles */}
-            {gridRadii.map((r, i) => (
-                <View
-                    key={i}
-                    style={{
-                        position: 'absolute',
-                        left: CENTER - r,
-                        top: CENTER - r,
-                        width: r * 2,
-                        height: r * 2,
-                        borderRadius: r,
-                        borderWidth: 1,
-                        borderColor: color + '28',
-                    }}
-                />
-            ))}
-
-            {/* Axis lines */}
-            {AXES.map((axis, i) => {
-                const tip = polar(axis.angle, MAX_RADIUS);
-                const length = Math.sqrt((tip.x - CENTER) ** 2 + (tip.y - CENTER) ** 2);
-                const angleDeg = Math.atan2(tip.y - CENTER, tip.x - CENTER) * (180 / Math.PI);
-                return (
-                    <View
-                        key={`axis-${i}`}
-                        style={{
-                            position: 'absolute',
-                            left: CENTER,
-                            top: CENTER,
-                            width: length,
-                            height: 1,
-                            backgroundColor: color + '30',
-                            // transformOrigin is not in RN's type defs but is used by Reanimated
-                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                            // @ts-ignore
-                            transformOrigin: 'left center',
-                            transform: [{ rotate: `${angleDeg}deg` }],
-                        }}
+            <Canvas style={StyleSheet.absoluteFill}>
+                {/* Grid circles */}
+                {gridRadii.map((r, i) => (
+                    <Circle
+                        key={`grid-${i}`}
+                        cx={CENTER}
+                        cy={CENTER}
+                        r={r}
+                        color={color}
+                        style="stroke"
+                        strokeWidth={1}
+                        opacity={0.15}
                     />
-                );
-            })}
+                ))}
 
-            {/* Polygon: rendered as dots connected visually via axis endpoint markers */}
-            {points.map((pt, i) => (
-                <View
-                    key={`pt-${i}`}
-                    style={{
-                        position: 'absolute',
-                        left: pt.x - 5,
-                        top: pt.y - 5,
-                        width: 10,
-                        height: 10,
-                        borderRadius: 5,
-                        backgroundColor: color,
-                        opacity: 0.9,
-                    }}
+                {/* Axis lines */}
+                {AXES.map((axis, i) => {
+                    const tip = polar(axis.angle, MAX_RADIUS);
+                    return (
+                        <Line
+                            key={`axis-${i}`}
+                            p1={centerVec}
+                            p2={vec(tip.x, tip.y)}
+                            color={color}
+                            strokeWidth={1}
+                            opacity={0.1}
+                        />
+                    );
+                })}
+
+                {/* The Resonance Polygon */}
+                <Group>
+                    <Path
+                        path={polygonPath}
+                        color={color}
+                        style="fill"
+                        opacity={0.2}
+                    />
+                    <Path
+                        path={polygonPath}
+                        color={color}
+                        style="stroke"
+                        strokeWidth={2}
+                        opacity={0.8}
+                    />
+
+                    {/* Polygon corner glows */}
+                    {points.map((pt, i) => (
+                        <Circle
+                            key={`pt-${i}`}
+                            cx={pt.x}
+                            cy={pt.y}
+                            r={3}
+                            color={color}
+                        />
+                    ))}
+                </Group>
+
+                {/* Center dot */}
+                <Circle
+                    cx={CENTER}
+                    cy={CENTER}
+                    r={2}
+                    color={color}
+                    opacity={0.5}
                 />
-            ))}
-
-            {/* Center dot */}
-            <View
-                style={{
-                    position: 'absolute',
-                    left: CENTER - 3,
-                    top: CENTER - 3,
-                    width: 6,
-                    height: 6,
-                    borderRadius: 3,
-                    backgroundColor: color + '80',
-                }}
-            />
+            </Canvas>
         </View>
     );
 }

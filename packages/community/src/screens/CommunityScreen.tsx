@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { RefreshControl, FlatList, ActivityIndicator, ScrollView } from 'react-native';
-import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, Theme, useBottomTabPadding, LotusPetalFAB, FadeInDown, HorizontalChipRow, SanctuaryFlashList, Heading, SanctuaryButton } from '@repo/ui';
+import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, Theme, useBottomTabPadding, useRegisterFAB, FadeInDown, HorizontalChipRow, SanctuaryFlashList, Heading, SanctuaryButton } from '@repo/ui';
 import Animated from 'react-native-reanimated';
 import PostCard from '../components/PostCard';
 import CreatePostModal from '../components/CreatePostModal';
@@ -72,6 +72,20 @@ export default function CommunityScreen() {
 
     // Derived feed filter chips via shared hook
     const feedFilterChips = useCommunityFilters(groups, t('community.filters.allUpdates'));
+
+    // Register FAB globally
+    useRegisterFAB({
+        tabType: 'community',
+        visible: !!userId,
+        onPress: () => {
+            if (activeTab === 'dms') {
+                setActiveTab('groups');
+            } else {
+                handleOpenCreatePost();
+            }
+        },
+        icon: activeTab === 'dms' ? <Mail size={24} color="white" /> : undefined
+    });
 
     // Initial data load
     useEffect(() => {
@@ -266,20 +280,6 @@ export default function CommunityScreen() {
                     ) : (
                         <DirectMessagesListScreen />
                     )
-                )}
-
-                {userId && (
-                    <LotusPetalFAB
-                        currentTab="community"
-                        onPress={() => {
-                            if (activeTab === 'dms') {
-                                setActiveTab('groups');
-                            } else {
-                                handleOpenCreatePost();
-                            }
-                        }}
-                        icon={activeTab === 'dms' ? <Mail size={24} color="white" /> : undefined}
-                    />
                 )}
 
                 <CreatePostModal

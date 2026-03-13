@@ -5,6 +5,7 @@ import { useStore } from '@repo/core';
 import { useNotifications, AppNotification } from '@repo/core';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 import { formatDistanceToNow } from 'date-fns';
+import { WebScreenHeader } from '@repo/ui';
 
 const ICON_MAP: Record<string, React.ReactNode> = {
     resonance:   <Bell     size={18} color="var(--action)"  />,
@@ -27,19 +28,22 @@ export default function NotificationsScreenWeb() {
     const { user } = useStore();
     const { notifications, unreadCount, isLoading, markAsRead, markAllRead } = useNotifications(user?.id);
 
+    // Automatically mark all as read when visiting this screen
+    React.useEffect(() => {
+        if (!isLoading && unreadCount > 0) {
+            markAllRead();
+        }
+    }, [isLoading, unreadCount, markAllRead]);
+
     return (
         <div className="sanctuary-screen">
             <div className="sanctuary-container">
                 {/* GREETING */}
-                <div className="greeting">
-                    <div className="greeting-time">{t('notifications.stream')}</div>
-                    <h1 className="greeting-main">{t('notifications.title')}</h1>
-                    <p className="greeting-note">
-                        {unreadCount > 0
-                            ? t('notifications.unread', { count: unreadCount })
-                            : ''}
-                    </p>
-                </div>
+                <WebScreenHeader
+                    title={t('notifications.title')}
+                    timeText={t('notifications.stream')}
+                    note={unreadCount > 0 ? t('notifications.unread', { count: unreadCount }) : ''}
+                />
 
                 {/* CONTENT */}
                 <div style={{ maxWidth: '800px' }}>

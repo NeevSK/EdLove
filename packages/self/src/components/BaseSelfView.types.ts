@@ -18,6 +18,7 @@ export interface SelfViewDomain {
 
 export interface BaseSelfViewProps {
     role: string;
+    title?: string;
     description?: string;
 
     /** The primary content domains (Personal, Working, etc.) */

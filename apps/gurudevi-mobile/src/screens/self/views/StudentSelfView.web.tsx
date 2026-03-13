@@ -133,24 +133,6 @@ export default function StudentSelfViewWeb() {
     // personalLayer: mood/energy pulse — the inner sanctuary
     const personalLayer = (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-            {/* Greeting */}
-            <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                    <div style={{ padding: '8px', background: 'rgba(58,122,154,0.1)', borderRadius: '8px', color: 'var(--water)' }}>
-                        <TrendingUp size={18} />
-                    </div>
-                    <span style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--ink-ghost)' }}>
-                        Growth Dashboard
-                    </span>
-                </div>
-                <h1 className="greeting-main">
-                    Peaceful <span style={{ color: 'var(--water)' }}>Progress</span>.
-                </h1>
-                <p className="greeting-note">
-                    {user?.full_name ? `Welcome back, ${user.full_name.split(' ')[0]}.` : 'Welcome back to your sanctuary of growth.'}
-                </p>
-            </div>
-
             {/* Daily Content — motivation spark to start the day */}
             <div className="sanctuary-card" style={{ padding: '4px' }}>
                 <DailyContentCard type="motivation" />

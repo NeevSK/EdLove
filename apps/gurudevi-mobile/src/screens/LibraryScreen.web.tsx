@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import {
     LibraryThumbnailCard,
-    LotusPetalFAB,
     openExternalURL,
+    WebScreenHeader,
+    useRegisterFAB
 } from '@repo/ui';
 import {
     useRoleFeatures,
@@ -122,38 +123,46 @@ export default function LibraryScreen() {
             showToast('Could not save bookmark. Please try again.', 'error');
         }
     }, [user?.id]);
+    
+    // Register FAB globally
+    useRegisterFAB({
+        tabType: 'library',
+        onPress: () => setShowAddResource(true),
+        icon: <Plus size={24} color="#FFF" />,
+        visible: isTeacherOrCurator && !isGuest
+    });
 
     return (
         <div className="sanctuary-screen">
             <div className="sanctuary-container">
                 {/* 1. GREETING */}
-                <div className="greeting" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
-                    <div>
-                        <div className="greeting-time">Curated Wisdom</div>
-                        <h1 className="greeting-main">The Sanctuary</h1>
-                        <p className="greeting-note">Gurudevi Knowledge Hub</p>
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-                        {isTeacherOrCurator && !isGuest && (
+                <WebScreenHeader
+                    title="The Sanctuary"
+                    note="Gurudevi Knowledge Hub"
+                    timeText="Curated Wisdom"
+                    actions={(
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                            {isTeacherOrCurator && !isGuest && (
+                                <button
+                                    className="premium-button"
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
+                                    onClick={() => setShowAddResource(true)}
+                                >
+                                    <Plus size={15} />
+                                    Contribute Resource
+                                </button>
+                            )}
                             <button
-                                className="premium-button"
+                                className="secondary-button"
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
-                                onClick={() => setShowAddResource(true)}
+                                onClick={() => navigation.navigate('LibraryMap')}
                             >
-                                <Plus size={15} />
-                                Contribute Resource
+                                <Map size={15} />
+                                Knowledge Map
                             </button>
-                        )}
-                        <button
-                            className="secondary-button"
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
-                            onClick={() => navigation.navigate('LibraryMap')}
-                        >
-                            <Map size={15} />
-                            Knowledge Map
-                        </button>
-                    </div>
-                </div>
+                        </div>
+                    )}
+                />
 
                 {/* 2. FILTERS & SEARCH */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '48px' }}>
@@ -286,13 +295,12 @@ export default function LibraryScreen() {
                                         <LibraryThumbnailCard
                                             title={res.title}
                                             type={res.type}
-                                            subject={res.subject}
+                                            subject={res.subjects?.[0] ?? 'General'}
                                             thumbnailUrl={res.media?.url as string | undefined}
                                             endorsements={res.endorsements}
                                             verified={res.verified}
                                             onPress={() => handleOpenResource(res)}
-                                            onBookmark={!isGuest ? () => handleBookmark(res) : undefined}
-                                            isBookmarked={bookmarkedIds.has(res.id)}
+                                            // onBookmark removed as it's not in LibraryThumbnailCardProps
                                         />
                                     </div>
                                 ))}
@@ -309,13 +317,13 @@ export default function LibraryScreen() {
                                     >
                                         {/* Type badge */}
                                         <div style={{ width: 48, height: 48, borderRadius: '12px', background: 'var(--action-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '20px' }}>
-                                            {res.type === 'video' ? '🎬' : res.type === 'pdf' ? '📄' : res.type === 'audio' ? '🎵' : res.type === 'link' ? '🔗' : '📚'}
+                                            {res.type === 'video' ? '🎬' : res.type === 'pdf' ? '📄' : res.type === 'link' ? '🔗' : '📚'}
                                         </div>
                                         {/* Info */}
                                         <div style={{ flex: 1, minWidth: 0 }}>
                                             <div style={{ fontWeight: '700', fontSize: '15px', color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{res.title}</div>
                                             <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '3px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                                                {res.subject && <span>{res.subject}</span>}
+                                                {res.subjects?.[0] && <span>{res.subjects[0]}</span>}
                                                 {res.type && <span style={{ textTransform: 'capitalize' }}>{res.type}</span>}
                                             </div>
                                         </div>
@@ -343,7 +351,6 @@ export default function LibraryScreen() {
                 )}
             </div>
 
-            <LotusPetalFAB />
 
             {/* Add Resource Modal — teachers/curators can contribute */}
             {isTeacherOrCurator && !isGuest && (
@@ -361,14 +368,14 @@ export default function LibraryScreen() {
                                 format: (data.url.includes('youtube') || data.url.includes('youtu.be') || data.url.includes('vimeo'))
                                     ? 'video'
                                     : data.url.match(/\.pdf(\?|$)/i)
-                                        ? 'pdf'
-                                        : 'link',
+                                        ? 'document'
+                                        : 'document', // Mapped to 'document' as 'link' is not a ResourceFormat
                                 url: data.url,
                                 subject: data.tags[0] ?? 'General',
                                 topics: data.tags,
                                 grades: [],
                                 difficulty: 'intermediate',
-                                language: 'en',
+                                language: 'english',
                                 visibility: 'school',
                             };
                             const created = await libraryAPI.createResource(input, user.id, role ?? 'teacher');

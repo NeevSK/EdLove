@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SANCTUARY CARD - Reusable Card Component
  * 
  * A versatile card component that follows sanctuary design principles:
@@ -35,6 +35,7 @@ interface SanctuaryCardProps {
     elevated?: boolean;
     variant?: 'glass' | 'solid'; // New variant prop
     style?: any;
+    accessibilityLabel?: string;
 }
 
 // ============================================================================
@@ -57,7 +58,8 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
     target = '_self',
     elevated = false,
     variant = 'glass', // Default to glass
-    style
+    style,
+    accessibilityLabel
 }) => {
     const { isDark, glass, glow, blurEnabled } = useTheme();
 
@@ -162,7 +164,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
         <View style={cardStyles.contentPadding}>
             {/* Title Section */}
             {title && (
-                <Text style={cardStyles.title}>{title}</Text>
+                <Text nativeID="card-title" style={cardStyles.title}>{title}</Text>
             )}
 
             {/* Children Content */}
@@ -187,6 +189,11 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
 
     const renderCard = () => (
         <Animated.View
+            // @ts-ignore
+            accessibilityRole={onPress || href ? undefined : 'summary'}
+            accessibilityLabel={accessibilityLabel}
+            // @ts-ignore
+            aria-labelledby={title ? 'card-title' : undefined}
             style={[
                 cardStyles.container,
                 elevated && cardStyles.elevated,

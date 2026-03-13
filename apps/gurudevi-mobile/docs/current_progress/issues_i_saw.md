@@ -1,6 +1,33 @@
 this file is for issues i saw while doing manual testing and should complement/integrate with the tasks do in future and update the progress as well)
 (other than not mentioned specifically all changes should apply both mobile and web - web related docs @ "/../docs/web")
 
+## 13/03/2026 (latest - [n])
+
+###  2.45 pm
+1. need to make carousla in *selfviews which dynamic where what will be shown as first 10 items should be user activity + time etc. and user should be pin and unpin what they want and 
+2. add info icon and when clicked it should show modal with info about that feature and where to find it in app. 
+
+## 11/03/2026 (latest - [n])
+
+### 10.55 pm
+1. wire all features in functional way with db saving all things in stored safely in temporal manner
+2. ai and ocr features, library and maps
+3. community groups
+4. demo classroom for even guest, newly authed based on view
+5. easily accessible breathing guides
+6. info or guidance for each feature and where to put them???
+7. signedup user should be able to use full thing
+8. learning models, growth model etc
+9. public profile - social links
+10. polls and forms including anonymus
+11. principal eco like feature for studnets to let their voice heard to teacher
+12. all wellbeing features for studentsself screen as well + working self feature
+13. breathing guidance etc important things
+14. founder role full functionality for me(please!)
+15. principal selfview, principal guest view with demo, principa school view
+16. all modals inside app.
+
+
 ## 07/03/2026 (latest - [n])
 ### 11.50 pm
 1. global header is still different colors/hieghts in different sectiuons
@@ -21,7 +48,7 @@ this file is for issues i saw while doing manual testing and should complement/i
 5. wcag math for text color vs backgroun color and any other standard libs, packages and utils for accessibility
 6. responsivenes for andoid apps in tab than mobile???
 7. focusing in signup user experience from now. principal, student, teacher
-
+8. sentry source map not uploading and issues in web
 
 ## 7.36 pm 03/03/2026 (latest - [n -1])  
 

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Box, VStack, Heading, Text, Button, Theme, useThemedColors, HStack, Pressable, hapticLight, LoadingOverlay, ScreenWrapper, SkeletonCard, useLotusToast } from '@repo/ui';
 import { Search, QrCode, User, School as SchoolIcon, ArrowLeft, CheckCircle } from 'lucide-react-native';
 import { onboardingAPI, schoolAPI, School, UserRole, useUserRole } from '@repo/core';
+import { useNavigation } from '@react-navigation/native';
+import CreateSchoolModal from './CreateSchoolModal';
 
 interface NoSchoolOnboardingProps {
     userId: string;
@@ -13,7 +15,9 @@ export default function NoSchoolOnboarding({ userId, profileCompleted, onRefresh
     const colors = useThemedColors();
     const { showToast } = useLotusToast();
     const { role } = useUserRole();
+    const navigation = useNavigation<any>();
     const [step, setStep] = useState<'profile' | 'choice' | 'search' | 'scan' | 'pending'>(profileCompleted ? 'choice' : 'profile');
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
 
     // Profile State
@@ -228,7 +232,31 @@ export default function NoSchoolOnboarding({ userId, profileCompleted, onRefresh
                     variant="secondary"
                     onPress={() => { hapticLight(); setStep('search'); }}
                 />
+                
+                {role === 'principal' && (
+                    <Box sx={{ marginTop: Theme.spacing.md, paddingTop: Theme.spacing.md, borderTopWidth: 1, borderColor: colors.border }}>
+                        <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', marginBottom: Theme.spacing.sm }}>
+                            Or establish your own institution
+                        </Text>
+                        <Button
+                            label="Create New Sanctuary"
+                            variant="outline"
+                            onPress={() => {
+                                hapticLight();
+                                setIsCreateModalOpen(true);
+                            }}
+                        />
+                    </Box>
+                )}
             </VStack>
+
+            <CreateSchoolModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                onSuccess={() => {
+                    onRefresh();
+                }}
+            />
 
             <LoadingOverlay visible={loading} />
         </VStack>

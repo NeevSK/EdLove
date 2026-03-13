@@ -250,6 +250,7 @@
         "timetableUpdated": "Timetable updated",
         "missingFields": "Missing required fields",
         "breathGuide": "Breath Guide",
+        "breathingReset": "Breathing Reset",
         "inhale": "Breathe in...",
         "hold": "Hold...",
         "exhale": "Breathe out...",
@@ -1350,11 +1351,12 @@
         "successDescription": "You can now access your data from any device."
     },
     "webNav": {
+        "menu": "Menu",
         "brandName": "Gurudevi Sanctuary",
         "notifications": "Notifications",
         "settings": "Settings",
         "toggleNavigation": "Toggle navigation",
-        "navigate": "Navigate",
+        "navigate": "Menu",
         "tabNavigation": "Tab navigation",
         "alerts": "Alerts"
     },

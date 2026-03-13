@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore, supabase, MOCK_CLASSROOMS } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { Classroom } from '@repo/core';
-import { SkeletonCard, SandboxBanner } from '@repo/ui';
+import { SkeletonCard, SandboxBanner, WebScreenHeader, PositiveInvitation } from '@repo/ui';
 import { useClassroomRoleData, CreateClassroomModal } from '@repo/classroom';
 import {
     Plus,
@@ -30,6 +30,7 @@ import {
     CheckSquare,
     DollarSign,
 } from 'lucide-react-native';
+import { formatDistanceToNow } from 'date-fns';
 
 
 // ── Mock data enriched for demo teacher view ─────────────────────────────────
@@ -149,57 +150,47 @@ export default function TeacherDashboardWeb({ forceDemo }: { forceDemo?: boolean
             {isDemo && <SandboxBanner />}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                 {/* Header & Quick Actions */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
-                    <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                            <div style={{ padding: '8px', background: 'var(--sanctuary-saffron-soft)', borderRadius: '8px', color: 'var(--sanctuary-saffron)' }}>
-                                <Users size={20} />
-                            </div>
-                            <span style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--ink-ghost)' }}>
-                                Classroom Management
-                            </span>
+                <WebScreenHeader
+                    title={<>Registry & <span style={{ color: 'var(--sanctuary-saffron)' }}>Resonance</span>.</>}
+                    note={isDemo ? 'Demo view — Sanduni Perera · Gurudevi Life School' : `Welcome back, ${user?.full_name?.split(' ')[0] ?? 'Teacher'}`}
+                    timeText="Classroom Management"
+                    actions={(
+                        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                            <button className="premium-button" style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => { if (isDemo) return; setShowCreateClassroom(true); }}>
+                                <Plus size={18} />
+                                Create Classroom
+                            </button>
+                            <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => navigation.navigate('Timetable', {})}>
+                                📅 Timetable
+                            </button>
+                            <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <ScanLine size={18} />
+                                Scan QR
+                            </button>
+                            <button
+                                className="secondary-button"
+                                style={{ display: 'flex', alignItems: 'center', gap: '8px', borderColor: 'var(--ember)', color: 'var(--ember)' }}
+                                onClick={() => setShowEchoModal(true)}
+                            >
+                                <MessageCircle size={18} />
+                                {t('teacher.actions.principalEcho') || 'Principal Echo'}
+                            </button>
+                            <button
+                                className="secondary-button"
+                                style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}
+                                onClick={() => { setShowEchoHistory(h => !h); if (!showEchoHistory) loadSentEchoes(); }}
+                            >
+                                <ClipboardList size={18} />
+                                My Echoes
+                                {sentEchoes.filter(e => e.principal_response && !e.is_read).length > 0 && (
+                                    <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: 'var(--moss)', color: '#fff', borderRadius: '50%', width: '16px', height: '16px', fontSize: '9px', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        {sentEchoes.filter(e => e.principal_response && !e.is_read).length}
+                                    </span>
+                                )}
+                            </button>
                         </div>
-                        <h1 style={{ fontSize: '36px', fontWeight: '800', margin: 0 }}>Registry & <span style={{ color: 'var(--sanctuary-saffron)' }}>Resonance</span>.</h1>
-                        <p style={{ color: 'var(--ink-ghost)', marginTop: '8px', fontSize: '14px' }}>
-                            {isDemo ? 'Demo view — Sanduni Perera · Gurudevi Life School' : `Welcome back, ${user?.full_name?.split(' ')[0] ?? 'Teacher'}`}
-                        </p>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                        <button className="premium-button" style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => { if (isDemo) return; setShowCreateClassroom(true); }}>
-                            <Plus size={18} />
-                            Create Classroom
-                        </button>
-                        <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => navigation.navigate('Timetable', {})}>
-                            📅 Timetable
-                        </button>
-                        <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <ScanLine size={18} />
-                            Scan QR
-                        </button>
-                        <button
-                            className="secondary-button"
-                            style={{ display: 'flex', alignItems: 'center', gap: '8px', borderColor: 'var(--ember)', color: 'var(--ember)' }}
-                            onClick={() => setShowEchoModal(true)}
-                        >
-                            <MessageCircle size={18} />
-                            {t('teacher.actions.principalEcho') || 'Principal Echo'}
-                        </button>
-                        <button
-                            className="secondary-button"
-                            style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}
-                            onClick={() => { setShowEchoHistory(h => !h); if (!showEchoHistory) loadSentEchoes(); }}
-                        >
-                            <ClipboardList size={18} />
-                            My Echoes
-                            {sentEchoes.filter(e => e.principal_response && !e.is_read).length > 0 && (
-                                <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: 'var(--moss)', color: '#fff', borderRadius: '50%', width: '16px', height: '16px', fontSize: '9px', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    {sentEchoes.filter(e => e.principal_response && !e.is_read).length}
-                                </span>
-                            )}
-                        </button>
-                    </div>
-                </div>
+                    )}
+                />
 
                 {/* Performance Stats */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '24px' }}>
@@ -256,11 +247,17 @@ export default function TeacherDashboardWeb({ forceDemo }: { forceDemo?: boolean
                                 {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
                             </div>
                         ) : filtered.length === 0 ? (
-                            <div style={{ padding: '80px 24px', textAlign: 'center' }}>
-                                <Archive size={40} color="var(--ink-ghost)" style={{ marginBottom: 16, opacity: 0.4 }} />
-                                <p style={{ color: 'var(--ink-ghost)', fontSize: '16px', fontWeight: '600', margin: 0 }}>
-                                    {searchQuery ? 'No classrooms match your search.' : 'No classrooms yet — create your first one above.'}
-                                </p>
+                            <div style={{ padding: '40px 24px', textAlign: 'center' }}>
+                                <PositiveInvitation
+                                    type="empty"
+                                    title={isDemo ? "Begin your Teaching Journey" : "No Classrooms found"}
+                                    description={isDemo 
+                                        ? "You're exploring a demo environment. Ready to host your own classes and lead your students? Establish your digital sanctuary today."
+                                        : "You haven't created any classrooms yet. Start by establishing your first sanctuary."
+                                    }
+                                    actionLabel="Create My First Classroom"
+                                    onAction={() => setShowCreateClassroom(true)}
+                                />
                             </div>
                         ) : (
                             <div style={{ overflowX: 'auto' }}>

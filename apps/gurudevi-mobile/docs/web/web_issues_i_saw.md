@@ -1,12 +1,31 @@
 this doc is to list issues in web i saw when manual testing.
+
+
+## 13/03/2026 (latest - [n])
+
+###  2.45 pm
+1. add info icon and when clicked it should show modal with info about that feature and where to find it in app. 
+2. 
+
+
 ## 09/03/2026 (latest [n])
 
 ### 2.00 pm
-1. https://platform.gurudevi.edlove.org/?error=server_error&error_code=unexpected_failure&error_description=Database+error+saving+new+user#error=server_error&error_code=unexpected_failure&error_description=Database+error+saving+new+user&sb=
+1. https://platform.gurudevi.edlove.org/?error=server_error&error_code=unexpected_failure&error_description=Database+error+saving+new+user#error=server_error&error_code=unexpected_failure&error_description=Database+error+saving+new+user&sb= (seems okay)
 2. explore as guest not wroking - seems we had some plans but didnt continued in other hand we changed identityapi and users recently.
-3. loading shimmers are very small and ugly not aligned with screen size.
-4. lazy loading seems making everything slow. is that a issue or only because local build?
-
+3. loading shimmers are very small and ugly not aligned with screen size(in large screens where shimmers are too small). i think may be issues is we are using mobile native shimmers in web which  can't match web screen sizes? then what?
+4. lazy loading seems making everything slow. is that a issue or only because local build? (why lazy loading over other way - justify)
+5. in smaller desktop screens(responsiveness) when bottom bar is appeared and side bar become hamberger. when opening the hamberger menu it clashes with bottom bar. so it need to close the bottom bar when opening the hamberger menu.
+6. the dot icon in notifications is still there though when notifications. though tried still same.
+7. icons are not aligned in the collapsed side bar specially setting icon in below. seems setting icon is has s\different padding etc. 
+8. in sidebar, there is text as naviagte, lets rename it as Menu and lets bring the collapsing icon to right side to the label where its in left side.. seems okay this.
+9. the name and top most part of self screen is different from other sections(which has specific font etc), we need to keep the UI standard b making self section aligned with other pages(for everyone). done 
+10. wire all features in functional way with db saving all things in temporal manner
+11. ai and ocr features, library and maps
+12. community groups
+13. demo classroom for even guest, newly authed based on view
+14. easily accessible breathing guides
+15. info or guidance for each feature and where to put them???
 
 
 

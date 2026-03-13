@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     VStack,
     HStack,
@@ -15,7 +15,8 @@ import {
     PositiveInvitation,
     SandboxBanner,
     hapticLight,
-    useLotusToast
+    useLotusToast,
+    useRegisterFAB
 } from '@repo/ui';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import {
@@ -30,12 +31,14 @@ import {
     ClipboardList,
     ChevronDown,
     ChevronUp,
+    Wind,
 } from 'lucide-react-native';
 
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { useFeatureAccess, useStore, ClassroomStackParamList, api, supabase, onboardingAPI, FlowResolver, identityAPI } from '@repo/core';
+import { BreathGuide } from '@repo/self';
 import ClassroomList from './ClassroomList';
 import CreateClassroomModal from './CreateClassroomModal';
 import { ScannerModal, resolveQR } from '@repo/scanner-kit';
@@ -59,6 +62,7 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
     const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+    const [isBreathingOpen, setIsBreathingOpen] = useState(false);
 
     // Echo history — teacher's sent echoes with principal responses
     const [sentEchoes, setSentEchoes] = useState<Array<{
@@ -113,6 +117,17 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
         });
         setIsLoading(false);
     };
+
+    // Register FAB globally for Teacher
+    useRegisterFAB({
+        tabType: 'classroom',
+        onPress: () => {
+            setModalMode('create');
+            setIsCreateModalOpen(true);
+        },
+        icon: <Plus size={24} color="#FFF" />,
+        visible: !isGuest
+    });
 
     const handleScan = async (data: string) => {
         setIsScannerOpen(false);
@@ -308,7 +323,13 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                             icon={ClipboardList}
                             label="My Echoes"
                             onPress={() => { setShowEchoHistory(true); loadSentEchoes(); }}
-                            color={Theme.colors.water ?? Theme.colors.action}
+                            color={colors.action}
+                        />
+                        <QuickAction
+                            icon={Wind}
+                            label={t('self.breathing') || 'Breathing'}
+                            onPress={() => setIsBreathingOpen(true)}
+                            color={colors.success}
                         />
                     </HStack>
                 </Animated.View>
@@ -355,6 +376,9 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                             emptyContent={
                                 <PositiveInvitation
                                     context="classroom"
+                                    title={isDemoMode ? "Create Your First Sanctuary" : undefined}
+                                    description={isDemoMode ? "Ready to lead your first classroom? Generate a sanctuary for your students to begin their journey." : undefined}
+                                    actionLabel={isDemoMode ? "Create My First Classroom" : undefined}
                                     onAction={() => {
                                         setModalMode('create');
                                         setIsCreateModalOpen(true);
@@ -497,6 +521,51 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                                 }
                             }}
                         />
+                    </ScrollView>
+                </Box>
+            </Modal>
+
+            {/* Breathing Modal */}
+            <Modal
+                visible={isBreathingOpen}
+                animationType="slide"
+                presentationStyle="pageSheet"
+                onRequestClose={() => setIsBreathingOpen(false)}
+            >
+                <Box flex={1} sx={{ backgroundColor: colors.primary }}>
+                    <Box sx={{
+                        paddingTop: 50,
+                        paddingBottom: Theme.spacing.md,
+                        paddingHorizontal: Theme.spacing.md,
+                        borderBottomWidth: 1,
+                        borderBottomColor: colors.border
+                    }}>
+                        <HStack justifyContent="space-between" alignItems="center">
+                            <Heading size="lg" color={colors.text}>
+                                {t('self.breathingReset') || 'Breathing Reset'}
+                            </Heading>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    hapticLight();
+                                    setIsBreathingOpen(false);
+                                }}
+                                style={{
+                                    padding: 8,
+                                    borderRadius: Theme.corners.full,
+                                    backgroundColor: colors.tertiary,
+                                    borderColor: colors.border,
+                                    borderWidth: 1,
+                                }}
+                            >
+                                <X size={24} color={colors.text} />
+                            </TouchableOpacity>
+                        </HStack>
+                    </Box>
+                    <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'center' }}>
+                        <BreathGuide onComplete={() => {
+                            showToast({ message: 'Well done. Take this peace into your next class.', type: 'success' });
+                            setIsBreathingOpen(false);
+                        }} />
                     </ScrollView>
                 </Box>
             </Modal>

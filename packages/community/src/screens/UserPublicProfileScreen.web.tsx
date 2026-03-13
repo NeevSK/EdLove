@@ -14,7 +14,6 @@ import {
   useTheme,
   SanctuaryBackground,
   GlobalHeader,
-  LotusPetalFAB,
   UserAvatar
 } from '@repo/ui';
 import {

@@ -1,0 +1,129 @@
+import { APCAcontrast, sRGBtoY, displayPolyfill } from 'apca-w3';
+import { parse, formatHex, formatRgb, converter } from 'culori';
+
+/**
+ * a11yUtils — Modern Accessibility Infrastructure for the Sanctuary.
+ * 
+ * Supports:
+ * - WCAG 2.1 (Relative Luminance / Contrast Ratio) - Legacy AA/AAA
+ * - APCA (Accessible Perceptual Contrast Algorithm) - Future of WCAG 3
+ * - Color space conversions for perceptual math (Oklch)
+ */
+
+interface ContrastResult {
+    ratio: number;
+    apca: number;
+    passesAA: boolean;
+    passesAAA: boolean;
+    apcaRating: string;
+}
+
+/**
+ * Convert any culori-parseable color to hex.
+ */
+export function toHex(color: string): string {
+    const c = parse(color);
+    return c ? formatHex(c) : '#000000';
+}
+
+/**
+ * WCAG 2.1 Relative Luminance (0-1).
+ * (Redundant: also in colorUtils.ts)
+ */
+/*
+export function getRelativeLuminance(color: string): number {
+    const c = parse(color);
+    if (!c) return 0;
+    
+    // WCAG 2.1 formula
+    const rgb = converter('rgb')(c);
+    const [r, g, b] = [rgb.r, rgb.g, rgb.b].map(val => {
+        return val <= 0.04045 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+*/
+
+/**
+ * WCAG 2.1 Contrast Ratio (1-21).
+ * (Redundant: also in colorUtils.ts)
+ */
+/*
+export function getContrastRatio(fg: string, bg: string): number {
+    const l1 = getRelativeLuminance(fg);
+    const l2 = getRelativeLuminance(bg);
+    const lighter = Math.max(l1, l2);
+    const darker = Math.min(l1, l2);
+    return (lighter + 0.05) / (darker + 0.05);
+}
+*/
+
+/**
+ * APCA Contrast calculation.
+ * Returns a score between -108 and 106.
+ */
+export function getAPCAContrast(fg: string, bg: string): number {
+    const f = parse(fg);
+    const b = parse(bg);
+    if (!f || !b) return 0;
+
+    const fgRgb = converter('rgb')(f);
+    const bgRgb = converter('rgb')(b);
+
+    // apca-w3 expects 0-255 or uses sRGBtoY
+    // Native apca-w3 implementation:
+    const fY = sRGBtoY([fgRgb.r * 255, fgRgb.g * 255, fgRgb.b * 255]);
+    const bY = sRGBtoY([bgRgb.r * 255, bgRgb.g * 255, bgRgb.b * 255]);
+
+    return Number(APCAcontrast(fY, bY));
+}
+
+/**
+ * APCA Level Rating based on score.
+ * Lc 90: Preferred for body text.
+ * Lc 75: Minimum for body text.
+ * Lc 60: Minimum for large text / headlines.
+ * Lc 45: Minimum for non-text graphics.
+ */
+export function getAPCARating(score: number): string {
+    const abs = Math.abs(score);
+    if (abs >= 90) return 'Silver/Gold (Excellent)';
+    if (abs >= 75) return 'Bronze (Body Text Minimum)';
+    if (abs >= 60) return 'Large Text Minimum';
+    if (abs >= 45) return 'Graphic/UI Only';
+    return 'Fail';
+}
+
+/**
+ * Unified accessibility check.
+ */
+export function checkAccessibility(fg: string, bg: string): ContrastResult {
+    const ratio = getContrastRatio(fg, bg);
+    const apca = getAPCAContrast(fg, bg);
+    
+    return {
+        ratio,
+        apca,
+        passesAA: ratio >= 4.5,
+        passesAAA: ratio >= 7.0,
+        apcaRating: getAPCARating(apca)
+    };
+}
+
+/**
+ * Finds the best text color for a given background from a set of candidates.
+ * Prioritizes APCA score over legacy WCAG ratio.
+ */
+export function getBestText(bg: string, candidates: string[] = ['#2A2318', '#FCF9F2', '#FFFFFF', '#000000']): string {
+    let bestColor = candidates[0] || '#000000';
+    let bestApca = -Infinity;
+
+    for (const fg of candidates) {
+        const score = Math.abs(getAPCAContrast(fg, bg));
+        if (score > bestApca) {
+            bestApca = score;
+            bestColor = fg;
+        }
+    }
+    return bestColor;
+}

@@ -7,7 +7,7 @@ import {
     VStack,
     Theme,
     SanctuaryButton,
-    LotusPetalFAB,
+    useRegisterFAB,
     ScreenWrapper
 } from '@repo/ui';
 import { useAIAgent, useStore } from '@repo/core';
@@ -16,6 +16,13 @@ import { BookOpen, Users, AlertCircle } from 'lucide-react-native';
 export default function GradeHeadView({ schoolId, userId }: { schoolId?: string; userId?: string }) {
     const { activeGaps, refreshStatus } = useAIAgent();
     const userRole = useStore((state: any) => state.userRole);
+
+    // Register FAB globally
+    useRegisterFAB({
+        tabType: 'grade',
+        hasActiveGaps: activeGaps.length > 0,
+        onPress: () => refreshStatus()
+    });
 
     return (
         <ScreenWrapper backgroundColor={Theme.colors.ink}>
@@ -106,11 +113,6 @@ export default function GradeHeadView({ schoolId, userId }: { schoolId?: string;
                 </VStack>
             </ScrollView>
 
-            <LotusPetalFAB
-                currentTab="grade"
-                hasActiveGaps={activeGaps.length > 0}
-                onPress={() => refreshStatus()}
-            />
         </ScreenWrapper>
     );
 }

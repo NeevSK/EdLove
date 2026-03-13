@@ -1,4 +1,4 @@
-﻿import React, { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Animated, {
     useAnimatedStyle,
@@ -50,7 +50,8 @@ const SkeletonLoader: React.FC<SkeletonProps> = ({
                     width,
                     height,
                     borderRadius,
-                    backgroundColor: colors.secondary
+                    backgroundColor: colors.secondary,
+                    maxWidth: 1200, // Sanity limit for very wide desktops
                 },
                 animatedStyle,
                 style
@@ -64,7 +65,7 @@ export const SkeletonCard = ({ height = 150, width = '100%', style }: { height?:
         width={width}
         height={height}
         borderRadius={Theme.corners.generous}
-        style={[{ marginBottom: Theme.spacing.md }, style]}
+        style={[{ marginBottom: Theme.spacing.md, maxWidth: 800 }, style]}
     />
 );
 

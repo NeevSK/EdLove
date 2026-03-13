@@ -12,25 +12,26 @@
         "clean": "rm -rf .turbo node_modules dist"
     },
     "dependencies": {
+        "@eslint/eslintrc": "^3.3.5",
         "@repo/core": "workspace:*",
         "@repo/ui": "workspace:*",
         "expo-clipboard": "^55.0.8",
-        "react-i18next": "^16.5.4",
-        "lucide-react-native": "^0.563.0"
+        "lucide-react-native": "^0.563.0",
+        "react-i18next": "^16.5.4"
     },
     "devDependencies": {
-        "@repo/typescript-config": "workspace:*",
-        "react-i18next": "^16.5.4",
-        "eslint": "^9.38.0",
         "@repo/eslint-config": "workspace:*",
+        "@repo/typescript-config": "workspace:*",
         "@types/react": "~19.1.10",
+        "eslint": "^9.38.0",
+        "react-i18next": "^16.5.4",
         "typescript": "^5.3.3"
     },
     "peerDependencies": {
-        "react": "*",
-        "react-native": "*",
-        "react-i18next": "*",
         "@repo/ui": "*",
-        "lucide-react-native": "*"
+        "lucide-react-native": "*",
+        "react": "*",
+        "react-i18next": "*",
+        "react-native": "*"
     }
 }

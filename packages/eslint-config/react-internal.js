@@ -7,6 +7,16 @@ import reactCompiler from "eslint-plugin-react-compiler";
 import pluginReactNativeA11y from "eslint-plugin-react-native-a11y";
 import globals from "globals";
 import { config as baseConfig } from "./base.js";
+import { FlatCompat } from "@eslint/eslintrc";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
 
 /**
  * A custom ESLint configuration for libraries that use React.
@@ -18,9 +28,10 @@ export const config = [
   eslintConfigPrettier,
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
+  ...compat.extends("plugin:react-hooks/recommended"),
+  ...compat.extends("plugin:react-native-a11y/recommended"),
   {
     languageOptions: {
-      ...pluginReact.configs.flat.recommended.languageOptions,
       globals: {
         ...globals.serviceworker,
         ...globals.browser,
@@ -29,14 +40,10 @@ export const config = [
   },
   {
     plugins: {
-      "react-hooks": pluginReactHooks,
       "react-compiler": reactCompiler,
-      "react-native-a11y": pluginReactNativeA11y,
     },
     settings: { react: { version: "detect" } },
     rules: {
-      ...pluginReactHooks.configs.recommended.rules,
-      ...pluginReactNativeA11y.configs.recommended.rules,
       "react-compiler/react-compiler": "error",
       // React scope no longer necessary with new JSX transform.
       "react/react-in-jsx-scope": "off",
