@@ -845,7 +845,7 @@ INSERT INTO public.nodes (
     '00000000-0003-0008-0000-000000000000',
     'e-Thaksalawa — Sri Lanka National LMS',
     'e-Thaksalawa — Sri Lanka National LMS',
-    '්෎-තක්සලාව',
+    'ඊ-තක්සලාව',
     'Sri Lanka Ministry of Education''s official online learning platform. Provides curriculum-aligned lessons, videos and assessments for Grades 1–13 in Sinhala, Tamil and English.',
     'Sri Lanka Ministry of Education''s official online learning platform. Provides curriculum-aligned lessons, videos and assessments for Grades 1–13 in Sinhala, Tamil and English.',
     'ශ්‍රී ලංකා අධ්‍යාපන අමාත්‍යාංශයේ නිල සබැඳි ඉගෙනීමේ වේදිකාව.',
