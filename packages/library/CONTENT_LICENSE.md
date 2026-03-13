@@ -4,11 +4,11 @@
 
 Every node in the Gurudevi Knowledge Library must carry a `copyright_notice` and `license`
 field that accurately reflects the rights of the originating source. This document defines
-the accepted licence values, their meanings, and the obligations each imposes.
+the accepted license values, their meanings, and the obligations each imposes.
 
 ---
 
-## Accepted Licence Values
+## Accepted License Values
 
 | `license` value     | Meaning                                                                        | Attribution required? | Commercial use? | Derivatives? |
 | ------------------- | ------------------------------------------------------------------------------ | --------------------- | --------------- | ------------ |
@@ -26,40 +26,40 @@ the accepted licence values, their meanings, and the obligations each imposes.
 ## Per-Source Guidance
 
 ### Wikipedia / Wikimedia Commons
-- Licence: `cc_by_sa`
+- License: `cc_by_sa`
 - Notice pattern: `"Wikipedia CC BY-SA 4.0. Free to read, share and adapt with attribution."`
 
 ### OpenStreetMap
-- Licence: `cc_by_sa`
+- License: `cc_by_sa`
 - Notice pattern: `"© OpenStreetMap contributors. CC BY-SA 2.0. Free to use with attribution."`
 
 ### Project Gutenberg
-- Licence: `public_domain`
+- License: `public_domain`
 - Notice pattern: `"Public domain. Text provided by Project Gutenberg (gutenberg.org). Free to read and download."`
 - ⚠️ Only use texts where US copyright has expired. Check gutenberg.org/ebooks/{id} before seeding.
 
 ### TED / TED-Ed
-- Licence: `cc_by_nc_nd`
+- License: `cc_by_nc_nd`
 - Notice pattern: `"© TED Conferences LLC. TED-Ed lessons are CC BY–NC–ND 4.0. Free for educational use."`
 
 ### Khan Academy
-- Licence: `cc_by_nc_sa`
+- License: `cc_by_nc_sa`
 - Notice pattern: `"© Khan Academy. Content is CC BY-NC-SA 3.0. Free for non-commercial educational use."`
 
 ### OpenStax
-- Licence: `cc_by`
+- License: `cc_by`
 - Notice pattern: `"© OpenStax, Rice University. CC BY 4.0. Free to read, download and share."`
 
 ### UNESCO / UNICEF / World Bank / OECD (institutional reports)
-- Licence: `cc_by_sa` for UNESCO; `institutional` for UNICEF/World Bank/OECD
+- License: `cc_by_sa` for UNESCO; `institutional` for UNICEF/World Bank/OECD
 - Notice pattern: `"© UNESCO/UNICEF/World Bank. Free for educational use. See site for full terms."`
 
 ### Google / Microsoft / Code.org / Kahoot (EdTech platforms)
-- Licence: `institutional`
+- License: `institutional`
 - Notice pattern: `"© [Platform]. Free tier available for educators. See platform for terms."`
 
 ### Archive.org materials
-- Licence varies (`public_domain` for expired copyright; `fair_use` for others)
+- License varies (`public_domain` for expired copyright; `fair_use` for others)
 - Always verify the original work's copyright status before assigning `public_domain`.
 
 ---
