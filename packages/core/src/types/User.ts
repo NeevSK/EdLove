@@ -11,6 +11,7 @@ export interface User {
     full_name: string;           // Display name
     role: UserRole;              // User's role in the system
     school_id: string;           // UUID of the school they belong to
+    username?: string;           // Unique handle for the user
     created_at: string;          // ISO timestamp
     updated_at?: string;         // ISO timestamp (optional)
     avatar_url?: string;         // Profile picture URL (optional)
@@ -60,6 +61,8 @@ export interface AuthSession {
 export interface SignUpData {
     email: string;
     password: string;
+    avatar_url: string | null;
+    username: string | null;
     full_name: string;
     role: UserRole;
     school_id?: string;          // Optional - can be selected or created during signup

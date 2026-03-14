@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { TouchableOpacity, ActivityIndicator } from 'react-native';
 import {
     VStack,
     HStack,
@@ -21,19 +22,22 @@ import {
     InputField,
 } from '@repo/ui';
 import {
+    Plus,
+    ClipboardCheck,
+    GraduationCap,
+    Edit3,
     Users,
     BookOpen,
     FileText,
-    Plus,
-    ClipboardCheck,
-    GraduationCap
+    QrCode
 } from 'lucide-react-native';
-import { Theme, useThemedColors, hapticLight, GlobalHeader, ScreenWrapper, PositiveInvitation } from '@repo/ui';
+import { Theme, useThemedColors, hapticLight, GlobalHeader, ScreenWrapper, PositiveInvitation, useTheme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { api, Classroom, ClassroomStudent, ClassroomStackParamList } from '@repo/core';
-import { StudentList } from '../components';
+import { StudentList, CreateClassroomModal } from '../components';
 import LessonFeed from './LessonFeed';
 import ContentLibrary from './ContentLibrary';
+import { QRCodeGenerator, QRBuilder } from '@repo/scanner-kit';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type Props = NativeStackScreenProps<ClassroomStackParamList, 'ClassroomDetails'>;
@@ -52,7 +56,10 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
     const [contentType, setContentType] = useState<'material' | 'assignment'>('material');
     const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isQrModalOpen, setIsQrModalOpen] = useState(false);
     const colors = useThemedColors();
+    const { glass, text } = useTheme();
 
     const [formTitle, setFormTitle] = useState('');
     const [formDescription, setFormDescription] = useState('');
@@ -205,6 +212,26 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
                 subtitle={classroom?.subject || 'Classroom'}
                 showBack
                 onBack={() => navigation.goBack()}
+                rightAction={
+                    <HStack sx={{ gap: 8 }}>
+                        <TouchableOpacity onPress={() => {
+                            hapticLight();
+                            setIsQrModalOpen(true);
+                        }}>
+                            <Box sx={{ padding: 8, borderRadius: 12, backgroundColor: glass.interact.bg }}>
+                                <QrCode size={20} color={text.primary} />
+                            </Box>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => {
+                            hapticLight();
+                            setIsEditModalOpen(true);
+                        }}>
+                            <Box sx={{ padding: 8, borderRadius: 12, backgroundColor: glass.interact.bg }}>
+                                <Edit3 size={20} color={text.primary} />
+                            </Box>
+                        </TouchableOpacity>
+                    </HStack>
+                }
             />
 
             {/* Header Stats */}
@@ -463,6 +490,57 @@ export default function ClassroomDetailsScreen({ route, navigation }: Props) {
                                 {isSubmitting ? <Spinner color={Theme.colors.white} /> : <ButtonText color={Theme.colors.white}>Add</ButtonText>}
                             </Button>
                         </HStack>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+            <CreateClassroomModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                mode="edit"
+                initialData={classroom ? {
+                    id: classroom.id,
+                    name: classroom.name,
+                    handle: classroom.handle || undefined,
+                    description: classroom.description || undefined,
+                    themeId: classroom.color_theme || undefined,
+                    syllabusId: classroom.syllabus_version || undefined,
+                    subject: classroom.subject || undefined
+                } : {
+                    id: classroomId,
+                    name: classroomName
+                }}
+                onSuccess={(updatedClass) => {
+                    fetchClassroomDetails();
+                }}
+            />
+
+            {/* QR Code Modal */}
+            <Modal isOpen={isQrModalOpen} onClose={() => setIsQrModalOpen(false)}>
+                <ModalBackdrop />
+                <ModalContent sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.generous }}>
+                    <ModalHeader>
+                        <Heading color={colors.text} sx={{ fontSize: 18 }}>Classroom QR Code</Heading>
+                    </ModalHeader>
+                    <ModalBody sx={{ alignItems: 'center', paddingVertical: 20 }}>
+                        <Box sx={{ padding: 16, backgroundColor: 'white', borderRadius: 16 }}>
+                            <QRCodeGenerator
+                                value={QRBuilder.classroom(classroomId, classroom?.handle || undefined)}
+                                size={220}
+                            />
+                        </Box>
+                        <Text color={colors.textSecondary} sx={{ marginTop: 20, textAlign: 'center' }}>
+                            Scan this code to join the <Text color={colors.text} sx={{ fontWeight: 'bold' }}>{classroomName}</Text> sanctuary.
+                        </Text>
+                        {classroom?.handle && (
+                            <Text color={colors.textTertiary} sx={{ marginTop: 8, fontSize: 12 }}>
+                                @{classroom.handle}
+                            </Text>
+                        )}
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button action="primary" onPress={() => setIsQrModalOpen(false)} sx={{ width: '100%', backgroundColor: Theme.colors.sanctuarySaffron }}>
+                            <ButtonText color="white">Close</ButtonText>
+                        </Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>

@@ -4,8 +4,18 @@ this file is for issues i saw while doing manual testing and should complement/i
 ## 13/03/2026 (latest - [n])
 
 ###  2.45 pm
-1. need to make carousla in *selfviews which dynamic where what will be shown as first 10 items should be user activity + time etc. and user should be pin and unpin what they want and 
+1. need to make items in carousl in *selfviews dynamic where what will be shown as first 10 items should be user activity + time etc. and user should be pin and unpin what they want and 
 2. add info icon and when clicked it should show modal with info about that feature and where to find it in app. 
+3. adding capability for username/handle for each user/school/school-classroom/groups etc adn it will even shown in QR. and part of QR link need to changed to platform.gurudevi.edlove.com from app.gurudevi.edlove.com.
+4.social links in profile screen should be inline editable in profile screen.
+5. there should be place to view school/classroom/community profile and things should be editable inline too( same for web)
+6. there should be public profile for everyone and also for schhol/class/community. and when someone tap, peeked public profile should be visible. 
+7. there are two FAB(shadow agent vs lotuspetalfab)[same for both web and mobile] which fights for space. lets remove shadow agent and need to think what to do for that? in self section and color of background of lotus is uggly which us muddy- i think its because may be in color diefintions primary or secondary colors has changed from santuray saffron to something else which is muddish. that orangish santuary saffron was theme of app. lets investigate this first around theme and other color defined places and then devise a plan. add santuary saffron. 
+8. the FAB in every screen should be draggable and also put somewhere else. now its draggable but it comes back to same place like a magnet. 
+9. the selfsection feature pinning is confusing and need to impliment intutive user firendly way. like when long press it ask to and when it pinned tapping it removes and shows the effect immediately, and increase the size of pin bit more. 
+10. default library view vs search view, 
+11. map view refinements in library
+
 
 ## 11/03/2026 (latest - [n])
 

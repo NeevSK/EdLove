@@ -20,7 +20,8 @@ import {
     Settings,
     MoreVertical,
     UserPlus,
-    MessageSquare
+    MessageSquare,
+    QrCode
 } from 'lucide-react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -36,6 +37,22 @@ import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import PostCard from '../components/PostCard';
 import SocialShieldModal from '../components/SocialShieldModal';
+import {
+    QRBuilder,
+    QRCodeGenerator
+} from '@repo/scanner-kit';
+import {
+    Modal,
+    ModalBackdrop,
+    ModalContent,
+    ModalHeader,
+    ModalCloseButton,
+    ModalBody,
+    ModalFooter,
+    Icon,
+    CloseIcon,
+    Heading as UIHeading
+} from '@repo/ui';
 
 type GroupDetailsRouteProp = {
     key: string;
@@ -61,6 +78,7 @@ export default function GroupDetailsScreen() {
     const [showAdmin, setShowAdmin] = useState(false);
     const [reportPostId, setReportPostId] = useState<string | undefined>(undefined);
     const [showReportModal, setShowReportModal] = useState(false);
+    const [showQRModal, setShowQRModal] = useState(false);
 
     useEffect(() => {
         const fetchGroup = async () => {
@@ -154,6 +172,9 @@ export default function GroupDetailsScreen() {
                                 <Settings size={20} color={colors.textSecondary} />
                             </TouchableOpacity>
                         )}
+                        <TouchableOpacity onPress={() => setShowQRModal(true)}>
+                            <QrCode size={20} color={colors.textSecondary} />
+                        </TouchableOpacity>
                         <TouchableOpacity>
                             <MoreVertical size={20} color={colors.textSecondary} />
                         </TouchableOpacity>
@@ -293,6 +314,48 @@ export default function GroupDetailsScreen() {
                     postId={reportPostId}
                     groupId={groupId}
                 />
+
+                <Modal
+                    isOpen={showQRModal}
+                    onClose={() => setShowQRModal(false)}
+                    size="md"
+                >
+                    <ModalBackdrop />
+                    <ModalContent sx={{ bg: colors.secondary }}>
+                        <ModalHeader>
+                            <UIHeading size="lg">{t('community.groups.qrTitle', 'Group QR Code')}</UIHeading>
+                            <ModalCloseButton>
+                                <Icon as={CloseIcon} />
+                            </ModalCloseButton>
+                        </ModalHeader>
+                        <ModalBody>
+                            <VStack space="xl" alignItems="center" py="$4">
+                                <QRCodeGenerator
+                                    value={QRBuilder.group(group.id, group.handle)}
+                                    size={240}
+                                />
+                                <VStack space="xs" alignItems="center">
+                                    <Text bold size="xl" textAlign="center">{group.name}</Text>
+                                    {group.handle && (
+                                        <Text color={colors.textSecondary} size="sm">@{group.handle}</Text>
+                                    )}
+                                    <Text size="sm" color={colors.textTertiary} textAlign="center" sx={{ mt: '$2', px: '$4' }}>
+                                        {t('community.groups.qrHint', 'Scan to join this community group')}
+                                    </Text>
+                                </VStack>
+                            </VStack>
+                        </ModalBody>
+                        <ModalFooter>
+                            <SanctuaryButton
+                                variant="outline"
+                                action="secondary"
+                                onPress={() => setShowQRModal(false)}
+                            >
+                                {t('common.close')}
+                            </SanctuaryButton>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
             </Box>
         </ScreenWrapper>
     );

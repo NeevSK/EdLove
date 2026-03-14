@@ -255,7 +255,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
                   1 minute of peace
                 </Text>
               </VStack>
-              <TouchableOpacity
+              <TouchableOpacity accessibilityRole="button"
                 onPress={() => {
                   hapticLight();
                   setBreathingOpen(false);

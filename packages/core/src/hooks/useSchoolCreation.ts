@@ -7,6 +7,7 @@ export interface SchoolCreationState {
     step: number;
     basicInfo: {
         name: string;
+        handle: string;
         contactEmail: string;
         contactPhone: string;
         website?: string;
@@ -32,6 +33,7 @@ const initialState: SchoolCreationState = {
     step: 1,
     basicInfo: {
         name: '',
+        handle: '',
         contactEmail: '',
         contactPhone: '',
         website: '',

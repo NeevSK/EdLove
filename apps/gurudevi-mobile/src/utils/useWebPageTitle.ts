@@ -9,9 +9,7 @@
  * Usage: call once in App.tsx (inside <NavigationContainer>).
  */
 
-import { useEffect } from 'react';
 import { Platform } from 'react-native';
-import { useNavigationState } from '@react-navigation/native';
 
 const APP_NAME = 'Gurudevi';
 

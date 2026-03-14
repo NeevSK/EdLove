@@ -49,13 +49,18 @@ export default function ProfileScreenWeb() {
     // isEditModalOpen removed — openInlineEdit() is used instead
     const [isAddLinkOpen, setIsAddLinkOpen] = useState(false);
     const [copiedLink, setCopiedLink] = useState(false);
-    const [editForm, setEditForm] = useState<{ full_name: string; bio: string; phone: string } | null>(null);
+    const [editForm, setEditForm] = useState<{ full_name: string; bio: string; phone: string; username: string } | null>(null);
     const [isSaving, setIsSaving] = useState(false);
 
     // Social links — own data, live-updated
     const { links: socialLinks, addLink: addSocialLink, loading: isSocialLinksLoading } = useSocialLinks(user?.id);
 
-    const openInlineEdit = () => setEditForm({ full_name: profile?.full_name ?? '', bio: profile?.bio ?? '', phone: profile?.phone ?? '' });
+    const openInlineEdit = () => setEditForm({ 
+        full_name: profile?.full_name ?? '', 
+        bio: profile?.bio ?? '', 
+        phone: profile?.phone ?? '',
+        username: profile?.username ?? ''
+    });
     const cancelEdit = () => setEditForm(null);
     const saveEdit = async () => {
         if (!editForm || !profile) return;
@@ -64,6 +69,7 @@ export default function ProfileScreenWeb() {
             if (editForm.full_name !== profile.full_name) await updateField('full_name', editForm.full_name);
             if (editForm.bio !== (profile.bio ?? '')) await updateField('bio', editForm.bio);
             if (editForm.phone !== (profile.phone ?? '')) await updateField('phone', editForm.phone);
+            if (editForm.username !== (profile.username ?? '')) await updateField('username', editForm.username);
             setEditForm(null);
             refresh?.();
         } finally {
@@ -72,7 +78,9 @@ export default function ProfileScreenWeb() {
     };
 
     // Profile public URL — used by QR code and copy-link button
-    const profilePublicUrl = profile ? `https://app.gurudevi.edlove.org/app/community/user/${profile.id}` : '';
+    const profilePublicUrl = profile?.username
+    ? `https://platform.gurudevi.edlove.org/p/${profile.username}`
+    : (profile?.id ? `https://platform.gurudevi.edlove.org/p/${profile.id}` : '');
 
     const isStaff = profile?.role && ['teacher', 'principal', 'grade_head', 'section_head'].includes(profile.role);
     const subjectsTaught = Array.isArray(profile?.subjects_taught)
@@ -336,6 +344,17 @@ export default function ProfileScreenWeb() {
                                     onChange={e => setEditForm(f => f ? { ...f, full_name: e.target.value } : f)}
                                     style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--glass-surface)', fontSize: '15px', fontFamily: 'var(--font-body)', color: 'var(--ink)', outline: 'none', boxSizing: 'border-box' }}
                                 />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--ink-ghost)', marginBottom: '6px' }}>Handle/Username</label>
+                                <input
+                                    value={editForm.username}
+                                    onChange={e => setEditForm(f => f ? { ...f, username: e.target.value } : f)}
+                                    placeholder="your-handle"
+                                    disabled={profile.is_anonymous}
+                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--glass-surface)', fontSize: '15px', fontFamily: 'var(--font-body)', color: 'var(--ink)', outline: 'none', boxSizing: 'border-box', opacity: profile.is_anonymous ? 0.5 : 1 }}
+                                />
+                                {profile.is_anonymous && <p style={{ fontSize: '10px', color: 'var(--ink-ghost)', marginTop: '4px' }}>Anonymous users cannot have handles.</p>}
                             </div>
                             <div>
                                 <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--ink-ghost)', marginBottom: '6px' }}>Phone</label>

@@ -140,6 +140,7 @@ export const communityAPI = {
             .from('community_groups')
             .insert([{
                 name: group.name,
+                handle: group.handle ?? null,
                 description: group.description ?? null,
                 group_type: group.group_type ?? 'general',
                 join_policy: group.join_policy ?? 'open',
@@ -377,6 +378,21 @@ export const communityAPI = {
 
         if (error) throw error;
         return data;
+    },
+
+    /**
+     * Update an existing group
+     */
+    async updateGroup(groupId: string, updates: Partial<CommunityGroup>) {
+        const { data, error } = await supabase
+            .from('community_groups')
+            .update(updates)
+            .eq('id', groupId)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data as CommunityGroup;
     },
 
     /**

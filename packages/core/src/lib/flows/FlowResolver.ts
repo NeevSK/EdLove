@@ -39,13 +39,13 @@ export class FlowResolver {
         try {
             switch (payload.action) {
                 case 'join_school':
-                    return await this.executeJoinSchool(payload.school_id, payload.group_id, userId);
+                    return await this.executeJoinSchool(payload.school_id, payload.group_id, userId, payload.handle);
 
                 case 'join_class':
-                    return await this.executeJoinClass(payload.classroom_id, userId);
+                    return await this.executeJoinClass(payload.classroom_id, userId, payload.handle);
 
                 case 'join_group':
-                    return await this.executeJoinGroup(payload.group_id, userId);
+                    return await this.executeJoinGroup(payload.group_id, userId, payload.handle);
 
                 case 'claim_invite':
                     return await this.executeClaimInvite(payload.invite_code, payload.school_id, payload.role as UserRole, userId);
@@ -74,21 +74,33 @@ export class FlowResolver {
         }
     }
 
-    private static async executeJoinSchool(schoolId: string, groupId: string, userId: string): Promise<FlowResult> {
+    private static async executeJoinSchool(schoolId: string, groupId: string, userId: string, handle?: string): Promise<FlowResult> {
+        let finalSchoolId = schoolId;
+        let finalGroupId = groupId;
+
+        // Resolve handle if present
+        if (handle && handle.startsWith('@')) {
+            const h = handle.slice(1);
+            const { data: school } = await supabase.from('schools').select('id, community_group_id').eq('handle', h).single();
+            if (school) {
+                finalSchoolId = school.id;
+                finalGroupId = school.community_group_id || groupId;
+            }
+        }
+
         // 1. Update user's school association
         const { error: userError } = await supabase
             .from('users')
-            .update({ school_id: schoolId })
+            .update({ school_id: finalSchoolId })
             .eq('id', userId);
 
         if (userError) throw userError;
 
         // 2. Join the automated school community group
-        // Note: Using raw supabase here to avoid cross-package circularity if communityAPI depends on core
         const { error: groupError } = await supabase
             .from('group_members')
             .upsert({
-                group_id: groupId,
+                group_id: finalGroupId,
                 user_id: userId,
                 status: 'active',
                 is_admin: false
@@ -103,7 +115,14 @@ export class FlowResolver {
         };
     }
 
-    private static async executeJoinClass(classroomId: string, userId: string): Promise<FlowResult> {
+    private static async executeJoinClass(classroomId: string, userId: string, handle?: string): Promise<FlowResult> {
+        let finalClassroomId = classroomId;
+        if (handle && handle.startsWith('@')) {
+            const h = handle.slice(1);
+            const { data: cls } = await supabase.from('classrooms').select('id').eq('handle', h).single();
+            if (cls) finalClassroomId = cls.id;
+        }
+
         // Look up the user's role so we can route correctly
         const { data: userData } = await supabase
             .from('users')
@@ -118,17 +137,16 @@ export class FlowResolver {
             const { error } = await supabase
                 .from('classroom_students')
                 .upsert(
-                    { classroom_id: classroomId, student_id: userId },
+                    { classroom_id: finalClassroomId, student_id: userId },
                     { onConflict: 'classroom_id,student_id' },
                 );
             if (error) throw error;
         } else {
             // Teachers/staff: only claim teacher_id if the classroom has no teacher yet.
-            // Never overwrite an existing teacher_id — that would steal classroom ownership.
             const { data: classroom, error: fetchError } = await supabase
                 .from('classrooms')
                 .select('teacher_id')
-                .eq('id', classroomId)
+                .eq('id', finalClassroomId)
                 .single();
 
             if (fetchError) throw fetchError;
@@ -138,7 +156,7 @@ export class FlowResolver {
                 const { data: claimed, error: updateError } = await supabase
                     .from('classrooms')
                     .update({ teacher_id: userId })
-                    .eq('id', classroomId)
+                    .eq('id', finalClassroomId)
                     .is('teacher_id', null)
                     .select('id');
                 if (updateError) throw updateError;
@@ -161,11 +179,18 @@ export class FlowResolver {
         };
     }
 
-    private static async executeJoinGroup(groupId: string, userId: string): Promise<FlowResult> {
+    private static async executeJoinGroup(groupId: string, userId: string, handle?: string): Promise<FlowResult> {
+        let finalGroupId = groupId;
+        if (handle && handle.startsWith('@')) {
+            const h = handle.slice(1);
+            const { data: group } = await supabase.from('community_groups').select('id').eq('handle', h).single();
+            if (group) finalGroupId = group.id;
+        }
+
         const { error } = await supabase
             .from('group_members')
             .upsert({
-                group_id: groupId,
+                group_id: finalGroupId,
                 user_id: userId,
                 status: 'active'
             });

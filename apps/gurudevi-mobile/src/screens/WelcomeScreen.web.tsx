@@ -184,7 +184,7 @@ function RightPanel({
                         const isActive = i18nLanguage?.startsWith(lang.code);
                         const isHov = langHover === lang.code;
                         return (
-                            <Pressable
+                            <Pressable accessibilityRole="button"
                                 key={lang.code}
                                 onPress={() => onChangeLanguage(lang.code)}
                                 onHoverIn={() => onLangHoverIn(lang.code)}

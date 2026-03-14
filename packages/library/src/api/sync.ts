@@ -33,12 +33,15 @@ export const knowledgeSync = {
 
             // 3. Fetch resources from Supabase
             const { data: resourceData, error: resourceError } = await supabase
-                .from('library_resources')
-                .select('id, title, type, subject, topics, tags, language, map_x, map_y, latitude, longitude, parent_id, island_id, updated_at')
+                .from('nodes')
+                .select('id, title, type, subjects, topics, tags, language, map_x, map_y, latitude, longitude, parent_id:parent_node_id, island_id, updated_at')
                 .gt('updated_at', lastSyncIso)
                 .order('updated_at', { ascending: true });
 
-            if (resourceError) throw resourceError;
+            if (resourceError) {
+                console.error('Fetch resources from Supabase failed:', resourceError);
+                throw resourceError;
+            }
 
             // 4. Fetch map layers from Supabase
             const { data: layerData, error: layerError } = await supabase

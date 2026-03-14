@@ -290,6 +290,7 @@ export interface CommunityGroup {
     type: GroupType;
     group_type?: GroupType; // Included for DB compatibility
     join_policy: GroupJoinPolicy;
+    handle?: string;
 
     // Visibility & Access
     visibility: PostVisibility;
@@ -376,6 +377,7 @@ export interface CreateGroupInput {
     image_url?: string;
     tags?: string[];
     school_id?: string;
+    handle?: string;
 }
 
 // ============================================================================

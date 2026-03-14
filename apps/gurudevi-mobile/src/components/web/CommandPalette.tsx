@@ -330,7 +330,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                         <Text style={[styles.searchIcon, { color: Theme.colors.sanctuarySaffron }]}>
                             ⌕
                         </Text>
-                        <TextInput
+                        <TextInput accessibilityLabel="Text input field"
                             ref={inputRef}
                             style={[styles.searchInput, { color: inputColor }]}
                             placeholder="Navigate anywhere…"
@@ -364,7 +364,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                                     const idx = globalIndex++;
                                     const isSelected = idx === selectedIndex;
                                     return (
-                                        <Pressable
+                                        <Pressable accessibilityRole="button"
                                             key={cmd.id}
                                             onPress={cmd.action}
                                             onHoverIn={() => setSelectedIndex(idx)}

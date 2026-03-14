@@ -1,13 +1,16 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Dimensions } from 'react-native';
-import { VStack, GlobalHeader } from '@repo/ui';
+import { VStack, GlobalHeader, FeatureInfoIcon, HStack } from '@repo/ui';
 import { BaseSelfViewProps } from './BaseSelfView.types';
 import { Theme } from '@repo/ui';
+import { FEATURE_DISCOVERY_DATA } from '../constants/selfRegistry';
+import { useFeatureActivity } from '../hooks/useFeatureActivity';
+import { useDynamicSelfFeatures } from '../hooks/useDynamicSelfFeatures';
 
 /**
  * Emoji mapping for common features to add soul to the UI.
  */
-const FEATURE_EMOJIS: Record<string, string> = {
+export const FEATURE_EMOJIS: Record<string, string> = {
     'pulse': '💜',
     'dashboard': '💜',
     'mood-lotus': '🪷',
@@ -41,7 +44,7 @@ export function BaseSelfView({
     // Default background based on role
     const surfaceBg = role === 'student' ? '#F5F3FF' : '#FFF7ED';
 
-    const allFeatures = [
+    const allFeatures = React.useMemo(() => [
         ...domains.flatMap(domain =>
             (domain.features || []).map(feature => ({
                 ...feature,
@@ -65,18 +68,27 @@ export function BaseSelfView({
             domainId: 'reminders',
             domainColor: '#F59E0B' // Amber for attention
         }] : [])
-    ];
+    ], [domains, sideBar, reminders]);
+
+    const { getPinnedFeatures, togglePin, trackFeatureAccess } = useFeatureActivity();
+    const { topItems: sortedFeatures } = useDynamicSelfFeatures(allFeatures);
+    const pinned = getPinnedFeatures();
 
     const [activeFeatureId, setActiveFeatureId] = React.useState(
-        allFeatures.find(f => f.id === 'pulse' || f.id === 'dashboard')?.id || allFeatures[0]?.id
+        sortedFeatures.find(f => f.id === 'pulse' || f.id === 'dashboard')?.id || sortedFeatures[0]?.id
     );
 
-    const activeFeature = allFeatures.find(f => f.id === activeFeatureId) || allFeatures[0];
+    const activeFeature = sortedFeatures.find(f => f.id === activeFeatureId) || sortedFeatures[0];
 
     const getEmoji = (feature: any) => {
         if (feature.id === 'mirrors') return '🪞';
         if (feature.id === 'reminders') return '🔔';
         return FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || '✨';
+    };
+
+    const handleFeaturePress = (featureId: string) => {
+        setActiveFeatureId(featureId);
+        trackFeatureAccess(featureId);
     };
 
     return (
@@ -108,14 +120,16 @@ export function BaseSelfView({
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={nativeStyles.carouselContent}
                     >
-                        {allFeatures.map((feature) => {
+                        {sortedFeatures.map((feature) => {
                             const isActive = activeFeatureId === feature.id;
+                            const isPinned = pinned.includes(feature.id);
                             const isInsight = feature.id === 'mirrors' || feature.id === 'reminders';
 
                             return (
                                 <Pressable
                                     key={feature.id}
-                                    onPress={() => setActiveFeatureId(feature.id)}
+                                    onPress={() => handleFeaturePress(feature.id)}
+                                    onLongPress={() => togglePin(feature.id)}
                                     style={nativeStyles.circleItem}
                                 >
                                     <View
@@ -142,6 +156,11 @@ export function BaseSelfView({
                                             <Text style={nativeStyles.circleIcon}>
                                                 {getEmoji(feature)}
                                             </Text>
+                                            {isPinned && (
+                                                <View style={[nativeStyles.pinIndicator, { backgroundColor: feature.domainColor }]}>
+                                                    <Text style={{ fontSize: 6, color: 'white' }}>📌</Text>
+                                                </View>
+                                            )}
                                         </View>
                                     </View>
                                     <View style={[
@@ -168,7 +187,28 @@ export function BaseSelfView({
 
                 {/* Active Feature Content */}
                 <View style={nativeStyles.activeFeatureContainer}>
-                    {activeFeature ? activeFeature.content : null}
+                    {activeFeature && (
+                        <VStack sx={{ space: 'md', mb: 16 } as any}>
+                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' } as any}>
+                                <HStack sx={{ alignItems: 'center', space: 'sm' } as any}>
+                                    <Text style={nativeStyles.activeLabel}>
+                                        {activeFeature.label}
+                                    </Text>
+                                    <FeatureInfoIcon 
+                                        title={activeFeature.label}
+                                        discoveryInfo={FEATURE_DISCOVERY_DATA[activeFeature.id]}
+                                        color={activeFeature.domainColor}
+                                    />
+                                </HStack>
+                                {activeFeature.id !== 'mirrors' && activeFeature.id !== 'reminders' && (
+                                    <Text style={{ fontSize: 10, color: 'rgba(0,0,0,0.3)', fontWeight: 'bold' }}>
+                                        ACTIVE FEATURE
+                                    </Text>
+                                )}
+                            </HStack>
+                            {activeFeature.content}
+                        </VStack>
+                    )}
                 </View>
 
                 {nightRitual && (
@@ -224,6 +264,18 @@ const nativeStyles = StyleSheet.create({
     circleIcon: {
         fontSize: 24,
     },
+    pinIndicator: {
+        position: 'absolute',
+        top: -4,
+        right: -4,
+        width: 16,
+        height: 16,
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: 'white',
+    },
     activeIndicator: {
         width: 4,
         height: 4,
@@ -267,5 +319,11 @@ const nativeStyles = StyleSheet.create({
     },
     insightsContent: {
         gap: 16,
-    } as any
+    } as any,
+    activeLabel: {
+        fontSize: 18,
+        fontWeight: '800',
+        color: '#1A1610',
+        letterSpacing: -0.5,
+    },
 });

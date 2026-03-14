@@ -4,9 +4,14 @@ this doc is to list issues in web i saw when manual testing.
 ## 13/03/2026 (latest - [n])
 
 ###  2.45 pm
-1. add info icon and when clicked it should show modal with info about that feature and where to find it in app. 
-2. 
-
+1. add info icon and when clicked it should show modal with info about that feature and where to find it in app. (neeed to test for self section)
+2. in community scetion there are 3 main parts and 4 cumulative sub parts. feed, groups, dms are 3 main parts and in groups there are 2 parts where joined groups vs global groups. so that how things are. then i think we need to groups tab to align with two types and i think whats there now seems not aligh with that. we need UI and wiring and everything. including showing global groups to everyone should be functional. currently, in small screens it shows upper bar instead of sid list of thing but upper bar only as three things
+3. lots of Missing translations. 
+4. self ui more human, organic, soulful - now its its not good its bad i dont know why. something is there.  may be texture of UI which feels like grainy or rough i dont know. may be emoji varient is ugly i dont know something is out of alignment. may be something is missing or something is not there.
+5. in profile scetion - social links parts lets make inline editable than open in new modal again. we can show icons of profile and then let edit. may be need validation or confirmation too. privacy thing may be using emojies such as eye to visibility globe for public and lock for private and two people for only frineds. think as UX stragist and best user experience. 
+6. need to implement and if implemented then need to check whether its working the social profile thing when someone tap on the avatar or profile icon in community section.
+7. school, classroom, community creation modal should be isomorphic and accurate against real world and need to validate and make it accurate fo user inputs. and it should be flowing one step by step than being confusing. (this should be same for mobile too.[need to implement in upstream so usable for both platforms])
+8. after creating school/classroom/community it should be visible in the list of schools/classrooms/communities in the app. and user should be accurately use it. 
 
 ## 09/03/2026 (latest [n])
 

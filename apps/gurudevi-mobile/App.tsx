@@ -584,7 +584,7 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
               updateWebPageTitle(state);
             }}
             linking={{
-              prefixes: ['gurudevi://', 'https://app.gurudevi.edlove.org', 'http://localhost:4000'],
+              prefixes: ['gurudevi://', 'https://platform.gurudevi.edlove.org', 'http://localhost:4000'],
               config: {
                 screens: {
                   Welcome: '',

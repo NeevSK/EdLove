@@ -30,6 +30,7 @@ import {
   Theme,
   hapticLight,
   hapticSuccess,
+  SanctuaryInput,
 } from "@repo/ui";
 import {
   TouchableOpacity,
@@ -81,6 +82,20 @@ interface CreateGroupModalProps {
   onClose: () => void;
   /** Called with the new group id after successful creation */
   onCreated?: (groupId: string) => void;
+  /** Mode: create or edit */
+  mode?: "create" | "edit";
+  /** Initial data for edit mode */
+  initialData?: {
+    id: string;
+    name: string;
+    handle?: string;
+    description?: string;
+    groupType?: GroupType;
+    joinPolicy?: JoinPolicy;
+    imageUrl?: string;
+  };
+  /** Called after successful creation or update */
+  onSuccess?: (group: any) => void;
 }
 
 // ── Static data ───────────────────────────────────────────────────────────────
@@ -141,6 +156,9 @@ export default function CreateGroupModal({
   isOpen,
   onClose,
   onCreated,
+  mode = "create",
+  initialData,
+  onSuccess,
 }: CreateGroupModalProps) {
   const { t } = useTranslation();
   const colors = useThemedColors();
@@ -150,16 +168,19 @@ export default function CreateGroupModal({
   const user = useStore((state) => state.user);
 
   // Form state
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [groupType, setGroupType] = useState<GroupType>("general");
-  const [joinPolicy, setJoinPolicy] = useState<JoinPolicy>("open");
-  const [avatarUri, setAvatarUri] = useState<string | null>(null);
+  const [name, setName] = useState(initialData?.name ?? "");
+  const [description, setDescription] = useState(initialData?.description ?? "");
+  const [groupType, setGroupType] = useState<GroupType>(initialData?.groupType ?? "general");
+  const [joinPolicy, setJoinPolicy] = useState<JoinPolicy>(initialData?.joinPolicy ?? "open");
+  const [avatarUri, setAvatarUri] = useState<string | null>(initialData?.imageUrl ?? null);
+  const [handle, setHandle] = useState(initialData?.handle ?? "");
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   // Async state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const isEdit = mode === "edit";
 
   // Success state
   const [createdGroupId, setCreatedGroupId] = useState<string | null>(null);
@@ -168,10 +189,22 @@ export default function CreateGroupModal({
     null,
   );
 
+  // Effect to reset form when initialData changes
+  React.useEffect(() => {
+    if (isOpen && initialData) {
+      setName(initialData.name);
+      setDescription(initialData.description ?? "");
+      setGroupType(initialData.groupType ?? "general");
+      setJoinPolicy(initialData.joinPolicy ?? "open");
+      setHandle(initialData.handle ?? "");
+      setAvatarUri(initialData.imageUrl ?? null);
+    }
+  }, [isOpen, initialData]);
+
   // ── Derived ────────────────────────────────────────────────────────────────
   const canSubmit =
     name.trim().length >= 2 && !isSubmitting && !isUploadingAvatar;
-  const groupQRValue = createdGroupId ? QRBuilder.group(createdGroupId) : "";
+  const groupQRValue = createdGroupId ? QRBuilder.group(createdGroupId, handle || undefined) : "";
   const GROUP_TYPES = getGroupTypes(t);
   const JOIN_POLICIES = getJoinPolicies(t);
 
@@ -188,6 +221,7 @@ export default function CreateGroupModal({
     setDescription("");
     setGroupType("general");
     setJoinPolicy("open");
+    setHandle("");
     setAvatarUri(null);
     setError(null);
     setCreatedGroupId(null);
@@ -214,32 +248,40 @@ export default function CreateGroupModal({
     setError(null);
 
     try {
-      // Upload avatar if selected
-      let imageUrl: string | undefined;
-      if (avatarUri) {
+      // Upload avatar if selected and changed (simple check: if it starts with 'http', it's likely already uploaded)
+      let imageUrl: string | undefined = avatarUri ?? undefined;
+      if (avatarUri && !avatarUri.startsWith("http")) {
         setIsUploadingAvatar(true);
         imageUrl = await uploadToCloudinary(avatarUri, "image");
         setIsUploadingAvatar(false);
       }
 
-      const group = await communityAPI.createGroupWithOwner(
-        {
-          name: name.trim(),
-          description: description.trim() || null,
-          group_type: groupType,
-          join_policy: joinPolicy,
-          school_id: schoolId ?? null,
-          image_url: imageUrl ?? null,
-        },
-        userId,
-      );
-      hapticSuccess();
-      setCreatedGroupId(group.id);
-      setCreatedGroupName(group.name ?? name.trim());
-      setCreatedGroupAvatar(imageUrl ?? null);
-      onCreated?.(group.id);
+      const groupPayload = {
+        name: name.trim(),
+        description: description.trim() || undefined,
+        group_type: groupType,
+        join_policy: joinPolicy,
+        school_id: schoolId ?? undefined,
+        image_url: imageUrl ?? undefined,
+        handle: handle.trim() || undefined,
+      };
+
+      if (isEdit && initialData?.id) {
+        const updated = await communityAPI.updateGroup(initialData.id, groupPayload as any);
+        hapticSuccess();
+        onSuccess?.(updated);
+        onClose();
+      } else {
+        const group = await communityAPI.createGroupWithOwner(groupPayload, userId);
+        hapticSuccess();
+        setCreatedGroupId(group.id);
+        setCreatedGroupName(group.name ?? name.trim());
+        setCreatedGroupAvatar(imageUrl ?? null);
+        onCreated?.(group.id);
+        onSuccess?.(group);
+      }
     } catch (err: any) {
-      setError(err?.message ?? "Failed to create group. Please try again.");
+      setError(err?.message ?? "Failed to save group. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -429,7 +471,7 @@ export default function CreateGroupModal({
         <ModalHeader>
           <HStack justifyContent="space-between" alignItems="center" w="$full">
             <Heading color={colors.text} size="lg">
-              {t("community.createGroup.title")}
+              {isEdit ? "Edit Group Details" : t("community.createGroup.title")}
             </Heading>
             <TouchableOpacity
               onPress={handleClose}
@@ -528,6 +570,18 @@ export default function CreateGroupModal({
                   {name.length}/60
                 </Text>
               </VStack>
+
+              {/* Handle */}
+              <SanctuaryInput
+                label="Group Handle (@)"
+                placeholder="e.g. photography-club"
+                value={handle}
+                onChangeText={(text) =>
+                  setHandle(text.toLowerCase().replace(/[^a-z0-9_-]/g, ""))
+                }
+                helperText="A unique identifier for your group's QR link."
+                leftIcon={Globe}
+              />
 
               {/* Description */}
               <VStack space="xs">
@@ -752,7 +806,7 @@ export default function CreateGroupModal({
                   fontSize: Theme.typography.fontSize.md,
                 }}
               >
-                {t("community.createGroup.submit")}
+                {isEdit ? "Save Changes" : t("community.createGroup.submit")}
               </Text>
             )}
           </TouchableOpacity>

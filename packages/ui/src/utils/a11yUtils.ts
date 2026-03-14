@@ -1,5 +1,6 @@
-import { APCAcontrast, sRGBtoY, displayPolyfill } from 'apca-w3';
-import { parse, formatHex, formatRgb, converter } from 'culori';
+import { APCAcontrast, sRGBtoY } from 'apca-w3';
+import { parse, formatHex, converter } from 'culori';
+import { getContrastRatio } from './colorUtils';
 
 /**
  * a11yUtils — Modern Accessibility Infrastructure for the Sanctuary.
@@ -26,37 +27,6 @@ export function toHex(color: string): string {
     return c ? formatHex(c) : '#000000';
 }
 
-/**
- * WCAG 2.1 Relative Luminance (0-1).
- * (Redundant: also in colorUtils.ts)
- */
-/*
-export function getRelativeLuminance(color: string): number {
-    const c = parse(color);
-    if (!c) return 0;
-    
-    // WCAG 2.1 formula
-    const rgb = converter('rgb')(c);
-    const [r, g, b] = [rgb.r, rgb.g, rgb.b].map(val => {
-        return val <= 0.04045 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4);
-    });
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-*/
-
-/**
- * WCAG 2.1 Contrast Ratio (1-21).
- * (Redundant: also in colorUtils.ts)
- */
-/*
-export function getContrastRatio(fg: string, bg: string): number {
-    const l1 = getRelativeLuminance(fg);
-    const l2 = getRelativeLuminance(bg);
-    const lighter = Math.max(l1, l2);
-    const darker = Math.min(l1, l2);
-    return (lighter + 0.05) / (darker + 0.05);
-}
-*/
 
 /**
  * APCA Contrast calculation.

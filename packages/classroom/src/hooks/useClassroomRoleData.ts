@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase, useUserRole, useStore } from '@repo/core';
 
 export interface ClassroomRoleData {
@@ -14,7 +14,7 @@ export function useClassroomRoleData(refreshTrigger: number = 0) {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<ClassroomRoleData | null>(null);
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         // 1. Instant Hydration: Prepare initial data from local store
         if (!userId) {
             setData(null);
@@ -23,11 +23,16 @@ export function useClassroomRoleData(refreshTrigger: number = 0) {
         }
 
         // Set initial data immediately so UI doesn't wait
-        setData(prev => prev || {
-            userId,
-            schoolId,
-            profileCompleted: !!localUser?.profile_completed,
-            realClassCount: 0
+        setData(prev => {
+            if (prev && prev.userId === userId && prev.schoolId === schoolId && prev.profileCompleted === !!localUser?.profile_completed) {
+                return prev;
+            }
+            return {
+                userId,
+                schoolId,
+                profileCompleted: !!localUser?.profile_completed,
+                realClassCount: prev?.realClassCount || 0
+            };
         });
 
         try {
@@ -52,8 +57,16 @@ export function useClassroomRoleData(refreshTrigger: number = 0) {
             // Update store if server data is newer/different (Convergence)
             if (profileCheck.data) {
                 const serverUser = profileCheck.data;
-                if (serverUser.profile_completed !== localUser?.profile_completed || serverUser.school_id !== localUser?.school_id) {
-                    console.log('🔄 useClassroomRoleData: Syncing user data from server');
+                // Strict comparison to prevent loop
+                const hasSignificantChanges = 
+                    serverUser.profile_completed !== localUser?.profile_completed || 
+                    serverUser.school_id !== localUser?.school_id ||
+                    serverUser.role !== localUser?.role ||
+                    serverUser.full_name !== localUser?.full_name ||
+                    serverUser.email !== localUser?.email;
+                                  
+                if (hasSignificantChanges) {
+                    console.log('🔄 useClassroomRoleData: Syncing user data from server (Changes detected)');
                     setUser({ ...localUser, ...serverUser, id: userId } as any);
                 }
             }
@@ -69,11 +82,11 @@ export function useClassroomRoleData(refreshTrigger: number = 0) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [userId, schoolId, role, setUser, localUser?.profile_completed, localUser?.school_id, localUser?.role]);
 
     useEffect(() => {
         fetchData();
-    }, [role, userId, refreshTrigger]);
+    }, [fetchData, refreshTrigger]);
 
     return { data, loading, fetchRoleData: fetchData };
 }

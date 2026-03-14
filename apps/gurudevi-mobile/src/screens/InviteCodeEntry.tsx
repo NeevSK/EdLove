@@ -175,7 +175,7 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
 
                 {/* Skip / Create School */}
                 <VStack space="sm" mt={Theme.spacing.md}>
-                    <Pressable
+                    <Pressable accessibilityRole="button"
                         onPress={() => {
                             hapticLight();
                             onSkip();

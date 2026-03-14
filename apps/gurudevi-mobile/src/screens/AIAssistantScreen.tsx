@@ -79,7 +79,7 @@ export default function AIAssistantScreen() {
             >
                 {/* Header */}
                 <HStack style={[styles.header, { borderBottomColor: glass.surface.border }]}>
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backButton, { backgroundColor: glass.surface.bg }]}>
+                    <TouchableOpacity accessibilityRole="button" onPress={() => navigation.goBack()} style={[styles.backButton, { backgroundColor: glass.surface.bg }]}>
                         <ChevronLeft color={text.primary} size={24} />
                     </TouchableOpacity>
                     <VStack>
@@ -124,13 +124,13 @@ export default function AIAssistantScreen() {
                             <Text color={text.secondary} size="sm" textAlign="center">
                                 {t('aiAssistant.loginPrompt')}
                             </Text>
-                            <TouchableOpacity onPress={() => (navigation as any).navigate('Welcome')}>
+                            <TouchableOpacity accessibilityRole="button" onPress={() => (navigation as any).navigate('Welcome')}>
                                 <Text color={accent.action} bold size="sm">{t('aiAssistant.continueLogin')}</Text>
                             </TouchableOpacity>
                         </VStack>
                     ) : (
                         <HStack style={[styles.inputWrapper, { backgroundColor: glass.surface.bg, borderColor: glass.surface.border, borderWidth: 1 }]} space="sm">
-                            <TextInput
+                            <TextInput accessibilityLabel="Text input field"
                                 style={[styles.input, { color: text.primary }]}
                                 placeholder={t('aiAssistant.placeholder')}
                                 placeholderTextColor={text.secondary}
@@ -139,7 +139,7 @@ export default function AIAssistantScreen() {
                                 multiline
                                 maxLength={500}
                             />
-                            <TouchableOpacity
+                            <TouchableOpacity accessibilityRole="button"
                                 onPress={handleSend}
                                 disabled={!inputText.trim()}
                                 style={[

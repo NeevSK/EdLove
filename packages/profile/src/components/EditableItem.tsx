@@ -22,6 +22,9 @@ interface EditableItemProps {
     placeholder: string;
     onSave: (field: string, value: any) => Promise<any>;
     multiline?: boolean;
+    disabled?: boolean;
+    helperText?: string;
+    transform?: (value: string) => string;
 }
 
 export const EditableItem = ({
@@ -31,6 +34,10 @@ export const EditableItem = ({
     field,
     placeholder,
     onSave,
+    disabled = false,
+    multiline = false,
+    helperText,
+    transform,
 }: EditableItemProps) => {
     const colors = useThemedColors();
     const [isEditing, setIsEditing] = useState(false);
@@ -53,6 +60,7 @@ export const EditableItem = ({
     }, [editValue, field, isEditing]);
 
     const handleStartEdit = () => {
+        if (disabled) return;
         hapticLight();
         setIsEditing(true);
     };
@@ -103,10 +111,14 @@ export const EditableItem = ({
                             >
                                 <InputField
                                     value={editValue}
-                                    onChangeText={setEditValue}
+                                    onChangeText={(text: string) => {
+                                        const nextValue = transform ? transform(text) : text;
+                                        setEditValue(nextValue);
+                                    }}
                                     placeholder={placeholder}
                                     autoFocus
                                     color={colors.text}
+                                    multiline={multiline}
                                 />
                             </Input>
                             <TouchableOpacity
@@ -134,8 +146,13 @@ export const EditableItem = ({
                         <Text size="md" color={value ? colors.text : colors.textTertiary} bold>
                             {value || placeholder}
                         </Text>
-                        <Edit2 size={14} color={colors.textTertiary} />
+                        {!disabled && <Edit2 size={14} color={colors.textTertiary} />}
                     </TouchableOpacity>
+                )}
+                {helperText && (
+                    <Text size="xs" color={colors.textTertiary} mt={2} sx={{ opacity: 0.8 }}>
+                        {helperText}
+                    </Text>
                 )}
             </VStack>
         </HStack>

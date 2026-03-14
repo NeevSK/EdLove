@@ -43,22 +43,41 @@ import { useNavigation } from '@react-navigation/native';
 interface CreateSchoolModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSuccess: (newSchool: any) => void;
+    onSuccess: (school: any) => void;
+    initialData?: {
+        id: string;
+        name: string;
+        handle?: string;
+        type: 'primary' | 'secondary' | 'mixed';
+    };
 }
 
 export default function CreateSchoolModal({
     isOpen,
     onClose,
     onSuccess,
+    initialData,
 }: CreateSchoolModalProps) {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const [step, setStep] = useState<'details' | 'type' | 'success'>('details');
-    const [name, setName] = useState('');
-    const [type, setType] = useState<'primary' | 'secondary' | 'mixed'>('mixed');
+    const [name, setName] = useState(initialData?.name ?? '');
+    const [handle, setHandle] = useState(initialData?.handle ?? '');
+    const [type, setType] = useState<'primary' | 'secondary' | 'mixed'>(initialData?.type ?? 'mixed');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [createdIds, setCreatedIds] = useState<{ schoolId: string; groupId?: string } | null>(null);
+
+    const isEdit = !!initialData;
+
+    React.useEffect(() => {
+        if (isOpen) {
+            setName(initialData?.name ?? '');
+            setHandle(initialData?.handle ?? '');
+            setType(initialData?.type ?? 'mixed');
+            setStep('details');
+        }
+    }, [isOpen, initialData]);
     const colors = useThemedColors();
 
     const handleSubmit = async () => {
@@ -75,36 +94,50 @@ export default function CreateSchoolModal({
             const userId = await identityAPI.getMyInternalId();
             if (!userId) throw new Error('Not authenticated');
 
-            // 1. Create real School
-            const newSchool = await api.school.create({
-                name: name.trim(),
-                type,
-                created_by: userId
-            });
+            let updatedSchool;
+            if (isEdit && initialData) {
+                updatedSchool = await api.school.update(initialData.id, {
+                    name: name.trim(),
+                    handle: handle.trim(),
+                    type,
+                });
+                hapticSuccess();
+                onSuccess(updatedSchool);
+                handleClose();
+                return;
+            } else {
+                // 1. Create real School
+                updatedSchool = await api.school.create({
+                    name: name.trim(),
+                    handle: handle.trim() || name.trim().toLowerCase().replace(/\s+/g, '-'),
+                    type,
+                    created_by: userId
+                });
 
-            let communityGroupId: string | undefined;
+                let communityGroupId: string | undefined;
 
-            // 2. Create default Community Group
-            try {
-                const group = await communityAPI.createGroupWithOwner({
-                    name: `${name.trim()} HQ`,
-                    description: `Official community portal for ${name.trim()}`,
-                    group_type: 'general',
-                    join_policy: 'open',
-                    school_id: newSchool.id,
-                }, userId);
-                communityGroupId = group.id;
-            } catch (groupErr) {
-                console.warn('Failed to create default group:', groupErr);
+                // 2. Create default Community Group
+                try {
+                    const group = await communityAPI.createGroupWithOwner({
+                        name: `${name.trim()} HQ`,
+                        description: `Official community portal for ${name.trim()}`,
+                        group_type: 'general',
+                        join_policy: 'open',
+                        school_id: updatedSchool.id,
+                    }, userId);
+                    communityGroupId = group.id;
+                } catch (groupErr) {
+                    console.warn('Failed to create default group:', groupErr);
+                }
+
+                hapticSuccess();
+                setCreatedIds({ schoolId: updatedSchool.id, groupId: communityGroupId });
+                setStep('success');
+                onSuccess(updatedSchool);
             }
-
-            hapticSuccess();
-            setCreatedIds({ schoolId: newSchool.id, groupId: communityGroupId });
-            setStep('success');
-            onSuccess(newSchool);
         } catch (err: any) {
-            console.error('Failed to create school:', err);
-            setError(err.message || 'Failed to create school');
+            console.error('Failed to save school:', err);
+            setError(err.message || 'Failed to save school');
         } finally {
             setIsSubmitting(false);
         }
@@ -112,6 +145,7 @@ export default function CreateSchoolModal({
 
     const handleClose = () => {
         setName('');
+        setHandle('');
         setType('mixed');
         setError(null);
         setStep('details');
@@ -146,9 +180,11 @@ export default function CreateSchoolModal({
                         <ModalHeader>
                             <VStack sx={{ gap: 4 }}>
                                 <Heading color={colors.text} size="lg">
-                                    {t('school.createTitle') || 'Sanctuary Identity'}
+                                    {isEdit ? 'Refine Sanctuary Identity' : (t('school.createTitle') || 'Sanctuary Identity')}
                                 </Heading>
-                                <Text size="xs" color={colors.textSecondary}>Step 1 of 2: Name your institution</Text>
+                                <Text size="xs" color={colors.textSecondary}>
+                                    {isEdit ? 'Update the details of your institution' : 'Step 1 of 2: Name your institution'}
+                                </Text>
                             </VStack>
                         </ModalHeader>
 
@@ -190,6 +226,9 @@ export default function CreateSchoolModal({
                                             value={name}
                                             onChangeText={(text: string) => {
                                                 setName(text);
+                                                if (!isEdit) {
+                                                    setHandle(text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9_-]/g, ''));
+                                                }
                                                 if (error) setError(null);
                                             }}
                                             color={colors.text}
@@ -197,6 +236,38 @@ export default function CreateSchoolModal({
                                             sx={{ fontSize: 18, fontWeight: '600' }}
                                         />
                                     </Input>
+                                </FormControl>
+
+                                <FormControl isRequired isInvalid={!!error}>
+                                    <FormControlLabel>
+                                        <FormControlLabelText color={colors.textSecondary}>
+                                            URL Handle (unique ID)
+                                        </FormControlLabelText>
+                                    </FormControlLabel>
+                                    <Input
+                                        sx={{
+                                            height: 56,
+                                            backgroundColor: colors.tertiary,
+                                            borderColor: colors.border,
+                                            borderWidth: 1,
+                                            borderRadius: Theme.corners.generous
+                                        }}
+                                    >
+                                        <InputField
+                                            placeholder="e.g., green-valley"
+                                            value={handle}
+                                            onChangeText={(text: string) => {
+                                                setHandle(text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9_-]/g, ''));
+                                                if (error) setError(null);
+                                            }}
+                                            color={colors.text}
+                                            placeholderTextColor={colors.textTertiary}
+                                            sx={{ fontSize: 16, fontWeight: '500' }}
+                                        />
+                                    </Input>
+                                    <Text size="xs" color={colors.textTertiary} sx={{ marginTop: 4 }}>
+                                        Used in your Sanctuary's QR codes and links.
+                                    </Text>
                                 </FormControl>
                             </VStack>
                         </ModalBody>
@@ -221,9 +292,11 @@ export default function CreateSchoolModal({
                                         flex: 2,
                                         backgroundColor: Theme.colors.sanctuarySaffron,
                                     }}
-                                    isDisabled={!name.trim()}
+                                    isDisabled={!name.trim() || !handle.trim()}
                                 >
-                                    <ButtonText color={Theme.colors.sacredWhite}>Next — Academic Focus</ButtonText>
+                                    <ButtonText color={Theme.colors.sacredWhite}>
+                                        {isEdit ? 'Continue to Focus' : 'Next — Academic Focus'}
+                                    </ButtonText>
                                 </Button>
                             </HStack>
                         </ModalFooter>
@@ -237,7 +310,9 @@ export default function CreateSchoolModal({
                                 <Heading color={colors.text} size="lg">
                                     Academic Focus
                                 </Heading>
-                                <Text size="xs" color={colors.textSecondary}>Step 2 of 2: Define your scope</Text>
+                                <Text size="xs" color={colors.textSecondary}>
+                                    {isEdit ? 'Update your scope' : 'Step 2 of 2: Define your scope'}
+                                </Text>
                             </VStack>
                         </ModalHeader>
 
@@ -305,7 +380,9 @@ export default function CreateSchoolModal({
                                     {isSubmitting ? (
                                         <Spinner color={Theme.colors.sacredWhite} size="small" />
                                     ) : (
-                                        <ButtonText color={Theme.colors.sacredWhite}>Establish Sanctuary</ButtonText>
+                                        <ButtonText color={Theme.colors.sacredWhite}>
+                                            {isEdit ? 'Save Changes' : 'Establish Sanctuary'}
+                                        </ButtonText>
                                     )}
                                 </Button>
                             </HStack>

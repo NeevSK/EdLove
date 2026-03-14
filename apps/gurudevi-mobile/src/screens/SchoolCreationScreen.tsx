@@ -79,6 +79,7 @@ export default function SchoolCreationScreen() {
             // 1. Create School
             const school = await schoolAPI.create({
                 name: state.basicInfo.name || 'My Sanctuary',
+                handle: state.basicInfo.handle,
                 type: type,
                 created_by: user.id,
             });
@@ -86,6 +87,7 @@ export default function SchoolCreationScreen() {
             // 2. Create Community Group — creator is auto-added as owner
             const group = await communityAPI.createGroupWithOwner({
                 name: `${school.name} HQ`,
+                handle: `${state.basicInfo.handle}-hq`,
                 description: `Official community portal for ${school.name}`,
                 group_type: 'general',
                 join_policy: 'open',

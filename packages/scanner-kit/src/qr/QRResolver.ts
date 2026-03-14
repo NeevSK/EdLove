@@ -55,8 +55,8 @@ export function resolveQR(raw: string): QRResolveResult {
     }
   }
 
-  // ── Canonical: gurudevi://qr?v=...&action=... ─────────────────────────────
-  if (trimmed.startsWith('gurudevi://qr')) {
+  // ── Canonical: gurudevi://qr or https://platform.gurudevi.edlove.org/qr ─────────
+  if (trimmed.startsWith('gurudevi://qr') || trimmed.startsWith('https://platform.gurudevi.edlove.org/qr')) {
     try {
       const queryStart = trimmed.indexOf('?')
       if (queryStart === -1) return { ok: false, error: 'invalid', raw }
@@ -105,21 +105,21 @@ function buildPayloadFromParams(
 ): QRResolveResult {
   switch (action) {
     case 'join_school': {
-      const { school_id, group_id } = params
+      const { school_id, group_id, handle } = params
       if (!school_id || !group_id) return { ok: false, error: 'invalid', raw }
-      return { ok: true, payload: { v: 1, action, school_id, group_id } }
+      return { ok: true, payload: { v: 1, action, school_id, group_id, handle } }
     }
 
     case 'join_class': {
-      const { classroom_id } = params
+      const { classroom_id, handle } = params
       if (!classroom_id) return { ok: false, error: 'invalid', raw }
-      return { ok: true, payload: { v: 1, action, classroom_id } }
+      return { ok: true, payload: { v: 1, action, classroom_id, handle } }
     }
 
     case 'join_group': {
-      const { group_id } = params
+      const { group_id, handle } = params
       if (!group_id) return { ok: false, error: 'invalid', raw }
-      return { ok: true, payload: { v: 1, action, group_id } }
+      return { ok: true, payload: { v: 1, action, group_id, handle } }
     }
 
     case 'claim_invite': {
@@ -129,11 +129,11 @@ function buildPayloadFromParams(
     }
 
     case 'user_invite': {
-      const { inviter_id, inviter_role } = params
+      const { inviter_id, inviter_role, username } = params
       if (!inviter_id) return { ok: false, error: 'invalid', raw }
       return {
         ok: true,
-        payload: { v: 1, action, inviter_id, inviter_role: inviter_role ?? 'unknown' },
+        payload: { v: 1, action, inviter_id, inviter_role: inviter_role ?? 'unknown', username },
       }
     }
 

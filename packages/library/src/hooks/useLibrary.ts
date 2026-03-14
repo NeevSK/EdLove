@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { Platform } from 'react-native';
 import { libraryAPI } from '../api/library';
 import { ResourceFilters, CollectionFilters } from '../types';
@@ -13,7 +14,7 @@ export const LIBRARY_KEYS = {
 };
 import { knowledgeSync } from '../api/sync';
 import { knowledgeDB } from '../api/database';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilters: CollectionFilters = {}) => {
     const queryClient = useQueryClient();
@@ -79,15 +80,24 @@ export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilt
         },
     });
 
+    const syncLibrary = useCallback(async () => {
+        await knowledgeSync.performSync();
+        // Use queryClient directly to invalidate instead of causing a dependency on the query object itself
+        queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resources() });
+    }, [queryClient]);
+
+    const resources = useMemo(() => resourcesInfiniteQuery.data?.pages.flat() || [], [resourcesInfiniteQuery.data]);
+    const collections = useMemo(() => collectionsInfiniteQuery.data?.pages.flat() || [], [collectionsInfiniteQuery.data]);
+
     return {
-        resources: resourcesInfiniteQuery.data?.pages.flat() || [],
+        resources,
         isLoadingResources: resourcesInfiniteQuery.isLoading,
         isFetchingNextResources: resourcesInfiniteQuery.isFetchingNextPage,
         hasNextResources: resourcesInfiniteQuery.hasNextPage,
         fetchNextResources: resourcesInfiniteQuery.fetchNextPage,
         fetchResources: resourcesInfiniteQuery.refetch,
 
-        collections: collectionsInfiniteQuery.data?.pages.flat() || [],
+        collections,
         isLoadingCollections: collectionsInfiniteQuery.isLoading,
         isFetchingNextCollections: collectionsInfiniteQuery.isFetchingNextPage,
         hasNextCollections: collectionsInfiniteQuery.hasNextPage,
@@ -99,10 +109,7 @@ export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilt
 
         endorseResource: endorseMutation.mutateAsync,
 
-        syncLibrary: async () => {
-            await knowledgeSync.performSync();
-            resourcesInfiniteQuery.refetch();
-        },
+        syncLibrary,
 
         loading: resourcesInfiniteQuery.isLoading || collectionsInfiniteQuery.isLoading,
         error: (resourcesInfiniteQuery.error || collectionsInfiniteQuery.error)

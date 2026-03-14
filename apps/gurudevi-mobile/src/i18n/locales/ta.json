@@ -30,6 +30,9 @@
         "saving": "Saving",
         "comingSoon": "Coming Soon"
     },
+    "goodMorning": "காலை வணக்கம்!",
+    "goodAfternoon": "மதிய வணக்கம்!",
+    "goodEvening": "மாலை வணக்கம்!",
     "demoMode": {
         "realityCheckTitle": "சாண்ட்பாக்ஸ் உருவகப்படுத்துதல்",
         "realityCheckMessage": "நீங்கள் டெமோ பயன்முறையில் உள்ளீர்கள். இந்தச் செயல் உருவகப்படுத்தப்பட்டது மற்றும் உங்கள் உண்மையான பள்ளித் தரவில் சேமிக்கப்படாது.",
@@ -517,6 +520,7 @@
         }
     },
     "library": {
+        "errorLoading": "நூலகத்தை ஏற்றுவதில் பிழை.",
         "title": "நூலகம்",
         "description": "அறிவுக் களஞ்சியம்",
         "browse": "உலாவு",

@@ -200,7 +200,7 @@ export default function IdentityCard({ profile, onEdit, onViewFullProfile, style
                             <QRCodeGenerator
                                 value={
                                     profile?.id
-                                        ? QRBuilder.userInvite(profile.id, profile.role || 'unknown')
+                                        ? QRBuilder.userInvite(profile.id, profile.role || 'unknown', profile.username || undefined)
                                         : 'gurudevi-guest'
                                 }
                                 size={120}

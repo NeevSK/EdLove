@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
     VStack,
     HStack,
@@ -20,22 +20,27 @@ import { Theme } from '@repo/ui';
 import { api, supabase, SRI_LANKAN_SUBJECTS_BY_LEVEL, SYLLABUS_VERSIONS, CLASSROOM_THEMES, identityAPI } from '@repo/core';
 import { communityAPI } from '@repo/community';
 import { useTranslation } from 'react-i18next';
-import { hapticLight, hapticSuccess, Textarea } from '@repo/ui';
+import { hapticLight, hapticSuccess, Textarea, SanctuaryInput } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 import { useFeatureAccess, handleAPIError } from '@repo/core';
 import GuestConversionPrompt from '../shared/GuestConversionPrompt';
 import { useNavigation } from '@react-navigation/native';
 import { ScannerModal, resolveQR } from '@repo/scanner-kit';
-import { ScanLine } from 'lucide-react-native';
+import { ScanLine, Globe } from 'lucide-react-native';
 
 interface CreateClassroomModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: (newClass: any) => void;
-    mode?: 'create' | 'join';
+    mode?: 'create' | 'join' | 'edit';
     initialData?: {
+        id: string;
         name: string;
         subject?: string;
+        handle?: string;
+        description?: string;
+        themeId?: string;
+        syllabusId?: string;
     };
 }
 
@@ -65,6 +70,7 @@ export default function CreateClassroomModal({
     const [schoolId, setSchoolId] = useState<string | null>(null);
 
     // New enhancement fields
+    const [handle, setHandle] = useState('');
     const [description, setDescription] = useState('');
     const [themeId, setThemeId] = useState('saffron');
     const [syllabusId, setSyllabusId] = useState('legacy');
@@ -95,13 +101,25 @@ export default function CreateClassroomModal({
             if (initialData) {
                 setName(initialData.name);
                 setSubject(initialData.subject || '');
-                setClassType(initialData.subject ? 'subject' : 'own');
+                setHandle(initialData.handle || '');
+                setDescription(initialData.description || '');
+                if (initialData.themeId) setThemeId(initialData.themeId);
+                if (initialData.syllabusId) setSyllabusId(initialData.syllabusId);
+                
+                if (mode !== 'edit') {
+                    setClassType(initialData.subject ? 'subject' : 'own');
+                }
             } else {
-                setClassType('own');
+                setName('');
+                setHandle('');
                 setSubject('');
+                setDescription('');
+                setThemeId('saffron');
+                setSyllabusId('legacy');
+                setClassType('own');
             }
         }
-    }, [isOpen, initialData]);
+    }, [isOpen, initialData, mode]);
 
     const fetchInitialData = async () => {
         try {
@@ -203,6 +221,16 @@ export default function CreateClassroomModal({
                 result = await api.classrooms.update(selectedClassroomId, {
                     teacher_id: userId
                 });
+            } else if (mode === 'edit') {
+                if (!initialData?.id) throw new Error('Classroom ID missing for edit');
+                result = await api.classrooms.update(initialData.id, {
+                    name: name.trim(),
+                    subject: subject.trim(),
+                    handle: handle.trim() || undefined,
+                    description: description.trim(),
+                    color_theme: themeId,
+                    syllabus_version: syllabusId,
+                });
             } else {
                 result = await api.classrooms.create({
                     name: name.trim(),
@@ -214,6 +242,7 @@ export default function CreateClassroomModal({
                     color_theme: themeId,
                     description: description.trim(),
                     syllabus_version: syllabusId,
+                    handle: handle.trim() || undefined,
                 });
 
                 // Create linked sanctuary group — creator auto-added as owner
@@ -224,7 +253,8 @@ export default function CreateClassroomModal({
                         group_type: 'class',
                         join_policy: 'approval_required',
                         school_id: schoolId,
-                        classroom_id: result.id
+                        classroom_id: result.id,
+                        handle: handle.trim() || undefined
                     }, userId);
                 }
             }
@@ -242,6 +272,7 @@ export default function CreateClassroomModal({
 
     const handleClose = () => {
         setName('');
+        setHandle('');
         setSubject('');
         setDescription('');
         setThemeId('saffron');
@@ -328,7 +359,7 @@ export default function CreateClassroomModal({
                         </Box>
                     )}
 
-                    {mode === 'create' && (
+                    {(mode === 'create' || mode === 'edit') && (
                         <FormControl isRequired isInvalid={!!error}>
                             <FormControlLabel>
                                 <FormControlLabelText sx={{ color: colors.textSecondary }}>
@@ -354,6 +385,17 @@ export default function CreateClassroomModal({
                                 />
                             </Input>
                         </FormControl>
+                    )}
+
+                    {(mode === 'create' || mode === 'edit') && (
+                        <SanctuaryInput
+                            label="Classroom Handle (@)"
+                            placeholder="e.g. grade-10-maths"
+                            value={handle}
+                            onChangeText={(text) => setHandle(text.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}
+                            helperText="A unique identifier for your classroom's QR link."
+                            leftIcon={Globe}
+                        />
                     )}
 
                     {mode === 'join' && (

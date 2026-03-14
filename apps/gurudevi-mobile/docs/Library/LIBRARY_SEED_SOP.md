@@ -490,5 +490,28 @@ When seeding 100+ nodes, use the task agent with this structure:
 
 ---
 
-*Last updated: 2026-03-13 — Session 4*  
+### Session 4 — Schema Standardization & Public Access
+**Status:** Completed
+**Branch:** `copilot/finalize-library-seeding`
+
+**What was addressed:**
+- **Schema Fixes:** The `nodes`, `collections`, and `edges` tables were missing several columns required for the holistic seed.
+- **RLS Updates:** Content was previously restricted to authenticated users. Applied new policies to allow `anon` (unauthenticated) users to view `verified=true` or `visibility='public'` content.
+- **Node Type Mapping:** Mapped variety of content types (movie trailers, TED talks) to project-official ENUM types (e.g., `lesson`, `story`).
+
+**Updated Schema Requirements (Mandatory for Seeds):**
+| Table | Missing Columns Added |
+|-------|-----------------------|
+| `nodes` | `format`, `license`, `media`, `verified`, `is_ministry_official` |
+| `collections` | `description`, `icon_emoji`, `verified`, `type`, `updated_at` |
+| `edges` | `from_node_id`, `to_node_id`, `relationship` (ENUM) |
+
+**Lessons for Future Migrations:**
+1. **Always Verify RLS:** After seeding, ensure `anon` role has `SELECT` access to public/verified nodes.
+2. **ENUM Consistency:** Check `pg_enum` for `node_type` and `node_relationship_type` before generating scripts.
+3. **ON CONFLICT Strategy:** Ensure all seed inserts use `ON CONFLICT (id) DO UPDATE SET ...` to handle schema updates on existing nodes.
+
+---
+
+*Last updated: 2026-03-14 — Session 4*  
 *Maintained by the Architect (Naveen) & the Engine*

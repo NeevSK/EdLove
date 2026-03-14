@@ -187,10 +187,11 @@ export const ModalCloseButton = BaseModalCloseButton as any;
 import { Icon as BaseIcon, CloseIcon as BaseCloseIcon } from '@gluestack-ui/themed/build/components/Icons';
 export const Icon = BaseIcon as any;
 export const CloseIcon = BaseCloseIcon as any;
-import { ChevronLeft, ChevronRight, Check, ArrowLeft } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, Check, ArrowLeft, Info } from 'lucide-react-native';
 export { ChevronLeft, ChevronRight };
 export const CheckIcon = Check;
 export const ArrowLeftIcon = ArrowLeft;
+export const InfoIcon = Info;
 
 import { Image as BaseImage } from '@gluestack-ui/themed/build/components/Image';
 export const Image = BaseImage as any;

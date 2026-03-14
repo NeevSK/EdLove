@@ -47,7 +47,7 @@ export default function StepHierarchy({ data, onUpdate }: StepHierarchyProps) {
                 </Text>
                 <VStack sx={{ gap: '$2' as any }}>
                     {COMMON_LEVELS.map(level => (
-                        <Pressable
+                        <Pressable accessibilityRole="button"
                             key={level.id}
                             onPress={() => toggleLevel(level.id)}
                             sx={{

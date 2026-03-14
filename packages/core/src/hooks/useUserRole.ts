@@ -42,32 +42,33 @@ export function useUserRole(): UseUserRoleReturn & { refresh: () => Promise<void
 
             const { data: profile } = await supabase
                 .from('users')
-                .select('role, school_id, orientation_seeds, organization_name')
+                .select('role, school_id, orientation_seeds, organization_name, profile_completed')
                 .eq('id', internalId)
                 .maybeSingle();
 
             if (profile) {
                 // Convergence: Update store if server has different info
-                if (
-                    profile.role !== role ||
-                    (user && (
-                        profile.school_id !== user.school_id ||
-                        JSON.stringify(profile.orientation_seeds) !== JSON.stringify(user.orientation_seeds) ||
-                        profile.organization_name !== user.organization_name
-                    ))
-                ) {
+                const hasRoleChanged = profile.role !== role;
+                const hasSchoolChanged = user && profile.school_id !== user.school_id;
+                const hasProfileStatusChanged = user && (!!profile.profile_completed !== !!user.profile_completed);
+                const hasSeedsChanged = user && JSON.stringify(profile.orientation_seeds) !== JSON.stringify(user.orientation_seeds);
+                const hasOrgChanged = user && profile.organization_name !== user.organization_name;
+
+                if (hasRoleChanged || hasSchoolChanged || hasProfileStatusChanged || hasSeedsChanged || hasOrgChanged || !user) {
+                    console.log('🔄 useUserRole: Syncing user data from server (convergence)');
+                    
                     // `id: internalId` is placed last so that spreads of `user`/`profile`
                     // (which may carry a Supabase auth UID) cannot overwrite the canonical
                     // internal users.id that the rest of the app relies on.
                     setUser({ ...user, ...profile, id: internalId } as any);
 
                     // Fetch school type if school_id changed
-                    if (profile.school_id) {
+                    if (profile.school_id && (hasSchoolChanged || !schoolType)) {
                         const { data: school } = await supabase
                             .from('schools')
                             .select('type')
                             .eq('id', profile.school_id)
-                            .single();
+                            .maybeSingle();
                         if (school) setSchoolType(school.type as any);
                     }
                 }

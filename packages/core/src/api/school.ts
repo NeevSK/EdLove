@@ -1,4 +1,4 @@
-﻿import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 import { APIError } from './types';
 import {
     School,
@@ -19,12 +19,13 @@ export const schoolAPI = {
      * Create a new school
      * User will be automatically assigned as principal via trigger or separate call
      */
-    async create(data: { name: string; type: 'primary' | 'secondary' | 'mixed'; created_by: string }): Promise<School> {
+    async create(data: { name: string; handle: string; type: 'primary' | 'secondary' | 'mixed'; created_by: string }): Promise<School> {
         try {
             const { data: newSchool, error } = await supabase
                 .from('schools')
                 .insert([{
                     name: data.name,
+                    handle: data.handle,
                     type: data.type,
                     created_by: data.created_by,
                     is_sample: false
@@ -295,6 +296,21 @@ export const schoolAPI = {
 
         if (error) {
             throw new APIError('Failed to fetch school', error.code, error);
+        }
+
+        return data;
+    },
+
+    async update(id: string, updates: Partial<School>): Promise<School> {
+        const { data, error } = await supabase
+            .from('schools')
+            .update(updates)
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to update school', error.code, error);
         }
 
         return data;

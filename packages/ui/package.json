@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/package",
   "name": "@repo/ui",
   "version": "1.0.0",
   "main": "src/index.ts",
@@ -10,7 +11,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@gluestack-style/react": "^1.0.57",

@@ -39,7 +39,7 @@ export default function StepDemographics({ data, onUpdate }: StepDemographicsPro
                 </FormControlLabel>
                 <HStack sx={{ gap: '$sm' as any, flexWrap: 'wrap' }}>
                     {STUDENT_TYPES.map(type => (
-                        <Pressable
+                        <Pressable accessibilityRole="button"
                             key={type.id}
                             onPress={() => onUpdate({ studentType: type.id as any })}
                             sx={{
@@ -84,7 +84,7 @@ export default function StepDemographics({ data, onUpdate }: StepDemographicsPro
                 <VStack sx={{ gap: '$xs' as any }}>
                     <HStack sx={{ gap: '$xs' as any, flexWrap: 'wrap' }}>
                         {RELIGIOUS_AFFILIATIONS.map(rel => (
-                            <Pressable
+                            <Pressable accessibilityRole="button"
                                 key={rel.id}
                                 onPress={() => onUpdate({ religiousAffiliation: rel.id })}
                                 sx={{

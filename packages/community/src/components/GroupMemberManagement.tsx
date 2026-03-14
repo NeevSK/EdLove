@@ -7,6 +7,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CommunityStackParamList } from '@repo/core';
 import { communityAPI } from '../api/community';
 import { CommunityGroup } from '../types';
+import CreateGroupModal from './CreateGroupModal';
 
 interface GroupMemberManagementProps {
     groupId: string;
@@ -22,6 +23,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
     const [currentUserMemberRecord, setCurrentUserMemberRecord] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [policy, setPolicy] = useState<string>('restricted');
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const { userId } = useUserRole();
 
     useEffect(() => {
@@ -88,7 +90,10 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                             <Text sx={{ fontSize: Theme.typography.fontSize.xl, fontWeight: '700' }}>{group.name}</Text>
                             <Text sx={{ color: colors.textSecondary }}>Member Management</Text>
                         </VStack>
-                        <Pressable sx={{ padding: Theme.spacing.sm, borderRadius: Theme.corners.comfortable, backgroundColor: colors.tertiary }}>
+                        <Pressable 
+                            onPress={() => setIsEditModalOpen(true)}
+                            sx={{ padding: Theme.spacing.sm, borderRadius: Theme.corners.comfortable, backgroundColor: colors.tertiary }}
+                        >
                             <Settings size={20} color={colors.textPrimary} />
                         </Pressable>
                     </HStack>
@@ -256,6 +261,25 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                 </VStack>
             </VStack>
             <LoadingOverlay visible={loading} />
+            
+            <CreateGroupModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                mode="edit"
+                initialData={group ? {
+                    id: group.id,
+                    name: group.name,
+                    handle: group.handle,
+                    description: group.description,
+                    groupType: (group.group_type || group.type) as any,
+                    joinPolicy: group.join_policy as any,
+                    imageUrl: group.image_url
+                } : undefined}
+                onSuccess={(updatedGroup) => {
+                    setGroup(updatedGroup);
+                    setPolicy(updatedGroup.join_policy);
+                }}
+            />
         </ScreenWrapper>
     );
 

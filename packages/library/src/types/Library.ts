@@ -134,6 +134,7 @@ export interface ResourceFilters {
     difficulty?: ResourceDifficulty;
     languages?: ResourceLanguage[];
     visibility?: ResourceVisibility;
+    source?: 'core' | 'community';
     verified_only?: boolean;
     creator_role?: UserRole;
     tags?: string[];

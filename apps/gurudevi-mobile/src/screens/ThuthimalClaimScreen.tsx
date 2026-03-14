@@ -139,7 +139,7 @@ export default function ThuthimalClaimScreen() {
               <Text sx={{ color: Theme.colors.mistGray, textAlign: 'center', lineHeight: 22 }}>
                 {t('thuthimalClaim.alreadyBloomedDesc')}
               </Text>
-              <TouchableOpacity
+              <TouchableOpacity accessibilityRole="button"
                 onPress={() => navigation.goBack()}
                 style={[styles.button, { backgroundColor: Theme.colors.ink }]}
               >
@@ -167,7 +167,7 @@ export default function ThuthimalClaimScreen() {
             <Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}>
               {t('thuthimalClaim.errorDesc')}
             </Text>
-            <TouchableOpacity
+            <TouchableOpacity accessibilityRole="button"
               onPress={() => navigation.goBack()}
               style={[styles.button, { backgroundColor: Theme.colors.ink }]}
             >
@@ -278,7 +278,7 @@ export default function ThuthimalClaimScreen() {
             </HStack>
 
             {/* Continue button */}
-            <TouchableOpacity
+            <TouchableOpacity accessibilityRole="button"
               onPress={handleContinue}
               style={[
                 styles.button,

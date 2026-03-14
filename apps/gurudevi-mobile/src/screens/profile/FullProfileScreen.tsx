@@ -19,7 +19,7 @@ import {
     SanctuaryButton,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Mail, Phone, Shield, Edit3, Check, X, User as UserIcon, FileText, Fingerprint, Briefcase, GraduationCap, BookOpen, School } from 'lucide-react-native';
+import { MapPin, Mail, Phone, Shield, Edit3, Check, X, User as UserIcon, FileText, Fingerprint, Briefcase, GraduationCap, BookOpen, School, AtSign } from 'lucide-react-native';
 import { hapticLight, hapticError } from '@repo/ui';
 import { useStore, identityAPI } from '@repo/core';
 import {
@@ -234,6 +234,18 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                                 />
 
                                 <EditableItem
+                                    icon={AtSign}
+                                    label={t('profile.username')}
+                                    value={profile.username}
+                                    field="username"
+                                    placeholder="your-handle"
+                                    onSave={(isOtherProfile || profile.is_anonymous) ? async () => { } : handleSave}
+                                    disabled={profile.is_anonymous}
+                                    helperText={profile.is_anonymous ? t('profile.anonymousHandleNotice') : t('profile.handleGuideline')}
+                                    transform={(text) => text.toLowerCase().replace(/[^a-z0-9_-]/g, '')}
+                                />
+
+                                <EditableItem
                                     icon={Phone}
                                     label={t('profile.phone')}
                                     value={profile.phone}
@@ -363,7 +375,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                             />
 
                             {!isOtherProfile && (
-                                <TouchableOpacity
+                                <TouchableOpacity accessibilityRole="button"
                                     onPress={() => setShowSocialModal(true)}
                                     style={styles.manageSocialsBtn}
                                 >

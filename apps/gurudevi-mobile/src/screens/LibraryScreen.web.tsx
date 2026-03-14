@@ -52,6 +52,12 @@ export default function LibraryScreen() {
         return selectedCategoryId as any;
     }, [selectedCategoryId]);
 
+    const libraryFilters = useMemo(() => (
+        isSearchMode
+            ? { type: resourceTypeFilter, search: searchQuery || undefined, sort_by: selectedSort, limit: 100 }
+            : { limit: 100, sort_by: selectedSort }
+    ), [isSearchMode, resourceTypeFilter, searchQuery, selectedSort]);
+
     const {
         resources,
         loading,
@@ -59,11 +65,7 @@ export default function LibraryScreen() {
         fetchResources,
         hasNextResources,
         isFetchingNextResources,
-    } = useLibrary(
-        isSearchMode
-            ? { type: resourceTypeFilter, search: searchQuery || undefined, sort_by: selectedSort }
-            : { limit: 100, sort_by: selectedSort }
-    );
+    } = useLibrary(libraryFilters);
 
     const handleOpenResource = useCallback((resource: LibraryResource) => {
         if (!resource.url) return;
@@ -291,12 +293,12 @@ export default function LibraryScreen() {
                         {viewMode === 'grid' ? (
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: '32px' }}>
                                 {resources.map(res => (
-                                    <div key={res.id} className="sanctuary-card" onClick={() => handleOpenResource(res)} style={{ cursor: 'pointer' }}>
+                                    <div key={`grid-${res.id}`} className="sanctuary-card" onClick={() => handleOpenResource(res)} style={{ cursor: 'pointer' }}>
                                         <LibraryThumbnailCard
                                             title={res.title}
                                             type={res.type}
                                             subject={res.subjects?.[0] ?? 'General'}
-                                            thumbnailUrl={res.media?.url as string | undefined}
+                                            thumbnailUrl={res.media?.url || (res as any).thumbnail_url || (res.type === 'video' || res.type === 'movie_trailer' ? `https://img.youtube.com/vi/${res.url?.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]{11})/)?.[1]}/mqdefault.jpg` : undefined)}
                                             endorsements={res.endorsements}
                                             verified={res.verified}
                                             onPress={() => handleOpenResource(res)}

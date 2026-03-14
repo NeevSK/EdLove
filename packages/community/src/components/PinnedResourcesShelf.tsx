@@ -79,7 +79,7 @@ export const PinnedResourcesShelf: React.FC<PinnedResourcesShelfProps> = ({
                                         color={Theme.colors.dimGray}
                                         numberOfLines={1}
                                     >
-                                        {resource.subject}
+                                        {resource.subjects?.[0] || ''}
                                     </Text>
                                 </VStack>
                             </Box>

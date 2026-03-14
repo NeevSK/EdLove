@@ -1,7 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { VStack, WebScreenHeader } from '@repo/ui';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { VStack, HStack, WebScreenHeader, FeatureInfoIcon } from '@repo/ui';
 import { BaseSelfViewProps } from './BaseSelfView.types';
+import { FEATURE_EMOJIS } from './BaseSelfView';
+import { useFeatureActivity } from '../hooks/useFeatureActivity';
+import { useDynamicSelfFeatures } from '../hooks/useDynamicSelfFeatures';
+import { FEATURE_DISCOVERY_DATA } from '../constants/selfRegistry';
 
 /**
  * BaseSelfView.web - The architectural kernel for GuruDevi Self sections on Web.
@@ -19,10 +23,46 @@ export function BaseSelfView({
     voiceJournal,
 }: BaseSelfViewProps) {
     const surfaceBg = role === 'student' ? '#F5F3FF' : '#FFF7ED';
+    
+    const allFeatures = React.useMemo(() => [
+        ...domains.flatMap((domain: any) =>
+            (domain.features || []).map((feature: any) => ({
+                ...feature,
+                domainId: domain.id,
+                domainColor: domain.accentColor
+            }))
+        ),
+        // Inject Mirrors as "Reflections" if provided
+        ...(sideBar ? [{
+            id: 'mirrors',
+            label: 'Reflections',
+            content: sideBar,
+            domainId: 'reflections',
+            domainColor: '#8B5CF6'
+        }] : []),
+        // Inject Reminders if provided
+        ...(reminders ? [{
+            id: 'reminders',
+            label: 'Reminders',
+            content: reminders,
+            domainId: 'reminders',
+            domainColor: '#F59E0B'
+        }] : [])
+    ], [domains, sideBar, reminders]);
+
+    const { getPinnedFeatures, togglePin, trackFeatureAccess } = useFeatureActivity();
+    const { topItems: sortedFeatures } = useDynamicSelfFeatures(allFeatures);
+    const pinned = getPinnedFeatures();
+
     const [activeCategoryId, setActiveCategoryId] = React.useState(domains[0]?.id);
     const [focusedItemId, setFocusedItemId] = React.useState<string | null>(null);
 
-    const activeDomain = domains.find(d => d.id === activeCategoryId) || domains[0];
+    const activeDomain = domains.find((d: any) => d.id === activeCategoryId) || domains[0];
+
+    const handleFeaturePress = (featureId: string) => {
+        setFocusedItemId(featureId);
+        trackFeatureAccess(featureId);
+    };
 
     return (
         <View style={[webStyles.container, { backgroundColor: surfaceBg }]}>
@@ -60,7 +100,6 @@ export function BaseSelfView({
                     ))}
                 </ScrollView>
             </View>
-
             {/* Main Content Area - Multi-column based on active domain */}
             <View style={webStyles.contentWrapper}>
                 {/* Primary Focus Area */}
@@ -81,7 +120,7 @@ export function BaseSelfView({
                                 </View>
                             </View>
                             {/* Render the selected feature content */}
-                            {activeDomain?.features?.find(f => f.id === focusedItemId)?.content || null}
+                            {activeDomain?.features?.find((f: any) => f.id === focusedItemId)?.content || null}
                         </View>
                     )}
 
@@ -94,21 +133,46 @@ export function BaseSelfView({
                     {activeDomain?.features && !focusedItemId && !activeDomain.content && (
                         <View style={webStyles.activeDomainContainer}>
                             <VStack space="xl">
-                                {activeDomain.features.map((feature) => (
-                                    <View
-                                        key={feature.id}
-                                        onPointerDown={() => setFocusedItemId(feature.id)}
-                                        style={[styles.card, { borderLeftWidth: 6, borderLeftColor: activeDomain.accentColor, cursor: 'pointer' }]}
-                                    >
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
-                                            <Text style={[styles.sectionHeading, { color: activeDomain.accentColor, marginBottom: 0 }]}>
-                                                {feature.label}
-                                            </Text>
-                                            <Text style={{ fontSize: 11, color: 'rgba(0,0,0,0.2)', fontWeight: '700' }}>EXPAND</Text>
-                                        </View>
-                                        {feature.content}
-                                    </View>
-                                ))}
+                                {sortedFeatures
+                                    .filter((f: any) => f.domainId === activeCategoryId || (activeCategoryId === 'reflections' && f.id === 'mirrors'))
+                                    .map((feature) => {
+                                        const isPinned = pinned.includes(feature.id);
+                                        return (
+                                            <View
+                                                key={feature.id}
+                                                style={[styles.card, { borderLeftWidth: 6, borderLeftColor: feature.domainColor, marginBottom: 24 }]}
+                                            >
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                                                    <HStack sx={{ alignItems: 'center', space: 'sm' } as any}>
+                                                        <Text style={{ fontSize: 20 }}>
+                                                            {FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || '✨'}
+                                                        </Text>
+                                                        <Text style={[styles.sectionHeading, { color: feature.domainColor, marginBottom: 0 }]}>
+                                                            {feature.label}
+                                                        </Text>
+                                                    </HStack>
+                                                    
+                                                    <HStack sx={{ alignItems: 'center', space: 'md' } as any}>
+                                                        <Pressable 
+                                                            onPress={() => togglePin(feature.id)}
+                                                            style={{ padding: 4 }}
+                                                        >
+                                                            <Text style={{ 
+                                                                fontSize: 16, 
+                                                                color: isPinned ? feature.domainColor : 'rgba(0,0,0,0.1)' 
+                                                            }}>
+                                                                {isPinned ? '📌' : '📍'}
+                                                            </Text>
+                                                        </Pressable>
+                                                        <Pressable onPress={() => handleFeaturePress(feature.id)}>
+                                                            <Text style={{ fontSize: 11, color: 'rgba(0,0,0,0.2)', fontWeight: '700' }}>EXPAND</Text>
+                                                        </Pressable>
+                                                    </HStack>
+                                                </View>
+                                                {feature.content}
+                                            </View>
+                                        );
+                                    })}
                             </VStack>
                         </View>
                     )}
@@ -169,11 +233,28 @@ const webStyles = StyleSheet.create({
         backgroundColor: 'rgba(255,255,255,0.8)',
         borderWidth: 2,
         borderColor: 'transparent',
-        cursor: 'pointer',
         flexDirection: 'row',
         alignItems: 'center',
         gap: 12,
     } as any,
+    featureCardHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        marginBottom: 16,
+        position: 'relative',
+    },
+    pinButton: {
+        position: 'absolute',
+        top: 0,
+        right: 24,
+        cursor: 'pointer',
+        fontSize: 14,
+        padding: 4,
+    },
+    activeDomainContainer: {
+        padding: 20,
+    },
     categoryIndicator: {
         width: 4,
         height: 20,
@@ -206,9 +287,6 @@ const webStyles = StyleSheet.create({
         padding: 40,
         gap: 32,
     } as any,
-    activeDomainContainer: {
-        marginBottom: 64,
-    },
     ritualSection: {
         marginTop: 20,
     },

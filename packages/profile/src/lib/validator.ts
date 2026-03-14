@@ -11,6 +11,7 @@ export const ProfileValidator = {
         if (!value && value !== 0) return { isValid: true }; // Allow empty for optional fields
 
         const stringValue = String(value).trim();
+        const rawValue = String(value);
 
         switch (field) {
             case 'nic_number':
@@ -41,6 +42,13 @@ export const ProfileValidator = {
             case 'full_name':
                 if (stringValue.length < 3) {
                     return { isValid: false, error: 'Full name must be at least 3 characters' };
+                }
+                break;
+
+            case 'username':
+                const usernameRegex = /^[a-z0-9_-]{3,30}$/;
+                if (!usernameRegex.test(rawValue)) {
+                    return { isValid: false, error: 'Handle must be 3-30 lowercase characters, numbers, underscores or hyphens' };
                 }
                 break;
         }

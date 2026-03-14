@@ -625,9 +625,14 @@ resource: nodes!resource_engagements_resource_id_fkey(
         if (filters.offset) query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1);
 
         const { data, error } = await query;
-
         if (error) {
-            throw new APIError('Failed to fetch collections', error.code, error);
+            console.error('[LibraryAPI] Failed to fetch collections:', {
+                code: error.code,
+                message: error.message,
+                details: error.details,
+                hint: error.hint
+            });
+            throw new APIError(`Failed to fetch collections: ${error.message}`, error.code, error);
         }
 
         // Fetch resources for each collection

@@ -29,7 +29,7 @@ export const config = [
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
   ...compat.extends("plugin:react-hooks/recommended"),
-  ...compat.extends("plugin:react-native-a11y/recommended"),
+  ...compat.extends("plugin:react-native-a11y/all"),
   {
     languageOptions: {
       globals: {

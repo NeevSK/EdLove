@@ -35,6 +35,9 @@
         "saving": "Saving",
         "comingSoon": "Coming Soon"
     },
+    "goodMorning": "Good Morning!",
+    "goodAfternoon": "Good Afternoon!",
+    "goodEvening": "Good Evening!",
     "demoMode": {
         "realityCheckTitle": "Sandbox Simulation",
         "realityCheckMessage": "You are in Demo Mode. This action is being simulated and will not be saved to your actual school data.",
@@ -664,6 +667,7 @@
         }
     },
     "library": {
+        "errorLoading": "Failed to load sanctuary wisdom.",
         "title": "Library",
         "description": "Repository of knowledge",
         "browse": "Browse",

@@ -5,6 +5,14 @@ export interface SelfViewFeature {
     label: string;
     content: React.ReactNode;
     icon?: string;
+    category?: 'pulse' | 'wisdom' | 'reflection' | 'rhythm' | 'growth' | 'ritual';
+    timing?: {
+        startTime?: string; // HH:mm
+        endTime?: string;
+        preferredPhase?: 'morning' | 'afternoon' | 'night';
+    };
+    domainColor?: string;
+    domainId?: string;
 }
 
 export interface SelfViewDomain {

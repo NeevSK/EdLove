@@ -20,6 +20,8 @@ export * from './hooks/useStudentGoals';
 export * from './hooks/useStudentGoals';
 export * from './hooks/useOrientationInference';
 export * from './hooks/useWellbeingEnrichment';
+export * from './hooks/useFeatureActivity';
+export * from './hooks/useDynamicSelfFeatures';
 
 // Components
 export { BaseSelfView } from './components/BaseSelfView';

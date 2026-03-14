@@ -136,9 +136,12 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                     handlePress();
                 }
 
-                // Spring back (resolve tension by temporary movement)
-                translateX.value = withSpring(0);
-                translateY.value = withSpring(0);
+                // Snap to edges behavior
+                const screenWidth = Dimensions.get('window').width;
+                const snapPointX = gesture.moveX > screenWidth / 2 ? 0 : -(screenWidth - FAB_SIZE - Theme.spacing.lg * 2);
+                
+                translateX.value = withSpring(snapPointX, Theme.motion.spring.snappy);
+                translateY.value = withSpring(translateY.value, Theme.motion.spring.gentle);
             },
         })
     ).current;
@@ -219,13 +222,16 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                         backgroundColor: Theme.colors.sanctuarySaffron,
                         alignItems: 'center',
                         justifyContent: 'center',
-                        shadowColor: glow.primary.color,
-                        shadowOpacity: glow.primary.opacity,
-                        shadowRadius: glow.primary.radius,
+                        shadowColor: Theme.colors.templeGold,
+                        shadowOpacity: 0.8,
+                        shadowRadius: 15,
                         shadowOffset: { width: 0, height: 0 },
-                        elevation: 10,
+                        elevation: 12,
+                        borderWidth: 1.5,
+                        borderColor: 'rgba(255, 255, 255, 0.2)',
                     }}
                 >
+
                     {hasActiveGaps ? (
                         <Text style={styles.emojiText}>❗</Text>
                     ) : icon ? (

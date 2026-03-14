@@ -44,6 +44,7 @@ export interface UserProfile extends ProfileStats {
     id: string;
     email: string;
     full_name: string;
+    username?: string;
     role: UserRole;
     avatar_url?: string;
     is_anonymous?: boolean;

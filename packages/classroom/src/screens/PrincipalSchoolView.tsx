@@ -33,10 +33,15 @@ import {
     GlobalHeader,
     useThemedColors,
     PositiveInvitation,
-    hapticLight
+    hapticLight,
+    Modal,
+    ModalBackdrop,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter
 } from '@repo/ui';
 import {
-    Plus,
     Users,
     Zap,
     FileText,
@@ -45,7 +50,9 @@ import {
     NotebookPen,
     School,
     MessageSquare,
-    Wind
+    Wind,
+    Edit3,
+    QrCode
 } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
@@ -68,6 +75,7 @@ import {
     ManagementStation,
     CreateSchoolModal,
 } from '../components';
+import { QRCodeGenerator, QRBuilder } from '@repo/scanner-kit';
 import PrincipalNotes from '../components/principal/PrincipalNotes';
 import AcademicCycleManager from './AcademicCycleManager';
 import AttendanceReportScreen from './AttendanceReportScreen';
@@ -104,6 +112,8 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
         'main' | 'hierarchy' | 'invites' | 'notes' | 'cycles' | 'attendance_report'
     >('main');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+    const [linkedGroupId, setLinkedGroupId] = useState<string | null>(null);
 
     // Register FAB actions globally
     useRegisterFAB({
@@ -343,6 +353,31 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
                                     onPress={() => setActiveView('notes')}
                                     color={Theme.colors.sanctuarySaffron}
                                 />
+                                <QuickAction
+                                    icon={Edit3}
+                                    label="Edit Details"
+                                    onPress={() => setIsCreateModalOpen(true)}
+                                    color={Theme.colors.gurudeviBlue}
+                                />
+                                <QuickAction
+                                    icon={QrCode}
+                                    label="School QR"
+                                    onPress={async () => {
+                                        if (!linkedGroupId) {
+                                            const { data: groups } = await supabase
+                                                .from('community_groups')
+                                                .select('id')
+                                                .eq('school_id', schoolId)
+                                                .limit(1);
+                                            
+                                            if (groups?.[0]?.id) {
+                                                setLinkedGroupId(groups[0].id);
+                                            }
+                                        }
+                                        setIsQrModalOpen(true);
+                                    }}
+                                    color={Theme.colors.amberGlow}
+                                />
                             </HStack>
                         </VStack>
                     </Animated.View>
@@ -567,10 +602,53 @@ export default function PrincipalSchoolView({ schoolId, userId, onRefresh }: Pri
             <CreateSchoolModal
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
-                onSuccess={(newSchool) => {
+                initialData={school ? {
+                    id: school.id,
+                    name: school.name,
+                    handle: school.handle ?? undefined,
+                    type: school.type as any
+                } : undefined}
+                onSuccess={(updatedSchool) => {
                     if (onRefresh) onRefresh();
+                    refreshData();
                 }}
             />
+
+            {/* School QR Modal */}
+            <Modal isOpen={isQrModalOpen} onClose={() => setIsQrModalOpen(false)}>
+                <ModalBackdrop />
+                <ModalContent sx={{ backgroundColor: colors.secondary, borderRadius: Theme.corners.generous }}>
+                    <ModalHeader>
+                        <Heading color={colors.text} sx={{ fontSize: 18 }}>School QR Code</Heading>
+                    </ModalHeader>
+                    <ModalBody sx={{ alignItems: 'center', paddingVertical: 20 }}>
+                        <Box sx={{ padding: 16, backgroundColor: 'white', borderRadius: 16 }}>
+                            <QRCodeGenerator
+                                value={QRBuilder.school(schoolId, linkedGroupId || '', school?.handle ?? undefined)}
+                                size={220}
+                            />
+                        </Box>
+                        <Text color={colors.textSecondary} sx={{ marginTop: 20, textAlign: 'center' }}>
+                            Scan to join the <Text color={colors.text} sx={{ fontWeight: 'bold' }}>{school?.name}</Text> sanctuary.
+                        </Text>
+                        {school?.handle && (
+                            <Text color={colors.textTertiary} sx={{ marginTop: 8, fontSize: 12 }}>
+                                @{school.handle}
+                            </Text>
+                        )}
+                        {!linkedGroupId && (
+                            <Text sx={{ color: Theme.colors.amberGlow, fontSize: 10, marginTop: 4 }}>
+                                * Loading community link...
+                            </Text>
+                        )}
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button action="primary" onPress={() => setIsQrModalOpen(false)} sx={{ width: '100%', backgroundColor: Theme.colors.sanctuarySaffron }}>
+                            <ButtonText color="white">Close</ButtonText>
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
 
             {/* School creation is handled via CreateSchoolModal for robust cross-platform experience */}
         </ScreenWrapper >

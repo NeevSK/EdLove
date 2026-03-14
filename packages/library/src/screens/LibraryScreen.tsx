@@ -1,5 +1,5 @@
 /**
- * LibraryScreen â€” Netflix-Style Holistic Digital Library
+ * LibraryScreen — Netflix-Style Holistic Digital Library
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
@@ -51,19 +51,19 @@ import {
     useStore,
 } from '@repo/core';
 import { LIBRARY_UI_CATEGORIES } from '../constants/categories';
-import CuratorReviewScreen from './CuratorReviewScreen'; // Added for completeness if needed in exports
+import { libraryAPI } from '../api/library';
 
 // Shelf definitions
 const SHELF_DEFS = [
-    { id: 'movie_trailer', label: 'ðŸŽ¬ Inspiring Films', types: ['movie_trailer'] },
-    { id: 'map', label: 'ðŸ—ºï¸ Maps & Visuals', types: ['map', 'infographic'] },
-    { id: 'story', label: 'ðŸ“– Stories', types: ['story'] },
-    { id: 'circular', label: 'ðŸ“‹ Edu Circulars', types: ['circular'] },
-    { id: 'guide', label: 'ðŸ‘©â€ðŸ« Teacher Guides', types: ['guide'] },
-    { id: 'tech_guide', label: 'ðŸ’¡ Tech Guides', types: ['tech_guide'] },
-    { id: 'video', label: 'ðŸŽ¥ Videos', types: ['video'] },
-    { id: 'doc', label: 'ðŸ“„ Documents', types: ['pdf', 'doc', 'lesson', 'worksheet', 'reading', 'pedagogy'] },
-    { id: 'link', label: 'ðŸŒ Web Resources', types: ['link'] },
+    { id: 'movie_trailer', label: '🎬 Inspiring Films', types: ['movie_trailer'] },
+    { id: 'map', label: '🗺️ Maps & Visuals', types: ['map', 'infographic'] },
+    { id: 'story', label: '📖 Stories', types: ['story'] },
+    { id: 'circular', label: '📋 Edu Circulars', types: ['circular'] },
+    { id: 'guide', label: '👩‍🏫 Teacher Guides', types: ['guide'] },
+    { id: 'tech_guide', label: '💡 Tech Guides', types: ['tech_guide'] },
+    { id: 'video', label: '🎥 Videos', types: ['video'] },
+    { id: 'doc', label: '📄 Documents', types: ['pdf', 'doc', 'lesson', 'worksheet', 'reading', 'pedagogy'] },
+    { id: 'link', label: '🌐 Web Resources', types: ['link'] },
 ] as const;
 
 
@@ -174,10 +174,40 @@ export default function LibraryScreen() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
+    const [fallbackAttempted, setFallbackAttempted] = useState(false);
+    const isFetchingPublicRef = React.useRef(false);
 
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
     const { discoverFeature } = useTracking();
+
+    const isSearchMode = searchQuery.trim().length > 0 || selectedCategoryId !== 'All';
+
+    const resourceTypeFilter = useMemo(() => {
+        if (selectedCategoryId === 'All') return undefined;
+        return selectedCategoryId as any;
+    }, [selectedCategoryId]);
+
+    const libraryFilters = useMemo(() => (
+        isSearchMode
+            ? { type: resourceTypeFilter, search: searchQuery || undefined, sort_by: selectedSort, limit: 60 }
+            : { limit: 60 }
+    ), [isSearchMode, resourceTypeFilter, searchQuery, selectedSort]);
+
+    const {
+        resources: rawResources,
+        collections: rawCollections,
+        loading,
+        error: libraryError,
+        fetchResources,
+        fetchNextResources,
+        hasNextResources,
+        isFetchingNextResources,
+        syncLibrary,
+    } = useLibrary(libraryFilters);
+
+    const [publicCollections, setPublicCollections] = useState<any[]>([]);
+    const [isFetchingPublic, setIsFetchingPublic] = useState(false);
 
     React.useEffect(() => {
         discoverFeature('section_library');
@@ -189,38 +219,28 @@ export default function LibraryScreen() {
             .finally(() => setIsSyncing(false));
     }, []);
 
-    const isSearchMode = searchQuery.trim().length > 0 || selectedCategoryId !== 'All';
-
-    const resourceTypeFilter = useMemo(() => {
-        if (selectedCategoryId === 'All') return undefined;
-        return selectedCategoryId as any;
-    }, [selectedCategoryId]);
-
-    const {
-        resources,
-        collections,
-        loading,
-        fetchResources,
-        fetchNextResources,
-        hasNextResources,
-        isFetchingNextResources,
-        syncLibrary,
-    } = useLibrary(
-        isSearchMode
-            ? { type: resourceTypeFilter, search: searchQuery || undefined, sort_by: selectedSort }
-            : { limit: 60 }
-    );
-
-    const shelfData = useMemo(() => {
-        const byType: Record<string, LibraryResource[]> = {};
-        for (const res of resources) {
-            const type = res.type;
-            if (!type) continue;
-            if (!byType[type]) byType[type] = [];
-            byType[type].push(res);
+    React.useEffect(() => {
+        if (!loading && rawResources.length === 0 && rawCollections.length === 0 && publicCollections.length === 0 && !fallbackAttempted && !isFetchingPublicRef.current) {
+            console.log('📚 LibraryScreen: Attempting public collection fallback fetch');
+            isFetchingPublicRef.current = true;
+            setIsFetchingPublic(true);
+            libraryAPI.getCollections({ limit: 10, visibility: 'public' })
+                .then(setPublicCollections)
+                .catch(err => {
+                    console.error('Failed to fetch public fallback:', err);
+                    setFallbackAttempted(true); // Stop retrying on failure
+                })
+                .finally(() => {
+                    setIsFetchingPublic(false);
+                    isFetchingPublicRef.current = false;
+                });
         }
-        return byType;
-    }, [resources]);
+    }, [loading, rawResources.length, rawCollections.length, publicCollections.length, fallbackAttempted]);
+
+    const resources = useMemo(() => rawResources, [rawResources]);
+    const collections = useMemo(() => 
+        rawCollections.length > 0 ? rawCollections : publicCollections
+    , [rawCollections, publicCollections]);
 
     const trending = useMemo(() =>
         [...resources].sort((a, b) => (b.endorsements ?? 0) - (a.endorsements ?? 0)).slice(0, 10),
@@ -234,7 +254,7 @@ export default function LibraryScreen() {
 
     const heroResource = trending[0] ?? newArrivals[0] ?? null;
 
-    const { deskItems, removeFromDeskLocal, user } = useStore();
+    const { deskItems, user } = useStore();
 
     const orientationSeeds = user?.orientation_seeds ?? null;
     const orderedShelfDefs = useMemo(() => {
@@ -283,8 +303,12 @@ export default function LibraryScreen() {
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
         await fetchResources();
+        if (resources.length === 0) {
+            const pub = await libraryAPI.getCollections({ limit: 10, visibility: 'public' });
+            setPublicCollections(pub);
+        }
         setRefreshing(false);
-    }, [fetchResources]);
+    }, [fetchResources, resources.length]);
 
     const chipData = useMemo(() => LIBRARY_UI_CATEGORIES.map(cat => ({
         label: cat.en,
@@ -292,41 +316,51 @@ export default function LibraryScreen() {
     })), []);
 
     const sortChips = useMemo(() => [
-        { label: 'ðŸ• Recent', value: 'recent' },
-        { label: 'ðŸ”¥ Popular', value: 'popular' },
-        { label: 'â­ Endorsed', value: 'most_endorsed' },
-        { label: 'ðŸ”– Saved', value: 'most_bookmarked' },
+        { label: '🕒 Recent', value: 'recent' },
+        { label: '🔥 Popular', value: 'popular' },
+        { label: '🌟 Endorsed', value: 'most_endorsed' },
+        { label: '🔖 Saved', value: 'most_bookmarked' },
     ], []);
 
     const handleEndReached = useCallback(() => {
         if (hasNextResources && !isFetchingNextResources) fetchNextResources();
     }, [hasNextResources, isFetchingNextResources, fetchNextResources]);
 
-    // Register FAB globally
-    useRegisterFAB({
-        tabType: 'library',
+    // Register FAB globally — memoized to prevent infinite loop
+    const fabConfig = useMemo(() => ({
+        tabType: 'library' as const,
         onPress: () => setIsAddModalOpen(true),
         visible: !loading
-    });
+    }), [loading]);
+
+    useRegisterFAB(fabConfig);
+
+    const getYoutubeThumbnail = (url?: string) => {
+        if (!url) return undefined;
+        const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]{11})/);
+        return match ? `https://img.youtube.com/vi/${match[1]}/mqdefault.jpg` : undefined;
+    };
 
     const renderShelf = useCallback((label: string, items: LibraryResource[], onSeeAll?: () => void) => {
         if (items.length === 0) return null;
         return (
-            <SmartShelf key={label} title={label} onSeeAll={onSeeAll}>
-                {items.map(res => (
-                    <LibraryThumbnailCard
-                        key={res.id}
-                        title={res.title}
-                        type={res.type}
-                        subject={res.subjects?.[0] || ''}
-                        thumbnailUrl={res.media?.url as string | undefined}
-                        endorsements={res.endorsements}
-                        verified={res.verified}
-                        copyrightNotice={res.copyright_notice}
-                        onPress={() => handleOpenResource(res)}
-                    />
-                ))}
-            </SmartShelf>
+            <Box sx={{ marginBottom: Theme.spacing.lg }}>
+                <SmartShelf key={label} title={label} onSeeAll={onSeeAll}>
+                    {items.map(res => (
+                        <LibraryThumbnailCard
+                            key={`shelf-${label}-${res.id}`}
+                            title={res.title}
+                            type={res.type}
+                            subject={res.subjects?.[0] || ''}
+                            thumbnailUrl={res.media?.url || (res as any).thumbnail_url || (res.type === 'video' || res.type === 'movie_trailer' ? getYoutubeThumbnail(res.url) : undefined)}
+                            endorsements={res.endorsements}
+                            verified={res.verified}
+                            copyrightNotice={res.copyright_notice}
+                            onPress={() => handleOpenResource(res)}
+                        />
+                    ))}
+                </SmartShelf>
+            </Box>
         );
     }, [handleOpenResource]);
 
@@ -358,7 +392,17 @@ export default function LibraryScreen() {
                 }
             />
 
-            {loading && !refreshing ? (
+            {libraryError ? (
+                <VStack space="md" px={Theme.spacing.md} mt={Theme.spacing.lg} alignItems="center">
+                    <Text sx={{ color: colors.error, textAlign: 'center' }}>
+                        {t('library.errorLoading') || 'Failed to load sanctuary wisdom.'}
+                    </Text>
+                    <Text sx={{ color: colors.textSecondary, fontSize: 12 }}>{libraryError}</Text>
+                    <TouchableOpacity onPress={() => fetchResources()}>
+                        <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}>Retry</Text>
+                    </TouchableOpacity>
+                </VStack>
+            ) : (loading || isFetchingPublic) && !refreshing ? (
                 <VStack space="md" px={Theme.spacing.md} mt={Theme.spacing.lg}>
                     <SkeletonCard height={200} />
                     <SkeletonCard height={160} />
@@ -421,7 +465,7 @@ export default function LibraryScreen() {
                         </Animated.View>
 
                         {deskItems && deskItems.filter((r: any) => r.type === 'resource').length > 0 && (
-                            <SmartShelf title="â–¶ Continue Learning">
+                            <SmartShelf title="▶ Continue Learning">
                                 {deskItems.filter((r: any) => r.type === 'resource').map((res: any) => (
                                     <LibraryThumbnailCard
                                         key={res.id}
@@ -435,33 +479,40 @@ export default function LibraryScreen() {
                         )}
 
                         {collections.length > 0 && (
-                            <SmartShelf title="ðŸ“š Featured Collections">
-                                {collections.map((col: any) => (
-                                    <CollectionCard
-                                        key={col.id}
-                                        title={col.name}
-                                        creator={col.creator_name}
-                                        resourceCount={col.resource_ids?.length ?? 0}
-                                        subjectTag={col.subjects?.[0] || ''}
-                                        onPullToDesk={() => { }}
-                                    />
-                                ))}
-                            </SmartShelf>
+                            <Box sx={{ marginBottom: Theme.spacing.lg }}>
+                                <SmartShelf title={rawCollections.length > 0 ? "📚 Featured Collections" : "🌟 Discover Sanctuary Collections"}>
+                                    {collections.map((col: any) => (
+                                        <CollectionCard
+                                            key={col.id}
+                                            title={col.name}
+                                            creator={col.creator_name}
+                                            resourceCount={col.resource_ids?.length ?? 0}
+                                            subjectTag={col.subjects?.[0] || ''}
+                                            onPullToDesk={() => { }}
+                                        />
+                                    ))}
+                                </SmartShelf>
+                            </Box>
                         )}
 
                         {orderedShelfDefs.map(shelf => {
-                            const items = resources.filter(r => (shelf.types as readonly string[]).includes(r.type));
+                            const items = resources.filter((r: LibraryResource) => (shelf.types as readonly string[]).includes(r.type));
                             return renderShelf(shelf.label, items);
                         })}
 
-                        {trending.length > 0 && renderShelf('â­ Trending', trending)}
-                        {newArrivals.length > 0 && renderShelf('âœ¨ New Arrivals', newArrivals)}
+                        {trending.length > 0 && renderShelf('⭐ Trending', trending)}
+                        {newArrivals.length > 0 && renderShelf('✨ New Arrivals', newArrivals)}
 
-                        {resources.length === 0 && (
-                            <PositiveInvitation
-                                context="library"
-                                onAction={() => setIsAddModalOpen(true)}
-                            />
+                        {resources.length === 0 && rawCollections.length === 0 && !isFetchingPublic && (
+                             <VStack sx={{ mt: Theme.spacing.xl, alignItems: 'center', opacity: 0.8 }}>
+                                <PositiveInvitation
+                                    context="library"
+                                    onAction={() => setIsAddModalOpen(true)}
+                                />
+                                <Text sx={{ color: colors.textSecondary, fontSize: 13, mt: Theme.spacing.md }}>
+                                    Your personal sanctuary is quiet.
+                                </Text>
+                             </VStack>
                         )}
                     </Box>
                 </ScrollView>
@@ -512,9 +563,9 @@ function HeroOverlay({ resource, colors }: { resource: LibraryResource; colors: 
     return (
         <LinearGradient colors={gradientColors} style={heroBannerStyles.gradient}>
             <View style={heroBannerStyles.featuredBadge}>
-                <RNText style={heroBannerStyles.featuredText}>âœ¦ FEATURED</RNText>
+                <RNText style={heroBannerStyles.featuredText}>✧ FEATURED</RNText>
             </View>
-            <RNText style={[heroBannerStyles.heroTitle, { color: colors.text }]} numberOfLines={2}>
+            <RNText style={[heroBannerStyles.heroTitle, { color: colors.textPrimary }]} numberOfLines={2}>
                 {resource.title}
             </RNText>
             {resource.description ? (
@@ -530,7 +581,7 @@ function HeroOverlay({ resource, colors }: { resource: LibraryResource; colors: 
                 {resource.copyright_notice && (
                     <View style={heroBannerStyles.copyrightBadge}>
                         <RNText style={heroBannerStyles.copyrightText} numberOfLines={1}>
-                            Â© {resource.copyright_notice}
+                            © {resource.copyright_notice}
                         </RNText>
                     </View>
                 )}
@@ -600,4 +651,3 @@ const styles = StyleSheet.create({
         marginRight: 4,
     },
 });
-

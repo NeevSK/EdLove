@@ -3,7 +3,9 @@ import { UserRole } from '../constants/SriLankanSchools';
 export interface School {
     id: string;
     name: string;
-    type: 'primary' | 'secondary' | 'mixed';
+    type: string;
+    handle: string | null;
+    status: 'active' | 'pending' | 'rejected';
     created_at: string;
 }
 

@@ -30,6 +30,9 @@
         "saving": "Saving",
         "comingSoon": "Coming Soon"
     },
+    "goodMorning": "සුභ උදෑසනක්!",
+    "goodAfternoon": "සුභ දහවල්!",
+    "goodEvening": "සුභ සවසක්!",
     "demoMode": {
         "realityCheckTitle": "වැලිපෙට්ටි අනුකරණය",
         "realityCheckMessage": "ඔබ සිටින්නේ නිරූපණ මාදිලියකය. මෙම ක්‍රියාව අනුකරණය කරන අතර ඔබේ සැබෑ පාසල් දත්ත වලට සුරැකෙන්නේ නැත.",
@@ -535,6 +538,7 @@
         }
     },
     "library": {
+        "errorLoading": "අභයභූමි ප්‍රඥාව පූරණය කිරීමට අපොහොසත් විය.",
         "title": "පුස්තකාලය",
         "description": "දැන ගැනීමේ කෝෂ්ඨාගාරය",
         "browse": "බ්‍රවුස් කරන්න",

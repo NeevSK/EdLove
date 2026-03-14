@@ -5,6 +5,7 @@ export interface Classroom {
     teacher_id?: string | null;
     section_id?: string | null;
     name: string;
+    handle?: string;
     subject?: string | null;
     description?: string | null;
     color_theme?: string;
@@ -30,6 +31,7 @@ export interface StudentAcademicRecord {
     academic_year: string;         // e.g. '2026'
     grade_number?: number | null;
     subject?: string | null;
+    handle?: string | null; // Added handle field
     avg_grade?: number | null;
     highest_grade?: number | null;
     lowest_grade?: number | null;
