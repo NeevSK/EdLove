@@ -164,7 +164,7 @@ export default function GroupChatScreen() {
                             >
                                 {/* Avatar */}
                                 <button
-                                    onClick={() => !isOwn && navigation.navigate('UserProfile', { userId: msg.author_id, userName: authorName })}
+                                    onClick={() => !isOwn && navigation.navigate('PublicProfile', { id: msg.author_id, type: 'user' })}
                                     style={{ flexShrink: 0, width: '32px', height: '32px', borderRadius: '16px', background: isOwn ? 'var(--sanctuary-saffron)' : 'var(--water)', border: 'none', cursor: isOwn ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: 'white', overflow: 'hidden', padding: 0 }}
                                 >
                                     {msg.author?.avatar_url

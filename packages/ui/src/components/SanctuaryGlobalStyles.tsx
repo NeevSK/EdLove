@@ -290,11 +290,32 @@ const STATIC_CSS = `
     .sanctuary-card::after {
       content: '';
       position: absolute; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      opacity: 0.03;
+      /* Refined vellum texture: softened frequency and reduced opacity for organic soul */
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.018;
       pointer-events: none;
       z-index: 1;
       mix-blend-mode: overlay;
+    }
+    /* Glass System - Premium Frosted Effects */
+    .sanctuary-glass-hub {
+      backdrop-filter: blur(24px) saturate(1.8);
+      -webkit-backdrop-filter: blur(24px) saturate(1.8);
+      background: rgba(var(--surface-rgb), 0.72);
+      border-bottom: 1px solid rgba(var(--action-rgb), 0.08);
+      z-index: 100;
+    }
+
+    .sanctuary-card.active {
+      border-color: var(--action);
+      background: var(--action-soft);
+      box-shadow: 0 4px 16px var(--action-glow);
+    }
+
+    .sanctuary-sidebar-glass {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(var(--surface-rgb), 0.15);
     }
 
     /* Inner Light Gloss for Card Variants */
@@ -724,10 +745,11 @@ const STATIC_CSS = `
       display: none;
       gap: 8px;
       margin-bottom: 24px;
-      padding: 4px;
+      padding: 6px;
       background: rgba(255, 255, 255, 0.4);
-      backdrop-filter: blur(20px);
-      border-radius: 16px;
+      backdrop-filter: blur(20px) saturate(1.8);
+      -webkit-backdrop-filter: blur(20px) saturate(1.8);
+      border-radius: 18px;
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
     .sub-nav-item {
@@ -735,18 +757,55 @@ const STATIC_CSS = `
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 10px;
+      gap: 10px;
+      padding: 12px;
       border-radius: 12px;
-      font-size: 13px;
-      font-weight: 500;
+      font-size: 14px;
+      font-weight: 600;
       color: var(--ink-ghost);
-      transition: all 0.2s ease;
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .sub-nav-item.active {
       background: white;
       color: var(--water);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 8px 24px rgba(90, 154, 186, 0.12);
+      transform: scale(1.02);
+    }
+    .sub-nav-item:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--ink-soft);
+    }
+
+    /* ── SUB-NAV-TABS (3rd Level) ── */
+    .sub-nav-tabs-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .sub-nav-tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-ghost);
+      background: rgba(0, 0, 0, 0.03);
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+    .sub-nav-tab.active {
+      background: var(--water-soft);
+      color: var(--water);
+      border-color: var(--water-glow);
+    }
+    .sub-nav-tab:hover:not(.active) {
+      background: rgba(0, 0, 0, 0.06);
+      color: var(--ink-soft);
     }
 
     /* ── RESPONSIVE — TABLET (768–1023px) ── */

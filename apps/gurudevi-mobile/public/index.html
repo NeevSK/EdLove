@@ -7,42 +7,40 @@
     <title>Gurudevi</title>
 
     <!-- ── Primary SEO ───────────────────────────────────────────────── -->
-    <meta name="description" content="A sacred space for teachers — wellbeing, classroom tools, and community. Built for educators in Sri Lanka and beyond." />
+    <meta name="description" content="A sacred space for teachers — wellbeing, classroom tools, and community." />
     <meta name="theme-color" content="#D4843A" />
 
-    <!-- ── Open Graph (Facebook, WhatsApp, LinkedIn previews) ───────── -->
-    <meta property="og:type"        content="website" />
-    <meta property="og:url"         content="https://app.gurudevi.edlove.org/" />
-    <meta property="og:title"       content="Gurudevi — A Sanctuary for Teachers" />
-    <meta property="og:description" content="Mending the teaching-learning impedance match — through care, not surveillance." />
-    <meta property="og:image"       content="https://app.gurudevi.edlove.org/og-image.png" />
-    <meta property="og:locale"      content="en_LK" />
-    <meta property="og:site_name"   content="Gurudevi" />
+    <!-- ── Open Graph ────────────────────────────────────────────────── -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Gurudevi — A Sanctuary for Teachers" />
+    <meta property="og:description" content="Mending the teaching-learning impedance match through care." />
+    <meta property="og:image" content="/og-image.png" />
 
-    <!-- ── Twitter / X card ─────────────────────────────────────────── -->
-    <meta name="twitter:card"        content="summary_large_image" />
-    <meta name="twitter:title"       content="Gurudevi — A Sanctuary for Teachers" />
-    <meta name="twitter:description" content="Mending the teaching-learning impedance match — through care, not surveillance." />
-    <meta name="twitter:image"       content="https://app.gurudevi.edlove.org/og-image.png" />
-
-    <!-- ── PWA / Icons ──────────────────────────────────────────────── -->
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
-    <link rel="canonical" href="https://app.gurudevi.edlove.org/" />
-
-    <!-- Prevent iOS from auto-linking phone numbers, dates, addresses -->
-    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
-    <!-- Chrome on Android — "Add to Home Screen" prompt -->
-    <meta name="mobile-web-app-capable" content="yes" />
-    <!-- Safari on iOS — full-screen web app mode -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Gurudevi" />
-    <!-- Windows / Edge tile -->
-    <meta name="application-name" content="Gurudevi" />
-    <meta name="msapplication-TileColor" content="#D4843A" />
-    <meta name="msapplication-config" content="/browserconfig.xml" />
+    <!-- ── Zero-Flash Theme Init ─────────────────────────────────────── -->
+    <script>
+      (function () {
+        try {
+          var raw = localStorage.getItem('gurudevi-storage');
+          var theme = 'sanctuary';
+          if (raw) {
+            var state = JSON.parse(raw);
+            theme = (state && state.state && state.state.themeMode) || 'sanctuary';
+          }
+          if (theme === 'system') {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'midnight' : 'sanctuary';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          
+          // Apply critical variables to prevent flash
+          var isDark = theme === 'midnight' || theme === 'dark';
+          var background = isDark ? '#0F0F12' : '#FFF8E7';
+          var ink = isDark ? '#E6E6E6' : '#2C3E50';
+          
+          document.documentElement.style.setProperty('--color-background', background);
+          document.documentElement.style.setProperty('--ink', ink);
+        } catch (e) {}
+      })();
+    </script>
 
     <!-- Google Fonts — loaded here (not inside React) to prevent FOUC on theme change -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

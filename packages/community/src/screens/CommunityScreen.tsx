@@ -199,9 +199,9 @@ export default function CommunityScreen() {
                                         }}
                                         onAuthorPress={() => {
                                             if (item.author_id && !item.is_anonymous) {
-                                                navigation.navigate('UserProfile', {
-                                                    userId: item.author_id,
-                                                    userName: item.author_name ?? 'Member',
+                                                navigation.navigate('PublicProfile', {
+                                                    id: item.author_id,
+                                                    type: 'user',
                                                 });
                                             }
                                         }}

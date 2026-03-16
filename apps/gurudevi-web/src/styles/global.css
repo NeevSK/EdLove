@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+  /* Sanctuary Core Tokens (Web) */
   --color-void-indigo: #0f0f1e;
   --color-cream-silence: #FFF8E7;
   --color-temple-stone: #F5F1E8;
@@ -14,9 +15,21 @@
   --color-sacred-white: #FFF8F0;
   --color-charcoal-truth: #2C3E50;
 
+  /* Premium Vellum / Saffron Architecture */
+  --color-background: var(--color-cream-silence);
+  --ink: var(--color-charcoal-truth);
+  --ink-soft: #7a7068;
+  --action: var(--color-sanctuary-saffron);
+  --water: #3a7a9a;
+
+  /* Motion */
+  --transition-smooth: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --transition-snap: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
   --font-sinhala: "Noto Sans Sinhala", ui-sans-serif, system-ui, sans-serif;
   --font-tamil: "Noto Sans Tamil", ui-sans-serif, system-ui, sans-serif;
-  --font-content: ui-sans-serif, system-ui, sans-serif;
+  --font-content: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "IM Fell English", serif;
 }
 
 @layer base {

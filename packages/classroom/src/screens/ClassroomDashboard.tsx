@@ -37,12 +37,14 @@ import {
     LayoutGrid,
     NotebookPen,
     Plus,
-    TrendingUp
+    TrendingUp,
+    MessageSquare
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { api, supabase, identityAPI } from '@repo/core';
 import type { Classroom } from '@repo/core';
-import { StudentList, GradebookTable, AttendanceView, InventoryView, ResourcesView, StudentPulseSection, ClassroomHolisticInsights } from '../components';
+import { StudentList, GradebookTable, AttendanceView, InventoryView, ResourcesView, StudentPulseSection, ClassroomHolisticInsights, ClassroomEchoSection } from '../components';
+import { StudentAnalysisModal } from '@repo/library';
 import ClassroomNotes from '../components/ClassroomNotes';
 import LessonFeed from './LessonFeed';
 import AttendanceReportScreen from './AttendanceReportScreen';
@@ -51,7 +53,7 @@ import { ClassroomStackParamList } from '@repo/core';
 
 type Props = NativeStackScreenProps<ClassroomStackParamList, 'ClassroomDetails'>;
 
-type FeatureId = 'insights' | 'notes' | 'students' | 'attendance' | 'gradebook' | 'lessons' | 'resources' | 'inventory';
+type FeatureId = 'insights' | 'notes' | 'students' | 'attendance' | 'gradebook' | 'lessons' | 'resources' | 'inventory' | 'echo';
 
 const ALL_FEATURES: { id: FeatureId; label: string; icon: any }[] = [
     { id: 'insights', label: 'Insights', icon: TrendingUp },
@@ -62,6 +64,7 @@ const ALL_FEATURES: { id: FeatureId; label: string; icon: any }[] = [
     { id: 'lessons', label: 'Lessons', icon: BookOpen },
     { id: 'resources', label: 'Library', icon: FileText },
     { id: 'inventory', label: 'Inventory', icon: LayoutGrid },
+    { id: 'echo', label: 'Echo', icon: MessageSquare },
 ];
 
 export default function ClassroomDashboard({ route, navigation }: Props) {
@@ -84,6 +87,8 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
     const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
     const [activeView, setActiveView] = useState<'main' | 'attendance_report'>('main');
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [showAnalysisModal, setShowAnalysisModal] = useState(false);
+    const [analysisStudent, setAnalysisStudent] = useState<any | null>(null);
 
     const [formTitle, setFormTitle] = useState('');
     const [formDescription, setFormDescription] = useState('');
@@ -240,6 +245,10 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
                         classroomId={classroomId}
                         students={students}
                         onRefresh={() => api.classroomStudents.getAll(classroomId).then(setStudents)}
+                        onAnalyzePotential={(student) => {
+                            setAnalysisStudent(student);
+                            setShowAnalysisModal(true);
+                        }}
                     />
                 );
             case 'attendance':
@@ -272,6 +281,8 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
                 return <InventoryView classroomId={classroomId} />
             case 'resources':
                 return <ResourcesView classroomId={classroomId} isTeacher={isClassTeacher} />
+            case 'echo':
+                return <ClassroomEchoSection classroomId={classroomId} isTeacher={isClassTeacher} />
             default:
                 return null;
         }
@@ -567,6 +578,20 @@ export default function ClassroomDashboard({ route, navigation }: Props) {
                     </ModalFooter>
                 </ModalContent>
             </Modal>
+
+            {/* Student Potential Analysis Modal */}
+            {showAnalysisModal && analysisStudent && (
+                <StudentAnalysisModal
+                    visible={showAnalysisModal}
+                    onClose={() => {
+                        setShowAnalysisModal(false);
+                        setAnalysisStudent(null);
+                    }}
+                    studentId={analysisStudent.id}
+                    studentName={analysisStudent.full_name}
+                    classroomId={classroomId}
+                />
+            )}
         </ScreenWrapper>
     );
 }

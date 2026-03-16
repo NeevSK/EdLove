@@ -27,7 +27,7 @@ import { Mail } from 'lucide-react-native';
 import { Platform, type TextInput } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme, BreathAnimation, GlassCard, LivingGlow } from '@repo/ui';
-import { useStore, supabase, UserRole, handleAPIError, GuestDataSync, identityAPI } from '@repo/core';
+import { useStore, supabase, UserRole, handleAPIError, GuestDataSync, identityAPI, authAPI } from '@repo/core';
 import { validators, validateForm } from '../utils/validators';
 import { ScannerModal, resolveQR } from '@repo/scanner-kit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -166,7 +166,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode }: AuthScree
         hapticLight();
 
         const redirectUrl = getRedirectUrl();
-        const { data: { session } } = await supabase.auth.getSession();
+        const session = await authAPI.getSession().catch(() => null);
         const isAnon = session?.user?.is_anonymous || !session?.user?.email;
 
         console.log('🚀 Auth: handleOAuthSignIn', { provider, isAnon, redirectUrl });
@@ -316,7 +316,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode }: AuthScree
         setLoading(true);
         try {
             if (isSignUp) {
-                const { data: { session: currentSession } } = await supabase.auth.getSession();
+                const currentSession = await authAPI.getSession().catch(() => null);
                 const isAnon = currentSession?.user?.is_anonymous || !currentSession?.user?.email;
 
                 if (isAnon && currentSession?.user) {

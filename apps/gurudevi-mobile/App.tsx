@@ -12,7 +12,7 @@ import { config } from "./gluestack-ui.config";
 import { Home, School, Users, Library, User, Sparkles } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
 import * as Font from 'expo-font';
-import { supabase, useStore, UserRole, SchoolType, initSentry, initPostHog, trackEvent, identifyUser, identityAPI } from '@repo/core';
+import { supabase, useStore, UserRole, SchoolType, initSentry, initPostHog, trackEvent, identifyUser, identifyUser as _, identityAPI, authAPI, APIError } from '@repo/core';
 import { Platform } from 'react-native';
 import ReactDOM from 'react-dom';
 import * as Linking from 'expo-linking';
@@ -194,40 +194,40 @@ function App() {
     const checkSession = async () => {
       try {
         // Initial session check - non-blocking for fonts/UI
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const session = await authAPI.getSession();
 
-        if (error) {
+        setSession(session);
+        if (session) {
+          setShowWelcome(false);
+          if (session.user) {
+            setIsProfileLoading(true);
+            identityAPI.getMyInternalId()
+              .then((internalId) => {
+                if (internalId) {
+                  fetchAndSetUserProfile(internalId, () => setIsProfileLoading(false));
+                } else {
+                  setIsProfileLoading(false);
+                }
+              })
+              .catch((err) => {
+                console.warn('⚠️ App: Identity resolution failed on startup:', err);
+                setIsProfileLoading(false);
+              });
+          }
+        }
+      } catch (error) {
+        if (error instanceof APIError) {
           // Gracefully handle Invalid Refresh Token (prevents infinite reload loops)
           if (error.message?.includes('Refresh Token') || (error as any).status === 400) {
             console.warn('🔄 App: Stale session detected, clearing local storage...');
             await supabase.auth.signOut({ scope: 'local' });
             setSession(null);
           } else {
-            throw error;
+            console.warn('❌ Startup: Auth session check failed:', error);
           }
         } else {
-          setSession(session);
-          if (session) {
-            setShowWelcome(false);
-            if (session.user) {
-              setIsProfileLoading(true);
-              identityAPI.getMyInternalId()
-                .then((internalId) => {
-                  if (internalId) {
-                    fetchAndSetUserProfile(internalId, () => setIsProfileLoading(false));
-                  } else {
-                    setIsProfileLoading(false);
-                  }
-                })
-                .catch((err) => {
-                  console.warn('⚠️ App: Identity resolution failed on startup:', err);
-                  setIsProfileLoading(false);
-                });
-            }
-          }
+          console.warn('❌ Startup: Auth session check failed:', error);
         }
-      } catch (error) {
-        console.warn('❌ Startup: Auth session check failed:', error);
       } finally {
         // Unblock UI as soon as we have an initial answer (or error)
         setLoading(false);

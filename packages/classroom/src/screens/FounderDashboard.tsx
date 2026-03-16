@@ -20,7 +20,8 @@ import {
     useThemedColors,
     Theme,
     Icon,
-    SandboxBanner
+    SandboxBanner,
+    FounderGlow
 } from '@repo/ui';
 import {
     Globe,
@@ -97,12 +98,14 @@ export default function FounderDashboard() {
                             <Heading sx={{ fontSize: 18, fontWeight: '700' }} color={colors.text}>
                                 Ecosystem Pulse
                             </Heading>
-                            <HStack sx={{ gap: 4, alignItems: 'center' }}>
-                                <HeartPulse size={16} color={colors.success} />
-                                <Text sx={{ fontSize: 12, fontWeight: '600' }} color={colors.success}>
-                                    Health: {stats?.ecosystem_health || 0}%
-                                </Text>
-                            </HStack>
+                            <FounderGlow active={true} intensity="subtle">
+                                <HStack sx={{ gap: 4, alignItems: 'center', backgroundColor: colors.secondary, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }}>
+                                    <HeartPulse size={16} color={colors.success} />
+                                    <Text sx={{ fontSize: 12, fontWeight: '800' }} color={colors.success}>
+                                        Health: {stats?.ecosystem_health || 0}%
+                                    </Text>
+                                </HStack>
+                            </FounderGlow>
                         </HStack>
 
                         {/* Quick Access to Main School */}

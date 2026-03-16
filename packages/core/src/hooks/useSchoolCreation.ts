@@ -8,6 +8,7 @@ export interface SchoolCreationState {
     basicInfo: {
         name: string;
         handle: string;
+        officialType: string;
         contactEmail: string;
         contactPhone: string;
         website?: string;
@@ -25,6 +26,7 @@ export interface SchoolCreationState {
     };
     hierarchy: {
         levels: string[]; // e.g., ['Primary', 'Secondary', 'AL']
+        gradeRange: { start: number; end: number };
         sections: { name: string; headName?: string }[];
     };
 }
@@ -34,9 +36,9 @@ const initialState: SchoolCreationState = {
     basicInfo: {
         name: '',
         handle: '',
+        officialType: '',
         contactEmail: '',
         contactPhone: '',
-        website: '',
     },
     location: {
         provinceId: '',
@@ -51,6 +53,7 @@ const initialState: SchoolCreationState = {
     },
     hierarchy: {
         levels: [],
+        gradeRange: { start: 1, end: 13 },
         sections: [],
     },
 };

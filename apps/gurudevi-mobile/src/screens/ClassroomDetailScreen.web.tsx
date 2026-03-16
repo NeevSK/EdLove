@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useStore, supabase, assignmentsAPI, useUserRole, api } from '@repo/core';
-import { useInventory, AddStudentModal } from '@repo/classroom';
+import { useInventory, AddStudentModal, StudentAnalysisModal } from '@repo/classroom';
 import {
     ArrowLeft, Users, BookOpen, Clock, ClipboardList, Plus, CheckCircle2,
     FileText, ExternalLink, NotebookPen, UserPlus, Pin, Trash2,
     TrendingUp, Calendar, Eye, AlertTriangle, Package, Layers,
     Edit2, UserX, MessageCircle, ShieldAlert, Send, Filter,
+    Sparkles,
 } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
 import { StackFallback } from '../components/web/WebScreenShimmer';
+
 
 interface Student {
     id: string; full_name: string; email?: string;
@@ -45,7 +47,7 @@ export default function ClassroomDetailScreenWeb() {
     const [classroom, setClassroom] = useState<any>(null);
     const [students, setStudents] = useState<Student[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'students' | 'assignments' | 'lessons' | 'resources' | 'notes' | 'insights' | 'inventory' | 'observations'>('students');
+    const [activeTab, setActiveTab] = useState<'students' | 'assignments' | 'lessons' | 'resources' | 'notes' | 'insights' | 'inventory' | 'observations' | 'analysis'>('students');
 
     // Assignments
     const [assignments, setAssignments] = useState<any[]>([]);
@@ -113,6 +115,10 @@ export default function ClassroomDetailScreenWeb() {
     const [obsVisibility, setObsVisibility] = useState<'private' | 'student_visible'>('private');
     const [savingObs, setSavingObs] = useState(false);
     const [obsFilter, setObsFilter] = useState<string>('all');
+
+    // Analysis Modal
+    const [showAnalysisModal, setShowAnalysisModal] = useState(false);
+    const [analysisStudent, setAnalysisStudent] = useState<Student | null>(null);
 
     const isTeacher = role === 'teacher' || role === 'principal' || role === 'developer' || role === 'grade_head';
 
@@ -232,6 +238,11 @@ export default function ClassroomDetailScreenWeb() {
     };
 
     // ── Observations CRUD ──────────────────────────────────────────────────────
+    const openPotentialAnalysis = (s: Student) => {
+        setAnalysisStudent(s);
+        setShowAnalysisModal(true);
+    };
+
     const loadObservations = useCallback(async () => {
         if (!classroomId) return;
         setObsTabLoading(true);
@@ -322,6 +333,7 @@ export default function ClassroomDetailScreenWeb() {
         if (activeTab === 'notes') loadNotes();
         if (activeTab === 'insights') loadInsights();
         if (activeTab === 'observations') loadObservations();
+        if (activeTab === 'analysis') loadObservations(); // Reuse observations for some context if needed
     }, [activeTab, loadAssignments, loadLessons, loadResources, loadNotes, loadInsights, loadObservations]);
 
     // ── Handlers ────────────────────────────────────────────────────────────
@@ -436,6 +448,7 @@ export default function ClassroomDetailScreenWeb() {
         { id: 'notes' as const, label: '📝 Notes' },
         ...(isTeacher ? [
             { id: 'observations' as const, label: `🔍 Observations${allObservations.length > 0 ? ` (${allObservations.length})` : ''}` },
+            { id: 'analysis' as const, label: '✨ Analysis' },
             { id: 'insights' as const, label: '📊 Insights' },
             { id: 'inventory' as const, label: '📦 Inventory' },
         ] : []),
@@ -537,6 +550,9 @@ export default function ClassroomDetailScreenWeb() {
                                                 {isTeacher && (
                                                     <td style={{ padding: '14px 20px' }} onClick={e => e.stopPropagation()}>
                                                         <div style={{ display: 'flex', gap: '6px' }}>
+                                                            <button title="Analyze Potential" onClick={() => openPotentialAnalysis(s)} style={{ padding: '5px 8px', borderRadius: '8px', border: '1px solid var(--sanctuary-saffron)', background: 'none', cursor: 'pointer', color: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: '700' }}>
+                                                                <Sparkles size={13} /> Potential
+                                                            </button>
                                                             <button title="Write observation" onClick={() => openObserveStudent(s)} style={{ padding: '5px 8px', borderRadius: '8px', border: '1px solid var(--border)', background: 'none', cursor: 'pointer', color: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: '700' }}>
                                                                 <MessageCircle size={13} /> Observe
                                                             </button>
@@ -1073,6 +1089,17 @@ export default function ClassroomDetailScreenWeb() {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* ── Student Analysis Modal ── */}
+            {showAnalysisModal && analysisStudent && classroomId && (
+                <StudentAnalysisModal
+                    visible={showAnalysisModal}
+                    onClose={() => { setShowAnalysisModal(false); setAnalysisStudent(null); }}
+                    studentId={analysisStudent.id}
+                    studentName={analysisStudent.full_name}
+                    classroomId={classroomId}
+                />
             )}
         </div>
     );

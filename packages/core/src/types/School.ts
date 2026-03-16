@@ -3,9 +3,17 @@ import { UserRole } from '../constants/SriLankanSchools';
 export interface School {
     id: string;
     name: string;
-    type: string;
+    type: string; // Legacy field
     handle: string | null;
     status: 'active' | 'pending' | 'rejected';
+    official_type?: string; 
+    province_id?: string;
+    district_id?: string;
+    city?: string;
+    address?: string;
+    student_type?: string;
+    religious_affiliation?: string;
+    student_count?: number;
     created_at: string;
 }
 

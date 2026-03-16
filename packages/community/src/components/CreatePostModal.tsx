@@ -9,10 +9,12 @@ import {
     SanctuaryModal,
     Textarea,
     TextareaInput,
+    Input,
+    InputField,
     useTheme,
     Theme,
 } from '@repo/ui';
-import { Mic, Image as ImageIcon, Trash2 } from 'lucide-react-native';
+import { Mic, Image as ImageIcon, Trash2, BarChart3, Plus, X } from 'lucide-react-native';
 import { useCommunity } from '../hooks/useCommunity';
 import { uploadToCloudinary } from '@repo/core';
 import { TouchableOpacity, Image, ActivityIndicator, ScrollView } from 'react-native';
@@ -49,6 +51,8 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [isPollMode, setIsPollMode] = useState(false);
+    const [pollOptions, setPollOptions] = useState<string[]>(['', '']);
 
     const toggleTag = (id: string) => {
         setSelectedTags((prev) =>
@@ -73,7 +77,27 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
         setContent('');
         setSelectedImage(null);
         setSelectedTags([]);
+        setIsPollMode(false);
+        setPollOptions(['', '']);
         onClose();
+    };
+
+    const addPollOption = () => {
+        if (pollOptions.length < 5) {
+            setPollOptions([...pollOptions, '']);
+        }
+    };
+
+    const updatePollOption = (index: number, val: string) => {
+        const updated = [...pollOptions];
+        updated[index] = val;
+        setPollOptions(updated);
+    };
+
+    const removePollOption = (index: number) => {
+        if (pollOptions.length > 2) {
+            setPollOptions(pollOptions.filter((_, i) => i !== index));
+        }
     };
 
     const handleSubmit = async () => {
@@ -93,11 +117,16 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
 
             await createPost({
                 group_id: groupId || 'general',
-                content,
-                post_type: mediaUrl ? 'resource' : 'post',
+                content: content.trim(),
+                post_type: isPollMode ? 'poll' : (mediaUrl ? 'resource' : 'post'),
                 visibility: 'school',
                 media_url: mediaUrl,
                 media_type: mediaType,
+                poll_data: isPollMode ? {
+                    options: pollOptions
+                        .filter(o => o.trim())
+                        .map((o, i) => ({ id: `opt_${i}`, text: o.trim() }))
+                } : undefined,
                 metadata: selectedTags.length > 0 ? ({ education_tags: selectedTags } as PostMetadata) : undefined,
             });
             setContent('');
@@ -138,11 +167,10 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                 <Textarea sx={{
                     backgroundColor: glass.interact.bg,
                     borderColor: glass.interact.border,
-                    borderRadius: Theme.corners.comfortable,
-                    minHeight: 180
+                    minHeight: isPollMode ? 100 : 180
                 }}>
                     <TextareaInput
-                        placeholder="What's on your mind?"
+                        placeholder={isPollMode ? "Ask a question..." : "What's on your mind?"}
                         placeholderTextColor={text.muted}
                         {...({ color: text.primary } as any)}
                         value={content}
@@ -150,6 +178,50 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                         sx={{ lineHeight: 22 }}
                     />
                 </Textarea>
+
+                {isPollMode && (
+                    <VStack {...({ space: "sm" } as any)}>
+                        {pollOptions.map((opt, idx) => (
+                            <HStack key={idx} {...({ space: "sm", alignItems: "center" } as any)}>
+                                <Input sx={{
+                                    flex: 1,
+                                    backgroundColor: glass.interact.bg,
+                                    borderColor: glass.interact.border,
+                                    borderRadius: Theme.corners.comfortable,
+                                    height: 48
+                                }}>
+                                    <InputField
+                                        placeholder={`Option ${idx + 1}`}
+                                        value={opt}
+                                        onChangeText={(val: string) => updatePollOption(idx, val)}
+                                        {...({ color: text.primary, size: "sm" } as any)}
+                                    />
+                                </Input>
+                                {pollOptions.length > 2 && (
+                                    <TouchableOpacity onPress={() => removePollOption(idx)}>
+                                        <X size={18} color={text.muted} />
+                                    </TouchableOpacity>
+                                )}
+                            </HStack>
+                        ))}
+                        {pollOptions.length < 5 && (
+                            <TouchableOpacity
+                                onPress={addPollOption}
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    paddingVertical: 8,
+                                    gap: 8
+                                }}
+                            >
+                                <Plus size={16} color={accent.action} />
+                                <Text {...({ color: accent.action, size: "$sm" } as any)} sx={{ fontWeight: '600' }}>
+                                    Add Option
+                                </Text>
+                            </TouchableOpacity>
+                        )}
+                    </VStack>
+                )}
 
                 {/* Education Tags */}
                 <VStack {...({ space: "xs" } as any)}>
@@ -237,6 +309,12 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                     </TouchableOpacity>
                     <TouchableOpacity style={{ padding: 8, backgroundColor: glass.interact.bg, borderRadius: 8 }}>
                         <Mic size={20} color={text.secondary} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => setIsPollMode(!isPollMode)}
+                        style={{ padding: 8, backgroundColor: isPollMode ? accent.action : glass.interact.bg, borderRadius: 8 }}
+                    >
+                        <BarChart3 size={20} color={isPollMode ? text.inverse : text.secondary} />
                     </TouchableOpacity>
                 </HStack>
             </VStack>

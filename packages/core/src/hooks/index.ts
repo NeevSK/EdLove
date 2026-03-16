@@ -7,6 +7,8 @@ export * from './useRewards';
 export * from './useRoleFeatures';
 export * from './useSafeMutation';
 export * from './useSchoolCreation';
+export * from './useClassroomCreation';
+export * from './useGroupCreation';
 export * from './useTaskActions';
 export * from './usePendingActions';
 export * from './useNotifications';

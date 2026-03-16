@@ -4,25 +4,28 @@ import { profileAPI } from '../api/profile';
 import { UserProfile } from '../types';
 import { ProfileValidator } from '../lib/validator';
 
-export function useProfile() {
+export function useProfile(userId?: string) {
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-    const { role } = useUserRole();
+    const { role: currentUserRole } = useUserRole();
     const { rewards, isLoading: isRewardsLoading } = useRewards();
     const addToQueue = useMutationQueue(state => state.addToQueue);
 
     const fetchProfile = useCallback(async () => {
         try {
             setLoading(true);
-            const internalId = await identityAPI.getMyInternalId();
-            if (!internalId) return;
+            
+            // If userId is provided, fetch that specific profile. 
+            // Otherwise, get the current authenticated user's ID and fetch their profile.
+            const targetId = userId || (await identityAPI.getMyInternalId());
+            if (!targetId) return;
 
-            const data = await profileAPI.getUserProfile(internalId);
+            const data = await profileAPI.getUserProfile(targetId);
             if (data) {
                 setProfile({
                     ...data,
-                    role: data.role || role || 'teacher',
+                    role: data.role || (userId ? null : currentUserRole) || 'teacher',
                     school_name: data.schools?.name || null
                 } as UserProfile);
             }
@@ -36,7 +39,7 @@ export function useProfile() {
             setLoading(false);
             setRefreshing(false);
         }
-    }, [role]);
+    }, [userId, currentUserRole]);
 
     useEffect(() => {
         fetchProfile();

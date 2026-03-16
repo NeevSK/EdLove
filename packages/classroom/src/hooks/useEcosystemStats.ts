@@ -25,6 +25,15 @@ export interface EcosystemStats {
     attendance_records: number;
     attendance_records_7d: number;
     growth_signals_7d: number;
+    // Phase 5 additions: Global Resource Aggregation
+    total_inventory_items: number;
+    total_inventory_requests: number;
+    pending_inventory_requests: number;
+    total_echo_feedback: number;
+    pending_echo_responses: number;
+    avg_student_performance: number | null;
+    total_submissions: number;
+    submissions_7d: number;
 }
 
 /**
@@ -88,7 +97,15 @@ export function useEcosystemStats() {
                     posts_7d: 156,
                     attendance_records: 4500,
                     attendance_records_7d: 840,
-                    growth_signals_7d: 3200
+                    growth_signals_7d: 3200,
+                    total_inventory_items: 4500,
+                    total_inventory_requests: 120,
+                    pending_inventory_requests: 45,
+                    total_echo_feedback: 85,
+                    pending_echo_responses: 12,
+                    avg_student_performance: 78.5,
+                    total_submissions: 1250,
+                    submissions_7d: 145
                 };
                 setStats(mockStats);
                 setSchools([]); // Demo mode usually handles specific school data elsewhere

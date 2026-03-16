@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Modal, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Modal, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import {
     Box,
     VStack,
@@ -13,24 +13,11 @@ import {
     Theme,
     useThemedColors,
     useTheme,
-    Select,
-    SelectTrigger,
-    SelectInput,
-    SelectIcon,
-    SelectPortal,
-    SelectBackdrop,
-    SelectContent,
-    SelectItem,
-    SelectDragIndicatorWrapper,
-    SelectDragIndicator,
     SanctuaryCard,
-    LivingGlow
 } from '@repo/ui';
 import {
     X,
-    ChevronDown,
     Plus,
-    Trash2,
     MessagesSquare,
     Linkedin,
     Instagram,
@@ -38,16 +25,18 @@ import {
     Mail,
     ShieldCheck,
     Shield,
-    ShieldAlert
+    ShieldAlert,
+    Check
 } from 'lucide-react-native';
 import { useSocialLinks } from '../hooks/useSocialLinks';
-import { SocialPlatform, PrivacyLevel } from '@repo/core';
+import { SocialLink, SocialPlatform, PrivacyLevel } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 
 interface AddSocialLinkModalProps {
     visible: boolean;
     onClose: () => void;
     userId: string;
+    initialLink?: SocialLink;
 }
 
 const PLATFORMS: { labelKey: string; value: SocialPlatform; icon: any; color: string }[] = [
@@ -55,7 +44,7 @@ const PLATFORMS: { labelKey: string; value: SocialPlatform; icon: any; color: st
     { labelKey: 'addSocialLink.platforms.linkedin', value: 'linkedin', icon: Linkedin, color: Theme.colors.linkedin },
     { labelKey: 'addSocialLink.platforms.instagram', value: 'instagram', icon: Instagram, color: Theme.colors.instagram },
     { labelKey: 'addSocialLink.platforms.portfolio', value: 'website', icon: Globe, color: Theme.colors.portfolio },
-    { labelKey: 'addSocialLink.platforms.email', value: 'website', icon: Mail, color: Theme.colors.emberOrange }, // Mapping to website type for now or core needs update
+    { labelKey: 'addSocialLink.platforms.email', value: 'website', icon: Mail, color: Theme.colors.emberOrange },
 ];
 
 const PRIVACY_LEVELS: { value: PrivacyLevel; icon: any; labelKey: string; descKey: string }[] = [
@@ -64,27 +53,48 @@ const PRIVACY_LEVELS: { value: PrivacyLevel; icon: any; labelKey: string; descKe
     { value: 'private', icon: ShieldAlert, labelKey: 'addSocialLink.privateLabel', descKey: 'addSocialLink.privateDesc' },
 ];
 
-export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible, onClose, userId }) => {
-    const { links, addLink, deleteLink } = useSocialLinks(userId);
+export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible, onClose, userId, initialLink }) => {
+    const { links, addLink, updateLink } = useSocialLinks(userId);
     const colors = useThemedColors();
     const { text, isDark } = useTheme();
     const { t } = useTranslation();
-    const [platform, setPlatform] = useState<SocialPlatform>('whatsapp');
-    const [url, setUrl] = useState('');
-    const [privacy, setPrivacy] = useState<PrivacyLevel>('public');
+    
+    const [platform, setPlatform] = useState<SocialPlatform>(initialLink?.platform || 'whatsapp');
+    const [url, setUrl] = useState(initialLink?.url || '');
+    const [privacy, setPrivacy] = useState<PrivacyLevel>(initialLink?.privacy_level || 'public');
     const [loading, setLoading] = useState(false);
 
-    const handleAdd = async () => {
+    useEffect(() => {
+        if (visible) {
+            setPlatform(initialLink?.platform || 'whatsapp');
+            setUrl(initialLink?.url || '');
+            setPrivacy(initialLink?.privacy_level || 'public');
+        }
+    }, [visible, initialLink]);
+
+    const handleSave = async () => {
         if (!url) return;
         setLoading(true);
-        const result = await addLink({
-            user_id: userId,
-            platform,
-            url,
-            privacy_level: privacy,
-            is_public: privacy !== 'private',
-            order_index: links.length
-        });
+        
+        let result;
+        if (initialLink) {
+            result = await updateLink(initialLink.id, {
+                platform,
+                url,
+                privacy_level: privacy,
+                is_public: privacy !== 'private'
+            });
+        } else {
+            result = await addLink({
+                user_id: userId,
+                platform,
+                url,
+                privacy_level: privacy,
+                is_public: privacy !== 'private',
+                order_index: links.length
+            });
+        }
+
         setLoading(false);
         if (result.success) {
             setUrl('');
@@ -97,7 +107,6 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
             <Box style={styles.overlay}>
                 <Box sx={{
                     flex: 1,
-                    // Backdrop: Shadow Violet — NEVER black rgba(0,0,0,x)
                     backgroundColor: isDark ? 'rgba(107,100,128,0.65)' : 'rgba(107,100,128,0.45)',
                     width: '100%',
                 }}>
@@ -114,8 +123,12 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                     }}>
                         <HStack justifyContent="space-between" alignItems="center" mb="$6">
                             <VStack>
-                                <Heading color={colors.textPrimary}>{t('addSocialLink.title')}</Heading>
-                                <Text size="xs" color={colors.textTertiary}>{t('addSocialLink.subtitle')}</Text>
+                                <Heading color={colors.textPrimary}>
+                                    {initialLink ? t('addSocialLink.editTitle') : t('addSocialLink.title')}
+                                </Heading>
+                                <Text size="xs" color={colors.textTertiary}>
+                                    {initialLink ? t('addSocialLink.editSubtitle') : t('addSocialLink.subtitle')}
+                                </Text>
                             </VStack>
                             <TouchableOpacity
                                 onPress={onClose}
@@ -131,7 +144,6 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
 
                         <ScrollView showsVerticalScrollIndicator={false}>
                             <VStack space="xl">
-                                {/* Platform Picker */}
                                 <VStack space="xs">
                                     <Text size="xs" bold color={colors.textSecondary}>{t('addSocialLink.selectPlatform')}</Text>
                                     <HStack space="sm" sx={{ flexWrap: 'wrap' }}>
@@ -163,7 +175,6 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                     </HStack>
                                 </VStack>
 
-                                {/* URL Input */}
                                 <VStack space="xs">
                                     <Text size="xs" bold color={colors.textSecondary}>{t('addSocialLink.handleOrLink')}</Text>
                                     <Input variant="outline" sx={{
@@ -182,7 +193,6 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                     </Input>
                                 </VStack>
 
-                                {/* Privacy Picker */}
                                 <VStack space="xs">
                                     <Text size="xs" bold color={colors.textSecondary}>{t('addSocialLink.privacyLevel')}</Text>
                                     <VStack space="sm">
@@ -218,7 +228,7 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
 
                                 <Button
                                     size="lg"
-                                    onPress={handleAdd}
+                                    onPress={handleSave}
                                     isDisabled={loading || !url}
                                     sx={{
                                         marginTop: Theme.spacing.md,
@@ -228,8 +238,10 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                     }}
                                 >
                                     <HStack space="xs" alignItems="center">
-                                        <Plus size={20} color={text.inverse} />
-                                        <ButtonText {...({ color: text.inverse, bold: true } as any)}>{t('addSocialLink.addButton')}</ButtonText>
+                                        {initialLink ? <Check size={20} color={text.inverse} /> : <Plus size={20} color={text.inverse} />}
+                                        <ButtonText {...({ color: text.inverse, bold: true } as any)}>
+                                            {initialLink ? t('addSocialLink.saveButton') : t('addSocialLink.addButton')}
+                                        </ButtonText>
                                     </HStack>
                                 </Button>
                             </VStack>

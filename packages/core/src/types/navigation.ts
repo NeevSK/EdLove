@@ -9,6 +9,7 @@ export type ClassroomStackParamList = {
     FounderSchoolView: { schoolId: string; userId: string };
     Timetable: { schoolId?: string };
     SchoolForest: undefined;
+    PublicProfile: { id: string; type: 'user' | 'school' | 'classroom' | 'community' };
 };
 
 /** Minimal profile shape passed to FullProfile screen.  Use proper fields instead of `any`. */
@@ -28,6 +29,7 @@ export type ProfileStackParamList = {
     FullProfile: { profile: FullProfileParams };
     AppSettings: undefined;
     PrivacyLedger: undefined;
+    PublicProfile: { id: string; type: 'user' | 'school' | 'classroom' | 'community' };
 };
 export type CommunityStackParamList = {
     CommunityMain: undefined;
@@ -36,6 +38,7 @@ export type CommunityStackParamList = {
     Announcements: undefined;
     /** Public profile viewer — tapping any user avatar in community navigates here */
     UserProfile: { userId: string; userName: string };
+    PublicProfile: { id: string; type: 'user' | 'school' | 'classroom' | 'community' };
     /** 1:1 Direct Messaging */
     DirectMessagesList: undefined;
     DirectMessage: { conversationId: string; userName: string };

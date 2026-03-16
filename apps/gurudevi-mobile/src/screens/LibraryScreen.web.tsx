@@ -3,7 +3,8 @@ import {
     LibraryThumbnailCard,
     openExternalURL,
     WebScreenHeader,
-    useRegisterFAB
+    useRegisterFAB,
+    SmartShelf,
 } from '@repo/ui';
 import {
     useRoleFeatures,
@@ -11,6 +12,7 @@ import {
     useUserRole,
     growthSignalsAPI,
     impactRipplesAPI,
+    supabase
 } from '@repo/core';
 import {
     Search,
@@ -22,14 +24,21 @@ import {
     Globe,
     LayoutGrid,
     List,
-    Map,
+    Map as MapIcon,
+    Play
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { useLibrary, LIBRARY_UI_CATEGORIES, libraryAPI, AddResourceModal } from '@repo/library';
-import { LibraryResource } from '@repo/library';
-import type { CreateResourceInput } from '@repo/library';
+import { 
+    useLibrary, 
+    LIBRARY_UI_CATEGORIES, 
+    libraryAPI, 
+    AddResourceModal, 
+    getOrderedShelfDefs, 
+    LibraryResource, 
+    CreateResourceInput,
+    UniversalPerspective 
+} from '@repo/library';
 import { useNavigation } from '@react-navigation/native';
-import { supabase } from '@repo/core';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 
 export default function LibraryScreen() {
@@ -42,7 +51,7 @@ export default function LibraryScreen() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategoryId, setSelectedCategoryId] = useState('All');
     const [selectedSort, setSelectedSort] = useState<'recent' | 'popular' | 'most_endorsed' | 'most_bookmarked'>('recent');
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+    const [viewMode, setViewMode] = useState<'shelf' | 'grid' | 'list' | 'map'>('shelf');
     const [showAddResource, setShowAddResource] = useState(false);
 
     const isTeacherOrCurator = role === 'teacher' || role === 'principal' || role === 'founder';
@@ -65,7 +74,23 @@ export default function LibraryScreen() {
         fetchResources,
         hasNextResources,
         isFetchingNextResources,
+        collections,
     } = useLibrary(libraryFilters);
+
+    // Grouping logic for shelves
+    const trending = useMemo(() =>
+        [...resources].sort((a, b) => (b.endorsements ?? 0) - (a.endorsements ?? 0)).slice(0, 10),
+        [resources]);
+
+    const heroResource = useMemo(() => trending[0] ?? resources[0] ?? null, [trending, resources]);
+
+    const orderedShelfDefs = useMemo(() => getOrderedShelfDefs(user?.orientation_seeds), [user?.orientation_seeds]);
+
+    const getYoutubeThumbnail = (url?: string) => {
+        if (!url) return undefined;
+        const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]{11})/);
+        return match ? `https://img.youtube.com/vi/${match[1]}/mqdefault.jpg` : undefined;
+    };
 
     const handleOpenResource = useCallback((resource: LibraryResource) => {
         if (!resource.url) return;
@@ -159,7 +184,7 @@ export default function LibraryScreen() {
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
                                 onClick={() => navigation.navigate('LibraryMap')}
                             >
-                                <Map size={15} />
+                                <MapIcon size={15} />
                                 Knowledge Map
                             </button>
                         </div>
@@ -233,8 +258,16 @@ export default function LibraryScreen() {
                             <option value="most_bookmarked">{t('library.sort.bookmarked') || 'Most Bookmarked'}</option>
                         </select>
 
-                        {/* View mode toggle */}
+                        {/* View mode toggle (Always visible in search, relevant for results) */}
                         <div style={{ display: 'flex', borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden', flexShrink: 0 }}>
+                            <button
+                                onClick={() => setViewMode('shelf')}
+                                style={{ padding: '10px 14px', border: 'none', cursor: 'pointer', background: viewMode === 'shelf' ? 'var(--action)' : 'rgba(255,255,255,0.5)', color: viewMode === 'shelf' ? '#fff' : 'var(--ink-ghost)', display: 'flex', alignItems: 'center' }}
+                                aria-label="Shelf view"
+                                title="Shelf view"
+                            >
+                                <Layers size={16} />
+                            </button>
                             <button
                                 onClick={() => setViewMode('grid')}
                                 style={{ padding: '10px 14px', border: 'none', cursor: 'pointer', background: viewMode === 'grid' ? 'var(--action)' : 'rgba(255,255,255,0.5)', color: viewMode === 'grid' ? '#fff' : 'var(--ink-ghost)', display: 'flex', alignItems: 'center' }}
@@ -250,6 +283,14 @@ export default function LibraryScreen() {
                                 title="List view"
                             >
                                 <List size={16} />
+                            </button>
+                            <button
+                                onClick={() => setViewMode('map')}
+                                style={{ padding: '10px 14px', border: 'none', cursor: 'pointer', background: viewMode === 'map' ? 'var(--action)' : 'rgba(255,255,255,0.5)', color: viewMode === 'map' ? '#fff' : 'var(--ink-ghost)', display: 'flex', alignItems: 'center' }}
+                                aria-label="Map view"
+                                title="Map view"
+                            >
+                                <MapIcon size={16} />
                             </button>
                         </div>
                     </div>
@@ -285,57 +326,212 @@ export default function LibraryScreen() {
                     </div>
                 </div>
 
-                {/* 3. CONTENT GRID */}
+                {/* 3. CONTENT AREA */}
                 {loading && resources.length === 0 ? (
                     <StackFallback variant="cards" />
                 ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-                        {viewMode === 'grid' ? (
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: '32px' }}>
-                                {resources.map(res => (
-                                    <div key={`grid-${res.id}`} className="sanctuary-card" onClick={() => handleOpenResource(res)} style={{ cursor: 'pointer' }}>
-                                        <LibraryThumbnailCard
-                                            title={res.title}
-                                            type={res.type}
-                                            subject={res.subjects?.[0] ?? 'General'}
-                                            thumbnailUrl={res.media?.url || (res as any).thumbnail_url || (res.type === 'video' || res.type === 'movie_trailer' ? `https://img.youtube.com/vi/${res.url?.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]{11})/)?.[1]}/mqdefault.jpg` : undefined)}
-                                            endorsements={res.endorsements}
-                                            verified={res.verified}
-                                            onPress={() => handleOpenResource(res)}
-                                            // onBookmark removed as it's not in LibraryThumbnailCardProps
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', paddingBottom: '60px' }}>
+                        
+                        {/* HERO BANNER (Only in default mode) */}
+                        {!isSearchMode && heroResource && (
+                            <HeroBanner resource={heroResource} onClick={() => handleOpenResource(heroResource)} />
+                        )}
+
+                        {isSearchMode ? (
+                            /* SEARCH / FILTERED RESULTS VIEW - Switches between modes */
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                <div style={{ fontSize: '14px', color: 'var(--ink-ghost)', marginBottom: '16px' }}>
+                                    {searchQuery ? `Found ${resources.length} findings for "${searchQuery}"` : `Showing ${selectedCategoryId} curated findings`}
+                                </div>
+                                
+                                {viewMode === 'shelf' && (
+                                    <>
+                                        {orderedShelfDefs.map(shelf => {
+                                            const shelfItems = resources.filter(res => shelf.types.includes(res.type));
+                                            if (shelfItems.length === 0) return null;
+                                            return (
+                                                <SmartShelf key={`search-shelf-${shelf.id}`} title={shelf.label}>
+                                                    <div style={{ display: 'flex', gap: '20px' }}>
+                                                        {shelfItems.map(res => (
+                                                            <div key={`search-${res.id}`} style={{ width: '280px', flexShrink: 0 }}>
+                                                                <LibraryThumbnailCard
+                                                                    title={res.title}
+                                                                    type={res.type}
+                                                                    subject={res.subjects?.[0] ?? 'General'}
+                                                                    thumbnailUrl={res.media?.url || (res as any).thumbnail_url || (res.type === 'video' || res.type === 'movie_trailer' ? getYoutubeThumbnail(res.url) : undefined)}
+                                                                    endorsements={res.endorsements}
+                                                                    verified={res.verified}
+                                                                    onPress={() => handleOpenResource(res)}
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </SmartShelf>
+                                            );
+                                        })}
+
+                                        {/* Fallback for items that don't match any shelf */}
+                                        {resources.filter(res => !orderedShelfDefs.some(s => s.types.includes(res.type))).length > 0 && (
+                                            <SmartShelf title="Diverse Findings">
+                                                <div style={{ display: 'flex', gap: '20px' }}>
+                                                    {resources.filter(res => !orderedShelfDefs.some(s => s.types.includes(res.type))).map(res => (
+                                                        <div key={`search-other-${res.id}`} style={{ width: '280px', flexShrink: 0 }}>
+                                                            <LibraryThumbnailCard
+                                                                title={res.title}
+                                                                type={res.type}
+                                                                subject={res.subjects?.[0] ?? 'General'}
+                                                                thumbnailUrl={res.media?.url || (res as any).thumbnail_url || (res.type === 'video' || res.type === 'movie_trailer' ? getYoutubeThumbnail(res.url) : undefined)}
+                                                                endorsements={res.endorsements}
+                                                                verified={res.verified}
+                                                                onPress={() => handleOpenResource(res)}
+                                                            />
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </SmartShelf>
+                                        )}
+                                    </>
+                                )}
+
+                                {viewMode === 'grid' && (
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+                                        {resources.map(res => (
+                                            <LibraryThumbnailCard
+                                                key={`grid-${res.id}`}
+                                                title={res.title}
+                                                type={res.type}
+                                                subject={res.subjects?.[0] ?? 'General'}
+                                                thumbnailUrl={res.media?.url || (res as any).thumbnail_url || (res.type === 'video' || res.type === 'movie_trailer' ? getYoutubeThumbnail(res.url) : undefined)}
+                                                endorsements={res.endorsements}
+                                                verified={res.verified}
+                                                onPress={() => handleOpenResource(res)}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+
+                                {viewMode === 'list' && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                        {resources.map(res => (
+                                            <div 
+                                                key={`list-${res.id}`}
+                                                onClick={() => handleOpenResource(res)}
+                                                style={{ 
+                                                    display: 'flex', 
+                                                    gap: '20px', 
+                                                    padding: '16px', 
+                                                    background: 'rgba(255,255,255,0.5)', 
+                                                    borderRadius: '16px', 
+                                                    border: '1px solid var(--border)',
+                                                    cursor: 'pointer',
+                                                    alignItems: 'center'
+                                                }}
+                                                className="sanctuary-card"
+                                            >
+                                                <div style={{ width: '120px', height: '80px', borderRadius: '8px', overflow: 'hidden', background: 'var(--action-soft)', flexShrink: 0 }}>
+                                                    {(res.media?.url || getYoutubeThumbnail(res.url)) ? (
+                                                        <img src={res.media?.url || getYoutubeThumbnail(res.url)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    ) : (
+                                                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--action)' }}>
+                                                            <Plus size={24} />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--action)', marginBottom: '4px' }}>{res.type.toUpperCase()}</div>
+                                                    <div style={{ fontSize: '16px', fontWeight: '700', color: 'var(--ink)' }}>{res.title}</div>
+                                                    <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{res.subjects?.[0]} • {res.creator_name}</div>
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--action)', fontSize: '13px', fontWeight: '600' }}>
+                                                    <Play size={14} fill="currentColor" />
+                                                    View
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {viewMode === 'map' && (
+                                    <div style={{ height: '600px', borderRadius: '24px', overflow: 'hidden', border: '1px solid var(--border)', background: 'rgba(0,0,0,0.05)' }}>
+                                        <UniversalPerspective 
+                                            topology={{
+                                                nodes: resources.map(res => ({
+                                                    id: res.id,
+                                                    label: res.title,
+                                                    type: res.type === 'video' ? 'persona' : 'topic',
+                                                    group: res.subjects?.[0] ?? 'General'
+                                                })),
+                                                links: resources.slice(0, -1).map((res, i) => ({
+                                                    source: res.id,
+                                                    target: resources[i+1].id,
+                                                    relationship: 'related'
+                                                })),
+                                                context: { title: 'Knowledge Constellation' }
+                                            } as any}
+                                            onNodePress={(node) => {
+                                                const res = resources.find(r => r.id === node.id);
+                                                if (res) handleOpenResource(res);
+                                            }}
                                         />
                                     </div>
-                                ))}
+                                )}
                             </div>
                         ) : (
-                            /* List view — compact rows */
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                {resources.map(res => (
-                                    <button
-                                        key={res.id}
-                                        className="sanctuary-card"
-                                        onClick={() => handleOpenResource(res)}
-                                        style={{ display: 'flex', alignItems: 'center', gap: '20px', padding: '16px 20px', textAlign: 'left', width: '100%', cursor: 'pointer' }}
-                                    >
-                                        {/* Type badge */}
-                                        <div style={{ width: 48, height: 48, borderRadius: '12px', background: 'var(--action-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '20px' }}>
-                                            {res.type === 'video' ? '🎬' : res.type === 'pdf' ? '📄' : res.type === 'link' ? '🔗' : '📚'}
+                            /* DEFAULT VIEW - Netflix Style Shelves */
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+                                {/* Featured Collections */}
+                                {collections.length > 0 && (
+                                    <SmartShelf title="Featured Collections">
+                                        <div style={{ display: 'flex', gap: '20px' }}>
+                                            {collections.map((col: any) => (
+                                                <div key={`col-${col.id}`} style={{ 
+                                                    width: '240px', 
+                                                    height: '140px', 
+                                                    borderRadius: '16px', 
+                                                    background: 'var(--action-soft)', 
+                                                    padding: '20px',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    justifyContent: 'center',
+                                                    cursor: 'pointer',
+                                                    border: '1px solid var(--border)',
+                                                    transition: 'transform 0.2s',
+                                                }}
+                                                className="sanctuary-card"
+                                                >
+                                                    <div style={{ fontSize: '12px', color: 'var(--action)', fontWeight: '800', marginBottom: '8px' }}>COLLECTION</div>
+                                                    <div style={{ fontWeight: '700', fontSize: '16px', color: 'var(--ink)' }}>{col.name}</div>
+                                                    <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '4px' }}>{col.resource_ids?.length ?? 0} items</div>
+                                                </div>
+                                            ))}
                                         </div>
-                                        {/* Info */}
-                                        <div style={{ flex: 1, minWidth: 0 }}>
-                                            <div style={{ fontWeight: '700', fontSize: '15px', color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{res.title}</div>
-                                            <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '3px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                                                {res.subjects?.[0] && <span>{res.subjects[0]}</span>}
-                                                {res.type && <span style={{ textTransform: 'capitalize' }}>{res.type}</span>}
+                                    </SmartShelf>
+                                )}
+
+                                {/* Categorized Shelves */}
+                                {orderedShelfDefs.map(shelf => {
+                                    const shelfItems = resources.filter(res => shelf.types.includes(res.type));
+                                    if (shelfItems.length === 0) return null;
+                                    return (
+                                        <SmartShelf key={`default-shelf-${shelf.id}`} title={shelf.label}>
+                                            <div style={{ display: 'flex', gap: '20px' }}>
+                                                {shelfItems.map(res => (
+                                                    <div key={`res-${res.id}`} style={{ width: '280px', flexShrink: 0 }}>
+                                                        <LibraryThumbnailCard
+                                                            title={res.title}
+                                                            type={res.type}
+                                                            subject={res.subjects?.[0] ?? 'General'}
+                                                            thumbnailUrl={res.media?.url || (res as any).thumbnail_url || (res.type === 'video' || res.type === 'movie_trailer' ? getYoutubeThumbnail(res.url) : undefined)}
+                                                            endorsements={res.endorsements}
+                                                            verified={res.verified}
+                                                            onPress={() => handleOpenResource(res)}
+                                                        />
+                                                    </div>
+                                                ))}
                                             </div>
-                                        </div>
-                                        {/* Meta */}
-                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', flexShrink: 0 }}>
-                                            {res.verified && <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--moss)', background: 'var(--moss-soft)', padding: '2px 8px', borderRadius: '20px' }}>✓ Verified</span>}
-                                            {(res.endorsements ?? 0) > 0 && <span style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>👍 {res.endorsements}</span>}
-                                        </div>
-                                    </button>
-                                ))}
+                                        </SmartShelf>
+                                    );
+                                })}
                             </div>
                         )}
 
@@ -395,6 +591,64 @@ export default function LibraryScreen() {
                     }}
                 />
             )}
+        </div>
+    );
+}
+
+function HeroBanner({ resource, onClick }: { resource: LibraryResource; onClick: () => void }) {
+    return (
+        <div 
+            onClick={onClick}
+            style={{
+                height: '320px',
+                borderRadius: '24px',
+                overflow: 'hidden',
+                position: 'relative',
+                cursor: 'pointer',
+                marginBottom: '40px',
+                background: 'var(--action-soft)',
+            }}
+        >
+            {resource.media?.url && (
+                <img 
+                    src={resource.media.url} 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                    alt={resource.title}
+                />
+            )}
+            <div style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                padding: '40px',
+                background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
+                color: '#fff',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+            }}>
+                <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '8px',
+                    fontSize: '12px',
+                    fontWeight: '800',
+                    letterSpacing: '1px',
+                    color: 'var(--sanctuary-saffron, #F5A623)',
+                }}>
+                    <span style={{ background: 'var(--sanctuary-saffron, #F5A623)', color: '#fff', padding: '2px 8px', borderRadius: '4px' }}>FEATURED</span>
+                    {resource.subjects?.[0] && <span>• {resource.subjects[0].toUpperCase()}</span>}
+                </div>
+                <h1 style={{ fontSize: '32px', fontWeight: '800', margin: 0 }}>{resource.title}</h1>
+                <p style={{ fontSize: '14px', opacity: 0.8, maxWidth: '600px', margin: 0, lineHeight: '1.5' }}>{resource.description}</p>
+                <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}>
+                    <button className="premium-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Play size={16} fill="currentColor" />
+                        Open Now
+                    </button>
+                </div>
+            </div>
         </div>
     );
 }

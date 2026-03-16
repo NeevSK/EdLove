@@ -29,7 +29,6 @@ import {
     TomorrowPrep,
     CommunityPresence,
     RemindersManager,
-    ShadowAgentDrawer,
     WelcomeModal,
 } from '@repo/self';
 import type { Goal } from '@repo/self';
@@ -441,7 +440,6 @@ export default function StudentSelfViewWeb() {
                 ]}
                 sideBar={sideBar}
             />
-            <ShadowAgentDrawer />
             <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}

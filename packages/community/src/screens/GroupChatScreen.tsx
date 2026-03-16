@@ -55,8 +55,8 @@ export default function GroupChatScreen() {
             fetchMessages={fetchMessages}
             sendMessage={sendMessage}
             subscription={subscription}
-            onPressAuthor={(userId, userName) => {
-                navigation.navigate('UserProfile', { userId, userName });
+            onPressAuthor={(userId) => {
+                navigation.navigate('PublicProfile', { id: userId, type: 'user' });
             }}
             headerRight={
                 <HeaderMoreMenu

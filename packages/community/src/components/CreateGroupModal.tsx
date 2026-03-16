@@ -15,12 +15,7 @@
 
 import React, { useState } from "react";
 import {
-  Modal,
-  ModalBackdrop,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
+  SanctuaryModal as SanctuaryModalComponent,
   Heading,
   Text,
   VStack,
@@ -31,15 +26,17 @@ import {
   hapticLight,
   hapticSuccess,
   SanctuaryInput,
+  Icon,
+  Button,
+  ButtonText,
+  Spinner,
 } from "@repo/ui";
 import {
   TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
   StyleSheet,
   Image,
 } from "react-native";
-import { TextInput } from "react-native";
 import {
   X,
   Users,
@@ -48,6 +45,8 @@ import {
   CheckCircle,
   QrCode,
   Camera,
+  ChevronRight,
+  ChevronLeft,
 } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -55,13 +54,19 @@ import { useTranslation } from "react-i18next";
 import { CommunityStackParamList } from "@repo/core";
 import { communityAPI } from "../api/community";
 import { QRBuilder, QRCodeGenerator } from "@repo/scanner-kit";
-import { useUserRole, useStore, uploadToCloudinary } from "@repo/core";
+import { 
+  useUserRole, 
+  useStore, 
+  uploadToCloudinary, 
+  useGroupCreation 
+} from "@repo/core";
 import * as ImagePicker from "expo-image-picker";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type GroupType = "general" | "club" | "interest" | "subject";
 type JoinPolicy = "open" | "approval_required" | "invite_only";
+type ModalStep = 'details' | 'setup' | 'success';
 
 interface TypeOption {
   value: GroupType;
@@ -167,44 +172,48 @@ export default function CreateGroupModal({
   const { userId, schoolId } = useUserRole();
   const user = useStore((state) => state.user);
 
-  // Form state
-  const [name, setName] = useState(initialData?.name ?? "");
-  const [description, setDescription] = useState(initialData?.description ?? "");
-  const [groupType, setGroupType] = useState<GroupType>(initialData?.groupType ?? "general");
-  const [joinPolicy, setJoinPolicy] = useState<JoinPolicy>(initialData?.joinPolicy ?? "open");
-  const [avatarUri, setAvatarUri] = useState<string | null>(initialData?.imageUrl ?? null);
-  const [handle, setHandle] = useState(initialData?.handle ?? "");
-  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const {
+    state,
+    updateStep,
+    updateDetails,
+    updateSetup,
+    resetProgress
+  } = useGroupCreation();
 
-  // Async state
+  // Derived state from hook
+  const step = state.step as unknown as ModalStep;
+  const { details, setup } = state;
+
+  // Local UI state
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [createdGroupId, setCreatedGroupId] = useState<string | null>(null);
+  const [createdGroupName, setCreatedGroupName] = useState("");
+  const [createdGroupAvatar, setCreatedGroupAvatar] = useState<string | null>(null);
 
   const isEdit = mode === "edit";
 
-  // Success state
-  const [createdGroupId, setCreatedGroupId] = useState<string | null>(null);
-  const [createdGroupName, setCreatedGroupName] = useState("");
-  const [createdGroupAvatar, setCreatedGroupAvatar] = useState<string | null>(
-    null,
-  );
-
-  // Effect to reset form when initialData changes
+  // Effect to sync initialData (only for edit mode)
   React.useEffect(() => {
-    if (isOpen && initialData) {
-      setName(initialData.name);
-      setDescription(initialData.description ?? "");
-      setGroupType(initialData.groupType ?? "general");
-      setJoinPolicy(initialData.joinPolicy ?? "open");
-      setHandle(initialData.handle ?? "");
-      setAvatarUri(initialData.imageUrl ?? null);
+    if (isOpen && initialData && isEdit) {
+      updateDetails({
+        name: initialData.name,
+        description: initialData.description || '',
+        handle: initialData.handle || '',
+        avatarUrl: initialData.imageUrl || null,
+      });
+      updateSetup({
+        groupType: initialData.groupType || 'general',
+        joinPolicy: initialData.joinPolicy || 'open',
+      });
     }
-  }, [isOpen, initialData]);
+  }, [isOpen, initialData, mode]);
 
   // ── Derived ────────────────────────────────────────────────────────────────
-  const canSubmit =
-    name.trim().length >= 2 && !isSubmitting && !isUploadingAvatar;
-  const groupQRValue = createdGroupId ? QRBuilder.group(createdGroupId, handle || undefined) : "";
+  const canContinueDetails = details.name.trim().length >= 2;
+  const canSubmit = canContinueDetails && !isSubmitting && !isUploadingAvatar;
+  const groupQRValue = createdGroupId ? QRBuilder.group(createdGroupId, details.handle || undefined) : "";
   const GROUP_TYPES = getGroupTypes(t);
   const JOIN_POLICIES = getJoinPolicies(t);
 
@@ -212,32 +221,20 @@ export default function CreateGroupModal({
 
   const handleClose = () => {
     if (isSubmitting) return;
-    resetForm();
-    onClose();
-  };
-
-  const resetForm = () => {
-    setName("");
-    setDescription("");
-    setGroupType("general");
-    setJoinPolicy("open");
-    setHandle("");
-    setAvatarUri(null);
+    resetProgress();
     setError(null);
-    setCreatedGroupId(null);
-    setCreatedGroupName("");
-    setCreatedGroupAvatar(null);
+    onClose();
   };
 
   const handlePickAvatar = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.8,
     });
     if (!result.canceled && result.assets?.[0]?.uri) {
-      setAvatarUri(result.assets[0].uri);
+      updateDetails({ avatarUrl: result.assets[0].uri });
     }
   };
 
@@ -248,22 +245,21 @@ export default function CreateGroupModal({
     setError(null);
 
     try {
-      // Upload avatar if selected and changed (simple check: if it starts with 'http', it's likely already uploaded)
-      let imageUrl: string | undefined = avatarUri ?? undefined;
-      if (avatarUri && !avatarUri.startsWith("http")) {
+      let imageUrl: string | undefined = details.avatarUrl ?? undefined;
+      if (details.avatarUrl && !details.avatarUrl.startsWith("http")) {
         setIsUploadingAvatar(true);
-        imageUrl = await uploadToCloudinary(avatarUri, "image");
+        imageUrl = await uploadToCloudinary(details.avatarUrl, "image");
         setIsUploadingAvatar(false);
       }
 
       const groupPayload = {
-        name: name.trim(),
-        description: description.trim() || undefined,
-        group_type: groupType,
-        join_policy: joinPolicy,
+        name: details.name.trim(),
+        description: details.description.trim() || undefined,
+        group_type: setup.groupType,
+        join_policy: setup.joinPolicy,
         school_id: schoolId ?? undefined,
         image_url: imageUrl ?? undefined,
-        handle: handle.trim() || undefined,
+        handle: details.handle.trim() || undefined,
       };
 
       if (isEdit && initialData?.id) {
@@ -275,8 +271,9 @@ export default function CreateGroupModal({
         const group = await communityAPI.createGroupWithOwner(groupPayload, userId);
         hapticSuccess();
         setCreatedGroupId(group.id);
-        setCreatedGroupName(group.name ?? name.trim());
+        setCreatedGroupName(group.name ?? details.name.trim());
         setCreatedGroupAvatar(imageUrl ?? null);
+        updateStep(2); // Success step
         onCreated?.(group.id);
         onSuccess?.(group);
       }
@@ -289,557 +286,335 @@ export default function CreateGroupModal({
 
   const handleOpenGroup = () => {
     if (!createdGroupId) return;
+    const gId = createdGroupId;
     handleClose();
-    navigation.navigate("GroupDetails", { groupId: createdGroupId });
+    navigation.navigate("GroupDetails", { groupId: gId });
   };
 
-  // ── Render: Success screen (QR code) ──────────────────────────────────────
+  // ── Render ─────────────────────────────────────────────────────────────────
 
-  if (createdGroupId) {
+  const renderFooter = () => {
+    if (step === 'success') {
+      return (
+        <VStack sx={{ gap: Theme.spacing.sm, width: '100%' }}>
+          <Button
+            size="lg"
+            onPress={handleOpenGroup}
+            sx={{
+              backgroundColor: Theme.colors.sanctuarySaffron,
+              borderRadius: Theme.corners.comfortable,
+            }}
+          >
+            <ButtonText color={Theme.colors.sacredWhite} sx={{ fontWeight: '700' }}>
+              Enter Group Space
+            </ButtonText>
+            <Icon as={ChevronRight} color={Theme.colors.sacredWhite} sx={{ marginLeft: Theme.spacing.xs }} />
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            onPress={handleClose}
+            sx={{
+              borderColor: colors.border,
+            }}
+          >
+            <ButtonText color={colors.textSecondary}>Dismiss</ButtonText>
+          </Button>
+        </VStack>
+      );
+    }
+
+    if (step === 'details') {
+      return (
+        <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
+          <Button
+            variant="outline"
+            sx={{ flex: 1, borderColor: colors.border }}
+            onPress={handleClose}
+          >
+            <ButtonText color={colors.textSecondary}>Cancel</ButtonText>
+          </Button>
+          <Button
+            sx={{
+              flex: 1,
+              backgroundColor: canContinueDetails ? Theme.colors.sanctuarySaffron : colors.border,
+            }}
+            disabled={!canContinueDetails}
+            onPress={() => {
+              hapticLight();
+              updateStep(1);
+            }}
+          >
+            <ButtonText color={Theme.colors.sacredWhite}>Next Step</ButtonText>
+            <Icon as={ChevronRight} color={Theme.colors.sacredWhite} sx={{ marginLeft: Theme.spacing.xs }} />
+          </Button>
+        </HStack>
+      );
+    }
+
     return (
-      <Modal isOpen={isOpen} onClose={handleClose}>
-        <ModalBackdrop />
-        <ModalContent
-          sx={{
-            backgroundColor: colors.secondary,
-            borderRadius: Theme.corners.generous,
-            marginHorizontal: 16,
-          }}
+      <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
+        <Button
+          variant="outline"
+          sx={{ flex: 1, borderColor: colors.border }}
+          onPress={() => updateStep(0)}
         >
-          <ModalHeader>
-            <HStack
-              justifyContent="space-between"
-              alignItems="center"
-              w="$full"
-            >
-              <HStack space="sm" alignItems="center">
-                <CheckCircle size={20} color={Theme.colors.sageGreen} />
-                <Heading color={Theme.colors.sageGreen} size="md">
-                  {t("community.createGroup.founded")}
-                </Heading>
-              </HStack>
-              <TouchableOpacity
-                onPress={handleClose}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
-                <X size={20} color={colors.textTertiary} />
-              </TouchableOpacity>
-            </HStack>
-          </ModalHeader>
-
-          <ModalBody>
-            <VStack space="md" alignItems="center" py="$2">
-              {/* Group avatar preview */}
-              <Box sx={styles.avatarLg as any}>
-                {createdGroupAvatar ? (
-                  <Image
-                    source={{ uri: createdGroupAvatar }}
-                    style={styles.avatarLg as any}
-                  />
-                ) : (
-                  <Text
-                    sx={{
-                      fontSize: 36,
-                      fontWeight: "700",
-                      color: Theme.colors.sacredWhite,
-                    }}
-                  >
-                    {createdGroupName.charAt(0).toUpperCase()}
-                  </Text>
-                )}
-              </Box>
-              <Text
-                color={colors.text}
-                sx={{
-                  fontWeight: "700",
-                  fontSize: Theme.typography.fontSize.lg,
-                  textAlign: "center",
-                }}
-              >
-                {createdGroupName}
-              </Text>
-              <Text
-                color={colors.textSecondary}
-                sx={{
-                  fontSize: Theme.typography.fontSize.sm,
-                  textAlign: "center",
-                }}
-              >
-                {t("community.createGroup.shareQr")}
-              </Text>
-
-              {/* QR Code */}
-              <Box
-                sx={{
-                  backgroundColor: Theme.colors.sacredWhite,
-                  borderRadius: Theme.corners.comfortable,
-                  padding: Theme.spacing.md,
-                  alignItems: "center",
-                  marginVertical: Theme.spacing.sm,
-                }}
-              >
-                <QRCodeGenerator
-                  value={groupQRValue}
-                  size={180}
-                  color={Theme.colors.obsidian}
-                  backgroundColor={Theme.colors.sacredWhite}
-                  label={createdGroupName}
-                  errorCorrectionLevel="H"
-                />
-              </Box>
-
-              <Box
-                sx={{
-                  backgroundColor: `${Theme.colors.sanctuarySaffron}15`,
-                  borderRadius: Theme.corners.comfortable,
-                  paddingHorizontal: Theme.spacing.md,
-                  paddingVertical: Theme.spacing.sm,
-                  borderWidth: 1,
-                  borderColor: `${Theme.colors.sanctuarySaffron}33`,
-                  width: "100%",
-                }}
-              >
-                <HStack space="sm" alignItems="flex-start">
-                  <QrCode
-                    size={16}
-                    color={Theme.colors.sanctuarySaffron}
-                    style={{ marginTop: 2 }}
-                  />
-                  <Text
-                    sx={{
-                      flex: 1,
-                      fontSize: Theme.typography.fontSize.xs,
-                      color: colors.textSecondary,
-                      lineHeight: 18,
-                    }}
-                  >
-                    {t("community.createGroup.ownerHint")}
-                  </Text>
-                </HStack>
-              </Box>
-            </VStack>
-          </ModalBody>
-
-          <ModalFooter sx={{ borderTopWidth: 0 }}>
-            <VStack space="sm" w="$full">
-              <TouchableOpacity
-                onPress={handleOpenGroup}
-                style={[
-                  styles.primaryBtn,
-                  { backgroundColor: Theme.colors.sanctuarySaffron },
-                ]}
-              >
-                <Text
-                  sx={{
-                    color: Theme.colors.sacredWhite,
-                    fontWeight: "700",
-                    fontSize: Theme.typography.fontSize.md,
-                  }}
-                >
-                  Open Group →
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleClose} style={styles.ghostBtn}>
-                <Text
-                  sx={{
-                    color: colors.textSecondary,
-                    fontSize: Theme.typography.fontSize.sm,
-                  }}
-                >
-                  {t("common.done")}
-                </Text>
-              </TouchableOpacity>
-            </VStack>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          <Icon as={ChevronLeft} color={colors.textSecondary} sx={{ marginRight: Theme.spacing.xs }} />
+          <ButtonText color={colors.textSecondary}>Back</ButtonText>
+        </Button>
+        <Button
+          sx={{
+            flex: 2,
+            backgroundColor: canSubmit ? Theme.colors.sanctuarySaffron : colors.border,
+          }}
+          disabled={!canSubmit}
+          onPress={handleSubmit}
+        >
+          {isSubmitting ? (
+            <Spinner color={Theme.colors.sacredWhite} />
+          ) : (
+            <ButtonText color={Theme.colors.sacredWhite}>
+              {isEdit ? "Update Group" : "Found Community"}
+            </ButtonText>
+          )}
+        </Button>
+      </HStack>
     );
-  }
+  };
 
-  // ── Render: Creation form ─────────────────────────────────────────────────
+  const SanctuaryModal = SanctuaryModalComponent as any;
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose}>
-      <ModalBackdrop />
-      <ModalContent
-        sx={{
-          backgroundColor: colors.secondary,
-          borderRadius: Theme.corners.generous,
-          marginHorizontal: 16,
-        }}
-      >
-        <ModalHeader>
-          <HStack justifyContent="space-between" alignItems="center" w="$full">
-            <Heading color={colors.text} size="lg">
-              {isEdit ? "Edit Group Details" : t("community.createGroup.title")}
-            </Heading>
-            <TouchableOpacity
-              onPress={handleClose}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
-              <X size={20} color={colors.textTertiary} />
-            </TouchableOpacity>
-          </HStack>
-        </ModalHeader>
-
-        <ModalBody>
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-          >
-            <VStack space="lg" py="$1">
-              {/* Avatar picker */}
-              <TouchableOpacity
-                onPress={handlePickAvatar}
-                style={styles.avatarPickerRow}
-              >
+    <SanctuaryModal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={isEdit ? "Edit Group" : "Found New Community"}
+      footer={renderFooter()}
+    >
+      <VStack sx={{ gap: Theme.spacing.lg }}>
+        {step === 'details' && (
+          <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 450 }}>
+            <VStack sx={{ gap: Theme.spacing.lg, paddingBottom: 20 }}>
+              {/* Avatar Picker */}
+              <TouchableOpacity onPress={handlePickAvatar} style={styles.avatarPickerRow}>
                 <Box
-                  sx={
-                    [
-                      styles.avatarSm,
-                      {
-                        backgroundColor: avatarUri
-                          ? "transparent"
-                          : colors.tertiary,
-                        borderColor: colors.border,
-                      },
-                    ] as any
-                  }
+                  sx={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: 40,
+                    backgroundColor: details.avatarUrl ? 'transparent' : 'rgba(246,191,140,0.1)',
+                    borderWidth: 1,
+                    borderColor: 'rgba(246,191,140,0.2)',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                  }}
                 >
-                  {avatarUri ? (
-                    <Image
-                      source={{ uri: avatarUri }}
-                      style={styles.avatarSm as any}
-                    />
+                  {details.avatarUrl ? (
+                    <Image source={{ uri: details.avatarUrl }} style={{ width: '100%', height: '100%' }} />
                   ) : (
-                    <Camera size={24} color={colors.textSecondary} />
+                    <Icon as={Camera} size={32} color={Theme.colors.sanctuarySaffron} />
                   )}
                 </Box>
-                <VStack sx={{ marginLeft: 12, flex: 1 }}>
-                  <Text
-                    sx={{
-                      fontWeight: "600",
-                      fontSize: Theme.typography.fontSize.sm,
-                      color: colors.text,
-                    }}
-                  >
-                    Group Profile Photo
-                  </Text>
-                  <Text sx={{ fontSize: 12, color: colors.textSecondary }}>
-                    {avatarUri
-                      ? t("community.createGroup.tapToChange")
-                      : t("community.createGroup.addPhotoOptional")}
+                <VStack sx={{ flex: 1, marginLeft: Theme.spacing.md }}>
+                  <Text sx={{ fontWeight: '700', color: colors.text }}>Group Identity</Text>
+                  <Text sx={{ fontSize: 13, color: colors.textSecondary }}>
+                    {details.avatarUrl ? "Tap to change photo" : "Add a soulful image for your community"}
                   </Text>
                 </VStack>
               </TouchableOpacity>
 
-              {/* Name */}
-              <VStack space="xs">
-                <Text
-                  sx={{
-                    fontSize: Theme.typography.fontSize.sm,
-                    fontWeight: "600",
-                    color: colors.text,
-                  }}
-                >
-                  {t("community.createGroup.groupName")}{" "}
-                  <Text sx={{ color: Theme.colors.emberRed }}>*</Text>
-                </Text>
-                <TextInput
-                  value={name}
-                  onChangeText={setName}
-                  placeholder={t("community.createGroup.groupNamePlaceholder")}
-                  placeholderTextColor={colors.textTertiary}
-                  maxLength={60}
-                  style={[
-                    styles.input,
-                    {
-                      color: colors.text,
-                      backgroundColor: colors.tertiary,
-                      borderColor: colors.border,
-                    },
-                  ]}
-                />
-                <Text
-                  sx={{
-                    fontSize: 11,
-                    color: colors.textTertiary,
-                    textAlign: "right",
-                  }}
-                >
-                  {name.length}/60
-                </Text>
-              </VStack>
-
-              {/* Handle */}
               <SanctuaryInput
-                label="Group Handle (@)"
-                placeholder="e.g. photography-club"
-                value={handle}
-                onChangeText={(text) =>
-                  setHandle(text.toLowerCase().replace(/[^a-z0-9_-]/g, ""))
-                }
-                helperText="A unique identifier for your group's QR link."
-                leftIcon={Globe}
+                label="Community Name"
+                placeholder="e.g. Ancient Wisdom Seekers"
+                value={details.name}
+                onChangeText={(text: string) => updateDetails({ name: text })}
               />
 
-              {/* Description */}
-              <VStack space="xs">
-                <Text
-                  sx={{
-                    fontSize: Theme.typography.fontSize.sm,
-                    fontWeight: "600",
-                    color: colors.text,
-                  }}
-                >
-                  {t("community.createGroup.description")}{" "}
-                  <Text sx={{ color: colors.textTertiary }}>
-                    ({t("community.createGroup.optional")})
-                  </Text>
-                </Text>
-                <TextInput
-                  value={description}
-                  onChangeText={setDescription}
-                  placeholder={t(
-                    "community.createGroup.descriptionPlaceholder",
-                  )}
-                  placeholderTextColor={colors.textTertiary}
-                  multiline
-                  numberOfLines={3}
-                  maxLength={200}
-                  style={[
-                    styles.textarea,
-                    {
-                      color: colors.text,
-                      backgroundColor: colors.tertiary,
-                      borderColor: colors.border,
-                    },
-                  ]}
-                />
-              </VStack>
+              <SanctuaryInput
+                label="Unique Handle (@)"
+                placeholder="e.g. seekers"
+                value={details.handle}
+                onChangeText={(text: string) => updateDetails({ handle: text.toLowerCase().replace(/[^a-z0-9_-]/g, "") })}
+                leftIcon={Globe}
+                helperText="A shared identity for your group link"
+              />
 
-              {/* Group Type */}
-              <VStack space="xs">
-                <Text
-                  sx={{
-                    fontSize: Theme.typography.fontSize.sm,
-                    fontWeight: "600",
-                    color: colors.text,
-                  }}
-                >
-                  {t("community.createGroup.type")}
-                </Text>
-                <HStack flexWrap="wrap" sx={{ gap: 8 }}>
-                  {GROUP_TYPES.map((t) => {
-                    const active = groupType === t.value;
-                    return (
-                      <TouchableOpacity
-                        key={t.value}
-                        onPress={() => {
-                          hapticLight();
-                          setGroupType(t.value);
-                        }}
-                        style={[
-                          styles.typeChip,
-                          {
-                            backgroundColor: active
-                              ? Theme.colors.sanctuarySaffron
-                              : colors.tertiary,
-                            borderColor: active
-                              ? Theme.colors.sanctuarySaffron
-                              : colors.border,
-                          },
-                        ]}
-                      >
-                        <Text sx={{ fontSize: 14 }}>{t.emoji}</Text>
-                        <Text
-                          sx={{
-                            fontSize: 12,
-                            fontWeight: active ? "700" : "400",
-                            color: active
-                              ? Theme.colors.sacredWhite
-                              : colors.text,
-                            marginLeft: 4,
-                          }}
-                        >
-                          {t.label}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </HStack>
-              </VStack>
-
-              {/* Join Policy */}
-              <VStack space="xs">
-                <Text
-                  sx={{
-                    fontSize: Theme.typography.fontSize.sm,
-                    fontWeight: "600",
-                    color: colors.text,
-                  }}
-                >
-                  {t("community.createGroup.whoCanJoin")}
-                </Text>
-                <VStack space="sm">
-                  {JOIN_POLICIES.map((p) => {
-                    const active = joinPolicy === p.value;
-                    const { Icon } = p;
-                    return (
-                      <TouchableOpacity
-                        key={p.value}
-                        onPress={() => {
-                          hapticLight();
-                          setJoinPolicy(p.value);
-                        }}
-                        style={[
-                          styles.policyRow,
-                          {
-                            backgroundColor: active
-                              ? `${Theme.colors.sanctuarySaffron}15`
-                              : colors.tertiary,
-                            borderColor: active
-                              ? Theme.colors.sanctuarySaffron
-                              : colors.border,
-                          },
-                        ]}
-                      >
-                        <Box
-                          sx={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: 18,
-                            backgroundColor: active
-                              ? Theme.colors.sanctuarySaffron
-                              : colors.secondary,
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Icon
-                            size={16}
-                            color={
-                              active
-                                ? Theme.colors.sacredWhite
-                                : colors.textSecondary
-                            }
-                          />
-                        </Box>
-                        <VStack sx={{ flex: 1, marginLeft: 12, gap: 2 }}>
-                          <Text
-                            sx={{
-                              fontWeight: "600",
-                              fontSize: Theme.typography.fontSize.sm,
-                              color: colors.text,
-                            }}
-                          >
-                            {p.label}
-                          </Text>
-                          <Text
-                            sx={{ fontSize: 12, color: colors.textSecondary }}
-                          >
-                            {p.description}
-                          </Text>
-                        </VStack>
-                        {active && (
-                          <CheckCircle
-                            size={18}
-                            color={Theme.colors.sanctuarySaffron}
-                          />
-                        )}
-                      </TouchableOpacity>
-                    );
-                  })}
-                </VStack>
-              </VStack>
-
-              {/* Error */}
-              {error && (
-                <Box
-                  sx={{
-                    backgroundColor: `${Theme.colors.emberRed}15`,
-                    borderRadius: Theme.corners.comfortable,
-                    paddingHorizontal: Theme.spacing.md,
-                    paddingVertical: Theme.spacing.sm,
-                    borderWidth: 1,
-                    borderColor: `${Theme.colors.emberRed}40`,
-                  }}
-                >
-                  <Text
-                    sx={{
-                      fontSize: Theme.typography.fontSize.sm,
-                      color: Theme.colors.emberRed,
-                    }}
-                  >
-                    {error}
-                  </Text>
-                </Box>
-              )}
+              <SanctuaryInput
+                label="Vision / Description"
+                placeholder="What is the heartbeat of this community?"
+                value={details.description}
+                onChangeText={(text: string) => updateDetails({ description: text })}
+                multiline
+                numberOfLines={3}
+              />
             </VStack>
           </ScrollView>
-        </ModalBody>
+        )}
 
-        <ModalFooter sx={{ borderTopWidth: 0 }}>
-          <TouchableOpacity
-            onPress={handleSubmit}
-            disabled={!canSubmit}
-            style={[
-              styles.primaryBtn,
-              {
-                backgroundColor: canSubmit
-                  ? Theme.colors.sanctuarySaffron
-                  : colors.border,
-                opacity: isSubmitting ? 0.8 : 1,
-              },
-            ]}
-          >
-            {isSubmitting ? (
-              <ActivityIndicator
-                size="small"
-                color={Theme.colors.sacredWhite}
-              />
-            ) : (
-              <Text
-                sx={{
-                  color: Theme.colors.sacredWhite,
-                  fontWeight: "700",
-                  fontSize: Theme.typography.fontSize.md,
-                }}
-              >
-                {isEdit ? "Save Changes" : t("community.createGroup.submit")}
+        {step === 'setup' && (
+          <VStack sx={{ gap: Theme.spacing.xl }}>
+            {/* Group Type */}
+            <VStack sx={{ gap: Theme.spacing.sm }}>
+              <Text sx={{ fontWeight: '700', color: colors.text, fontSize: 14 }}>
+                Community Heartbeat (Type)
               </Text>
+              <HStack flexWrap="wrap" sx={{ gap: Theme.spacing.sm }}>
+                {GROUP_TYPES.map((t) => {
+                  const active = setup.groupType === t.value;
+                  return (
+                    <TouchableOpacity
+                      key={t.value}
+                      onPress={() => {
+                        hapticLight();
+                        updateSetup({ groupType: t.value });
+                      }}
+                      style={[
+                        styles.typeChip,
+                        {
+                          backgroundColor: active ? Theme.colors.sanctuarySaffron : 'rgba(246,191,140,0.05)',
+                          borderColor: active ? Theme.colors.sanctuarySaffron : 'rgba(246,191,140,0.2)',
+                        },
+                      ]}
+                    >
+                      <Text sx={{ fontSize: 14 }}>{t.emoji}</Text>
+                      <Text
+                        sx={{
+                          fontSize: 12,
+                          fontWeight: active ? '700' : '500',
+                          color: active ? Theme.colors.sacredWhite : colors.text,
+                          marginLeft: 4,
+                        }}
+                      >
+                        {t.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </HStack>
+            </VStack>
+
+            {/* Join Policy */}
+            <VStack sx={{ gap: Theme.spacing.sm }}>
+              <Text sx={{ fontWeight: '700', color: colors.text, fontSize: 14 }}>
+                Sanctuary Intent (Privacy)
+              </Text>
+              <VStack sx={{ gap: Theme.spacing.sm }}>
+                {JOIN_POLICIES.map((p) => {
+                  const active = setup.joinPolicy === p.value;
+                  const { Icon: PolicyIcon } = p;
+                  return (
+                    <TouchableOpacity
+                      key={p.value}
+                      onPress={() => {
+                        hapticLight();
+                        updateSetup({ joinPolicy: p.value });
+                      }}
+                      style={[
+                        styles.policyRow,
+                        {
+                          backgroundColor: active ? 'rgba(246,191,140,0.1)' : 'rgba(246,191,140,0.05)',
+                          borderColor: active ? Theme.colors.sanctuarySaffron : 'rgba(246,191,140,0.2)',
+                        },
+                      ]}
+                    >
+                      <Box
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 20,
+                          backgroundColor: active ? Theme.colors.sanctuarySaffron : 'rgba(246,191,140,0.2)',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Icon
+                          as={PolicyIcon}
+                          size={18}
+                          color={active ? Theme.colors.sacredWhite : colors.textSecondary}
+                        />
+                      </Box>
+                      <VStack sx={{ flex: 1, marginLeft: Theme.spacing.md }}>
+                        <Text sx={{ fontWeight: '700', color: colors.text, fontSize: 14 }}>{p.label}</Text>
+                        <Text sx={{ fontSize: 12, color: colors.textSecondary }}>{p.description}</Text>
+                      </VStack>
+                      {active && (
+                        <Icon as={CheckCircle} color={Theme.colors.sanctuarySaffron} size={20} />
+                      )}
+                    </TouchableOpacity>
+                  );
+                })}
+              </VStack>
+            </VStack>
+
+            {error && (
+              <Box sx={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', padding: Theme.spacing.md, borderRadius: Theme.corners.comfortable }}>
+                <Text sx={{ color: Theme.colors.emberRed, fontSize: 13 }}>{error}</Text>
+              </Box>
             )}
-          </TouchableOpacity>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+          </VStack>
+        )}
+
+        {step === 'success' && (
+          <VStack sx={{ gap: Theme.spacing.xl, alignItems: 'center', paddingVertical: Theme.spacing.lg }}>
+            <Box sx={{ backgroundColor: 'rgba(246,191,140,0.1)', padding: 24, borderRadius: 60 }}>
+              <Icon as={CheckCircle} color={Theme.colors.sanctuarySaffron} size={64} />
+            </Box>
+            
+            <VStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
+              <Heading color={colors.text} size="xl" sx={{ textAlign: 'center' }}>
+                Community Founded!
+              </Heading>
+              <Text sx={{ textAlign: 'center', color: colors.textSecondary }}>
+                Your group <Text sx={{ fontWeight: 'bold', color: colors.text }}>{details.name}</Text> is ready to welcome its members.
+              </Text>
+            </VStack>
+
+            {/* QR Code */}
+            <Box
+              sx={{
+                backgroundColor: Theme.colors.sacredWhite,
+                borderRadius: Theme.corners.generous,
+                padding: Theme.spacing.lg,
+                alignItems: "center",
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.1,
+                shadowRadius: 10,
+                elevation: 5,
+              }}
+            >
+              <QRCodeGenerator
+                value={groupQRValue}
+                size={180}
+                color={Theme.colors.obsidian}
+                backgroundColor={Theme.colors.sacredWhite}
+                label={createdGroupName}
+                errorCorrectionLevel="H"
+              />
+            </Box>
+
+            <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center', backgroundColor: colors.tertiary, padding: Theme.spacing.md, borderRadius: Theme.corners.comfortable, width: '100%' }}>
+              <Icon as={QrCode} color={Theme.colors.sanctuarySaffron} size={16} />
+              <Text sx={{ fontSize: 12, color: colors.textSecondary, flex: 1 }}>
+                Others can scan this to join your community instantly.
+              </Text>
+            </HStack>
+          </VStack>
+        )}
+      </VStack>
+    </SanctuaryModal>
   );
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  input: {
-    height: 44,
-    borderRadius: Theme.corners.comfortable,
-    borderWidth: 1,
-    paddingHorizontal: Theme.spacing.md,
-    fontSize: Theme.typography.fontSize.sm,
-  },
-  textarea: {
-    borderRadius: Theme.corners.comfortable,
-    borderWidth: 1,
-    paddingHorizontal: Theme.spacing.md,
-    paddingVertical: Theme.spacing.sm,
-    fontSize: Theme.typography.fontSize.sm,
-    minHeight: 88,
-    textAlignVertical: "top",
-  },
   typeChip: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     borderRadius: Theme.corners.full,
     borderWidth: 1,
   },
@@ -848,40 +623,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: Theme.corners.comfortable,
     borderWidth: 1,
-    padding: 12,
-  },
-  primaryBtn: {
-    height: 48,
-    borderRadius: Theme.corners.comfortable,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-  },
-  ghostBtn: {
-    height: 36,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatarSm: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-  avatarLg: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: Theme.colors.sanctuarySaffron,
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
+    padding: 16,
   },
   avatarPickerRow: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: 'rgba(246,191,140,0.02)',
+    padding: Theme.spacing.md,
+    borderRadius: Theme.corners.comfortable,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: 'rgba(246,191,140,0.3)',
   },
 });

@@ -57,3 +57,4 @@ export { AdaptiveLayout } from './AdaptiveLayout';
 export { WebScreenHeader } from './WebScreenHeader.web';
 export { default as FeatureInfoIcon } from './FeatureInfoIcon';
 export { default as FeatureDiscoveryModal } from './FeatureDiscoveryModal';
+export { FounderGlow } from './FounderGlow';

@@ -1,4 +1,5 @@
 ---
+import SEO from '../components/SEO.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -6,23 +7,13 @@ interface Props {
 	description?: string;
 }
 
-const { title, description = "Gurudevi - Education Ecology Support System. A sanctuary for teachers and learners." } = Astro.props;
+const { title, description = "Education Ecology Support System" } = Astro.props;
 ---
 
+<!doctype html>
 <html lang="en">
 	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title} | Gurudevi</title>
-		<meta name="description" content={description} />
-		
-		<!-- SEO Meta Tags -->
-		<meta property="og:title" content={title} />
-		<meta property="og:description" content={description} />
-		<meta property="og:type" content="website" />
-		<meta name="twitter:card" content="summary_large_image" />
+		<SEO title={title} description={description} />
 	</head>
 	<body class="bg-cream-silence text-charcoal-truth min-h-screen flex flex-col">
 		<slot />

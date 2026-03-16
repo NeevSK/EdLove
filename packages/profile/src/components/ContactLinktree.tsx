@@ -5,8 +5,9 @@
  * Supports elective sharing of social links with glassmorphism aesthetics.
  */
 
-import React, { useCallback } from 'react';
-import { Linking, Platform } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { Linking, Platform, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import {
     VStack,
     HStack,
@@ -31,24 +32,35 @@ import {
     ShieldCheck,
     Shield,
     ShieldAlert,
-    Link
+    Link,
+    Edit2,
+    Trash2,
+    Plus,
 } from 'lucide-react-native';
 import Animated from 'react-native-reanimated';
 import { SocialLink } from '@repo/core';
 import * as Clipboard from 'expo-clipboard';
+import { AddSocialLinkModal } from './AddSocialLinkModal';
+import { useSocialLinks } from '../hooks/useSocialLinks';
+import { InlineSocialLinkEditor } from './InlineSocialLinkEditor';
+import { hapticLight, hapticHeavy } from '@repo/ui';
 
 interface ContactLinktreeProps {
     links: SocialLink[];
     userName: string;
+    userId?: string;
     bio?: string;
     isOwnProfile?: boolean;
+    editable?: boolean;
+    inline?: boolean;
 }
 
-const PRIVACY_ICONS: Record<string, any> = {
-    public: ShieldCheck,
-    particulars: Shield,
-    private: ShieldAlert,
+const PRIVACY_ICONS: Record<string, string> = {
+    public: '🌍',
+    particulars: '👥',
+    private: '🔒',
 };
+
 
 const PROVIDER_CONFIG: Record<string, {
     icon: React.ComponentType<any>;
@@ -88,8 +100,19 @@ const PROVIDER_CONFIG: Record<string, {
     }
 };
 
-export function ContactLinktree({ links, userName, bio, isOwnProfile }: ContactLinktreeProps) {
+export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, editable, inline }: ContactLinktreeProps) {
     const colors = useThemedColors();
+    const { t } = useTranslation();
+    const [isEditing, setIsEditing] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [editingLink, setEditingLink] = useState<SocialLink | undefined>();
+    const { deleteLink, addLink, updateLink } = useSocialLinks(userId || '');
+    const [inlineAdding, setInlineAdding] = useState(false);
+    const [inlineEditingId, setInlineEditingId] = useState<string | null>(null);
+
+    const displayLinks = isOwnProfile 
+        ? links 
+        : links.filter(l => l.privacy_level === 'public' || (l.is_public && l.privacy_level !== 'private'));
 
     const handlePress = useCallback(async (provider: string, value: string) => {
         const config = PROVIDER_CONFIG[provider];
@@ -135,9 +158,30 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile }: ContactL
         await Clipboard.setStringAsync(url).catch(() => { /* non-fatal */ });
     }, [userName]);
 
-    const visibleLinks = isOwnProfile
-        ? links
-        : links.filter(l => l.is_public && l.privacy_level !== 'private');
+    const handleEditLink = (link: SocialLink) => {
+        hapticLight();
+        if (inline) {
+            setInlineEditingId(link.id);
+        } else {
+            setEditingLink(link);
+            setIsAddModalOpen(true);
+        }
+    };
+
+    const handleDeleteLink = (id: string) => {
+        hapticHeavy();
+        deleteLink(id);
+    };
+
+    const handleAddLink = () => {
+        hapticLight();
+        if (inline) {
+            setInlineAdding(true);
+        } else {
+            setEditingLink(undefined);
+            setIsAddModalOpen(true);
+        }
+    };
 
     return (
         <VStack space="lg" sx={{ width: '100%' }}>
@@ -170,34 +214,68 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile }: ContactL
                     </Text>
                 )}
                 {/* Copy/Share profile link — visible on web always, on native only for own profile */}
-                {(Platform.OS === 'web' || isOwnProfile) && (
-                    <SanctuaryButton
-                        size="sm"
-                        variant="outline"
-                        onPress={handleCopyProfileLink}
-                        leftIcon={Link}
-                    >
-                        {Platform.OS === 'web' ? 'Share Profile Link' : 'Copy Profile Link'}
-                    </SanctuaryButton>
-                )}
+                <HStack space="sm">
+                    {(Platform.OS === 'web' || isOwnProfile) && (
+                        <SanctuaryButton
+                            size="sm"
+                            variant="outline"
+                            onPress={handleCopyProfileLink}
+                            leftIcon={Link}
+                        >
+                            {Platform.OS === 'web' ? 'Share Profile Link' : 'Copy Profile Link'}
+                        </SanctuaryButton>
+                    )}
+                    
+                    {isOwnProfile && editable && (
+                        <SanctuaryButton
+                            size="sm"
+                            variant={isEditing ? "solid" : "outline"}
+                            onPress={() => {
+                                hapticLight();
+                                setIsEditing(!isEditing);
+                            }}
+                            leftIcon={Edit2}
+                        >
+                            {isEditing ? 'Done' : 'Edit Contacts'}
+                        </SanctuaryButton>
+                    )}
+                </HStack>
             </VStack>
 
             {/* Link List */}
             <VStack space="md">
-                {visibleLinks.map((link, index) => {
-                    const config = PROVIDER_CONFIG[link.platform]; // Corrected from .provider
+                {displayLinks.map((link, index) => {
+                    if (inline && inlineEditingId === link.id) {
+                        return (
+                            <InlineSocialLinkEditor
+                                key={link.id}
+                                link={link}
+                                onSave={async (updates) => {
+                                    await updateLink(link.id, updates);
+                                    setInlineEditingId(null);
+                                }}
+                                onCancel={() => setInlineEditingId(null)}
+                                onDelete={async (id) => {
+                                    await deleteLink(id);
+                                    setInlineEditingId(null);
+                                }}
+                            />
+                        );
+                    }
+
+                    const config = PROVIDER_CONFIG[link.platform];
                     if (!config) return null;
                     const Icon = config.icon;
-                    const PrivacyIcon = PRIVACY_ICONS[link.privacy_level || 'public'];
+                    const PrivacyEmoji = PRIVACY_ICONS[link.privacy_level || 'public'];
 
                     return (
                         <Animated.View
-                            key={`${link.platform}-${index}`} // Corrected from .provider
+                            key={`${link.platform}-${index}`}
                             entering={FadeInDown.delay(index * 100).springify()}
                         >
                             <SanctuaryCard
                                 variant="glass"
-                                onPress={() => handlePress(link.platform, link.url)} // Corrected from .provider
+                                onPress={() => isEditing ? handleEditLink(link) : handlePress(link.platform, link.url)}
                             >
                                 <HStack space="md" alignItems="center" sx={{ padding: Theme.spacing.md }}>
                                     <Box
@@ -217,26 +295,78 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile }: ContactL
                                             <Text size="md" bold color={colors.textPrimary}>
                                                 {config.label}
                                             </Text>
-                                            {isOwnProfile && PrivacyIcon && (
-                                                <PrivacyIcon size={12} color={colors.textTertiary} />
+                                            {isOwnProfile && PrivacyEmoji && (
+                                                <Text style={{ fontSize: 13, marginLeft: 4 }}>{PrivacyEmoji}</Text>
                                             )}
                                         </HStack>
                                         <Text size="xs" color={colors.textTertiary} numberOfLines={1}>
                                             {link.url}
                                         </Text>
                                     </VStack>
-                                    <ExternalLink size={18} color={colors.textTertiary} />
+                                    
+                                    {isEditing ? (
+                                        <HStack space="sm">
+                                            <TouchableOpacity onPress={() => handleEditLink(link)} style={{ padding: 4 }}>
+                                                <Edit2 size={18} color={colors.action} />
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => handleDeleteLink(link.id)} style={{ padding: 4 }}>
+                                                <Trash2 size={18} color={colors.error} />
+                                            </TouchableOpacity>
+                                        </HStack>
+                                    ) : (
+                                        <ExternalLink size={18} color={colors.textTertiary} />
+                                    )}
                                 </HStack>
                             </SanctuaryCard>
                         </Animated.View>
                     );
                 })}
+                
+                {isEditing && (
+                    <>
+                        {inline && inlineAdding && (
+                            <InlineSocialLinkEditor
+                                isNew
+                                onSave={async (newLink) => {
+                                    await addLink({
+                                        ...newLink,
+                                        user_id: userId!,
+                                        order_index: links.length
+                                    } as any);
+                                    setInlineAdding(false);
+                                }}
+                                onCancel={() => setInlineAdding(false)}
+                            />
+                        )}
+                        <Animated.View entering={FadeInDown.springify()}>
+                            <SanctuaryCard
+                                variant="glass"
+                                onPress={handleAddLink}
+                                style={{ borderStyle: 'dashed' }}
+                            >
+                                <HStack space="md" alignItems="center" sx={{ padding: Theme.spacing.md, justifyContent: 'center' }}>
+                                    <Plus size={20} color={colors.action} />
+                                    <Text bold color={colors.action}>Add Social Link</Text>
+                                </HStack>
+                            </SanctuaryCard>
+                        </Animated.View>
+                    </>
+                )}
             </VStack>
 
-            {links.length === 0 && (
+            {userId && (
+                <AddSocialLinkModal
+                    visible={isAddModalOpen}
+                    onClose={() => setIsAddModalOpen(false)}
+                    userId={userId}
+                    initialLink={editingLink}
+                />
+            )}
+
+            {displayLinks.length === 0 && (
                 <Box sx={{ paddingVertical: Theme.spacing.xl, alignItems: 'center' }}>
                     <Text color={colors.textTertiary} italic>
-                        No public contacts shared yet.
+                        {isOwnProfile ? t('community.profile.noContactsYet') || "No public contacts shared yet." : t('community.profile.noPublicContacts') || "No public contacts shared yet."}
                     </Text>
                 </Box>
             )}

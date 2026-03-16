@@ -38,6 +38,9 @@ import { founderAPI } from './founder';
 import { academicCyclesAPI } from './academicCycles';
 import { studentObservationsAPI } from './studentObservations';
 import { privacyAPI } from './privacy';
+import { echoAPI } from './echo';
+import { studentPotentialAPI } from './studentPotential';
+import { mappingAPI } from './mapping';
 
 export * from './mockData';
 export * from './types';
@@ -49,6 +52,7 @@ export * from './resonantProxy';
 export * from './classroomNotes';
 export * from './principalNotes';
 export * from './studentObservations';
+export * from './studentPotential';
 export * from './community'; // Export community types/API
 export * from './staffManagement'; // Export staff management types
 // Growth Model v3.0 — Full Nature-Inspired Growth Ecosystem
@@ -61,6 +65,7 @@ export * from './moonPhase';
 export * from './schoolForest';
 export * from './contextualChallenges';
 export * from './privacy';
+export * from './mapping';
 // Staff management types/API only exported selectively or implicitly required
 
 // Simplified named exports for direct access
@@ -106,6 +111,9 @@ export {
     academicCyclesAPI,
     studentObservationsAPI,
     privacyAPI,
+    echoAPI,
+    studentPotentialAPI,
+    mappingAPI,
 };
 
 /**
@@ -157,6 +165,9 @@ export const api = {
     academicCycles: academicCyclesAPI,
     studentObservations: studentObservationsAPI,
     privacy: privacyAPI,
+    echo: echoAPI,
+    studentPotential: studentPotentialAPI,
+    mapping: mappingAPI,
 };
 
 export default api;

@@ -14,7 +14,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { supabase, UserRole, handleAPIError, GuestDataSync, identityAPI } from '@repo/core';
+import { supabase, UserRole, handleAPIError, GuestDataSync, identityAPI, authAPI } from '@repo/core';
 import { validators, validateForm } from '../utils/validators';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as WebBrowser from 'expo-web-browser';
@@ -109,8 +109,7 @@ export default function AuthScreenWeb({
     async function handleGoogleSignIn() {
         setLoading(true);
         const redirectUrl = window.location.origin;
-
-        const { data: { session } } = await supabase.auth.getSession();
+        const session = await authAPI.getSession().catch(() => null);
         const isAnon = session?.user?.is_anonymous || !session?.user?.email;
 
         if (isAnon && session?.user) {
@@ -153,7 +152,7 @@ export default function AuthScreenWeb({
         setLoading(true);
         try {
             if (mode === 'signup') {
-                const { data: { session: cur } } = await supabase.auth.getSession();
+                const cur = await authAPI.getSession().catch(() => null);
                 const isAnon = cur?.user?.is_anonymous || !cur?.user?.email;
 
                 // Even if anonymous, we should call signUp to convert the user in Supabase Auth.

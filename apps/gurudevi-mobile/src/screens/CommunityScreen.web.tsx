@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     useTheme,
     PositiveInvitation,
     LotusPetalFAB,
     Theme,
     useThemedColors,
-    WebScreenHeader
+    WebScreenHeader,
+    Avatar,
+    AvatarFallbackText,
+    AvatarImage,
+    HStack,
+    VStack,
+    Text,
+    Box,
+    SanctuaryFlashList,
 } from '@repo/ui';
 import { useUserRole, useStore } from '@repo/core';
 import {
@@ -30,11 +38,17 @@ import {
     Flame,
     Plus,
     PenLine,
+    Globe,
+    Lock,
 } from 'lucide-react-native';
+import { ActivityIndicator } from 'react-native';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { formatDistanceToNow } from 'date-fns';
+
+type CommunityTab = 'feed' | 'groups' | 'dms';
+type GroupsSubTab = 'joined' | 'global';
 
 export default function CommunityScreen() {
     const { t } = useTranslation();
@@ -42,11 +56,16 @@ export default function CommunityScreen() {
     const { role, isGuest } = useUserRole();
     const { user } = useStore();
 
+    const [activeTab, setActiveTab] = useState<CommunityTab>('feed');
+    const [groupsSubTab, setGroupsSubTab] = useState<GroupsSubTab>('joined');
     const [selectedGroupId, setSelectedGroupId] = useState<string | 'all' | 'my' | 'pulse'>('all');
-    const [showList, setShowList] = useState<'none' | 'joined' | 'discover'>('none');
     const [searchQuery, setSearchQuery] = useState('');
     const [showCreatePost, setShowCreatePost] = useState(false);
     const [showCreateGroup, setShowCreateGroup] = useState(false);
+
+    // DM Logic
+    const [conversations, setConversations] = useState<any[]>([]);
+    const [loadingDMs, setLoadingDMs] = useState(false);
 
     // Real data wiring
     const { posts, isLoadingPosts, fetchPosts } = useCommunity(
@@ -65,6 +84,17 @@ export default function CommunityScreen() {
 
     const isEcosystemRole = role === 'founder' || role === 'admin' || role === 'developer';
     const colors = useThemedColors();
+
+    // Fetch DMs when activeTab is 'dms'
+    useEffect(() => {
+        if (activeTab === 'dms') {
+            setLoadingDMs(true);
+            communityAPI.getDirectConversations()
+                .then(data => setConversations(data as any[]))
+                .catch(console.error)
+                .finally(() => setLoadingDMs(false));
+        }
+    }, [activeTab]);
 
     // Client-side search filter — runs over fetched posts and groups
     const q = searchQuery.toLowerCase().trim();
@@ -90,8 +120,8 @@ export default function CommunityScreen() {
             <div className="sanctuary-container">
                 {/* 1. GREETING */}
                 <WebScreenHeader
-                    title="The Heart"
-                    note="Ecosystem Resonance"
+                    title={t('community.title') || "The Heart"}
+                    note={t('community.subtitle') || "Ecosystem Resonance"}
                     timeText={isEcosystemRole ? "Architect's Stream" : "Global Resonance"}
                     actions={!isGuest && (
                         <>
@@ -101,7 +131,7 @@ export default function CommunityScreen() {
                                 onClick={() => setShowCreatePost(true)}
                             >
                                 <PenLine size={15} />
-                                New Post
+                                {t('community.actions.newPost') || "New Post"}
                             </button>
                             <button
                                 className="secondary-button"
@@ -109,7 +139,7 @@ export default function CommunityScreen() {
                                 onClick={() => setShowCreateGroup(true)}
                             >
                                 <Plus size={15} />
-                                New Group
+                                {t('community.actions.newGroup') || "New Group"}
                             </button>
                         </>
                     )}
@@ -123,260 +153,269 @@ export default function CommunityScreen() {
                         <nav className="sidebar-nav" style={{ gap: '8px' }}>
                             <SidebarItem
                                 icon={<Compass size={18} />}
-                                label={t('community.filters.allUpdates')}
-                                active={selectedGroupId === 'all' && showList === 'none'}
-                                onClick={() => { setSelectedGroupId('all'); setShowList('none'); }}
+                                label={t('community.tabs.feed') || "Feed"}
+                                active={activeTab === 'feed'}
+                                onClick={() => setActiveTab('feed')}
                             />
                             <SidebarItem
                                 icon={<Users2 size={18} />}
-                                label={t('community.groups.sanctuary')}
-                                active={selectedGroupId === 'my' && showList === 'none'}
-                                onClick={() => { setSelectedGroupId('my'); setShowList('none'); }}
+                                label={t('community.tabs.groups') || "Groups"}
+                                active={activeTab === 'groups'}
+                                onClick={() => setActiveTab('groups')}
                             />
                             <SidebarItem
-                                icon={<Activity size={18} />}
-                                label={t('community.tabs.resonantFeed')}
-                                active={selectedGroupId === 'pulse' && showList === 'none'}
-                                onClick={() => { setSelectedGroupId('pulse'); setShowList('none'); }}
+                                icon={<MessageSquare size={18} />}
+                                label={t('community.tabs.dms') || "Messages"}
+                                active={activeTab === 'dms'}
+                                onClick={() => setActiveTab('dms')}
                             />
-                            <button
-                                className="sidebar-item"
-                                onClick={() => navigation.navigate('DirectMessagesList')}
-                            >
-                                <span className="sidebar-icon">
-                                    <MessageSquare size={18} />
-                                </span>
-                                <span className="sidebar-label">{t('community.tabs.dms')}</span>
-                            </button>
                         </nav>
 
-                        <div className="sidebar-divider" style={{ margin: '20px 16px 12px 16px', opacity: 0.1, backgroundColor: 'var(--ink)' }} />
+                        {activeTab === 'feed' && (
+                            <>
+                                <div className="sidebar-divider" style={{ margin: '20px 16px 12px 16px', opacity: 0.1, backgroundColor: 'var(--ink)' }} />
+                                <div style={{ padding: '0 16px' }}>
+                                    <div className="sidebar-group-label" style={{ marginBottom: '12px', opacity: 0.6 }}>{t('community.filters.title') || "Filters"}</div>
+                                    <SidebarItem
+                                        icon={<Activity size={16} />}
+                                        label={t('community.filters.allUpdates') || "All Updates"}
+                                        active={selectedGroupId === 'all'}
+                                        onClick={() => setSelectedGroupId('all')}
+                                    />
+                                    <SidebarItem
+                                        icon={<Heart size={16} />}
+                                        label={t('community.filters.joined') || "Joined"}
+                                        active={selectedGroupId === 'pulse'}
+                                        onClick={() => setSelectedGroupId('pulse')}
+                                    />
+                                </div>
+                            </>
+                        )}
 
-                        <div style={{ padding: '0 16px', marginTop: '12px' }}>
-                            <div className="sidebar-group-label" style={{ marginBottom: '12px', opacity: 0.6 }}>{t('community.groups.title')}</div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                {joinedGroups?.map((g) => (
-                                    <button
-                                        key={g.id}
-                                        className={`sidebar-item ${selectedGroupId === g.id ? 'active' : ''}`}
-                                        style={{ padding: '8px 12px' }}
-                                        onClick={() => { setSelectedGroupId(g.id); setShowList('none'); }}
-                                    >
-                                        <span className="sidebar-icon">
-                                            <Hash size={14} />
-                                        </span>
-                                        <span className="sidebar-label" style={{ fontWeight: '400' }}>{g.name}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="sidebar-divider" style={{ margin: '24px 16px 12px 16px', opacity: 0.1, backgroundColor: 'var(--ink)' }} />
-
-                        <div style={{ padding: '0 16px' }}>
-                            <div className="sidebar-group-label" style={{ marginBottom: '12px', opacity: 0.6 }}>{t('community.tabs.infiniteGalaxy')}</div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                {discoverGroups?.map((g) => (
-                                    <button
-                                        key={g.id}
-                                        className={`sidebar-item ${selectedGroupId === g.id ? 'active' : ''}`}
-                                        style={{ padding: '8px 12px' }}
-                                        onClick={() => { setSelectedGroupId(g.id); setShowList('none'); }}
-                                    >
-                                        <span className="sidebar-icon">
-                                            <Hash size={14} />
-                                        </span>
-                                        <span className="sidebar-label" style={{ fontWeight: '400' }}>{g.name}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
+                        {activeTab === 'groups' && (
+                            <>
+                                <div className="sidebar-divider" style={{ margin: '20px 16px 12px 16px', opacity: 0.1, backgroundColor: 'var(--ink)' }} />
+                                <div style={{ padding: '0 16px' }}>
+                                    <div className="sidebar-group-label" style={{ marginBottom: '12px', opacity: 0.6 }}>{t('community.groups.myGroups') || "My Sanctuary"}</div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                        {joinedGroups?.map((g) => (
+                                            <button
+                                                key={g.id}
+                                                className={`sidebar-item ${selectedGroupId === g.id ? 'active' : ''}`}
+                                                style={{ padding: '8px 12px' }}
+                                                onClick={() => { setSelectedGroupId(g.id); }}
+                                            >
+                                                <span className="sidebar-icon">
+                                                    <Hash size={14} />
+                                                </span>
+                                                <span className="sidebar-label" style={{ fontWeight: '400' }}>{g.name}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </aside>
 
-                    {/* CENTER: Main Feed */}
+                    {/* CENTER: Main Feed / Groups / DMs */}
                     <div className="community-feed">
-                        {/* ── Search bar ── */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', padding: '10px 14px', borderRadius: '12px', border: '1px solid var(--border)', background: 'rgba(255,255,255,0.5)' }}>
-                            <Compass size={16} color="var(--ink-ghost)" />
-                            <input
-                                style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '14px', color: 'var(--ink)', outline: 'none', fontFamily: 'var(--font-body)' }}
-                                placeholder={t('community.search.placeholder') || 'Search posts, groups, members…'}
-                                value={searchQuery}
-                                onChange={(e) => { setSearchQuery(e.target.value); if (e.target.value) setShowList('none'); }}
-                                aria-label="Search community"
-                            />
-                            {searchQuery && (
-                                <button onClick={() => setSearchQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', fontSize: '16px', lineHeight: 1 }} aria-label="Clear search">✕</button>
-                            )}
+                        {/* ── Responsive Upper Bar (Hidden on Desktop via CSS) ── */}
+                        <div className="community-sub-nav">
+                            <button
+                                className={`sub-nav-item ${activeTab === 'feed' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('feed')}
+                            >
+                                <Compass size={16} />
+                                <span>{t('community.tabs.feed') || "Feed"}</span>
+                            </button>
+                            <button
+                                className={`sub-nav-item ${activeTab === 'groups' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('groups')}
+                            >
+                                <Users2 size={16} />
+                                <span>{t('community.tabs.groups') || "Groups"}</span>
+                            </button>
+                            <button
+                                className={`sub-nav-item ${activeTab === 'dms' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('dms')}
+                            >
+                                <MessageSquare size={16} />
+                                <span>{t('community.tabs.dms') || "DMs"}</span>
+                            </button>
                         </div>
 
-                        {/* ── Search results: matching groups ── */}
-                        {filteredGroups && filteredGroups.length > 0 && (
-                            <div style={{ marginBottom: '24px' }}>
-                                <p style={{ fontSize: '11px', fontWeight: '800', color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '10px' }}>Groups</p>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                    {filteredGroups.map(g => (
-                                        <button key={g.id} onClick={() => { setSelectedGroupId(g.id); setSearchQuery(''); setShowList('none'); }} className="sanctuary-card" style={{ padding: '14px 18px', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                            <Hash size={16} color="var(--water)" />
-                                            <div>
-                                                <div style={{ fontWeight: '700', fontSize: '14px' }}>{g.name}</div>
+                        {/* Search bar (Persistent across Feed and Groups) */}
+                        {activeTab !== 'dms' && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', padding: '10px 14px', borderRadius: '12px', border: '1px solid var(--border)', background: 'rgba(255,255,255,0.5)' }}>
+                                <Compass size={16} color="var(--ink-ghost)" />
+                                <input
+                                    style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '14px', color: 'var(--ink)', outline: 'none', fontFamily: 'var(--font-body)' }}
+                                    placeholder={t('community.search.placeholder') || 'Search posts, groups, members…'}
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    aria-label="Search community"
+                                />
+                                {searchQuery && (
+                                    <button onClick={() => setSearchQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', fontSize: '16px', lineHeight: 1 }} aria-label="Clear search">✕</button>
+                                )}
+                            </div>
+                        )}
+
+                        {activeTab === 'feed' && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                {isLoadingPosts ? (
+                                    <StackFallback variant="cards" />
+                                ) : (() => {
+                                    const visiblePosts = (filteredPosts || []).filter(p => {
+                                        if (selectedGroupId === 'all') return true;
+                                        if (selectedGroupId === 'pulse') return p.post_type === 'announcement' || Object.values(p.reactions || {}).reduce((a: number, b) => a + (b as number), 0) > 5;
+                                        return p.group_id === selectedGroupId;
+                                    });
+                                    if (visiblePosts.length === 0) {
+                                        return (
+                                            <div style={{ padding: '80px 40px', textAlign: 'center' }}>
+                                                <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic' }}>
+                                                    {q ? `No posts match "${searchQuery}"` : t('community.empty.title')}
+                                                </p>
+                                            </div>
+                                        );
+                                    }
+                                    return visiblePosts.map((post) => (
+                                        <PostCard
+                                            key={post.id}
+                                            post={post}
+                                            currentUserId={user?.id}
+                                            onPress={() => {
+                                                if (post.group_id) {
+                                                    navigation.navigate('GroupDetails', {
+                                                        groupId: post.group_id,
+                                                        groupName: post.group_name ?? 'Group',
+                                                    });
+                                                }
+                                            }}
+                                            onLike={() => {
+                                                if (user?.id) communityAPI.togglePostReaction(post.id, user.id).catch(console.error);
+                                            }}
+                                            onAuthorPress={() => {
+                                                if (post.author_id && !post.is_anonymous) {
+                                                    navigation.navigate('PublicProfile', {
+                                                        id: post.author_id,
+                                                        type: 'user',
+                                                    });
+                                                }
+                                            }}
+                                        />
+                                    ));
+                                })()}
+                            </div>
+                        )}
+
+                        {activeTab === 'groups' && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button 
+                                        className={`top-tab ${groupsSubTab === 'joined' ? 'active' : ''}`}
+                                        onClick={() => setGroupsSubTab('joined')}
+                                    >
+                                        <Lock size={14} style={{ marginRight: 4 }} />
+                                        {t('community.groups.joinedTitle') || "Joined Schools"}
+                                    </button>
+                                    <button 
+                                        className={`top-tab ${groupsSubTab === 'global' ? 'active' : ''}`}
+                                        onClick={() => setGroupsSubTab('global')}
+                                    >
+                                        <Globe size={14} style={{ marginRight: 4 }} />
+                                        {t('community.tabs.infiniteGalaxy') || "Global Groups"}
+                                    </button>
+                                </div>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+                                    {(groupsSubTab === 'joined' ? joinedGroups : discoverGroups)?.map(g => (
+                                        <button
+                                            key={g.id}
+                                            onClick={() => navigation.navigate('GroupDetails', { groupId: g.id, groupName: g.name })}
+                                            className="sanctuary-card interactive"
+                                            style={{ padding: '20px', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '12px' }}
+                                        >
+                                            <Hash size={20} color={groupsSubTab === 'joined' ? "var(--water)" : "var(--moss)"} />
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ fontWeight: '700' }}>{g.name}</div>
                                                 {g.description && <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{g.description}</div>}
                                             </div>
+                                            {groupsSubTab === 'joined' ? <MessageSquare size={16} color="var(--ink-ghost)" /> : <Plus size={16} color="var(--ink-ghost)" />}
                                         </button>
                                     ))}
                                 </div>
                             </div>
                         )}
 
-                        <div className="community-sub-nav">
-                            <button
-                                className={`sub-nav-item ${showList === 'none' ? 'active' : ''}`}
-                                onClick={() => setShowList('none')}
-                            >
-                                <Compass size={16} />
-                                <span>{t('community.tabs.resonantFeed')}</span>
-                            </button>
-                            <button
-                                className={`sub-nav-item ${showList === 'joined' ? 'active' : ''}`}
-                                onClick={() => setShowList('joined')}
-                            >
-                                <Users2 size={16} />
-                                <span>{t('community.groups.sanctuary')}</span>
-                            </button>
-                            <button
-                                className={`sub-nav-item ${showList === 'discover' ? 'active' : ''}`}
-                                onClick={() => setShowList('discover')}
-                            >
-                                <Compass size={16} />
-                                <span>{t('community.tabs.infiniteGalaxy')}</span>
-                            </button>
-                        </div>
-
-                        {showList === 'joined' ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                <h2 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '8px' }}>{t('community.groups.joinedTitle')}</h2>
-                                {joinedGroups?.map(g => (
-                                    <button
-                                        key={g.id}
-                                        onClick={() => navigation.navigate('GroupDetails', { groupId: g.id, groupName: g.name })}
-                                        className="sanctuary-card interactive"
-                                        style={{ padding: '20px', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '12px' }}
-                                    >
-                                        <Hash size={20} color="var(--water)" />
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ fontWeight: '700' }}>{g.name}</div>
-                                            {g.description && <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{g.description}</div>}
-                                        </div>
-                                        <MessageSquare size={16} color="var(--ink-ghost)" />
-                                    </button>
-                                ))}
-                            </div>
-                        ) : showList === 'discover' ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                <h2 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '8px' }}>{t('community.tabs.infiniteGalaxy')}</h2>
-                                {discoverGroups?.map(g => (
-                                    <button
-                                        key={g.id}
-                                        onClick={() => navigation.navigate('GroupDetails', { groupId: g.id, groupName: g.name })}
-                                        className="sanctuary-card interactive"
-                                        style={{ padding: '20px', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '12px' }}
-                                    >
-                                        <Compass size={20} color="var(--moss)" />
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ fontWeight: '700' }}>{g.name}</div>
-                                            {g.description && <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{g.description}</div>}
-                                        </div>
-                                        <Plus size={16} color="var(--ink-ghost)" />
-                                    </button>
-                                ))}
-                            </div>
-                        ) : (
-                            <>
-                                {selectedGroupId === 'all' && (
-                                    <div style={{ marginBottom: '12px' }}>
-                                        {/* Hearth moved to right sidebar for better web utility */}
+                        {activeTab === 'dms' && (
+                            <div className="sanctuary-card" style={{ padding: '0', overflow: 'hidden' }}>
+                                {loadingDMs ? (
+                                    <div style={{ padding: '40px', textAlign: 'center' }}>
+                                        <ActivityIndicator color="var(--action)" />
                                     </div>
-                                )}
-
-                                {!isEcosystemRole && isGuest ? (
-                                    <div style={{ marginTop: '40px' }}>
-                                        <PositiveInvitation
-                                            context="community"
-                                            onAction={() => navigation.navigate('Auth' as any)}
-                                        />
+                                ) : conversations.length === 0 ? (
+                                    <div style={{ padding: '80px 40px', textAlign: 'center' }}>
+                                        <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic' }}>
+                                            No messages yet. Start a conversation from a user's profile!
+                                        </p>
                                     </div>
                                 ) : (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                                        {isLoadingPosts ? (
-                                            <StackFallback variant="cards" />
-                                        ) : (() => {
-                                            // Apply group filter on top of the text-search filter
-                                            const visiblePosts = (filteredPosts || []).filter(p => {
-                                                if (selectedGroupId === 'all') return true;
-                                                if (selectedGroupId === 'my') return joinedGroups?.some(g => g.id === p.group_id);
-                                                if (selectedGroupId === 'pulse') return p.post_type === 'announcement' || Object.values(p.reactions || {}).reduce((a: number, b) => a + (b as number), 0) > 5;
-                                                return p.group_id === selectedGroupId;
-                                            });
-                                            if (visiblePosts.length === 0) {
-                                                return (
-                                                    <div style={{ padding: '80px 40px', textAlign: 'center' }}>
-                                                        <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic' }}>
-                                                            {q ? `No posts match "${searchQuery}"` : (selectedGroupId === 'my' ? t('community.groups.noGalaxyTitle') : t('community.empty.title'))}
-                                                        </p>
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        {conversations.map((item, index) => {
+                                            const initials = item.other_user_name?.split(' ').map((w: any) => w[0]).join('').slice(0, 2).toUpperCase();
+                                            return (
+                                                <button
+                                                    key={item.id}
+                                                    onClick={() => navigation.navigate('DirectMessage', {
+                                                        conversationId: item.id,
+                                                        userName: item.other_user_name
+                                                    })}
+                                                    style={{ 
+                                                        display: 'flex', 
+                                                        alignItems: 'center', 
+                                                        padding: '16px 20px', 
+                                                        gap: '16px',
+                                                        borderBottom: index === conversations.length - 1 ? 'none' : '1px solid var(--border)',
+                                                        textAlign: 'left',
+                                                        width: '100%',
+                                                        background: 'transparent'
+                                                    }}
+                                                    className="interactive-row"
+                                                >
+                                                    <div style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: 'var(--action-soft)', overflow: 'hidden' }}>
+                                                        {item.other_user_avatar 
+                                                            ? <img src={item.other_user_avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                            : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--action)', fontWeight: '700' }}>{initials}</div>
+                                                        }
                                                     </div>
-                                                );
-                                            }
-                                            return visiblePosts.map((post) => (
-                                                <PostCard
-                                                    key={post.id}
-                                                    post={post}
-                                                    currentUserId={user?.id}
-                                                    onPress={() => {
-                                                        // Navigate to the group where this post lives
-                                                        if (post.group_id) {
-                                                            navigation.navigate('GroupDetails', {
-                                                                groupId: post.group_id,
-                                                                groupName: post.group_name ?? 'Group',
-                                                            });
-                                                        }
-                                                    }}
-                                                    onLike={() => {
-                                                        if (user?.id) communityAPI.togglePostReaction(post.id, user.id).catch(console.error);
-                                                    }}
-                                                    onAuthorPress={() => {
-                                                        if (post.author_id && !post.is_anonymous) {
-                                                            navigation.navigate('UserProfile', {
-                                                                userId: post.author_id,
-                                                                userName: post.author_name ?? 'Member',
-                                                            });
-                                                        }
-                                                    }}
-                                                />
-                                            ));
-                                        })()}
+                                                    <div style={{ flex: 1 }}>
+                                                        <div style={{ fontWeight: '700', fontSize: '15px' }}>{item.other_user_name}</div>
+                                                        <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>Tap to continue conversation</div>
+                                                    </div>
+                                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>
+                                                        {new Date(item.updated_at).toLocaleDateString()}
+                                                    </div>
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 )}
-                            </>
+                            </div>
                         )}
                     </div>
 
                     {/* RIGHT: Presence & Stats */}
                     <aside className="community-panel">
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-
-                            <div style={{ width: '100%' }}>
-                                <CommunityHearth
-                                    manifestos={manifestos}
-                                    userId={user?.id || 'guest'}
-                                    userRole={role}
-                                />
-                            </div>
-                        </div>
+                        <CommunityHearth
+                            manifestos={manifestos}
+                            userId={user?.id || 'guest'}
+                            userRole={role}
+                        />
                     </aside>
                 </div>
             </div>
-
-            {/* FAB Removed per user request */}
 
             {/* Create Post Modal */}
             <CreatePostModal
@@ -390,10 +429,15 @@ export default function CommunityScreen() {
                 isOpen={showCreateGroup}
                 onClose={() => { setShowCreateGroup(false); fetchGroups?.(); }}
             />
+            
+            <style dangerouslySetInnerHTML={{ __html: `
+                .interactive-row:hover {
+                    background: var(--background-alt) !important;
+                }
+            ` }} />
         </div>
     );
 }
-
 
 function SidebarItem({ icon, label, active, onClick }: { icon: any, label: string, active: boolean, onClick: () => void }) {
     return (
@@ -410,3 +454,4 @@ function SidebarItem({ icon, label, active, onClick }: { icon: any, label: strin
         </button>
     );
 }
+

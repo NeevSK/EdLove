@@ -31,7 +31,12 @@ export interface ThemeColors {
     overlay: string;
     shadow: string;
     glow: string;
+    backgroundDark: string;
+    obsidian: string;
+    black: string;
 }
+
+
 
 /**
  * Get theme colors based on dark mode status and temporal phase
@@ -78,7 +83,12 @@ function getBaseThemeColors(isDark: boolean): ThemeColors {
             overlay: baseColors.shadowAmbient,
             shadow: baseColors.shadowDeep,
             glow: baseColors.shadowAmbient, // Default glow for dark mode
+            backgroundDark: baseColors.backgroundDark,
+            obsidian: baseColors.obsidian,
+            black: baseColors.black,
         };
+
+
     } else {
         return {
             // Light mode backgrounds
@@ -103,7 +113,12 @@ function getBaseThemeColors(isDark: boolean): ThemeColors {
             overlay: baseColors.shadowAmbient,
             shadow: baseColors.shadowAmbient,
             glow: baseColors.shadowFocus, // Default glow for light mode
+            backgroundDark: baseColors.vellum, // Use vellum for light mode "dark" background
+            obsidian: baseColors.silk,
+            black: baseColors.inkTruth, // Use inkTruth for light mode "black"
         };
+
+
     }
 }
 
