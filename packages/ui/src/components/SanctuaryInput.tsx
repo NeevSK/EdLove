@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import {
     FormControl,
     FormControlLabel,
@@ -32,6 +32,7 @@ interface SanctuaryInputProps {
     isDisabled?: boolean;
     multiline?: boolean;
     numberOfLines?: number;
+    keyboardType?: 'default' | 'number-pad' | 'decimal-pad' | 'numeric' | 'email-address' | 'phone-pad';
     autoFocus?: boolean;
     accessibilityLabel?: string;
     accessibilityHint?: string;
@@ -53,6 +54,7 @@ export default function SanctuaryInput({
     multiline = false,
     numberOfLines = 1,
     autoFocus = false,
+    keyboardType = 'default',
     accessibilityLabel,
     accessibilityHint
 }: SanctuaryInputProps) {
@@ -116,6 +118,7 @@ export default function SanctuaryInput({
                     onChangeText={onChangeText}
                     autoFocus={autoFocus}
                     type={type}
+                    keyboardType={keyboardType as any}
                     color={text.primary}
                     placeholderTextColor={text.muted}
                     multiline={multiline}

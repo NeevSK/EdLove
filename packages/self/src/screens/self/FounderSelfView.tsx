@@ -22,7 +22,6 @@ import { useWellbeingEnrichment } from '../../hooks/useWellbeingEnrichment';
 
 // Role Components
 import MoodLotus from '../../components/MoodLotus';
-import ShadowAgentDrawer from '../../components/ShadowAgentDrawer';
 import WelcomeModal from '../../components/WelcomeModal';
 import { useMoodLogs } from '../../hooks/useMoodLogs';
 import { useEnergyForecast } from '../../hooks/useEnergyForecast';
@@ -137,7 +136,7 @@ export default function FounderSelfView() {
                 }
             />
 
-            <ShadowAgentDrawer />
+
             <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}

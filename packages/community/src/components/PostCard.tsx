@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, Platform, Share } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, Platform, Share, ActivityIndicator } from 'react-native';
 import { Box, HStack, VStack, Text, Avatar, AvatarFallbackText, AvatarImage } from '@repo/ui';
 import { MoreHorizontal, Heart, MessageCircle, Sparkles, Globe, Share2 } from 'lucide-react-native';
 import { SanctuaryCard, Theme, useThemedColors, LivingGlow } from '@repo/ui';
 import { formatDistanceToNow } from 'date-fns';
-import { MediaAsset } from '@repo/core';
+import { MediaAsset, communityAPI, supabase } from '@repo/core';
 import * as Clipboard from 'expo-clipboard';
+import { useCommunity } from '../hooks/useCommunity';
 
 export type PostType = 'post' | 'text' | 'announcement' | 'poll';
 
@@ -51,7 +52,8 @@ const PostCard = React.memo(function PostCard({
         media_url,
         media_type,
         is_anonymous,
-        id
+        id,
+        poll_data
     } = post;
     const colors = useThemedColors();
     const [activeMediaIndex, setActiveMediaIndex] = React.useState(0);
@@ -137,6 +139,13 @@ const PostCard = React.memo(function PostCard({
         }
     };
 
+    const renderPollContent = () => {
+        if (post_type === 'poll' && poll_data) {
+            return <PollWidget postId={id} pollData={poll_data} currentUserId={currentUserId} />;
+        }
+        return null;
+    };
+
     return (
         <SanctuaryCard onPress={onPress} elevated={isAnnouncement}>
             <VStack space="md">
@@ -179,6 +188,9 @@ const PostCard = React.memo(function PostCard({
 
                 {/* Media Content */}
                 {renderMediaContent()}
+
+                {/* Poll Content */}
+                {renderPollContent()}
 
                 {/* Footer: Actions */}
                 <HStack justifyContent="space-between" alignItems="center" mt="$1">
@@ -247,6 +259,122 @@ const PostCard = React.memo(function PostCard({
         </SanctuaryCard>
     );
 });
+
+function PollWidget({ postId, pollData, currentUserId }: { postId: string, pollData: any, currentUserId?: string }) {
+    const { options = [] } = pollData;
+    const colors = useThemedColors();
+    const [votes, setVotes] = React.useState<Record<string, number>>({});
+    const [userVotedOption, setUserVotedOption] = React.useState<string | null>(null);
+    const [totalVotes, setTotalVotes] = React.useState(0);
+    const [isLoading, setIsLoading] = React.useState(true);
+
+    const fetchVotes = React.useCallback(async () => {
+        try {
+            const { data: votesData, error } = await supabase
+                .from('community_poll_votes')
+                .select('user_id, option_id')
+                .eq('post_id', postId);
+
+            if (error) throw error;
+
+            const counts: Record<string, number> = {};
+            let userChoice: string | null = null;
+            
+            (votesData || []).forEach((v: any) => {
+                counts[v.option_id] = (counts[v.option_id] || 0) + 1;
+                if (v.user_id === currentUserId) {
+                    userChoice = v.option_id;
+                }
+            });
+
+            setVotes(counts);
+            setTotalVotes(votesData?.length || 0);
+            setUserVotedOption(userChoice);
+        } catch (err) {
+            console.error('Failed to fetch poll votes:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [postId, currentUserId]);
+
+    React.useEffect(() => {
+        fetchVotes();
+    }, [fetchVotes]);
+
+    const handleVote = async (optionId: string) => {
+        if (userVotedOption || !currentUserId) return;
+
+        // Optimistic update
+        setUserVotedOption(optionId);
+        setVotes(prev => ({ ...prev, [optionId]: (prev[optionId] || 0) + 1 }));
+        setTotalVotes(prev => prev + 1);
+
+        try {
+            await communityAPI.voteInPoll(postId, optionId);
+        } catch (err) {
+            console.error('Failed to vote:', err);
+            // Revert on error
+            setUserVotedOption(null);
+            fetchVotes();
+        }
+    };
+
+    if (isLoading) {
+        return <ActivityIndicator size="small" color={colors.action} />;
+    }
+
+    return (
+        <VStack space="sm" sx={{ marginTop: Theme.spacing.sm }}>
+            {options.map((opt: any) => {
+                const count = votes[opt.id] || 0;
+                const percentage = totalVotes > 0 ? (count / totalVotes) * 100 : 0;
+                const isSelected = userVotedOption === opt.id;
+
+                return (
+                    <TouchableOpacity
+                        key={opt.id}
+                        onPress={() => handleVote(opt.id)}
+                        disabled={!!userVotedOption || !currentUserId}
+                        style={{
+                            borderRadius: Theme.corners.comfortable,
+                            overflow: 'hidden',
+                            borderWidth: 1,
+                            borderColor: isSelected ? colors.action : colors.overlay,
+                            backgroundColor: colors.secondary,
+                            height: 44,
+                            justifyContent: 'center'
+                        }}
+                    >
+                        {/* Progress Bar Background */}
+                        <Box sx={{
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            bottom: 0,
+                            width: `${percentage}%`,
+                            backgroundColor: isSelected ? colors.action : colors.overlay,
+                            opacity: 0.3
+                        }} />
+                        
+                        <HStack justifyContent="space-between" px="$3" alignItems="center">
+                            <Text color={colors.textPrimary} size="sm" bold={isSelected}>
+                                {opt.text}
+                            </Text>
+                            {userVotedOption && (
+                                <Text color={colors.textSecondary} size="xs">
+                                    {Math.round(percentage)}%
+                                </Text>
+                            )}
+                        </HStack>
+                    </TouchableOpacity>
+                );
+            })}
+            <Text color={colors.textTertiary} size="xs" sx={{ textAlign: 'right', marginTop: 4 }}>
+                {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
+            </Text>
+        </VStack>
+    );
+}
 
 export default PostCard;
 

@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useStore } from '../store/useStore';
 import { supabase } from '../lib/supabase';
+import { authAPI } from '../api/auth';
 import { identityAPI } from '../api/identity';
 import { TimetableScheduler, CoordinationGap } from '../api/agents';
 import { moonPhaseAPI } from '../api/moonPhase';
@@ -188,8 +189,8 @@ export function useAIAgent() {
         try {
             // getSession() here is correct: we only need the JWT access_token to call
             // the edge function — NOT session.user.id for any DB query.
-            const { data: sessionData } = await supabase.auth.getSession();
-            const token = sessionData?.session?.access_token;
+            const session = await authAPI.getSession();
+            const token = session?.access_token;
 
             if (!token) {
                 throw new Error('No auth token');

@@ -116,9 +116,28 @@ const TAB_CONFIG = [
 /** Reusable notification badge dot for Bell icons */
 function NotificationBadge({ count, size = 'md' }: { count: number; size?: 'sm' | 'md' }) {
   if (count <= 0) return null;
-  const dim = size === 'sm' ? { minW: '14px', h: '14px', fs: '8px', top: '-3px', right: '-5px' } : { minW: '16px', h: '16px', fs: '9px', top: '-4px', right: '-6px' };
+  const dim = size === 'sm' ? 
+    { minW: '14px', h: '14px', fs: '8px', top: '-3px', right: '-5px' } : 
+    { minW: '16px', h: '16px', fs: '9px', top: '-4px', right: '-6px' };
+  
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: dim.minW, height: dim.h, padding: '0 4px', fontSize: dim.fs, fontWeight: '800', background: 'var(--lotus)', color: 'white', borderRadius: '8px', position: 'absolute', top: dim.top, right: dim.right }}>
+    <div style={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      minWidth: dim.minW, 
+      height: dim.h, 
+      padding: '0 4px', 
+      fontSize: dim.fs, 
+      fontWeight: '800', 
+      background: 'var(--lotus)', 
+      color: 'white', 
+      borderRadius: '8px', 
+      position: 'absolute', 
+      top: dim.top, 
+      right: dim.right,
+      zIndex: 1
+    }}>
       {count > 99 ? '99+' : String(count)}
     </div>
   );
@@ -419,9 +438,7 @@ export default function TabNavigator({
                       : "var(--ink-ghost)"
                   }
                 />
-                <div className="bell-dot" style={unreadCount > 0 ? { display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '16px', height: '16px', padding: '0 4px', fontSize: '9px', fontWeight: '800', background: 'var(--lotus)', color: 'white', borderRadius: '8px', top: '-4px', right: '-6px' } : {}}>
-                  {unreadCount > 0 ? (unreadCount > 99 ? '99+' : String(unreadCount)) : ''}
-                </div>
+                <NotificationBadge count={unreadCount} />
               </div>
               {(isSidebarExpanded || isMobileView) && (
                 <span className="sidebar-label">Notifications</span>
@@ -616,9 +633,7 @@ export default function TabNavigator({
                     : "var(--ink-ghost)"
                 }
               />
-              <div className="bell-dot" style={unreadCount > 0 ? { display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px', height: '14px', padding: '0 3px', fontSize: '8px', fontWeight: '800', background: 'var(--lotus)', color: 'white', borderRadius: '7px', top: '-3px', right: '-5px' } : {}}>
-                {unreadCount > 0 ? (unreadCount > 99 ? '99+' : String(unreadCount)) : ''}
-              </div>
+              <NotificationBadge count={unreadCount} size="sm" />
             </div>
             <span className="mobile-nav-label">{t("webNav.alerts")}</span>
           </button>

@@ -8,6 +8,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import { supabase } from '@repo/core';
 import { useTheme, getInitialsFromName } from '@repo/ui';
 import { Camera } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
 
 // expo-file-system/legacy has no web implementation.
 // On native we use it for local caching; on web we skip that layer entirely.
@@ -24,6 +25,8 @@ interface AvatarDisplayProps {
   editable?: boolean;
   onAvatarUpdated?: (newPublicUrl: string) => Promise<void>;
   style?: object;
+  peekable?: boolean;
+  peekType?: 'user' | 'school' | 'classroom' | 'community';
 }
 
 function getCachePath(userId: string): string | null {
@@ -52,8 +55,11 @@ export function AvatarDisplay({
   editable = false,
   onAvatarUpdated,
   style,
+  peekable = false,
+  peekType = 'user',
 }: AvatarDisplayProps) {
   const { accent, text } = useTheme();
+  const navigation = useNavigation<any>();
   const [localCachePath, setLocalCachePath] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -143,6 +149,14 @@ export function AvatarDisplay({
     }
   }, [userId, onAvatarUpdated]);
 
+  const handlePeek = useCallback(() => {
+    if (!peekable || !userId) return;
+    navigation.navigate('PublicProfile', { 
+      id: userId, 
+      type: peekType 
+    });
+  }, [peekable, userId, peekType, navigation]);
+
   // Display source priority: local cache > remote URL > initials
   const displayUri = localCachePath || avatarUrl || null;
   const initials = getInitialsFromName(fullName);
@@ -168,6 +182,13 @@ export function AvatarDisplay({
   );
 
   if (!editable) {
+    if (peekable) {
+      return (
+        <TouchableOpacity style={containerStyle} onPress={handlePeek} activeOpacity={0.7}>
+          {content}
+        </TouchableOpacity>
+      );
+    }
     return <View style={containerStyle}>{content}</View>;
   }
 

@@ -1,15 +1,26 @@
 this file is for issues i saw while doing manual testing and should complement/integrate with the tasks do in future and update the progress as well)
 (other than not mentioned specifically all changes should apply both mobile and web - web related docs @ "/../docs/web")
 
+## 16/03/2026 
+
+
+## 15/03/2026 (latest - [n])
+### 7.34 pm
+1. for teachers -studnet analysis where she already has notes etc - Gifted children , radar chart kinda (interactive editable) way to child analsysis for teachers it should multi perespective and finding silver lining in clouds and potential
+2. the global resource needed cumulative - my idea is one gblobal view and aggregation we can get from everything we have in app. and it should be make founder or any other assigned user infomed about full education ecology about resources(stocks), flows.feedbackloops etc. then founder should be like minister of edu who has all aggregated data from school. what really need to implement to make this powerful? what do we have already lets implement all of these 
+3. map view refinements in library (this is visualized way to show details than just texts, map be different charts, kinnda kinda maps, mind maps, reak maos with itearctive data, learning pathways etc) are we clear on what we gonna do? what we have now  seems just something like in obsidian and its useless and uglyy but good as acknolegeavle first step we put.  what i need different types of visualizations. not just this nodes and edges ething. its one others are real world geographical maps with interactivity, kinnu kind of map(search if needed), mind maps(focused nodes, edges), flow charts, various charts like in power bi,  etc. what we are still trying to implement is just one. are you with we?? when i say map in my mind its so felxible like sir lanka global, one part of sri lanka with more details etc(this is the smallest exmple of what i m dreaming in this way). then when it said kinnu map thousand of different kinnu maps, when mind maps more mind maps etc how about now? may be thing dont need to capable crossview and i dont know whether all are really croosview feasible given data type. and anyhow i think we need to add technical,a rchitectal doc in relevant place to make things clear in future
+
+
+
 ## 13/03/2026 (latest - [n])
 
 ###  2.45 pm
 1. need to make items in carousl in *selfviews dynamic where what will be shown as first 10 items should be user activity + time etc. and user should be pin and unpin what they want and 
 2. add info icon and when clicked it should show modal with info about that feature and where to find it in app. 
-3. adding capability for username/handle for each user/school/school-classroom/groups etc adn it will even shown in QR. and part of QR link need to changed to platform.gurudevi.edlove.com from app.gurudevi.edlove.com.
-4.social links in profile screen should be inline editable in profile screen.
+3. adding capability for username/handle for each user/school/school-classroom/groups etc adn it will even shown in QR. and part of QR link need to changed to platform.gurudevi.edlove.com from app.gurudevi.edlove.org.
+4.social links in profile screen should be inline editable in profile screen.(web and mobile)
 5. there should be place to view school/classroom/community profile and things should be editable inline too( same for web)
-6. there should be public profile for everyone and also for schhol/class/community. and when someone tap, peeked public profile should be visible. 
+6. there should be public profile for everyone(users) and also for schhol/class/community. and when someone tap, peeked the avatart or profile pic public profile should be visible. 
 7. there are two FAB(shadow agent vs lotuspetalfab)[same for both web and mobile] which fights for space. lets remove shadow agent and need to think what to do for that? in self section and color of background of lotus is uggly which us muddy- i think its because may be in color diefintions primary or secondary colors has changed from santuray saffron to something else which is muddish. that orangish santuary saffron was theme of app. lets investigate this first around theme and other color defined places and then devise a plan. add santuary saffron. 
 8. the FAB in every screen should be draggable and also put somewhere else. now its draggable but it comes back to same place like a magnet. 
 9. the selfsection feature pinning is confusing and need to impliment intutive user firendly way. like when long press it ask to and when it pinned tapping it removes and shows the effect immediately, and increase the size of pin bit more. 
@@ -29,8 +40,8 @@ this file is for issues i saw while doing manual testing and should complement/i
 7. signedup user should be able to use full thing
 8. learning models, growth model etc
 9. public profile - social links
-10. polls and forms including anonymus
-11. principal eco like feature for studnets to let their voice heard to teacher
+10. polls and forms including anonymus in classroom or community creatable by anyone. 
+11. principal eco like feature for studnets to let their voice heard to class teacher
 12. all wellbeing features for studentsself screen as well + working self feature
 13. breathing guidance etc important things
 14. founder role full functionality for me(please!)

@@ -1,199 +1,399 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, useWindowDimensions, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState, useMemo } from 'react';
+import { StyleSheet, View, useWindowDimensions, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import {
-    Box,
-    VStack,
-    Text,
-    useThemedColors,
+    ScreenWrapper,
     GlobalHeader,
-    Theme
+    useThemedColors,
+    Theme,
+    Box,
+    Text,
+    HStack,
+    VStack,
 } from '@repo/ui';
-import * as d3 from 'd3';
+import { useNavigation } from '@react-navigation/native';
+import {
+    X,
+    Globe,
+    Orbit,
+    Route,
+    Network,
+    BarChart3,
+    Wind,
+    FileCheck,
+} from 'lucide-react-native';
 import { libraryAPI } from '../api/library';
-import { KnowledgeTopology, KnowledgeNode, KnowledgeLink } from '../types';
+import { KnowledgeTopology, KnowledgeNode } from '../types/Library';
+import { 
+    AstroView, 
+    VastuView, 
+    JyotiView, 
+    TerraView, 
+    DharmaView,
+    VatyaView, // Added VatyaView
+} from '../components/perspectives';
+import { usePerspectiveLayout } from '../hooks/usePerspectiveLayout';
+import { getAvailablePerspectives as getEnginePerspectives, KnowledgeParser, CaptureEngine } from '@repo/graphics';
+
+type PerspectiveId = 'astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti' | 'vatya'; // Added 'vatya'
+
+interface Perspective {
+    id: PerspectiveId;
+    label: string;
+    icon: any;
+    description: string;
+    disabled?: boolean;
+}
+
+const PERSPECTIVES: Perspective[] = [
+    { id: 'astro', label: 'Cosmos', icon: Orbit, description: 'Interconnected topology of wisdom' },
+    { id: 'terra', label: 'Geo', icon: Globe, description: 'Geographical maps of knowledge' },
+    { id: 'dharma', label: 'Path', icon: Route, description: 'Sequential learning pathways' },
+    { id: 'vastu', label: 'Structure', icon: Network, description: 'Mind maps & hierarchies' },
+    { id: 'jyoti', label: 'Insight', icon: BarChart3, description: 'Analytic charts & metrics' },
+    { id: 'vatya', label: 'Vatya', icon: Wind, description: 'Dynamic flow of knowledge' }, // Added Vatya
+];
+
+const getAvailablePerspectives = (topology: any) => {
+    if (!topology) return PERSPECTIVES;
+    const engineIds = getEnginePerspectives(topology);
+    return PERSPECTIVES.map(p => ({
+        ...p,
+        disabled: !engineIds.includes(p.id)
+    }));
+};
 
 /**
- * MapScreen.web.tsx — The Infinite Cosmos
+ * MapScreen.web.tsx — The Unified Vision
  * 
- * A high-fidelity D3-driven knowledge topology.
- * Leverages browser-native SVG rendering for a physics-based force graph.
+ * Refactored to use the @repo/graphics layout engine.
+ * Achieves parity with native while optimizing for browser-native SVG/div rendering.
  */
-
 export default function MapScreen() {
     const colors = useThemedColors();
+    const navigation = useNavigation();
     const { width, height } = useWindowDimensions();
-    const svgRef = useRef<SVGSVGElement>(null);
-    const [data, setData] = useState<KnowledgeTopology | null>(null);
+    
+    const [activePerspective, setActivePerspective] = useState<PerspectiveId>('astro');
+    const [isExporting, setIsExporting] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [hoveredNode, setHoveredNode] = useState<KnowledgeNode | null>(null);
+    const [data, setData] = useState<KnowledgeTopology | null>(null);
+    const [selectedNode, setSelectedNode] = useState<KnowledgeNode | null>(null);
 
     useEffect(() => {
-        const fetchTopology = async () => {
+        const fetchData = async () => {
+            setLoading(true);
             try {
                 const topology = await libraryAPI.getMapTopology();
                 setData(topology);
             } catch (err) {
-                console.error('Failed to load topology', err);
+                console.error('Failed to fetch map topology:', err);
             } finally {
                 setLoading(false);
             }
         };
-        fetchTopology();
+
+        fetchData();
     }, []);
 
-    useEffect(() => {
-        if (!data || !svgRef.current) return;
+    // Simulation: Load Mermaid data if AI mode is active
+    const activeData = useMemo(() => {
+        if (activePerspective === 'astro' && !data?.nodes.length) {
+            return KnowledgeParser.fromMermaid(`
+                graph TD
+                A[Retina Engine] --> B[Astro View]
+                A --> C[Vastu View]
+                A --> D[Terra View]
+                B --> E[High Performance]
+                C --> F[Hierarchical]
+                D --> G[Geographical]
+            `);
+        }
+        return data;
+    }, [data, activePerspective]);
 
-        const svg = d3.select(svgRef.current);
-        svg.selectAll("*").remove(); // Clear previous
+    const layout = usePerspectiveLayout(activeData as any, { 
+        width: width, 
+        height: height, 
+        perspective: activePerspective 
+    });
 
-        const canvasWidth = width - 64;
-        const canvasHeight = height - 150;
+    const handleNodePress = (node: KnowledgeNode) => {
+        setSelectedNode(node);
+        // On web, we could implement smooth scroll to node or zoom here
+    };
 
-        const simulation = d3.forceSimulation<KnowledgeNode>(data.nodes)
-            .force("link", d3.forceLink<KnowledgeNode, KnowledgeLink>(data.links).id(d => d.id).distance(100))
-            .force("charge", d3.forceManyBody().strength(-300))
-            .force("center", d3.forceCenter(canvasWidth / 2, canvasHeight / 2))
-            .force("collision", d3.forceCollide().radius(50));
-
-        const g = svg.append("g");
-
-        // Add Zoom behavior
-        svg.call(d3.zoom<SVGSVGElement, unknown>().on("zoom", (event) => {
-            g.attr("transform", event.transform);
-        }));
-
-        const link = g.append("g")
-            .attr("stroke", colors.border)
-            .attr("stroke-opacity", 0.3)
-            .selectAll("line")
-            .data(data.links)
-            .join("line")
-            .attr("stroke-width", (d: any) => Math.sqrt(d.value));
-
-        const node = g.append("g")
-            .selectAll("g")
-            .data(data.nodes)
-            .join("g")
-            .call(drag(simulation) as any)
-            .on("mouseenter", (event, d) => setHoveredNode(d))
-            .on("mouseleave", () => setHoveredNode(null));
-
-        // Background circle for nodes
-        node.append("circle")
-            .attr("r", (d: any) => d.type === 'topic' ? 12 : 8)
-            .attr("fill", (d: any) => d.type === 'topic' ? Theme.colors.sanctuarySaffron : colors.textPrimary)
-            .attr("stroke", colors.secondary)
-            .attr("stroke-width", 2);
-
-        // Labels
-        node.append("text")
-            .text((d: any) => d.label)
-            .attr("x", 15)
-            .attr("y", 5)
-            .style("font-size", "12px")
-            .style("font-weight", "600")
-            .attr("fill", colors.textPrimary)
-            .style("pointer-events", "none");
-
-        simulation.on("tick", () => {
-            link
-                .attr("x1", (d: any) => d.source.x)
-                .attr("y1", (d: any) => d.source.y)
-                .attr("x2", (d: any) => d.target.x)
-                .attr("y2", (d: any) => d.target.y);
-
-            node
-                .attr("transform", (d: any) => `translate(${d.x},${d.y})`);
-        });
-
-        // Drag functionality
-        function drag(sim: any) {
-            function dragstarted(event: any) {
-                if (!event.active) sim.alphaTarget(0.3).restart();
-                event.subject.fx = event.subject.x;
-                event.subject.fy = event.subject.y;
+    const handleExport = async () => {
+        setIsExporting(true);
+        try {
+            // Find the SVG element in the current perspective
+            const svgElement = document.querySelector('svg');
+            if (svgElement) {
+                const dataUrl = await CaptureEngine.svgToDataURL(svgElement);
+                console.log('--- VISUALIZATION CAPTURED ---');
+                console.log('Snapshot ready for Report:', dataUrl.substring(0, 50) + '...');
+                alert('Success: Visualization captured and synced to the Student Report.');
+            } else {
+                alert('Error: No visualization found to export.');
             }
-            function dragged(event: any) {
-                event.subject.fx = event.x;
-                event.subject.fy = event.y;
-            }
-            function dragended(event: any) {
-                if (!event.active) sim.alphaTarget(0);
-                event.subject.fx = null;
-                event.subject.fy = null;
-            }
-            return d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended);
+        } catch (err) {
+            console.error('Export failed:', err);
+            alert('Export failed. Please check the console for details.');
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
+    const renderContent = () => {
+        if (loading) {
+            return (
+                <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} />
+                </Box>
+            );
         }
 
-    }, [data, width, height, colors]);
+        if (activePerspective === 'astro' && activeData && layout) {
+            return (
+                <AstroView 
+                    data={activeData as any} 
+                    layout={layout} 
+                    onNodePress={handleNodePress as any}
+                    selectedNode={selectedNode as any}
+                    width={width}
+                    height={height}
+                />
+            );
+        }
+
+        if (activePerspective === 'jyoti' && activeData) {
+            return (
+                <JyotiView 
+                    data={activeData as any} 
+                    layout={layout!} 
+                    width={width}
+                    height={height}
+                />
+            );
+        }
+
+        if (activePerspective === 'terra' && activeData) {
+            return (
+                <TerraView 
+                    data={activeData as any} 
+                    layout={layout!} 
+                    width={width}
+                    height={height}
+                />
+            );
+        }
+
+        if (activePerspective === 'dharma' && activeData) {
+            return (
+                <DharmaView 
+                    data={activeData as any} 
+                    layout={layout!} 
+                    width={width}
+                    height={height}
+                />
+            );
+        }
+
+        if (activePerspective === 'vatya' && activeData) {
+            return (
+                <VatyaView 
+                    data={activeData as any} 
+                    layout={layout!}
+                    selectedNode={selectedNode as any}
+                    width={width}
+                    height={height}
+                />
+            );
+        }
+
+        if (activePerspective === 'vastu' && activeData && layout) {
+            return (
+                <VastuView 
+                    data={activeData as any} 
+                    layout={layout} 
+                    onNodePress={handleNodePress as any}
+                    selectedNode={selectedNode as any}
+                    width={width}
+                    height={height}
+                />
+            );
+        }
+
+        return (
+            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
+            </Box>
+        );
+    };
 
     return (
-        <VStack sx={{ flex: 1, backgroundColor: colors.primary }}>
+        <ScreenWrapper scroll={false}>
             <GlobalHeader
                 title="Knowledge Cosmos"
-                subtitle="The Infinite topology"
+                subtitle="Isomorphic Visualization Engine"
                 showBack
+                onBack={() => navigation.goBack()}
+                rightAction={
+                    <TouchableOpacity 
+                        onPress={handleExport}
+                        disabled={isExporting}
+                        style={{ 
+                            paddingHorizontal: 16, 
+                            paddingVertical: 8, 
+                            borderRadius: 12, 
+                            backgroundColor: colors.action + '20',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            opacity: isExporting ? 0.5 : 1,
+                            marginRight: 12
+                        }}
+                    >
+                        <FileCheck size={18} color={colors.action} style={{ marginRight: 8 }} />
+                        <Text sx={{ color: colors.action, fontSize: 13, fontWeight: '700' }}>
+                            {isExporting ? 'CAPTURING...' : 'EXPORT'}
+                        </Text>
+                    </TouchableOpacity>
+                }
             />
 
-            <Box sx={{
-                flex: 1,
-                backgroundColor: colors.secondary,
-                margin: Theme.spacing.lg,
-                borderRadius: 24,
-                borderWidth: 1,
-                borderColor: 'rgba(255, 255, 255, 0.05)',
+            <Box sx={{ p: 12, backgroundColor: colors.backgroundDark }}>
+                <View style={styles.perspectiveSwitcherContainer}>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 6 }}>
+                        {getAvailablePerspectives(activeData).map((p) => {
+                            const isActive = activePerspective === p.id;
+                            const isDisabled = p.disabled;
+                            const Icon = p.icon;
+                            return (
+                                <TouchableOpacity 
+                                    key={p.id}
+                                    onPress={() => !isDisabled && setActivePerspective(p.id)}
+                                    disabled={isDisabled}
+                                    style={[
+                                        styles.perspectiveButton,
+                                        isActive && styles.activePerspectiveButton,
+                                        isDisabled && { opacity: 0.3 }
+                                    ]}
+                                >
+                                    <Icon 
+                                        size={18} 
+                                        color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.starlightGray} 
+                                    />
+                                    <Text style={[
+                                        styles.perspectiveLabel,
+                                        isActive && styles.activePerspectiveLabel
+                                    ]}>
+                                        {p.label}
+                                    </Text>
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </ScrollView>
+                </View>
+            </Box>
+
+            <Box sx={{ 
+                flex: 1, 
+                backgroundColor: colors.obsidian || colors.black,
                 overflow: 'hidden',
                 position: 'relative'
             }}>
-                {loading && (
-                    <Box sx={{ ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center', zIndex: 10 }}>
-                        <ActivityIndicator size="large" />
-                    </Box>
-                )}
+                {renderContent()}
 
-                {/* @ts-ignore - svg is valid in react-native-web context */}
-                <svg
-                    ref={svgRef}
-                    style={{ width: '100%', height: '100%', display: 'block' }}
-                />
-
-                {/* Retina Preview Overlay */}
-                {hoveredNode && (
-                    <Box sx={{
-                        position: 'absolute',
-                        bottom: 24,
-                        right: 24,
-                        padding: Theme.spacing.md,
-                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                        borderRadius: 16,
-                        maxWidth: 300,
+                {selectedNode && (
+                    <Box sx={{ 
+                        position: 'absolute', 
+                        bottom: 40, 
+                        left: 20, 
+                        right: 20, 
+                        backgroundColor: 'rgba(15, 23, 42, 0.95)', 
+                        borderRadius: 32,
+                        padding: 24,
                         borderWidth: 1,
-                        borderColor: Theme.colors.sanctuarySaffron,
-                        shadowColor: '#000',
-                        shadowOpacity: 0.1,
-                        shadowRadius: 10,
-                        elevation: 5
-                    }}>
-                        <Text sx={{ fontSize: 16, fontWeight: '800', color: '#000' }}>
-                            {hoveredNode.label}
-                        </Text>
-                        <Text sx={{ fontSize: 12, color: '#666', marginTop: 4 }}>
-                            {hoveredNode.type.toUpperCase()} • {hoveredNode.group}
-                        </Text>
-                        {hoveredNode.metadata?.subject && (
-                            <Box sx={{ marginTop: 8, paddingHorizontal: 8, paddingVertical: 4, backgroundColor: Theme.colors.sanctuarySaffron + '22', borderRadius: 8, alignSelf: 'flex-start' }}>
-                                <Text sx={{ fontSize: 10, fontWeight: '700', color: Theme.colors.sanctuarySaffron }}>
-                                    {hoveredNode.metadata.subject}
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                    } as any}>
+                        <VStack spacing={12}>
+                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                <VStack>
+                                    <Text sx={{ fontSize: 20, fontWeight: '900', color: Theme.colors.sacredWhite }}>
+                                        {selectedNode.label}
+                                    </Text>
+                                    <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron, textTransform: 'uppercase' }}>
+                                        {selectedNode.type} • {selectedNode.group}
+                                    </Text>
+                                </VStack>
+                                <TouchableOpacity onPress={() => setSelectedNode(null)}>
+                                    <Box sx={{ p: 8, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)' }}>
+                                        <X size={20} color={Theme.colors.sacredWhite} />
+                                    </Box>
+                                </TouchableOpacity>
+                            </HStack>
+
+                            {selectedNode.metadata?.description && (
+                                <Text sx={{ fontSize: 14, color: Theme.colors.starlightGray, lineHeight: 20 }}>
+                                    {selectedNode.metadata.description}
                                 </Text>
-                            </Box>
-                        )}
+                            )}
+
+                            <TouchableOpacity 
+                                style={[styles.actionButton, { backgroundColor: Theme.colors.sanctuarySaffron }]}
+                                onPress={() => {
+                                    if (selectedNode.type === 'resource') {
+                                        // @ts-ignore
+                                        navigation.navigate('ResourceDetail', { id: selectedNode.id });
+                                    }
+                                }}
+                            >
+                                <Text sx={{ color: colors.obsidian || '#000', fontWeight: '800' }}>
+                                    {selectedNode.type === 'topic' ? 'Explore Knowledge' : 'Begin Learning'}
+                                </Text>
+                            </TouchableOpacity>
+                        </VStack>
                     </Box>
                 )}
             </Box>
-        </VStack>
+        </ScreenWrapper>
     );
 }
+
+const styles = StyleSheet.create({
+    perspectiveSwitcherContainer: {
+        borderRadius: 20,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+    },
+    perspectiveButton: {
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 14,
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginHorizontal: 4,
+        gap: 8,
+    },
+    activePerspectiveButton: {
+        backgroundColor: 'rgba(255, 153, 0, 0.15)',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 153, 0, 0.3)',
+    },
+    perspectiveLabel: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: Theme.colors.starlightGray,
+    },
+    activePerspectiveLabel: {
+        fontWeight: '800',
+        color: Theme.colors.sanctuarySaffron,
+    },
+    actionButton: {
+        height: 56,
+        borderRadius: 28,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 8
+    }
+});

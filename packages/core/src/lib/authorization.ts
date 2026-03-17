@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AUTHORIZATION UTILITIES
  * 
  * Functions to verify user permissions before accessing resources.
@@ -12,6 +12,7 @@
  */
 
 import { supabase } from './supabase';
+import { authAPI } from '../api/auth';
 import { identityAPI } from '../api/identity';
 import { APIError } from '../api/types';
 import { isDemo } from '../api/demo';
@@ -41,8 +42,8 @@ export async function requireAuth() {
     // getSession() here is correct: used only to verify a session exists and extract
     // session.user.email for the returned object. The actual user ID is resolved below
     // via identityAPI.getMyInternalId() (internal users.id, not session.user.id).
-    const { data: { session }, error } = await supabase.auth.getSession();
-    if (error || !session) {
+    const session = await authAPI.getSession();
+    if (!session) {
         throw new APIError('Not authenticated', 'UNAUTHENTICATED');
     }
 

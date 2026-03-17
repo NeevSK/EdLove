@@ -30,7 +30,6 @@ import FireJournal from '../../components/FireJournal';
 import DailyRhythm from '../../components/DailyRhythm';
 import WindDownRitual from '../../components/WindDownRitual';
 import WisdomSeeds from '../../components/WisdomSeeds';
-import ShadowAgentDrawer from '../../components/ShadowAgentDrawer';
 import WelcomeModal from '../../components/WelcomeModal';
 import { useMoodLogs } from '../../hooks/useMoodLogs';
 import { useEnergyForecast } from '../../hooks/useEnergyForecast';
@@ -173,7 +172,7 @@ export default function TeacherSelfView() {
                 }
             />
 
-            <ShadowAgentDrawer />
+
             <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}

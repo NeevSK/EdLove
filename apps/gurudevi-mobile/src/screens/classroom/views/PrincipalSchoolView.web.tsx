@@ -1,10 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
-import { useUserRole, useStore, staffManagementAPI, supabase, api, schoolAPI, StaffPresenceSummary, TeacherCarouselItem, StudentAttendancePulse, StaffLeaveDTO, useFeatureAccess } from '@repo/core';
+import { 
+    useUserRole, 
+    useStore, 
+    staffManagementAPI, 
+    supabase, 
+    api, 
+    schoolAPI, 
+    StaffPresenceSummary, 
+    TeacherCarouselItem, 
+    StudentAttendancePulse, 
+    StaffLeaveDTO, 
+    useFeatureAccess,
+    mappingAPI 
+} from '@repo/core';
 import { useSchoolStats, CreateClassroomModal, AddStudentModal } from '@repo/classroom';
 import { useSchoolPulse } from '@repo/profile';
 import { SkeletonCard, SandboxBanner, getInitialsFromName, PositiveInvitation, hapticLight, WebScreenHeader } from '@repo/ui';
+import { UniversalPerspective } from '@repo/library';
+import { KnowledgeTopology } from '@repo/graphics';
+import { formatDistanceToNow } from 'date-fns';
 import {
     Users,
     FileText,
@@ -35,7 +51,6 @@ import {
     ArrowLeft,
     PlusCircle,
 } from 'lucide-react-native';
-import { formatDistanceToNow } from 'date-fns';
 import { CreateSchoolModal } from '@repo/classroom';
 
 const LEAVE_STATUS_COLORS: Record<string, string> = {
@@ -85,6 +100,27 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
     const [showAddTeacher, setShowAddTeacher] = useState(false);
     const [processingLeave, setProcessingLeave] = useState<string | null>(null);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [schoolTopology, setSchoolTopology] = useState<KnowledgeTopology | null>(null);
+    const [topologyLoading, setTopologyLoading] = useState(true);
+
+    // ── Topology Pulse Loader ──────────────────────────────────────────────
+    useEffect(() => {
+        if (!effectiveSchoolId) return;
+        let mounted = true;
+        const loadTopology = async () => {
+            setTopologyLoading(true);
+            try {
+                const data = await mappingAPI.getSchoolPulse(effectiveSchoolId);
+                if (mounted && data) setSchoolTopology(data);
+            } catch (err) {
+                console.error('[PrincipalSchoolView] Error loading topology:', err);
+            } finally {
+                if (mounted) setTopologyLoading(false);
+            }
+        };
+        loadTopology();
+        return () => { mounted = false; };
+    }, [effectiveSchoolId]);
 
     // ── Sub-view navigation (ManagementStation) ───────────────────────────
     type PrincipalView = 'main' | 'hierarchy' | 'invites' | 'log' | 'cycles';
@@ -845,6 +881,40 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
                                         ))}
                                     </div>
                                 )}
+                            </div>
+
+                            {/* [NEW] School Topology Pulse */}
+                            <div className="sanctuary-card" style={{ padding: '24px', position: 'relative' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '800' }}>
+                                        School Topology Pulse 🌐
+                                    </h3>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <div style={{ padding: '4px 8px', background: 'var(--lotus-soft)', borderRadius: '6px', fontSize: '10px', fontWeight: '800', color: 'var(--lotus)' }}>STRATEGIC VIEW</div>
+                                    </div>
+                                </div>
+                                <div style={{ height: '400px', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-light)', background: 'var(--background-alt)' }}>
+                                    {topologyLoading ? (
+                                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <SkeletonCard />
+                                        </div>
+                                    ) : schoolTopology ? (
+                                        <UniversalPerspective 
+                                            topology={schoolTopology}
+                                            onNodePress={(node) => {
+                                                console.log('Principal tapped node:', node);
+                                                // Future: Navigate to department or classroom specific view
+                                            }}
+                                        />
+                                    ) : (
+                                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-ghost)', fontSize: '14px' }}>
+                                            Initializing topology pulse...
+                                        </div>
+                                    )}
+                                </div>
+                                <p style={{ marginTop: '12px', fontSize: '12px', color: 'var(--ink-ghost)', fontStyle: 'italic' }}>
+                                    Visualizing organizational structure and resonance hotspots across all departments.
+                                </p>
                             </div>
 
                             {/* Student Pulse */}

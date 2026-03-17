@@ -11,20 +11,26 @@ import { useDynamicSelfFeatures } from '../hooks/useDynamicSelfFeatures';
  * Emoji mapping for common features to add soul to the UI.
  */
 export const FEATURE_EMOJIS: Record<string, string> = {
-    'pulse': '💜',
-    'dashboard': '💜',
-    'mood-lotus': '🪷',
-    'wisdom': '🌱',
-    'mood-picker': '🎭',
-    'energy-forecast': '⚡',
-    'wind-down': '🏮',
-    'daily-rhythm': '⏳',
-    'progress': '🌳',
+    'energy_pulse': '⚡',
+    'mood_checkin': '🪷',
+    'study_rhythm': '⏳',
+    'goals': '🎯',
     'grades': '📜',
+    'voice_journaling': '🎙️',
+    'school_pulse': '📈',
     'decisions': '⚖️',
-    'resonance': '🌀',
-    'voice': '🎙️',
-    'fire-journal': '🔥',
+    'wisdom': '🌱',
+    'reflections': '🪞',
+    'breath_presence': '🌬️',
+    'journal': '📓',
+    'banyan_path': '🌳',
+    'faculty_resonance': '🌀',
+    'systemic_overview': '🌐',
+    'strategic_wisdom': '🗺️',
+    'system_health': '🛠️',
+    'user_resonance': '👥',
+    'mirrors': '🪞',
+    'reminders': '🔔',
 };
 
 /**
@@ -75,14 +81,12 @@ export function BaseSelfView({
     const pinned = getPinnedFeatures();
 
     const [activeFeatureId, setActiveFeatureId] = React.useState(
-        sortedFeatures.find(f => f.id === 'pulse' || f.id === 'dashboard')?.id || sortedFeatures[0]?.id
+        sortedFeatures.find(f => f.id === 'energy_pulse' || f.id === 'mood_checkin')?.id || sortedFeatures[0]?.id
     );
 
     const activeFeature = sortedFeatures.find(f => f.id === activeFeatureId) || sortedFeatures[0];
 
     const getEmoji = (feature: any) => {
-        if (feature.id === 'mirrors') return '🪞';
-        if (feature.id === 'reminders') return '🔔';
         return FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || '✨';
     };
 
@@ -158,7 +162,7 @@ export function BaseSelfView({
                                             </Text>
                                             {isPinned && (
                                                 <View style={[nativeStyles.pinIndicator, { backgroundColor: feature.domainColor }]}>
-                                                    <Text style={{ fontSize: 6, color: 'white' }}>📌</Text>
+                                                    <Text style={{ fontSize: 10, color: 'white' }}>📌</Text>
                                                 </View>
                                             )}
                                         </View>
@@ -266,15 +270,20 @@ const nativeStyles = StyleSheet.create({
     },
     pinIndicator: {
         position: 'absolute',
-        top: -4,
-        right: -4,
-        width: 16,
-        height: 16,
-        borderRadius: 8,
+        top: -6,
+        right: -6,
+        width: 20,
+        height: 20,
+        borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 1,
+        borderWidth: 2,
         borderColor: 'white',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 1,
+        elevation: 2,
     },
     activeIndicator: {
         width: 4,

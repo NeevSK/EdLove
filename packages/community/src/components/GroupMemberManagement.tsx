@@ -209,9 +209,9 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                         return (
                             <Pressable
                                 key={member.user_id}
-                                onPress={() => navigation.navigate('UserProfile', {
-                                    userId: member.user_id,
-                                    userName: member.user?.full_name || 'Member'
+                                onPress={() => navigation.navigate('PublicProfile', {
+                                    id: member.user_id,
+                                    type: 'user'
                                 })}
                             >
                                 <Box

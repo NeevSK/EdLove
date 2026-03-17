@@ -1,5 +1,6 @@
 export * from './api/library';
 export * from './types';
+export * from './constants/shelf';
 export * from './hooks/useLibrary';
 export * from './components/ResourceList';
 export { default as AddResourceModal } from './components/AddResourceModal';
@@ -17,4 +18,6 @@ export const LIBRARY_UI_CATEGORIES = [
 ];
 export { default as MapScreen } from './screens/MapScreen';
 export { default as CuratorReviewScreen } from './screens/CuratorReviewScreen';
+export * from './components/modals/StudentAnalysisModal';
+export * from './components/perspectives/UniversalPerspective';
 

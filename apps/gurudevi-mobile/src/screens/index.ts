@@ -21,3 +21,4 @@ export { default as NotificationsScreen } from './NotificationsScreen';
 export { default as SchoolCreationScreen } from './SchoolCreationScreen';
 export { default as AIAssistantScreen } from './AIAssistantScreen';
 export { default as WelcomeScreen } from './WelcomeScreen';
+export * from './FounderVisionScreen';

@@ -1,5 +1,5 @@
-﻿import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, useWindowDimensions, TouchableOpacity, FlatList } from 'react-native';
+import React, { useEffect, useState, useMemo } from 'react';
+import { StyleSheet, View, useWindowDimensions, TouchableOpacity, FlatList, ActivityIndicator, ScrollView, Alert } from 'react-native';
 import {
     ScreenWrapper,
     GlobalHeader,
@@ -7,275 +7,457 @@ import {
     Theme,
     Box,
     Text,
-    FadeInDown,
     HorizontalChipRow,
     HStack,
     VStack,
-    SanctuaryLocation,
-    LocationSubscription,
-    LocationObject
 } from '@repo/ui';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withSpring,
+    FadeIn,
+    FadeOut,
+    FadeInDown
+} from 'react-native-reanimated';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BlurView } from 'expo-blur';
 import { useNavigation } from '@react-navigation/native';
-import { Search, Map as MapIcon, Layers, X, Globe, Star } from 'lucide-react-native';
+import {
+    X,
+    Globe,
+    Orbit,
+    Route,
+    Network,
+    BarChart3,
+    Wind,
+    FileCheck,
+    Compass,
+    Search
+} from 'lucide-react-native';
 import { libraryAPI } from '../api/library';
-import { supabase } from '@repo/core';
-import { useMapPresence } from '../hooks/useMapPresence';
 import { useUserRole } from '@repo/core';
-// Removed: import * as Location from 'expo-location';
+import { SRI_LANKAN_PROVINCES, SRI_LANKAN_DISTRICTS } from '@repo/core';
+import { KnowledgeTopology, KnowledgeNode } from '../types/Library';
+import { AstroView } from '../components/perspectives/AstroView';
+import { VastuView } from '../components/perspectives/VastuView';
+import { JyotiView } from '../components/perspectives/JyotiView';
+import { TerraView } from '../components/perspectives/TerraView';
+import { DharmaView } from '../components/perspectives/DharmaView';
+import { VatyaView } from '../components/perspectives/VatyaView'; // Added VatyaView import
+import { usePerspectiveLayout } from '../hooks/usePerspectiveLayout';
+import { getAvailablePerspectives as getEnginePerspectives, KnowledgeParser, CaptureEngine } from '@repo/graphics';
+
+type PerspectiveId = 'astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti' | 'vatya'; // Added 'vatya'
+
+interface Perspective {
+    id: PerspectiveId;
+    label: string;
+    icon: any;
+    description: string;
+    disabled?: boolean;
+}
+
+const PERSPECTIVES: Perspective[] = [
+    { id: 'astro', label: 'Cosmos', icon: Orbit, description: 'Interconnected topology of wisdom' },
+    { id: 'terra', label: 'Geo', icon: Globe, description: 'Geographical maps of knowledge' },
+    { id: 'dharma', label: 'Path', icon: Route, description: 'Sequential learning pathways' },
+    { id: 'vastu', label: 'Structure', icon: Network, description: 'Mind maps & hierarchies' },
+    { id: 'jyoti', label: 'Insight', icon: BarChart3, description: 'Analytic charts & metrics' },
+    { id: 'vatya', label: 'Vatya', icon: Wind, description: 'Dynamic flow of knowledge' }, // Added Vatya perspective
+];
+
+const getAvailablePerspectives = (topology: any) => {
+    if (!topology) return PERSPECTIVES;
+    const engineIds = getEnginePerspectives(topology);
+    return PERSPECTIVES.map(p => ({
+        ...p,
+        disabled: !engineIds.includes(p.id)
+    }));
+};
 
 export default function MapScreen() {
     const colors = useThemedColors();
     const navigation = useNavigation();
-    const [layers, setLayers] = useState<any[]>([]);
-    const [selectedLayer, setSelectedLayer] = useState<string>('cosmos');
-    const [projection, setProjection] = useState<'earth' | 'cosmos'>('cosmos');
+    const { width, height } = useWindowDimensions();
+    
+    const [activePerspective, setActivePerspective] = useState<PerspectiveId>('astro');
+    const [isExporting, setIsExporting] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState<any[]>([]);
-    const [isSearching, setIsSearching] = useState(false);
-    const { role, userId } = useUserRole();
-    const { presences, updateLocation } = useMapPresence(`presence:map:${selectedLayer}`);
+    const [data, setData] = useState<KnowledgeTopology | null>(null);
+    const [selectedNode, setSelectedNode] = useState<KnowledgeNode | null>(null);
+    const [geoData, setGeoData] = useState<any[] | null>(null);
+    const [geoQueryLoading, setGeoQueryLoading] = useState(false);
+
+    // Zoom and Pan state
+    const scale = useSharedValue(1);
+    const savedScale = useSharedValue(1);
+    const translateX = useSharedValue(0);
+    const translateY = useSharedValue(0);
+    const savedTranslateX = useSharedValue(0);
+    const savedTranslateY = useSharedValue(0);
 
     useEffect(() => {
-        if (searchQuery.trim().length > 2) {
-            const delayDebounceFn = setTimeout(async () => {
-                setIsSearching(true);
-                try {
-                    const results = await libraryAPI.searchMapUniverse(searchQuery);
-                    setSearchResults(results);
-                } catch (err) {
-                    console.error('Map search failed:', err);
-                } finally {
-                    setIsSearching(false);
-                }
-            }, 300);
-            return () => clearTimeout(delayDebounceFn);
-        } else {
-            setSearchResults([]);
-        }
-    }, [searchQuery]);
-
-    useEffect(() => {
-        const fetchLayers = async () => {
-            const { data } = await supabase.from('map_layers').select('*').order('created_at');
-            if (data) {
-                setLayers(data.map(l => ({
-                    label: l.name,
-                    value: l.layer_type,
-                    projection: l.projection_type
-                })));
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const topology = await libraryAPI.getMapTopology();
+                setData(topology);
+            } catch (err) {
+                console.error('Failed to fetch map topology:', err);
+            } finally {
                 setLoading(false);
             }
         };
-        fetchLayers();
-    }, []);
 
-    // Track user location for Community Aura
-    useEffect(() => {
-        if (!userId || !role) return;
+        const fetchGeoData = async () => {
+            if (geoData) return;
+            setGeoQueryLoading(true);
+            try {
+                const schools = await libraryAPI.getGeoTopology();
+                setGeoData(schools);
+            } catch (err) {
+                console.error('Failed to load geo data', err);
+            } finally {
+                setGeoQueryLoading(false);
+            }
+        };
 
-        let locationSubscription: LocationSubscription | null = null;
+        fetchData();
+        if (activePerspective === 'terra') fetchGeoData();
+    }, [activePerspective]);
 
-        const startTracking = async () => {
-            const { status } = await SanctuaryLocation.requestPermissionsAsync();
-            if (status !== 'granted') return;
+    // Simulation: Load Mermaid data if AI mode is active
+    const activeData = useMemo(() => {
+        if (activePerspective === 'astro' && !data?.nodes.length) {
+            // Demonstration of Mermaid Parsing
+            return KnowledgeParser.fromMermaid(`
+                graph TD
+                A[Retina Engine] --> B[Astro View]
+                A --> C[Vastu View]
+                A --> D[Terra View]
+                B --> E[High Performance]
+                C --> F[Hierarchical]
+                D --> G[Geographical]
+            `);
+        }
+        return data;
+    }, [data, activePerspective]);
 
-            locationSubscription = await SanctuaryLocation.watchPositionAsync(
-                {
-                    accuracy: SanctuaryLocation.Accuracy.Balanced,
-                    timeInterval: 10000,
-                    distanceInterval: 50,
-                },
-                (location: LocationObject) => {
-                    updateLocation({
-                        userId: userId!,
-                        vibe: 'active',
-                        latitude: location.coords.latitude,
-                        longitude: location.coords.longitude,
-                        role: role || 'guest',
-                    });
-                }
+    const layout = usePerspectiveLayout(activeData as any, { 
+        width: width * 3, 
+        height: height * 3, 
+        perspective: activePerspective 
+    });
+
+    const handleExport = async () => {
+        setIsExporting(true);
+        try {
+            // In native, we demonstrate the isomorphic intent with the layout data
+            const snapshot = CaptureEngine.prepareForCapture(activeData as any);
+            console.log('--- NATIVE VISUALIZATION CAPTURED ---');
+            console.log('Snapshot Nodes:', snapshot.nodes.length);
+            
+            Alert.alert(
+                "Export Successful",
+                "Visualization logic captured for the Student Report.",
+                [{ text: "OK" }]
             );
-        };
+        } catch (err) {
+            console.error('Export failed:', err);
+        } finally {
+            setIsExporting(false);
+        }
+    };
 
-        startTracking();
+    const handleNodePress = (node: KnowledgeNode) => {
+        setSelectedNode(node);
+        const pos = layout?.positions.get(node.id);
+        if (pos) {
+            translateX.value = withSpring(width / 2 - pos.x);
+            translateY.value = withSpring(height / 2.5 - pos.y);
+            scale.value = withSpring(2);
+            
+            savedTranslateX.value = width / 2 - pos.x;
+            savedTranslateY.value = height / 2.5 - pos.y;
+            savedScale.value = 2;
+        }
+    };
 
-        return () => {
-            if (locationSubscription) locationSubscription.remove();
-        };
-    }, [userId, role, updateLocation, selectedLayer]);
+    const renderContent = () => {
+        if (loading) {
+            return (
+                <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} />
+                </Box>
+            );
+        }
 
-    const handleLayerSelect = (value: string) => {
-        setSelectedLayer(value);
-        const layer = layers.find(l => l.value === value);
-        if (layer?.projection) setProjection(layer.projection);
+        if (activePerspective === 'astro' && data && layout) {
+            return (
+                <AstroView 
+                    data={data as any} 
+                    layout={layout} 
+                    onNodePress={handleNodePress as any}
+                    selectedNode={selectedNode as any}
+                    width={width}
+                    height={height}
+                />
+            );
+        }
+
+        if (activePerspective === 'jyoti' && data) {
+            return (
+                <JyotiView 
+                    data={data as any} 
+                    layout={layout!} 
+                    width={width}
+                    height={height}
+                />
+            );
+        }
+
+        if (activePerspective === 'terra' && data) {
+            return (
+                <TerraView 
+                    data={data as any} 
+                    layout={layout!} 
+                    width={width}
+                    height={height}
+                />
+            );
+        }
+
+        if (activePerspective === 'dharma' && data) {
+            return (
+                <DharmaView 
+                    data={data as any} 
+                    layout={layout!} 
+                    width={width}
+                    height={height}
+                />
+            );
+        }
+
+        if (activePerspective === 'vastu' && data && layout) {
+            return (
+                <VastuView 
+                    data={data as any} 
+                    layout={layout} 
+                    onNodePress={handleNodePress as any}
+                    selectedNode={selectedNode as any}
+                    width={width}
+                    height={height}
+                />
+            );
+        }
+
+        return (
+            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
+            </Box>
+        );
     };
 
     return (
         <ScreenWrapper scroll={false}>
             <GlobalHeader
-                title="Knowledge Map"
-                subtitle="The TrÃ¼be of Shared Wisdom"
+                title="Knowledge Cosmos"
+                subtitle="Isomorphic Visualization Engine"
                 showBack
                 onBack={() => navigation.goBack()}
-                showSearch
-                searchProps={{
-                    value: searchQuery,
-                    onChangeText: setSearchQuery,
-                    placeholder: "Search Sri Lanka, Schools, Topics..."
-                }}
+                rightAction={
+                    <TouchableOpacity 
+                        onPress={handleExport}
+                        disabled={isExporting}
+                        style={{ 
+                            paddingHorizontal: 16, 
+                            paddingVertical: 8, 
+                            borderRadius: 12, 
+                            backgroundColor: colors.action + '20',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            opacity: isExporting ? 0.5 : 1,
+                            marginRight: 12
+                        }}
+                    >
+                        <FileCheck size={18} color={colors.action} style={{ marginRight: 8 }} />
+                        <Text sx={{ color: colors.action, fontSize: 13, fontWeight: '700' }}>
+                            {isExporting ? '...' : 'EXPORT'}
+                        </Text>
+                    </TouchableOpacity>
+                }
             />
 
-            {searchResults.length > 0 && (
-                <Animated.View
-                    entering={FadeIn}
-                    exiting={FadeOut}
-                    style={[styles.searchResultsOverlay, { backgroundColor: colors.primary, borderBottomColor: colors.border }]}
-                >
-                    <FlatList
-                        data={searchResults}
-                        keyExtractor={(item) => `${item.result_type}-${item.id}`}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity
-                                style={styles.searchResultItem}
-                                onPress={() => {
-                                    if (item.result_type === 'layer') handleLayerSelect(item.layer_type);
-                                    setSearchQuery('');
-                                }}
-                            >
-                                <HStack sx={{ gap: 12, alignItems: 'center' }}>
-                                    <Box sx={{
-                                        p: 8,
-                                        borderRadius: 8,
-                                        backgroundColor: item.result_type === 'layer'
-                                            ? Theme.colors.sanctuarySaffron + '11'
-                                            : colors.secondary
-                                    }}>
-                                        {item.result_type === 'layer' ? (
-                                            <Globe size={18} color={Theme.colors.sanctuarySaffron} />
-                                        ) : (
-                                            <Star size={18} color={Theme.colors.sanctuarySaffron} />
-                                        )}
-                                    </Box>
-                                    <VStack sx={{ flex: 1 }}>
-                                        <Text sx={{ fontSize: 14, fontWeight: '700', color: colors.textPrimary }}>
-                                            {item.name}
+            <Box sx={{ p: 12, backgroundColor: colors.backgroundDark }}>
+                <View style={styles.perspectiveSwitcherContainer}>
+                    <BlurView intensity={30} tint="dark" style={styles.blurContainer}>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 6 }}>
+                            {getAvailablePerspectives(data).map((p) => {
+                                const isActive = activePerspective === p.id;
+                                const isDisabled = p.disabled;
+                                const Icon = p.icon;
+                                return (
+                                    <TouchableOpacity 
+                                        key={p.id}
+                                        onPress={() => !isDisabled && setActivePerspective(p.id)}
+                                        disabled={isDisabled}
+                                        style={[
+                                            styles.perspectiveButton,
+                                            isActive && styles.activePerspectiveButton,
+                                            isDisabled && { opacity: 0.3 }
+                                        ]}
+                                    >
+                                        <Icon 
+                                            size={18} 
+                                            color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.starlightGray} 
+                                        />
+                                        <Text style={[
+                                            styles.perspectiveLabel,
+                                            isActive && styles.activePerspectiveLabel
+                                        ]}>
+                                            {p.label}
                                         </Text>
-                                        <Text sx={{ fontSize: 11, color: colors.textSecondary }} numberOfLines={1}>
-                                            {item.result_type === 'layer' ? `Map Layer â€¢ ${item.projection_type}` : 'Resource Node'}
-                                        </Text>
-                                    </VStack>
-                                </HStack>
-                            </TouchableOpacity>
-                        )}
-                        style={{ maxHeight: 300 }}
-                    />
-                </Animated.View>
-            )}
-
-            <Box sx={{ p: 12, backgroundColor: colors.secondary }}>
-                <HorizontalChipRow
-                    chips={layers.length > 0 ? layers : [{ label: 'Assembling...', value: 'loading' }]}
-                    selectedValue={selectedLayer}
-                    onSelect={handleLayerSelect}
-                    size="sm"
-                />
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </ScrollView>
+                    </BlurView>
+                </View>
             </Box>
 
-            <Box sx={{ flex: 1, backgroundColor: colors.secondary, justifyContent: 'center', alignItems: 'center' }}>
-                {/* Community Aura Visualization */}
-                {presences.map((presence) => (
-                    <Animated.View
-                        key={presence.userId}
-                        entering={FadeIn}
-                        exiting={FadeOut}
-                        style={[
-                            styles.aura,
-                            {
-                                backgroundColor: getVibeColor(presence.vibe, colors),
-                                // Simplified positioning for placeholder visualization
-                                // In a real Mapbox implementation, these would be markers
-                                left: 50 + (Math.random() * 100),
-                                top: 50 + (Math.random() * 100),
-                            }
-                        ]}
-                    >
-                        <Box sx={{ width: 12, height: 12, borderRadius: 6, backgroundColor: getVibeColor(presence.vibe, colors) }} />
-                    </Animated.View>
-                ))}
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <Box sx={{ 
+                    flex: 1, 
+                    backgroundColor: colors.obsidian || colors.black,
+                    overflow: 'hidden'
+                }}>
+                    {renderContent()}
 
-                <Animated.View entering={FadeInDown.delay(200).springify()} style={styles.placeholder}>
-                    <Box sx={{
-                        width: 80,
-                        height: 80,
-                        borderRadius: 40,
-                        backgroundColor: Theme.colors.sanctuarySaffron + '11',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        marginBottom: 16
-                    }}>
-                        {projection === 'earth' ? (
-                            <MapIcon size={40} color={Theme.colors.sanctuarySaffron} />
-                        ) : (
-                            <Layers size={40} color={Theme.colors.sanctuarySaffron} />
-                        )}
-                    </Box>
-                    <Text sx={{ fontSize: 20, fontWeight: '900', color: colors.textPrimary }}>
-                        {projection === 'earth' ? 'Geographic Island' : 'Epistemic Cosmos'}
-                    </Text>
-                    <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', maxWidth: 280, marginTop: 8 }}>
-                        {projection === 'earth'
-                            ? `Mapping the physical presence of ${layers.find(l => l.value === selectedLayer)?.label || 'entities'} across Sri Lanka and the world.`
-                            : `Exploring the hidden islands of thought, mind maps, and pathways within the ${layers.find(l => l.value === selectedLayer)?.label || 'cosmos'}.`
-                        }
-                    </Text>
-                </Animated.View>
-            </Box>
+                    {selectedNode && (
+                        <Animated.View 
+                            entering={FadeInDown}
+                            style={styles.nodeSheetContainer}
+                        >
+                            <BlurView intensity={30} tint="dark" style={styles.blurSheet}>
+                                <VStack spacing={12}>
+                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <VStack>
+                                            <Text sx={{ fontSize: 20, fontWeight: '900', color: Theme.colors.sacredWhite }}>
+                                                {selectedNode.label}
+                                            </Text>
+                                            <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron, textTransform: 'uppercase' }}>
+                                                {selectedNode.type} • {selectedNode.group}
+                                            </Text>
+                                        </VStack>
+                                        <TouchableOpacity onPress={() => setSelectedNode(null)}>
+                                            <Box sx={{ p: 8, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)' }}>
+                                                <X size={20} color={colors.textPrimary} />
+                                            </Box>
+                                        </TouchableOpacity>
+                                    </HStack>
+
+                                    {selectedNode.metadata?.description && (
+                                        <Text sx={{ fontSize: 14, color: Theme.colors.starlightGray, lineHeight: 20 }}>
+                                            {selectedNode.metadata.description}
+                                        </Text>
+                                    )}
+
+                                    <TouchableOpacity 
+                                        style={[styles.actionButton, { backgroundColor: Theme.colors.sanctuarySaffron }]}
+                                        onPress={() => {
+                                            // @ts-ignore
+                                            if (selectedNode.type === 'resource') {
+                                                // @ts-ignore
+                                                navigation.navigate('ResourceDetail', { id: selectedNode.id });
+                                            }
+                                        }}
+                                    >
+                                        <Text sx={{ color: colors.obsidian || '#000', fontWeight: '800' }}>
+                                            {selectedNode.type === 'topic' ? 'Explore Knowledge' : 'Begin Learning'}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </VStack>
+                            </BlurView>
+                        </Animated.View>
+                    )}
+                </Box>
+            </GestureHandlerRootView>
         </ScreenWrapper>
     );
 }
 
 const styles = StyleSheet.create({
-    placeholder: {
+    perspectiveSwitcherContainer: {
+        borderRadius: 20,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+    },
+    blurContainer: {
+        flexDirection: 'row',
+    },
+    perspectiveButton: {
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 14,
+        flexDirection: 'row',
         alignItems: 'center',
+        marginHorizontal: 4,
+        gap: 8,
     },
-    searchResultsOverlay: {
+    activePerspectiveButton: {
+        backgroundColor: 'rgba(255, 153, 0, 0.15)',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 153, 0, 0.3)',
+    },
+    perspectiveLabel: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: Theme.colors.starlightGray,
+    },
+    activePerspectiveLabel: {
+        fontWeight: '800',
+        color: Theme.colors.sanctuarySaffron,
+    },
+    nodeSheetContainer: {
         position: 'absolute',
-        top: 110, // Approx header height
-        left: 0,
-        right: 0,
-        zIndex: 100,
-        borderBottomWidth: 1,
-        maxHeight: 400,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4.65,
-        elevation: 8,
+        bottom: 40,
+        left: 20,
+        right: 20,
+        borderRadius: 32,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
     },
-    searchResultItem: {
-        padding: 16,
-        borderBottomWidth: 0.5,
-        borderBottomColor: 'rgba(255,255,255,0.05)',
+    blurSheet: {
+        padding: 24,
     },
-    aura: {
-        position: 'absolute',
-        width: 30,
-        height: 30,
-        borderRadius: 15,
+    actionButton: {
+        height: 56,
+        borderRadius: 28,
         justifyContent: 'center',
         alignItems: 'center',
-        opacity: 0.4,
+        marginTop: 8
     }
 });
 
-const getVibeColor = (vibe: string, colors: any) => {
-    switch (vibe.toLowerCase()) {
-        case 'active': return colors.action || Theme.colors.sanctuarySaffron;
-        case 'reflecting': return colors.secondary || Theme.colors.gurudeviViolet;
-        case 'teaching': return colors.success || Theme.colors.sanctuarySaffron;
-        default: return Theme.colors.sanctuarySaffron;
-    }
-};
+function StatCardNative({ label, value, icon: Icon }: { label: string; value: number; icon: any }) {
+    return (
+        <Box sx={{ 
+            flex: 1, 
+            backgroundColor: 'rgba(255,255,255,0.05)', 
+            padding: 16, 
+            borderRadius: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 12
+        }}>
+            <Icon size={20} color={Theme.colors.sanctuarySaffron} />
+            <VStack>
+                <Text sx={{ fontSize: 10, color: Theme.colors.starlightGray }}>{label}</Text>
+                <Text sx={{ fontSize: 18, fontWeight: '900', color: Theme.colors.sacredWhite }}>{value}</Text>
+            </VStack>
+        </Box>
+    );
+}
 

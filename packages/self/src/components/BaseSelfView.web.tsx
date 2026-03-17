@@ -67,17 +67,17 @@ export function BaseSelfView({
     return (
         <View style={[webStyles.container, { backgroundColor: surfaceBg }]}>
             {/* Fixed Control Panel (Top Hub) - Category Navigation */}
-            <View style={webStyles.hubHeader}>
-
+            {/* @ts-ignore - className is valid on web */}
+            <View style={webStyles.hubHeader} className="sanctuary-glass-hub">
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={webStyles.categoryTabs}
                 >
                     {domains?.map((domain) => (
-                        <View
+                        <Pressable
                             key={domain.id}
-                            onPointerDown={() => {
+                            onPress={() => {
                                 setActiveCategoryId(domain.id);
                                 setFocusedItemId(null);
                             }}
@@ -88,15 +88,17 @@ export function BaseSelfView({
                                     borderColor: domain.accentColor
                                 }
                             ]}
+                            // @ts-ignore - className is valid on web
+                            className={activeCategoryId === domain.id ? "sanctuary-card interactive active" : "sanctuary-card interactive"}
                         >
                             <View style={[webStyles.categoryIndicator, { backgroundColor: domain.accentColor }]} />
                             <Text style={[
                                 webStyles.categoryTitle,
-                                { color: activeCategoryId === domain.id ? domain.accentColor : 'rgba(0,0,0,0.4)' }
+                                { color: activeCategoryId === domain.id ? domain.accentColor : 'var(--text-muted)' }
                             ]}>
                                 {domain.title}
                             </Text>
-                        </View>
+                        </Pressable>
                     ))}
                 </ScrollView>
             </View>
@@ -141,15 +143,23 @@ export function BaseSelfView({
                                             <View
                                                 key={feature.id}
                                                 style={[styles.card, { borderLeftWidth: 6, borderLeftColor: feature.domainColor, marginBottom: 24 }]}
+                                                // @ts-ignore - className is valid on web
+                                                className="sanctuary-card"
                                             >
-                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                                                    <HStack sx={{ alignItems: 'center', space: 'sm' } as any}>
-                                                        <Text style={{ fontSize: 20 }}>
+                                                <View style={webStyles.featureCardHeader}>
+                                                    <HStack sx={{ alignItems: 'center', space: 'md' } as any}>
+                                                        <Text style={{ fontSize: 24 }}>
                                                             {FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || '✨'}
                                                         </Text>
-                                                        <Text style={[styles.sectionHeading, { color: feature.domainColor, marginBottom: 0 }]}>
-                                                            {feature.label}
-                                                        </Text>
+                                                        <VStack>
+                                                            <Text style={[styles.sectionHeading, { color: feature.domainColor, marginBottom: 2, opacity: 1 }]}>
+                                                                {feature.label}
+                                                            </Text>
+                                                        </VStack>
+                                                        <FeatureInfoIcon 
+                                                            title={feature.label} 
+                                                            discoveryInfo={FEATURE_DISCOVERY_DATA[feature.id as keyof typeof FEATURE_DISCOVERY_DATA]}
+                                                        />
                                                     </HStack>
                                                     
                                                     <HStack sx={{ alignItems: 'center', space: 'md' } as any}>
@@ -190,7 +200,8 @@ export function BaseSelfView({
                 </ScrollView>
 
                 {/* Support Sidebar (Unified Feedback) */}
-                <View style={webStyles.sideColumn}>
+                {/* @ts-ignore - className is valid on web */}
+                <View style={webStyles.sideColumn} className="sanctuary-sidebar-glass">
                     <ScrollView
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={webStyles.sideBarContent}
@@ -218,52 +229,52 @@ const webStyles = StyleSheet.create({
         backgroundColor: 'rgba(255,255,255,0.4)',
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(0,0,0,0.05)',
+        // Glass will be applied via CSS class
     } as any,
     headerInfo: {
         marginBottom: 32,
     },
     categoryTabs: {
-        gap: 16,
+        gap: 20, // Increased gap for organic breathing room
         paddingRight: 40,
     } as any,
     categoryCard: {
-        width: 200,
-        padding: 20,
-        borderRadius: 16,
-        backgroundColor: 'rgba(255,255,255,0.8)',
-        borderWidth: 2,
-        borderColor: 'transparent',
+        width: 'auto', // Dynamic width for better text fit
+        minWidth: 160,
+        paddingHorizontal: 24,
+        paddingVertical: 18,
+        borderRadius: 24, // Generous corners per TAIL_FIN
+        backgroundColor: 'rgba(255,255,255,0.6)',
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.3)',
         flexDirection: 'row',
         alignItems: 'center',
         gap: 12,
+        transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
     } as any,
     featureCardHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
-        marginBottom: 16,
-        position: 'relative',
+        justifyContent: 'space-between',
+        marginBottom: 20,
     },
     pinButton: {
-        position: 'absolute',
-        top: 0,
-        right: 24,
         cursor: 'pointer',
         fontSize: 14,
         padding: 4,
     },
     activeDomainContainer: {
-        padding: 20,
+        padding: 24,
     },
     categoryIndicator: {
-        width: 4,
-        height: 20,
-        borderRadius: 2,
+        width: 6,
+        height: 6,
+        borderRadius: 3, // Transform bar into a soulful dot
     },
     categoryTitle: {
-        fontSize: 14,
+        fontSize: 15,
         fontWeight: '700',
-        letterSpacing: 0.5,
+        letterSpacing: 0.2,
     },
     contentWrapper: {
         flex: 1,
@@ -278,7 +289,8 @@ const webStyles = StyleSheet.create({
         height: '100%',
         borderLeftWidth: 1,
         borderLeftColor: 'rgba(0,0,0,0.05)',
-        backgroundColor: 'rgba(255,255,255,0.2)',
+        backgroundColor: 'rgba(255,255,255,0.15)',
+        // Side column also benefits from subtle glass
     } as any,
     scrollContent: {
         padding: 40,
@@ -288,17 +300,18 @@ const webStyles = StyleSheet.create({
         gap: 32,
     } as any,
     ritualSection: {
-        marginTop: 20,
+        marginTop: 40,
+        paddingHorizontal: 24,
     },
     ritualGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         gap: 24,
-        marginTop: 8,
+        marginTop: 16,
     } as any,
     ritualCard: {
         flex: 1,
-        minWidth: 300,
+        minWidth: 320,
     } as any,
     roleTag: {
         fontSize: 11,
@@ -308,9 +321,9 @@ const webStyles = StyleSheet.create({
         marginBottom: 8,
     },
     description: {
-        fontSize: 15,
+        fontSize: 16,
         color: 'rgba(0,0,0,0.5)',
-        lineHeight: 22,
+        lineHeight: 24,
         maxWidth: 600,
     }
 });

@@ -4,7 +4,7 @@ import { useUserRole, useStore, naturePathsAPI } from '@repo/core';
 import type { BanyanStage } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { SkeletonCard } from '@repo/ui';
-import { useMoodLogs, useJournalEntries, useEnergyForecast, VoiceJournaling, FireJournal, MoodLotus, DailyRhythm, DailyContentCard, SleepTracker, BreathGuide, EnergyForecast, TomorrowPrep, GratitudeGlimmers, JoyJar, CommunityPresence, RemindersManager, ShadowAgentDrawer, WelcomeModal } from '@repo/self';
+import { useMoodLogs, useJournalEntries, useEnergyForecast, VoiceJournaling, FireJournal, MoodLotus, DailyRhythm, DailyContentCard, SleepTracker, BreathGuide, EnergyForecast, TomorrowPrep, GratitudeGlimmers, JoyJar, CommunityPresence, RemindersManager, WelcomeModal } from '@repo/self';
 import {
     Activity,
     MessageSquare,
@@ -333,7 +333,6 @@ export default function TeacherSelfViewWeb() {
                 ]}
                 sideBar={sideBar}
             />
-            <ShadowAgentDrawer />
             <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}

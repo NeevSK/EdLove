@@ -84,5 +84,87 @@ export const founderAPI = {
 
         if (error) throw new APIError('Founder failed to create group', error.code, error);
         return newGroup;
+    },
+
+    /**
+     * Get all users across the entire ecosystem (Founder/Admin only)
+     */
+    async listAllUsers(): Promise<any[]> {
+        const { data, error } = await supabase
+            .from('users')
+            .select('*, schools(name)')
+            .order('created_at', { ascending: false });
+
+        if (error) throw new APIError('Failed to list all users', error.code, error);
+        return data || [];
+    },
+
+    /**
+     * Update school metadata globally
+     */
+    async updateSchoolMetadata(schoolId: string, metadata: any): Promise<School> {
+        const { data, error } = await supabase
+            .from('schools')
+            .update({ metadata })
+            .eq('id', schoolId)
+            .select()
+            .single();
+
+        if (error) throw new APIError('Failed to update school metadata', error.code, error);
+        return data;
+    },
+
+    /**
+     * Get Ecosystem Pulse — aggregate "weather" across all institutions.
+     * High-level resonance for Founders.
+     */
+    async getEcosystemPulse(): Promise<any> {
+        const { data: schools, error: schoolError } = await supabase
+            .from('schools')
+            .select('id, name');
+
+        if (schoolError) throw new APIError('Failed to fetch schools for pulse', schoolError.code, schoolError);
+
+        // In a real implementation, this would be a single optimized RPC.
+        // For now, we aggregate known school pulse logic.
+        const pulses = await Promise.all((schools || []).map(async (s) => {
+            const { data: stats } = await supabase.rpc('get_school_pulse_weather', { p_school_id: s.id });
+            return {
+                school_id: s.id,
+                school_name: s.name,
+                weather: stats?.weather || 'steady',
+                health: stats?.health_index || 0
+            };
+        }));
+
+        const radiantCount = pulses.filter(p => p.weather === 'radiant').length;
+        const total = pulses.length;
+        
+        let ecosystemWeather: 'radiant' | 'lush' | 'steady' | 'resting' | 'quiet' = 'steady';
+        if (radiantCount / total > 0.6) ecosystemWeather = 'radiant';
+        else if (radiantCount / total > 0.3) ecosystemWeather = 'lush';
+        
+        return {
+            weather: ecosystemWeather,
+            pulses,
+            computed_at: new Date().toISOString()
+        };
+    },
+
+    /**
+     * Get Sentinel Governance — non-repudiable audit logs for critical actions.
+     */
+    async getSentinelGovernance(): Promise<any[]> {
+        const { data, error } = await supabase
+            .from('audit_logs')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(50);
+
+        // If table doesn't exist yet, return empty for now (Strategic Placeholder)
+        if (error && error.code === 'PGRST116') return [];
+        if (error) throw new APIError('Failed to fetch sentinel logs', error.code, error);
+        
+        return data || [];
     }
 };

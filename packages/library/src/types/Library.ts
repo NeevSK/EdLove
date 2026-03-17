@@ -215,9 +215,35 @@ export const LIBRARY_UI_CATEGORIES = [
 export interface KnowledgeNode {
     id: string;
     label: string;
-    type: 'resource' | 'topic';
+    type: 'resource' | 'topic' | 'persona' | 'collection';
     group: string;
-    metadata?: any;
+    thumbnail?: string;
+    isHero?: boolean;
+    isPathway?: boolean;
+    metadata?: {
+        subjects?: string[];
+        topics?: string[];
+        tags?: string[];
+        description?: string;
+        is_ministry_official?: boolean;
+        duration?: string;
+    };
+    // Metadata-driven visibility
+    supportedPerspectives?: ('astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti')[];
+    
+    // Geographical context for Terra
+    geo?: {
+        lat: number;
+        lng: number;
+        provinceId: string;
+        districtId: string;
+    };
+    
+    // Sequential context for Dharma
+    path?: {
+        order: number;
+        dependencies: string[];
+    };
     // D3 specific fields (optional for type safety)
     x?: number;
     y?: number;
@@ -229,11 +255,19 @@ export interface KnowledgeLink {
     source: string | KnowledgeNode;
     target: string | KnowledgeNode;
     value: number;
+    relationship?: NodeRelationship | 'path' | 'topic_association';
+    isPathway?: boolean;
 }
+
 
 export interface KnowledgeTopology {
     nodes: KnowledgeNode[];
     links: KnowledgeLink[];
+    supportedPerspectives?: ('astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti')[];
+    context?: {
+        focusRegion?: string;
+        zoomLevel?: number;
+    };
 }
 
 // ============================================================================

@@ -14,7 +14,7 @@ export interface AnnouncementWithAuthor extends Announcement {
 // COMMUNITY POST TYPES
 // ============================================================================
 
-export type PostType = 'question' | 'resource' | 'feedback' | 'announcement' | 'discussion';
+export type PostType = 'question' | 'resource' | 'feedback' | 'announcement' | 'discussion' | 'poll';
 export type PostVisibility = 'class' | 'grade' | 'school' | 'teachers_only' | 'public';
 export type Urgency = 'low' | 'medium' | 'high';
 export type FeedbackStatus = 'pending' | 'under_review' | 'approved' | 'implemented' | 'declined';
@@ -54,6 +54,11 @@ export interface CommunityPost {
     media_url?: string;
     media_type?: 'image' | 'video' | 'audio' | 'document';
 
+    // Poll-specific fields
+    poll_data?: {
+        options: { id: string; text: string }[];
+    };
+
     // Engagement
     reactions: Record<string, number>;
     comment_count: number;
@@ -61,6 +66,7 @@ export interface CommunityPost {
 
     // Context
     group_id?: string;
+    group_name?: string;
     classroom_id?: string;
     school_id: string;
 

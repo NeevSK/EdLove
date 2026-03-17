@@ -233,15 +233,23 @@ export const RadioIndicator = BaseRadioIndicator as any;
 export const RadioIcon = BaseRadioIcon as any;
 export const RadioLabel = BaseRadioLabel as any;
 
-export {
-    Actionsheet,
-    ActionsheetBackdrop,
-    ActionsheetContent,
-    ActionsheetItem,
-    ActionsheetItemText,
-    ActionsheetDragIndicator,
-    ActionsheetDragIndicatorWrapper,
+import {
+    Actionsheet as BaseActionsheet,
+    ActionsheetBackdrop as BaseActionsheetBackdrop,
+    ActionsheetContent as BaseActionsheetContent,
+    ActionsheetItem as BaseActionsheetItem,
+    ActionsheetItemText as BaseActionsheetItemText,
+    ActionsheetDragIndicator as BaseActionsheetDragIndicator,
+    ActionsheetDragIndicatorWrapper as BaseActionsheetDragIndicatorWrapper,
 } from '@gluestack-ui/themed/build/components/Actionsheet';
+
+export const Actionsheet = BaseActionsheet as any;
+export const ActionsheetBackdrop = BaseActionsheetBackdrop as any;
+export const ActionsheetContent = BaseActionsheetContent as any;
+export const ActionsheetItem = BaseActionsheetItem as any;
+export const ActionsheetItemText = BaseActionsheetItemText as any;
+export const ActionsheetDragIndicator = BaseActionsheetDragIndicator as any;
+export const ActionsheetDragIndicatorWrapper = BaseActionsheetDragIndicatorWrapper as any;
 
 import {
     Fab as BaseFab,

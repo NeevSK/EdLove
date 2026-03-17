@@ -1,0 +1,32 @@
+{
+  "name": "@repo/graphics",
+  "version": "0.0.1",
+  "description": "Topology & layout brain for Gurudevi visualization perspectives. No rendering — pure layout math.",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "check-types": "tsc --noEmit",
+    "clean": "rm -rf .turbo node_modules dist"
+  },
+  "dependencies": {
+    "d3-force": "^3.0.0",
+    "d3-hierarchy": "^3.1.2"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/d3-force": "^3.0.10",
+    "@types/d3-hierarchy": "^3.1.7",
+    "@types/react": "~19.1.10",
+    "eslint": "^9.38.0",
+    "typescript": "~5.9.2"
+  },
+  "peerDependencies": {
+    "react": "*"
+  }
+}

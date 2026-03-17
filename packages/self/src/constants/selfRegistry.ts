@@ -27,7 +27,7 @@ export const FEATURE_DISCOVERY_DATA: Record<string, { whatIsIt: string; whereToF
         whereToFind: 'Located in your Personal Sanctuary hub.'
     },
     'mood_checkin': {
-        whatIsIt: 'A space to log your emotions and see patterns over time. Understanding your mood is the first step to emotional resonance.',
+        whatIsIt: 'A space to log your emotions and see patterns over time. Understanding your mood is the first step up the emotional resonance ladder.',
         whereToFind: 'Top of your Self screen, accessible anytime for a quick reflection.'
     },
     'study_rhythm': {
@@ -45,6 +45,62 @@ export const FEATURE_DISCOVERY_DATA: Record<string, { whatIsIt: string; whereToF
     'voice_journaling': {
         whatIsIt: 'Speak your heart. A hands-free way to capture reflections through the "Voice of the Soul".',
         whereToFind: 'Accessible via the microphone icon in your daily rituals.'
+    },
+    'school_pulse': {
+        whatIsIt: 'A real-time overview of your school\'s collective energy and engagement levels.',
+        whereToFind: 'In the Working domain of the Principal dashboard.'
+    },
+    'decisions': {
+        whatIsIt: 'A structured space to track and reflect on institutional choices using "Strategic Wisdom".',
+        whereToFind: 'Found in your professional working layer.'
+    },
+    'wisdom': {
+        whatIsIt: 'A curated repository of insights and philosophical foundations for your educational journey.',
+        whereToFind: 'Under the Wisdom domain in your Self view.'
+    },
+    'reflections': {
+        whatIsIt: 'Deeper insights generated from your activity, helping you mirror your inner self.',
+        whereToFind: 'Located in the personal reflections layer.'
+    },
+    'breath_presence': {
+        whatIsIt: 'Mindful breathing exercises designed to restore focus and presence between classes.',
+        whereToFind: 'In your personal rituals section.'
+    },
+    'journal': {
+        whatIsIt: 'A private space for written reflections and creative sparks.',
+        whereToFind: 'Part of your personal growth layer.'
+    },
+    'banyan_path': {
+        whatIsIt: 'A visual map of your professional development and pedagogical experiments.',
+        whereToFind: 'In the working domain for educators.'
+    },
+    'faculty_resonance': {
+        whatIsIt: 'Connect with fellow educators to share insights and foster collective growth.',
+        whereToFind: 'The social hub of your professional layer.'
+    },
+    'systemic_overview': {
+        whatIsIt: 'High-level analytics across the entire educational ecosystem.',
+        whereToFind: 'Executive layer of the Founder dashboard.'
+    },
+    'strategic_wisdom': {
+        whatIsIt: 'Long-term planning tools and philosophical guidance for institutional growth.',
+        whereToFind: 'Under the Strategic domain for Founders.'
+    },
+    'system_health': {
+        whatIsIt: 'Technical monitoring and operational status of the Gurudevi platform.',
+        whereToFind: 'In the Working domain for Administrators.'
+    },
+    'user_resonance': {
+        whatIsIt: 'Tools to monitor and improve the quality of interactions across the user base.',
+        whereToFind: 'Admin dashboard, focusing on community health.'
+    },
+    'mirrors': {
+        whatIsIt: 'A collection of "Life Reflections" derived from your interactions and moods.',
+        whereToFind: 'The special Reflections tab in your Discovery Hub.'
+    },
+    'reminders': {
+        whatIsIt: 'Timely prompts to keep you aligned with your daily rituals and goals.',
+        whereToFind: 'The Reminders tab in your Discovery Hub.'
     }
 };
 

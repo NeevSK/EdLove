@@ -15,9 +15,19 @@ import {
     Pressable,
     SanctuaryModal,
     useTheme,
+    Heading,
+    Icon,
 } from '@repo/ui';
 import { Theme } from '@repo/ui';
-import { api, supabase, SRI_LANKAN_SUBJECTS_BY_LEVEL, SYLLABUS_VERSIONS, CLASSROOM_THEMES, identityAPI } from '@repo/core';
+import { 
+    api, 
+    supabase, 
+    SRI_LANKAN_SUBJECTS_BY_LEVEL, 
+    SYLLABUS_VERSIONS, 
+    CLASSROOM_THEMES, 
+    identityAPI, 
+    useClassroomCreation 
+} from '@repo/core';
 import { communityAPI } from '@repo/community';
 import { useTranslation } from 'react-i18next';
 import { hapticLight, hapticSuccess, Textarea, SanctuaryInput } from '@repo/ui';
@@ -51,75 +61,37 @@ export default function CreateClassroomModal({
     mode = 'create',
     initialData,
 }: CreateClassroomModalProps) {
+    const { 
+        state, 
+        updateStep, 
+        updateDetails, 
+        updateAcademic, 
+        updateAesthetics,
+        resetProgress 
+    } = useClassroomCreation();
+    
     const { t } = useTranslation();
-    const [name, setName] = useState('');
-    const [classType, setClassType] = useState<'own' | 'subject'>('own');
-    const [subject, setSubject] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const colors = useThemedColors();
-    const { text, accent, glass } = useTheme();
-
-    const [sections, setSections] = useState<any[]>([]);
-    const [grades, setGrades] = useState<any[]>([]);
-    const [selectedSectionId, setSelectedSectionId] = useState<string>('');
-    const [selectedGradeId, setSelectedGradeId] = useState<string>('');
-    const [availableClassrooms, setAvailableClassrooms] = useState<any[]>([]);
-    const [selectedClassroomId, setSelectedClassroomId] = useState<string>('');
-    const [isJoining, setIsJoining] = useState(false);
-    const [schoolId, setSchoolId] = useState<string | null>(null);
-
-    // New enhancement fields
-    const [handle, setHandle] = useState('');
-    const [description, setDescription] = useState('');
-    const [themeId, setThemeId] = useState('saffron');
-    const [syllabusId, setSyllabusId] = useState('legacy');
-    const [availableSubjects, setAvailableSubjects] = useState<readonly any[]>([]);
-
-    // Scanner state
-    const [isScannerOpen, setIsScannerOpen] = useState(false);
-
+    const { text, glass, accent } = useTheme();
+    const navigation = useNavigation();
+    
     // Guest support
     const { isGuest, canCreateClassroom } = useFeatureAccess();
     const [showGuestPrompt, setShowGuestPrompt] = useState(false);
-    const navigation = useNavigation();
+    
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [sections, setSections] = useState<any[]>([]);
+    const [grades, setGrades] = useState<any[]>([]);
+    const [schoolId, setSchoolId] = useState<string | null>(null);
+    const [availableSubjects, setAvailableSubjects] = useState<readonly any[]>([]);
+    const [isScannerOpen, setIsScannerOpen] = useState(false);
+    const [selectedClassroomId, setSelectedClassroomId] = useState<string>('');
+    const [availableClassrooms, setAvailableClassrooms] = useState<any[]>([]);
+    const [createdIds, setCreatedIds] = useState<{ classroomId: string; groupId?: string } | null>(null);
 
-    const handleScan = (data: string) => {
-        const result = resolveQR(data);
-        if (!result.ok || result.payload.action !== 'join_class') {
-            // Fallback: treat raw string as classroom ID for unknown formats
-            setSelectedClassroomId(data);
-            return;
-        }
-        setSelectedClassroomId(result.payload.classroom_id);
-        // We could auto-submit here, but letting the user see what they selected and click join is safer
-    };
-
-    React.useEffect(() => {
-        if (isOpen) {
-            fetchInitialData();
-            if (initialData) {
-                setName(initialData.name);
-                setSubject(initialData.subject || '');
-                setHandle(initialData.handle || '');
-                setDescription(initialData.description || '');
-                if (initialData.themeId) setThemeId(initialData.themeId);
-                if (initialData.syllabusId) setSyllabusId(initialData.syllabusId);
-                
-                if (mode !== 'edit') {
-                    setClassType(initialData.subject ? 'subject' : 'own');
-                }
-            } else {
-                setName('');
-                setHandle('');
-                setSubject('');
-                setDescription('');
-                setThemeId('saffron');
-                setSyllabusId('legacy');
-                setClassType('own');
-            }
-        }
-    }, [isOpen, initialData, mode]);
+    const isEdit = mode === 'edit';
+    const isJoin = mode === 'join';
 
     const fetchInitialData = async () => {
         try {
@@ -142,9 +114,28 @@ export default function CreateClassroomModal({
         }
     };
 
+    React.useEffect(() => {
+        if (isOpen) {
+            fetchInitialData();
+            if (initialData && isEdit) {
+                updateDetails({
+                    name: initialData.name,
+                    handle: initialData.handle || '',
+                    description: initialData.description || '',
+                });
+                updateAcademic({
+                    subject: initialData.subject || '',
+                    syllabusId: initialData.syllabusId || 'legacy',
+                });
+                updateAesthetics({
+                    themeId: initialData.themeId || 'saffron',
+                });
+            }
+        }
+    }, [isOpen, initialData, mode]);
+
     const handleSectionChange = async (sectionId: string) => {
-        setSelectedSectionId(sectionId);
-        setSelectedGradeId('');
+        updateAcademic({ sectionId, gradeId: '' });
         setGrades([]);
         setAvailableClassrooms([]);
         setSelectedClassroomId('');
@@ -158,7 +149,7 @@ export default function CreateClassroomModal({
 
     const handleGradeChange = async (gradeId: string) => {
         const grade = grades.find(g => g.id === gradeId);
-        setSelectedGradeId(gradeId);
+        updateAcademic({ gradeId, subject: '' });
         setAvailableClassrooms([]);
         setSelectedClassroomId('');
 
@@ -177,7 +168,7 @@ export default function CreateClassroomModal({
 
         try {
             // Fetch classrooms for this grade
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from('classrooms')
                 .select('*')
                 .eq('grade_id', gradeId)
@@ -192,13 +183,14 @@ export default function CreateClassroomModal({
     };
 
     const handleSubmit = async () => {
-        // Check if user is guest - show conversion prompt
         if (isGuest || !canCreateClassroom) {
             setShowGuestPrompt(true);
             return;
         }
 
-        if (mode === 'create' && !name.trim()) {
+        const { details, academic, aesthetics } = state;
+
+        if (mode === 'create' && !details.name.trim()) {
             setError(t('classroom.errorNameRequired') || 'Class name is required');
             return;
         }
@@ -224,44 +216,53 @@ export default function CreateClassroomModal({
             } else if (mode === 'edit') {
                 if (!initialData?.id) throw new Error('Classroom ID missing for edit');
                 result = await api.classrooms.update(initialData.id, {
-                    name: name.trim(),
-                    subject: subject.trim(),
-                    handle: handle.trim() || undefined,
-                    description: description.trim(),
-                    color_theme: themeId,
-                    syllabus_version: syllabusId,
+                    name: details.name.trim(),
+                    subject: academic.subject.trim(),
+                    handle: details.handle.trim() || undefined,
+                    description: details.description.trim(),
+                    color_theme: aesthetics.themeId,
+                    syllabus_version: academic.syllabusId,
                 });
             } else {
                 result = await api.classrooms.create({
-                    name: name.trim(),
-                    subject: subject.trim(),
+                    name: details.name.trim(),
+                    subject: academic.subject.trim(),
                     school_id: schoolId,
                     teacher_id: userId,
-                    grade_id: selectedGradeId || null,
-                    section_id: selectedSectionId || null,
-                    color_theme: themeId,
-                    description: description.trim(),
-                    syllabus_version: syllabusId,
-                    handle: handle.trim() || undefined,
+                    grade_id: academic.gradeId || null,
+                    section_id: academic.sectionId || null,
+                    color_theme: aesthetics.themeId,
+                    description: details.description.trim(),
+                    syllabus_version: academic.syllabusId,
+                    handle: details.handle.trim() || undefined,
                 });
 
-                // Create linked sanctuary group — creator auto-added as owner
-                if (result && schoolId) {
-                    await communityAPI.createGroupWithOwner({
-                        name: `${name.trim()} Sanctuary`,
-                        description: `A sacred space for the ${name.trim()} classroom ${subject ? `(${subject}) ` : ''}discussions and heart-sharing.`,
+                // Create linked sanctuary group
+                try {
+                    const group = await communityAPI.createGroupWithOwner({
+                        name: `${details.name.trim()} Sanctuary`,
+                        description: `A sacred space for the ${details.name.trim()} classroom discussions.`,
                         group_type: 'class',
                         join_policy: 'approval_required',
-                        school_id: schoolId,
+                        school_id: schoolId ?? undefined,
                         classroom_id: result.id,
-                        handle: handle.trim() || undefined
+                        handle: details.handle.trim() || undefined
                     }, userId);
+                    setCreatedIds({ classroomId: result.id, groupId: group.id });
+                } catch (groupErr) {
+                    console.warn('Failed to create linked group:', groupErr);
+                    setCreatedIds({ classroomId: result.id });
                 }
             }
 
             hapticSuccess();
-            onSuccess(result);
-            handleClose();
+            if (mode === 'create') {
+                updateStep(3);
+                onSuccess(result);
+            } else {
+                onSuccess(result);
+                handleClose();
+            }
         } catch (err: any) {
             const apiError = handleAPIError(err, true);
             setError(apiError.message);
@@ -270,14 +271,41 @@ export default function CreateClassroomModal({
         }
     };
 
+    const handleEnterClassroom = () => {
+        if (!createdIds?.classroomId) return;
+        const cId = createdIds.classroomId;
+        handleClose();
+        navigation.navigate('ClassroomDetails' as never, { id: cId } as never);
+    };
+
+    const handleScan = async (qrData: string) => {
+        setIsScannerOpen(false);
+        try {
+            const resolved = resolveQR(qrData);
+            if (resolved.ok && 'type' in resolved.payload && resolved.payload.type === 'classroom') {
+                const classroomId = (resolved.payload as any).id;
+                setSelectedClassroomId(classroomId);
+                // Directly join if it's a join mode scan
+                const userId = await identityAPI.getMyInternalId();
+                if (userId) {
+                    const result = await api.classrooms.update(classroomId, {
+                        teacher_id: userId
+                    });
+                    onSuccess(result);
+                    handleClose();
+                    hapticSuccess();
+                }
+            } else {
+                setError('Invalid classroom QR code');
+            }
+        } catch (err) {
+            setError('Failed to resolve QR code');
+            console.error(err);
+        }
+    };
+
     const handleClose = () => {
-        setName('');
-        setHandle('');
-        setSubject('');
-        setDescription('');
-        setThemeId('saffron');
-        setSyllabusId('legacy');
-        setClassType('own');
+        resetProgress();
         setError(null);
         onClose();
     };
@@ -303,42 +331,83 @@ export default function CreateClassroomModal({
                 }
                 footer={
                     <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
-                        <Button
-                            variant="outline"
-                            action="secondary"
-                            onPress={handleClose}
-                            sx={{ flex: 1, borderColor: glass.interact.border }}
-                            isDisabled={isSubmitting}
-                        >
-                            <ButtonText {...({ color: text.secondary } as any)}>
-                                {t('common.cancel') || 'Cancel'}
-                            </ButtonText>
-                        </Button>
-                        <Button
-                            action="primary"
-                            onPress={handleSubmit}
-                            sx={{
-                                flex: 1,
-                                backgroundColor: accent.action,
-                                borderRadius: Theme.corners.comfortable,
-                            }}
-                            isDisabled={
-                                isSubmitting ||
-                                (mode === 'create' && (!name.trim() || (classType === 'subject' && !subject.trim()))) ||
-                                (mode === 'join' && !selectedClassroomId)
-                            }
-                        >
-                            {isSubmitting ? (
-                                <Spinner {...({ color: text.inverse, size: "small" } as any)} />
-                            ) : (
+                        {state.step === 1 && (
+                            <>
+                                <Button
+                                    variant="outline"
+                                    action="secondary"
+                                    onPress={handleClose}
+                                    sx={{ flex: 1, borderColor: glass.interact.border }}
+                                    isDisabled={isSubmitting}
+                                >
+                                    <ButtonText {...({ color: text.secondary } as any)}>
+                                        {t('common.cancel') || 'Cancel'}
+                                    </ButtonText>
+                                </Button>
+                                <Button
+                                    action="primary"
+                                    onPress={() => updateStep(2)}
+                                    sx={{
+                                        flex: 2,
+                                        backgroundColor: Theme.colors.sanctuarySaffron,
+                                        borderRadius: Theme.corners.comfortable,
+                                    }}
+                                    isDisabled={!state.details.name.trim() || !state.details.handle.trim()}
+                                >
+                                    <ButtonText {...({ color: text.inverse } as any)}>
+                                        {'Next — Academic Focus'}
+                                    </ButtonText>
+                                </Button>
+                            </>
+                        )}
+                        {state.step === 2 && (
+                            <>
+                                <Button
+                                    variant="outline"
+                                    action="secondary"
+                                    onPress={() => updateStep(1)}
+                                    sx={{ flex: 1, borderColor: glass.interact.border }}
+                                    isDisabled={isSubmitting}
+                                >
+                                    <ButtonText {...({ color: text.secondary } as any)}>
+                                        {'Back'}
+                                    </ButtonText>
+                                </Button>
+                                <Button
+                                    action="primary"
+                                    onPress={handleSubmit}
+                                    sx={{
+                                        flex: 2,
+                                        backgroundColor: Theme.colors.sanctuarySaffron,
+                                        borderRadius: Theme.corners.comfortable,
+                                    }}
+                                    isDisabled={isSubmitting || (state.aesthetics.classType === 'subject' && !state.academic.subject.trim())}
+                                >
+                                    {isSubmitting ? (
+                                        <Spinner {...({ color: text.inverse, size: "small" } as any)} />
+                                    ) : (
+                                        <ButtonText {...({ color: text.inverse } as any)}>
+                                            {mode === 'edit' ? 'Save' : 'Establish Sanctuary'}
+                                        </ButtonText>
+                                    )}
+                                </Button>
+                            </>
+                        )}
+                        {state.step === 3 && (
+                            <Button
+                                action="primary"
+                                onPress={handleEnterClassroom}
+                                sx={{
+                                    flex: 1,
+                                    backgroundColor: Theme.colors.sanctuarySaffron,
+                                    borderRadius: Theme.corners.comfortable,
+                                }}
+                            >
                                 <ButtonText {...({ color: text.inverse } as any)}>
-                                    {mode === 'join'
-                                        ? (t('common.join') || 'Join')
-                                        : (t('common.create') || 'Create')
-                                    }
+                                    {'Enter Classroom Dashboard'}
                                 </ButtonText>
-                            )}
-                        </Button>
+                            </Button>
+                        )}
                     </HStack>
                 }
             >
@@ -359,202 +428,172 @@ export default function CreateClassroomModal({
                         </Box>
                     )}
 
-                    {(mode === 'create' || mode === 'edit') && (
-                        <FormControl isRequired isInvalid={!!error}>
-                            <FormControlLabel>
-                                <FormControlLabelText sx={{ color: colors.textSecondary }}>
-                                    {t('classroom.labelClassName') || 'Class Name'}
-                                </FormControlLabelText>
-                            </FormControlLabel>
-                            <Input
-                                sx={{
-                                    backgroundColor: colors.tertiary,
-                                    borderColor: colors.border,
-                                    height: 48,
-                                }}
-                            >
-                                <InputField
-                                    placeholder={t('classroom.placeholderClassName') || "e.g., 10-A"}
-                                    value={name}
-                                    onChangeText={(text: string) => {
-                                        setName(text);
-                                        if (error) setError(null);
-                                    }}
-                                    color={colors.text}
-                                    placeholderTextColor={colors.textTertiary}
-                                />
-                            </Input>
-                        </FormControl>
-                    )}
-
-                    {(mode === 'create' || mode === 'edit') && (
-                        <SanctuaryInput
-                            label="Classroom Handle (@)"
-                            placeholder="e.g. grade-10-maths"
-                            value={handle}
-                            onChangeText={(text) => setHandle(text.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}
-                            helperText="A unique identifier for your classroom's QR link."
-                            leftIcon={Globe}
-                        />
-                    )}
-
-                    {mode === 'join' && (
-                        <Box sx={{ marginBottom: Theme.spacing.md }}>
-                            <Button
-                                variant="outline"
-                                onPress={() => setIsScannerOpen(true)}
-                                sx={{ borderColor: accent.action }}
-                            >
-                                <HStack sx={{ gap: Theme.spacing.sm }} alignItems="center">
-                                    <ScanLine color={accent.action} size={20} />
-                                    <ButtonText {...({ color: accent.action } as any)}>
-                                        {t('classroom.scanQrToJoin') || 'Scan QR to Join'}
-                                    </ButtonText>
-                                </HStack>
-                            </Button>
-
-                            {schoolId && (
-                                <HStack alignItems="center" sx={{ marginVertical: Theme.spacing.md }}>
-                                    <Box sx={{ flex: 1, height: 1, backgroundColor: colors.border }} />
-                                    <Text sx={{ color: colors.textTertiary, paddingHorizontal: Theme.spacing.md, fontSize: Theme.typography.fontSize.sm }}>
-                                        {t('common.or') || 'OR'}
-                                    </Text>
-                                    <Box sx={{ flex: 1, height: 1, backgroundColor: colors.border }} />
-                                </HStack>
-                            )}
-                        </Box>
-                    )}
-
-                    {/* Grade & Section Selection (if in school) */}
-                    {schoolId && (
-                        <VStack sx={{ gap: Theme.spacing.md }}>
-                            <FormControl isRequired>
-                                <FormControlLabel>
-                                    <FormControlLabelText sx={{ color: colors.textSecondary }}>
-                                        {t('classroom.selectSection') || 'Select Section'}
-                                    </FormControlLabelText>
-                                </FormControlLabel>
-                                <Box sx={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                                    {sections.map((section) => (
-                                        <Button
-                                            key={section.id}
-                                            variant={selectedSectionId === section.id ? 'solid' : 'outline'}
-                                            size="sm"
-                                            onPress={() => handleSectionChange(section.id)}
-                                            sx={{
-                                                backgroundColor: selectedSectionId === section.id ? accent.action : 'transparent',
-                                                borderColor: selectedSectionId === section.id ? accent.action : colors.border,
-                                            }}
-                                        >
-                                            <ButtonText color={selectedSectionId === section.id ? text.inverse : colors.textSecondary}>
-                                                {section.name}
-                                            </ButtonText>
-                                        </Button>
-                                    ))}
-                                </Box>
-                            </FormControl>
-
-                            {selectedSectionId && grades.length > 0 && (
-                                <FormControl isRequired>
+                    {state.step === 1 && (
+                        <>
+                            {(mode === 'create' || mode === 'edit') && (
+                                <FormControl isRequired isInvalid={!!error}>
                                     <FormControlLabel>
                                         <FormControlLabelText sx={{ color: colors.textSecondary }}>
-                                            {t('classroom.selectGrade') || 'Select Grade'}
+                                            {t('classroom.labelClassName') || 'What shall we call your Sanctuary?'}
                                         </FormControlLabelText>
                                     </FormControlLabel>
-                                    <Box sx={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                                        {grades.map((grade) => (
-                                            <Button
-                                                key={grade.id}
-                                                variant={selectedGradeId === grade.id ? 'solid' : 'outline'}
-                                                size="xs"
-                                                onPress={() => handleGradeChange(grade.id)}
-                                                sx={{
-                                                    paddingHorizontal: 8,
-                                                    backgroundColor: selectedGradeId === grade.id ? accent.action : 'transparent',
-                                                    borderColor: selectedGradeId === grade.id ? accent.action : colors.border,
-                                                }}
-                                            >
-                                                <ButtonText color={selectedGradeId === grade.id ? text.inverse : colors.textSecondary}>
-                                                    {grade.number}
-                                                </ButtonText>
-                                            </Button>
-                                        ))}
-                                    </Box>
+                                    <Input
+                                        sx={{
+                                            backgroundColor: colors.tertiary,
+                                            borderColor: colors.border,
+                                            height: 56,
+                                            borderRadius: Theme.corners.generous
+                                        }}
+                                    >
+                                        <InputField
+                                            placeholder={t('classroom.placeholderClassName') || "e.g., 10-A Maths"}
+                                            value={state.details.name}
+                                            onChangeText={(textValue: string) => {
+                                                updateDetails({ 
+                                                    name: textValue,
+                                                    handle: textValue.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9_-]/g, '')
+                                                });
+                                                if (error) setError(null);
+                                            }}
+                                            color={colors.text}
+                                            placeholderTextColor={colors.textTertiary}
+                                            sx={{ fontSize: 18, fontWeight: '600' }}
+                                        />
+                                    </Input>
                                 </FormControl>
                             )}
 
-                            {mode === 'join' && selectedGradeId && availableClassrooms.length > 0 && (
-                                <FormControl isRequired>
+                            {(mode === 'create' || mode === 'edit') && (
+                                <SanctuaryInput
+                                    label="Classroom Handle (unique ID)"
+                                    placeholder="e.g. grade-10-maths"
+                                    value={state.details.handle}
+                                    onChangeText={(text: string) => updateDetails({ handle: text.toLowerCase().replace(/[^a-z0-9_-]/g, '') })}
+                                    helperText="Used for your classroom's QR codes and deep links."
+                                    leftIcon={Globe}
+                                />
+                            )}
+
+                            {(mode === 'create' || mode === 'edit') && (
+                                <FormControl>
                                     <FormControlLabel>
                                         <FormControlLabelText sx={{ color: colors.textSecondary }}>
-                                            {t('classroom.selectClassToJoin') || 'Select Classroom to Join'}
+                                            {t('classroom.description') || 'Brief Description'}
                                         </FormControlLabelText>
                                     </FormControlLabel>
-                                    <VStack sx={{ gap: Theme.spacing.sm }}>
-                                        {availableClassrooms.map((cls) => (
-                                            <Pressable
-                                                key={cls.id}
-                                                onPress={() => setSelectedClassroomId(cls.id)}
-                                            >
-                                                <Box
+                                    <Input
+                                        sx={{
+                                            minHeight: 100,
+                                            backgroundColor: colors.tertiary,
+                                            borderColor: colors.border,
+                                            borderRadius: Theme.corners.comfortable
+                                        }}
+                                    >
+                                        <InputField
+                                            placeholder={t('classroom.descPlaceholder') || "e.g., Daily announcements and resource sharing."}
+                                            value={state.details.description}
+                                            onChangeText={(text: string) => updateDetails({ description: text })}
+                                            multiline
+                                            numberOfLines={4}
+                                            color={colors.text}
+                                            placeholderTextColor={colors.textTertiary}
+                                        />
+                                    </Input>
+                                </FormControl>
+                            )}
+
+                            {mode === 'join' && (
+                                <Box sx={{ marginBottom: Theme.spacing.md }}>
+                                    <Button
+                                        variant="outline"
+                                        onPress={() => setIsScannerOpen(true)}
+                                        sx={{ borderColor: Theme.colors.sanctuarySaffron }}
+                                    >
+                                        <HStack sx={{ gap: Theme.spacing.sm }} alignItems="center">
+                                            <ScanLine color={Theme.colors.sanctuarySaffron} size={20} />
+                                            <ButtonText {...({ color: Theme.colors.sanctuarySaffron } as any)}>
+                                                {t('classroom.scanQrToJoin') || 'Scan QR to Join'}
+                                            </ButtonText>
+                                        </HStack>
+                                    </Button>
+
+                                    {schoolId && (
+                                        <HStack alignItems="center" sx={{ marginVertical: Theme.spacing.md }}>
+                                            <Box sx={{ flex: 1, height: 1, backgroundColor: colors.border }} />
+                                            <Text sx={{ color: colors.textTertiary, paddingHorizontal: Theme.spacing.md, fontSize: Theme.typography.fontSize.sm }}>
+                                                {t('common.or') || 'OR'}
+                                            </Text>
+                                            <Box sx={{ flex: 1, height: 1, backgroundColor: colors.border }} />
+                                        </HStack>
+                                    )}
+
+                                    {schoolId && (
+                                        <VStack sx={{ gap: Theme.spacing.md }}>
+                                            <FormControl isRequired>
+                                                <FormControlLabel>
+                                                    <FormControlLabelText sx={{ color: colors.textSecondary }}>
+                                                        {t('classroom.selectSection') || 'Select Section'}
+                                                    </FormControlLabelText>
+                                                </FormControlLabel>
+                                                <Box sx={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                                                    {sections.map((section) => (
+                                                        <Button
+                                                            key={section.id}
+                                                            variant={state.academic.sectionId === section.id ? 'solid' : 'outline'}
+                                                            size="sm"
+                                                            onPress={() => handleSectionChange(section.id)}
+                                                            sx={{
+                                                                backgroundColor: state.academic.sectionId === section.id ? Theme.colors.sanctuarySaffron : 'transparent',
+                                                                borderColor: state.academic.sectionId === section.id ? Theme.colors.sanctuarySaffron : colors.border,
+                                                            }}
+                                                        >
+                                                            <ButtonText color={state.academic.sectionId === section.id ? text.inverse : colors.textSecondary}>
+                                                                {section.name}
+                                                            </ButtonText>
+                                                        </Button>
+                                                    ))}
+                                                </Box>
+                                            </FormControl>
+                                        </VStack>
+                                    )}
+                                </Box>
+                            )}
+                        </>
+                    )}
+
+                    {state.step === 2 && (
+                        <>
+                            {schoolId && (
+                                <VStack sx={{ gap: Theme.spacing.md }}>
+                                    <FormControl isRequired>
+                                        <FormControlLabel>
+                                            <FormControlLabelText sx={{ color: colors.textSecondary }}>
+                                                {t('classroom.selectGrade') || 'Target Grade'}
+                                            </FormControlLabelText>
+                                        </FormControlLabel>
+                                        <Box sx={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                                            {grades.map((grade) => (
+                                                <Button
+                                                    key={grade.id}
+                                                    variant={state.academic.gradeId === grade.id ? 'solid' : 'outline'}
+                                                    size="xs"
+                                                    onPress={() => handleGradeChange(grade.id)}
                                                     sx={{
-                                                        padding: Theme.spacing.md,
-                                                        borderRadius: Theme.corners.comfortable,
-                                                        backgroundColor: selectedClassroomId === cls.id ? colors.tertiary : 'transparent',
-                                                        borderWidth: 1,
-                                                        borderColor: selectedClassroomId === cls.id ? accent.action : colors.border,
+                                                        paddingHorizontal: 8,
+                                                        backgroundColor: state.academic.gradeId === grade.id ? Theme.colors.sanctuarySaffron : 'transparent',
+                                                        borderColor: state.academic.gradeId === grade.id ? Theme.colors.sanctuarySaffron : colors.border,
                                                     }}
                                                 >
-                                                    <HStack justifyContent="space-between" alignItems="center">
-                                                        <VStack>
-                                                            <Text sx={{ color: colors.text, fontWeight: 'bold' }}>{cls.name}</Text>
-                                                            <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>{cls.subject || t('classroom.noSubject') || 'No subject'}</Text>
-                                                        </VStack>
-                                                        {selectedClassroomId === cls.id && (
-                                                            <Box sx={{ backgroundColor: accent.action, borderRadius: 10, padding: 2 }}>
-                                                                <Text {...({ color: text.inverse } as any)} sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: 'bold', paddingHorizontal: 4 }}>{t('common.selected') || 'SELECTED'}</Text>
-                                                            </Box>
-                                                        )}
-                                                    </HStack>
-                                                </Box>
-                                            </Pressable>
-                                        ))}
-                                    </VStack>
-                                </FormControl>
+                                                    <ButtonText color={state.academic.gradeId === grade.id ? text.inverse : colors.textSecondary}>
+                                                        {grade.number}
+                                                    </ButtonText>
+                                                </Button>
+                                            ))}
+                                        </Box>
+                                    </FormControl>
+                                </VStack>
                             )}
 
-                            {mode === 'join' && selectedClassroomId && !availableClassrooms.find(c => c.id === selectedClassroomId) && (
-                                <Box sx={{
-                                    padding: Theme.spacing.md,
-                                    borderRadius: Theme.corners.comfortable,
-                                    backgroundColor: colors.tertiary,
-                                    borderWidth: 1,
-                                    borderColor: accent.action,
-                                    marginTop: Theme.spacing.sm
-                                }}>
-                                    <HStack sx={{ gap: Theme.spacing.sm }} alignItems="center">
-                                        <ScanLine color={accent.action} size={20} />
-                                        <Text sx={{ color: colors.text, fontWeight: 'bold' }}>
-                                            Scanned Classroom Ready
-                                        </Text>
-                                    </HStack>
-                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs, marginTop: 4 }}>
-                                        Classroom ID: {selectedClassroomId.substring(0, 8)}...
-                                    </Text>
-                                </Box>
-                            )}
-
-                            {mode === 'join' && selectedGradeId && availableClassrooms.length === 0 && !selectedClassroomId && (
-                                <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.sm, textAlign: 'center', marginTop: Theme.spacing.md }}>
-                                    {t('classroom.noAvailableClasses') || 'No unassigned classrooms found for this grade.'}
-                                </Text>
-                            )}
-                        </VStack>
-                    )}
-
-                    {mode === 'create' && (
-                        <>
-                            {/* Subject Selection - Context Aware */}
                             <FormControl>
                                 <FormControlLabel>
                                     <FormControlLabelText sx={{ color: colors.textSecondary }}>
@@ -565,165 +604,111 @@ export default function CreateClassroomModal({
                                     {availableSubjects.map((sub: any) => (
                                         <Button
                                             key={sub.id}
-                                            variant={subject === sub.id ? 'solid' : 'outline'}
+                                            variant={state.academic.subject === sub.id ? 'solid' : 'outline'}
                                             size="xs"
-                                            onPress={() => setSubject(sub.id)}
+                                            onPress={() => updateAcademic({ subject: sub.id })}
                                             sx={{
-                                                backgroundColor: subject === sub.id ? accent.action : 'transparent',
-                                                borderColor: subject === sub.id ? accent.action : colors.border,
+                                                backgroundColor: state.academic.subject === sub.id ? Theme.colors.sanctuarySaffron : 'transparent',
+                                                borderColor: state.academic.subject === sub.id ? Theme.colors.sanctuarySaffron : colors.border,
                                             }}
                                         >
-                                            <ButtonText color={subject === sub.id ? text.inverse : colors.textSecondary}>
+                                            <ButtonText color={state.academic.subject === sub.id ? text.inverse : colors.textSecondary}>
                                                 {sub.en}
                                             </ButtonText>
                                         </Button>
                                     ))}
-                                    {/* Fallback for "Other" or custom */}
-                                    <Input
-                                        sx={{
-                                            flex: 1,
-                                            minWidth: 120,
-                                            height: 40,
-                                            backgroundColor: colors.tertiary,
-                                            borderColor: colors.border,
-                                        }}
-                                    >
-                                        <InputField
-                                            placeholder={t('classroom.customSubject') || "Other..."}
-                                            value={availableSubjects.find(s => s.id === subject) ? '' : subject}
-                                            onChangeText={setSubject}
-                                            color={colors.text}
-                                            placeholderTextColor={colors.textTertiary}
-                                        />
-                                    </Input>
                                 </HStack>
                             </FormControl>
 
-                            {/* Syllabus Version */}
                             <FormControl>
                                 <FormControlLabel>
                                     <FormControlLabelText sx={{ color: colors.textSecondary }}>
-                                        {t('classroom.syllabusVersion') || 'Syllabus Version'}
-                                    </FormControlLabelText>
-                                </FormControlLabel>
-                                <HStack sx={{ gap: Theme.spacing.md }}>
-                                    {SYLLABUS_VERSIONS.map((v) => (
-                                        <Button
-                                            key={v.id}
-                                            variant={syllabusId === v.id ? 'solid' : 'outline'}
-                                            size="sm"
-                                            onPress={() => setSyllabusId(v.id)}
-                                            sx={{
-                                                flex: 1,
-                                                backgroundColor: syllabusId === v.id ? colors.text : 'transparent',
-                                                borderColor: colors.border,
-                                            }}
-                                        >
-                                            <ButtonText color={syllabusId === v.id ? colors.secondary : colors.textSecondary}>
-                                                {v.en.split(' ')[0]}
-                                            </ButtonText>
-                                        </Button>
-                                    ))}
-                                </HStack>
-                            </FormControl>
-
-                            {/* Theme Picker */}
-                            <FormControl>
-                                <FormControlLabel>
-                                    <FormControlLabelText sx={{ color: colors.textSecondary }}>
-                                        {t('classroom.theme') || 'Classroom Theme'}
+                                        {t('classroom.theme') || 'Sanctuary Theme'}
                                     </FormControlLabelText>
                                 </FormControlLabel>
                                 <HStack sx={{ flexWrap: 'wrap', gap: 12, paddingVertical: 4 }}>
                                     {CLASSROOM_THEMES.map((theme) => (
-                                        <Pressable
-                                            key={theme.id}
-                                            onPress={() => setThemeId(theme.id)}
-                                        >
+                                        <Pressable key={theme.id} onPress={() => updateAesthetics({ themeId: theme.id })}>
                                             <Box
                                                 sx={{
-                                                    width: 32,
-                                                    height: 32,
-                                                    borderRadius: 16,
+                                                    width: 40,
+                                                    height: 40,
+                                                    borderRadius: 20,
                                                     backgroundColor: theme.color,
-                                                    borderWidth: themeId === theme.id ? 3 : 0,
-                                                    borderColor: colors.text,
+                                                    borderWidth: state.aesthetics.themeId === theme.id ? 3 : 0,
+                                                    borderColor: Theme.colors.sanctuarySaffron,
                                                     justifyContent: 'center',
                                                     alignItems: 'center'
                                                 }}
-                                            />
+                                            >
+                                                {state.aesthetics.themeId === theme.id && <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: 'white' }} />}
+                                            </Box>
                                         </Pressable>
                                     ))}
                                 </HStack>
                             </FormControl>
 
-                            {/* Description */}
                             <FormControl>
                                 <FormControlLabel>
                                     <FormControlLabelText sx={{ color: colors.textSecondary }}>
-                                        {t('classroom.description') || 'Description'}
-                                    </FormControlLabelText>
-                                </FormControlLabel>
-                                <Input
-                                    sx={{
-                                        minHeight: 80,
-                                        backgroundColor: colors.tertiary,
-                                        borderColor: colors.border,
-                                    }}
-                                >
-                                    <InputField
-                                        placeholder={t('classroom.descPlaceholder') || "e.g., Daily announcements, resource sharing for 10-A Maths."}
-                                        value={description}
-                                        onChangeText={setDescription}
-                                        multiline
-                                        numberOfLines={3}
-                                        color={colors.text}
-                                        placeholderTextColor={colors.textTertiary}
-                                    />
-                                </Input>
-                            </FormControl>
-
-                            {/* Classroom Type Selection */}
-                            <FormControl>
-                                <FormControlLabel>
-                                    <FormControlLabelText sx={{ color: colors.textSecondary }}>
-                                        {t('classroom.labelType') || 'Teacher Role for this Class'}
+                                        {t('classroom.labelType') || 'Institutional Role'}
                                     </FormControlLabelText>
                                 </FormControlLabel>
                                 <HStack sx={{ gap: Theme.spacing.md }}>
-                                    <Button
-                                        variant={classType === 'own' ? 'solid' : 'outline'}
-                                        action={classType === 'own' ? 'primary' : 'secondary'}
-                                        onPress={() => setClassType('own')}
-                                        sx={{
-                                            flex: 1,
-                                            backgroundColor: classType === 'own' ? accent.action : 'transparent',
-                                            borderColor: classType === 'own' ? accent.action : glass.interact.border,
-                                            borderRadius: Theme.corners.comfortable,
-                                        }}
-                                    >
-                                        <ButtonText {...({ color: classType === 'own' ? text.inverse : text.secondary } as any)}>
-                                            {t('classroom.roleClassTeacher') || 'Class Teacher'}
-                                        </ButtonText>
-                                    </Button>
-                                    <Button
-                                        variant={classType === 'subject' ? 'solid' : 'outline'}
-                                        action={classType === 'subject' ? 'primary' : 'secondary'}
-                                        onPress={() => setClassType('subject')}
-                                        sx={{
-                                            flex: 1,
-                                            backgroundColor: classType === 'subject' ? accent.action : 'transparent',
-                                            borderColor: classType === 'subject' ? accent.action : glass.interact.border,
-                                            borderRadius: Theme.corners.comfortable,
-                                        }}
-                                    >
-                                        <ButtonText {...({ color: classType === 'subject' ? text.inverse : text.secondary } as any)}>
-                                            {t('classroom.roleSubjectTeacher') || 'Subject Teacher'}
-                                        </ButtonText>
-                                    </Button>
+                                    {(['own', 'subject'] as const).map((type) => (
+                                        <Button
+                                            key={type}
+                                            variant={state.aesthetics.classType === type ? 'solid' : 'outline'}
+                                            onPress={() => updateAesthetics({ classType: type })}
+                                            sx={{
+                                                flex: 1,
+                                                backgroundColor: state.aesthetics.classType === type ? Theme.colors.sanctuarySaffron : 'transparent',
+                                                borderColor: state.aesthetics.classType === type ? Theme.colors.sanctuarySaffron : colors.border,
+                                                height: 48
+                                            }}
+                                        >
+                                            <ButtonText color={state.aesthetics.classType === type ? text.inverse : colors.textSecondary}>
+                                                {type === 'own' ? (t('classroom.roleClassTeacher') || 'Class Teacher') : (t('classroom.roleSubjectTeacher') || 'Subject Teacher')}
+                                            </ButtonText>
+                                        </Button>
+                                    ))}
                                 </HStack>
                             </FormControl>
                         </>
+                    )}
+
+                    {state.step === 3 && (
+                        <VStack sx={{ gap: Theme.spacing.xl, alignItems: 'center', paddingVertical: Theme.spacing.lg }}>
+                            <Box sx={{ backgroundColor: 'rgba(246,191,140,0.1)', padding: 24, borderRadius: 60 }}>
+                                <Icon as={Globe} color={Theme.colors.sanctuarySaffron} size={64} />
+                            </Box>
+                            
+                            <VStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
+                                <Heading color={colors.text} size="xl" sx={{ textAlign: 'center' }}>
+                                    Sanctuary Established!
+                                </Heading>
+                                <Text sx={{ textAlign: 'center', color: colors.textSecondary }}>
+                                    Your classroom <Text sx={{ fontWeight: 'bold', color: colors.text }}>{state.details.name}</Text> is ready for the breath-like learning journey.
+                                </Text>
+                            </VStack>
+
+                            <Box sx={{ backgroundColor: colors.tertiary, padding: Theme.spacing.lg, borderRadius: Theme.corners.generous, width: '100%' }}>
+                                <VStack sx={{ gap: Theme.spacing.md }}>
+                                    <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
+                                        <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} />
+                                        <Text sx={{ fontSize: 14, color: colors.text }}>Classroom Hub Initialized</Text>
+                                    </HStack>
+                                    <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
+                                        <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} />
+                                        <Text sx={{ fontSize: 14, color: colors.text }}>Linked Sanctuary Group Active</Text>
+                                    </HStack>
+                                    <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
+                                        <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} />
+                                        <Text sx={{ fontSize: 14, color: colors.text }}>QR Code & Handle Registered</Text>
+                                    </HStack>
+                                </VStack>
+                            </Box>
+                        </VStack>
                     )}
                 </VStack>
             </SanctuaryModal>

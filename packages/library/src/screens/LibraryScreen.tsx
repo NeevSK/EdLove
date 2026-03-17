@@ -39,7 +39,7 @@ import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
 import AddResourceModal from '../components/AddResourceModal';
 import { ResourceList } from '../components/ResourceList';
-import { Map as MapIcon, Play, Plus, FileText } from 'lucide-react-native';
+import { Map as MapIcon, Play, Plus, FileText, Layers, LayoutGrid, List } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useLibrary } from '../hooks/useLibrary';
 import { LibraryResource } from '../types';
@@ -52,19 +52,9 @@ import {
 } from '@repo/core';
 import { LIBRARY_UI_CATEGORIES } from '../constants/categories';
 import { libraryAPI } from '../api/library';
+import { SHELF_DEFS, getOrderedShelfDefs } from '../constants/shelf';
 
-// Shelf definitions
-const SHELF_DEFS = [
-    { id: 'movie_trailer', label: '🎬 Inspiring Films', types: ['movie_trailer'] },
-    { id: 'map', label: '🗺️ Maps & Visuals', types: ['map', 'infographic'] },
-    { id: 'story', label: '📖 Stories', types: ['story'] },
-    { id: 'circular', label: '📋 Edu Circulars', types: ['circular'] },
-    { id: 'guide', label: '👩‍🏫 Teacher Guides', types: ['guide'] },
-    { id: 'tech_guide', label: '💡 Tech Guides', types: ['tech_guide'] },
-    { id: 'video', label: '🎥 Videos', types: ['video'] },
-    { id: 'doc', label: '📄 Documents', types: ['pdf', 'doc', 'lesson', 'worksheet', 'reading', 'pedagogy'] },
-    { id: 'link', label: '🌐 Web Resources', types: ['link'] },
-] as const;
+// Local shelf definitions removed in favor of shared constants
 
 
 function MapInvitation({ onPress }: { onPress: () => void }) {
@@ -171,6 +161,7 @@ export default function LibraryScreen() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategoryId, setSelectedCategoryId] = useState('All');
     const [selectedSort, setSelectedSort] = useState<'recent' | 'popular' | 'most_endorsed' | 'most_bookmarked'>('recent');
+    const [viewMode, setViewMode] = useState<'shelf' | 'grid' | 'list'>('shelf');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
@@ -257,27 +248,7 @@ export default function LibraryScreen() {
     const { deskItems, user } = useStore();
 
     const orientationSeeds = user?.orientation_seeds ?? null;
-    const orderedShelfDefs = useMemo(() => {
-        if (!orientationSeeds) return [...SHELF_DEFS];
-
-        const depthBreadth = orientationSeeds.depth_breadth;
-        const soloSocial = orientationSeeds.solo_social;
-        const reflectAct = orientationSeeds.reflect_act;
-
-        const priority: Record<string, number> = {
-            movie_trailer: soloSocial > 55 ? 10 : 0,
-            map: depthBreadth > 55 ? 15 : depthBreadth < 45 ? 5 : 10,
-            story: reflectAct < 45 ? 14 : 8,
-            circular: 0,
-            guide: (depthBreadth < 45 || reflectAct < 45) ? 20 : 10,
-            tech_guide: reflectAct > 55 ? 18 : 8,
-            video: soloSocial > 55 ? 12 : 6,
-            doc: depthBreadth < 45 ? 16 : 8,
-            link: depthBreadth > 55 ? 10 : 4,
-        };
-
-        return [...SHELF_DEFS].sort((a, b) => (priority[b.id] ?? 0) - (priority[a.id] ?? 0));
-    }, [orientationSeeds]);
+    const orderedShelfDefs = useMemo(() => getOrderedShelfDefs(orientationSeeds), [orientationSeeds]);
 
     const handleOpenResource = useCallback((resource: LibraryResource) => {
         if (!resource.url) return;
@@ -419,24 +390,77 @@ export default function LibraryScreen() {
                         />
                     </Animated.View>
                     <Animated.View entering={FadeInDown.delay(160).springify()}>
-                        <HorizontalChipRow
-                            chips={sortChips}
-                            selectedValue={selectedSort}
-                            onSelect={(v) => setSelectedSort(v as typeof selectedSort)}
-                            size="sm"
-                        />
+                        <HStack sx={{ px: Theme.spacing.md, pb: Theme.spacing.sm, justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Box sx={{ flex: 1 }}>
+                                <HorizontalChipRow
+                                    chips={sortChips}
+                                    selectedValue={selectedSort}
+                                    onSelect={(v) => setSelectedSort(v as typeof selectedSort)}
+                                    size="sm"
+                                />
+                            </Box>
+                            
+                            {/* View Mode Toggle */}
+                            <HStack sx={{ gap: 4, backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: 12, padding: 4, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)' }}>
+                                <TouchableOpacity 
+                                    onPress={() => setViewMode('shelf')} 
+                                    style={[styles.toggleBtn, viewMode === 'shelf' && { backgroundColor: Theme.colors.sanctuarySaffron }]}
+                                >
+                                    <Layers size={14} color={viewMode === 'shelf' ? '#fff' : colors.textSecondary} />
+                                </TouchableOpacity>
+                                <TouchableOpacity 
+                                    onPress={() => setViewMode('grid')} 
+                                    style={[styles.toggleBtn, viewMode === 'grid' && { backgroundColor: Theme.colors.sanctuarySaffron }]}
+                                >
+                                    <LayoutGrid size={14} color={viewMode === 'grid' ? '#fff' : colors.textSecondary} />
+                                </TouchableOpacity>
+                                <TouchableOpacity 
+                                    onPress={() => setViewMode('list')} 
+                                    style={[styles.toggleBtn, viewMode === 'list' && { backgroundColor: Theme.colors.sanctuarySaffron }]}
+                                >
+                                    <List size={14} color={viewMode === 'list' ? '#fff' : colors.textSecondary} />
+                                </TouchableOpacity>
+                            </HStack>
+                        </HStack>
                     </Animated.View>
-                    <ResourceList
-                        resources={resources}
-                        onOpenResource={handleOpenResource}
-                        onPullToDesk={(res) => console.log('Pull to desk', res.id)}
-                        ListFooterComponent={isFetchingNextResources ? (
-                            <ActivityIndicator size="small" color={Theme.colors.sanctuarySaffron} style={{ padding: 20 }} />
-                        ) : null}
-                        onEndReached={handleEndReached}
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                    />
+
+                    {viewMode === 'shelf' ? (
+                        <ScrollView style={{ flex: 1 }}>
+                            <Box sx={{ p: Theme.spacing.md }}>
+                                <Text sx={{ fontSize: 13, color: colors.textSecondary, marginBottom: Theme.spacing.md }}>
+                                    {searchQuery ? `Found ${resources.length} findings for "${searchQuery}"` : `Showing curated findings`}
+                                </Text>
+                                
+                                {orderedShelfDefs.map(shelf => {
+                                    const shelfItems = resources.filter(res => shelf.types.includes(res.type));
+                                    if (shelfItems.length === 0) return null;
+                                    return renderShelf(shelf.label, shelfItems);
+                                })}
+
+                                {resources.filter(res => !orderedShelfDefs.some(s => s.types.includes(res.type))).length > 0 && 
+                                    renderShelf('Diverse Findings', resources.filter(res => !orderedShelfDefs.some(s => s.types.includes(res.type))))
+                                }
+                            </Box>
+                        </ScrollView>
+                    ) : (
+                        <ResourceList
+                            resources={resources}
+                            onOpenResource={handleOpenResource}
+                            onPullToDesk={(res) => console.log('Pull to desk', res.id)}
+                            viewMode={viewMode === 'grid' ? 'grid' : 'list'}
+                            ListHeaderComponent={<Box sx={{ p: Theme.spacing.md, pb: 0 }}>
+                                <Text sx={{ fontSize: 13, color: colors.textSecondary }}>
+                                    {searchQuery ? `Found ${resources.length} findings for "${searchQuery}"` : `Showing curated findings`}
+                                </Text>
+                            </Box>}
+                            ListFooterComponent={isFetchingNextResources ? (
+                                <ActivityIndicator size="small" color={Theme.colors.sanctuarySaffron} style={{ padding: 20 }} />
+                            ) : null}
+                            onEndReached={handleEndReached}
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                        />
+                    )}
                 </Box>
             ) : (
                 <ScrollView
@@ -649,5 +673,12 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'rgba(255, 255, 255, 0.1)',
         marginRight: 4,
+    },
+    toggleBtn: {
+        width: 32,
+        height: 32,
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });

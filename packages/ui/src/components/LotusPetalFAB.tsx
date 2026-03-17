@@ -99,7 +99,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     const icon = customIcon || globalState.icon;
 
     const colors = useThemedColors();
-    const { glow, accent } = useTheme();
+    const { isDark, glow, accent } = useTheme();
     const config = useMemo(() => fabConfig[currentTab] || fabConfig.self, [currentTab]);
 
     // Reanimated Shared Values
@@ -219,16 +219,16 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                         width: FAB_SIZE,
                         height: FAB_SIZE,
                         borderRadius: Theme.corners.full,
-                        backgroundColor: Theme.colors.sanctuarySaffron,
+                        backgroundColor: accent.action,
                         alignItems: 'center',
                         justifyContent: 'center',
-                        shadowColor: Theme.colors.templeGold,
-                        shadowOpacity: 0.8,
+                        shadowColor: Theme.colors.shadowViolet,
+                        shadowOpacity: 0.15,
                         shadowRadius: 15,
-                        shadowOffset: { width: 0, height: 0 },
+                        shadowOffset: { width: 0, height: 4 },
                         elevation: 12,
                         borderWidth: 1.5,
-                        borderColor: 'rgba(255, 255, 255, 0.2)',
+                        borderColor: isDark ? Theme.colors.glass.dark.border : Theme.colors.glass.light.border,
                     }}
                 >
 
@@ -285,8 +285,8 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                                     }}
                                     style={({ pressed }) => [
                                         styles.actionItem,
-                                        { backgroundColor: 'rgba(143, 188, 143, 0.1)' },
-                                        pressed && { backgroundColor: 'rgba(143, 188, 143, 0.2)' }
+                                        { backgroundColor: `${Theme.colors.sageGreen}1A` }, // 10% opacity
+                                        pressed && { backgroundColor: `${Theme.colors.sageGreen}33` } // 20% opacity
                                     ]}
                                 >
                                     <HStack alignItems="center" sx={{ gap: '$3' as any }}>
@@ -310,7 +310,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                                     accessibilityLabel={action.label}
                                     style={({ pressed }) => [
                                         styles.actionItem,
-                                        pressed && { backgroundColor: 'rgba(255,255,255,0.05)' }
+                                        pressed && { backgroundColor: `${Theme.colors.sacredWhite}0D` } // 5% opacity
                                     ]}
                                 >
                                     <HStack alignItems="center" sx={{ gap: '$3' as any }}>

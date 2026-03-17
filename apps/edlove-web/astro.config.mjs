@@ -7,11 +7,11 @@ import svelte from '@astrojs/svelte';
 // https://astro.build/config
 export default defineConfig({
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [/** @type {any} */ (tailwindcss())]
   },
 
   integrations: [svelte()],
-  
+
   i18n: {
     defaultLocale: 'en',
     locales: ['en', 'si', 'ta'],

@@ -1,0 +1,61 @@
+# Concept: Universal Mapping Protocol (The Topology Sphere)
+
+Instead of isolated "feature-locked" charts, we are building a **Universal Perspective Engine**. Every visualization we've created (Astro, Vastu, Dharma, Terra, Vatya, Jyoti) is now a "lens" that can be applied to any data, by any role.
+
+## 1. Multi-Modal Versatility
+The engine no longer cares *who* is using it. It cares about the *Structure* of the insight:
+
+- **Founder**: Can map the "App Governance Flowchart" using the **Dharma (Path)** or **Vastu (Hierarchy)** lens.
+- **Students**: Can build "Interest Mind-Maps" using **Vastu** and then toggle to **Astro (Dynamic)** to see how they resonate with peers.
+- **Principals**: Can see "Resource Ecosystems" using **Terra (Geo)** or **Jyoti (Charts)**.
+- **Teachers**: Can map "Lesson Progress" (Dharma) and then switch to "Potential Analysis" (Vatya).
+
+## 2. The Unified Perspective Protocol
+To facilitate this "whenever, wherever" usage:
+
+### A. The "Plug-and-Play" Component
+We will create a `UniversalPerspective` component in `@repo/library`. You drop this onto any screen, give it data, and it provides a "Lens Toggle" for the user to switch between Mind-map, Flowchart, or Graph.
+
+### B. Persistent Topologies
+Every "drawing" or "map" is stored in the unified `mapping_topologies` table. This means a Founder's flowchart is stored using the same mechanism as a Student's mind-map, making sharing (via deep-links) identical across the ecosystem.
+
+### C. Permissions: The "Resonance" Layer
+Sharing is managed by "Vibration Levels."
+- **Level 1 (Private)**: Personal musings/mind-maps.
+- **Level 2 (Resonant/Shared)**: Peer-to-peer links (Student to Student, Founder to Community).
+- **Level 3 (Ecological)**: Global maps published by the Founder or Principal.
+
+---
+
+## Technical Grounding
+- **Universal API**: The `mappingAPI` is already built to be role-agnostic.
+- **Real-time Sync**: [useMappingSync](file:///c:/Users/Naween/projects/polymath-platform/packages/library/src/hooks/useMappingSync.ts#6-69) ensures that whether it's a student's mind-map or a founder's app-flow, collaborative editing is active.
+
+---
+
+## Sharing & Peer Interaction
+
+### 1. Constellation Links (Deep-Linking)
+- Use signed URLs (`/share/constellation/:id`) that allow peers to peek into a shared mind-map without full app access.
+- **Privacy First**: RLS policies will ensure that "Principal Views" are never leaking, but "Student Peer Maps" are openly resonant.
+
+### 2. Collaborative "Echo"
+- Integrating the mapping engine with the "Echo" system. Tapping a node on a shared map allows peers to leave appreciative "ripples" (feedback).
+
+---
+
+## Infrastructure Requirements (The "Sphere" Foundation)
+
+### Database (Supabase)
+- **New Table `mapping_topologies`**: Stores raw node/link JSON or references to existing entities.
+- **RLS Refinement**: Implementing a "Contributor" vs "Viewer" policy based on `share_tokens`.
+
+### UI / Aesthetics
+- **Glass Protocol Expansion**: Ensuring the [AstroView](file:///c:/Users/Naween/projects/polymath-platform/packages/library/src/components/perspectives/AstroView.tsx#17-145) feels premium and consistent across Desktop (web) and Mobile.
+- **Export Synergy**: Using the existing `CaptureEngine` to generate high-fidelity PNGs of these shared "Constellations".
+
+---
+
+## Next Steps for Exploration
+1. **Pilot Peer Sharing**: Implement a simple "Share my Insight" button in the library that generates a [AstroView](file:///c:/Users/Naween/projects/polymath-platform/packages/library/src/components/perspectives/AstroView.tsx#17-145) link.
+2. **Principal Pulse**: Prototype a school-wide [TerraView](file:///c:/Users/Naween/projects/polymath-platform/packages/library/src/components/perspectives/TerraView.tsx#10-96) showing resource allocation relative to school regions.

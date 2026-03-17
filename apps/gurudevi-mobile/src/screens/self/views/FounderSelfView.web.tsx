@@ -33,7 +33,6 @@ import {
     TomorrowPrep,
     CommunityPresence,
     RemindersManager,
-    ShadowAgentDrawer,
     WelcomeModal,
 } from '@repo/self';
 import {
@@ -332,7 +331,6 @@ export default function FounderSelfViewWeb() {
                 ]}
                 sideBar={sideBar}
             />
-            <ShadowAgentDrawer />
             <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}

@@ -37,23 +37,24 @@ const SafeIcon = ({ icon: Icon, size = 20, color = 'currentColor', className = '
     }
 };
 
-export default function ProfileScreenWeb() {
+export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string; isPublic?: boolean }) {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const colors = useThemedColors();
     const { role } = useUserRole();
     const { isGuest } = useRoleFeatures();
     const { user } = useStore();
-    const { profile, loading: isProfileLoading, updateField, rewards, refresh } = useProfile();
+    const { profile, loading: isProfileLoading, updateField, rewards, refresh } = useProfile(userId);
     const completionResult = useProfileCompletion(profile, (role as any) ?? null);
-    // isEditModalOpen removed — openInlineEdit() is used instead
-    const [isAddLinkOpen, setIsAddLinkOpen] = useState(false);
+    // isAddLinkOpen removed — integrated into ContactLinktree
     const [copiedLink, setCopiedLink] = useState(false);
     const [editForm, setEditForm] = useState<{ full_name: string; bio: string; phone: string; username: string } | null>(null);
     const [isSaving, setIsSaving] = useState(false);
 
+    const isOwnProfile = !userId || userId === user?.id;
+
     // Social links — own data, live-updated
-    const { links: socialLinks, addLink: addSocialLink, loading: isSocialLinksLoading } = useSocialLinks(user?.id);
+    const { links: socialLinks, addLink: addSocialLink, loading: isSocialLinksLoading } = useSocialLinks(userId || user?.id);
 
     const openInlineEdit = () => setEditForm({ 
         full_name: profile?.full_name ?? '', 
@@ -139,8 +140,10 @@ export default function ProfileScreenWeb() {
                                     avatarUrl={profile.avatar_url}
                                     fullName={profile.full_name}
                                     size={88}
-                                    editable={true}
+                                    editable={isOwnProfile}
                                     onAvatarUpdated={async (url: string) => { await updateField('avatar_url', url); }}
+                                    peekable={!isOwnProfile || isPublic}
+                                    peekType="user"
                                 />
                             </div>
 
@@ -216,32 +219,10 @@ export default function ProfileScreenWeb() {
                                     </div>
                                 )}
 
-                                {/* Quick contact row */}
-                                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '20px' }}>
-                                    {profile.email && (
-                                        <span style={{ fontSize: '13px', color: 'var(--ink-ghost)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <Mail size={13} color="var(--ink-ghost)" />
-                                            {profile.email}
-                                        </span>
-                                    )}
-                                    {profile.phone && (
-                                        <span style={{ fontSize: '13px', color: 'var(--ink-ghost)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <Phone size={13} color="var(--ink-ghost)" />
-                                            {profile.phone}
-                                        </span>
-                                    )}
                                 </div>
-
-                                {/* Edit profile button — guests must create an account first */}
-                                {isGuest ? (
-                                    <button
-                                        className="premium-button"
-                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}
-                                        onClick={() => (navigation as any).navigate('Auth')}
-                                    >
-                                        Create Account
-                                    </button>
-                                ) : (
+                                
+                                {/* Show edit button only for own profile */}
+                                {isOwnProfile && !isGuest && (
                                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                                         <button
                                             className="secondary-button"
@@ -273,6 +254,17 @@ export default function ProfileScreenWeb() {
                                             🔒 Privacy Ledger
                                         </button>
                                     </div>
+                                )}
+
+                                {/* Show account creation for guest ON OWN profile only (if that's even possible) */}
+                                {isOwnProfile && isGuest && (
+                                    <button
+                                        className="premium-button"
+                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}
+                                        onClick={() => (navigation as any).navigate('Auth')}
+                                    >
+                                        Create Account
+                                    </button>
                                 )}
                             </div>
                         </div>
@@ -458,30 +450,16 @@ export default function ProfileScreenWeb() {
                                         Social Sanctuary
                                     </h3>
                                 </div>
-                                <button
-                                    className="secondary-button"
-                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', padding: '6px 12px' }}
-                                    onClick={() => setIsAddLinkOpen(true)}
-                                >
-                                    <Plus size={14} />
-                                    Add Link
-                                </button>
                             </div>
 
-                            {socialLinks && socialLinks.length > 0 ? (
-                                <ContactLinktree
-                                    links={socialLinks}
-                                    userName={profile.full_name}
-                                    isOwnProfile={true}
-                                />
-                            ) : (
-                                <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--ink-ghost)' }}>
-                                    <Globe size={32} color="var(--border)" />
-                                    <p style={{ fontSize: '13px', marginTop: '12px', fontStyle: 'italic' }}>
-                                        No social links yet. Add your first one.
-                                    </p>
-                                </div>
-                            )}
+                            <ContactLinktree
+                                links={socialLinks || []}
+                                userName={profile.full_name}
+                                userId={profile.id}
+                                isOwnProfile={isOwnProfile}
+                                editable={isOwnProfile}
+                                inline={true}
+                            />
                         </div>
 
                     </div>
@@ -509,12 +487,7 @@ export default function ProfileScreenWeb() {
 
             {/* EditProfileModal removed — inline edit panel used instead for web shell compatibility */}
 
-            {/* Add Social Link Modal */}
-            <AddSocialLinkModal
-                visible={isAddLinkOpen}
-                userId={user?.id}
-                onClose={() => setIsAddLinkOpen(false)}
-            />
+            {/* Add Social Link Modal removed — now managed by ContactLinktree */}
         </div>
     );
 }

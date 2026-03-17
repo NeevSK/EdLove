@@ -43,7 +43,6 @@ export { OrientationCaptureStep } from './components/OrientationCaptureStep';
 export { default as ProgressTree } from './components/ProgressTree';
 export { default as RemindersManager } from './components/RemindersManager';
 export { default as ResonancePatternCard } from './components/ResonancePatternCard';
-export { default as ShadowAgentDrawer } from './components/ShadowAgentDrawer';
 export { default as SleepTracker } from './components/SleepTracker';
 export { default as StudentGoals } from './components/StudentGoals';
 export { default as TomorrowPrep } from './components/TomorrowPrep';

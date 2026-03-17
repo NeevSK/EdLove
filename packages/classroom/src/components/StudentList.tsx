@@ -27,6 +27,7 @@ import {
     Edit2,
     Trash2,
     Plus,
+    Sparkles,
 } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
 import { QRCodeGenerator } from '@repo/scanner-kit';
@@ -36,14 +37,14 @@ import { AddStudentModal } from './AddStudentModal';
 import { useThemedColors } from '@repo/ui';
 import * as Clipboard from 'expo-clipboard';
 import { QrCode } from 'lucide-react-native';
-
 interface StudentListProps {
     classroomId: string;
     students: ClassroomStudent[];
     onRefresh: () => void;
+    onAnalyzePotential?: (student: ClassroomStudent) => void;
 }
 
-export default function StudentList({ classroomId, students, onRefresh }: StudentListProps) {
+export default function StudentList({ classroomId, students, onRefresh, onAnalyzePotential }: StudentListProps) {
     const { t } = useTranslation();
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<ClassroomStudent | null>(null);
@@ -139,6 +140,13 @@ export default function StudentList({ classroomId, students, onRefresh }: Studen
                                 </HStack>
 
                                 <HStack sx={{ gap: Theme.spacing.sm }}>
+                                    {onAnalyzePotential && (
+                                        <Pressable onPress={() => { hapticLight(); onAnalyzePotential(student); }}>
+                                            <Box sx={{ padding: Theme.spacing.xs }}>
+                                                <Sparkles size={20} color={Theme.colors.sanctuarySaffron} />
+                                            </Box>
+                                        </Pressable>
+                                    )}
                                     {!student.student_id && student.invite_code && (
                                         <Pressable onPress={() => handleShowQr(student)}>
                                             <Box sx={{ padding: Theme.spacing.xs }}>

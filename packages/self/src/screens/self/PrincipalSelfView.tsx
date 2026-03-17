@@ -19,7 +19,6 @@ import { ImpactRipplesCard } from '../../components/ImpactRipplesCard';
 import { useWellbeingEnrichment } from '../../hooks/useWellbeingEnrichment';
 
 // Role Components
-import ShadowAgentDrawer from '../../components/ShadowAgentDrawer';
 import WelcomeModal from '../../components/WelcomeModal';
 import { useMoodLogs } from '../../hooks/useMoodLogs';
 import { useEnergyForecast } from '../../hooks/useEnergyForecast';
@@ -149,7 +148,7 @@ export default function PrincipalSelfView() {
                 }
             />
 
-            <ShadowAgentDrawer />
+
             <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}

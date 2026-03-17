@@ -860,30 +860,50 @@ resource: nodes!resource_engagements_resource_id_fkey(
      * Get the epistemic map topology (nodes and links)
      */
     async getMapTopology(): Promise<KnowledgeTopology> {
-        const { data: resources, error } = await supabase
+        // 1. Fetch Resources (Nodes)
+        const { data: resources, error: resourceError } = await supabase
             .from('nodes')
-            .select('id, title, type, subjects, topics, tags, thumbnail_url');
+            .select('id, title, type, subjects, topics, tags, thumbnail_url, description, verified, is_ministry_official');
 
-        if (error) throw new APIError('Failed to fetch resource topology', error.code, error);
+        if (resourceError) throw new APIError('Failed to fetch resource topology', resourceError.code, resourceError);
+
+        // 2. Fetch Semantic Edges
+        const { data: edges, error: edgeError } = await supabase
+            .from('edges')
+            .select('from_node_id, to_node_id, relationship, weight');
+
+        if (edgeError) throw new APIError('Failed to fetch semantic edges', edgeError.code, edgeError);
+
+        // 3. Fetch Official Collections (Pathways)
+        const { data: collections, error: collectionError } = await supabase
+            .from('collections')
+            .select('id, name, resource_ids, sequence_order')
+            .eq('is_official', true);
+
+        if (collectionError) throw new APIError('Failed to fetch pathway collections', collectionError.code, collectionError);
 
         const nodes: KnowledgeNode[] = [];
         const links: KnowledgeLink[] = [];
         const topicNodes = new Set<string>();
 
+        // Process Resources
         resources.forEach(res => {
-            // Add Resource Node
             nodes.push({
                 id: res.id,
                 label: res.title,
                 type: 'resource',
                 group: res.type || 'unknown',
+                thumbnail: res.thumbnail_url,
                 metadata: {
                     subjects: res.subjects,
-                    thumbnail: res.thumbnail_url
+                    topics: res.topics,
+                    tags: res.tags,
+                    description: res.description,
+                    is_ministry_official: res.is_ministry_official
                 }
             });
 
-            // Process Topics
+            // Process Topics (Legacy auto-linking)
             const itemTopics = res.topics || [];
             itemTopics.forEach((topic: string) => {
                 const topicId = `topic:${topic}`;
@@ -897,17 +917,42 @@ resource: nodes!resource_engagements_resource_id_fkey(
                     topicNodes.add(topicId);
                 }
 
-                // Link Resource to Topic
                 links.push({
                     source: res.id,
                     target: topicId,
-                    value: 1
+                    value: 1,
+                    relationship: 'topic_association'
                 });
             });
         });
 
+        // Add Semantic Edges
+        edges.forEach(edge => {
+            links.push({
+                source: edge.from_node_id,
+                target: edge.to_node_id,
+                value: edge.weight || 1,
+                relationship: edge.relationship as any
+            });
+        });
+
+        // Add Pathway Links from Collections
+        collections.forEach(col => {
+            const resIds = col.resource_ids || [];
+            for (let i = 0; i < resIds.length - 1; i++) {
+                links.push({
+                    source: resIds[i],
+                    target: resIds[i + 1],
+                    value: 2, // Higher weight for pathways
+                    relationship: 'path',
+                    isPathway: true
+                });
+            }
+        });
+
         return { nodes, links };
     },
+
 
     /**
      * Report a broken link for a resource.
@@ -951,4 +996,17 @@ resource: nodes!resource_engagements_resource_id_fkey(
             return [];
         }
     },
+
+    /**
+     * Get Geographical Topology (Provinces -> Districts -> Schools)
+     */
+    async getGeoTopology(): Promise<any> {
+        const { data: schools, error } = await supabase
+            .from('schools')
+            .select('id, name, province_id, district_id, student_count');
+        
+        if (error) throw new APIError('Failed to fetch school geo-data', error.code, error);
+
+        return schools;
+    }
 };

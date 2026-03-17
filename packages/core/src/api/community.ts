@@ -377,5 +377,28 @@ export const communityAPI = {
 
         if (error) throw error;
         return data;
+    },
+
+    /**
+     * Cast a vote in a community poll.
+     */
+    async voteInPoll(postId: string, optionId: string): Promise<void> {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new Error('Authentication required');
+
+        const { error } = await supabase
+            .from('community_poll_votes')
+            .insert([{
+                post_id: postId,
+                user_id: myId,
+                option_id: optionId
+            }]);
+
+        if (error) {
+            if (error.code === '23505') { // Unique constraint violation
+                throw new Error('You have already voted in this poll');
+            }
+            throw new Error(error.message);
+        }
     }
 };

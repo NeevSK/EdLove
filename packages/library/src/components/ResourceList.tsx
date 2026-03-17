@@ -44,6 +44,7 @@ import { getMediaUrl, formatFileSize, formatDuration } from '@repo/core';
 import { libraryAPI } from '../api/library';
 import type { LibraryResource } from '../types';
 import { Alert } from 'react-native';
+import { LibraryThumbnailCard } from '@repo/ui';
 
 // ============================================================================
 // CONSTANTS & CONFIG
@@ -86,6 +87,7 @@ export interface ResourceListProps {
     onEndReached?: () => void;
     refreshing?: boolean;
     onRefresh?: () => void;
+    viewMode?: 'grid' | 'list';
 }
 
 export function ResourceList({
@@ -97,6 +99,7 @@ export function ResourceList({
     onEndReached,
     refreshing,
     onRefresh,
+    viewMode = 'list',
 }: ResourceListProps) {
     const [flashPlayResource, setFlashPlayResource] = useState<LibraryResource | null>(null);
 
@@ -108,14 +111,36 @@ export function ResourceList({
         setFlashPlayResource(null);
     }, []);
 
-    const renderItem = useCallback(({ item }: { item: LibraryResource }) => (
-        <ResourceRow
-            resource={item}
-            onOpen={() => onOpenResource?.(item)}
-            onFlashPlay={() => handleFlashPlay(item)}
-            onPullToDesk={onPullToDesk ? () => onPullToDesk(item) : undefined}
-        />
-    ), [onOpenResource, handleFlashPlay, onPullToDesk]);
+    const renderItem = useCallback(({ item }: { item: LibraryResource }) => {
+        if (viewMode === 'grid') {
+            const getYoutubeThumbnail = (url?: string) => {
+                if (!url) return undefined;
+                const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]{11})/);
+                return match ? `https://img.youtube.com/vi/${match[1]}/mqdefault.jpg` : undefined;
+            };
+
+            return (
+                <Box sx={{ margin: 6 }}>
+                    <LibraryThumbnailCard
+                        title={item.title}
+                        type={item.type}
+                        subject={item.subjects?.[0] || ''}
+                        thumbnailUrl={item.media?.url || (item as any).thumbnail_url || (item.type === 'video' || item.type === 'movie_trailer' ? getYoutubeThumbnail(item.url) : undefined)}
+                        onPress={() => onOpenResource?.(item)}
+                    />
+                </Box>
+            );
+        }
+
+        return (
+            <ResourceRow
+                resource={item}
+                onOpen={() => onOpenResource?.(item)}
+                onFlashPlay={() => handleFlashPlay(item)}
+                onPullToDesk={onPullToDesk ? () => onPullToDesk(item) : undefined}
+            />
+        );
+    }, [onOpenResource, handleFlashPlay, onPullToDesk, viewMode]);
 
     const handleReportBroken = useCallback(async (resourceId: string) => {
         try {
@@ -132,8 +157,10 @@ export function ResourceList({
             <SanctuaryFlashList
                 data={resources}
                 renderItem={renderItem}
+                key={`resource-list-${viewMode}`}
+                numColumns={viewMode === 'grid' ? 2 : 1}
                 keyExtractor={(item) => item.id}
-                estimatedItemSize={Theme.listSizes.resourceRow}
+                estimatedItemSize={viewMode === 'grid' ? 200 : Theme.listSizes.resourceRow}
                 ListHeaderComponent={ListHeaderComponent}
                 ListFooterComponent={ListFooterComponent}
                 onEndReached={onEndReached}

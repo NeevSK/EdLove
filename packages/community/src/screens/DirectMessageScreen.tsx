@@ -60,8 +60,8 @@ export default function DirectMessageScreen() {
             fetchMessages={fetchMessages}
             sendMessage={sendMessage}
             subscription={subscription}
-            onPressAuthor={(userId, name) => {
-                navigation.navigate('UserProfile', { userId, userName: name });
+            onPressAuthor={(userId) => {
+                navigation.navigate('PublicProfile', { id: userId, type: 'user' });
             }}
             headerRight={
                 <HeaderMoreMenu

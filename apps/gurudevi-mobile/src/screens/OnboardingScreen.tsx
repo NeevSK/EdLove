@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Theme } from '@repo/ui';
-import { UserRole, supabase, identityAPI } from '@repo/core';
+import { UserRole, supabase, identityAPI, authAPI } from '@repo/core';
 import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
@@ -183,7 +183,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             }
 
             // 2. Update user profile
-            const { data: { session: currentSession } } = await supabase.auth.getSession();
+            const currentSession = await authAPI.getSession().catch(() => null);
             const actuallyAnonymous = currentSession?.user?.is_anonymous ?? true;
 
             const { error: profileError } = await supabase
