@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useStore, supabase, assignmentsAPI, useUserRole, api } from '@repo/core';
-import { useInventory, AddStudentModal, StudentAnalysisModal } from '@repo/classroom';
+import { useInventory, AddStudentModal } from '@repo/classroom';
+import { StudentAnalysisModal } from '@repo/library';
 import {
     ArrowLeft, Users, BookOpen, Clock, ClipboardList, Plus, CheckCircle2,
     FileText, ExternalLink, NotebookPen, UserPlus, Pin, Trash2,
