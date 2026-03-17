@@ -12,7 +12,7 @@ import { config } from "./gluestack-ui.config";
 import { Home, School, Users, Library, User, Sparkles } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
 import * as Font from 'expo-font';
-import { supabase, useStore, UserRole, SchoolType, initSentry, initPostHog, trackEvent, identifyUser, identifyUser as _, identityAPI, authAPI, APIError } from '@repo/core';
+import { supabase, useStore, UserRole, SchoolType, initSentry, initPostHog, trackEvent, identifyUser, identityAPI, authAPI, APIError } from '@repo/core';
 import { Platform } from 'react-native';
 import ReactDOM from 'react-dom';
 import * as Linking from 'expo-linking';
