@@ -6,7 +6,7 @@ export interface Props {
 	canonicalURL?: URL;
 }
 
-const { title, description, image = '/og-image.jpg', canonicalURL = new URL(Astro.url.pathname, Astro.site) } = Astro.props;
+const { title, description, image = '/og-image.jpg', canonicalURL = Astro.site ? new URL(Astro.url.pathname, Astro.site) : Astro.url } = Astro.props;
 ---
 
 <!-- Global Metadata -->

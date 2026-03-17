@@ -1,8 +1,13 @@
-import { skipWaiting, clientsClaim } from 'workbox-core';
-import { precacheAndRoute } from 'workbox-precaching';
-import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate, CacheFirst } from 'workbox-strategies';
-import { ExpirationPlugin } from 'workbox-expiration';
+// Standard Workbox Service Worker via CDN importScripts
+// Using importScripts is required for service workers — bare ESM imports are not supported in SW context
+
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js');
+
+const { skipWaiting, clientsClaim } = workbox.core;
+const { precacheAndRoute } = workbox.precaching;
+const { registerRoute } = workbox.routing;
+const { StaleWhileRevalidate, CacheFirst } = workbox.strategies;
+const { ExpirationPlugin } = workbox.expiration;
 
 // Standard Workbox Service Worker
 // Uses CDN fallback if not bundled

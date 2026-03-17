@@ -25,7 +25,7 @@ export function useProfile(userId?: string) {
             if (data) {
                 setProfile({
                     ...data,
-                    role: data.role || (userId ? null : currentUserRole) || 'teacher',
+                    role: data.role ?? (!userId ? currentUserRole : undefined) ?? 'teacher',
                     school_name: data.schools?.name || null
                 } as UserProfile);
             }

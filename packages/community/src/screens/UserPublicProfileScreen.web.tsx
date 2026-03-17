@@ -51,7 +51,12 @@ export default function UserPublicProfileScreen() {
   const route = useRoute<any>();
   const navigation =
     useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
-  const { userId, userName } = route.params;
+  const { userId: userIdParam, id, userName } = route.params as {
+    userId?: string;
+    id?: string;
+    userName?: string;
+  };
+  const userId = userIdParam || id || '';
   const { userId: currentUserId } = useUserRole();
   const currentUser = useStore(state => state.user);
   const { glass, text, accent } = useTheme();

@@ -52,10 +52,12 @@ export default function UserPublicProfileScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<Nav>();
   const route = useRoute<any>();
-  const { userId, userName } = route.params as {
-    userId: string;
-    userName: string;
+  const { userId: userIdParam, id, userName } = route.params as {
+    userId?: string;
+    id?: string;
+    userName?: string;
   };
+  const userId = userIdParam || id || '';
   const currentUserId = useStore((state) => state.user?.id);
   const colors = useThemedColors();
 
