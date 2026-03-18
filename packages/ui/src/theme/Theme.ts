@@ -97,6 +97,14 @@ export const colors = {
     shadowFocus: 'rgba(246, 191, 140, 0.15)',    // Saffron glow (#F6BF8C based)
     shadowSaffron: 'rgba(246, 191, 140, 0.4)',  // Stronger Saffron glow
 
+    // Resonance System - Phase Tints
+    resonance: {
+        past: '#968E80',    // Muted Sepia-Grey (History)
+        present: '#F6BF8C', // Sanctuary Saffron (Living)
+        future: '#FDD925',  // Temple Gold (Potential)
+        ghost: 'rgba(150, 142, 128, 0.4)', // Faded historical resonance
+    },
+
     // Functional Semantic Aliases
     text: '#2A2318',                // inkTruth
     textPrimary: '#2A2318',

@@ -10,7 +10,18 @@ export * from './components/GlassCard';
 export { default as SanctuaryFlashList } from './components/SanctuaryFlashList';
 export type { SanctuaryFlashListProps } from './components/SanctuaryFlashList';
 export * from './components/InteractiveRadarChart';
+export * from './components/ResonanceProvider';
+export * from './components/TemporalScrubber';
+export * from './components/TemporalPilot';
+export * from './components/ResonanceShield';
+export * from './theme/Theme';
 export * from './components';
+
+
+
+
+
+
 
 export * from './utils/DeviceUtils';
 export * from './utils/haptics';
