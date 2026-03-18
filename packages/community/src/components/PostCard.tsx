@@ -551,25 +551,42 @@ function PollWidget({
     // ── Fetch votes from DB ──────────────────────────────────────────────────
     const fetchVotes = React.useCallback(async () => {
         try {
-            const { data, error } = await supabase
+            // First, fetch aggregated counts without exposing user identifiers
+            const { data: countData, error: countError } = await supabase
                 .from('community_poll_votes')
-                .select('user_id, option_id')
+                .select('option_id')
                 .eq('post_id', postId);
-            if (error) throw error;
+            if (countError) throw countError;
 
             const newCounts: Record<string, number> = {};
-            const myVotes = new Set<string>();
             let total = 0;
 
-            (data ?? []).forEach((v: { user_id: string; option_id: string }) => {
+            (countData ?? []).forEach((v: { option_id: string }) => {
                 newCounts[v.option_id] = (newCounts[v.option_id] ?? 0) + 1;
                 total++;
-                if (currentUserId && v.user_id === currentUserId) myVotes.add(v.option_id);
             });
 
             setCounts(newCounts);
-            setUserVotes(myVotes);
             setTotalVotes(total);
+
+            // Then, fetch only the current user's votes (if we have a user id)
+            if (currentUserId) {
+                const { data: myVotesData, error: myVotesError } = await supabase
+                    .from('community_poll_votes')
+                    .select('option_id')
+                    .eq('post_id', postId)
+                    .eq('user_id', currentUserId);
+                if (myVotesError) throw myVotesError;
+
+                const myVotes = new Set<string>();
+                (myVotesData ?? []).forEach((v: { option_id: string }) => {
+                    myVotes.add(v.option_id);
+                });
+                setUserVotes(myVotes);
+            } else {
+                // No current user; ensure we clear any previous selection state
+                setUserVotes(new Set<string>());
+            }
         } catch (err) {
             console.error('[PollWidget] fetchVotes error:', err);
         } finally {
