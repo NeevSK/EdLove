@@ -20,7 +20,7 @@ CREATE POLICY "comments_select_school" ON public.community_comments
     FOR SELECT USING (
         EXISTS (
             SELECT 1 FROM public.community_posts cp
-            JOIN public.users u ON u.id = auth.uid()
+            JOIN public.users u ON u.id = public.get_my_id()
             WHERE cp.id = community_comments.post_id
               AND (
                   cp.school_id = u.school_id
@@ -33,23 +33,23 @@ CREATE POLICY "comments_select_school" ON public.community_comments
 DROP POLICY IF EXISTS "comments_insert_own" ON public.community_comments;
 CREATE POLICY "comments_insert_own" ON public.community_comments
     FOR INSERT WITH CHECK (
-        author_id = (SELECT id FROM public.users WHERE id = auth.uid() LIMIT 1)
+        author_id = public.get_my_id()
     );
 
 -- Update: only the author (e.g. to support future edits)
 DROP POLICY IF EXISTS "comments_update_own" ON public.community_comments;
 CREATE POLICY "comments_update_own" ON public.community_comments
-    FOR UPDATE USING (author_id = auth.uid());
+    FOR UPDATE USING (author_id = public.get_my_id());
 
 -- Delete: author can delete own comment; post author can also delete on their post
 DROP POLICY IF EXISTS "comments_delete_own_or_post_author" ON public.community_comments;
 CREATE POLICY "comments_delete_own_or_post_author" ON public.community_comments
     FOR DELETE USING (
-        author_id = auth.uid()
+        author_id = public.get_my_id()
         OR EXISTS (
             SELECT 1 FROM public.community_posts cp
             WHERE cp.id = community_comments.post_id
-              AND cp.author_id = auth.uid()
+              AND cp.author_id = public.get_my_id()
         )
     );
 
