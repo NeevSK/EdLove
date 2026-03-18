@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useMemo } from 'react';
-import { StyleSheet, View, Platform } from 'react-native';
+import React, { useRef, useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Theme, useThemedColors } from '@repo/ui';
 import type { 

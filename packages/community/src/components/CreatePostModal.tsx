@@ -118,7 +118,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
             await createPost({
                 group_id: groupId || 'general',
                 content: content.trim(),
-                post_type: isPollMode ? 'poll' : (mediaUrl ? 'resource' : 'post'),
+                post_type: isPollMode ? 'poll' : (mediaUrl ? 'resource' : 'discussion'),
                 visibility: 'school',
                 media_url: mediaUrl,
                 media_type: mediaType,

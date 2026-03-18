@@ -52,10 +52,9 @@ export default function UserPublicProfileScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<Nav>();
   const route = useRoute<any>();
-  const { userId, userName } = route.params as {
-    userId: string;
-    userName: string;
-  };
+  const { userId: userIdParam, id, userName } =
+    ((route as { params?: { userId?: string; id?: string; userName?: string } }).params ?? {});
+  const userId = userIdParam || id || '';
   const currentUserId = useStore((state) => state.user?.id);
   const colors = useThemedColors();
 
@@ -68,6 +67,11 @@ export default function UserPublicProfileScreen() {
   const fetchProfile = useCallback(async () => {
     setLoading(true);
     try {
+      if (!userId) {
+        console.error("UserPublicProfileScreen: missing user id in route params");
+        setLoading(false);
+        return;
+      }
       // Fetch public fields only
       const { data: userData } = await supabase
         .from('users')
