@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Image, Platform, Share, ActivityIndicator } from 'react-native';
+import { StyleSheet, TouchableOpacity, Image, Platform, Share, ActivityIndicator, Animated } from 'react-native';
 import { Box, HStack, VStack, Text, Avatar, AvatarFallbackText, AvatarImage } from '@repo/ui';
-import { MoreHorizontal, Heart, MessageCircle, Sparkles, Share2, CheckCircle2, AlertTriangle, FileText, Video, Music, Link2, BookOpen } from 'lucide-react-native';
+import { MoreHorizontal, Heart, MessageCircle, Sparkles, Share2, CheckCircle2, AlertTriangle, FileText, Video, Music, Link2, BookOpen, Lock, Clock, Check, Trophy, X as XIcon } from 'lucide-react-native';
 import { SanctuaryCard, Theme, useThemedColors, LivingGlow } from '@repo/ui';
 import { formatDistanceToNow } from 'date-fns';
 import { supabase } from '@repo/core';
@@ -10,7 +10,7 @@ import { useCommunity } from '../hooks/useCommunity';
 import { useSocialShield } from '../hooks/useSocialShield';
 import { communityAPI } from '../api/community';
 import { ShieldAlert, UserX } from 'lucide-react-native';
-import { PostType, FeedbackStatus } from '../types/Community';
+import { PostType, FeedbackStatus, PollData } from '../types/Community';
 
 import { CommunityPost } from '../types';
 
@@ -253,7 +253,14 @@ const PostCard = React.memo(function PostCard({
 
     const renderPollContent = () => {
         if (post_type === 'poll' && poll_data) {
-            return <PollWidget postId={id} pollData={poll_data} currentUserId={currentUserId} />;
+            return (
+                <PollWidget
+                    postId={id}
+                    pollData={poll_data}
+                    currentUserId={currentUserId}
+                    isAuthor={author_id === currentUserId}
+                />
+            );
         }
         return null;
     };
@@ -417,118 +424,377 @@ const PostCard = React.memo(function PostCard({
     );
 });
 
-function PollWidget({ postId, pollData, currentUserId }: { postId: string, pollData: any, currentUserId?: string }) {
-    const { options = [] } = pollData;
+function PollWidget({
+    postId,
+    pollData,
+    currentUserId,
+    isAuthor = false,
+}: {
+    postId: string;
+    pollData: PollData;
+    currentUserId?: string;
+    isAuthor?: boolean;
+}) {
+    const {
+        options = [],
+        allow_multiple = false,
+        is_anonymous = false,
+        ends_at,
+    } = pollData;
+
     const colors = useThemedColors();
-    const [votes, setVotes] = React.useState<Record<string, number>>({});
-    const [userVotedOption, setUserVotedOption] = React.useState<string | null>(null);
+
+    // ── Vote state ──────────────────────────────────────────────────────────
+    const [counts, setCounts] = React.useState<Record<string, number>>({});
+    const [userVotes, setUserVotes] = React.useState<Set<string>>(new Set());
     const [totalVotes, setTotalVotes] = React.useState(0);
     const [isLoading, setIsLoading] = React.useState(true);
+    const [isVoting, setIsVoting] = React.useState(false);
+    const [isRemoving, setIsRemoving] = React.useState(false);
 
+    // ── Time state ───────────────────────────────────────────────────────────
+    const [timeLeft, setTimeLeft] = React.useState<string | null>(null);
+    const [isExpired, setIsExpired] = React.useState(false);
+
+    // ── Animated progress bars (one Animated.Value per option, 0–100) ────────
+    const progressAnims = React.useRef<Record<string, Animated.Value>>({});
+    options.forEach(opt => {
+        if (!progressAnims.current[opt.id]) {
+            progressAnims.current[opt.id] = new Animated.Value(0);
+        }
+    });
+
+    const hasVoted = userVotes.size > 0;
+    // Results are revealed once user has voted, poll has ended, or author is viewing.
+    const showResults = hasVoted || isExpired || isAuthor;
+    const maxCount = options.reduce((m, o) => Math.max(m, counts[o.id] ?? 0), 0);
+
+    // ── Fetch votes from DB ──────────────────────────────────────────────────
     const fetchVotes = React.useCallback(async () => {
         try {
-            const { data: votesData, error } = await supabase
+            const { data, error } = await supabase
                 .from('community_poll_votes')
                 .select('user_id, option_id')
                 .eq('post_id', postId);
-
             if (error) throw error;
 
-            const counts: Record<string, number> = {};
-            let userChoice: string | null = null;
-            
-            (votesData || []).forEach((v: any) => {
-                counts[v.option_id] = (counts[v.option_id] || 0) + 1;
-                if (v.user_id === currentUserId) {
-                    userChoice = v.option_id;
-                }
+            const newCounts: Record<string, number> = {};
+            const myVotes = new Set<string>();
+            let total = 0;
+
+            (data ?? []).forEach((v: { user_id: string; option_id: string }) => {
+                newCounts[v.option_id] = (newCounts[v.option_id] ?? 0) + 1;
+                total++;
+                if (currentUserId && v.user_id === currentUserId) myVotes.add(v.option_id);
             });
 
-            setVotes(counts);
-            setTotalVotes(votesData?.length || 0);
-            setUserVotedOption(userChoice);
+            setCounts(newCounts);
+            setUserVotes(myVotes);
+            setTotalVotes(total);
         } catch (err) {
-            console.error('Failed to fetch poll votes:', err);
+            console.error('[PollWidget] fetchVotes error:', err);
         } finally {
             setIsLoading(false);
         }
     }, [postId, currentUserId]);
 
+    React.useEffect(() => { fetchVotes(); }, [fetchVotes]);
+
+    // ── Supabase realtime subscription ───────────────────────────────────────
     React.useEffect(() => {
-        fetchVotes();
-    }, [fetchVotes]);
+        const channel = supabase
+            .channel(`poll-${postId}`)
+            .on(
+                'postgres_changes' as any,
+                { event: '*', schema: 'public', table: 'community_poll_votes', filter: `post_id=eq.${postId}` },
+                () => fetchVotes(),
+            )
+            .subscribe();
+        return () => { supabase.removeChannel(channel); };
+    }, [postId, fetchVotes]);
 
+    // ── Animate progress bars whenever results change ────────────────────────
+    React.useEffect(() => {
+        if (!showResults) return;
+        options.forEach(opt => {
+            const pct = totalVotes > 0 ? ((counts[opt.id] ?? 0) / totalVotes) * 100 : 0;
+            Animated.timing(progressAnims.current[opt.id]!, {
+                toValue: pct,
+                duration: 500,
+                useNativeDriver: false,
+            }).start();
+        });
+    }, [counts, totalVotes, showResults]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // ── Countdown timer ──────────────────────────────────────────────────────
+    React.useEffect(() => {
+        if (!ends_at) return;
+        const end = new Date(ends_at).getTime();
+
+        const tick = () => {
+            const diff = end - Date.now();
+            if (diff <= 0) { setIsExpired(true); setTimeLeft(null); return; }
+            const totalMins = Math.floor(diff / 60_000);
+            const d = Math.floor(totalMins / (60 * 24));
+            const h = Math.floor((totalMins % (60 * 24)) / 60);
+            const m = totalMins % 60;
+            setTimeLeft(d > 0 ? `${d}d ${h}h left` : h > 0 ? `${h}h ${m}m left` : `${m}m left`);
+        };
+
+        if (end <= Date.now()) { setIsExpired(true); return; }
+        tick();
+        const timer = setInterval(tick, 30_000);
+        return () => clearInterval(timer);
+    }, [ends_at]);
+
+    // ── Vote handler ─────────────────────────────────────────────────────────
     const handleVote = async (optionId: string) => {
-        if (userVotedOption || !currentUserId) return;
+        if (isExpired || !currentUserId || isVoting || isRemoving) return;
+        setIsVoting(true);
 
-        // Optimistic update
-        setUserVotedOption(optionId);
-        setVotes(prev => ({ ...prev, [optionId]: (prev[optionId] || 0) + 1 }));
-        setTotalVotes(prev => prev + 1);
+        // --- Optimistic update ---
+        const wasSelected = userVotes.has(optionId);
+
+        if (allow_multiple) {
+            // Toggle this option on/off
+            setUserVotes(prev => {
+                const next = new Set(prev);
+                wasSelected ? next.delete(optionId) : next.add(optionId);
+                return next;
+            });
+            setCounts(prev => ({ ...prev, [optionId]: Math.max(0, (prev[optionId] ?? 0) + (wasSelected ? -1 : 1)) }));
+            setTotalVotes(prev => Math.max(0, prev + (wasSelected ? -1 : 1)));
+        } else {
+            // Single-choice: tap same → retract; tap different → replace
+            const prevId = [...userVotes][0] as string | undefined;
+            const isSame = prevId === optionId;
+
+            const newCounts = { ...counts };
+            if (isSame) {
+                // Retract
+                newCounts[optionId] = Math.max(0, (newCounts[optionId] ?? 0) - 1);
+                setUserVotes(new Set());
+                setTotalVotes(prev => Math.max(0, prev - 1));
+            } else {
+                // Replace
+                if (prevId) newCounts[prevId] = Math.max(0, (newCounts[prevId] ?? 0) - 1);
+                newCounts[optionId] = (newCounts[optionId] ?? 0) + 1;
+                setUserVotes(new Set([optionId]));
+                if (!prevId) setTotalVotes(prev => prev + 1);
+            }
+            setCounts(newCounts);
+        }
 
         try {
-            await communityAPI.voteInPoll(postId, optionId);
+            await communityAPI.voteInPoll(postId, optionId, allow_multiple);
         } catch (err) {
-            console.error('Failed to vote:', err);
-            // Revert on error
-            setUserVotedOption(null);
-            fetchVotes();
+            console.error('[PollWidget] vote error:', err);
+            fetchVotes(); // revert on error
+        } finally {
+            setIsVoting(false);
+        }
+    };
+
+    // ── Remove ALL votes ─────────────────────────────────────────────────────
+    const handleRemoveVote = async () => {
+        if (isExpired || !currentUserId || isVoting || isRemoving || !hasVoted) return;
+        setIsRemoving(true);
+
+        // Optimistic: subtract user's votes from counts then clear
+        const removedVotes = new Set(userVotes);
+        setCounts(prev => {
+            const next = { ...prev };
+            removedVotes.forEach(id => { next[id] = Math.max(0, (next[id] ?? 0) - 1); });
+            return next;
+        });
+        setTotalVotes(prev => Math.max(0, prev - removedVotes.size));
+        setUserVotes(new Set());
+
+        try {
+            await communityAPI.retractAllVotes(postId);
+        } catch (err) {
+            console.error('[PollWidget] retract error:', err);
+            fetchVotes(); // revert on error
+        } finally {
+            setIsRemoving(false);
         }
     };
 
     if (isLoading) {
-        return <ActivityIndicator size="small" color={colors.action} />;
+        return <ActivityIndicator size="small" color={colors.action} style={{ marginTop: 12 }} />;
     }
 
     return (
         <VStack space="sm" sx={{ marginTop: Theme.spacing.sm }}>
-            {options.map((opt: any) => {
-                const count = votes[opt.id] || 0;
+
+            {/* Poll header: meta badges + countdown */}
+            <HStack justifyContent="space-between" alignItems="center">
+                <HStack space="xs" alignItems="center">
+                    {is_anonymous && (
+                        <HStack space="xs" alignItems="center"
+                            style={{ backgroundColor: colors.overlay, paddingHorizontal: 7, paddingVertical: 3, borderRadius: Theme.corners.tight }}>
+                            <Lock size={11} color={colors.textTertiary} />
+                            <Text color={colors.textTertiary} size="xs">Anonymous</Text>
+                        </HStack>
+                    )}
+                    {allow_multiple && (
+                        <Box style={{ backgroundColor: colors.overlay, paddingHorizontal: 7, paddingVertical: 3, borderRadius: Theme.corners.tight }}>
+                            <Text color={colors.textTertiary} size="xs">Multi-select</Text>
+                        </Box>
+                    )}
+                </HStack>
+
+                {isExpired ? (
+                    <HStack space="xs" alignItems="center">
+                        <Clock size={12} color={colors.textTertiary} />
+                        <Text color={colors.textTertiary} size="xs">Poll ended</Text>
+                    </HStack>
+                ) : timeLeft ? (
+                    <HStack space="xs" alignItems="center">
+                        <Clock size={12} color={colors.action} />
+                        <Text color={colors.action} size="xs">{timeLeft}</Text>
+                    </HStack>
+                ) : null}
+            </HStack>
+
+            {/* Options */}
+            {options.map(opt => {
+                const count = counts[opt.id] ?? 0;
                 const percentage = totalVotes > 0 ? (count / totalVotes) * 100 : 0;
-                const isSelected = userVotedOption === opt.id;
+                const isSelected = userVotes.has(opt.id);
+                const isWinner = isExpired && count > 0 && count === maxCount;
+                const canTap = !isExpired && !!currentUserId && !isVoting && !isRemoving;
 
                 return (
                     <TouchableOpacity
                         key={opt.id}
                         onPress={() => handleVote(opt.id)}
-                        disabled={!!userVotedOption || !currentUserId}
+                        disabled={!canTap}
+                        activeOpacity={canTap ? 0.7 : 1}
                         style={{
                             borderRadius: Theme.corners.comfortable,
                             overflow: 'hidden',
-                            borderWidth: 1,
-                            borderColor: isSelected ? colors.action : colors.overlay,
+                            borderWidth: isSelected ? 2 : 1,
+                            borderColor: isWinner
+                                ? Theme.colors.sanctuarySaffron
+                                : isSelected ? colors.action : colors.overlay,
                             backgroundColor: colors.secondary,
-                            height: 44,
-                            justifyContent: 'center'
+                            minHeight: 48,
+                            justifyContent: 'center',
                         }}
                     >
-                        {/* Progress Bar Background */}
-                        <Box sx={{
-                            position: 'absolute',
-                            left: 0,
-                            top: 0,
-                            bottom: 0,
-                            width: `${percentage}%`,
-                            backgroundColor: isSelected ? colors.action : colors.overlay,
-                            opacity: 0.3
-                        }} />
-                        
-                        <HStack justifyContent="space-between" px="$3" alignItems="center">
-                            <Text color={colors.textPrimary} size="sm" bold={isSelected}>
-                                {opt.text}
-                            </Text>
-                            {userVotedOption && (
-                                <Text color={colors.textSecondary} size="xs">
-                                    {Math.round(percentage)}%
+                        {/* Animated fill bar — only shown after voting/expiry */}
+                        {showResults && (
+                            <Animated.View
+                                style={{
+                                    position: 'absolute',
+                                    left: 0, top: 0, bottom: 0,
+                                    width: progressAnims.current[opt.id]!.interpolate({
+                                        inputRange: [0, 100],
+                                        outputRange: ['0%', '100%'],
+                                    }),
+                                    backgroundColor: isWinner
+                                        ? `${Theme.colors.sanctuarySaffron}28`
+                                        : isSelected
+                                            ? `${colors.action}22`
+                                            : `${colors.overlay}88`,
+                                }}
+                            />
+                        )}
+
+                        <HStack justifyContent="space-between" style={{ paddingHorizontal: 12, zIndex: 1 }} alignItems="center">
+                            <HStack space="sm" alignItems="center" style={{ flex: 1 }}>
+                                {/* Checkbox (multi) or radio dot (single) — hidden when poll is closed */}
+                                {!isExpired && (
+                                    <Box style={{
+                                        width: 20, height: 20,
+                                        borderRadius: allow_multiple ? 5 : 10,
+                                        borderWidth: isSelected ? 0 : 1.5,
+                                        borderColor: colors.overlay,
+                                        backgroundColor: isSelected ? colors.action : 'transparent',
+                                        alignItems: 'center', justifyContent: 'center',
+                                    }}>
+                                        {isSelected && (
+                                            allow_multiple
+                                                ? <Check size={12} color="#fff" strokeWidth={3} />
+                                                : <Box style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#fff' }} />
+                                        )}
+                                    </Box>
+                                )}
+                                {isWinner && <Trophy size={14} color={Theme.colors.sanctuarySaffron} />}
+                                <Text
+                                    color={isSelected ? colors.textPrimary : colors.textSecondary}
+                                    size="sm"
+                                    bold={isSelected || isWinner}
+                                    style={{ flex: 1, paddingVertical: 12 }}
+                                    numberOfLines={3}
+                                >
+                                    {opt.text}
                                 </Text>
+                            </HStack>
+
+                            {/* Percentage + count — only after voting/expiry */}
+                            {showResults && (
+                                <VStack alignItems="flex-end" style={{ marginLeft: 8 }}>
+                                    <Text
+                                        size="sm"
+                                        bold={isSelected || isWinner}
+                                        style={{
+                                            color: isWinner
+                                                ? Theme.colors.sanctuarySaffron
+                                                : isSelected ? colors.action : colors.textTertiary,
+                                        }}
+                                    >
+                                        {Math.round(percentage)}%
+                                    </Text>
+                                    {!is_anonymous && (
+                                        <Text color={colors.textTertiary} size="xs">{count}</Text>
+                                    )}
+                                </VStack>
                             )}
                         </HStack>
                     </TouchableOpacity>
                 );
             })}
-            <Text color={colors.textTertiary} size="xs" sx={{ textAlign: 'right', marginTop: 4 }}>
-                {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
-            </Text>
+
+            {/* Footer row: total responses + contextual hints */}
+            <HStack justifyContent="space-between" alignItems="center" style={{ marginTop: 2 }}>
+                <Text color={colors.textTertiary} size="xs">
+                    {totalVotes} {totalVotes === 1 ? 'response' : 'responses'}
+                </Text>
+
+                <HStack space="md" alignItems="center">
+                    {/* Change-vote hint — visible when voted + poll open */}
+                    {hasVoted && !isExpired && (
+                        <Text color={colors.textTertiary} size="xs" italic>
+                            {allow_multiple ? 'Tap to toggle' : 'Tap to change'}
+                        </Text>
+                    )}
+
+                    {/* Remove vote — explicit retract button */}
+                    {hasVoted && !isExpired && (
+                        <TouchableOpacity
+                            onPress={handleRemoveVote}
+                            disabled={isRemoving}
+                            style={{
+                                flexDirection: 'row', alignItems: 'center', gap: 3,
+                                paddingHorizontal: 8, paddingVertical: 4,
+                                borderRadius: Theme.corners.tight,
+                                borderWidth: 1, borderColor: colors.overlay,
+                            }}
+                            accessibilityLabel="Remove my vote"
+                        >
+                            {isRemoving
+                                ? <ActivityIndicator size="small" color={colors.textTertiary} />
+                                : <XIcon size={11} color={colors.textTertiary} />
+                            }
+                            <Text color={colors.textTertiary} size="xs">
+                                {isRemoving ? 'Removing…' : 'Remove vote'}
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+                </HStack>
+            </HStack>
         </VStack>
     );
 }
