@@ -98,14 +98,14 @@ export interface Comment {
     author_id: string;
     author_name: string;
     author_role: UserRole;
-    author_avatar?: string;
+    author_avatar?: string | null;
     content: string;
     is_anonymous: boolean;
 
     // Answer-specific (for questions)
     is_official_answer: boolean;
     upvotes: number;
-    has_upvoted?: boolean; // Current user has upvoted
+    has_upvoted: boolean; // Current user has upvoted
 
     // Timestamps
     created_at: string;

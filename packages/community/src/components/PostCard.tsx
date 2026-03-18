@@ -194,11 +194,19 @@ const PostCard = React.memo(function PostCard({
     // Optimistic local like state — re-sync when post data changes (e.g. feed refresh)
     const [liked, setLiked] = React.useState(false);
     const [localLikeCount, setLocalLikeCount] = React.useState(reactions['❤️'] || 0);
+    const [hasResonated, setHasResonated] = React.useState(false);
+    const [isResonating, setIsResonating] = React.useState(false);
 
     React.useEffect(() => {
         setLocalLikeCount(reactions['❤️'] || 0);
         setLiked(false);
     }, [id, reactions['❤️']]);
+
+    // Fetch initial resonance state for current user
+    React.useEffect(() => {
+        if (!currentUserId) return;
+        communityAPI.hasResonated(id).then(setHasResonated).catch(() => null);
+    }, [id, currentUserId]);
 
     const handleLike = async () => {
         const prevLiked = liked;
@@ -209,14 +217,28 @@ const PostCard = React.memo(function PostCard({
         try {
             await onLike?.();
         } catch {
-            // Revert optimistic update on failure
             setLiked(prevLiked);
             setLocalLikeCount(prevCount);
         }
     };
 
+    const handleResonate = async () => {
+        if (isResonating || !currentUserId) return;
+        setIsResonating(true);
+        const prev = hasResonated;
+        setHasResonated(!prev);
+        try {
+            const next = await communityAPI.toggleResonance(id);
+            setHasResonated(next);
+            onResonate?.();
+        } catch {
+            setHasResonated(prev);
+        } finally {
+            setIsResonating(false);
+        }
+    };
+
     const isLiked = liked;
-    const hasResonated = false;
 
     const [menuOpen, setMenuOpen] = React.useState(false);
     const { blockUser } = useSocialShield();
@@ -248,6 +270,29 @@ const PostCard = React.memo(function PostCard({
         if (!is_anonymous && author_id) {
             await blockUser(author_id);
             setMenuOpen(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        setMenuOpen(false);
+        const confirm = Platform.OS === 'web'
+            ? window.confirm('Delete this post? This cannot be undone.')
+            : await new Promise<boolean>(resolve =>
+                require('react-native').Alert.alert(
+                    'Delete post',
+                    'Are you sure? This cannot be undone.',
+                    [
+                        { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
+                        { text: 'Delete', style: 'destructive', onPress: () => resolve(true) },
+                    ],
+                )
+            );
+        if (!confirm) return;
+        try {
+            await communityAPI.deletePost(id);
+            // Parent list will refresh via React Query invalidation
+        } catch (err) {
+            console.error('[PostCard] deletePost failed:', err);
         }
     };
 
@@ -315,15 +360,31 @@ const PostCard = React.memo(function PostCard({
                                 elevation: 4,
                             }}>
                                 <VStack>
-                                    <TouchableOpacity 
-                                        style={styles.menuItem} 
-                                        onPress={() => { onReport?.(); setMenuOpen(false); }}
-                                    >
-                                        <HStack space="md" alignItems="center">
-                                            <ShieldAlert size={16} color={colors.text} />
-                                            <Text size="sm" color={colors.text}>Report Post</Text>
-                                        </HStack>
-                                    </TouchableOpacity>
+                                    {/* Own post: Delete */}
+                                    {author_id === currentUserId && (
+                                        <TouchableOpacity
+                                            style={styles.menuItem}
+                                            onPress={handleDelete}
+                                        >
+                                            <HStack space="md" alignItems="center">
+                                                <XIcon size={16} color={colors.error} />
+                                                <Text size="sm" color={colors.error}>Delete Post</Text>
+                                            </HStack>
+                                        </TouchableOpacity>
+                                    )}
+
+                                    {/* Report (other people's posts) */}
+                                    {author_id !== currentUserId && (
+                                        <TouchableOpacity 
+                                            style={styles.menuItem} 
+                                            onPress={() => { onReport?.(); setMenuOpen(false); }}
+                                        >
+                                            <HStack space="md" alignItems="center">
+                                                <ShieldAlert size={16} color={colors.text} />
+                                                <Text size="sm" color={colors.text}>Report Post</Text>
+                                            </HStack>
+                                        </TouchableOpacity>
+                                    )}
 
                                     {!is_anonymous && author_id !== currentUserId && (
                                         <TouchableOpacity 
@@ -374,7 +435,7 @@ const PostCard = React.memo(function PostCard({
                         </TouchableOpacity>
 
                         {/* Resonance Reaction */}
-                        <TouchableOpacity onPress={onResonate} style={styles.actionButton}>
+                        <TouchableOpacity onPress={handleResonate} style={styles.actionButton} disabled={isResonating}>
                             <LivingGlow active={hasResonated}>
                                 <Sparkles
                                     size={20}

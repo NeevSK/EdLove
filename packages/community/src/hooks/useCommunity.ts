@@ -122,10 +122,74 @@ export const useCommunity = (groupId?: string) => {
         mutationFn: async ({ groupId, userId, joinPolicy }: { groupId: string, userId: string, joinPolicy?: string }) => {
             return communityAPI.joinGroup(groupId, userId, joinPolicy);
         },
-        onSuccess: (_, variables) => {
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.groups() });
-            // Also invalidate specific group if we have query for it
         }
+    });
+
+    // Toggle ❤️ reaction — optimistic update on the cached post list
+    const toggleReactionMutation = useMutation({
+        mutationFn: async ({ postId, userId }: { postId: string; userId: string }) => {
+            return communityAPI.togglePostReaction(postId, userId);
+        },
+        onMutate: async ({ postId }) => {
+            const key = COMMUNITY_KEYS.posts(groupId || 'all', viewDate);
+            await queryClient.cancelQueries({ queryKey: key });
+            const previous = queryClient.getQueryData(key);
+
+            const update = (post: CommunityPost) => {
+                if (post.id !== postId) return post;
+                const prev = post.reactions?.['❤️'] ?? 0;
+                const wasLiked = prev > 0;
+                return {
+                    ...post,
+                    reactions: { ...post.reactions, '❤️': Math.max(0, prev + (wasLiked ? -1 : 1)) },
+                    reaction_count: Math.max(0, (post.reaction_count ?? 0) + (wasLiked ? -1 : 1)),
+                };
+            };
+
+            queryClient.setQueryData(key, (pages: any) => {
+                if (!pages) return pages;
+                return Array.isArray(pages?.pages)
+                    ? { ...pages, pages: pages.pages.map((p: CommunityPost[]) => p.map(update)) }
+                    : (pages as CommunityPost[]).map(update);
+            });
+
+            return { previous };
+        },
+        onError: (_err, _vars, context: any) => {
+            if (context?.previous !== undefined) {
+                queryClient.setQueryData(COMMUNITY_KEYS.posts(groupId || 'all', viewDate), context.previous);
+            }
+        },
+    });
+
+    // Delete post — optimistic remove
+    const deletePostMutation = useMutation({
+        mutationFn: (postId: string) => communityAPI.deletePost(postId),
+        onMutate: async (postId) => {
+            const key = COMMUNITY_KEYS.posts(groupId || 'all', viewDate);
+            await queryClient.cancelQueries({ queryKey: key });
+            const previous = queryClient.getQueryData(key);
+
+            const filter = (p: CommunityPost) => p.id !== postId;
+            queryClient.setQueryData(key, (pages: any) => {
+                if (!pages) return pages;
+                return Array.isArray(pages?.pages)
+                    ? { ...pages, pages: pages.pages.map((p: CommunityPost[]) => p.filter(filter)) }
+                    : (pages as CommunityPost[]).filter(filter);
+            });
+
+            return { previous };
+        },
+        onError: (_err, _vars, context: any) => {
+            if (context?.previous !== undefined) {
+                queryClient.setQueryData(COMMUNITY_KEYS.posts(groupId || 'all', viewDate), context.previous);
+            }
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(groupId || 'all', viewDate) });
+        },
     });
 
     return {
@@ -141,13 +205,8 @@ export const useCommunity = (groupId?: string) => {
         hasNextPosts: postsInfiniteQuery.hasNextPage,
         fetchNextPosts: postsInfiniteQuery.fetchNextPage,
 
-        getPosts: (groupId?: string) => {
-            // Wrapper to access data if needed
-            return { data: [], isLoading: false };
-        },
-
         fetchGroups: () => groupsInfiniteQuery.refetch(),
-        fetchPosts: (groupId?: string) => queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(groupId || 'all', viewDate) }),
+        fetchPosts: (gid?: string) => queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(gid || 'all', viewDate) }),
 
         createPost: createPostMutation.mutateAsync,
         isCreatingPost: createPostMutation.isPending,
@@ -157,6 +216,12 @@ export const useCommunity = (groupId?: string) => {
 
         joinGroup: joinGroupMutation.mutateAsync,
         isJoiningGroup: joinGroupMutation.isPending,
+
+        toggleReaction: toggleReactionMutation.mutateAsync,
+        isTogglingReaction: toggleReactionMutation.isPending,
+
+        deletePost: deletePostMutation.mutateAsync,
+        isDeletingPost: deletePostMutation.isPending,
 
         loading: groupsInfiniteQuery.isLoading || postsInfiniteQuery.isLoading,
         error: (groupsInfiniteQuery.error || postsInfiniteQuery.error)
