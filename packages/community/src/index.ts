@@ -4,6 +4,8 @@ export * from './hooks/useCommunity';
 export * from './hooks/useCommunityFilters';
 export * from './hooks/useManifestos';
 export * from './hooks/useCommunityGroups';
+export * from './hooks/useComments';
+export * from './hooks/useNotifications';
 export * from './api/sacredMissions';
 
 // Components
@@ -16,6 +18,7 @@ export { default as GroupCard } from './components/GroupCard';
 export { default as PostCard } from './components/PostCard';
 export { default as ManifestoCard } from './components/ManifestoCard';
 export { default as SocialShieldModal } from './components/SocialShieldModal';
+export { CommentSheet } from './components/CommentSheet';
 
 // Screens
 export { default as CommunityScreen } from './screens/CommunityScreen';

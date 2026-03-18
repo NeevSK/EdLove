@@ -37,6 +37,8 @@ import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import PostCard from '../components/PostCard';
 import SocialShieldModal from '../components/SocialShieldModal';
+import { CommentSheet } from '../components/CommentSheet';
+import { communityAPI } from '../api/community';
 import {
     QRBuilder,
     QRCodeGenerator
@@ -79,6 +81,9 @@ export default function GroupDetailsScreen() {
     const [reportPostId, setReportPostId] = useState<string | undefined>(undefined);
     const [showReportModal, setShowReportModal] = useState(false);
     const [showQRModal, setShowQRModal] = useState(false);
+    const [commentPostId, setCommentPostId] = useState<string | null>(null);
+    const [commentPostAuthorId, setCommentPostAuthorId] = useState<string | undefined>();
+    const [commentPostType, setCommentPostType] = useState<string | undefined>();
 
     useEffect(() => {
         const fetchGroup = async () => {
@@ -189,7 +194,16 @@ export default function GroupDetailsScreen() {
                             <Box px="$4" pb="$4">
                                 <PostCard
                                     post={item}
+                                    currentUserId={user?.id}
                                     onPress={() => console.log('OPEN_POST', item.id)}
+                                    onLike={() => {
+                                        if (user?.id) communityAPI.togglePostReaction(item.id, user.id).catch(console.error);
+                                    }}
+                                    onComment={() => {
+                                        setCommentPostId(item.id);
+                                        setCommentPostAuthorId(item.author_id ?? undefined);
+                                        setCommentPostType(item.post_type);
+                                    }}
                                     onReport={() => {
                                         setReportPostId(item.id);
                                         setShowReportModal(true);
@@ -313,6 +327,15 @@ export default function GroupDetailsScreen() {
                     }}
                     postId={reportPostId}
                     groupId={groupId}
+                />
+
+                {/* Comment Sheet — opens when user taps the comment button on a post */}
+                <CommentSheet
+                    postId={commentPostId}
+                    postAuthorId={commentPostAuthorId}
+                    currentUserId={user?.id}
+                    postType={commentPostType}
+                    onClose={() => setCommentPostId(null)}
                 />
 
                 <Modal

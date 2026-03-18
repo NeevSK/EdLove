@@ -289,7 +289,7 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                     {t('fireJournal.title')}
                 </Heading>
                 <Text color={Theme.colors.mistGray} size="sm">
-                    {isPastView ? t('fireJournal.pastRecord', 'What was released on this day.') : t('fireJournal.subtitle')}
+                    {isPastView ? t('fireJournal.pastRecord') : t('fireJournal.subtitle')}
                 </Text>
             </VStack>
 
@@ -387,7 +387,7 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                             isDisabled={isBurning || isPastView}
                         >
                             <InputField
-                                placeholder={isPastView ? (journalHistory.length > 0 ? '' : t('fireJournal.noPastRecord', 'No burdens were released on this day.')) : t('fireJournal.placeholder')}
+                                placeholder={isPastView ? (journalHistory.length > 0 ? '' : t('fireJournal.noPastRecord')) : t('fireJournal.placeholder')}
                                 multiline
                                 value={isPastView ? (journalHistory[0]?.content_preview || '') : content}
                                 onChangeText={setContent}
@@ -429,7 +429,7 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                     size="md"
                     action="primary"
                     onPress={handleBurn}
-                    isDisabled={!content.trim() || isBurning}
+                    isDisabled={!content.trim() || isBurning || isPastView}
                     sx={{
                         borderRadius: Theme.corners.full,
                         backgroundColor: isBurning
@@ -445,7 +445,7 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                         style={{ marginRight: Theme.spacing.sm }}
                     />
                     <ButtonText color={Theme.colors.sacredWhite}>
-                        {isPastView ? t('fireJournal.historical', 'Historical') : (isBurning ? t('fireJournal.burning') : t('fireJournal.burn'))}
+                        {isPastView ? t('fireJournal.historical') : (isBurning ? t('fireJournal.burning') : t('fireJournal.burn'))}
                     </ButtonText>
                 </Button>
             </HStack>

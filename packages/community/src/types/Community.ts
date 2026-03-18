@@ -11,6 +11,25 @@ export interface AnnouncementWithAuthor extends Announcement {
 }
 
 // ============================================================================
+// POLL TYPES
+// ============================================================================
+
+export interface PollOption {
+    id: string;
+    text: string;
+}
+
+export interface PollData {
+    options: PollOption[];
+    /** false = single-choice (default), true = multi-choice */
+    allow_multiple?: boolean;
+    /** false = votes are attributed to voters (default), true = only counts shown */
+    is_anonymous?: boolean;
+    /** ISO 8601 timestamp after which no more votes are accepted. null = no expiry. */
+    ends_at?: string | null;
+}
+
+// ============================================================================
 // COMMUNITY POST TYPES
 // ============================================================================
 
@@ -55,9 +74,7 @@ export interface CommunityPost {
     media_type?: 'image' | 'video' | 'audio' | 'document';
 
     // Poll-specific fields
-    poll_data?: {
-        options: { id: string; text: string }[];
-    };
+    poll_data?: PollData;
 
     // Engagement
     reactions: Record<string, number>;
@@ -81,14 +98,14 @@ export interface Comment {
     author_id: string;
     author_name: string;
     author_role: UserRole;
-    author_avatar?: string;
+    author_avatar?: string | null;
     content: string;
     is_anonymous: boolean;
 
     // Answer-specific (for questions)
     is_official_answer: boolean;
     upvotes: number;
-    has_upvoted?: boolean; // Current user has upvoted
+    has_upvoted: boolean; // Current user has upvoted
 
     // Timestamps
     created_at: string;
@@ -122,6 +139,7 @@ export interface CreatePostInput {
     classroom_id?: string;
     media_url?: string;
     media_type?: 'image' | 'video' | 'audio' | 'document';
+    poll_data?: PollData;
 }
 
 export interface CreateCommentInput {

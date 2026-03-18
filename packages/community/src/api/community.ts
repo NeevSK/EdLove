@@ -577,26 +577,89 @@ export const communityAPI = {
     },
 
     /**
-     * Cast a vote in a community poll.
+     * Cast or toggle a vote in a community poll.
+     *
+     * Single-choice (allowMultiple = false):
+     *   Tap same option → retract (returns []). Tap different → replace.
+     *
+     * Multi-choice (allowMultiple = true):
+     *   Tap unselected → add. Tap selected → remove (toggle).
+     *
+     * Returns the caller's active option IDs after the operation.
      */
-    async voteInPoll(postId: string, optionId: string): Promise<void> {
+    async voteInPoll(
+        postId: string,
+        optionId: string,
+        allowMultiple: boolean = false,
+    ): Promise<string[]> {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new Error('Authentication required');
+
+        const { data: existing, error: fetchErr } = await supabase
+            .from('community_poll_votes')
+            .select('option_id')
+            .eq('post_id', postId)
+            .eq('user_id', myId);
+        if (fetchErr) throw new Error(fetchErr.message);
+
+        const existingIds: string[] = (existing ?? []).map((r: any) => r.option_id);
+        const alreadyVotedThis = existingIds.includes(optionId);
+
+        if (allowMultiple) {
+            if (alreadyVotedThis) {
+                const { error } = await supabase
+                    .from('community_poll_votes')
+                    .delete()
+                    .eq('post_id', postId)
+                    .eq('user_id', myId)
+                    .eq('option_id', optionId);
+                if (error) throw new Error(error.message);
+                return existingIds.filter(id => id !== optionId);
+            } else {
+                const { error } = await supabase
+                    .from('community_poll_votes')
+                    .insert({ post_id: postId, user_id: myId, option_id: optionId });
+                if (error) throw new Error(error.message);
+                return [...existingIds, optionId];
+            }
+        } else {
+            if (alreadyVotedThis) {
+                const { error } = await supabase
+                    .from('community_poll_votes')
+                    .delete()
+                    .eq('post_id', postId)
+                    .eq('user_id', myId);
+                if (error) throw new Error(error.message);
+                return [];
+            } else {
+                await supabase
+                    .from('community_poll_votes')
+                    .delete()
+                    .eq('post_id', postId)
+                    .eq('user_id', myId);
+                const { error } = await supabase
+                    .from('community_poll_votes')
+                    .insert({ post_id: postId, user_id: myId, option_id: optionId });
+                if (error) throw new Error(error.message);
+                return [optionId];
+            }
+        }
+    },
+
+    /**
+     * Completely remove all of the current user's votes from a poll.
+     * Used by the explicit "Remove my vote" action.
+     */
+    async retractAllVotes(postId: string): Promise<void> {
         const myId = await identityAPI.getMyInternalId();
         if (!myId) throw new Error('Authentication required');
 
         const { error } = await supabase
             .from('community_poll_votes')
-            .insert([{
-                post_id: postId,
-                user_id: myId,
-                option_id: optionId
-            }]);
-
-        if (error) {
-            if (error.code === '23505') { // Unique constraint violation
-                throw new Error('You have already voted in this poll');
-            }
-            throw new Error(error.message);
-        }
+            .delete()
+            .eq('post_id', postId)
+            .eq('user_id', myId);
+        if (error) throw new Error(error.message);
     },
 
     /**
@@ -687,5 +750,302 @@ export const communityAPI = {
 
         if (error) throw error;
         return (data || []).map((b: any) => b.blocked).filter(Boolean);
-    }
+    },
+
+    // ── COMMENTS ─────────────────────────────────────────────────────────────
+
+    /**
+     * Fetch comments for a post, newest first up to `limit`.
+     * Each comment includes the author's name/avatar and the caller's upvote state.
+     */
+    async getComments(postId: string, limit = 60): Promise<Comment[]> {
+        const myId = await identityAPI.getMyInternalId();
+
+        const { data, error } = await supabase
+            .from('community_comments')
+            .select(`
+                id,
+                post_id,
+                content,
+                is_anonymous,
+                is_official_answer,
+                upvote_count,
+                created_at,
+                updated_at,
+                author_id,
+                author:users!community_comments_author_id_fkey(
+                    id,
+                    full_name,
+                    avatar_url,
+                    role
+                )
+            `)
+            .eq('post_id', postId)
+            .order('created_at', { ascending: false })
+            .limit(limit);
+
+        if (error) throw new Error(error.message);
+
+        // Fetch caller's upvotes in one query
+        let upvotedIds = new Set<string>();
+        if (myId && data && data.length > 0) {
+            const { data: uv } = await supabase
+                .from('community_comment_upvotes')
+                .select('comment_id')
+                .eq('user_id', myId)
+                .in('comment_id', data.map((c: any) => c.id));
+            (uv ?? []).forEach((r: any) => upvotedIds.add(r.comment_id));
+        }
+
+        return (data ?? []).map((c: any) => ({
+            id: c.id,
+            post_id: c.post_id,
+            content: c.content,
+            is_anonymous: c.is_anonymous,
+            is_official_answer: c.is_official_answer,
+            upvotes: c.upvote_count ?? 0,
+            has_upvoted: upvotedIds.has(c.id),
+            created_at: c.created_at,
+            updated_at: c.updated_at,
+            author_id: c.author_id,
+            author_name: c.is_anonymous ? 'Anonymous' : (c.author?.full_name ?? 'Unknown'),
+            author_avatar: c.is_anonymous ? null : (c.author?.avatar_url ?? null),
+            author_role: c.author?.role ?? 'student',
+        } as Comment));
+    },
+
+    /**
+     * Create a new comment on a post.
+     * Returns the full comment object (with optimistic author data).
+     */
+    async createComment(
+        postId: string,
+        content: string,
+        isAnonymous = false,
+    ): Promise<Comment> {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new Error('Authentication required');
+
+        // Fetch caller profile for optimistic return
+        const { data: me } = await supabase
+            .from('users')
+            .select('full_name, avatar_url, role')
+            .eq('id', myId)
+            .maybeSingle();
+
+        const { data, error } = await supabase
+            .from('community_comments')
+            .insert({
+                post_id: postId,
+                author_id: myId,
+                content: content.trim(),
+                is_anonymous: isAnonymous,
+            })
+            .select('id, post_id, content, is_anonymous, is_official_answer, upvote_count, created_at, updated_at, author_id')
+            .single();
+
+        if (error) throw new Error(error.message);
+
+        // Increment comment_count on the post (best-effort, trigger should also do it)
+        await supabase.rpc('increment_comment_count', { p_post_id: postId }).catch(() => null);
+
+        return {
+            id: data.id,
+            post_id: data.post_id,
+            content: data.content,
+            is_anonymous: data.is_anonymous,
+            is_official_answer: data.is_official_answer,
+            upvotes: 0,
+            has_upvoted: false,
+            created_at: data.created_at,
+            updated_at: data.updated_at,
+            author_id: data.author_id,
+            author_name: isAnonymous ? 'Anonymous' : (me?.full_name ?? 'Me'),
+            author_avatar: isAnonymous ? null : (me?.avatar_url ?? null),
+            author_role: me?.role ?? 'student',
+        } as Comment;
+    },
+
+    /**
+     * Delete a comment.  Only the comment author can delete (enforced by RLS too).
+     */
+    async deleteComment(commentId: string): Promise<void> {
+        const { error } = await supabase
+            .from('community_comments')
+            .delete()
+            .eq('id', commentId);
+        if (error) throw new Error(error.message);
+    },
+
+    /**
+     * Toggle upvote on a comment.  Returns true if now upvoted, false if retracted.
+     */
+    async toggleCommentUpvote(commentId: string): Promise<boolean> {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new Error('Authentication required');
+
+        const { data: existing } = await supabase
+            .from('community_comment_upvotes')
+            .select('comment_id')
+            .eq('comment_id', commentId)
+            .eq('user_id', myId)
+            .maybeSingle();
+
+        if (existing) {
+            await supabase
+                .from('community_comment_upvotes')
+                .delete()
+                .eq('comment_id', commentId)
+                .eq('user_id', myId);
+            // Decrement counter
+            await supabase.rpc('decrement_comment_upvote', { p_comment_id: commentId }).catch(() => null);
+            return false;
+        } else {
+            await supabase
+                .from('community_comment_upvotes')
+                .insert({ comment_id: commentId, user_id: myId });
+            await supabase.rpc('increment_comment_upvote', { p_comment_id: commentId }).catch(() => null);
+            return true;
+        }
+    },
+
+    /**
+     * Mark a comment as the official answer to a question.
+     * Only the post author should call this.
+     */
+    async markOfficialAnswer(commentId: string, isOfficial: boolean): Promise<void> {
+        const { error } = await supabase
+            .from('community_comments')
+            .update({ is_official_answer: isOfficial })
+            .eq('id', commentId);
+        if (error) throw new Error(error.message);
+    },
+
+    // ── POST MANAGEMENT ───────────────────────────────────────────────────────
+
+    /**
+     * Hard-delete a post.  Only the post author can do this (RLS enforced).
+     */
+    async deletePost(postId: string): Promise<void> {
+        const { error } = await supabase
+            .from('community_posts')
+            .delete()
+            .eq('id', postId);
+        if (error) throw new Error(error.message);
+    },
+
+    /**
+     * Edit the text content of an existing post.
+     * Only the post author can do this (RLS enforced).
+     */
+    async updatePost(postId: string, content: string): Promise<void> {
+        const { error } = await supabase
+            .from('community_posts')
+            .update({ content: content.trim(), updated_at: new Date().toISOString() })
+            .eq('id', postId);
+        if (error) throw new Error(error.message);
+    },
+
+    // ── RESONANCE (✨ Sparkles) ────────────────────────────────────────────────
+
+    /**
+     * Toggle a ✨ resonance reaction on a post (separate from ❤️ likes).
+     * Returns true if now resonated, false if retracted.
+     */
+    async toggleResonance(postId: string): Promise<boolean> {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new Error('Authentication required');
+
+        const { data: existing } = await supabase
+            .from('community_reactions')
+            .select('user_id')
+            .eq('post_id', postId)
+            .eq('user_id', myId)
+            .eq('reaction_code', '✨')
+            .maybeSingle();
+
+        if (existing) {
+            await supabase
+                .from('community_reactions')
+                .delete()
+                .eq('post_id', postId)
+                .eq('user_id', myId)
+                .eq('reaction_code', '✨');
+            return false;
+        } else {
+            await supabase
+                .from('community_reactions')
+                .insert({ post_id: postId, user_id: myId, reaction_code: '✨' });
+            return true;
+        }
+    },
+
+    /**
+     * Fetch whether the current user has resonated with a post.
+     */
+    async hasResonated(postId: string): Promise<boolean> {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) return false;
+        const { data } = await supabase
+            .from('community_reactions')
+            .select('user_id')
+            .eq('post_id', postId)
+            .eq('user_id', myId)
+            .eq('reaction_code', '✨')
+            .maybeSingle();
+        return !!data;
+    },
+
+    // ── NOTIFICATIONS ─────────────────────────────────────────────────────────
+
+    /**
+     * Fetch the caller's notifications, newest first.
+     */
+    async getNotifications(limit = 30): Promise<import('../types/Community').Notification[]> {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) return [];
+
+        const { data, error } = await supabase
+            .from('notifications')
+            .select('*')
+            .eq('user_id', myId)
+            .order('created_at', { ascending: false })
+            .limit(limit);
+
+        if (error) throw new Error(error.message);
+        return (data ?? []) as import('../types/Community').Notification[];
+    },
+
+    /** Count of unread notifications for the current user. */
+    async getUnreadNotificationCount(): Promise<number> {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) return 0;
+        const { count, error } = await supabase
+            .from('notifications')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', myId)
+            .eq('is_read', false);
+        if (error) return 0;
+        return count ?? 0;
+    },
+
+    /** Mark a single notification as read. */
+    async markNotificationRead(notificationId: string): Promise<void> {
+        const { error } = await supabase
+            .from('notifications')
+            .update({ is_read: true, read_at: new Date().toISOString() })
+            .eq('id', notificationId);
+        if (error) throw new Error(error.message);
+    },
+
+    /** Mark ALL of the current user's notifications as read. */
+    async markAllNotificationsRead(): Promise<void> {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) return;
+        await supabase
+            .from('notifications')
+            .update({ is_read: true, read_at: new Date().toISOString() })
+            .eq('user_id', myId)
+            .eq('is_read', false);
+    },
 };

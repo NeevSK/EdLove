@@ -217,7 +217,7 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
                                 {t('self.moodLotus')}
                             </Heading>
                             <Text color={colors.textSecondary} size="sm">
-                                {isPastView ? t('self.historicalMood', 'Your resonance on this journey.') : t('self.moodLotusDesc')}
+                                {isPastView ? t('self.historicalMood') : t('self.moodLotusDesc')}
                             </Text>
                         </VStack>
                         <Button

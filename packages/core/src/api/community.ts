@@ -84,7 +84,7 @@ export const communityAPI = {
             .range(filters.offset, filters.offset + filters.limit - 1);
 
         if (filters.viewDate) {
-            query = applyResonanceFilter(query, filters.viewDate);
+            query = applyResonanceFilter(query, 'created_at');
         } else {
             query = query.order('created_at', { ascending: false });
         }
@@ -228,7 +228,7 @@ export const communityAPI = {
             .eq('group_id', groupId);
 
         if (viewDate) {
-            query = applyResonanceFilter(query, viewDate);
+            query = applyResonanceFilter(query, 'created_at');
         } else {
             query = query.order('created_at', { ascending: false }).limit(limit);
         }
@@ -392,25 +392,97 @@ export const communityAPI = {
     },
 
     /**
-     * Cast a vote in a community poll.
+     * Cast or toggle a vote in a community poll.
+     *
+     * Single-choice (`allowMultiple = false`):
+     *   - Tap a new option  → delete all previous votes for this user, insert new.
+     *   - Tap the same option → delete it (retract). Returns [].
+     *
+     * Multi-choice (`allowMultiple = true`):
+     *   - Tap an unselected option → insert it.
+     *   - Tap a selected option    → delete it (toggle off).
+     *
+     * Returns the caller's active option IDs after the operation.
      */
-    async voteInPoll(postId: string, optionId: string): Promise<void> {
+    async voteInPoll(
+        postId: string,
+        optionId: string,
+        allowMultiple: boolean = false,
+    ): Promise<string[]> {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new Error('Authentication required');
+
+        // Fetch current votes for this user+poll
+        const { data: existing, error: fetchErr } = await supabase
+            .from('community_poll_votes')
+            .select('option_id')
+            .eq('post_id', postId)
+            .eq('user_id', myId);
+
+        if (fetchErr) throw new Error(fetchErr.message);
+
+        const existingIds: string[] = (existing ?? []).map((r: any) => r.option_id);
+        const alreadyVotedThis = existingIds.includes(optionId);
+
+        if (allowMultiple) {
+            // Toggle: remove if selected, add if not
+            if (alreadyVotedThis) {
+                const { error } = await supabase
+                    .from('community_poll_votes')
+                    .delete()
+                    .eq('post_id', postId)
+                    .eq('user_id', myId)
+                    .eq('option_id', optionId);
+                if (error) throw new Error(error.message);
+                return existingIds.filter(id => id !== optionId);
+            } else {
+                const { error } = await supabase
+                    .from('community_poll_votes')
+                    .insert({ post_id: postId, user_id: myId, option_id: optionId });
+                if (error) throw new Error(error.message);
+                return [...existingIds, optionId];
+            }
+        } else {
+            // Single-choice: tap same → retract; tap different → replace
+            if (alreadyVotedThis) {
+                // Retract
+                const { error } = await supabase
+                    .from('community_poll_votes')
+                    .delete()
+                    .eq('post_id', postId)
+                    .eq('user_id', myId);
+                if (error) throw new Error(error.message);
+                return [];
+            } else {
+                // Replace: delete previous then insert new
+                await supabase
+                    .from('community_poll_votes')
+                    .delete()
+                    .eq('post_id', postId)
+                    .eq('user_id', myId);
+                const { error } = await supabase
+                    .from('community_poll_votes')
+                    .insert({ post_id: postId, user_id: myId, option_id: optionId });
+                if (error) throw new Error(error.message);
+                return [optionId];
+            }
+        }
+    },
+
+    /**
+     * Completely remove all of the current user's votes from a poll.
+     * Used by the explicit "Remove my vote" action.
+     */
+    async retractAllVotes(postId: string): Promise<void> {
         const myId = await identityAPI.getMyInternalId();
         if (!myId) throw new Error('Authentication required');
 
         const { error } = await supabase
             .from('community_poll_votes')
-            .insert([{
-                post_id: postId,
-                user_id: myId,
-                option_id: optionId
-            }]);
+            .delete()
+            .eq('post_id', postId)
+            .eq('user_id', myId);
 
-        if (error) {
-            if (error.code === '23505') { // Unique constraint violation
-                throw new Error('You have already voted in this poll');
-            }
-            throw new Error(error.message);
-        }
-    }
+        if (error) throw new Error(error.message);
+    },
 };

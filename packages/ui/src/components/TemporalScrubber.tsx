@@ -27,9 +27,11 @@ export const TemporalScrubber: React.FC = () => {
       onPanResponderRelease: (e, gestureState) => {
         // Simple logic to change date based on swipe direction
         const today = new Date();
-        const todayStr = today.toISOString().split('T')[0];
         if (gestureState.dx < -50) {
-          // Swipe Left -> Past
+          // Swipe Left -> Past: derive target from current resonanceDate or yesterday
+          const currentDate = resonanceDate ? new Date(resonanceDate) : today;
+          const pastDate = new Date(currentDate);
+          pastDate.setDate(pastDate.getDate() - 1);
           setResonanceDate(pastDate.toISOString().split('T')[0]!);
         } else if (gestureState.dx > 50) {
           // Swipe Right -> Reset to Present

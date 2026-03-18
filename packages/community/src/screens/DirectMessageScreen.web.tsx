@@ -81,7 +81,7 @@ export default function DirectMessageScreen() {
             }
         }
         fetchContext();
-    }, [conversationId, user]);
+    }, [conversationId, user, viewDate]);
 
     useEffect(() => {
         if (!loading) scrollToBottom(false);
