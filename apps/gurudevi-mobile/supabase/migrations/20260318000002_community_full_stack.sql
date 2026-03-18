@@ -175,7 +175,7 @@ CREATE POLICY "posts_delete_own" ON public.community_posts
 -- UPDATE policy (author edits own post)
 DROP POLICY IF EXISTS "posts_update_own" ON public.community_posts;
 CREATE POLICY "posts_update_own" ON public.community_posts
-    FOR UPDATE USING (author_id = auth.uid());
+    FOR UPDATE USING (author_id = auth.uid()) WITH CHECK (author_id = auth.uid());
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 7. notifications — SELECT + UPDATE (mark read) for own user
