@@ -109,21 +109,21 @@ export function useNotifications() {
     const markAllReadMutation = useMutation({
         mutationFn: communityAPI.markAllNotificationsRead,
         onMutate: async () => {
-            await queryClient.cancelQueries({ queryKey: NOTIF_KEYS.list() });
-            const previous = queryClient.getQueryData<Notification[]>(NOTIF_KEYS.list());
+            await queryClient.cancelQueries({ queryKey: NOTIF_KEYS.list(userId) });
+            const previous = queryClient.getQueryData<Notification[]>(NOTIF_KEYS.list(userId));
             const now = new Date().toISOString();
 
-            queryClient.setQueryData<Notification[]>(NOTIF_KEYS.list(), prev =>
+            queryClient.setQueryData<Notification[]>(NOTIF_KEYS.list(userId), prev =>
                 (prev ?? []).map(n => ({ ...n, is_read: true, read_at: now })),
             );
-            queryClient.setQueryData<number>(NOTIF_KEYS.count(), 0);
+            queryClient.setQueryData<number>(NOTIF_KEYS.count(userId), 0);
 
             return { previous };
         },
         onError: (_err, _vars, context: any) => {
             if (context?.previous !== undefined) {
-                queryClient.setQueryData(NOTIF_KEYS.list(), context.previous);
-                queryClient.invalidateQueries({ queryKey: NOTIF_KEYS.count() });
+                queryClient.setQueryData(NOTIF_KEYS.list(userId), context.previous);
+                queryClient.invalidateQueries({ queryKey: NOTIF_KEYS.count(userId) });
             }
         },
     });

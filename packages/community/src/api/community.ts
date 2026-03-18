@@ -1,4 +1,4 @@
-import { supabase, identityAPI, applyTemporalFilter } from '@repo/core';
+import { supabase, identityAPI, applyResonanceFilter } from '@repo/core';
 import { CommunityPost, CommunityGroup, Group, Post, Comment } from '../types';
 
 /**
@@ -81,7 +81,7 @@ export const communityAPI = {
             .range(filters.offset, filters.offset + filters.limit - 1);
 
         if (filters.viewDate) {
-            query = applyTemporalFilter(query, filters.viewDate);
+            query = applyResonanceFilter(query, 'created_at');
         } else {
             query = query.order('created_at', { ascending: false });
         }
@@ -228,7 +228,7 @@ export const communityAPI = {
             .eq('group_id', groupId);
 
         if (viewDate) {
-            query = applyTemporalFilter(query, viewDate);
+            query = applyResonanceFilter(query, 'created_at');
         } else {
             query = query.order('created_at', { ascending: false }).limit(limit);
         }
@@ -543,7 +543,7 @@ export const communityAPI = {
             .eq('conversation_id', conversationId);
 
         if (viewDate) {
-            query = applyTemporalFilter(query, viewDate);
+            query = applyResonanceFilter(query, 'created_at');
         } else {
             query = query.order('created_at', { ascending: false }).limit(limit);
         }
@@ -879,7 +879,10 @@ export const communityAPI = {
         if (error) throw new Error(error.message);
 
         // Increment comment_count on the post (best-effort, trigger should also do it)
-        await supabase.rpc('increment_comment_count', { p_post_id: postId }).catch(() => null);
+        const { error: incrementCountError } = await supabase.rpc('increment_comment_count', { p_post_id: postId });
+        if (incrementCountError) {
+            console.warn('[communityAPI] increment_comment_count failed:', incrementCountError.message);
+        }
 
         return {
             id: data.id,
@@ -930,13 +933,19 @@ export const communityAPI = {
                 .eq('comment_id', commentId)
                 .eq('user_id', myId);
             // Decrement counter
-            await supabase.rpc('decrement_comment_upvote', { p_comment_id: commentId }).catch(() => null);
+            const { error: decrementUpvoteError } = await supabase.rpc('decrement_comment_upvote', { p_comment_id: commentId });
+            if (decrementUpvoteError) {
+                console.warn('[communityAPI] decrement_comment_upvote failed:', decrementUpvoteError.message);
+            }
             return false;
         } else {
             await supabase
                 .from('community_comment_upvotes')
                 .insert({ comment_id: commentId, user_id: myId });
-            await supabase.rpc('increment_comment_upvote', { p_comment_id: commentId }).catch(() => null);
+            const { error: incrementUpvoteError } = await supabase.rpc('increment_comment_upvote', { p_comment_id: commentId });
+            if (incrementUpvoteError) {
+                console.warn('[communityAPI] increment_comment_upvote failed:', incrementUpvoteError.message);
+            }
             return true;
         }
     },

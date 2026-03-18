@@ -75,9 +75,9 @@ function CommentRow({
     };
 
     return (
-        <View style={[styles.commentRow, comment.is_official_answer && { borderLeftWidth: 3, borderLeftColor: accent.growth }]}>
+        <View style={[styles.commentRow, comment.is_official_answer && { borderLeftWidth: 3, borderLeftColor: accent.reward }]}>
             {/* Avatar */}
-            <View style={[styles.avatar, { backgroundColor: comment.is_anonymous ? glass.interact.bg as string : accent.soft as string }]}>
+            <View style={[styles.avatar, { backgroundColor: comment.is_anonymous ? glass.interact.bg as string : accent.muted as string }]}>
                 {comment.is_anonymous
                     ? <EyeOff size={14} color={text.muted as string} />
                     : (comment.author_avatar
@@ -94,7 +94,7 @@ function CommentRow({
                             {comment.author_name}
                         </Text>
                         {comment.is_official_answer && (
-                            <View style={[styles.officialBadge, { backgroundColor: accent.growth as string }]}>
+                            <View style={[styles.officialBadge, { backgroundColor: accent.reward as string }]}>
                                 <Shield size={9} color="#fff" />
                                 <Text sx={{ fontSize: 9, color: '#fff', fontWeight: '700', marginLeft: 2 }}>Official</Text>
                             </View>
@@ -130,8 +130,8 @@ function CommentRow({
                             onPress={() => onMarkOfficial(comment.id, !comment.is_official_answer)}
                             style={styles.actionBtn}
                         >
-                            <Shield size={13} color={comment.is_official_answer ? accent.growth as string : text.muted as string} />
-                            <Text sx={{ fontSize: 11, color: comment.is_official_answer ? accent.growth : text.muted, marginLeft: 3 }}>
+                            <Shield size={13} color={comment.is_official_answer ? accent.reward as string : text.muted as string} />
+                            <Text sx={{ fontSize: 11, color: comment.is_official_answer ? accent.reward : text.muted, marginLeft: 3 }}>
                                 {comment.is_official_answer ? 'Unmark' : 'Mark answer'}
                             </Text>
                         </TouchableOpacity>

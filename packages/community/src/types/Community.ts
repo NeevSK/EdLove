@@ -78,6 +78,8 @@ export interface CommunityPost {
 
     // Engagement
     reactions: Record<string, number>;
+    has_liked?: boolean;
+    reaction_count?: number;
     comment_count: number;
     view_count: number;
 
@@ -300,6 +302,7 @@ export interface Notification {
     reference_id?: string;
     reference_type?: string;
     is_read: boolean;
+    read_at?: string | null;
     created_at: string;
 }
 

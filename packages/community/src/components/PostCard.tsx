@@ -10,7 +10,7 @@ import { useCommunity } from '../hooks/useCommunity';
 import { useSocialShield } from '../hooks/useSocialShield';
 import { communityAPI } from '../api/community';
 import { ShieldAlert, UserX } from 'lucide-react-native';
-import { PostType, FeedbackStatus, PollData } from '../types/Community';
+import { PostType, FeedbackStatus, PollData, Urgency } from '../types/Community';
 
 import { CommunityPost } from '../types';
 
@@ -148,12 +148,13 @@ const PostCard = React.memo(function PostCard({
      */
     const renderTypeMetadata = () => {
         if (isQuestion) {
-            const urgencyConfig: Record<string, { label: string; color: string; bg: string }> = {
+            const urgencyConfig: Record<Urgency, { label: string; color: string; bg: string }> = {
                 high:   { label: 'Urgent',  color: '#DC2626', bg: 'rgba(220,38,38,0.1)' },
                 medium: { label: 'Medium',  color: '#D97706', bg: 'rgba(217,119,6,0.1)' },
                 low:    { label: 'Low',     color: colors.textTertiary, bg: colors.overlay },
             };
-            const urg = urgencyConfig[urgency ?? 'low'];
+            const urgencyLevel: Urgency = urgency ?? 'low';
+            const urg = urgencyConfig[urgencyLevel];
             return (
                 <HStack space="sm" alignItems="center" sx={{ marginBottom: 4 }}>
                     {urgency && urgency !== 'low' && (
