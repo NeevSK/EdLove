@@ -37,10 +37,11 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { useFeatureAccess, useStore, ClassroomStackParamList, api, supabase, onboardingAPI, FlowResolver, identityAPI } from '@repo/core';
+import { useFeatureAccess, useStore, ClassroomStackParamList, api, supabase, onboardingAPI, FlowResolver, identityAPI, useTemporalStore } from '@repo/core';
 import { BreathGuide } from '@repo/self';
 import ClassroomList from './ClassroomList';
 import CreateClassroomModal from './CreateClassroomModal';
+import { TemporalNavigator } from '@repo/ui';
 import { ScannerModal, resolveQR } from '@repo/scanner-kit';
 import TeacherFeedbackModal from './teacher/TeacherFeedbackModal';
 import { Modal, TouchableOpacity } from 'react-native';
@@ -63,6 +64,7 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
     const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
     const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
     const [isBreathingOpen, setIsBreathingOpen] = useState(false);
+    const { isPastView } = useTemporalStore();
 
     // Echo history — teacher's sent echoes with principal responses
     const [sentEchoes, setSentEchoes] = useState<Array<{
@@ -126,7 +128,7 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
             setIsCreateModalOpen(true);
         },
         icon: <Plus size={24} color="#FFF" />,
-        visible: !isGuest
+        visible: !isGuest && !isPastView
     });
 
     const handleScan = async (data: string) => {
@@ -167,9 +169,11 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
     const QuickAction = ({ icon: LucideIcon, label, onPress, color }: any) => (
         <Pressable
             onPress={() => {
+                if (isPastView) return;
                 hapticLight();
                 onPress();
             }}
+            disabled={isPastView}
             sx={{
                 flex: 1,
                 alignItems: 'center',
@@ -178,6 +182,7 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                 borderRadius: Theme.corners.generous,
                 borderWidth: 1,
                 borderColor: colors.border,
+                opacity: isPastView ? 0.5 : 1
             }}
         >
             <Box
@@ -265,6 +270,11 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                             {t('classroom.dashboardIntro') || 'Lead the classroom with love and care.'}
                         </Text>
                     </VStack>
+                </Animated.View>
+
+                {/* Temporal Travel */}
+                <Animated.View entering={FadeInDown.delay(75)}>
+                    <TemporalNavigator />
                 </Animated.View>
 
                 {/* Quick Actions - Primary */}

@@ -17,6 +17,7 @@ import type { CommunityStackParamList } from '@repo/core';
 import { supabase, useStore } from '@repo/core';
 import { getInitialsFromName, formatTimestamp } from '@repo/ui';
 import { communityAPI } from '../api/community';
+import HeaderMoreMenu from '../components/HeaderMoreMenu';
 
 interface ChatMessage {
     id: string;
@@ -139,6 +140,11 @@ export default function GroupChatScreen() {
                     <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--ink)' }}>{groupName}</div>
                     <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>Group Chat</div>
                 </div>
+                <HeaderMoreMenu 
+                    conversationId={groupId}
+                    groupId={groupId}
+                    targetUserName={groupName}
+                />
             </div>
 
             {/* Message list */}

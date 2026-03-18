@@ -35,7 +35,7 @@ import { useTranslation } from "react-i18next";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { CommunityStackParamList } from "@repo/core";
 import { useUserRole, supabase, useStore } from "@repo/core";
-import { GiveThuthimalModal } from "@repo/profile";
+import { GiveThuthimalModal } from "@repo/profile/components/GiveThuthimalModal";
 import { communityAPI } from "../api/community";
 
 /**

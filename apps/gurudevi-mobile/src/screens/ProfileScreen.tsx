@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ScrollView, RefreshControl, Alert, Dimensions, Modal, TouchableOpacity, Platform, useWindowDimensions } from 'react-native';
 import {
     Box,
@@ -45,6 +45,7 @@ import {
     Eye
 } from 'lucide-react-native';
 import AppSettingsScreen from './AppSettingsScreen';
+import MuteHubScreen from './profile/MuteHubScreen';
 
 import Animated, { FadeInDown, useSharedValue, useAnimatedStyle, withSequence, withTiming, withRepeat } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';

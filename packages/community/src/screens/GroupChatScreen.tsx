@@ -10,7 +10,7 @@ import React from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { CommunityStackParamList } from '@repo/core';
-import { supabase } from '@repo/core';
+import { supabase, useTemporalStore } from '@repo/core';
 import { communityAPI } from '../api/community';
 import BaseChatScreen, { type ChatMessage, type SubscriptionConfig } from './BaseChatScreen';
 import HeaderMoreMenu from '../components/HeaderMoreMenu';
@@ -26,11 +26,14 @@ export default function GroupChatScreen() {
     const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
     const { groupId, groupName } = route.params;
 
+    const { viewDate, isPastView } = useTemporalStore();
+    
     const fetchMessages = async (): Promise<ChatMessage[]> => {
-        return communityAPI.getGroupMessages(groupId) as Promise<ChatMessage[]>;
+        return communityAPI.getGroupMessages(groupId, 60, viewDate) as Promise<ChatMessage[]>;
     };
 
     const sendMessage = async (content: string): Promise<ChatMessage> => {
+        if (isPastView) throw new Error('Cannot send messages in historical view');
         return communityAPI.sendGroupMessage(groupId, content) as Promise<ChatMessage>;
     };
 
@@ -55,12 +58,16 @@ export default function GroupChatScreen() {
             fetchMessages={fetchMessages}
             sendMessage={sendMessage}
             subscription={subscription}
+            isReadOnly={isPastView}
+            key={viewDate} // Force remount/refetch on date change for consistency
             onPressAuthor={(userId) => {
                 navigation.navigate('PublicProfile', { id: userId, type: 'user' });
             }}
             headerRight={
                 <HeaderMoreMenu
+                    conversationId={groupId}
                     groupId={groupId}
+                    targetUserName={groupName}
                 />
             }
         />

@@ -1,37 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Dimensions } from 'react-native';
-import { VStack, GlobalHeader, FeatureInfoIcon, HStack } from '@repo/ui';
+import { VStack, GlobalHeader, FeatureInfoIcon, HStack, TemporalNavigator } from '@repo/ui';
 import { BaseSelfViewProps } from './BaseSelfView.types';
 import { Theme } from '@repo/ui';
-import { FEATURE_DISCOVERY_DATA } from '../constants/selfRegistry';
+import { FEATURE_DISCOVERY_DATA, FEATURE_EMOJIS } from '../constants/selfRegistry';
 import { useFeatureActivity } from '../hooks/useFeatureActivity';
 import { useDynamicSelfFeatures } from '../hooks/useDynamicSelfFeatures';
-
-/**
- * Emoji mapping for common features to add soul to the UI.
- */
-export const FEATURE_EMOJIS: Record<string, string> = {
-    'energy_pulse': '⚡',
-    'mood_checkin': '🪷',
-    'study_rhythm': '⏳',
-    'goals': '🎯',
-    'grades': '📜',
-    'voice_journaling': '🎙️',
-    'school_pulse': '📈',
-    'decisions': '⚖️',
-    'wisdom': '🌱',
-    'reflections': '🪞',
-    'breath_presence': '🌬️',
-    'journal': '📓',
-    'banyan_path': '🌳',
-    'faculty_resonance': '🌀',
-    'systemic_overview': '🌐',
-    'strategic_wisdom': '🗺️',
-    'system_health': '🛠️',
-    'user_resonance': '👥',
-    'mirrors': '🪞',
-    'reminders': '🔔',
-};
 
 /**
  * BaseSelfView - The architectural kernel for GuruDevi Self sections on Mobile.
@@ -58,6 +32,14 @@ export function BaseSelfView({
                 domainColor: domain.accentColor
             }))
         ),
+        // Inject Holistic History if any domain provides content
+        ...(domains.some(domain => domain.content) ? [{
+            id: 'holistic_history',
+            label: 'History',
+            content: domains.find(domain => domain.content)?.content,
+            domainId: 'journey',
+            domainColor: '#8B5CF6'
+        }] : []),
         // Inject Mirrors as "Reflections" if provided
         ...(sideBar ? [{
             id: 'mirrors',
@@ -103,6 +85,8 @@ export function BaseSelfView({
                 subtitle={role.toUpperCase()}
                 title="Sadhana"
             />
+
+            <TemporalNavigator />
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
                 {voiceJournal && (
@@ -203,6 +187,14 @@ export function BaseSelfView({
                                         discoveryInfo={FEATURE_DISCOVERY_DATA[activeFeature.id]}
                                         color={activeFeature.domainColor}
                                     />
+                                    {activeFeature.id !== 'holistic_history' && (
+                                        <Pressable 
+                                            onPress={() => handleFeaturePress('holistic_history')}
+                                            style={{ padding: 4, marginLeft: 4 }}
+                                        >
+                                            <Text style={{ fontSize: 16 }}>⏳</Text>
+                                        </Pressable>
+                                    )}
                                 </HStack>
                                 {activeFeature.id !== 'mirrors' && activeFeature.id !== 'reminders' && (
                                     <Text style={{ fontSize: 10, color: 'rgba(0,0,0,0.3)', fontWeight: 'bold' }}>

@@ -1,4 +1,4 @@
-import { useStore } from '@repo/core';
+import { useStore, useTemporalStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { api, School, SchoolStats, SafeZustandStorage, MOCK_SCHOOL_STATS, useFeatureAccess } from '@repo/core';
 
@@ -15,6 +15,7 @@ const SCHOOL_INFO_CACHE_KEY = 'gurudevi-school-info-cache';
  */
 export function useSchoolStats(schoolId: string) {
     const isOnline = useStore(state => state.isOnline);
+    const { viewDate } = useTemporalStore();
     const isDemoMode = useStore(state => state.isDemoMode);
     const { isGuest } = useFeatureAccess();
     const [stats, setStats] = useState<SchoolStats | null>(null);
@@ -29,7 +30,7 @@ export function useSchoolStats(schoolId: string) {
         const loadCache = async () => {
             try {
                 const [cachedStats, cachedSchool] = await Promise.all([
-                    SafeZustandStorage.getItem(`${SCHOOL_STATS_CACHE_KEY}-${schoolId}`),
+                    SafeZustandStorage.getItem(`${SCHOOL_STATS_CACHE_KEY}-${schoolId}-${viewDate}`),
                     SafeZustandStorage.getItem(`${SCHOOL_INFO_CACHE_KEY}-${schoolId}`)
                 ]);
 
@@ -72,7 +73,7 @@ export function useSchoolStats(schoolId: string) {
             } else {
                 [schoolData, statsData] = await Promise.all([
                     api.school.getSchool(schoolId),
-                    api.school.getSchoolStats(schoolId),
+                    api.school.getSchoolStats(schoolId, viewDate),
                 ]);
             }
 
@@ -83,7 +84,7 @@ export function useSchoolStats(schoolId: string) {
             if (schoolId) {
                 await Promise.all([
                     SafeZustandStorage.setItem(`${SCHOOL_INFO_CACHE_KEY}-${schoolId}`, JSON.stringify(schoolData)),
-                    SafeZustandStorage.setItem(`${SCHOOL_STATS_CACHE_KEY}-${schoolId}`, JSON.stringify(statsData))
+                    SafeZustandStorage.setItem(`${SCHOOL_STATS_CACHE_KEY}-${schoolId}-${viewDate}`, JSON.stringify(statsData))
                 ]);
             }
 
@@ -94,7 +95,7 @@ export function useSchoolStats(schoolId: string) {
         } finally {
             setIsLoading(false);
         }
-    }, [schoolId, isOnline, isDemoMode]);
+    }, [schoolId, isOnline, isDemoMode, viewDate]);
 
     // Fetch on mount/online change
     useEffect(() => {

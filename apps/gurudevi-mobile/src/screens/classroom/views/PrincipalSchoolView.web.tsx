@@ -13,11 +13,12 @@ import {
     StudentAttendancePulse, 
     StaffLeaveDTO, 
     useFeatureAccess,
-    mappingAPI 
+    mappingAPI,
+    useTemporalStore 
 } from '@repo/core';
 import { useSchoolStats, CreateClassroomModal, AddStudentModal } from '@repo/classroom';
 import { useSchoolPulse } from '@repo/profile';
-import { SkeletonCard, SandboxBanner, getInitialsFromName, PositiveInvitation, hapticLight, WebScreenHeader } from '@repo/ui';
+import { SkeletonCard, SandboxBanner, getInitialsFromName, PositiveInvitation, hapticLight, WebScreenHeader, TemporalNavigator } from '@repo/ui';
 import { UniversalPerspective } from '@repo/library';
 import { KnowledgeTopology } from '@repo/graphics';
 import { formatDistanceToNow } from 'date-fns';
@@ -79,6 +80,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
     const { t } = useTranslation();
     const { user } = useStore();
     const { isGuest } = useFeatureAccess();
+    const { viewDate, isPastView } = useTemporalStore();
     
     const effectiveSchoolId = schoolId || user?.school_id || '';
     const effectiveUserId = userId || user?.id || '';
@@ -110,7 +112,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
         const loadTopology = async () => {
             setTopologyLoading(true);
             try {
-                const data = await mappingAPI.getSchoolPulse(effectiveSchoolId);
+                const data = await mappingAPI.getSchoolPulse(effectiveSchoolId, viewDate);
                 if (mounted && data) setSchoolTopology(data);
             } catch (err) {
                 console.error('[PrincipalSchoolView] Error loading topology:', err);
@@ -120,7 +122,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
         };
         loadTopology();
         return () => { mounted = false; };
-    }, [effectiveSchoolId]);
+    }, [effectiveSchoolId, viewDate]);
 
     // ── Sub-view navigation (ManagementStation) ───────────────────────────
     type PrincipalView = 'main' | 'hierarchy' | 'invites' | 'log' | 'cycles';
@@ -183,6 +185,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
                     .from('school_echo_feedback')
                     .select('*')
                     .eq('school_id', effectiveSchoolId)
+                    .lte('created_at', viewDate + 'T23:59:59.999Z')
                     .order('created_at', { ascending: false })
                     .limit(5);
 
@@ -205,7 +208,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
         };
         loadEcho();
         return () => { mounted = false; };
-    }, [effectiveSchoolId]);
+    }, [effectiveSchoolId, viewDate]);
 
     // ── Calendar events ────────────────────────────────────────────────────
     const [calendarEvents, setCalendarEvents] = useState<Array<{
@@ -234,7 +237,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
                     .from('school_calendar_events')
                     .select('*')
                     .eq('school_id', effectiveSchoolId)
-                    .gte('start_date', today)
+                    .gte('start_date', viewDate)
                     .order('start_date', { ascending: true })
                     .limit(5);
                 if (!mounted) return;
@@ -256,7 +259,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
             }
         })();
         return () => { mounted = false; };
-    }, [effectiveSchoolId]);
+    }, [effectiveSchoolId, viewDate]);
 
     // ── Observations ───────────────────────────────────────────────────────
     const [observations, setObservations] = useState<Array<{
@@ -277,6 +280,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
                     .from('principal_observations')
                     .select('*')
                     .eq('principal_id', effectiveUserId)
+                    .lte('created_at', viewDate + 'T23:59:59.999Z')
                     .order('created_at', { ascending: false })
                     .limit(5);
                 if (!mounted) return;
@@ -295,7 +299,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
             }
         })();
         return () => { mounted = false; };
-    }, [effectiveUserId]);
+    }, [effectiveUserId, viewDate]);
 
     const handleSaveObservation = async () => {
         if (!obsContent.trim() || !effectiveUserId || !effectiveSchoolId) return;
@@ -334,9 +338,9 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
             setStaffLoading(true);
             try {
                 const [pres, teacherList, pulse, leaves] = await Promise.all([
-                    staffManagementAPI.getStaffPresenceSummary(effectiveSchoolId),
-                    staffManagementAPI.getTeacherCarousel(effectiveSchoolId),
-                    staffManagementAPI.getStudentAttendancePulse(effectiveSchoolId),
+                    staffManagementAPI.getStaffPresenceSummary(effectiveSchoolId, viewDate),
+                    staffManagementAPI.getTeacherCarousel(effectiveSchoolId, viewDate),
+                    staffManagementAPI.getStudentAttendancePulse(effectiveSchoolId, undefined, viewDate),
                     staffManagementAPI.getPendingLeaves(effectiveSchoolId),
                 ]);
                 if (!mounted) return;
@@ -352,7 +356,7 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
         };
         loadStaffData();
         return () => { mounted = false; };
-    }, [effectiveSchoolId]);
+    }, [effectiveSchoolId, viewDate]);
 
     useEffect(() => {
         const fetchProgress = async () => {
@@ -532,12 +536,12 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
                         <h2 style={{ margin: '0 0 4px', fontSize: '24px', fontWeight: '800' }}>🏛️ System Hierarchy</h2>
                         <p style={{ margin: '0 0 24px', color: 'var(--ink-ghost)', fontSize: '14px' }}>Grades, sections and class structure for your school.</p>
                         {/* Add section form */}
-                        <div className="sanctuary-card" style={{ padding: '24px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                        <div className="sanctuary-card" style={{ padding: '24px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '14px', opacity: isPastView ? 0.6 : 1 }}>
                             <h4 style={{ margin: 0, fontSize: '13px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)' }}>Add Section</h4>
                             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                                <input value={newSectionGrade} onChange={e => setNewSectionGrade(e.target.value)} placeholder="Grade (e.g. Grade 8)" style={{ flex: 1, minWidth: '140px', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px' }} />
-                                <input value={newSectionName} onChange={e => setNewSectionName(e.target.value)} placeholder="Section name (e.g. 8A)" style={{ flex: 1, minWidth: '140px', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px' }} />
-                                <button onClick={handleCreateSection} disabled={!newSectionName.trim() || savingSection} className="premium-button" style={{ background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <input value={newSectionGrade} onChange={e => setNewSectionGrade(e.target.value)} disabled={isPastView} placeholder="Grade (e.g. Grade 8)" style={{ flex: 1, minWidth: '140px', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px' }} />
+                                <input value={newSectionName} onChange={e => setNewSectionName(e.target.value)} disabled={isPastView} placeholder="Section name (e.g. 8A)" style={{ flex: 1, minWidth: '140px', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px' }} />
+                                <button onClick={handleCreateSection} disabled={!newSectionName.trim() || savingSection || isPastView} className="premium-button" style={{ background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                     {savingSection ? '⏳' : <><Plus size={14} /> Add</>}
                                 </button>
                             </div>
@@ -565,13 +569,13 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
                         </button>
                         <h2 style={{ margin: '0 0 4px', fontSize: '24px', fontWeight: '800' }}>📬 Governance Invites</h2>
                         <p style={{ margin: '0 0 24px', color: 'var(--ink-ghost)', fontSize: '14px' }}>Generate invite codes to onboard principals and teachers.</p>
-                        <div className="sanctuary-card" style={{ padding: '24px', marginBottom: '20px' }}>
+                        <div className="sanctuary-card" style={{ padding: '24px', marginBottom: '20px', opacity: isPastView ? 0.6 : 1 }}>
                             <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-                                <select value={inviteRole} onChange={e => setInviteRole(e.target.value as any)} style={{ padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px' }}>
+                                <select value={inviteRole} onChange={e => setInviteRole(e.target.value as any)} disabled={isPastView} style={{ padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px' }}>
                                     <option value="teacher">Teacher</option>
                                     <option value="principal">Principal</option>
                                 </select>
-                                <button onClick={handleGenerateCode} disabled={generatingCode} className="premium-button" style={{ background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <button onClick={handleGenerateCode} disabled={generatingCode || isPastView} className="premium-button" style={{ background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     {generatingCode ? '⏳' : <><Plus size={14} /> Generate Code</>}
                                 </button>
                             </div>
@@ -602,12 +606,12 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
                         </button>
                         <h2 style={{ margin: '0 0 4px', fontSize: '24px', fontWeight: '800' }}>📓 Institutional Log</h2>
                         <p style={{ margin: '0 0 24px', color: 'var(--ink-ghost)', fontSize: '14px' }}>Your daily operational notes and walkthroughs.</p>
-                        <div className="sanctuary-card" style={{ padding: '24px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            <select value={obsType} onChange={e => setObsType(e.target.value)} style={{ padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px' }}>
+                        <div className="sanctuary-card" style={{ padding: '24px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px', opacity: isPastView ? 0.6 : 1 }}>
+                            <select value={obsType} onChange={e => setObsType(e.target.value)} disabled={isPastView} style={{ padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px' }}>
                                 {['walkthrough', 'note', 'concern', 'commendation'].map(t => <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
                             </select>
-                            <textarea value={obsContent} onChange={e => setObsContent(e.target.value)} placeholder="Write your observation or note…" rows={3} style={{ padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', resize: 'vertical' as const }} />
-                            <button onClick={handleSaveObservation} disabled={!obsContent.trim() || savingObs} className="premium-button" style={{ alignSelf: 'flex-start', background: 'var(--sanctuary-saffron)' }}>
+                            <textarea value={obsContent} onChange={e => setObsContent(e.target.value)} disabled={isPastView} placeholder={isPastView ? "Log entry is disabled for past views." : "Write your observation or note…"} rows={3} style={{ padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', resize: 'vertical' as const }} />
+                            <button onClick={handleSaveObservation} disabled={!obsContent.trim() || savingObs || isPastView} className="premium-button" style={{ alignSelf: 'flex-start', background: 'var(--sanctuary-saffron)' }}>
                                 {savingObs ? '⏳' : '+ Log Entry'}
                             </button>
                         </div>
@@ -631,22 +635,22 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
                         </button>
                         <h2 style={{ margin: '0 0 4px', fontSize: '24px', fontWeight: '800' }}>📅 Academic Cycles</h2>
                         <p style={{ margin: '0 0 24px', color: 'var(--ink-ghost)', fontSize: '14px' }}>Define terms, semesters and academic periods.</p>
-                        <div className="sanctuary-card" style={{ padding: '24px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <div className="sanctuary-card" style={{ padding: '24px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px', opacity: isPastView ? 0.6 : 1 }}>
                             <h4 style={{ margin: 0, fontSize: '13px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)' }}>New Cycle</h4>
-                            <input value={newCycleName} onChange={e => setNewCycleName(e.target.value)} placeholder="e.g. First Term 2026" style={{ padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px' }} />
+                            <input value={newCycleName} onChange={e => setNewCycleName(e.target.value)} disabled={isPastView} placeholder="e.g. First Term 2026" style={{ padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px' }} />
                             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                                 <div style={{ flex: 1 }}>
                                     <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>Start Date</label>
-                                    <input type="date" value={newCycleStart} onChange={e => setNewCycleStart(e.target.value)} style={{ width: '100%', marginTop: '6px', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', boxSizing: 'border-box' as const }} />
+                                    <input type="date" value={newCycleStart} onChange={e => setNewCycleStart(e.target.value)} disabled={isPastView} style={{ width: '100%', marginTop: '6px', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', boxSizing: 'border-box' as const }} />
                                 </div>
                                 <div style={{ flex: 1 }}>
                                     <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>End Date</label>
-                                    <input type="date" value={newCycleEnd} onChange={e => setNewCycleEnd(e.target.value)} style={{ width: '100%', marginTop: '6px', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', boxSizing: 'border-box' as const }} />
+                                    <input type="date" value={newCycleEnd} onChange={e => setNewCycleEnd(e.target.value)} disabled={isPastView} style={{ width: '100%', marginTop: '6px', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', boxSizing: 'border-box' as const }} />
                                 </div>
                             </div>
-                            <button onClick={handleCreateCycle} disabled={!newCycleName.trim() || !newCycleStart || savingCycle} className="premium-button" style={{ alignSelf: 'flex-start', background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <button onClick={handleCreateCycle} disabled={!newCycleName.trim() || !newCycleStart || savingCycle || isPastView} className="premium-button" style={{ alignSelf: 'flex-start', background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 {savingCycle ? '⏳' : <><Plus size={14} /> Create</>}
-                            </button>
+                              </button>
                         </div>
                         {cyclesLoading ? <SkeletonCard /> : academicCycles.length === 0 ? (
                             <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic' }}>No academic cycles yet. Create the first one above.</p>
@@ -702,10 +706,20 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
                         timeText={school?.name || 'School Ecosystem'}
                         actions={(
                             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                                <button className="premium-button" style={{ background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowCreateClassroom(true)}>
+                                <button
+                                    className="premium-button"
+                                    disabled={isPastView}
+                                    style={{ background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '8px', opacity: isPastView ? 0.5 : 1, cursor: isPastView ? 'not-allowed' : 'pointer' }}
+                                    onClick={() => setShowCreateClassroom(true)}
+                                >
                                     <Plus size={18} /> Establish Hierarchy
                                 </button>
-                                <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowAddTeacher(true)}>
+                                <button
+                                    className="secondary-button"
+                                    disabled={isPastView}
+                                    style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: isPastView ? 0.5 : 1, cursor: isPastView ? 'not-allowed' : 'pointer' }}
+                                    onClick={() => setShowAddTeacher(true)}
+                                >
                                     <Users size={18} /> Invite Staff
                                 </button>
                                 <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => navigation.navigate('SchoolProfile', { schoolId: effectiveSchoolId })}>
@@ -717,6 +731,10 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
                             </div>
                         )}
                     />
+
+                    <div style={{ marginBottom: '16px' }}>
+                        <TemporalNavigator />
+                    </div>
 
                     {/* ─── NEW: Command Center (Topological Parity) ───── */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -845,7 +863,13 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
                                             </span>
                                         )}
                                     </h3>
-                                    <button style={{ color: 'var(--lotus)', background: 'transparent', border: 'none', fontWeight: '800', fontSize: '12px', cursor: 'pointer' }} onClick={() => setShowCreateClassroom(true)}>+ New Classroom</button>
+                                    <button
+                                        disabled={isPastView}
+                                        style={{ color: 'var(--lotus)', background: 'transparent', border: 'none', fontWeight: '800', fontSize: '12px', cursor: isPastView ? 'not-allowed' : 'pointer', opacity: isPastView ? 0.5 : 1 }}
+                                        onClick={() => setShowCreateClassroom(true)}
+                                    >
+                                        + New Classroom
+                                    </button>
                                 </div>
                                 {staffLoading ? (
                                     <SkeletonCard />
@@ -1010,26 +1034,26 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
                                                 </div>
                                                 <div style={{ display: 'flex', gap: '8px' }}>
                                                     <button
-                                                        disabled={processingLeave === leave.id}
+                                                        disabled={processingLeave === leave.id || isPastView}
                                                         onClick={async () => {
                                                             setProcessingLeave(leave.id);
                                                             const ok = await staffManagementAPI.approveLeave(leave.id, effectiveUserId, true);
                                                             if (ok) setPendingLeaves(prev => prev.filter(l => l.id !== leave.id));
                                                             setProcessingLeave(null);
                                                         }}
-                                                        style={{ padding: '6px 12px', borderRadius: '8px', background: 'var(--moss-soft)', color: 'var(--moss)', border: 'none', fontWeight: '700', fontSize: '11px', cursor: 'pointer', opacity: processingLeave === leave.id ? 0.5 : 1 }}
+                                                        style={{ padding: '6px 12px', borderRadius: '8px', background: 'var(--moss-soft)', color: 'var(--moss)', border: 'none', fontWeight: '700', fontSize: '11px', cursor: isPastView ? 'not-allowed' : 'pointer', opacity: (processingLeave === leave.id || isPastView) ? 0.5 : 1 }}
                                                     >
                                                         {processingLeave === leave.id ? '…' : 'Approve'}
                                                     </button>
                                                     <button
-                                                        disabled={processingLeave === leave.id}
+                                                        disabled={processingLeave === leave.id || isPastView}
                                                         onClick={async () => {
                                                             setProcessingLeave(leave.id);
                                                             const ok = await staffManagementAPI.approveLeave(leave.id, effectiveUserId, false);
                                                             if (ok) setPendingLeaves(prev => prev.filter(l => l.id !== leave.id));
                                                             setProcessingLeave(null);
                                                         }}
-                                                        style={{ padding: '6px 12px', borderRadius: '8px', background: 'var(--background-alt)', color: 'var(--ink-ghost)', border: 'none', fontWeight: '700', fontSize: '11px', cursor: 'pointer', opacity: processingLeave === leave.id ? 0.5 : 1 }}
+                                                        style={{ padding: '6px 12px', borderRadius: '8px', background: 'var(--background-alt)', color: 'var(--ink-ghost)', border: 'none', fontWeight: '700', fontSize: '11px', cursor: isPastView ? 'not-allowed' : 'pointer', opacity: (processingLeave === leave.id || isPastView) ? 0.5 : 1 }}
                                                     >
                                                         Reject
                                                     </button>
@@ -1185,11 +1209,12 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
                                                             </button>
                                                         )}
                                                         <button
+                                                            disabled={isPastView}
                                                             onClick={() => {
                                                                 if (isExpanded) { setReplyingTo(null); setReplyText(''); }
                                                                 else { setReplyingTo(item.id); setReplyText(item.principal_response ?? ''); }
                                                             }}
-                                                            style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--lotus)', background: isExpanded ? 'var(--lotus-soft)' : 'none', cursor: 'pointer', fontSize: '11px', fontWeight: '700', color: 'var(--lotus)', fontFamily: 'var(--font-body)' }}
+                                                            style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--lotus)', background: isExpanded ? 'var(--lotus-soft)' : 'none', cursor: isPastView ? 'not-allowed' : 'pointer', fontSize: '11px', fontWeight: '700', color: 'var(--lotus)', fontFamily: 'var(--font-body)', opacity: isPastView ? 0.5 : 1 }}
                                                         >
                                                             {item.principal_response ? '✏️ Edit reply' : '↩ Reply'}
                                                         </button>
@@ -1283,9 +1308,9 @@ export default function PrincipalSchoolViewWeb({ schoolId, userId, forceDemo, on
                                     />
                                     <button
                                         className="premium-button"
-                                        style={{ alignSelf: 'flex-end', fontSize: '12px', padding: '6px 14px', background: 'var(--sanctuary-saffron)' }}
+                                        style={{ alignSelf: 'flex-end', fontSize: '12px', padding: '6px 14px', background: 'var(--sanctuary-saffron)', opacity: isPastView ? 0.5 : 1, cursor: isPastView ? 'not-allowed' : 'pointer' }}
                                         onClick={handleSaveObservation}
-                                        disabled={!obsContent.trim() || savingObs}
+                                        disabled={!obsContent.trim() || savingObs || isPastView}
                                     >
                                         {savingObs ? '⏳' : '+ Log'}
                                     </button>

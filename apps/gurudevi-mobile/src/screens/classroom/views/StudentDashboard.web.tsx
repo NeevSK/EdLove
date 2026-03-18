@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore, supabase, useRewards, growthSignalsAPI, MOCK_CLASSROOMS } from '@repo/core';
 import { Classroom } from '@repo/core';
-import { SkeletonCard, SandboxBanner, PositiveInvitation, useRegisterFAB } from '@repo/ui';
+import { SkeletonCard, SandboxBanner, PositiveInvitation, useRegisterFAB, TemporalNavigator } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 import { useClassroomRoleData, SubmissionModal } from '@repo/classroom';
 import { useStudentGoals } from '@repo/self';
+import { useTemporalStore } from '@repo/core';
 import {
     BookOpen,
     MessageSquare,
@@ -45,6 +46,7 @@ export default function StudentDashboardWeb({ forceDemo }: { forceDemo?: boolean
     const isDemo = forceDemo === true;
     const { rewards, isLoading: rewardsLoading } = useRewards();
     const { data: roleData, loading: roleLoading } = useClassroomRoleData();
+    const { isPastView } = useTemporalStore();
 
     const { goals: realGoals, isLoading: goalsLoading } = useStudentGoals(isDemo ? undefined : (userId ?? undefined));
     const [classrooms, setClassrooms] = useState<Classroom[]>([]);
@@ -137,6 +139,11 @@ export default function StudentDashboardWeb({ forceDemo }: { forceDemo?: boolean
                                 Demo view — Amara Jayasinghe · Grade 10 · Gurudevi Life School
                             </p>
                         )}
+                    </div>
+
+                    {/* Temporal Travel */}
+                    <div style={{ marginBottom: '32px', maxWidth: '400px' }}>
+                        <TemporalNavigator />
                     </div>
 
                     {/* Growth Stats Row */}
@@ -240,7 +247,7 @@ export default function StudentDashboardWeb({ forceDemo }: { forceDemo?: boolean
                                                 <span>Due {typeof a.due_date === 'string' ? a.due_date : new Date(a.due_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
                                             </div>
                                         </div>
-                                        {!a.submitted && !isDemo && (
+                                        {!a.submitted && !isPastView && (
                                             <button
                                                 className="premium-button"
                                                 style={{ fontSize: '11px', padding: '6px 12px' }}

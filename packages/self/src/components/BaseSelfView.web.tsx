@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
-import { VStack, HStack, WebScreenHeader, FeatureInfoIcon } from '@repo/ui';
+import { VStack, HStack, WebScreenHeader, FeatureInfoIcon, TemporalNavigator } from '@repo/ui';
 import { BaseSelfViewProps } from './BaseSelfView.types';
-import { FEATURE_EMOJIS } from './BaseSelfView';
+import { FEATURE_EMOJIS } from '../constants/selfRegistry';
 import { useFeatureActivity } from '../hooks/useFeatureActivity';
 import { useDynamicSelfFeatures } from '../hooks/useDynamicSelfFeatures';
 import { FEATURE_DISCOVERY_DATA } from '../constants/selfRegistry';
@@ -56,6 +56,7 @@ export function BaseSelfView({
 
     const [activeCategoryId, setActiveCategoryId] = React.useState(domains[0]?.id);
     const [focusedItemId, setFocusedItemId] = React.useState<string | null>(null);
+    const [focusedHistoryId, setFocusedHistoryId] = React.useState<string | null>(null);
 
     const activeDomain = domains.find((d: any) => d.id === activeCategoryId) || domains[0];
 
@@ -80,6 +81,7 @@ export function BaseSelfView({
                             onPress={() => {
                                 setActiveCategoryId(domain.id);
                                 setFocusedItemId(null);
+                                setFocusedHistoryId(null);
                             }}
                             style={[
                                 webStyles.categoryCard,
@@ -102,6 +104,11 @@ export function BaseSelfView({
                     ))}
                 </ScrollView>
             </View>
+            
+            <View style={{ paddingHorizontal: 40, marginTop: 24 }}>
+                <TemporalNavigator />
+            </View>
+
             {/* Main Content Area - Multi-column based on active domain */}
             <View style={webStyles.contentWrapper}>
                 {/* Primary Focus Area */}
@@ -111,28 +118,37 @@ export function BaseSelfView({
                     showsVerticalScrollIndicator={false}
                 >
                     {/* Featured Detail View (Conditional) */}
-                    {focusedItemId && (
+                    {(focusedItemId || focusedHistoryId) && (
                         <View style={[styles.card, { marginBottom: 48, backgroundColor: '#FFF', elevation: 8 }]}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}>
                                 <Text style={[styles.sectionHeading, { color: activeDomain?.accentColor || '#000' }]}>
-                                    Focused Detail
+                                    {focusedHistoryId ? 'Historical Context' : 'Focused Detail'}
                                 </Text>
-                                <View onPointerDown={() => setFocusedItemId(null)} style={{ cursor: 'pointer', padding: 4 }}>
+                                <View 
+                                    onPointerDown={() => {
+                                        setFocusedItemId(null);
+                                        setFocusedHistoryId(null);
+                                    }} 
+                                    style={{ cursor: 'pointer', padding: 4 }}
+                                >
                                     <Text style={{ fontSize: 20 }}>✕</Text>
                                 </View>
                             </View>
-                            {/* Render the selected feature content */}
-                            {activeDomain?.features?.find((f: any) => f.id === focusedItemId)?.content || null}
+                            {/* Render the selected feature content or its history */}
+                            {focusedHistoryId 
+                                ? activeDomain?.features?.find((f: any) => f.id === focusedHistoryId)?.historyContent || <Text>No history available for this feature.</Text>
+                                : activeDomain?.features?.find((f: any) => f.id === focusedItemId)?.content || null
+                            }
                         </View>
                     )}
 
-                    {activeDomain?.content && !focusedItemId && (
+                    {activeDomain?.content && !focusedItemId && !focusedHistoryId && (
                         <View style={webStyles.activeDomainContainer}>
                             {activeDomain?.content}
                         </View>
                     )}
 
-                    {activeDomain?.features && !focusedItemId && !activeDomain.content && (
+                    {activeDomain?.features && !focusedItemId && !focusedHistoryId && !activeDomain.content && (
                         <View style={webStyles.activeDomainContainer}>
                             <VStack space="xl">
                                 {sortedFeatures
@@ -163,6 +179,16 @@ export function BaseSelfView({
                                                     </HStack>
                                                     
                                                     <HStack sx={{ alignItems: 'center', space: 'md' } as any}>
+                                                        {/* "Past" shortcut icon */}
+                                                        {feature.historyContent && (
+                                                            <Pressable 
+                                                                onPress={() => setFocusedHistoryId(feature.id)}
+                                                                style={{ padding: 4, marginRight: 8, opacity: 0.6 }}
+                                                            >
+                                                                <Text style={{ fontSize: 16 }}>⏳</Text>
+                                                            </Pressable>
+                                                        )}
+
                                                         <Pressable 
                                                             onPress={() => togglePin(feature.id)}
                                                             style={{ padding: 4 }}
