@@ -8,35 +8,83 @@
 -- Table already exists; RLS is enabled; policies were missing.
 
 -- Anyone in the same school can read comments (posts table carries school_id)
-CREATE POLICY "community_comments_select" ON public.community_comments
-    FOR SELECT USING (
-        EXISTS (
-            SELECT 1 FROM public.community_posts cp
-            JOIN public.users u ON u.school_id = cp.school_id
-            WHERE cp.id = community_comments.post_id
-              AND u.id = auth.uid()
-        )
-    );
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_policies
+        WHERE schemaname = 'public'
+          AND tablename = 'community_comments'
+          AND policyname = 'community_comments_select'
+    ) THEN
+        CREATE POLICY "community_comments_select" ON public.community_comments
+            FOR SELECT USING (
+                EXISTS (
+                    SELECT 1 FROM public.community_posts cp
+                    JOIN public.users u ON u.school_id = cp.school_id
+                    WHERE cp.id = community_comments.post_id
+                      AND u.id = auth.uid()
+                )
+            );
+    END IF;
+END
+$$;
 
 -- Authenticated school members may insert their own comments
-CREATE POLICY "community_comments_insert" ON public.community_comments
-    FOR INSERT WITH CHECK (
-        author_id = auth.uid()
-        AND EXISTS (
-            SELECT 1 FROM public.community_posts cp
-            JOIN public.users u ON u.school_id = cp.school_id
-            WHERE cp.id = community_comments.post_id
-              AND u.id = auth.uid()
-        )
-    );
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_policies
+        WHERE schemaname = 'public'
+          AND tablename = 'community_comments'
+          AND policyname = 'community_comments_insert'
+    ) THEN
+        CREATE POLICY "community_comments_insert" ON public.community_comments
+            FOR INSERT WITH CHECK (
+                author_id = auth.uid()
+                AND EXISTS (
+                    SELECT 1 FROM public.community_posts cp
+                    JOIN public.users u ON u.school_id = cp.school_id
+                    WHERE cp.id = community_comments.post_id
+                      AND u.id = auth.uid()
+                )
+            );
+    END IF;
+END
+$$;
 
 -- Authors may delete their own comments
-CREATE POLICY "community_comments_delete_own" ON public.community_comments
-    FOR DELETE USING (author_id = auth.uid());
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_policies
+        WHERE schemaname = 'public'
+          AND tablename = 'community_comments'
+          AND policyname = 'community_comments_delete_own'
+    ) THEN
+        CREATE POLICY "community_comments_delete_own" ON public.community_comments
+            FOR DELETE USING (author_id = auth.uid());
+    END IF;
+END
+$$;
 
 -- Authors may update (edit) their own comments
-CREATE POLICY "community_comments_update_own" ON public.community_comments
-    FOR UPDATE USING (author_id = auth.uid());
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_policies
+        WHERE schemaname = 'public'
+          AND tablename = 'community_comments'
+          AND policyname = 'community_comments_update_own'
+    ) THEN
+        CREATE POLICY "community_comments_update_own" ON public.community_comments
+            FOR UPDATE USING (author_id = auth.uid());
+    END IF;
+END
+$$;
 
 -- ── 2. community_comments: add is_anonymous + upvote columns ─────────────────
 
