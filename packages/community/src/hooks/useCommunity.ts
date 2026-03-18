@@ -139,12 +139,14 @@ export const useCommunity = (groupId?: string) => {
 
             const update = (post: CommunityPost) => {
                 if (post.id !== postId) return post;
+                const wasLiked = post.has_liked ?? false;
+                const delta = wasLiked ? -1 : 1;
                 const prev = post.reactions?.['❤️'] ?? 0;
-                const wasLiked = prev > 0;
                 return {
                     ...post,
-                    reactions: { ...post.reactions, '❤️': Math.max(0, prev + (wasLiked ? -1 : 1)) },
-                    reaction_count: Math.max(0, (post.reaction_count ?? 0) + (wasLiked ? -1 : 1)),
+                    has_liked: !wasLiked,
+                    reactions: { ...post.reactions, '❤️': Math.max(0, prev + delta) },
+                    reaction_count: Math.max(0, (post.reaction_count ?? 0) + delta),
                 };
             };
 
