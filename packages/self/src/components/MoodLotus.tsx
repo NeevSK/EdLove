@@ -1,4 +1,4 @@
-﻿/**
+/**
  * MOOD LOTUS COMPONENT
  * Daily mood check-in with lotus visual metaphor
  * 
@@ -36,7 +36,7 @@ import { Theme, typography } from '@repo/ui';
 import * as Haptics from 'expo-haptics';
 import BreathGuide from './BreathGuide';
 import { useTranslation } from 'react-i18next';
-import { supabase, useStore, useSafeMutation } from '@repo/core';
+import { supabase, useStore, useSafeMutation, useTemporalStore } from '@repo/core';
 import { useThemedColors, SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useMoodLogs } from '../hooks/useMoodLogs';
 import { useNavigation } from '@react-navigation/native';
@@ -44,12 +44,13 @@ import { useNavigation } from '@react-navigation/native';
 interface MoodLotusProps {
     userId?: string;
     onMoodChange?: (mood: number) => void;
+    disabled?: boolean;
 }
 
 const LOTUS_BUD = require('../../assets/images/lotus_bud.png');
 const LOTUS_BLOOM = require('../../assets/images/lotus_bloom.png');
 
-export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
+export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusProps) {
     const navigation = useNavigation<any>();
     const { t } = useTranslation();
     const colors = useThemedColors();
@@ -64,6 +65,7 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
 
     const [moodValue, setMoodValue] = useState(3);
     const [showBreathGuide, setShowBreathGuide] = useState(false);
+    const isPastView = useTemporalStore(state => state.isPastView);
 
     // Resilient Data
     const { moodHistory, refreshData, isLoading, addMoodLog } = useMoodLogs(userId);
@@ -137,6 +139,7 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
             onMoodChange?.(value);
 
             // Pulse animation on change
+            if (isPastView) return; // Prevent animation/change in past view
             scale.value = withSpring(currentMood.scale * 1.05, {
                 damping: 10,
                 stiffness: 200,
@@ -214,7 +217,7 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
                                 {t('self.moodLotus')}
                             </Heading>
                             <Text color={colors.textSecondary} size="sm">
-                                {t('self.moodLotusDesc')}
+                                {isPastView ? t('self.historicalMood', 'Your resonance on this journey.') : t('self.moodLotusDesc')}
                             </Text>
                         </VStack>
                         <Button
@@ -285,11 +288,14 @@ export default function MoodLotus({ userId, onMoodChange }: MoodLotusProps) {
                                     <Pressable
                                         key={state.value}
                                         onPress={() => {
+                                            if (isPastView) return;
                                             handleMoodChange(state.value);
                                             handleSlidingComplete(state.value);
                                         }}
+                                        disabled={isPastView}
                                         sx={{
                                             alignItems: 'center',
+                                            opacity: isPastView && !isActive ? 0.3 : 1
                                         }}
                                     >
                                         <VStack alignItems="center" space="xs">

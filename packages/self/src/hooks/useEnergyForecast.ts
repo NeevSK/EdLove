@@ -1,4 +1,4 @@
-import { SafeZustandStorage, supabase, useStore } from '@repo/core';
+import { SafeZustandStorage, supabase, useStore, useTemporalStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { EnergyForecast } from '../types';
 
@@ -13,6 +13,7 @@ const ENERGY_CACHE_KEY = 'gurudevi-energy-cache';
  */
 export function useEnergyForecast(userId?: string) {
     const isOnline = useStore(state => state.isOnline);
+    const { viewDate, isPastView } = useTemporalStore();
     const [forecasts, setForecasts] = useState<EnergyForecast[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -22,7 +23,7 @@ export function useEnergyForecast(userId?: string) {
 
         const loadCache = async () => {
             try {
-                const cached = await SafeZustandStorage.getItem(`${ENERGY_CACHE_KEY}-${userId}`);
+                const cached = await SafeZustandStorage.getItem(`${ENERGY_CACHE_KEY}-${userId}-${viewDate}`);
                 if (cached) {
                     setForecasts(JSON.parse(cached));
                 }
@@ -33,19 +34,25 @@ export function useEnergyForecast(userId?: string) {
             }
         };
         loadCache();
-    }, [userId]);
+    }, [userId, viewDate]);
 
     // Refresh from API
     const refreshData = useCallback(async () => {
         if (!userId || !isOnline) return;
 
         try {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('energy_forecasts')
                 .select('*')
-                .eq('user_id', userId)
-                .order('forecast_date', { ascending: false })
-                .limit(7); // Last 7 days
+                .eq('user_id', userId);
+
+            if (isPastView) {
+                query = query.eq('forecast_date', viewDate);
+            } else {
+                query = query.order('forecast_date', { ascending: false }).limit(7);
+            }
+
+            const { data, error } = await query;
 
             if (error) throw error;
 
@@ -53,14 +60,14 @@ export function useEnergyForecast(userId?: string) {
                 setForecasts(data);
                 // Persist to cache
                 await SafeZustandStorage.setItem(
-                    `${ENERGY_CACHE_KEY}-${userId}`,
+                    `${ENERGY_CACHE_KEY}-${userId}-${viewDate}`,
                     JSON.stringify(data)
                 );
             }
         } catch (e) {
             console.error('Failed to refresh energy forecasts', e);
         }
-    }, [userId, isOnline]);
+    }, [userId, isOnline, viewDate, isPastView]);
 
     // Fetch on mount/online change
     useEffect(() => {

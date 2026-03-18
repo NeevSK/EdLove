@@ -7,7 +7,7 @@
  * Metro resolves this over EnergyForecast.tsx on the web platform.
  */
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@repo/core';
+import { supabase, useTemporalStore } from '@repo/core';
 import { useEnergyForecast } from '../hooks/useEnergyForecast';
 import { ENERGY_COLORS } from '../constants/wellbeing';
 import { Battery } from 'lucide-react-native';
@@ -26,6 +26,7 @@ const LEVEL_LABELS: Record<number, { label: string; emoji: string; desc: string 
 
 export default function EnergyForecast({ userId }: EnergyForecastProps) {
     const { forecasts, refreshData, isLoading } = useEnergyForecast(userId);
+    const isPastView = useTemporalStore(s => s.isPastView);
     const today = new Date().toISOString().split('T')[0];
 
     const todayForecast = forecasts.find(f => f.forecast_date === today) ?? null;
@@ -84,26 +85,27 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
                     return (
                         <button
                             key={level}
-                            onClick={() => handleSave(level)}
-                            disabled={saving}
-                            title={m.label}
+                            onClick={() => !isPastView && handleSave(level)}
+                            disabled={saving || isPastView}
+                            title={isPastView ? 'Viewing past energy resonance' : m!.label}
                             style={{
                                 flex: 1,
                                 padding: '12px 4px',
                                 borderRadius: '10px',
                                 border: `2px solid ${isSelected ? color : 'var(--border)'}`,
                                 background: isSelected ? `${color}18` : 'var(--background-alt)',
-                                cursor: 'pointer',
+                                cursor: (saving || isPastView) ? 'default' : 'pointer',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 gap: '4px',
                                 transition: 'all 0.2s',
                                 transform: isSelected ? 'scale(1.08)' : 'scale(1)',
+                                opacity: isPastView && !isSelected ? 0.4 : 1,
                             }}
                         >
-                            <span style={{ fontSize: '20px' }}>{m.emoji}</span>
-                            <span style={{ fontSize: '9px', fontWeight: '700', color: isSelected ? color : 'var(--ink-ghost)', textTransform: 'uppercase' }}>{m.label}</span>
+                            <span style={{ fontSize: '20px' }}>{m!.emoji}</span>
+                            <span style={{ fontSize: '9px', fontWeight: '700', color: isSelected ? color : 'var(--ink-ghost)', textTransform: 'uppercase' }}>{m!.label}</span>
                         </button>
                     );
                 })}
@@ -122,9 +124,10 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
                     <input
                         value={notes}
                         onChange={e => setNotes(e.target.value)}
-                        onBlur={() => selectedLevel && handleSave(selectedLevel)}
-                        placeholder="Add context (optional)…"
-                        style={{ flex: 1, padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontSize: '13px', fontFamily: 'var(--font-body)', outline: 'none' }}
+                        onBlur={() => !isPastView && selectedLevel && handleSave(selectedLevel)}
+                        placeholder={isPastView ? "Viewing historical context" : "Add context (optional)…"}
+                        disabled={isPastView}
+                        style={{ flex: 1, padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontSize: '13px', fontFamily: 'var(--font-body)', outline: 'none', opacity: isPastView ? 0.7 : 1 }}
                     />
                 </div>
             )}

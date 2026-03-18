@@ -7,7 +7,7 @@
  * Metro resolves this over TomorrowPrep.tsx on the web platform.
  */
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@repo/core';
+import { supabase, useTemporalStore } from '@repo/core';
 import { useTomorrowPrep } from '../hooks/useTomorrowPrep';
 import type { DailyPrepItem } from '../types';
 import { Calendar, Plus, Trash2, Check } from 'lucide-react-native';
@@ -16,14 +16,15 @@ interface TomorrowPrepProps {
     userId?: string;
 }
 
-const getTomorrow = () => {
+const getTomorrow = (): string => {
     const d = new Date();
     d.setDate(d.getDate() + 1);
-    return d.toISOString().split('T')[0];
+    return d.toISOString().split('T')[0] as string;
 };
 
 export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
     const { prepItems, isLoading, setPrepItems, refreshData } = useTomorrowPrep(userId);
+    const isPastView = useTemporalStore(s => s.isPastView);
     const [showForm, setShowForm] = useState(false);
     const [itemText, setItemText] = useState('');
     const [saving, setSaving] = useState(false);
@@ -103,10 +104,11 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                     )}
                 </div>
                 <button
-                    onClick={() => setShowForm(v => !v)}
-                    style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: showForm ? 'var(--sanctuary-saffron)' : 'transparent', color: showForm ? 'var(--text-on-action)' : 'var(--ink-ghost)', cursor: 'pointer', fontWeight: '700', transition: 'all 0.2s' }}
+                    onClick={() => !isPastView && setShowForm(v => !v)}
+                    disabled={isPastView}
+                    style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: isPastView ? 'transparent' : (showForm ? 'var(--sanctuary-saffron)' : 'transparent'), color: isPastView ? 'var(--ink-ghost)' : (showForm ? 'var(--text-on-action)' : 'var(--ink-ghost)'), cursor: isPastView ? 'default' : 'pointer', fontWeight: '700', transition: 'all 0.2s', opacity: isPastView ? 0.5 : 1 }}
                 >
-                    <Plus size={12} color={showForm ? 'var(--text-on-action)' : 'var(--ink-ghost)'} />
+                    <Plus size={12} color={isPastView ? 'var(--ink-ghost)' : (showForm ? 'var(--text-on-action)' : 'var(--ink-ghost)')} />
                     {showForm ? 'Cancel' : 'Add'}
                 </button>
             </div>
@@ -158,17 +160,17 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                             <input
                                 type="checkbox"
                                 checked={item.is_completed}
-                                onChange={() => handleToggle(item)}
-                                disabled={toggling === item.id}
-                                style={{ width: '16px', height: '16px', accentColor: 'var(--sanctuary-saffron)', cursor: 'pointer', flexShrink: 0 }}
+                                onChange={() => !isPastView && handleToggle(item)}
+                                disabled={toggling === item.id || isPastView}
+                                style={{ width: '16px', height: '16px', accentColor: 'var(--sanctuary-saffron)', cursor: isPastView ? 'default' : 'pointer', flexShrink: 0 }}
                             />
                             <span style={{ flex: 1, fontSize: '13px', textDecoration: item.is_completed ? 'line-through' : 'none', color: item.is_completed ? 'var(--ink-ghost)' : 'var(--ink)' }}>
                                 {item.item_text}
                             </span>
                             <button
-                                onClick={() => handleDelete(item.id)}
-                                disabled={deleting === item.id}
-                                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', opacity: deleting === item.id ? 0.4 : 0.6 }}
+                                onClick={() => !isPastView && handleDelete(item.id)}
+                                disabled={deleting === item.id || isPastView}
+                                style={{ background: 'none', border: 'none', cursor: isPastView ? 'default' : 'pointer', padding: '2px', opacity: (deleting === item.id || isPastView) ? 0.4 : 0.6 }}
                             >
                                 <Trash2 size={13} color="var(--ink-ghost)" />
                             </button>

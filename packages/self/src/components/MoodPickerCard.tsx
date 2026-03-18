@@ -27,6 +27,8 @@ interface MoodPickerCardProps {
      * Defaults to 'dark'.
      */
     accent?: 'dark' | 'water' | 'light' | 'earth' | 'fire';
+    /** Whether the picker is disabled (e.g. historical view). */
+    isDisabled?: boolean;
 }
 
 /**
@@ -42,6 +44,7 @@ export function MoodPickerCard({
     latestMood,
     isLoading,
     accent = 'dark',
+    isDisabled = false,
 }: MoodPickerCardProps) {
     const [note, setNote] = useState('');
 
@@ -70,13 +73,14 @@ export function MoodPickerCard({
                 <Text style={styles.title}>Mood Resonance</Text>
                 <TouchableOpacity
                     onPress={onToggle}
+                    disabled={isDisabled}
                     style={[
                         styles.toggleButton,
-                        { backgroundColor: isOpen ? '#8B5CF6' : 'rgba(255,255,255,0.15)' }
+                        { backgroundColor: isOpen ? '#8B5CF6' : 'rgba(255,255,255,0.15)', opacity: isDisabled ? 0.5 : 1 }
                     ]}
                 >
                     <Text style={styles.toggleButtonText}>
-                        {isOpen ? 'Cancel' : '+ Log Mood'}
+                        {isDisabled ? 'Viewing History' : (isOpen ? 'Cancel' : '+ Log Mood')}
                     </Text>
                 </TouchableOpacity>
             </View>

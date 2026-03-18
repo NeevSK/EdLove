@@ -1,4 +1,4 @@
-import { SafeZustandStorage, supabase, useStore } from '@repo/core';
+import { SafeZustandStorage, supabase, useStore, useTemporalStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { Goal } from '../types';
 
@@ -15,6 +15,7 @@ export function useStudentGoals(userId?: string) {
     const isOnline = useStore(state => state.isOnline);
     const [goals, setGoals] = useState<Goal[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const { viewDate, isPastView } = useTemporalStore();
 
     // Initial load from cache
     useEffect(() => {
@@ -22,7 +23,8 @@ export function useStudentGoals(userId?: string) {
 
         const loadCache = async () => {
             try {
-                const cached = await SafeZustandStorage.getItem(`${GOALS_CACHE_KEY}-${userId}`);
+                const dateKey = viewDate;
+                const cached = await SafeZustandStorage.getItem(`${GOALS_CACHE_KEY}-${userId}-${dateKey}`);
                 if (cached) {
                     setGoals(JSON.parse(cached));
                 }
@@ -33,7 +35,7 @@ export function useStudentGoals(userId?: string) {
             }
         };
         loadCache();
-    }, [userId]);
+    }, [userId, viewDate]);
 
     // Refresh from API
     const refreshData = useCallback(async () => {
@@ -44,6 +46,7 @@ export function useStudentGoals(userId?: string) {
                 .from('student_goals')
                 .select('*')
                 .eq('user_id', userId)
+                .lte('created_at', `${viewDate}T23:59:59Z`)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -51,8 +54,9 @@ export function useStudentGoals(userId?: string) {
             if (data) {
                 setGoals(data);
                 // Persist to cache
+                const dateKey = viewDate;
                 await SafeZustandStorage.setItem(
-                    `${GOALS_CACHE_KEY}-${userId}`,
+                    `${GOALS_CACHE_KEY}-${userId}-${dateKey}`,
                     JSON.stringify(data)
                 );
             }

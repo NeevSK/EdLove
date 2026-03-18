@@ -19,9 +19,10 @@ import { useNavigation } from '@react-navigation/native';
 
 interface EnergyForecastProps {
   userId?: string;
+  disabled?: boolean;
 }
 
-export default function EnergyForecast({ userId }: EnergyForecastProps) {
+export default function EnergyForecast({ userId, disabled }: EnergyForecastProps) {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const colors = useThemedColors();
@@ -128,7 +129,7 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
               <Pressable
                 key={energy.level}
                 onPress={() => handleSelectEnergy(energy.level as any)}
-                disabled={isLoading}
+                disabled={isLoading || disabled}
                 sx={{ alignItems: 'center' }}
               >
                 <VStack alignItems="center" space="xs">

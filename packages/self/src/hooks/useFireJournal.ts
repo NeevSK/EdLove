@@ -1,4 +1,4 @@
-import { SafeZustandStorage, supabase, useStore } from '@repo/core';
+import { SafeZustandStorage, supabase, useStore, useTemporalStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { FireJournalEntry } from '../types';
 
@@ -13,6 +13,8 @@ const JOURNAL_CACHE_KEY = 'gurudevi-journal-cache';
  */
 export function useFireJournal(userId?: string) {
     const isOnline = useStore(state => state.isOnline);
+    const viewDate = useTemporalStore(state => state.viewDate);
+    const isPastView = useTemporalStore(state => state.isPastView);
     const [journalHistory, setJournalHistory] = useState<FireJournalEntry[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -40,12 +42,20 @@ export function useFireJournal(userId?: string) {
         if (!userId || !isOnline) return;
 
         try {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('fire_journal')
                 .select('*')
-                .eq('user_id', userId)
-                .order('created_at', { ascending: false })
-                .limit(10);
+                .eq('user_id', userId);
+
+            if (isPastView) {
+                const startOfDay = `${viewDate}T00:00:00.000Z`;
+                const endOfDay = `${viewDate}T23:59:59.999Z`;
+                query = query.gte('created_at', startOfDay).lte('created_at', endOfDay);
+            } else {
+                query = query.order('created_at', { ascending: false }).limit(10);
+            }
+
+            const { data, error } = await query;
 
             if (error) throw error;
 
@@ -60,7 +70,7 @@ export function useFireJournal(userId?: string) {
         } catch (e) {
             console.error('Failed to refresh journal history', e);
         }
-    }, [userId, isOnline]);
+    }, [userId, isOnline, viewDate, isPastView]);
 
     // Fetch on mount/online change
     useEffect(() => {

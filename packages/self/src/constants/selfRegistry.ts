@@ -18,6 +18,48 @@ export interface SelfModuleRegistry {
 export type UserRole = 'teacher' | 'principal' | 'founder' | 'admin' | 'student';
 
 /**
+ * Emoji mapping for common features to add soul to the UI.
+ */
+export const FEATURE_EMOJIS: Record<string, string> = {
+    'energy_pulse': '⚡',
+    'mood_checkin': '🪷',
+    'mood_lotus': '🪷',
+    'study_rhythm': '⏳',
+    'daily_rhythm': '⏳',
+    'goals': '🎯',
+    'grades': '📜',
+    'voice_journaling': '🎙️',
+    'voice': '🎙️',
+    'school_pulse': '📈',
+    'teacher_pulse': '📈',
+    'decisions': '⚖️',
+    'decision_mirror': '⚖️',
+    'wisdom': '🌱',
+    'reflections': '🪞',
+    'breath_presence': '🌬️',
+    'breath': '🌬️',
+    'journal': '📓',
+    'banyan_path': '🌳',
+    'professional_growth': '🌳',
+    'faculty_resonance': '🌀',
+    'systemic_overview': '🌐',
+    'ecosystem_dash': '🌐',
+    'strategic_wisdom': '🗺️',
+    'strategic_pulse': '🗺️',
+    'system_health': '🛠️',
+    'user_resonance': '👥',
+    'mirrors': '🪞',
+    'reminders': '🔔',
+    'holistic_history': '📜',
+    'joy_jar': '🏺',
+    'sleep': '😴',
+    'fire_journal': '🔥',
+    'tomorrow': '🌅',
+    'vision_lab': '🔬',
+    'philosophy_lab': '🏛️',
+};
+
+/**
  * Feature Discovery Metadata
  * Provides friendly explanations for each feature.
  */
@@ -101,6 +143,58 @@ export const FEATURE_DISCOVERY_DATA: Record<string, { whatIsIt: string; whereToF
     'reminders': {
         whatIsIt: 'Timely prompts to keep you aligned with your daily rituals and goals.',
         whereToFind: 'The Reminders tab in your Discovery Hub.'
+    },
+    'teacher_pulse': {
+        whatIsIt: 'A real-time reflection of your instructional impact and professional growth.',
+        whereToFind: 'Located in the working layer of your Teacher sanctuary.'
+    },
+    'mood_lotus': {
+        whatIsIt: 'An interactive visualization of your emotional state over time.',
+        whereToFind: 'Found in your personal growth layer.'
+    },
+    'daily_rhythm': {
+        whatIsIt: 'A visualization of your daily flow, balancing rest and focus.',
+        whereToFind: 'In your daily rituals section.'
+    },
+    'professional_growth': {
+        whatIsIt: 'A map of your journey through the pedagogical landscape.',
+        whereToFind: 'In the working domain for educators.'
+    },
+    'joy_jar': {
+        whatIsIt: 'A collection of "Glimmers" — small moments of shared joy and connection.',
+        whereToFind: 'In your personal sanctuary.'
+    },
+    'sleep': {
+        whatIsIt: 'Track your rest pattern to understand how it fuels your daily energy.',
+        whereToFind: 'In your personal rituals section.'
+    },
+    'fire_journal': {
+        whatIsIt: 'A space for transformative reflections and clearing mental space.',
+        whereToFind: 'Part of your private journaling tools.'
+    },
+    'tomorrow': {
+        whatIsIt: 'Set intentions and prepare your heart for the coming day.',
+        whereToFind: 'In your evening ritual section.'
+    },
+    'strategic_pulse': {
+        whatIsIt: 'High-level orchestration of institutional health and direction.',
+        whereToFind: 'Leadership hub for Principals and Founders.'
+    },
+    'decision_mirror': {
+        whatIsIt: 'Reflect on the legacy of your choices through the lens of Strategic Wisdom.',
+        whereToFind: 'Governance layer of the Principal dashboard.'
+    },
+    'vision_lab': {
+        whatIsIt: 'A technical and philosophical space for prototyping the future of Gurudevi.',
+        whereToFind: 'Reserved for the Founder core.'
+    },
+    'philosophy_lab': {
+        whatIsIt: 'A workspace for refining the foundational principles of our educational ecosystem.',
+        whereToFind: 'Founder and Principal wisdom layers.'
+    },
+    'ecosystem_dash': {
+        whatIsIt: 'Collective analytics representing the health of the entire Gurudevi biosphere.',
+        whereToFind: 'Global dashboard for Founders.'
     }
 };
 

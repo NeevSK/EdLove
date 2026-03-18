@@ -1,4 +1,4 @@
-import { SafeZustandStorage, supabase, useStore } from '@repo/core';
+import { SafeZustandStorage, supabase, useStore, useTemporalStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { WisdomNote } from '../types';
 
@@ -13,6 +13,7 @@ const WISDOM_CACHE_KEY = 'gurudevi-wisdom-cache';
  */
 export function useWisdom(userId?: string) {
     const isOnline = useStore(state => state.isOnline);
+    const { viewDate, isPastView } = useTemporalStore();
     const [notes, setNotes] = useState<WisdomNote[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -22,7 +23,7 @@ export function useWisdom(userId?: string) {
 
         const loadCache = async () => {
             try {
-                const cached = await SafeZustandStorage.getItem(`${WISDOM_CACHE_KEY}-${userId}`);
+                const cached = await SafeZustandStorage.getItem(`${WISDOM_CACHE_KEY}-${userId}-${viewDate}`);
                 if (cached) {
                     setNotes(JSON.parse(cached));
                 }
@@ -33,19 +34,27 @@ export function useWisdom(userId?: string) {
             }
         };
         loadCache();
-    }, [userId]);
+    }, [userId, viewDate]);
 
     // Refresh from API
     const refreshData = useCallback(async () => {
         if (!userId || !isOnline) return;
 
         try {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('wisdom_notes')
                 .select('*')
-                .eq('user_id', userId)
-                .order('created_at', { ascending: false })
-                .limit(30);
+                .eq('user_id', userId);
+
+            if (isPastView) {
+                const startOfDay = `${viewDate}T00:00:00.000Z`;
+                const endOfDay = `${viewDate}T23:59:59.999Z`;
+                query = query.gte('created_at', startOfDay).lte('created_at', endOfDay);
+            } else {
+                query = query.order('created_at', { ascending: false }).limit(30);
+            }
+
+            const { data, error } = await query;
 
             if (error) throw error;
 
@@ -53,14 +62,14 @@ export function useWisdom(userId?: string) {
                 setNotes(data);
                 // Persist to cache
                 await SafeZustandStorage.setItem(
-                    `${WISDOM_CACHE_KEY}-${userId}`,
+                    `${WISDOM_CACHE_KEY}-${userId}-${viewDate}`,
                     JSON.stringify(data)
                 );
             }
         } catch (e) {
             console.error('Failed to refresh wisdom history', e);
         }
-    }, [userId, isOnline]);
+    }, [userId, isOnline, viewDate, isPastView]);
 
     // Fetch on mount/online change
     useEffect(() => {

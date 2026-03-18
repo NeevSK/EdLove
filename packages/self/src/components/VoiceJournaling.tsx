@@ -1,4 +1,4 @@
-﻿/**
+/**
  * VOICE JOURNALING
  * Speak pain, feel release (2 min → peace for hours)
  * Perfect for exhausted teachers who can't type
@@ -41,11 +41,12 @@ import { useTranslation } from 'react-i18next';
 interface VoiceJournalingProps {
     userId?: string;
     onComplete?: () => void;
+    disabled?: boolean;
 }
 
 type RecordingState = 'idle' | 'recording' | 'recorded' | 'playing';
 
-export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingProps) {
+export default function VoiceJournaling({ userId, onComplete, disabled }: VoiceJournalingProps) {
     const [recordingState, setRecordingState] = useState<RecordingState>('idle');
     const [recordingDuration, setRecordingDuration] = useState(0);
     const [recordingUri, setRecordingUri] = useState<string | null>(null);
@@ -309,9 +310,10 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                         size="lg"
                         action="primary"
                         onPress={startRecording}
+                        isDisabled={disabled}
                         sx={{
                             borderRadius: Theme.corners.full,
-                            backgroundColor: Theme.colors.sanctuarySaffron,
+                            backgroundColor: disabled ? Theme.colors.dimGray : Theme.colors.sanctuarySaffron,
                         }}
                     >
                         <Mic
@@ -319,7 +321,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                             size={20}
                             style={{ marginRight: Theme.spacing.sm }}
                         />
-                        <ButtonText>{t('voiceJournaling.startRecording')}</ButtonText>
+                        <ButtonText>{disabled ? 'Journaling Disabled' : t('voiceJournaling.startRecording')}</ButtonText>
                     </Button>
                 )}
 
