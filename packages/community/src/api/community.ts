@@ -716,21 +716,53 @@ export const communityAPI = {
      * Get aggregate resonance for a user's content.
      */
     async getCommunityResonance(userId: string) {
+        // Prefer the view, but do not hard-code optional column names.
+        // Some DB states expose `reaction_count` while others expose `likes_count`.
         const { data, error } = await supabase
             .from('community_posts_with_counts')
-            .select('likes_count, comments_count, shares_count')
+            .select('*')
             .eq('author_id', userId);
 
-        if (error) throw error;
+        if (!error) {
+            return (data || []).reduce(
+                (acc, curr: any) => ({
+                    likes: acc.likes + (curr.likes_count ?? curr.reaction_count ?? curr.reactions_count ?? 0),
+                    comments: acc.comments + (curr.comments_count ?? curr.comment_count ?? 0),
+                    shares: acc.shares + (curr.shares_count ?? curr.share_count ?? 0),
+                }),
+                { likes: 0, comments: 0, shares: 0 }
+            );
+        }
 
-        return (data || []).reduce(
-            (acc, curr) => ({
-                likes: acc.likes + (curr.likes_count || 0),
-                comments: acc.comments + (curr.comments_count || 0),
-                shares: acc.shares + (curr.shares_count || 0),
-            }),
-            { likes: 0, comments: 0, shares: 0 }
+        // Fallback path for environments where the view is missing/outdated.
+        const { data: posts, error: postsError } = await supabase
+            .from('community_posts')
+            .select('id, comments_count, comment_count, shares_count, share_count')
+            .eq('author_id', userId);
+
+        if (postsError) throw postsError;
+
+        const postIds = (posts || []).map((p: any) => p.id).filter(Boolean);
+        let likes = 0;
+        if (postIds.length > 0) {
+            const { count, error: reactionError } = await supabase
+                .from('community_reactions')
+                .select('id', { count: 'exact', head: true })
+                .in('post_id', postIds);
+            if (reactionError) throw reactionError;
+            likes = count || 0;
+        }
+
+        const comments = (posts || []).reduce(
+            (sum: number, p: any) => sum + (p.comments_count ?? p.comment_count ?? 0),
+            0
         );
+        const shares = (posts || []).reduce(
+            (sum: number, p: any) => sum + (p.shares_count ?? p.share_count ?? 0),
+            0
+        );
+
+        return { likes, comments, shares };
     },
 
     /**

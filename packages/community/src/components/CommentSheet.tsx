@@ -198,7 +198,10 @@ export function CommentSheet({
         <KeyboardAvoidingView
             style={[
                 styles.sheet,
-                { backgroundColor: glass.card.bg as string, borderTopColor: glass.interact.border as string },
+                {
+                    backgroundColor: (glass?.modal?.bg ?? glass?.surface?.bg ?? Theme.colors.vellum) as string,
+                    borderTopColor: (glass?.interact?.border ?? 'rgba(42,35,24,0.08)') as string,
+                },
             ]}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}

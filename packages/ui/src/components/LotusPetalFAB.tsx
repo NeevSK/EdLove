@@ -1,23 +1,20 @@
 import React, { FC, useMemo, useEffect, useCallback, useState, useRef } from 'react';
-import { View, Pressable, StyleSheet, PanResponder, Dimensions, Image, Platform } from 'react-native';
+import { View, Pressable, StyleSheet, PanResponder, Dimensions, Platform } from 'react-native';
 import Animated, {
     useAnimatedStyle,
     withRepeat,
     withTiming,
     withSequence,
     withSpring,
-    interpolate,
     SharedValue,
-    Extrapolate,
     useSharedValue,
     Easing,
 } from 'react-native-reanimated';
 import { Theme } from '../theme/Theme';
-import { useThemedColors } from '../hooks/useThemedColors';
 import { useTheme } from '../hooks/useTheme';
 import { hapticLight } from '../utils/haptics';
 import { useAccessibility } from '../hooks/useAccessibility';
-import { X, Wind } from 'lucide-react-native';
+import { Wind } from 'lucide-react-native';
 import { Box, VStack, HStack, Text } from '../gluestack';
 import { UniversalModal } from './UniversalModal';
 import { useBottomTabPadding } from './ScreenWrapper';
@@ -55,6 +52,9 @@ interface LotusPetalFABProps {
 
 const FAB_SIZE = 56;
 const ACTION_DRAWER_HEIGHT = Dimensions.get('window').height * 0.4;
+const FAB_EDGE_MARGIN = Theme.spacing.lg;
+const FAB_DRAG_THRESHOLD = 8;
+const FAB_WEB_STORAGE_KEY = 'gurudevi_lotus_fab_position_v1';
 
 const fabConfig: Record<TabType, { emoji: string; label: string }> = {
     self: { emoji: '🪷', label: 'Reflection' },
@@ -86,7 +86,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     useGlobal = true,
 }) => {
     const { state: globalState } = useFAB();
-    const { isReduceMotionEnabled, announce } = useAccessibility();
+    const { isReduceMotionEnabled } = useAccessibility();
     const bottomTabPadding = useBottomTabPadding();
 
     // Reconcile props with global state
@@ -98,8 +98,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     const isVisible = useGlobal ? globalState.visible : true;
     const icon = customIcon || globalState.icon;
 
-    const colors = useThemedColors();
-    const { isDark, glow, accent } = useTheme();
+    const { isDark, accent } = useTheme();
     const config = useMemo(() => fabConfig[currentTab] || fabConfig.self, [currentTab]);
 
     // Reanimated Shared Values
@@ -108,40 +107,115 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     const pulseOpacity = useSharedValue(0.4);
 
     // Position Shared Values for Draggability
-    const translateX = useSharedValue(0);
-    const translateY = useSharedValue(0);
+    const positionX = useSharedValue(0);
+    const positionY = useSharedValue(0);
+    const dragStartX = useRef(0);
+    const dragStartY = useRef(0);
 
     const [isDrawerVisible, setIsDrawerVisible] = useState(false);
 
-    // PanResponder for Draggability
+    const clampFabToViewport = useCallback((x: number, y: number) => {
+        const windowDims = Dimensions.get('window');
+        const maxX = Math.max(FAB_EDGE_MARGIN, windowDims.width - FAB_SIZE - FAB_EDGE_MARGIN);
+        const maxY = Math.max(
+            FAB_EDGE_MARGIN,
+            windowDims.height - FAB_SIZE - FAB_EDGE_MARGIN - (bottomInset + bottomTabPadding)
+        );
+        return {
+            x: Math.max(FAB_EDGE_MARGIN, Math.min(maxX, x)),
+            y: Math.max(FAB_EDGE_MARGIN, Math.min(maxY, y)),
+        };
+    }, [bottomInset, bottomTabPadding]);
+
+    const persistWebPosition = useCallback((x: number, y: number) => {
+        if (Platform.OS !== 'web') return;
+        try {
+            if (typeof window === 'undefined' || !window.localStorage) return;
+            window.localStorage.setItem(FAB_WEB_STORAGE_KEY, JSON.stringify({ x, y }));
+        } catch {
+            // Ignore storage failures
+        }
+    }, []);
+
+    const setDefaultPosition = useCallback(() => {
+        const windowDims = Dimensions.get('window');
+        const preferredX = windowDims.width - FAB_SIZE - FAB_EDGE_MARGIN;
+        const preferredY = windowDims.height - FAB_SIZE - FAB_EDGE_MARGIN - (bottomInset + bottomTabPadding);
+        const next = clampFabToViewport(preferredX, preferredY);
+        positionX.value = next.x;
+        positionY.value = next.y;
+    }, [bottomInset, bottomTabPadding, clampFabToViewport, positionX, positionY]);
+
+    useEffect(() => {
+        let initialized = false;
+        if (Platform.OS === 'web') {
+            try {
+                if (typeof window !== 'undefined' && window.localStorage) {
+                    const raw = window.localStorage.getItem(FAB_WEB_STORAGE_KEY);
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (typeof parsed?.x === 'number' && typeof parsed?.y === 'number') {
+                            const next = clampFabToViewport(parsed.x, parsed.y);
+                            positionX.value = next.x;
+                            positionY.value = next.y;
+                            initialized = true;
+                        }
+                    }
+                }
+            } catch {
+                // Ignore and use default position
+            }
+        }
+
+        if (!initialized) {
+            setDefaultPosition();
+        }
+    }, [clampFabToViewport, positionX, positionY, setDefaultPosition]);
+
+    useEffect(() => {
+        const sub = Dimensions.addEventListener('change', () => {
+            const next = clampFabToViewport(positionX.value, positionY.value);
+            positionX.value = next.x;
+            positionY.value = next.y;
+            persistWebPosition(next.x, next.y);
+        });
+        return () => sub.remove();
+    }, [clampFabToViewport, persistWebPosition, positionX, positionY]);
+
+    // PanResponder for draggability
     const panResponder = useRef(
         PanResponder.create({
             onStartShouldSetPanResponder: () => true,
             onMoveShouldSetPanResponder: (_, gesture) => {
-                return Math.abs(gesture.dx) > 10 || Math.abs(gesture.dy) > 10;
+                return Math.abs(gesture.dx) > FAB_DRAG_THRESHOLD || Math.abs(gesture.dy) > FAB_DRAG_THRESHOLD;
             },
             onPanResponderGrant: () => {
+                dragStartX.current = positionX.value;
+                dragStartY.current = positionY.value;
                 pressScale.value = withSpring(1.1);
                 hapticLight();
             },
             onPanResponderMove: (_, gesture) => {
-                translateX.value = gesture.dx;
-                translateY.value = gesture.dy;
+                const next = clampFabToViewport(
+                    dragStartX.current + gesture.dx,
+                    dragStartY.current + gesture.dy
+                );
+                positionX.value = next.x;
+                positionY.value = next.y;
             },
             onPanResponderRelease: (_, gesture) => {
                 pressScale.value = withSpring(1);
-                
-                // If it was a small movement, trigger press
-                if (Math.abs(gesture.dx) < 10 && Math.abs(gesture.dy) < 10) {
+
+                // Tap
+                if (Math.abs(gesture.dx) < FAB_DRAG_THRESHOLD && Math.abs(gesture.dy) < FAB_DRAG_THRESHOLD) {
                     handlePress();
+                    return;
                 }
 
-                // Snap to edges behavior
-                const screenWidth = Dimensions.get('window').width;
-                const snapPointX = gesture.moveX > screenWidth / 2 ? 0 : -(screenWidth - FAB_SIZE - Theme.spacing.lg * 2);
-                
-                translateX.value = withSpring(snapPointX, Theme.motion.spring.snappy);
-                translateY.value = withSpring(translateY.value, Theme.motion.spring.gentle);
+                const next = clampFabToViewport(positionX.value, positionY.value);
+                positionX.value = withSpring(next.x, Theme.motion.spring.gentle);
+                positionY.value = withSpring(next.y, Theme.motion.spring.gentle);
+                persistWebPosition(next.x, next.y);
             },
         })
     ).current;
@@ -163,9 +237,9 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     }, [disabled, isReduceMotionEnabled]);
 
     const containerStyle = useAnimatedStyle(() => ({
+        left: positionX.value,
+        top: positionY.value,
         transform: [
-            { translateX: translateX.value },
-            { translateY: translateY.value },
             { scale: pressScale.value }
         ],
     }));
@@ -202,10 +276,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     if (!isVisible) return null;
 
     return (
-        <View 
-            style={[styles.container, { bottom: bottomInset + bottomTabPadding }]}
-            pointerEvents="box-none"
-        >
+        <View style={styles.overlayContainer}>
             <Animated.View 
                 {...panResponder.panHandlers}
                 style={[styles.fabWrapper, containerStyle]}
@@ -222,11 +293,15 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                         backgroundColor: accent.action,
                         alignItems: 'center',
                         justifyContent: 'center',
-                        shadowColor: Theme.colors.shadowViolet,
-                        shadowOpacity: 0.15,
-                        shadowRadius: 15,
-                        shadowOffset: { width: 0, height: 4 },
-                        elevation: 12,
+                        ...(Platform.OS === 'web'
+                            ? { boxShadow: `0 10px 24px ${Theme.colors.shadowAmbient}` }
+                            : {
+                                shadowColor: Theme.colors.shadowViolet,
+                                shadowOpacity: 0.15,
+                                shadowRadius: 15,
+                                shadowOffset: { width: 0, height: 4 },
+                                elevation: 12,
+                            }),
                         borderWidth: 1.5,
                         borderColor: isDark ? Theme.colors.glass.dark.border : Theme.colors.glass.light.border,
                     }}
@@ -328,16 +403,18 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
 };
 
 const styles = StyleSheet.create({
-    container: {
-        position: 'absolute',
-        right: Theme.spacing.lg,
+    overlayContainer: {
+        ...StyleSheet.absoluteFillObject,
         zIndex: Theme.zIndex.fab,
+        pointerEvents: 'box-none' as any,
     },
     fabWrapper: {
+        position: 'absolute',
         width: FAB_SIZE,
         height: FAB_SIZE,
         alignItems: 'center',
         justifyContent: 'center',
+        pointerEvents: 'auto' as any,
     },
     glow: {
         position: 'absolute',
@@ -356,7 +433,7 @@ const styles = StyleSheet.create({
     },
     modalOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        backgroundColor: 'rgba(107, 100, 128, 0.56)',
         justifyContent: 'flex-end',
     },
     actionItem: {

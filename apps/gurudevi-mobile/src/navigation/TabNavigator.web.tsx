@@ -491,12 +491,16 @@ export default function TabNavigator({
                   if (!s || s.index === undefined) return;
                   const routeName = s.routes[s.index]?.name;
                   if (routeName) {
-                    setActiveTab(routeName);
-                    // Only report main tabs to parent (not panel screens)
-                    const mainTabs = ["Self", "Community", "Classroom", "Library", "Profile"];
-                    if (mainTabs.includes(routeName)) {
-                      onTabChange?.(routeName.toLowerCase());
-                    }
+                    // Guard against repeated same-value updates from nested navigation
+                    // state events to avoid unnecessary re-render churn.
+                    setActiveTab((prev) => {
+                      if (prev === routeName) return prev;
+                      const mainTabs = ["Self", "Community", "Classroom", "Library", "Profile"];
+                      if (mainTabs.includes(routeName)) {
+                        onTabChange?.(routeName.toLowerCase());
+                      }
+                      return routeName;
+                    });
                   }
                 },
               }}

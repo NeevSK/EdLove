@@ -127,6 +127,9 @@ jobs:
           VERSION="${{ github.event.inputs.version }}"
           VERSION_CODE="${{ github.event.inputs.version_code }}"
           RELEASE="org.edlove.gurudevi@${VERSION}+${VERSION_CODE}"
+          BUNDLE_PATH="/tmp/sentry-artifacts/index.android.bundle"
+          MAP_PATH="/tmp/sentry-artifacts/index.android.bundle.map"
+          STRIP_PREFIX="$GITHUB_WORKSPACE/apps/gurudevi-mobile"
 
           echo "=== Sentry sourcemap upload ==="
           echo "   Org     : intuitui-labs"
@@ -135,15 +138,57 @@ jobs:
           echo "   Dist    : $VERSION_CODE"
           echo ""
 
-          cd apps/gurudevi-mobile
-          pnpm exec sentry-cli sourcemaps upload \
-            --release "$RELEASE" \
-            --dist "$VERSION_CODE" \
-            /tmp/sentry-artifacts/index.android.bundle \
-            /tmp/sentry-artifacts/index.android.bundle.map \
-            2>&1
+          if [ ! -f "$BUNDLE_PATH" ] || [ ! -f "$MAP_PATH" ]; then
+            echo "❌ Required upload artifacts are missing"
+            echo "   Bundle path: $BUNDLE_PATH"
+            echo "   Map path   : $MAP_PATH"
+            exit 1
+          fi
 
-          UPLOAD_EXIT=$?
+          cd apps/gurudevi-mobile
+          echo "Attempting modern Expo upload mode (debug-id-reference)..."
+          MODERN_OK=0
+          for ATTEMPT in 1 2 3; do
+            echo "Modern upload attempt $ATTEMPT/3"
+            if pnpm exec sentry-cli sourcemaps upload \
+              --org "$SENTRY_ORG" \
+              --project "$SENTRY_PROJECT" \
+              --debug-id-reference \
+              --strip-prefix "$STRIP_PREFIX" \
+              --validate \
+              "$BUNDLE_PATH" \
+              "$MAP_PATH"; then
+              MODERN_OK=1
+              break
+            fi
+            sleep $((ATTEMPT * 10))
+          done
+
+          if [ "$MODERN_OK" -eq 0 ]; then
+            echo "⚠️ Modern upload mode failed. Falling back to release/dist mode..."
+            for ATTEMPT in 1 2 3; do
+              echo "Legacy upload attempt $ATTEMPT/3"
+              if pnpm exec sentry-cli sourcemaps upload \
+                --org "$SENTRY_ORG" \
+                --project "$SENTRY_PROJECT" \
+                --release "$RELEASE" \
+                --dist "$VERSION_CODE" \
+                --strip-prefix "$STRIP_PREFIX" \
+                --validate \
+                "$BUNDLE_PATH" \
+                "$MAP_PATH"; then
+                MODERN_OK=1
+                break
+              fi
+              sleep $((ATTEMPT * 10))
+            done
+          fi
+
+          if [ "$MODERN_OK" -eq 1 ]; then
+            UPLOAD_EXIT=0
+          else
+            UPLOAD_EXIT=1
+          fi
           echo ""
           if [ $UPLOAD_EXIT -eq 0 ]; then
             echo "✅ Upload complete"

@@ -620,6 +620,7 @@
       "contributions": "Contributions",
       "posts": "Posts",
       "endorsements": "Endorsements",
+      "noContactsYet": "No contacts yet",
       "badgesComingSoon": "Badges\ncoming soon",
       "privacyNote": "≡ƒöÆ Only public contributions are shown. Wellbeing data, grades, and private content remain private.",
       "aspiration": "Aspiration",
@@ -811,7 +812,11 @@
     "subjects": "Specialized Subjects",
     "qualifications": "Degrees & Certifications",
     "aboutMe": "Your Story",
-    "tellUsAboutYourself": "Tell us about yourself..."
+    "tellUsAboutYourself": "Tell us about yourself...",
+    "completion": {
+      "done": "Profile complete",
+      "incomplete": "Profile incomplete"
+    }
   },
   "invite": {
     "enterCode": "Enter Invite Code",

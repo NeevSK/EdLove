@@ -493,6 +493,7 @@ jobs:
         run: |
           BUNDLE_PATH="/tmp/sentry-artifacts/index.android.bundle"
           MAP_PATH="/tmp/sentry-artifacts/index.android.bundle.map"
+          STRIP_PREFIX="$GITHUB_WORKSPACE/apps/gurudevi-mobile"
 
           if [ ! -f "$BUNDLE_PATH" ]; then
             echo "❌ Bundle not found at $BUNDLE_PATH"
@@ -521,11 +522,51 @@ jobs:
           echo "   Project : gurudevi-mobile"
           echo "   Release : $RELEASE"
           echo "   Dist    : $VERSION_CODE"
+          echo "   Prefix  : $STRIP_PREFIX"
 
           cd apps/gurudevi-mobile
-          pnpm exec sentry-cli sourcemaps upload \
-            --release "$RELEASE" \
-            --dist "$VERSION_CODE" \
-            "$BUNDLE_PATH" "$MAP_PATH"
+
+          echo "Attempting modern Expo upload mode (debug-id-reference)..."
+          UPLOAD_OK=0
+          for ATTEMPT in 1 2 3; do
+            echo "Modern upload attempt $ATTEMPT/3"
+            if pnpm exec sentry-cli sourcemaps upload \
+              --org "$SENTRY_ORG" \
+              --project "$SENTRY_PROJECT" \
+              --debug-id-reference \
+              --strip-prefix "$STRIP_PREFIX" \
+              --validate \
+              "$BUNDLE_PATH" \
+              "$MAP_PATH"; then
+              UPLOAD_OK=1
+              break
+            fi
+            sleep $((ATTEMPT * 10))
+          done
+
+          if [ "$UPLOAD_OK" -eq 0 ]; then
+            echo "⚠️ Modern upload mode failed. Falling back to release/dist mode..."
+            for ATTEMPT in 1 2 3; do
+              echo "Legacy upload attempt $ATTEMPT/3"
+              if pnpm exec sentry-cli sourcemaps upload \
+                --org "$SENTRY_ORG" \
+                --project "$SENTRY_PROJECT" \
+                --release "$RELEASE" \
+                --dist "$VERSION_CODE" \
+                --strip-prefix "$STRIP_PREFIX" \
+                --validate \
+                "$BUNDLE_PATH" \
+                "$MAP_PATH"; then
+                UPLOAD_OK=1
+                break
+              fi
+              sleep $((ATTEMPT * 10))
+            done
+          fi
+
+          if [ "$UPLOAD_OK" -ne 1 ]; then
+            echo "❌ Sentry sourcemap upload failed after all retries and fallback modes."
+            exit 1
+          fi
 
           echo "✅ Sentry sourcemap upload complete."

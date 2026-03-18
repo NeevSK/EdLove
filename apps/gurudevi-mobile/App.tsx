@@ -275,6 +275,8 @@ function App() {
 
   // Handle native deep links (especially for Supabase Auth callback)
   useEffect(() => {
+    if (Platform.OS === 'web') return;
+
     const handleDeepLink = async (url: string) => {
       console.log('🔗 Deep Link received:', url);
 

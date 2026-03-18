@@ -78,6 +78,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode }: AuthScree
     const [currentUser, setCurrentUser] = useState<any>(null);
     const [showSyncModal, setShowSyncModal] = useState(false);
     const [newUserId, setNewUserId] = useState<string>('');
+    const syncCheckDoneRef = useRef(false);
     const toast = useToast();
     const passwordRef = useRef<TextInput>(null);
 
@@ -94,6 +95,29 @@ export default function AuthScreen({ onSuccess, onBack, initialMode }: AuthScree
             setCurrentUser(data ?? null);
         });
     }, []);
+
+    // Safety net: after any successful auth transition (email or OAuth),
+    // if guest data exists and user is now non-anonymous, prompt sync.
+    React.useEffect(() => {
+        let cancelled = false;
+        const checkPendingGuestSync = async () => {
+            if (syncCheckDoneRef.current || showSyncModal) return;
+            const session = await authAPI.getSession().catch(() => null);
+            if (!session?.user) return;
+            const isAnon = session.user.is_anonymous || !session.user.email;
+            if (isAnon) return;
+            const internalId = await identityAPI.getMyInternalId();
+            if (!internalId) return;
+            const hasGuestData = await GuestDataSync.hasGuestData();
+            if (!cancelled && hasGuestData) {
+                setNewUserId(internalId);
+                setShowSyncModal(true);
+            }
+            syncCheckDoneRef.current = true;
+        };
+        checkPendingGuestSync();
+        return () => { cancelled = true; };
+    }, [showSyncModal]);
 
     // ── Web: detect Supabase OAuth error params in URL hash/query ────────────
     // e.g. ?error=server_error&error_code=identity_already_exists&...
@@ -292,7 +316,13 @@ export default function AuthScreen({ onSuccess, onBack, initialMode }: AuthScree
                         }
                     }
                 }
-                if (onSuccess) onSuccess();
+                const hasGuestData = await GuestDataSync.hasGuestData();
+                if (isAnon && hasGuestData && userId) {
+                    setNewUserId(userId);
+                    setShowSyncModal(true);
+                } else {
+                    if (onSuccess) onSuccess();
+                }
             }
         } catch (err: any) {
             console.error('❌ Auth: Session completion error', err);
@@ -320,22 +350,12 @@ export default function AuthScreen({ onSuccess, onBack, initialMode }: AuthScree
                 const isAnon = currentSession?.user?.is_anonymous || !currentSession?.user?.email;
 
                 if (isAnon && currentSession?.user) {
-                    const { error } = await supabase.auth.updateUser({
-                        email,
-                        password,
-                        data: {
-                            is_anonymous: false,
-                        }
-                    });
-                    if (error) throw error;
+                    const existingName =
+                        (currentUser?.full_name && String(currentUser.full_name).trim()) ||
+                        'Sanctuary User';
+                    await authAPI.linkAnonymousToEmail(email, password, existingName, 'teacher');
 
                     const internalId = await identityAPI.getMyInternalId();
-                    if (internalId) {
-                        await supabase.from('users').update({
-                            email,
-                            is_anonymous: false,
-                        }).eq('id', internalId);
-                    }
 
                     hapticSuccess();
                     showToast(t('auth.signupSuccess'), "success");

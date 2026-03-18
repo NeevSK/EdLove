@@ -124,7 +124,8 @@ export const authAPI = {
             throw new APIError('Failed to link anonymous account', updateError.code, updateError);
         }
 
-        // Update the profile in public.users using the internal user ID
+        // Update the profile in public.users using the internal user ID.
+        // Use upsert so conversion still succeeds even if the DB trigger missed creating the row.
         const internalId = await identityAPI.getMyInternalId();
         if (!internalId) {
             throw new APIError('Cannot resolve user identity after linking', 'IDENTITY_ERROR');
@@ -132,18 +133,25 @@ export const authAPI = {
 
         const { error: profileError } = await supabase
             .from('users')
-            .update({
+            .upsert({
+                id: internalId,
                 email,
                 full_name: fullName,
                 role,
                 is_anonymous: false,
                 onboarding_completed: true,
                 onboarding_completed_at: new Date().toISOString(),
-            })
-            .eq('id', internalId);
+            }, {
+                onConflict: 'id',
+            });
 
         if (profileError) {
             throw new APIError('Failed to update profile', profileError.code, profileError);
+        }
+
+        // Ensure auth -> internal mapping is present after upgrade.
+        if (updateData?.user?.id) {
+            await identityAPI.linkIdentity(internalId, 'supabase', updateData.user.id);
         }
 
         return updateData;
