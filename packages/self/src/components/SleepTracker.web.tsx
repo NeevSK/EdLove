@@ -7,7 +7,7 @@
  * Metro resolves this over SleepTracker.tsx on the web platform.
  */
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@repo/core';
+import { supabase, useTemporalStore } from '@repo/core';
 import { useSleepTracker } from '../hooks/useSleepTracker';
 
 interface SleepTrackerProps {
@@ -24,6 +24,7 @@ const QUALITY_LABELS: Record<number, { label: string; emoji: string; color: stri
 
 export default function SleepTracker({ userId }: SleepTrackerProps) {
     const { sleepLogs, refreshData, setSleepLogs } = useSleepTracker(userId);
+    const isPastView = useTemporalStore(s => s.isPastView);
     const [quality, setQuality] = useState(3);
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
@@ -66,7 +67,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '18px' }}>🌙</span>
                 <span style={{ fontSize: '14px', fontWeight: '800' }}>Sleep Quality</span>
-                {isMorning && !alreadyLoggedToday && (
+                {isMorning && !alreadyLoggedToday && !isPastView && (
                     <span style={{ marginLeft: 'auto', fontSize: '11px', padding: '3px 8px', background: 'rgba(139,92,246,0.1)', color: '#8B5CF6', borderRadius: '6px', fontWeight: '700' }}>
                         Morning check-in
                     </span>
@@ -98,7 +99,8 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
                         step={1}
                         value={quality}
                         onChange={e => setQuality(Number(e.target.value))}
-                        style={{ width: '100%', accentColor: meta.color, cursor: 'pointer' }}
+                        disabled={isPastView}
+                        style={{ width: '100%', accentColor: meta.color, cursor: isPastView ? 'default' : 'pointer', opacity: isPastView ? 0.6 : 1 }}
                     />
 
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -109,7 +111,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
                         ))}
                     </div>
 
-                    {isMorning ? (
+                    {isMorning && !isPastView ? (
                         <button
                             onClick={handleSave}
                             disabled={saving}
@@ -119,7 +121,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
                         </button>
                     ) : (
                         <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', textAlign: 'center', margin: 0 }}>
-                            Sleep check-in is available in the morning (5am – 12pm).
+                            {isPastView ? 'Viewing historical sleep quality.' : 'Sleep check-in is available in the morning (5am – 12pm).'}
                         </p>
                     )}
                 </>

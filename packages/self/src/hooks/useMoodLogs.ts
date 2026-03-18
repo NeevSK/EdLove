@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { supabase, GuestDataManager, authAPI, SafeZustandStorage, useStore, growthSignalsAPI } from '@repo/core';
+import React, { useState, useEffect, useCallback } from 'react';
+import { supabase, GuestDataManager, authAPI, SafeZustandStorage, useStore, growthSignalsAPI, useResonanceStore, applyResonanceFilter } from '@repo/core';
+
 import { MoodLog } from '../types';
 
 const MOOD_CACHE_KEY = 'gurudevi-mood-cache';
@@ -14,6 +15,8 @@ const MOOD_CACHE_KEY = 'gurudevi-mood-cache';
  */
 export const useMoodLogs = (userId?: string) => {
     const isOnline = useStore(state => state.isOnline);
+    const { resonanceDate, phase } = useResonanceStore();
+
     const [moodHistory, setMoodHistory] = useState<MoodLog[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isAnonymous, setIsAnonymous] = useState(false);
@@ -45,7 +48,8 @@ export const useMoodLogs = (userId?: string) => {
                     setMoodHistory(mappedLogs as MoodLog[]);
                 } else if (userId) {
                     // Authenticated Mode: Load from Cache first
-                    const cached = await SafeZustandStorage.getItem(`${MOOD_CACHE_KEY}-${userId}`);
+                    const cached = await SafeZustandStorage.getItem(`${MOOD_CACHE_KEY}-${userId}-${resonanceDate}`);
+
                     if (cached) {
                         setMoodHistory(JSON.parse(cached));
                     }
@@ -58,7 +62,7 @@ export const useMoodLogs = (userId?: string) => {
         };
 
         loadInitial();
-    }, [isAnonymous, userId]);
+    }, [isAnonymous, userId, resonanceDate]);
 
     // Refresh from API or Storage
     const refreshData = useCallback(async () => {
@@ -79,12 +83,20 @@ export const useMoodLogs = (userId?: string) => {
         if (!userId || !isOnline) return;
 
         try {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('mood_logs')
                 .select('*')
-                .eq('user_id', userId)
-                .order('created_at', { ascending: false })
-                .limit(30);
+                .eq('user_id', userId);
+
+            // Automated Resonance Filtering
+            query = applyResonanceFilter(query);
+
+            
+            if (phase === 'present') {
+                query = query.order('created_at', { ascending: false }).limit(30);
+            }
+
+            const { data, error } = await query;
 
             if (error) throw error;
 
@@ -92,14 +104,15 @@ export const useMoodLogs = (userId?: string) => {
                 setMoodHistory(data);
                 // Sync to cache
                 await SafeZustandStorage.setItem(
-                    `${MOOD_CACHE_KEY}-${userId}`,
+                    `${MOOD_CACHE_KEY}-${userId}-${resonanceDate}`,
                     JSON.stringify(data)
                 );
             }
         } catch (e) {
             console.error('Failed to refresh mood logs', e);
         }
-    }, [userId, isOnline, isAnonymous]);
+    }, [userId, isOnline, isAnonymous, resonanceDate, phase]);
+
 
     // Sync from API in background on state change
     useEffect(() => {

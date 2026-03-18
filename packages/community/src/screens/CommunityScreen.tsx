@@ -13,7 +13,8 @@ import { useCommunity } from '../hooks/useCommunity';
 import { useCommunityFilters } from '../hooks/useCommunityFilters';
 import { useCommunityGroups } from '../hooks/useCommunityGroups';
 import { Post, Group } from '../types';
-import { useUserRole, useTracking, supabase, isDemo } from '@repo/core';
+import { useUserRole, useTracking, supabase, isDemo, useTemporalStore } from '@repo/core';
+import { TemporalNavigator } from '@repo/ui';
 import { CommunityPresence } from '@repo/self';
 import ManifestoCard from '../components/ManifestoCard';
 import CommunityHearth from '../components/CommunityHearth';
@@ -57,6 +58,8 @@ export default function CommunityScreen() {
     const colors = useThemedColors();
     const { discoverFeature } = useTracking();
     const bottomPadding = useBottomTabPadding();
+    const { viewDate, isPastView } = useTemporalStore();
+    const { t: translate } = useTranslation();
 
     useEffect(() => {
         discoverFeature('section_community');
@@ -242,6 +245,7 @@ export default function CommunityScreen() {
                             }
                             ListHeaderComponent={
                                 <VStack space="md" sx={{ paddingVertical: Theme.spacing.md }}>
+                                    <TemporalNavigator />
                                     {renderCommunityHearth()}
                                     {renderFeedFilterChips()}
                                 </VStack>

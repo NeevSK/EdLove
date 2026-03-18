@@ -17,11 +17,11 @@ export * from './hooks/useSleepTracker';
 export * from './hooks/useFireJournal';
 export * from './hooks/useTomorrowPrep';
 export * from './hooks/useStudentGoals';
-export * from './hooks/useStudentGoals';
 export * from './hooks/useOrientationInference';
 export * from './hooks/useWellbeingEnrichment';
 export * from './hooks/useFeatureActivity';
 export * from './hooks/useDynamicSelfFeatures';
+export * from './hooks/useJourneyData';
 
 // Components
 export { BaseSelfView } from './components/BaseSelfView';
@@ -52,6 +52,25 @@ export { default as WindDownRitual } from './components/WindDownRitual';
 export { default as WisdomSeeds } from './components/WisdomSeeds';
 export { default as DecisionJournalSection } from './components/DecisionJournalSection';
 export { PulseDashboard } from './components/PulseDashboard';
+export { 
+    JournalSection, 
+    MoodSection, 
+    GoalSection, 
+    IdentitySection, 
+    TeacherFeedbackSection, 
+    NatureSection, 
+    TeacherPulse, 
+    PrincipalPulse,
+    DecisionSection,
+    VisionSection,
+    PhilosophySection
+} from './views/sections';
+export { ResonanceTimeline } from './components/ResonanceTimeline';
+export { TimelineEvent } from './components/TimelineEvent';
+export { GenesisNode } from './components/GenesisNode';
+export { SpotlightEmpty } from './components/SpotlightEmpty';
+
+
 
 // Screens
 export { default as SelfScreen } from './screens/SelfScreen';

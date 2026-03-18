@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { KnowledgeTopology } from '@repo/graphics';
 import { mappingAPI, MappingTopology, supabase } from '@repo/core';
 
 /**

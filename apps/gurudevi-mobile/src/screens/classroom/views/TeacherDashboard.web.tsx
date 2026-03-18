@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useUserRole, useStore, supabase, MOCK_CLASSROOMS } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { Classroom } from '@repo/core';
-import { SkeletonCard, SandboxBanner, WebScreenHeader, PositiveInvitation } from '@repo/ui';
+import { SkeletonCard, SandboxBanner, WebScreenHeader, PositiveInvitation, TemporalNavigator } from '@repo/ui';
 import { useClassroomRoleData, CreateClassroomModal } from '@repo/classroom';
+import { useTemporalStore } from '@repo/core';
 import {
     Plus,
     Users,
@@ -66,6 +67,7 @@ export default function TeacherDashboardWeb({ forceDemo }: { forceDemo?: boolean
     const [echoPriority, setEchoPriority] = useState<'low' | 'medium' | 'high'>('medium');
     const [echoContent, setEchoContent] = useState('');
     const [echoSubmitting, setEchoSubmitting] = useState(false);
+    const { isPastView } = useTemporalStore();
 
     // Echo history (teacher's sent echoes + principal responses)
     const [sentEchoes, setSentEchoes] = useState<Array<{
@@ -156,21 +158,37 @@ export default function TeacherDashboardWeb({ forceDemo }: { forceDemo?: boolean
                     timeText="Classroom Management"
                     actions={(
                         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                            <button className="premium-button" style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => { if (isDemo) return; setShowCreateClassroom(true); }}>
+                            <button 
+                                className="premium-button" 
+                                style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '8px', opacity: isPastView ? 0.5 : 1 }} 
+                                onClick={() => { if (isDemo || isPastView) return; setShowCreateClassroom(true); }}
+                                disabled={isPastView}
+                            >
                                 <Plus size={18} />
                                 Create Classroom
                             </button>
-                            <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => navigation.navigate('Timetable', {})}>
+                            <button 
+                                className="secondary-button" 
+                                style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: isPastView ? 0.5 : 1 }} 
+                                onClick={() => { if (isPastView) return; navigation.navigate('Timetable', {}); }}
+                                disabled={isPastView}
+                            >
                                 📅 Timetable
                             </button>
-                            <button className="secondary-button" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <button 
+                                className="secondary-button" 
+                                style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: isPastView ? 0.5 : 1 }}
+                                disabled={isPastView}
+                                onClick={() => { if (isPastView) return; }}
+                            >
                                 <ScanLine size={18} />
                                 Scan QR
                             </button>
                             <button
                                 className="secondary-button"
-                                style={{ display: 'flex', alignItems: 'center', gap: '8px', borderColor: 'var(--ember)', color: 'var(--ember)' }}
-                                onClick={() => setShowEchoModal(true)}
+                                style={{ display: 'flex', alignItems: 'center', gap: '8px', borderColor: 'var(--ember)', color: 'var(--ember)', opacity: isPastView ? 0.5 : 1 }}
+                                onClick={() => { if (isPastView) return; setShowEchoModal(true); }}
+                                disabled={isPastView}
                             >
                                 <MessageCircle size={18} />
                                 {t('teacher.actions.principalEcho') || 'Principal Echo'}
@@ -191,6 +209,11 @@ export default function TeacherDashboardWeb({ forceDemo }: { forceDemo?: boolean
                         </div>
                     )}
                 />
+
+                {/* Temporal Travel */}
+                <div style={{ maxWidth: '400px' }}>
+                    <TemporalNavigator />
+                </div>
 
                 {/* Performance Stats */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '24px' }}>

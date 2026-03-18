@@ -42,9 +42,10 @@ import { useTranslation } from 'react-i18next';
 
 interface SleepTrackerProps {
     userId?: string;
+    disabled?: boolean;
 }
 
-export default function SleepTracker({ userId }: SleepTrackerProps) {
+export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
     // Resilient Data Hook
     const { sleepLogs, refreshData } = useSleepTracker(userId);
     const { t, i18n } = useTranslation();
@@ -288,7 +289,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
                     <Button
                         size="lg"
                         onPress={saveSleepLog}
-                        isDisabled={isSaving}
+                        isDisabled={isSaving || disabled}
                         sx={{
                             borderRadius: Theme.corners.full,
                             backgroundColor: currentQuality?.color,

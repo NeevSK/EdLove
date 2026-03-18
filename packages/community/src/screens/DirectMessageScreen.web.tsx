@@ -13,9 +13,10 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { CommunityStackParamList } from '@repo/core';
-import { supabase, useStore } from '@repo/core';
+import { supabase, useStore, useTemporalStore } from '@repo/core';
 import { getInitialsFromName, formatTimestamp } from '@repo/ui';
 import { communityAPI } from '../api/community';
+import HeaderMoreMenu from '../components/HeaderMoreMenu';
 
 interface ChatMessage {
     id: string;
@@ -41,6 +42,9 @@ export default function DirectMessageScreen() {
     const [loading, setLoading] = useState(true);
     const [draft, setDraft] = useState('');
     const [sending, setSending] = useState(false);
+    const [targetUserId, setTargetUserId] = useState<string | undefined>();
+    const [isBlocked, setIsBlocked] = useState(false);
+    const { viewDate, isPastView } = useTemporalStore();
 
     const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -52,11 +56,32 @@ export default function DirectMessageScreen() {
 
     // ── Initial load ─────────────────────────────────────────────
     useEffect(() => {
-        communityAPI.getDirectMessages(conversationId)
-            .then((data: any) => setMessages(data as ChatMessage[]))
-            .catch((e: any) => console.error('[DirectMessage] load error', e))
-            .finally(() => setLoading(false));
-    }, [conversationId]);
+        async function fetchContext() {
+            try {
+                const msgs = await communityAPI.getDirectMessages(conversationId, 60, viewDate) as ChatMessage[];
+                setMessages(msgs);
+
+                const { data: convData } = await supabase
+                    .from('direct_conversations')
+                    .select('user1_id, user2_id')
+                    .eq('id', conversationId)
+                    .single();
+                
+                if (convData && user) {
+                    const otherId = convData.user1_id === user.id ? convData.user2_id : convData.user1_id;
+                    setTargetUserId(otherId);
+                    
+                    const blocked = await communityAPI.isBlockingActive(otherId);
+                    setIsBlocked(blocked);
+                }
+            } catch (e: any) {
+                console.error('[DirectMessage] load error', e);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchContext();
+    }, [conversationId, user, viewDate]);
 
     useEffect(() => {
         if (!loading) scrollToBottom(false);
@@ -90,7 +115,7 @@ export default function DirectMessageScreen() {
     // ── Send ──────────────────────────────────────────────────────
     const handleSend = useCallback(async () => {
         const content = draft.trim();
-        if (!content || !user) return;
+        if (!content || !user || isPastView) return;
         setSending(true);
         setDraft('');
 
@@ -137,6 +162,11 @@ export default function DirectMessageScreen() {
                     <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--ink)' }}>{userName}</div>
                     <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>Private Message</div>
                 </div>
+                <HeaderMoreMenu 
+                    conversationId={conversationId}
+                    targetUserId={targetUserId}
+                    targetUserName={userName}
+                />
             </div>
 
             {/* Message list */}
@@ -196,50 +226,62 @@ export default function DirectMessageScreen() {
 
             {/* Compose bar */}
             <div style={{ borderTop: '1px solid var(--border-light)', padding: '12px 24px', background: 'var(--surface)', display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
-                <textarea
-                    value={draft}
-                    onChange={e => setDraft(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder={`Message ${userName}… (Enter to send, Shift+Enter for new line)`}
-                    rows={1}
-                    style={{
-                        flex: 1,
-                        padding: '10px 14px',
-                        borderRadius: '12px',
-                        border: '1.5px solid var(--border)',
-                        background: 'var(--background-alt)',
-                        color: 'var(--ink)',
-                        fontSize: '14px',
-                        fontFamily: 'var(--font-body)',
-                        lineHeight: '1.5',
-                        outline: 'none',
-                        resize: 'none',
-                        minHeight: '40px',
-                        maxHeight: '120px',
-                        overflow: 'auto',
-                    }}
-                />
-                <button
-                    onClick={handleSend}
-                    disabled={!draft.trim() || sending}
-                    style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '20px',
-                        background: draft.trim() ? 'var(--sanctuary-saffron)' : 'var(--border)',
-                        border: 'none',
-                        cursor: draft.trim() ? 'pointer' : 'default',
-                        color: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '16px',
-                        flexShrink: 0,
-                        transition: 'background 0.2s',
-                    }}
-                >
-                    {sending ? '…' : '➤'}
-                </button>
+                {isPastView ? (
+                    <div style={{ flex: 1, padding: '12px', textAlign: 'center', color: 'var(--ink-ghost)', fontSize: '13px', fontStyle: 'italic' }}>
+                        Viewing historical sanctuary records.
+                    </div>
+                ) : isBlocked ? (
+                    <div style={{ flex: 1, padding: '12px', textAlign: 'center', color: 'var(--ink-ghost)', fontSize: '13px', fontStyle: 'italic' }}>
+                        This conversation is currently paused. {userName} or you have restricted interactions.
+                    </div>
+                ) : (
+                    <>
+                        <textarea
+                            value={draft}
+                            onChange={e => setDraft(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            placeholder={`Message ${userName}… (Enter to send, Shift+Enter for new line)`}
+                            rows={1}
+                            style={{
+                                flex: 1,
+                                padding: '10px 14px',
+                                borderRadius: '12px',
+                                border: '1.5px solid var(--border)',
+                                background: 'var(--background-alt)',
+                                color: 'var(--ink)',
+                                fontSize: '14px',
+                                fontFamily: 'var(--font-body)',
+                                lineHeight: '1.5',
+                                outline: 'none',
+                                resize: 'none',
+                                minHeight: '40px',
+                                maxHeight: '120px',
+                                overflow: 'auto',
+                            }}
+                        />
+                        <button
+                            onClick={handleSend}
+                            disabled={!draft.trim() || sending}
+                            style={{
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '20px',
+                                background: draft.trim() ? 'var(--sanctuary-saffron)' : 'var(--border)',
+                                border: 'none',
+                                cursor: draft.trim() ? 'pointer' : 'default',
+                                color: 'white',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '16px',
+                                flexShrink: 0,
+                                transition: 'background 0.2s',
+                            }}
+                        >
+                            {sending ? '…' : '➤'}
+                        </button>
+                    </>
+                )}
             </div>
         </div>
     );

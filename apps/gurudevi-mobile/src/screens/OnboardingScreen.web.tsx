@@ -20,7 +20,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserRole, supabase, identityAPI } from '@repo/core';
+import { UserRole, supabase, identityAPI, authAPI } from '@repo/core';
 import { hapticLight, hapticSuccess, hapticError } from '@repo/ui';
 import { LanguageUtils } from '../utils/LanguageUtils';
 
@@ -101,7 +101,14 @@ export default function OnboardingScreenWeb({ onComplete, isAnonymous = false }:
                     console.warn('[Onboarding] Failed to restore progress from storage:', e);
                 }
 
-                if (!internalId) return;
+                if (!internalId) {
+                    // This is likely a deep-link where the session wasn't initialized yet.
+                    // We trigger an anonymous sign-in here to ensure the wizard has an ID.
+                    console.log('🧭 OnboardingScreen.web: No internalId found, initiating anonymous session...');
+                    await authAPI.signInAnonymously();
+                    // Re-run the initialization once signed in
+                    return initOnboarding();
+                }
                 const { data: profile } = await supabase
                     .from('users')
                     .select('full_name, is_anonymous, role')

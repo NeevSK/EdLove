@@ -28,8 +28,9 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { useFeatureAccess, useStore, ClassroomStackParamList, api, supabase } from '@repo/core';
+import { useFeatureAccess, useStore, ClassroomStackParamList, api, supabase, useTemporalStore } from '@repo/core';
 import ClassroomList from './ClassroomList';
+import { TemporalNavigator } from '@repo/ui';
 
 interface StudentDashboardProps {
     onRefresh?: () => void;
@@ -58,6 +59,7 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
     const { isDemoMode } = useStore();
     const showToast = useStore(state => state.showToast);
     const { isGuest } = useFeatureAccess();
+    const { isPastView, viewDate } = useTemporalStore();
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [isLoading, setIsLoading] = useState(!isDemoMode);
     const colors = useThemedColors();
@@ -139,6 +141,41 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
             >
                 <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={24} />
             </TouchableOpacity>
+            <Text color={colors.text} sx={{ textAlign: 'center', fontSize: 10, fontWeight: '700', opacity: isPastView ? 0.6 : 1 }}>
+                {label}
+            </Text>
+        </VStack>
+    );
+
+    const QuickActionFixed = ({ icon: LucideIcon, label, onPress, color, disabled }: any) => (
+        <VStack
+            alignItems="center"
+            sx={{
+                flex: 1,
+                gap: Theme.spacing.xs,
+                opacity: disabled ? 0.5 : 1
+            }}
+        >
+            <TouchableOpacity
+                onPress={() => {
+                    if (disabled) return;
+                    hapticLight();
+                    onPress();
+                }}
+                disabled={disabled}
+                style={{
+                    width: 60,
+                    height: 60,
+                    borderRadius: Theme.corners.comfortable,
+                    backgroundColor: colors.tertiary,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderWidth: 1,
+                    borderColor: colors.border
+                }}
+            >
+                <LucideIcon color={color || Theme.colors.sanctuarySaffron} size={24} />
+            </TouchableOpacity>
             <Text color={colors.text} sx={{ textAlign: 'center', fontSize: 10, fontWeight: '700' }}>
                 {label}
             </Text>
@@ -186,22 +223,29 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
                     </VStack>
                 </Animated.View>
 
+                {/* Temporal Travel */}
+                <Animated.View entering={FadeInDown.delay(25)}>
+                    <TemporalNavigator />
+                </Animated.View>
+
                 {/* Quick Shortcuts */}
                 <Animated.View entering={FadeInDown.delay(50)}>
                     <HStack sx={{ gap: Theme.spacing.md, marginBottom: Theme.spacing.xl, justifyContent: 'space-between' }}>
-                        <QuickAction
+                        <QuickActionFixed
                             icon={BookOpen}
                             label={t('classroom.library') || 'Library'}
                             onPress={() => navigation.navigate('Library' as any)}
                             color={Theme.colors.amberGlow}
+                            disabled={isPastView}
                         />
-                        <QuickAction
+                        <QuickActionFixed
                             icon={MessageSquare}
                             label={t('community.sanctuaries') || 'Sanctuaries'}
                             onPress={() => navigation.navigate('Community' as any)}
                             color={Theme.colors.gurudeviBlue}
+                            disabled={isPastView}
                         />
-                        <QuickAction
+                        <QuickActionFixed
                             icon={Star}
                             label={t('student.rewards') || 'Rewards'}
                             onPress={() => {
@@ -209,8 +253,9 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
                                 showToast(t('common.comingSoon') || 'Rewards are blossoming soon! 🌸', 'info');
                             }}
                             color={Theme.colors.sanctuarySaffron}
+                            disabled={isPastView}
                         />
-                        <QuickAction
+                        <QuickActionFixed
                             icon={Layout}
                             label={t('student.timetable') || 'Timetable'}
                             onPress={() => {
@@ -218,8 +263,9 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
                                 navigation.navigate('Self' as any);
                             }}
                             color={Theme.colors.sageGreen}
+                            disabled={isPastView}
                         />
-                        <QuickAction
+                        <QuickActionFixed
                             icon={Wind}
                             label={t('student.breathing') || 'Breathing'}
                             onPress={() => {
@@ -228,6 +274,7 @@ export default function StudentDashboard({ onRefresh, schoolId, userId }: Studen
                                 setBreathingOpen(true);
                             }}
                             color={Theme.colors.lotusDeepPink}
+                            disabled={isPastView}
                         />
                     </HStack>
                 </Animated.View>

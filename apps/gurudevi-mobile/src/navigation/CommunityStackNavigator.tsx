@@ -35,6 +35,11 @@ export default function CommunityStackNavigator() {
                 component={UserPublicProfileScreen}
                 options={{ headerShown: false, animation: 'slide_from_right' }}
             />
+            <Stack.Screen
+                name="PublicProfile"
+                component={UserPublicProfileScreen}
+                options={{ headerShown: false, animation: 'slide_from_right' }}
+            />
         </Stack.Navigator>
     );
 }

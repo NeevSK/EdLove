@@ -1,4 +1,4 @@
-﻿﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   Box,
   VStack,
@@ -23,9 +23,10 @@ import { useNavigation } from '@react-navigation/native';
 
 interface JoyJarProps {
   userId?: string;
+  disabled?: boolean;
 }
 
-export default function JoyJar({ userId }: JoyJarProps) {
+export default function JoyJar({ userId, disabled }: JoyJarProps) {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   // Resilient Data Hook
@@ -124,12 +125,15 @@ export default function JoyJar({ userId }: JoyJarProps) {
             size="md"
             action="primary"
             onPress={() => {
+              if (disabled) return;
               hapticLight();
               setShowForm(true);
             }}
+            isDisabled={disabled}
             sx={{
               backgroundColor: Theme.colors.sanctuarySaffron,
-              borderRadius: Theme.corners.comfortable
+              borderRadius: Theme.corners.comfortable,
+              opacity: disabled ? 0.6 : 1
             }}
           >
             <Plus color={Theme.colors.sacredWhite} size={20} />

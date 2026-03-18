@@ -13,6 +13,7 @@ export interface SelfViewFeature {
     };
     domainColor?: string;
     domainId?: string;
+    historyContent?: React.ReactNode;
 }
 
 export interface SelfViewDomain {

@@ -88,14 +88,15 @@ export const staffManagementAPI = {
   /**
    * Returns presence summary for staff today.
    */
-  async getStaffPresenceSummary(schoolId: string): Promise<StaffPresenceSummary> {
+  async getStaffPresenceSummary(schoolId: string, viewDate?: string): Promise<StaffPresenceSummary> {
+    const targetDate = viewDate || todayISO();
     const empty: StaffPresenceSummary = { present: 0, absent: 0, onLeave: 0, total: 0 };
     try {
       const { data, error } = await supabase
         .from('staff_attendance')
         .select('status')
         .eq('school_id', schoolId)
-        .eq('date', todayISO());
+        .eq('date', targetDate);
 
       if (error) {
         console.error('[staffManagement] getStaffPresenceSummary:', error.message);
@@ -118,9 +119,9 @@ export const staffManagementAPI = {
   /**
    * Returns teacher cards for the carousel (users + today's attendance + class count).
    */
-  async getTeacherCarousel(schoolId: string): Promise<TeacherCarouselItem[]> {
+  async getTeacherCarousel(schoolId: string, viewDate?: string): Promise<TeacherCarouselItem[]> {
     try {
-      const today = todayISO();
+      const targetDate = viewDate || todayISO();
 
       const { data: users, error: usersError } = await supabase
         .from('users')
@@ -142,7 +143,7 @@ export const staffManagementAPI = {
           .from('staff_attendance')
           .select('user_id, status')
           .eq('school_id', schoolId)
-          .eq('date', today)
+          .eq('date', targetDate)
           .in('user_id', userIds),
         supabase
           .from('classrooms')
@@ -288,11 +289,15 @@ export const staffManagementAPI = {
    * If classroomId is provided, filters to that classroom. Otherwise fetches for whole school.
    * At-risk is computed as students absent on both today AND yesterday.
    */
-  async getStudentAttendancePulse(schoolId: string, classroomId?: string): Promise<StudentAttendancePulse> {
+  async getStudentAttendancePulse(schoolId: string, classroomId?: string, viewDate?: string): Promise<StudentAttendancePulse> {
     const empty: StudentAttendancePulse = { todayRate: 0, yesterdayRate: 0, atRiskCount: 0 };
     try {
-      const today = todayISO();
-      const yesterday = yesterdayISO();
+      const targetDate = viewDate || todayISO();
+      
+      // Compute relative yesterday for at-risk comparison based on viewDate
+      const d = new Date(targetDate);
+      d.setDate(d.getDate() - 1);
+      const relativeYesterday = formatLocalDateISO(d);
 
       let classroomIds: string[] = [];
 
@@ -315,12 +320,12 @@ export const staffManagementAPI = {
           .from('attendance')
           .select('status, student_id')
           .in('classroom_id', classroomIds)
-          .eq('date', today),
+          .eq('date', targetDate),
         supabase
           .from('attendance')
           .select('status, student_id')
           .in('classroom_id', classroomIds)
-          .eq('date', yesterday),
+          .eq('date', relativeYesterday),
       ]);
 
       const calcRate = (rows: { status: string }[] | null) => {
@@ -352,13 +357,14 @@ export const staffManagementAPI = {
   /**
    * Returns the next N upcoming events from the institutional calendar.
    */
-  async getUpcomingCalendarEvents(schoolId: string, limit = 5): Promise<CalendarEvent[]> {
+  async getUpcomingCalendarEvents(schoolId: string, limit = 5, viewDate?: string): Promise<CalendarEvent[]> {
     try {
+      const targetDate = viewDate || todayISO();
       const { data, error } = await supabase
         .from('institutional_calendar')
         .select('*')
         .eq('school_id', schoolId)
-        .gte('start_date', todayISO())
+        .gte('start_date', targetDate)
         .order('start_date', { ascending: true })
         .limit(limit);
 

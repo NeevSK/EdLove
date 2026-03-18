@@ -2,6 +2,7 @@ import { supabase } from '../lib/supabase';
 import { identityAPI } from './identity';
 import { growthSignalsAPI } from './growthSignals';
 import { impactRipplesAPI } from './impactRipples';
+import { applyResonanceFilter } from '../utils/temporalUtils';
 // Note: Types should ideally be shared in @repo/core/src/types, 
 // for now we use 'any' if types are not yet moved to core to prevent blocking the restoration.
 // However, the community package should ideally depend on core for types.
@@ -76,12 +77,17 @@ export const communityAPI = {
     /**
      * Get Posts with filtering and pagination
      */
-    async getPosts(filters: { limit: number; offset: number; groupId?: string }) {
+    async getPosts(filters: { limit: number; offset: number; groupId?: string; viewDate?: string }) {
         let query = supabase
             .from('community_posts')
             .select('*')
-            .range(filters.offset, filters.offset + filters.limit - 1)
-            .order('created_at', { ascending: false });
+            .range(filters.offset, filters.offset + filters.limit - 1);
+
+        if (filters.viewDate) {
+            query = applyResonanceFilter(query, 'created_at');
+        } else {
+            query = query.order('created_at', { ascending: false });
+        }
 
         if (filters.groupId && filters.groupId !== 'all') {
             query = query.eq('group_id', filters.groupId);
@@ -215,13 +221,19 @@ export const communityAPI = {
     /**
      * Fetch the most recent messages for a group, oldest-first for chat display.
      */
-    async getGroupMessages(groupId: string, limit = 60) {
-        const { data, error } = await supabase
+    async getGroupMessages(groupId: string, limit = 60, viewDate?: string) {
+        let query = supabase
             .from('group_messages')
             .select('*, author:users!group_messages_author_id_fkey(full_name, avatar_url)')
-            .eq('group_id', groupId)
-            .order('created_at', { ascending: false })
-            .limit(limit);
+            .eq('group_id', groupId);
+
+        if (viewDate) {
+            query = applyResonanceFilter(query, 'created_at');
+        } else {
+            query = query.order('created_at', { ascending: false }).limit(limit);
+        }
+
+        const { data, error } = await query;
 
         if (error) throw error;
         // Reverse so oldest is at top
@@ -380,25 +392,97 @@ export const communityAPI = {
     },
 
     /**
-     * Cast a vote in a community poll.
+     * Cast or toggle a vote in a community poll.
+     *
+     * Single-choice (`allowMultiple = false`):
+     *   - Tap a new option  → delete all previous votes for this user, insert new.
+     *   - Tap the same option → delete it (retract). Returns [].
+     *
+     * Multi-choice (`allowMultiple = true`):
+     *   - Tap an unselected option → insert it.
+     *   - Tap a selected option    → delete it (toggle off).
+     *
+     * Returns the caller's active option IDs after the operation.
      */
-    async voteInPoll(postId: string, optionId: string): Promise<void> {
+    async voteInPoll(
+        postId: string,
+        optionId: string,
+        allowMultiple: boolean = false,
+    ): Promise<string[]> {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new Error('Authentication required');
+
+        // Fetch current votes for this user+poll
+        const { data: existing, error: fetchErr } = await supabase
+            .from('community_poll_votes')
+            .select('option_id')
+            .eq('post_id', postId)
+            .eq('user_id', myId);
+
+        if (fetchErr) throw new Error(fetchErr.message);
+
+        const existingIds: string[] = (existing ?? []).map((r: any) => r.option_id);
+        const alreadyVotedThis = existingIds.includes(optionId);
+
+        if (allowMultiple) {
+            // Toggle: remove if selected, add if not
+            if (alreadyVotedThis) {
+                const { error } = await supabase
+                    .from('community_poll_votes')
+                    .delete()
+                    .eq('post_id', postId)
+                    .eq('user_id', myId)
+                    .eq('option_id', optionId);
+                if (error) throw new Error(error.message);
+                return existingIds.filter(id => id !== optionId);
+            } else {
+                const { error } = await supabase
+                    .from('community_poll_votes')
+                    .insert({ post_id: postId, user_id: myId, option_id: optionId });
+                if (error) throw new Error(error.message);
+                return [...existingIds, optionId];
+            }
+        } else {
+            // Single-choice: tap same → retract; tap different → replace
+            if (alreadyVotedThis) {
+                // Retract
+                const { error } = await supabase
+                    .from('community_poll_votes')
+                    .delete()
+                    .eq('post_id', postId)
+                    .eq('user_id', myId);
+                if (error) throw new Error(error.message);
+                return [];
+            } else {
+                // Replace: delete previous then insert new
+                await supabase
+                    .from('community_poll_votes')
+                    .delete()
+                    .eq('post_id', postId)
+                    .eq('user_id', myId);
+                const { error } = await supabase
+                    .from('community_poll_votes')
+                    .insert({ post_id: postId, user_id: myId, option_id: optionId });
+                if (error) throw new Error(error.message);
+                return [optionId];
+            }
+        }
+    },
+
+    /**
+     * Completely remove all of the current user's votes from a poll.
+     * Used by the explicit "Remove my vote" action.
+     */
+    async retractAllVotes(postId: string): Promise<void> {
         const myId = await identityAPI.getMyInternalId();
         if (!myId) throw new Error('Authentication required');
 
         const { error } = await supabase
             .from('community_poll_votes')
-            .insert([{
-                post_id: postId,
-                user_id: myId,
-                option_id: optionId
-            }]);
+            .delete()
+            .eq('post_id', postId)
+            .eq('user_id', myId);
 
-        if (error) {
-            if (error.code === '23505') { // Unique constraint violation
-                throw new Error('You have already voted in this poll');
-            }
-            throw new Error(error.message);
-        }
-    }
+        if (error) throw new Error(error.message);
+    },
 };

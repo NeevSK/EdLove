@@ -35,7 +35,7 @@ import { useTranslation } from "react-i18next";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { CommunityStackParamList } from "@repo/core";
 import { useUserRole, supabase, useStore } from "@repo/core";
-import { GiveThuthimalModal } from "@repo/profile";
+import { GiveThuthimalModal } from "@repo/profile/components/GiveThuthimalModal";
 import { communityAPI } from "../api/community";
 
 /**
@@ -51,7 +51,13 @@ export default function UserPublicProfileScreen() {
   const route = useRoute<any>();
   const navigation =
     useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
-  const { userId, userName } = route.params;
+  const params = (route as any)?.params ?? {};
+  const { userId: userIdParam, id, userName } = params as {
+    userId?: string;
+    id?: string;
+    userName?: string;
+  };
+  const userId = userIdParam || id || "";
   const { userId: currentUserId } = useUserRole();
   const currentUser = useStore(state => state.user);
   const { glass, text, accent } = useTheme();
@@ -64,10 +70,21 @@ export default function UserPublicProfileScreen() {
   const [stats, setStats] = useState({ posts: 0, endorsements: 0 });
 
   useEffect(() => {
-    loadProfile();
+    if (userId) {
+      loadProfile();
+    } else {
+      // No user identifier provided; ensure we are not stuck in a loading state
+      setUser(null);
+      setStats({ posts: 0, endorsements: 0 });
+      setLoading(false);
+    }
   }, [userId]);
 
   const loadProfile = async () => {
+    if (!userId) {
+      // Guard against calling Supabase with an empty or missing userId
+      return;
+    }
     setLoading(true);
     try {
       // Fetch profile data directly using supabase

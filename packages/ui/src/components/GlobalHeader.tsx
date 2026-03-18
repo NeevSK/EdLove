@@ -191,7 +191,7 @@ export default function GlobalHeader({
                         <VStack>
                             {(subtitle || (!title && greetingText)) && (
                                 <HStack sx={{ gap: 4, alignItems: 'center' }}>
-                                    <Text
+                                <Text
                                         color={text.secondary}
                                         sx={{
                                             fontSize: '$xs' as any,

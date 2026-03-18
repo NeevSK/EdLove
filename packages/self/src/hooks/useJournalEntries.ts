@@ -1,11 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase, GuestDataManager, authAPI, identityAPI, growthSignalsAPI } from '@repo/core';
+import { supabase, GuestDataManager, authAPI, identityAPI, growthSignalsAPI, useResonanceStore, applyResonanceFilter } from '@repo/core';
+
 import { JournalEntry } from '../types';
 
 export const useJournalEntries = () => {
     const [entries, setEntries] = useState<JournalEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [isAnonymous, setIsAnonymous] = useState(false);
+    const { resonanceDate, phase } = useResonanceStore();
+
 
     // Check anonymous status
     useEffect(() => {
@@ -35,12 +38,16 @@ export const useJournalEntries = () => {
                     const internalId = await identityAPI.getMyInternalId();
                     if (!internalId) return;
 
-                    const { data, error } = await supabase
+                    let query = supabase
                         .from('journal_entries')
                         .select('*')
-                        .eq('user_id', internalId) // Explicitly filter for robustness
-                        .order('created_at', { ascending: false })
-                        .limit(50);
+                        .eq('user_id', internalId);
+
+                    query = applyResonanceFilter(query);
+                    query = query.order('created_at', { ascending: false }).limit(50);
+
+                    const { data, error } = await query;
+
 
                     if (!error && data) {
                         setEntries(data);
@@ -54,9 +61,13 @@ export const useJournalEntries = () => {
         };
 
         loadEntries();
-    }, [isAnonymous]);
+    }, [isAnonymous, resonanceDate, phase]);
+
 
     const addJournalEntry = useCallback(async (content: string) => {
+        // [Resonance Shield] Handled by resonantProxy, but keeping check for UI responsiveness
+        if (phase === 'past') throw new Error("Cannot add entries to the past");
+
         try {
             if (isAnonymous) {
                 // Guest mode: Save to local storage

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@repo/core';
+import { supabase, useTemporalStore, getTemporalRange } from '@repo/core';
 
 export interface PulseMetrics {
     resonance_score: number; // 0-100
@@ -24,12 +24,14 @@ export function useSchoolPulse(schoolId?: string) {
     const [error, setError] = useState<string | null>(null);
     // refreshToken is bumped by the manual refresh() to re-run the effect
     const [refreshToken, setRefreshToken] = useState(0);
+    const viewDate = useTemporalStore(state => state.viewDate);
 
-    const fetchPulse = useCallback(async (id: string, signal: { cancelled: boolean }) => {
+    const fetchPulse = useCallback(async (id: string, signal: { cancelled: boolean }, targetDate: string) => {
         setLoading(true);
         try {
-            const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString();
-            const yesterday = new Date(Date.now() - 86400000).toISOString();
+            const anchorDate = new Date(targetDate);
+            const sevenDaysAgo = new Date(anchorDate.getTime() - 7 * 86400000).toISOString();
+            const { start: dayStart, end: dayEnd } = getTemporalRange(targetDate);
 
             // Parallel queries — all school-scoped public data (no individual mood data)
             const [
@@ -40,11 +42,11 @@ export function useSchoolPulse(schoolId?: string) {
                 { count: classroomCount },
             ] = await Promise.all([
                 supabase.from('community_posts').select('id', { count: 'exact', head: true })
-                    .eq('school_id', id).gte('created_at', sevenDaysAgo),
+                    .eq('school_id', id).gte('created_at', sevenDaysAgo).lte('created_at', dayEnd),
                 supabase.from('community_posts').select('id', { count: 'exact', head: true })
-                    .eq('school_id', id).gte('created_at', yesterday),
+                    .eq('school_id', id).gte('created_at', dayStart).lte('created_at', dayEnd),
                 supabase.from('library_items').select('id', { count: 'exact', head: true })
-                    .eq('school_id', id).gte('created_at', sevenDaysAgo),
+                    .eq('school_id', id).gte('created_at', sevenDaysAgo).lte('created_at', dayEnd),
                 supabase.from('community_groups').select('id', { count: 'exact', head: true })
                     .eq('school_id', id),
                 supabase.from('classrooms').select('id', { count: 'exact', head: true })
@@ -97,9 +99,9 @@ export function useSchoolPulse(schoolId?: string) {
             return;
         }
         const signal = { cancelled: false };
-        fetchPulse(schoolId, signal);
+        fetchPulse(schoolId, signal, viewDate);
         return () => { signal.cancelled = true; };
-    }, [schoolId, refreshToken, fetchPulse]);
+    }, [schoolId, refreshToken, fetchPulse, viewDate]);
 
     return { pulse, loading, error, refresh: () => setRefreshToken(t => t + 1) };
 }

@@ -20,10 +20,12 @@ import {
     useCommunity,
     useCommunityGroups,
     useManifestos,
+    useNotifications,
     CommunityHearth,
     PostCard,
     CreatePostModal,
     CreateGroupModal,
+    CommentSheet,
     communityAPI
 } from '@repo/community';
 import { CommunityPresence } from '@repo/self';
@@ -40,6 +42,7 @@ import {
     PenLine,
     Globe,
     Lock,
+    Bell,
 } from 'lucide-react-native';
 import { ActivityIndicator } from 'react-native';
 import { StackFallback } from '../components/web/WebScreenShimmer';
@@ -62,6 +65,14 @@ export default function CommunityScreen() {
     const [searchQuery, setSearchQuery] = useState('');
     const [showCreatePost, setShowCreatePost] = useState(false);
     const [showCreateGroup, setShowCreateGroup] = useState(false);
+
+    // Comment sheet state
+    const [commentPostId, setCommentPostId] = useState<string | null>(null);
+    const [commentPostAuthorId, setCommentPostAuthorId] = useState<string | undefined>();
+    const [commentPostType, setCommentPostType] = useState<string | undefined>();
+
+    // Notification badge
+    const { unreadCount: notifCount } = useNotifications();
 
     // DM Logic
     const [conversations, setConversations] = useState<any[]>([]);
@@ -141,6 +152,38 @@ export default function CommunityScreen() {
                                 <Plus size={15} />
                                 {t('community.actions.newGroup') || "New Group"}
                             </button>
+                            {/* Notification bell with unread badge */}
+                            <div style={{ position: 'relative', display: 'inline-flex' }}>
+                                <button
+                                    className="secondary-button"
+                                    style={{ display: 'inline-flex', alignItems: 'center', padding: '8px' }}
+                                    title="Notifications"
+                                    onClick={() => {/* TODO: open notifications panel */}}
+                                >
+                                    <Bell size={17} />
+                                </button>
+                                {notifCount > 0 && (
+                                    <span style={{
+                                        position: 'absolute',
+                                        top: '-4px',
+                                        right: '-4px',
+                                        minWidth: '16px',
+                                        height: '16px',
+                                        borderRadius: '8px',
+                                        backgroundColor: 'var(--error, #e53e3e)',
+                                        color: '#fff',
+                                        fontSize: '10px',
+                                        fontWeight: '700',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        padding: '0 3px',
+                                        lineHeight: 1,
+                                    }}>
+                                        {notifCount > 99 ? '99+' : notifCount}
+                                    </span>
+                                )}
+                            </div>
                         </>
                     )}
                 />
@@ -296,6 +339,11 @@ export default function CommunityScreen() {
                                             onLike={() => {
                                                 if (user?.id) communityAPI.togglePostReaction(post.id, user.id).catch(console.error);
                                             }}
+                                            onComment={() => {
+                                                setCommentPostId(post.id);
+                                                setCommentPostAuthorId(post.author_id ?? undefined);
+                                                setCommentPostType(post.post_type);
+                                            }}
                                             onAuthorPress={() => {
                                                 if (post.author_id && !post.is_anonymous) {
                                                     navigation.navigate('PublicProfile', {
@@ -428,6 +476,15 @@ export default function CommunityScreen() {
             <CreateGroupModal
                 isOpen={showCreateGroup}
                 onClose={() => { setShowCreateGroup(false); fetchGroups?.(); }}
+            />
+
+            {/* Comment Sheet — slides up over the feed when a comment button is tapped */}
+            <CommentSheet
+                postId={commentPostId}
+                postAuthorId={commentPostAuthorId}
+                currentUserId={user?.id}
+                postType={commentPostType}
+                onClose={() => setCommentPostId(null)}
             />
             
             <style dangerouslySetInnerHTML={{ __html: `

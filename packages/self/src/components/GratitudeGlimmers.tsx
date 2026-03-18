@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   VStack,
@@ -23,9 +23,10 @@ import { useNavigation } from '@react-navigation/native';
 
 interface GratitudeGlimmersProps {
   userId?: string;
+  disabled?: boolean;
 }
 
-export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
+export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmersProps) {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   // Resilient Data Hook
@@ -115,12 +116,15 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
             size="md"
             action="primary"
             onPress={() => {
+              if (disabled) return;
               hapticLight();
               setShowForm(true);
             }}
+            isDisabled={disabled}
             sx={{
               backgroundColor: Theme.colors.sanctuarySaffron,
-              borderRadius: Theme.corners.comfortable
+              borderRadius: Theme.corners.comfortable,
+              opacity: disabled ? 0.6 : 1
             }}
           >
             <Plus color={Theme.colors.sacredWhite} size={20} />

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * FIRE JOURNAL
  * "Burn" negative thoughts - A cathartic release mechanism
  * 
@@ -38,20 +38,23 @@ import { Theme, typography } from '@repo/ui';
 import { supabase, useSafeMutation } from '@repo/core';
 import { hapticLight, hapticMedium, SkeletonCard, SkeletonLoader, PositiveInvitation } from '@repo/ui';
 import { useFireJournal } from '../hooks/useFireJournal';
+import { useTemporalStore } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 
 interface FireJournalProps {
     userId?: string;
     onBurned?: () => void;
+    disabled?: boolean;
 }
 
-export default function FireJournal({ userId, onBurned }: FireJournalProps) {
+export default function FireJournal({ userId, onBurned, disabled }: FireJournalProps) {
     const navigation = useNavigation<any>();
     const [content, setContent] = useState('');
     const [isBurning, setIsBurning] = useState(false);
-    // Use useFireJournal to keep cache in sync (even if not explicitly showing history)
-    const { refreshData, isLoading } = useFireJournal(userId);
+    const isPastView = useTemporalStore(state => state.isPastView);
+    // Use useFireJournal to keep cache in sync
+    const { journalHistory, refreshData, isLoading } = useFireJournal(userId);
     const [showSuccess, setShowSuccess] = useState(false);
     const { t } = useTranslation();
 
@@ -286,7 +289,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                     {t('fireJournal.title')}
                 </Heading>
                 <Text color={Theme.colors.mistGray} size="sm">
-                    {t('fireJournal.subtitle')}
+                    {isPastView ? t('fireJournal.pastRecord') : t('fireJournal.subtitle')}
                 </Text>
             </VStack>
 
@@ -381,12 +384,12 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                                 borderWidth: 0,
                                 flex: 1,
                             }}
-                            isDisabled={isBurning}
+                            isDisabled={isBurning || isPastView}
                         >
                             <InputField
-                                placeholder={t('fireJournal.placeholder')}
+                                placeholder={isPastView ? (journalHistory.length > 0 ? '' : t('fireJournal.noPastRecord')) : t('fireJournal.placeholder')}
                                 multiline
-                                value={content}
+                                value={isPastView ? (journalHistory[0]?.content_preview || '') : content}
                                 onChangeText={setContent}
                                 color={Theme.colors.sacredWhite}
                                 placeholderTextColor={Theme.colors.dimGray}
@@ -426,7 +429,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                     size="md"
                     action="primary"
                     onPress={handleBurn}
-                    isDisabled={!content.trim() || isBurning}
+                    isDisabled={!content.trim() || isBurning || isPastView}
                     sx={{
                         borderRadius: Theme.corners.full,
                         backgroundColor: isBurning
@@ -442,7 +445,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
                         style={{ marginRight: Theme.spacing.sm }}
                     />
                     <ButtonText color={Theme.colors.sacredWhite}>
-                        {isBurning ? t('fireJournal.burning') : t('fireJournal.burn')}
+                        {isPastView ? t('fireJournal.historical') : (isBurning ? t('fireJournal.burning') : t('fireJournal.burn'))}
                     </ButtonText>
                 </Button>
             </HStack>

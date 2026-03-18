@@ -58,3 +58,8 @@ export { WebScreenHeader } from './WebScreenHeader.web';
 export { default as FeatureInfoIcon } from './FeatureInfoIcon';
 export { default as FeatureDiscoveryModal } from './FeatureDiscoveryModal';
 export { FounderGlow } from './FounderGlow';
+export { TemporalNavigator } from './TemporalNavigator';
+export { ResonanceProvider, useResonanceAesthetics } from './ResonanceProvider';
+export { JourneyHistoryCard } from './JourneyHistoryCard';
+export type { JourneyEvent } from './JourneyHistoryCard';
+export * from './ResonantHeatmap';

@@ -7,7 +7,7 @@
  * HTML/CSS. Metro picks this file over MoodLotus.tsx on the web platform.
  */
 import React, { useState, useRef, useEffect } from 'react';
-import { supabase, useStore } from '@repo/core';
+import { supabase, useStore, useTemporalStore } from '@repo/core';
 import { useMoodLogs } from '../hooks/useMoodLogs';
 import { MOOD_COLORS, MOOD_LABELS } from '../constants/wellbeing';
 
@@ -26,6 +26,8 @@ const BREATH_STEPS = [
 
 export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }: MoodLotusProps) {
     const { moodHistory, addMoodLog, isLoading } = useMoodLogs(userId);
+    const isPastView = useTemporalStore(s => s.isPastView);
+
     const [selected, setSelected] = useState<number | null>(null);
     const [note, setNote] = useState('');
     const [saving, setSaving] = useState(false);
@@ -151,21 +153,23 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
                     {[1, 2, 3, 4, 5].map(score => (
                         <button
                             key={score}
-                            onClick={() => setSelected(score)}
-                            title={MOOD_OPTION_LABELS[score]}
+                            onClick={() => !isPastView && setSelected(score)}
+                            title={isPastView ? 'Viewing past mood resonance' : MOOD_OPTION_LABELS[score]}
+                            disabled={isPastView}
                             style={{
                                 width: isDetail ? '56px' : '44px',
                                 height: isDetail ? '56px' : '44px',
                                 borderRadius: '50%',
                                 border: `2px solid ${selected === score ? MOOD_COLORS[score] : 'var(--border)'}`,
                                 background: selected === score ? `${MOOD_COLORS[score]}22` : 'var(--background-alt)',
-                                cursor: 'pointer',
+                                cursor: isPastView ? 'default' : 'pointer',
                                 fontSize: isDetail ? '24px' : '18px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 transition: 'all 0.2s',
                                 transform: selected === score ? 'scale(1.15)' : 'scale(1)',
+                                opacity: isPastView && selected !== score ? 0.4 : 1,
                             }}
                         >
                             {LOTUS_EMOJIS[score]}
@@ -179,14 +183,15 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
                         <input
                             value={note}
                             onChange={e => setNote(e.target.value)}
-                            onKeyDown={e => { if (e.key === 'Enter') handleSave(); }}
-                            placeholder="Add a note (optional)…"
-                            style={{ padding: '12px 16px', borderRadius: '12px', border: '1.5px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontSize: '14px', fontFamily: 'var(--font-body)', outline: 'none' }}
+                            onKeyDown={e => { if (e.key === 'Enter' && !isPastView) handleSave(); }}
+                            placeholder={isPastView ? "Viewing historical reflection" : "Add a note (optional)…"}
+                            disabled={isPastView}
+                            style={{ padding: '12px 16px', borderRadius: '12px', border: '1.5px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontSize: '14px', fontFamily: 'var(--font-body)', outline: 'none', opacity: isPastView ? 0.7 : 1 }}
                         />
                         <button
                             onClick={handleSave}
-                            disabled={saving}
-                            style={{ padding: '12px 20px', borderRadius: '12px', background: accent, color: '#fff', border: 'none', fontWeight: '700', fontSize: '14px', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1, transition: 'all 0.2s' }}
+                            disabled={saving || isPastView}
+                            style={{ padding: '12px 20px', borderRadius: '12px', background: accent, color: '#fff', border: 'none', fontWeight: '700', fontSize: '14px', cursor: (saving || isPastView) ? 'not-allowed' : 'pointer', opacity: (saving || isPastView) ? 0.6 : 1, transition: 'all 0.2s' }}
                         >
                             {saving ? 'Saving…' : saved ? '✓ Logged' : 'Log Mood'}
                         </button>

@@ -50,7 +50,14 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             } catch { /* ignore corrupt storage */ }
 
             // No saved progress — pre-fill for verified (non-anonymous) users with a real name
-            if (!internalId) return;
+            if (!internalId) {
+                // This is likely a deep-link where the session wasn't initialized yet.
+                // We trigger an anonymous sign-in here to ensure the wizard has an ID.
+                console.log('🧭 OnboardingScreen: No internalId found, initiating anonymous session...');
+                await authAPI.signInAnonymously();
+                // Re-run the initialization once signed in
+                return initOnboarding();
+            }
             const { data: profile } = await supabase
                 .from('users')
                 .select('full_name, is_anonymous, role, onboarding_completed')

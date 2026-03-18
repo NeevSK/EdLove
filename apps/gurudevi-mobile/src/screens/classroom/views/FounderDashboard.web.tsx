@@ -13,8 +13,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { useStore } from '@repo/core';
 import { School } from '@repo/core';
-import { SkeletonCard } from '@repo/ui';
+import { SkeletonCard, TemporalNavigator } from '@repo/ui';
 import { useEcosystemStats, GlobalCreateModal } from '@repo/classroom';
+import { useTemporalStore } from '@repo/core';
 import {
     Activity,
     Building,
@@ -54,6 +55,7 @@ export default function FounderDashboardWeb() {
     const [sentinelLogs, setSentinelLogs] = useState<any[]>([]);
     const [ecoPulse, setEcoPulse] = useState<any>(null);
     const [isLoadingPulse, setIsLoadingPulse] = useState(false);
+    const { isPastView } = useTemporalStore();
 
     // Data Fetching based on tab
     React.useEffect(() => {
@@ -135,45 +137,50 @@ export default function FounderDashboardWeb() {
                         Welcome, {user?.full_name || 'Founder'}. Real-time institutional resonance across Gurudevi.
                     </p>
                 </div>
-                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                    <button
-                        onClick={() => setIsCreateModalOpen(true)}
-                        className="premium-button"
-                        style={{
-                            background: 'var(--sanctuary-saffron)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            boxShadow: '0 4px 14px rgba(255,166,0,0.4)',
-                            border: 'none',
-                            color: 'white',
-                            padding: '12px 20px',
-                            borderRadius: '12px',
-                            fontWeight: '700',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        <Plus size={18} /> Initialize New
-                    </button>
-                    <button
-                        onClick={refreshData}
-                        className="secondary-button"
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            background: 'rgba(255,255,255,0.05)',
-                            backdropFilter: 'blur(10px)',
-                            border: '1px solid var(--border)',
-                            color: 'var(--ink)',
-                            padding: '12px 20px',
-                            borderRadius: '12px',
-                            fontWeight: '700',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        <Zap size={16} /> Refresh
-                    </button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'flex-end' }}>
+                    <TemporalNavigator />
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                        <button
+                            onClick={() => setIsCreateModalOpen(true)}
+                            className="premium-button"
+                            disabled={isPastView}
+                            style={{
+                                background: 'var(--sanctuary-saffron)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                boxShadow: '0 4px 14px rgba(255,166,0,0.4)',
+                                border: 'none',
+                                color: 'white',
+                                padding: '12px 20px',
+                                borderRadius: '12px',
+                                fontWeight: '700',
+                                cursor: isPastView ? 'not-allowed' : 'pointer',
+                                opacity: isPastView ? 0.5 : 1
+                            }}
+                        >
+                            <Plus size={18} /> Initialize New
+                        </button>
+                        <button
+                            onClick={refreshData}
+                            className="secondary-button"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                background: 'rgba(255,255,255,0.05)',
+                                backdropFilter: 'blur(10px)',
+                                border: '1px solid var(--border)',
+                                color: 'var(--ink)',
+                                padding: '12px 20px',
+                                borderRadius: '12px',
+                                fontWeight: '700',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            <Zap size={16} /> Refresh
+                        </button>
+                    </div>
                 </div>
             </div>
 

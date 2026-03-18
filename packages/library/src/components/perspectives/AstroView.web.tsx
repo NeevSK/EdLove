@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { View, StyleSheet, useWindowDimensions } from 'react-native';
-import * as d3 from 'd3';
 import { useThemedColors } from '@repo/ui';
 import type { 
     PerspectiveViewProps, 
@@ -36,7 +35,7 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
                     const sourcePos = typeof link.source === 'string' ? layout.positions.get(link.source) : (link.source as any);
                     const targetPos = typeof link.target === 'string' ? layout.positions.get(link.target) : (link.target as any);
                     
-                    if (!sourcePos?.x || !sourcePos?.y || !targetPos?.x || !targetPos?.y) return null;
+                    if (sourcePos?.x == null || sourcePos?.y == null || targetPos?.x == null || targetPos?.y == null) return null;
 
                     return (
                         <line
