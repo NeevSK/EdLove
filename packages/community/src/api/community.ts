@@ -781,7 +781,7 @@ export const communityAPI = {
                 )
             `)
             .eq('post_id', postId)
-            .order('created_at', { ascending: true })
+            .order('created_at', { ascending: false })
             .limit(limit);
 
         if (error) throw new Error(error.message);
