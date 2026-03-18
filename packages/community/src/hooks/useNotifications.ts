@@ -11,8 +11,8 @@ import type { Notification } from '../types/Community';
 
 const NOTIF_KEYS = {
     all:   ['notifications'] as const,
-    list:  () => [...NOTIF_KEYS.all, 'list'] as const,
-    count: () => [...NOTIF_KEYS.all, 'unread-count'] as const,
+    list:  (userId: string | undefined) => [...NOTIF_KEYS.all, userId, 'list'] as const,
+    count: (userId: string | undefined) => [...NOTIF_KEYS.all, userId, 'unread-count'] as const,
 };
 
 export function useNotifications() {
@@ -21,7 +21,7 @@ export function useNotifications() {
 
     // ── Fetch list ─────────────────────────────────────────────────────────
     const listQuery = useQuery({
-        queryKey: NOTIF_KEYS.list(),
+        queryKey: NOTIF_KEYS.list(userId),
         queryFn: () => communityAPI.getNotifications(40),
         enabled: !!userId,
         staleTime: 60_000,
@@ -29,7 +29,7 @@ export function useNotifications() {
 
     // ── Unread badge count ─────────────────────────────────────────────────
     const countQuery = useQuery({
-        queryKey: NOTIF_KEYS.count(),
+        queryKey: NOTIF_KEYS.count(userId),
         queryFn: communityAPI.getUnreadNotificationCount,
         enabled: !!userId,
         staleTime: 30_000,
@@ -52,11 +52,11 @@ export function useNotifications() {
                 },
                 (payload: any) => {
                     // Prepend new notification optimistically
-                    queryClient.setQueryData<Notification[]>(NOTIF_KEYS.list(), prev =>
+                    queryClient.setQueryData<Notification[]>(NOTIF_KEYS.list(userId), prev =>
                         [payload.new as Notification, ...(prev ?? [])],
                     );
                     // Bump badge count
-                    queryClient.setQueryData<number>(NOTIF_KEYS.count(), prev => (prev ?? 0) + 1);
+                    queryClient.setQueryData<number>(NOTIF_KEYS.count(userId), prev => (prev ?? 0) + 1);
                 },
             )
             .on(
@@ -68,8 +68,8 @@ export function useNotifications() {
                     filter: `user_id=eq.${userId}`,
                 },
                 () => {
-                    queryClient.invalidateQueries({ queryKey: NOTIF_KEYS.list() });
-                    queryClient.invalidateQueries({ queryKey: NOTIF_KEYS.count() });
+                    queryClient.invalidateQueries({ queryKey: NOTIF_KEYS.list(userId) });
+                    queryClient.invalidateQueries({ queryKey: NOTIF_KEYS.count(userId) });
                 },
             )
             .subscribe();
@@ -81,17 +81,17 @@ export function useNotifications() {
     const markReadMutation = useMutation({
         mutationFn: (notifId: string) => communityAPI.markNotificationRead(notifId),
         onMutate: async (notifId) => {
-            await queryClient.cancelQueries({ queryKey: NOTIF_KEYS.list() });
-            const previous = queryClient.getQueryData<Notification[]>(NOTIF_KEYS.list());
+            await queryClient.cancelQueries({ queryKey: NOTIF_KEYS.list(userId) });
+            const previous = queryClient.getQueryData<Notification[]>(NOTIF_KEYS.list(userId));
 
-            queryClient.setQueryData<Notification[]>(NOTIF_KEYS.list(), prev =>
+            queryClient.setQueryData<Notification[]>(NOTIF_KEYS.list(userId), prev =>
                 (prev ?? []).map(n =>
                     n.id === notifId ? { ...n, is_read: true, read_at: new Date().toISOString() } : n,
                 ),
             );
             // Decrement badge
             queryClient.setQueryData<number>(
-                NOTIF_KEYS.count(),
+                NOTIF_KEYS.count(userId),
                 prev => Math.max(0, (prev ?? 1) - 1),
             );
 
@@ -99,8 +99,8 @@ export function useNotifications() {
         },
         onError: (_err, _vars, context: any) => {
             if (context?.previous !== undefined) {
-                queryClient.setQueryData(NOTIF_KEYS.list(), context.previous);
-                queryClient.invalidateQueries({ queryKey: NOTIF_KEYS.count() });
+                queryClient.setQueryData(NOTIF_KEYS.list(userId), context.previous);
+                queryClient.invalidateQueries({ queryKey: NOTIF_KEYS.count(userId) });
             }
         },
     });
