@@ -55,10 +55,24 @@ export function useTracking() {
         return exploredFeatures.includes(featureName);
     };
 
+    /**
+     * Tracks a manual snapshot event.
+     */
+    const trackSnapshot = async (label: string, resonanceDate: string) => {
+        if (!userId) return;
+
+        trackEvent('manual_snapshot_captured', {
+            label,
+            resonance_date: resonanceDate,
+            user_id: userId
+        });
+    };
+
     return {
         exploredFeatures,
         isLoading,
         discoverFeature,
-        isDiscovered
+        isDiscovered,
+        trackSnapshot
     };
 }

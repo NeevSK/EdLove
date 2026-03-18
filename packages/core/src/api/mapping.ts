@@ -32,11 +32,14 @@ export const mappingAPI = {
     /**
      * Fetch the "School Pulse" for a principal or authorized staff
      */
-    async getSchoolPulse(schoolId: string): Promise<KnowledgeTopology | null> {
+    async getSchoolPulse(schoolId: string, viewDate?: string): Promise<KnowledgeTopology | null> {
         // In a real implementation, this would call a complex RPC that aggregates 
         // school data into a topology.
         const { data, error } = await supabase
-            .rpc('get_school_mapping_pulse', { p_school_id: schoolId });
+            .rpc('get_school_mapping_pulse', { 
+                p_school_id: schoolId,
+                p_view_date: viewDate || new Date().toISOString().split('T')[0]
+            });
 
         if (error) {
             console.error('[MappingAPI] School Pulse error:', error);

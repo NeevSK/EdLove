@@ -87,8 +87,10 @@ export const identityAPI = {
         const internalId = await this.resolveInternalId('supabase', authUid);
         (this as any)._cachedAuthUid = authUid;
 
-        // Fallback: If not found in auth_identities, check if public.users has it (legacy sync).
-        // This heals legacy users whose auth_identities row was never created.
+        // Fallback or Initial Mapping:
+        // If not found in auth_identities (modern proxy) or public.users (legacy direct),
+        // we fallback to returning the Auth UID (authUid) itself.
+        // For new users, we will use the Auth UID as the initial internal users.id.
         if (!internalId) {
             const { data: legacyUser } = await supabase
                 .from('users')
@@ -102,10 +104,14 @@ export const identityAPI = {
                 cachedInternalId = legacyUser.id;
                 return legacyUser.id;
             }
-        } else {
-            cachedInternalId = internalId;
+
+            // Brand new user (no record in users or auth_identities)
+            // We use the Auth UID as the internal ID.
+            cachedInternalId = authUid;
+            return authUid;
         }
 
+        cachedInternalId = internalId;
         return internalId;
     },
 

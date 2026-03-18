@@ -14,14 +14,12 @@ import {
     KnowledgeTopology, 
     PerspectiveViewProps 
 } from '@repo/graphics';
-import { 
-    AstroView, 
-    VastuView, 
-    DharmaView, 
-    TerraView, 
-    VatyaView, 
-    JyotiView 
-} from './index';
+import { AstroView } from './AstroView';
+import { VastuView } from './VastuView';
+import { DharmaView } from './DharmaView';
+import { TerraView } from './TerraView';
+import { VatyaView } from './VatyaView';
+import { JyotiView } from './JyotiView';
 import { usePerspectiveLayout } from '../../hooks/usePerspectiveLayout';
 import { 
     mappingAPI,

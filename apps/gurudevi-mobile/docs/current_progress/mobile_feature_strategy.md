@@ -11,10 +11,10 @@ This document is the **Technical Source of Truth** for Gurudevi Mobile. It maps 
 | :--- | :--- | :--- | :--- | :--- |
 | `ALL-PRF-001` | Identity Card | ALL | **UI**: `IdentityCard.tsx`<br>**API**: `authAPI.getUserProfile()` | 🟢 **Complete**. Visual card syncs with `users` table. |
 | `ALL-PRF-002` | Full Profile Nav | ALL | **UI**: `ProfileScreen.tsx` -> `FullProfileScreen.tsx` | 🟢 **Complete**. Navigation stack configured. |
-| `ALL-PRF-003` | Avatar Display/Edit | ALL | **UI**: `IdentityCard.tsx`<br>**API**: `supabase.storage` | 🟡 **Partial**. UI integrated; needs storage policy hardening. |
+| `ALL-PRF-003` | Avatar Display/Edit | ALL | **UI**: `AvatarDisplay.tsx`<br>**API**: `supabase.storage` | 🟢 **Complete**. Interactive display and upload logic verified in `FullProfileScreen`. |
 | `ALL-PRF-004` | Progress Bar | ALL | **UI**: `SanctuaryProgressBar.tsx`<br>**API**: `@repo/profile` | 🟢 **Complete**. Visual completion logic functional. |
 | `ALL-PRF-005` | Completion Milestones| ALL | **UI**: Hint text in `ProfileScreen` | 🟢 **Complete**. Logic driven by `useProfileCompletion`. |
-| `ALL-PRF-006` | Stats Dashboard | ALL | **UI**: `UserStatsCard.tsx`<br>**API**: Aggregation hooks | 🟢 **Complete**. Fetches dynamic stats per role. |
+| `ALL-PRF-006` | Living Journey Panel | ALL | **UI**: `LivingJourneyPanel.tsx`<br>**API**: Aggregation hooks | 🟢 **Complete**. Narrative-first growth display. Replaces `UserStatsCard`. |
 | `ALL-PRF-007` | Achievement Gallery | ALL | **UI**: `AchievementGallery.tsx` | 🟢 **Complete**. Animated list of earned badges. |
 | `ALL-PRF-008` | Thuthimal Recognition| ALL | **UI**: `ThuthimalBadge.tsx`, `GiveThuthimalModal.tsx`<br>**DB**: `thuthimal_gifts` table<br>**Screen**: `ThuthimalClaimScreen.tsx` | 🟢 **Complete**. Full two-sided flow: give (GiveThuthimalModal on other's profile) + claim (QR scan → ThuthimalClaimScreen → celebration). Feb 28 2026. |
 | `ALL-PRF-009` | Identity Info Edit | ALL | **UI**: `FullProfileScreen.tsx`<br>**API**: `onboardingAPI.completeProfile` | 🟢 **Complete**. Update logic functional. |
@@ -347,12 +347,12 @@ This document is the **Technical Source of Truth** for Gurudevi Mobile. It maps 
 | `STU-COM-058` | Notification Cen. | **UI**: `NotificationsScreen.tsx` | 🟢 **Complete**. Per-circle update ledger. |
 | `STU-COM-059` | Junior Manifesto | **UI**: Collaborative mission widget | 🔴 **Pending**. Student-led mission UI missing. |
 | `STU-COM-060` | Circle Creation | **UI**: `RequestCircleModal.tsx` | 🟢 **Complete**. Petition for new clubs active. |
-| `ALL-COM-061` | Direct Resonance | **DB**: `direct_messages` table + Realtime | 🔴 **Pending**. Dedicated DM schema missing. |
-| `ALL-COM-062` | Resonant Contact | **Lib**: `expo-linking` | 🟢 **Complete**. Profile-to-WhatsApp trigger. |
-| `ALL-COM-063` | The Block Pillar | **DB**: `blocked_users` table + RLS | 🔴 **Pending**. Backend blocking logic missing. |
-| `ALL-COM-064` | Mute Harmony | **Lib**: `expo-notifications` (Mute) | 🔴 **Pending**. Per-thread silencing logic. |
-| `ALL-COM-065` | Social Shield Mod | **API**: `moderationAPI.reportDM` | 🔴 **Pending**. DM pipeline for moderators. |
-| `ALL-COM-066` | Privacy Cloak | **Logic**: `useDMGuard` hook | 🔴 **Pending**. Role-based DM initiation guards. |
+| `ALL-COM-061` | Direct Resonance | ALL | **UI**: `LivingJourneyPanel.tsx`<br>**API**: `communityAPI.getCommunityResonance` | 🟢 **Complete**. Aggregated likes/comments visible in Profile. |
+| `ALL-COM-062` | Resonant Contact | ALL | **Lib**: `expo-linking` | 🟢 **Complete**. Profile-to-WhatsApp trigger. |
+| `ALL-COM-063` | The Block Pillar | ALL | **UI**: `MuteHubScreen.tsx`<br>**API**: `user_blocks` table + RLS | 🟢 **Complete**. E2E block/unblock flow with management UI. |
+| `ALL-COM-064` | Mute Harmony | ALL | **UI**: `MuteHubScreen.tsx` | 🟢 **Complete**. Centralized silence management in Profile. |
+| `ALL-COM-065` | Social Shield Mod | ALL | **UI**: `SocialShieldModal.tsx` | 🟢 **Complete**. Integrated report/block flow in Feed. |
+| `ALL-COM-066` | Privacy Cloak | ALL | **Logic**: `useDMGuard` hook | 🟡 **Partial**. Guards in place; needs further role-lock testing. |
 
 ---
 
@@ -448,12 +448,12 @@ This document is the **Technical Source of Truth** for Gurudevi Mobile. It maps 
 
 | Domain | Total Features | 🟢 Complete | 🟡 Partial | 🔴 Missing |
 | :--- | :--- | :--- | :--- | :--- |
-| **Profile** | 32 | 24 | 2 | 6 |
+| **Profile** | 32 | 26 | 1 | 5 |
 | **Library** | 30 | 19 | 3 | 8 |
 | **Principal Domains**| 70 | 38 | 5 | 27 |
 | **Teacher Domains** | 70 | 48 | 5 | 17 |
 | **Student Domains** | 80 | 52 | 5 | 23 |
-| **Community (DMs)** | 66 | 40 | 0 | 26 |
+| **Community (DMs)** | 66 | 45 | 1 | 20 |
 | **QR Capabilities** | 10 | 8 | 1 | 1 |
 | **Non-Functional** | 10 | 10 | 0 | 0 |
 | **Orphaned Assets** | 12 | 10 | 2 | 0 |

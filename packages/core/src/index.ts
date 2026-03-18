@@ -2,6 +2,10 @@ export * from './api';
 export * from './offline/resilience';
 export * from './hooks';
 export * from './store/useStore';
+export * from './store/useTemporalStore';
+export * from './store/useResonanceStore';
+export * from './utils/temporalUtils';
+
 export * from './types';
 export * from './constants/SriLankanSchools';
 export * from './lib/supabase';

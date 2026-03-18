@@ -41,6 +41,7 @@ import {
     type CrystalTier,
 } from '@repo/core';
 import { UserRole } from '@repo/core';
+import { communityAPI } from "@repo/community/api";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TYPES
@@ -198,6 +199,73 @@ function MoonRow({ moon, colors, t }: MoonRowProps) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// RESONANCE ROW COMPONENT
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface ResonanceRowProps {
+    stats: { likes: number; comments: number; shares: number };
+    colors: ReturnType<typeof useThemedColors>;
+}
+
+function ResonanceRow({ stats, colors }: ResonanceRowProps) {
+    const total = stats.likes + stats.comments + stats.shares;
+    let label = 'Quiet Presence 🤫';
+    let narrative = 'Your voice is being found. Each interaction is a resonance.';
+
+    if (total > 50) {
+        label = 'Luminous Echo 🔔';
+        narrative = 'Your presence ripples through the community. Others are listening.';
+    } else if (total > 20) {
+        label = 'Steady Vibration 🌊';
+        narrative = 'You are consistently heard. Your contributions find their mark.';
+    } else if (total > 5) {
+        label = 'First Ripples 💧';
+        narrative = 'A splash in the pond. Others have begun to respond to your presence.';
+    }
+
+    return (
+        <Box
+            sx={{
+                paddingVertical: Theme.spacing.md,
+                borderBottomWidth: 1,
+                borderBottomColor: `${colors.border}60`,
+            }}
+        >
+            <HStack space="md" alignItems="flex-start">
+                <Text style={styles.pathEmoji}>✨</Text>
+                <VStack flex={1} space="xs">
+                    <HStack justifyContent="space-between" alignItems="center">
+                        <Text
+                            size="xs"
+                            color={colors.textTertiary}
+                            style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
+                        >
+                            COMMUNITY RESONANCE
+                        </Text>
+                        <Text size="sm" bold color={colors.text}>
+                            {label}
+                        </Text>
+                    </HStack>
+                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18 }}>
+                        {narrative}
+                    </Text>
+                    <HStack space="sm" mt={4}>
+                        <Text size="xs" sx={{ bg: `${colors.action}15`, px: 8, py: 2, borderRadius: 4, color: colors.action }}>
+                            {stats.likes} Likes
+                        </Text>
+                        <Text size="xs" sx={{ bg: `${colors.action}15`, px: 8, py: 2, borderRadius: 4, color: colors.action }}>
+                            {stats.comments} Comments
+                        </Text>
+                    </HStack>
+                </VStack>
+            </HStack>
+        </Box>
+    );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────────────────────
 // WHISPERED MOMENTS SECTION
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -285,6 +353,7 @@ export default function LivingJourneyPanel({ userId, role }: LivingJourneyPanelP
     const [whisperedMoments, setWhisperedMoments] = useState<
         Array<{ key: string; name_en: string; name_si: string }>
     >([]);
+    const [resonance, setResonance] = useState({ likes: 0, comments: 0, shares: 0 });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -296,10 +365,12 @@ export default function LivingJourneyPanel({ userId, role }: LivingJourneyPanelP
             userGrowthStateAPI.getOrCreateState(userId),
             // @ts-ignore - moments might be optional or different type
             userGrowthStateAPI.getWhisperedMoments(userId),
+            communityAPI.getCommunityResonance(userId),
         ])
-            .then(([state, moments]) => {
+            .then(([state, moments, resonanceData]) => {
                 setGrowthState(state);
                 setWhisperedMoments(moments ?? []);
+                if (resonanceData) setResonance(resonanceData);
             })
             .catch((err) => {
                 console.error('Error fetching growth journey:', err);
@@ -436,6 +507,9 @@ export default function LivingJourneyPanel({ userId, role }: LivingJourneyPanelP
 
                     {/* Moon — all users, live */}
                     {moon && <MoonRow moon={moon} colors={colors} t={t} />}
+
+                    {/* Community Resonance — aggregated from social actions */}
+                    <ResonanceRow stats={resonance} colors={colors} />
 
                     {/* Whispered Moments — all users */}
                     <WhisperedMomentsRow

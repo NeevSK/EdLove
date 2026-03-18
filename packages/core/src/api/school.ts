@@ -215,7 +215,7 @@ export const schoolAPI = {
     /**
      * Get school statistics for dashboard
      */
-    async getSchoolStats(schoolId: string): Promise<SchoolStats> {
+    async getSchoolStats(schoolId: string, viewDate?: string): Promise<SchoolStats> {
         // Get total students
         const { count: studentCount, error: studentError } = await supabase
             .from('users')
