@@ -4,13 +4,16 @@ import { Box, HStack, VStack, Text, Avatar, AvatarFallbackText, AvatarImage } fr
 import { MoreHorizontal, Heart, MessageCircle, Sparkles, Globe, Share2 } from 'lucide-react-native';
 import { SanctuaryCard, Theme, useThemedColors, LivingGlow } from '@repo/ui';
 import { formatDistanceToNow } from 'date-fns';
-import { MediaAsset, communityAPI, supabase } from '@repo/core';
+import { MediaAsset, supabase } from '@repo/core';
 import * as Clipboard from 'expo-clipboard';
 import { useCommunity } from '../hooks/useCommunity';
+import { useSocialShield } from '../hooks/useSocialShield';
+import { communityAPI } from '../api/community';
+import { ShieldAlert, UserX } from 'lucide-react-native';
 
 export type PostType = 'post' | 'text' | 'announcement' | 'poll';
 
-import { CommunityPost } from '../index';
+import { CommunityPost } from '../types';
 
 interface PostCardProps {
     post: CommunityPost;
@@ -42,6 +45,7 @@ const PostCard = React.memo(function PostCard({
     currentUserId
 }: PostCardProps) {
     const {
+        author_id,
         author_name,
         author_avatar,
         content,
@@ -116,6 +120,9 @@ const PostCard = React.memo(function PostCard({
     const isLiked = liked;
     const hasResonated = false;
 
+    const [menuOpen, setMenuOpen] = React.useState(false);
+    const { blockUser } = useSocialShield();
+
     const handleShare = async () => {
         // Include the post ID so the share link is post-specific (deep link ready)
         const shareUrl = `https://app.gurudevi.edlove.org/app?post=${id}`;
@@ -136,6 +143,13 @@ const PostCard = React.memo(function PostCard({
             } else {
                 Share.share({ message: shareUrl });
             }
+        }
+    };
+
+    const handleBlock = async () => {
+        if (!is_anonymous && author_id) {
+            await blockUser(author_id);
+            setMenuOpen(false);
         }
     };
 
@@ -176,9 +190,51 @@ const PostCard = React.memo(function PostCard({
                         </VStack>
                     </HStack>
 
-                    <TouchableOpacity onPress={onReport}>
-                        <MoreHorizontal color={colors.textTertiary} size={20} />
-                    </TouchableOpacity>
+                    <Box>
+                        <TouchableOpacity onPress={() => setMenuOpen(!menuOpen)}>
+                            <MoreHorizontal color={colors.textTertiary} size={20} />
+                        </TouchableOpacity>
+
+                        {menuOpen && (
+                            <Box sx={{
+                                position: 'absolute',
+                                top: 25,
+                                right: 0,
+                                backgroundColor: colors.secondary,
+                                borderRadius: Theme.corners.comfortable,
+                                borderWidth: 1,
+                                borderColor: colors.border,
+                                minWidth: 150,
+                                zIndex: 10,
+                                overflow: 'hidden',
+                                elevation: 4,
+                            }}>
+                                <VStack>
+                                    <TouchableOpacity 
+                                        style={styles.menuItem} 
+                                        onPress={() => { onReport?.(); setMenuOpen(false); }}
+                                    >
+                                        <HStack space="md" alignItems="center">
+                                            <ShieldAlert size={16} color={colors.text} />
+                                            <Text size="sm" color={colors.text}>Report Post</Text>
+                                        </HStack>
+                                    </TouchableOpacity>
+
+                                    {!is_anonymous && author_id !== currentUserId && (
+                                        <TouchableOpacity 
+                                            style={[styles.menuItem, { borderBottomWidth: 0 }]} 
+                                            onPress={handleBlock}
+                                        >
+                                            <HStack space="md" alignItems="center">
+                                                <UserX size={16} color={Theme.colors.sanctuarySaffron} />
+                                                <Text size="sm" color={Theme.colors.sanctuarySaffron}>Block User</Text>
+                                            </HStack>
+                                        </TouchableOpacity>
+                                    )}
+                                </VStack>
+                            </Box>
+                        )}
+                    </Box>
                 </HStack>
 
                 {/* Content */}
@@ -384,4 +440,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 4,
     },
+    menuItem: {
+        padding: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: 'rgba(0,0,0,0.05)',
+    }
 });

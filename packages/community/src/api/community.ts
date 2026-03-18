@@ -1,4 +1,4 @@
-import { supabase, identityAPI } from '@repo/core';
+import { supabase, identityAPI, applyTemporalFilter } from '@repo/core';
 import { CommunityPost, CommunityGroup, Group, Post, Comment } from '../types';
 
 /**
@@ -74,12 +74,17 @@ export const communityAPI = {
     /**
      * Get Posts with filtering and pagination
      */
-    async getPosts(filters: { limit: number; offset: number; groupId?: string }) {
+    async getPosts(filters: { limit: number; offset: number; groupId?: string; viewDate?: string }) {
         let query = supabase
-            .from('community_posts')
+            .from('community_posts_with_counts')
             .select('*')
-            .range(filters.offset, filters.offset + filters.limit - 1)
-            .order('created_at', { ascending: false });
+            .range(filters.offset, filters.offset + filters.limit - 1);
+
+        if (filters.viewDate) {
+            query = applyTemporalFilter(query, filters.viewDate);
+        } else {
+            query = query.order('created_at', { ascending: false });
+        }
 
         if (filters.groupId && filters.groupId !== 'all') {
             query = query.eq('group_id', filters.groupId);
@@ -216,13 +221,19 @@ export const communityAPI = {
     /**
      * Fetch the most recent messages for a group, oldest-first for chat display.
      */
-    async getGroupMessages(groupId: string, limit = 60) {
-        const { data, error } = await supabase
+    async getGroupMessages(groupId: string, limit = 60, viewDate?: string) {
+        let query = supabase
             .from('group_messages')
             .select('*, author:users!group_messages_author_id_fkey(full_name, avatar_url)')
-            .eq('group_id', groupId)
-            .order('created_at', { ascending: false })
-            .limit(limit);
+            .eq('group_id', groupId);
+
+        if (viewDate) {
+            query = applyTemporalFilter(query, viewDate);
+        } else {
+            query = query.order('created_at', { ascending: false }).limit(limit);
+        }
+
+        const { data, error } = await query;
 
         if (error) throw error;
         // Reverse so oldest is at top
@@ -396,12 +407,61 @@ export const communityAPI = {
     },
 
     /**
-     * Report content (post/comment)
+     * Report content (post, group, or user)
+     * Automatically routes to appropriate handler (Teacher/Principal/Platform)
      */
-    async reportContent(input: any, reporterId: string) {
+    async reportContent(params: {
+        postId?: string;
+        groupId?: string;
+        targetUserId?: string;
+        reason: string;
+        report_target: 'teacher' | 'principal' | 'platform';
+    }, reporterId: string) {
+        let assignedHandlerId: string | null = null;
+
+        // 1. Fetch routing info (school_id, classroom_id) if needed
+        const { data: reporterData } = await supabase
+            .from('users')
+            .select('school_id, section_id, grade_id')
+            .eq('id', reporterId)
+            .single();
+
+        if (params.report_target === 'teacher' && reporterData?.school_id) {
+            // Find classroom teacher - for simplicity, we look for the main classroom teacher
+            // In a real scenario, this might need more complex logic to find "the" teacher for this reporter
+            const { data: classroom } = await supabase
+                .from('classrooms')
+                .select('teacher_id')
+                .eq('school_id', reporterData.school_id)
+                .is('is_archived', false)
+                .limit(1) // Simplified: pick first active classroom
+                .single();
+            
+            assignedHandlerId = classroom?.teacher_id || null;
+        } else if (params.report_target === 'principal' && reporterData?.school_id) {
+            const { data: principal } = await supabase
+                .from('users')
+                .select('id')
+                .eq('school_id', reporterData.school_id)
+                .eq('role', 'principal')
+                .limit(1)
+                .single();
+            
+            assignedHandlerId = principal?.id || null;
+        }
+
         const { data, error } = await supabase
             .from('community_reports')
-            .insert([{ ...input, reporter_id: reporterId }])
+            .insert([{ 
+                reporter_id: reporterId,
+                post_id: params.postId,
+                group_id: params.groupId,
+                target_user_id: params.targetUserId,
+                reason: params.reason,
+                report_target: params.report_target,
+                assigned_handler_id: assignedHandlerId,
+                status: 'pending'
+            }])
             .select()
             .single();
 
@@ -476,13 +536,19 @@ export const communityAPI = {
     /**
      * Fetch the most recent direct messages for a conversation.
      */
-    async getDirectMessages(conversationId: string, limit = 60) {
-        const { data, error } = await supabase
+    async getDirectMessages(conversationId: string, limit = 60, viewDate?: string) {
+        let query = supabase
             .from('direct_messages')
             .select('*, author:users!direct_messages_author_id_fkey(full_name, avatar_url)')
-            .eq('conversation_id', conversationId)
-            .order('created_at', { ascending: false })
-            .limit(limit);
+            .eq('conversation_id', conversationId);
+
+        if (viewDate) {
+            query = applyTemporalFilter(query, viewDate);
+        } else {
+            query = query.order('created_at', { ascending: false }).limit(limit);
+        }
+
+        const { data, error } = await query;
 
         if (error) throw error;
         // Reverse so oldest is at top
@@ -531,5 +597,95 @@ export const communityAPI = {
             }
             throw new Error(error.message);
         }
+    },
+
+    /**
+     * Block a user
+     */
+    async blockUser(targetUserId: string): Promise<void> {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new Error('Authentication required');
+
+        const { error } = await supabase
+            .from('user_blocks')
+            .insert([{
+                blocker_id: myId,
+                blocked_id: targetUserId
+            }]);
+
+        if (error && error.code !== '23505') throw error;
+    },
+
+    /**
+     * Unblock a user
+     */
+    async unblockUser(targetUserId: string): Promise<void> {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new Error('Authentication required');
+
+        const { error } = await supabase
+            .from('user_blocks')
+            .delete()
+            .eq('blocker_id', myId)
+            .eq('blocked_id', targetUserId);
+
+        if (error) throw error;
+    },
+
+    /**
+     * Check if a user is blocked by me or has blocked me
+     */
+    async isBlockingActive(targetUserId: string): Promise<boolean> {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) return false;
+
+        const { data, error } = await supabase
+            .from('user_blocks')
+            .select('blocker_id')
+            .or(`and(blocker_id.eq.${myId},blocked_id.eq.${targetUserId}),and(blocker_id.eq.${targetUserId},blocked_id.eq.${myId})`)
+            .maybeSingle();
+
+        if (error) throw error;
+        return !!data;
+    },
+
+    /**
+     * Get aggregate resonance for a user's content.
+     */
+    async getCommunityResonance(userId: string) {
+        const { data, error } = await supabase
+            .from('community_posts_with_counts')
+            .select('likes_count, comments_count, shares_count')
+            .eq('author_id', userId);
+
+        if (error) throw error;
+
+        return (data || []).reduce(
+            (acc, curr) => ({
+                likes: acc.likes + (curr.likes_count || 0),
+                comments: acc.comments + (curr.comments_count || 0),
+                shares: acc.shares + (curr.shares_count || 0),
+            }),
+            { likes: 0, comments: 0, shares: 0 }
+        );
+    },
+
+    /**
+     * Get list of muted (blocked) users
+     */
+    async getMutedUsers() {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) return [];
+
+        const { data, error } = await supabase
+            .from('user_blocks')
+            .select(`
+                blocked_id, 
+                blocked:users(id, full_name, avatar_url)
+            `)
+            .eq('blocker_id', myId);
+
+        if (error) throw error;
+        return (data || []).map((b: any) => b.blocked).filter(Boolean);
     }
 };

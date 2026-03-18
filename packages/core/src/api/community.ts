@@ -2,6 +2,7 @@ import { supabase } from '../lib/supabase';
 import { identityAPI } from './identity';
 import { growthSignalsAPI } from './growthSignals';
 import { impactRipplesAPI } from './impactRipples';
+import { applyResonanceFilter } from '../utils/temporalUtils';
 // Note: Types should ideally be shared in @repo/core/src/types, 
 // for now we use 'any' if types are not yet moved to core to prevent blocking the restoration.
 // However, the community package should ideally depend on core for types.
@@ -76,12 +77,17 @@ export const communityAPI = {
     /**
      * Get Posts with filtering and pagination
      */
-    async getPosts(filters: { limit: number; offset: number; groupId?: string }) {
+    async getPosts(filters: { limit: number; offset: number; groupId?: string; viewDate?: string }) {
         let query = supabase
             .from('community_posts')
             .select('*')
-            .range(filters.offset, filters.offset + filters.limit - 1)
-            .order('created_at', { ascending: false });
+            .range(filters.offset, filters.offset + filters.limit - 1);
+
+        if (filters.viewDate) {
+            query = applyResonanceFilter(query, filters.viewDate);
+        } else {
+            query = query.order('created_at', { ascending: false });
+        }
 
         if (filters.groupId && filters.groupId !== 'all') {
             query = query.eq('group_id', filters.groupId);
@@ -215,13 +221,19 @@ export const communityAPI = {
     /**
      * Fetch the most recent messages for a group, oldest-first for chat display.
      */
-    async getGroupMessages(groupId: string, limit = 60) {
-        const { data, error } = await supabase
+    async getGroupMessages(groupId: string, limit = 60, viewDate?: string) {
+        let query = supabase
             .from('group_messages')
             .select('*, author:users!group_messages_author_id_fkey(full_name, avatar_url)')
-            .eq('group_id', groupId)
-            .order('created_at', { ascending: false })
-            .limit(limit);
+            .eq('group_id', groupId);
+
+        if (viewDate) {
+            query = applyResonanceFilter(query, viewDate);
+        } else {
+            query = query.order('created_at', { ascending: false }).limit(limit);
+        }
+
+        const { data, error } = await query;
 
         if (error) throw error;
         // Reverse so oldest is at top

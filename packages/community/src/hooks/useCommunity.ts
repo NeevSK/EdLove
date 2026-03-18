@@ -1,4 +1,4 @@
-import { storage, StorageKeys, requireAuth, useStore, growthSignalsAPI } from '@repo/core';
+import { storage, StorageKeys, requireAuth, useStore, growthSignalsAPI, useTemporalStore } from '@repo/core';
 import { CommunityPost, CommunityGroup, Group, Post } from '../types';
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { communityAPI } from '../api/community';
@@ -7,12 +7,13 @@ import { communityAPI } from '../api/community';
 export const COMMUNITY_KEYS = {
     all: ['community'] as const,
     groups: () => [...COMMUNITY_KEYS.all, 'groups'] as const,
-    posts: (groupId?: string) => [...COMMUNITY_KEYS.all, 'posts', groupId || 'all'] as const,
+    posts: (groupId?: string, date?: string) => [...COMMUNITY_KEYS.all, 'posts', groupId || 'all', date || 'now'] as const,
 };
 
 export const useCommunity = (groupId?: string) => {
     const queryClient = useQueryClient();
     const storeUser = useStore(state => state.user);
+    const viewDate = useTemporalStore(state => state.viewDate);
 
     // Fetch Groups with Infinite Scroll
     const groupsInfiniteQuery = useInfiniteQuery({
@@ -28,12 +29,13 @@ export const useCommunity = (groupId?: string) => {
 
     // Fetch Posts with Infinite Scroll
     const postsInfiniteQuery = useInfiniteQuery({
-        queryKey: COMMUNITY_KEYS.posts(groupId || 'all'),
+        queryKey: COMMUNITY_KEYS.posts(groupId || 'all', viewDate),
         queryFn: async ({ pageParam = 0 }) => {
             return communityAPI.getPosts({
                 limit: 10,
                 offset: pageParam,
-                groupId: groupId
+                groupId: groupId,
+                viewDate: viewDate
             });
         },
         initialPageParam: 0,
@@ -67,12 +69,15 @@ export const useCommunity = (groupId?: string) => {
                         reactions: {},
                         author_name: 'Me',
                         author_role: storeUser?.role ?? 'teacher',
-                        post_type: newPost.post_type || 'discussion',
+                        post_type: newPost.post_type || 'post',
                         visibility: 'school',
                         media_url: newPost.media_url,
                         media_type: newPost.media_type,
+                        poll_data: newPost.poll_data,
                         is_anonymous: false,
                         comment_count: 0,
+                        reaction_count: 0,
+                        total_votes: 0,
                         view_count: 0,
                         school_id: storeUser?.school_id ?? '',
                         tags: [],

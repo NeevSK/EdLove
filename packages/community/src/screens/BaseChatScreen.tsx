@@ -14,6 +14,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     FlatList,
     TextInput,
@@ -67,6 +68,9 @@ export interface BaseChatScreenProps {
     subscription: SubscriptionConfig;
     onPressAuthor?: (userId: string, userName: string) => void;
     headerRight?: React.ReactNode;
+    isBlocked?: boolean;
+    blockedMessage?: string;
+    isReadOnly?: boolean;
 }
 
 export default function BaseChatScreen({
@@ -78,10 +82,14 @@ export default function BaseChatScreen({
     subscription,
     onPressAuthor,
     headerRight,
+    isBlocked,
+    blockedMessage,
+    isReadOnly,
 }: BaseChatScreenProps) {
     const navigation = useNavigation<any>();
     const user = useStore(state => state.user);
     const colors = useThemedColors();
+    const { t } = useTranslation();
 
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [loading, setLoading] = useState(true);
@@ -242,27 +250,41 @@ export default function BaseChatScreen({
 
                 {/* Compose bar */}
                 <Box sx={{ backgroundColor: colors.secondary, borderTopWidth: 1, borderTopColor: colors.border, paddingHorizontal: Theme.spacing.md, paddingVertical: Theme.spacing.sm }}>
-                    <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'flex-end' }}>
-                        <TextInput
-                            value={draft}
-                            onChangeText={setDraft}
-                            placeholder="Write a message…"
-                            placeholderTextColor={colors.textTertiary}
-                            multiline
-                            style={[styles.input, { color: colors.text, backgroundColor: colors.tertiary, borderColor: colors.border }]}
-                            returnKeyType="default"
-                        />
-                        <TouchableOpacity
-                            onPress={handleSend}
-                            disabled={!draft.trim() || sending}
-                            style={[styles.sendBtn, { backgroundColor: draft.trim() ? Theme.colors.sanctuarySaffron : colors.border }]}
-                        >
-                            {sending
-                                ? <ActivityIndicator size="small" color={Theme.colors.sacredWhite} />
-                                : <Send size={18} color={Theme.colors.sacredWhite} />
-                            }
-                        </TouchableOpacity>
-                    </HStack>
+                    {isReadOnly ? (
+                        <Box sx={{ padding: Theme.spacing.md, alignItems: 'center' }}>
+                            <Text color={colors.textTertiary} size="sm" italic>
+                                {t('chat.historicalView', 'Viewing historical sanctuary records.')}
+                            </Text>
+                        </Box>
+                    ) : isBlocked ? (
+                        <Box sx={{ padding: Theme.spacing.md, alignItems: 'center' }}>
+                            <Text color={colors.textSecondary} size="sm" italic>
+                                {blockedMessage || 'You cannot send messages to this sanctuary.'}
+                            </Text>
+                        </Box>
+                    ) : (
+                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'flex-end' }}>
+                            <TextInput
+                                value={draft}
+                                onChangeText={setDraft}
+                                placeholder="Write a message…"
+                                placeholderTextColor={colors.textTertiary}
+                                multiline
+                                style={[styles.input, { color: colors.text, backgroundColor: colors.tertiary, borderColor: colors.border }]}
+                                returnKeyType="default"
+                            />
+                            <TouchableOpacity
+                                onPress={handleSend}
+                                disabled={!draft.trim() || sending}
+                                style={[styles.sendBtn, { backgroundColor: draft.trim() ? Theme.colors.sanctuarySaffron : colors.border }]}
+                            >
+                                {sending
+                                    ? <ActivityIndicator size="small" color={Theme.colors.sacredWhite} />
+                                    : <Send size={18} color={Theme.colors.sacredWhite} />
+                                }
+                            </TouchableOpacity>
+                        </HStack>
+                    )}
                 </Box>
             </Box>
         </ScreenWrapper>

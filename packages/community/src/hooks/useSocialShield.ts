@@ -109,9 +109,9 @@ export function useSocialShield() {
         setLoading(true);
         try {
             await communityAPI.reportContent({
-                post_id: params.postId,
-                group_id: params.groupId,
-                target_user_id: params.targetUserId,
+                postId: params.postId,
+                groupId: params.groupId,
+                targetUserId: params.targetUserId,
                 reason: params.reason,
                 report_target: params.target
             }, user.id);
