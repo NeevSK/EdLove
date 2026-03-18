@@ -1,17 +1,16 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, Platform, Share, ActivityIndicator } from 'react-native';
+import { StyleSheet, TouchableOpacity, Image, Platform, Share, ActivityIndicator } from 'react-native';
 import { Box, HStack, VStack, Text, Avatar, AvatarFallbackText, AvatarImage } from '@repo/ui';
-import { MoreHorizontal, Heart, MessageCircle, Sparkles, Globe, Share2 } from 'lucide-react-native';
+import { MoreHorizontal, Heart, MessageCircle, Sparkles, Share2, CheckCircle2, AlertTriangle, FileText, Video, Music, Link2, BookOpen } from 'lucide-react-native';
 import { SanctuaryCard, Theme, useThemedColors, LivingGlow } from '@repo/ui';
 import { formatDistanceToNow } from 'date-fns';
-import { MediaAsset, supabase } from '@repo/core';
+import { supabase } from '@repo/core';
 import * as Clipboard from 'expo-clipboard';
 import { useCommunity } from '../hooks/useCommunity';
 import { useSocialShield } from '../hooks/useSocialShield';
 import { communityAPI } from '../api/community';
 import { ShieldAlert, UserX } from 'lucide-react-native';
-
-export type PostType = 'post' | 'text' | 'announcement' | 'poll';
+import { PostType, FeedbackStatus } from '../types/Community';
 
 import { CommunityPost } from '../types';
 
@@ -57,22 +56,30 @@ const PostCard = React.memo(function PostCard({
         media_type,
         is_anonymous,
         id,
-        poll_data
+        poll_data,
+        urgency,
+        has_accepted_answer,
+        feedback_status,
+        feedback_response,
     } = post;
     const colors = useThemedColors();
-    const [activeMediaIndex, setActiveMediaIndex] = React.useState(0);
 
     const isAnnouncement = post_type === 'announcement';
+    const isQuestion = post_type === 'question';
+    const isResource = post_type === 'resource';
+    const isFeedback = post_type === 'feedback';
+    const isDiscussion = post_type === 'discussion';
     const totalReactions = Object.values(reactions).reduce((a, b) => a + b, 0);
 
     const renderMediaContent = () => {
-        // Handle direct media_url if provided (new schema)
-        if (media_url && media_type === 'image') {
+        if (!media_url) return null;
+
+        if (media_type === 'image') {
             return (
                 <Box sx={{ marginTop: Theme.spacing.sm }}>
                     <Box
                         sx={{
-                            height: MEDIA_HEIGHT, // Keep original height for media display
+                            height: MEDIA_HEIGHT,
                             borderRadius: Theme.corners.comfortable,
                             overflow: 'hidden',
                             borderWidth: 1,
@@ -90,6 +97,97 @@ const PostCard = React.memo(function PostCard({
                 </Box>
             );
         }
+
+        // Non-image attachments: document / video / audio — render a tappable link chip
+        const mediaIcon = media_type === 'video'
+            ? <Video size={16} color={colors.action} />
+            : media_type === 'audio'
+                ? <Music size={16} color={colors.action} />
+                : <FileText size={16} color={colors.action} />;
+
+        const mediaLabel = media_type === 'video' ? 'Video'
+            : media_type === 'audio' ? 'Audio'
+            : 'Attachment';
+
+        return (
+            <TouchableOpacity
+                onPress={() => { if (Platform.OS === 'web') { window.open(media_url, '_blank'); } }}
+                style={[styles.attachmentChip, { borderColor: colors.action }]}
+                accessibilityLabel={`Open ${mediaLabel}`}
+            >
+                {mediaIcon}
+                <Text color={colors.action} size="sm" sx={{ marginLeft: 6 }}>{mediaLabel}</Text>
+                <Link2 size={12} color={colors.action} style={{ marginLeft: 4 }} />
+            </TouchableOpacity>
+        );
+    };
+
+    /**
+     * Renders type-specific metadata above the post content.
+     * - question: urgency badge + accepted-answer checkmark
+     * - resource: resource-type chip
+     * - feedback: status badge + authority response if present
+     */
+    const renderTypeMetadata = () => {
+        if (isQuestion) {
+            const urgencyConfig: Record<string, { label: string; color: string; bg: string }> = {
+                high:   { label: 'Urgent',  color: '#DC2626', bg: 'rgba(220,38,38,0.1)' },
+                medium: { label: 'Medium',  color: '#D97706', bg: 'rgba(217,119,6,0.1)' },
+                low:    { label: 'Low',     color: colors.textTertiary, bg: colors.overlay },
+            };
+            const urg = urgencyConfig[urgency ?? 'low'];
+            return (
+                <HStack space="sm" alignItems="center" sx={{ marginBottom: 4 }}>
+                    {urgency && urgency !== 'low' && (
+                        <Box sx={{ backgroundColor: urg.bg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                            <AlertTriangle size={11} color={urg.color} />
+                            <Text size="xs" bold sx={{ color: urg.color }}>{urg.label}</Text>
+                        </Box>
+                    )}
+                    {has_accepted_answer && (
+                        <Box sx={{ backgroundColor: 'rgba(22,163,74,0.1)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                            <CheckCircle2 size={11} color="#16A34A" />
+                            <Text size="xs" bold sx={{ color: '#16A34A' }}>Answered</Text>
+                        </Box>
+                    )}
+                </HStack>
+            );
+        }
+
+        if (isResource) {
+            return (
+                <Box sx={{ marginBottom: 4 }}>
+                    <Box sx={{ backgroundColor: 'rgba(99,102,241,0.1)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                        <BookOpen size={11} color="#6366F1" />
+                        <Text size="xs" bold sx={{ color: '#6366F1' }}>Resource</Text>
+                    </Box>
+                </Box>
+            );
+        }
+
+        if (isFeedback) {
+            const statusConfig: Record<FeedbackStatus, { label: string; color: string; bg: string }> = {
+                pending:      { label: 'Pending',      color: colors.textTertiary,    bg: colors.overlay },
+                under_review: { label: 'Under Review', color: '#D97706',              bg: 'rgba(217,119,6,0.1)' },
+                approved:     { label: 'Approved',     color: '#16A34A',              bg: 'rgba(22,163,74,0.1)' },
+                implemented:  { label: 'Implemented',  color: Theme.colors.sanctuarySaffron, bg: 'rgba(246,191,140,0.15)' },
+                declined:     { label: 'Declined',     color: '#DC2626',              bg: 'rgba(220,38,38,0.1)' },
+            };
+            const cfg = feedback_status ? statusConfig[feedback_status] : statusConfig.pending;
+            return (
+                <VStack space="xs" sx={{ marginBottom: 4 }}>
+                    <Box sx={{ backgroundColor: cfg.bg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Theme.corners.tight, alignSelf: 'flex-start' }}>
+                        <Text size="xs" bold sx={{ color: cfg.color }}>{cfg.label}</Text>
+                    </Box>
+                    {!!feedback_response && (
+                        <Box sx={{ backgroundColor: colors.secondary, padding: Theme.spacing.sm, borderRadius: Theme.corners.comfortable, borderLeftWidth: 3, borderLeftColor: Theme.colors.sanctuarySaffron }}>
+                            <Text color={colors.textSecondary} size="xs" italic>{feedback_response}</Text>
+                        </Box>
+                    )}
+                </VStack>
+            );
+        }
+
         return null;
     };
 
@@ -237,6 +335,9 @@ const PostCard = React.memo(function PostCard({
                     </Box>
                 </HStack>
 
+                {/* Type-specific metadata (urgency, feedback status, resource chip) */}
+                {renderTypeMetadata()}
+
                 {/* Content */}
                 <Text color={colors.textPrimary} size="md" sx={{ lineHeight: 22 }} numberOfLines={onPress ? 4 : undefined}>
                     {content}
@@ -291,22 +392,22 @@ const PostCard = React.memo(function PostCard({
                     {/* Engagement Count */}
                     {totalReactions > 0 && (
                         <Text color={colors.textTertiary} size="xs">
-                            {totalReactions} Resonances
+                            {totalReactions} {isQuestion ? 'Upvotes' : 'Resonances'}
                         </Text>
                     )}
 
-                    {/* Announcement Badge */}
+                    {/* Type Badge — contextual label per post type */}
                     <LivingGlow active={isAnnouncement}>
                         <Box sx={{
-                            backgroundColor: isAnnouncement ? '$amber100' : colors.overlay,
+                            backgroundColor: TYPE_BADGE[post_type]?.bg ?? colors.overlay,
                             borderWidth: 1,
-                            borderColor: isAnnouncement ? '$amber400' : colors.action,
+                            borderColor: TYPE_BADGE[post_type]?.border ?? colors.action,
                             paddingHorizontal: 8,
                             paddingVertical: 2,
                             borderRadius: Theme.corners.tight,
                         }}>
-                            <Text color={isAnnouncement ? '$amber700' : colors.action} size="xs" bold>
-                                {isAnnouncement ? 'Sacred Bulletin' : 'Resonance'}
+                            <Text sx={{ color: TYPE_BADGE[post_type]?.text ?? colors.action }} size="xs" bold>
+                                {TYPE_BADGE[post_type]?.label ?? 'Post'}
                             </Text>
                         </Box>
                     </LivingGlow>
@@ -434,6 +535,16 @@ function PollWidget({ postId, pollData, currentUserId }: { postId: string, pollD
 
 export default PostCard;
 
+/** Maps each canonical PostType to its footer badge config. */
+const TYPE_BADGE: Record<PostType, { label: string; bg: string; border: string; text: string }> = {
+    announcement: { label: 'Sacred Bulletin', bg: '$amber100',          border: '$amber400',           text: '$amber700' },
+    question:     { label: 'Question',        bg: 'rgba(59,130,246,0.1)',  border: 'rgba(59,130,246,0.5)', text: '#3B82F6' },
+    resource:     { label: 'Resource',        bg: 'rgba(99,102,241,0.1)', border: 'rgba(99,102,241,0.5)', text: '#6366F1' },
+    feedback:     { label: 'Feedback',        bg: 'rgba(168,85,247,0.1)', border: 'rgba(168,85,247,0.5)', text: '#A855F7' },
+    discussion:   { label: 'Discussion',      bg: 'rgba(20,184,166,0.1)', border: 'rgba(20,184,166,0.5)', text: '#14B8A6' },
+    poll:         { label: 'Poll',            bg: 'rgba(246,191,140,0.15)', border: 'rgba(246,143,15,0.4)', text: '#F68F0F' },
+};
+
 const styles = StyleSheet.create({
     actionButton: {
         flexDirection: 'row',
@@ -444,5 +555,15 @@ const styles = StyleSheet.create({
         padding: 12,
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(0,0,0,0.05)',
-    }
+    },
+    attachmentChip: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: Theme.spacing.sm,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: Theme.corners.comfortable,
+        borderWidth: 1,
+        alignSelf: 'flex-start',
+    },
 });

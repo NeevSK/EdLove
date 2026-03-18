@@ -84,7 +84,7 @@ export const communityAPI = {
             .range(filters.offset, filters.offset + filters.limit - 1);
 
         if (filters.viewDate) {
-            query = applyResonanceFilter(query, filters.viewDate);
+            query = applyResonanceFilter(query, 'created_at');
         } else {
             query = query.order('created_at', { ascending: false });
         }
@@ -228,7 +228,7 @@ export const communityAPI = {
             .eq('group_id', groupId);
 
         if (viewDate) {
-            query = applyResonanceFilter(query, viewDate);
+            query = applyResonanceFilter(query, 'created_at');
         } else {
             query = query.order('created_at', { ascending: false }).limit(limit);
         }

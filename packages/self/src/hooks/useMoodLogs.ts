@@ -62,7 +62,7 @@ export const useMoodLogs = (userId?: string) => {
         };
 
         loadInitial();
-    }, [isAnonymous, userId]);
+    }, [isAnonymous, userId, resonanceDate]);
 
     // Refresh from API or Storage
     const refreshData = useCallback(async () => {

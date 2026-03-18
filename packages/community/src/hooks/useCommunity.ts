@@ -56,12 +56,12 @@ export const useCommunity = (groupId?: string) => {
         },
         onMutate: async (newPost) => {
             // Optimistic Update
-            await queryClient.cancelQueries({ queryKey: COMMUNITY_KEYS.posts(newPost.group_id) });
+            await queryClient.cancelQueries({ queryKey: COMMUNITY_KEYS.posts(newPost.group_id, viewDate) });
 
-            const previousPosts = queryClient.getQueryData<Post[]>(COMMUNITY_KEYS.posts(newPost.group_id));
+            const previousPosts = queryClient.getQueryData<Post[]>(COMMUNITY_KEYS.posts(newPost.group_id, viewDate));
 
             if (previousPosts) {
-                queryClient.setQueryData<Post[]>(COMMUNITY_KEYS.posts(newPost.group_id), [
+                queryClient.setQueryData<Post[]>(COMMUNITY_KEYS.posts(newPost.group_id, viewDate), [
                     {
                         ...newPost,
                         id: 'temp-id',
@@ -69,7 +69,7 @@ export const useCommunity = (groupId?: string) => {
                         reactions: {},
                         author_name: 'Me',
                         author_role: storeUser?.role ?? 'teacher',
-                        post_type: newPost.post_type || 'post',
+                        post_type: newPost.post_type || 'discussion',
                         visibility: 'school',
                         media_url: newPost.media_url,
                         media_type: newPost.media_type,
@@ -91,11 +91,11 @@ export const useCommunity = (groupId?: string) => {
         },
         onError: (err, newPost, context: any) => {
             if (context?.previousPosts) {
-                queryClient.setQueryData(COMMUNITY_KEYS.posts(newPost.group_id), context.previousPosts);
+                queryClient.setQueryData(COMMUNITY_KEYS.posts(newPost.group_id, viewDate), context.previousPosts);
             }
         },
         onSettled: (data, error, variables) => {
-            queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(variables.group_id) });
+            queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(variables.group_id, viewDate) });
         },
         onSuccess: (_data, _variables) => {
             // Growth signal — post created, fire-and-forget
@@ -147,7 +147,7 @@ export const useCommunity = (groupId?: string) => {
         },
 
         fetchGroups: () => groupsInfiniteQuery.refetch(),
-        fetchPosts: (groupId?: string) => queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(groupId || 'all') }),
+        fetchPosts: (groupId?: string) => queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(groupId || 'all', viewDate) }),
 
         createPost: createPostMutation.mutateAsync,
         isCreatingPost: createPostMutation.isPending,
