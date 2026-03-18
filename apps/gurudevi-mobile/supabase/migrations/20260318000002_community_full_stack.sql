@@ -202,7 +202,8 @@ CREATE POLICY "notifications_select_own" ON public.notifications
 
 DROP POLICY IF EXISTS "notifications_update_own" ON public.notifications;
 CREATE POLICY "notifications_update_own" ON public.notifications
-    FOR UPDATE USING (user_id = auth.uid());
+    FOR UPDATE USING (user_id = auth.uid())
+    WITH CHECK (user_id = auth.uid());
 
 -- Backend (service_role) inserts notifications — no INSERT policy for anon/user needed
 -- But we grant SELECT on the realtime subscription:
