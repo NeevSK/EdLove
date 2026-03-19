@@ -123,7 +123,8 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
         if (!user?.id || !name.trim()) return;
         setLoading(true); setError('');
         try {
-            const school = await schoolAPI.create({ name: name.trim(), type, created_by: user.id });
+            const handle = name.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9_-]/g, '');
+            const school = await schoolAPI.create({ name: name.trim(), handle, type, created_by: user.id });
             try {
                 await communityAPI.createGroupWithOwner({
                     name: `${school.name} HQ`,

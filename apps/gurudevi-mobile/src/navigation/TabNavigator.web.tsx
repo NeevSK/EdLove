@@ -255,6 +255,17 @@ export default function TabNavigator({
     }
   }, [activeTab, t]);
 
+  // Sync active tab to parent state via effect to avoid "setState during render" warnings.
+  // Using a stable callback from parent and checking values prevents infinite loops.
+  React.useEffect(() => {
+    if (activeTab) {
+      const mainTabs = ["Self", "Community", "Classroom", "Library", "Profile"];
+      if (mainTabs.includes(activeTab)) {
+        onTabChange?.(activeTab.toLowerCase());
+      }
+    }
+  }, [activeTab, onTabChange]);
+
   const getClassroomLabel = () => {
     if (role === "principal") return t("tabs.mySchool");
     if (role === "founder") return t("tabs.school");
@@ -279,7 +290,7 @@ export default function TabNavigator({
 
   return (
     <div className="vellum-app-shell">
-      <div className="world-bg" />
+      <div className="world-bg" aria-hidden="true" />
 
       {/* ── TOP BAR ── */}
       <header className="top-bar">
@@ -488,19 +499,11 @@ export default function TabNavigator({
               screenListeners={{
                 state: (e) => {
                   const s = (e.data as any)?.state;
-                  if (!s || s.index === undefined) return;
+                  if (!s || s.index === undefined || !s.routes) return;
                   const routeName = s.routes[s.index]?.name;
-                  if (routeName) {
-                    // Guard against repeated same-value updates from nested navigation
-                    // state events to avoid unnecessary re-render churn.
-                    setActiveTab((prev) => {
-                      if (prev === routeName) return prev;
-                      const mainTabs = ["Self", "Community", "Classroom", "Library", "Profile"];
-                      if (mainTabs.includes(routeName)) {
-                        onTabChange?.(routeName.toLowerCase());
-                      }
-                      return routeName;
-                    });
+                  if (routeName && routeName !== activeTab) {
+                    // Update local tab state — the useEffect above handles notifying parent
+                    setActiveTab(routeName);
                   }
                 },
               }}

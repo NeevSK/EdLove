@@ -22,6 +22,9 @@ interface GroupsScreenProps {
 
 export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateGroup, onNavigateToGroup }: GroupsScreenProps) {
     const { t } = useTranslation();
+    const [activeSubTab, setActiveSubTab] = useState<GroupsSubTab>('sanctuary');
+    const [searchQuery, setSearchQuery] = useState('');
+
     const {
         sanctuaryGroups,
         galaxyGroups,
@@ -29,12 +32,56 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
         fetchNextGroups,
         hasNextGroups,
         isFetchingNextGroups
-    } = useCommunityGroups({ schoolId, userId });
+    } = useCommunityGroups({ 
+        schoolId, 
+        userId,
+        searchQuery,
+        isPublicOnly: activeSubTab === 'galaxy' && !searchQuery
+    });
 
     const colors = useThemedColors();
-    const [activeSubTab, setActiveSubTab] = useState<GroupsSubTab>('sanctuary');
 
     const activeGroups = activeSubTab === 'sanctuary' ? sanctuaryGroups : galaxyGroups;
+
+    const renderSearchBar = () => (
+        <Animated.View entering={FadeInDown.delay(100).springify()}>
+            <Box px="$4" mb="$3">
+                <HStack 
+                    space="sm" 
+                    alignItems="center" 
+                    sx={{ 
+                        backgroundColor: colors.secondary, 
+                        borderRadius: Theme.corners.comfortable,
+                        paddingHorizontal: Theme.spacing.md,
+                        height: 48,
+                        borderWidth: 1,
+                        borderColor: colors.border
+                    }}
+                >
+                    <Compass size={18} color={colors.textSecondary} />
+                    <input
+                        style={{ 
+                            flex: 1, 
+                            border: 'none', 
+                            background: 'transparent', 
+                            fontSize: 15, 
+                            color: colors.text,
+                            outline: 'none',
+                            height: '100%'
+                        }}
+                        placeholder={activeSubTab === 'sanctuary' ? "Search your groups..." : "Discover groups in the galaxy..."}
+                        value={searchQuery}
+                        onChange={(e: any) => setSearchQuery(e.target.value)}
+                    />
+                    {searchQuery ? (
+                        <Pressable onPress={() => setSearchQuery('')}>
+                            <Text sx={{ color: colors.textSecondary, fontSize: 18 }}>×</Text>
+                        </Pressable>
+                    ) : null}
+                </HStack>
+            </Box>
+        </Animated.View>
+    );
 
     const renderSubTabs = () => (
         <Animated.View entering={FadeInDown.delay(150).springify()}>
@@ -195,6 +242,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
     return (
         <Box sx={{ flex: 1 }}>
             {renderSubTabs()}
+            {renderSearchBar()}
             {renderGalaxyActions()}
             <SanctuaryFlashList
                 data={activeGroups as any}

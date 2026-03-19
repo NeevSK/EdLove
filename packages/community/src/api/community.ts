@@ -1,5 +1,5 @@
 import { supabase, identityAPI, applyResonanceFilter } from '@repo/core';
-import { CommunityPost, CommunityGroup, Group, Post, Comment } from '../types';
+import { CommunityPost, CommunityGroup, Group, Post, Comment, GroupFilters } from '../types';
 
 /**
  * Community API
@@ -57,11 +57,34 @@ export const communityAPI = {
     /**
      * Get Groups with filtering and pagination
      */
-    async getGroups(filters: { limit: number; offset: number }) {
-        const { data, error } = await supabase
+    async getGroups(filters: GroupFilters) {
+        let query = supabase
             .from('community_groups')
-            .select('*')
-            .range(filters.offset, filters.offset + filters.limit - 1)
+            .select('*');
+
+        if (filters.is_public !== undefined) {
+            query = query.eq('is_public', filters.is_public);
+        }
+        if (filters.join_policy) {
+            query = query.eq('join_policy', filters.join_policy);
+        }
+        if (filters.school_id) {
+            query = query.eq('school_id', filters.school_id);
+        }
+        if (filters.type) {
+            query = query.eq('group_type', filters.type);
+        }
+        if (filters.search) {
+            query = query.ilike('name', `%${filters.search}%`);
+        }
+
+        const offset = filters.offset ?? 0;
+        const limit = filters.limit ?? 10;
+
+        const { data, error } = await query
+            .range(offset, offset + limit - 1)
+
+
             .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -69,6 +92,13 @@ export const communityAPI = {
             ...group,
             type: group.group_type || group.type || 'general'
         })) as CommunityGroup[];
+    },
+
+    /**
+     * Search groups globally across the platform
+     */
+    async searchGroups(query: string, filters: Partial<GroupFilters> = {}) {
+        return this.getGroups({ ...filters, search: query });
     },
 
     /**

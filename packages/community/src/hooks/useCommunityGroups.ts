@@ -5,6 +5,8 @@ import type { Group, CommunityGroup } from '../types';
 export interface UseCommunityGroupsOptions {
     schoolId?: string;
     userId?: string;
+    searchQuery?: string;
+    isPublicOnly?: boolean;
 }
 
 export function useCommunityGroups(options: UseCommunityGroupsOptions = {}) {
@@ -15,7 +17,10 @@ export function useCommunityGroups(options: UseCommunityGroupsOptions = {}) {
         fetchNextGroups,
         hasNextGroups,
         isFetchingNextGroups
-    } = useCommunity();
+    } = useCommunity(undefined, { 
+        searchQuery: options.searchQuery, 
+        isPublicOnly: options.isPublicOnly 
+    });
 
     // Fix type conflicts by ensuring we check all possible type aliases
     const classroomGroups = useMemo(() =>

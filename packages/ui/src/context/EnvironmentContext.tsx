@@ -75,10 +75,14 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
     });
 
     // Compute derived state
+    // Force light mode only (dark mode disabled for now)
+    const isDark = false;
+    /*
     const isDark =
         themeMode === 'dark' ||
         (themeMode === 'system' && systemColorScheme === 'dark') ||
         (themeMode === 'auto' && shouldUseDarkTheme(temporalPhase));
+    */
     const effectiveFidelity = computeEffectiveFidelity(fidelityLevel, reality.deviceTier);
 
     /**

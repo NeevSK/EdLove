@@ -57,4 +57,6 @@ export type LibraryStackParamList = {
     PDFViewer: { resourceId: string; title: string; url: string; creator?: string };
     /** Inline video player */
     VideoPlayer: { resourceId: string; title: string; url: string; creator?: string };
+    /** Collection detail view */
+    CollectionDetail: { id: string; title: string };
 };

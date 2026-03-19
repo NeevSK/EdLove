@@ -23,12 +23,7 @@ export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilt
     const resourcesInfiniteQuery = useInfiniteQuery({
         queryKey: LIBRARY_KEYS.resources(resourceFilters),
         queryFn: async ({ pageParam = 0 }) => {
-            // High-Performance Sync Search — IndexedDB local search for web only
-            if (resourceFilters.search && Platform.OS === 'web') {
-                return libraryAPI.searchResourcesLocal(resourceFilters.search, 20);
-            }
-
-            // Versatile Server-Side Search (for native, or web without local index)
+            // Prefer Server-Side Search for reliability on web (Guest and Auth)
             if (resourceFilters.search || resourceFilters.type) {
                 return libraryAPI.searchLibrary({
                     query: resourceFilters.search || '',
@@ -51,6 +46,7 @@ export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilt
     const collectionsInfiniteQuery = useInfiniteQuery({
         queryKey: LIBRARY_KEYS.collections(collectionFilters),
         queryFn: async ({ pageParam = 0 }) => {
+            // Apply search filter to collections as well
             return libraryAPI.getCollections({ ...collectionFilters, limit: 10, offset: pageParam });
         },
         initialPageParam: 0,
@@ -115,5 +111,21 @@ export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilt
         error: (resourcesInfiniteQuery.error || collectionsInfiniteQuery.error)
             ? ((resourcesInfiniteQuery.error || collectionsInfiniteQuery.error) as Error).message
             : null,
+    };
+};
+
+export const useCollection = (id: string, userId?: string) => {
+    const { data, isLoading, error, refetch } = useInfiniteQuery({
+        queryKey: LIBRARY_KEYS.resource(id), // Reusing resource key pattern for collection detail
+        queryFn: () => libraryAPI.getCollectionById(id, userId),
+        initialPageParam: 0,
+        getNextPageParam: () => undefined, // Detail is a single fetch for now
+    });
+
+    return {
+        collection: data?.pages[0],
+        isLoading,
+        error: error ? (error as Error).message : null,
+        refetch,
     };
 };

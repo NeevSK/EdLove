@@ -89,7 +89,11 @@ export default function CommunityScreen() {
         galaxyGroups: discoverGroups,
         loading: isLoadingGroups,
         fetchGroups
-    } = useCommunityGroups({ schoolId: user?.school_id });
+    } = useCommunityGroups({ 
+        schoolId: user?.school_id,
+        searchQuery: searchQuery,
+        isPublicOnly: groupsSubTab === 'global' && !searchQuery
+    });
 
     const { manifestos } = useManifestos(user?.school_id, user?.id);
 
@@ -377,22 +381,83 @@ export default function CommunityScreen() {
                                     </button>
                                 </div>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
-                                    {(groupsSubTab === 'joined' ? joinedGroups : discoverGroups)?.map(g => (
-                                        <button
-                                            key={g.id}
-                                            onClick={() => navigation.navigate('GroupDetails', { groupId: g.id, groupName: g.name })}
-                                            className="sanctuary-card interactive"
-                                            style={{ padding: '20px', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '12px' }}
-                                        >
-                                            <Hash size={20} color={groupsSubTab === 'joined' ? "var(--water)" : "var(--moss)"} />
-                                            <div style={{ flex: 1 }}>
-                                                <div style={{ fontWeight: '700' }}>{g.name}</div>
-                                                {g.description && <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>{g.description}</div>}
-                                            </div>
-                                            {groupsSubTab === 'joined' ? <MessageSquare size={16} color="var(--ink-ghost)" /> : <Plus size={16} color="var(--ink-ghost)" />}
-                                        </button>
-                                    ))}
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
+                                    {(groupsSubTab === 'joined' ? joinedGroups : discoverGroups)?.map(g => {
+                                        const initials = (g.name || 'G').charAt(0).toUpperCase();
+                                        const isJoined = groupsSubTab === 'joined' || g.is_member;
+                                        
+                                        return (
+                                            <button
+                                                key={g.id}
+                                                onClick={() => navigation.navigate('GroupDetails', { groupId: g.id, groupName: g.name })}
+                                                className="sanctuary-card interactive group-web-card"
+                                                style={{ 
+                                                    padding: '16px', 
+                                                    textAlign: 'left', 
+                                                    display: 'flex', 
+                                                    alignItems: 'center', 
+                                                    gap: '16px',
+                                                    background: 'rgba(255, 255, 255, 0.05)',
+                                                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                                                    borderRadius: '16px',
+                                                    transition: 'all 0.2s ease'
+                                                }}
+                                            >
+                                                {/* Modern Avatar Placeholder */}
+                                                <div style={{ 
+                                                    width: '52px', 
+                                                    height: '52px', 
+                                                    borderRadius: '26px', 
+                                                    backgroundColor: g.is_public ? 'rgba(108, 92, 231, 0.15)' : 'rgba(247, 183, 49, 0.15)',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontSize: '20px',
+                                                    fontWeight: '700',
+                                                    color: g.is_public ? 'var(--gurudevi-violet, #6c5ce7)' : 'var(--sanctuary-saffron, #f7b731)',
+                                                    border: '2px solid rgba(255, 255, 255, 0.1)',
+                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                                }}>
+                                                    {initials}
+                                                </div>
+
+                                                <div style={{ flex: 1, minWidth: 0 }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                                                        <span style={{ fontWeight: '600', fontSize: '15px', color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                            {g.name}
+                                                        </span>
+                                                        {g.join_policy === 'invite_only' && <Lock size={12} color="var(--ink-ghost)" />}
+                                                    </div>
+                                                    <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                        {g.description || "Building resonance together..."}
+                                                    </div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+                                                        <span style={{ fontSize: '11px', color: 'var(--ink-ghost)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                            <Users2 size={10} />
+                                                            {g.member_count} members
+                                                        </span>
+                                                        {!isJoined && (
+                                                            <span style={{ 
+                                                                fontSize: '10px', 
+                                                                padding: '2px 6px', 
+                                                                backgroundColor: 'rgba(52, 211, 153, 0.1)', 
+                                                                color: '#34d399', 
+                                                                borderRadius: '4px',
+                                                                fontWeight: '600',
+                                                                textTransform: 'uppercase'
+                                                            }}>
+                                                                Discover
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div style={{ color: 'var(--ink-ghost)', opacity: 0.5 }}>
+                                                    {isJoined ? <MessageSquare size={16} /> : <Plus size={16} />}
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}

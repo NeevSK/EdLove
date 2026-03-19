@@ -18,10 +18,10 @@ import {
     Text,
     Pressable,
     StyleSheet,
-    useColorScheme,
 } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
 import { Theme } from '../theme/Theme';
+import { useThemedColors } from '../hooks/useThemedColors';
 
 // ============================================================================
 // TYPES
@@ -45,7 +45,7 @@ export function SmartShelf({
     onSeeAll,
     horizontalPadding = Theme.spacing.md,
 }: SmartShelfProps) {
-    const isDark = useColorScheme() === 'dark';
+    const colors = useThemedColors();
 
     const styles = StyleSheet.create({
         container: {
@@ -61,7 +61,7 @@ export function SmartShelf({
         title: {
             fontSize: Theme.typography.fontSize.md,
             fontWeight: '700',
-            color: isDark ? Theme.colors.sacredWhite : Theme.colors.inkTruth,
+            color: colors.text,
             letterSpacing: 0.2,
         },
         seeAllRow: {

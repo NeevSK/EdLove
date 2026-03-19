@@ -70,7 +70,7 @@ export const useStore = create<AppState>()(
             setUserRole: (role) => set({ userRole: role }),
             schoolType: null,
             setSchoolType: (type) => set({ schoolType: type }),
-            themeMode: 'system', // Default to system theme preference
+            themeMode: 'light', // Default to light mode (dark mode disabled)
             setThemeMode: (mode) => set({ themeMode: mode }),
             onboardingCompleted: false,
             setOnboardingCompleted: (completed) => set({ onboardingCompleted: completed }),

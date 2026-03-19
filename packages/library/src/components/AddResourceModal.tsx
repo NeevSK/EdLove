@@ -55,12 +55,12 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
 
     const footer = (
         <HStack {...({ space: "md" } as any)}>
-            <SanctuaryButton onPress={onClose} variant="ghost" action="secondary">Dismiss</SanctuaryButton>
+            <SanctuaryButton onPress={onClose} variant="ghost" action="secondary">{t('library.addResource.dismiss')}</SanctuaryButton>
             <SanctuaryButton
                 onPress={handleAdd}
                 isDisabled={!title || !url}
             >
-                Endorse & Add
+                {t('library.addResource.submit')}
             </SanctuaryButton>
         </HStack>
     );
@@ -69,17 +69,17 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
         <SanctuaryModal
             isOpen={isOpen}
             onClose={onClose}
-            title="Contribute to the Sanctuary"
-            subtitle="Share knowledge with your community"
+            title={t('library.addResource.title')}
+            subtitle={t('library.addResource.subtitle')}
             footer={footer}
         >
             <VStack {...({ space: "md", mt: "$4" } as any)}>
                 <VStack {...({ space: "xs" } as any)}>
-                    <Text {...({ color: text.secondary, size: "xs", bold: true } as any)}>Resource Information</Text>
+                    <Text {...({ color: text.secondary, size: "xs", bold: true } as any)}>{t('library.addResource.infoSection')}</Text>
                     <Input sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}>
                         <InputField
                             {...({ color: text.primary } as any)}
-                            placeholder="Resource Title (e.g. Unit 5 Past Paper)"
+                            placeholder={t('library.addResource.titlePlaceholder')}
                             value={title}
                             onChangeText={setTitle}
                         />
@@ -89,7 +89,7 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
                 <Input sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}>
                     <InputField
                         {...({ color: text.primary } as any)}
-                        placeholder="Universal Resource Link (URL)"
+                        placeholder={t('library.addResource.urlPlaceholder')}
                         value={url}
                         onChangeText={setUrl}
                         autoCapitalize="none"
@@ -99,7 +99,7 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
                 <Input sx={{ minHeight: 80, backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}>
                     <InputField
                         {...({ color: text.primary } as any)}
-                        placeholder="Brief Description (Optional)"
+                        placeholder={t('library.addResource.descriptionPlaceholder')}
                         value={description}
                         onChangeText={setDescription}
                         multiline
@@ -107,7 +107,7 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
                 </Input>
 
                 <VStack {...({ space: "xs" } as any)}>
-                    <Text {...({ color: text.secondary, size: "xs", bold: true } as any)}>Resource Type</Text>
+                    <Text {...({ color: text.secondary, size: "xs", bold: true } as any)}>{t('library.addResource.typeSection')}</Text>
                     <HStack {...({ space: "xs", flexWrap: "wrap" } as any)}>
                         {LIBRARY_RESOURCE_CATEGORIES.map(cat => (
                             <SanctuaryButton
@@ -124,11 +124,11 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
                 </VStack>
 
                 <VStack {...({ space: "xs" } as any)}>
-                    <Text {...({ color: text.secondary, size: "xs", bold: true } as any)}>Searchable Tags</Text>
+                    <Text {...({ color: text.secondary, size: "xs", bold: true } as any)}>{t('library.addResource.tagsSection')}</Text>
                     <Input sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}>
                         <InputField
                             {...({ color: text.primary } as any)}
-                            placeholder="e.g. grade10, maths, geometry"
+                            placeholder={t('library.addResource.tagsPlaceholder')}
                             value={tags}
                             onChangeText={setTags}
                         />

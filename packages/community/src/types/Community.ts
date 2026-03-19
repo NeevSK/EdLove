@@ -321,6 +321,7 @@ export interface CommunityGroup {
 
     // Visibility & Access
     visibility: PostVisibility;
+    is_public: boolean;
     allowed_roles?: UserRole[]; // If specified, only these roles can see/join
 
     // Membership
@@ -379,6 +380,7 @@ export interface GroupJoinRequest {
 
 export interface GroupFilters {
     type?: GroupType;
+    is_public?: boolean;
     visibility?: PostVisibility;
     join_policy?: GroupJoinPolicy;
     school_id?: string;

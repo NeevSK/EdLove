@@ -27,6 +27,11 @@ import { knowledgeDB } from './database';
 import { knowledgeSync } from './sync';
 
 // ============================================================================
+// HELPERS
+// ============================================================================
+const capitalize = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+
+// ============================================================================
 // LIBRARY API - Resource Management for Educational Ecology
 // ============================================================================
 
@@ -42,14 +47,15 @@ export const libraryAPI = {
         let query = supabase
             .from('nodes')
             .select(`
-  *,
-  creator: users(full_name),
-  verified_by_user: users(full_name)
+                *,
+                creator: users!library_items_uploader_id_fkey(full_name),
+                verified_by_user: users!library_resources_verified_by_fkey(full_name)
       `);
 
         // Apply filters
         if (filters.type) query = query.eq('type', filters.type);
         if (filters.subject) query = query.contains('subjects', [filters.subject]);
+        if (filters.topic) query = query.contains('topics', [filters.topic]);
         if (filters.subjects && filters.subjects.length > 0) {
             query = query.overlaps('subjects', filters.subjects);
         }
@@ -76,10 +82,10 @@ export const libraryAPI = {
         }
         if (filters.search) {
             // Trim and sanitize.
-            // • Single-quotes are escaped to prevent breaking the PostgREST filter string.
-            // • Curly braces are stripped because they have special meaning in Postgres
+            // â€¢ Single-quotes are escaped to prevent breaking the PostgREST filter string.
+            // â€¢ Curly braces are stripped because they have special meaning in Postgres
             //   array literals (used by the cs operator below).
-            // • User-supplied % / _ wildcards are also stripped so callers cannot craft
+            // â€¢ User-supplied % / _ wildcards are also stripped so callers cannot craft
             //   their own ilike patterns.
             // Note: the Supabase JS client URL-encodes the entire filter string, which
             // provides an additional layer of protection in transit.
@@ -92,17 +98,14 @@ export const libraryAPI = {
             if (term.length === 0) {
                 // Nothing left after sanitisation — skip the filter entirely
             } else {
-                // Search across every useful text column.
-                // ilike gives case-insensitive substring matching.
-                // cs (contains) checks whether the text[] column contains an exact tag match.
+                // Robust case-insensitive search logic for Web/Guest
                 query = query.or(
                     [
                         `title.ilike.%${term}%`,
                         `description.ilike.%${term}%`,
-                        `subjects.cs.{${term}}`,
-                        `creator_name.ilike.%${term}%`,
-                        `tags.cs.{${term}}`,
-                        `topics.cs.{${term}}`,
+                        `subjects.cs.{${term.toLowerCase()}}`,
+                        `tags.cs.{${term.toLowerCase()}}`,
+                        `topics.cs.{${term.toLowerCase()}}`,
                     ].join(',')
                 );
             }
@@ -138,7 +141,7 @@ export const libraryAPI = {
 
         return (data || []).map((resource: any) => ({
             ...resource,
-            creator_name: resource.creator?.full_name || 'Unknown',
+            creator_name: resource.creator?.full_name || resource.creator_name || 'System',
             verified_by_name: resource.verified_by_user?.full_name,
         }));
     },
@@ -187,7 +190,7 @@ export const libraryAPI = {
                 .filter(r => !!r)
                 .map(resource => ({
                     ...resource,
-                    creator_name: resource.creator?.full_name || 'Unknown',
+                    creator_name: resource.creator?.full_name || resource.creator_name || 'System',
                     verified_by_name: resource.verified_by_user?.full_name,
                     has_endorsed: false,
                     has_bookmarked: false,
@@ -224,6 +227,8 @@ export const libraryAPI = {
         return (data || []).map((resource: any) => ({
             ...resource,
             creator_name: resource.creator_name || 'System',
+            // Ensure subject/subjects mapping is consistent
+            subjects: resource.subjects || (resource.subject ? [resource.subject] : [])
         }));
     },
 
@@ -234,9 +239,9 @@ export const libraryAPI = {
         const { data, error } = await supabase
             .from('nodes')
             .select(`
-  *,
-  creator: users!library_resources_creator_id_fkey(full_name),
-    verified_by_user: users!library_resources_verified_by_fkey(full_name)
+                *,
+                creator: users!library_items_uploader_id_fkey(full_name),
+                verified_by_user: users!library_resources_verified_by_fkey(full_name)
       `)
             .eq('id', id)
             .single();
@@ -265,7 +270,7 @@ export const libraryAPI = {
 
         return {
             ...data,
-            creator_name: data.creator?.full_name || 'Unknown',
+            creator_name: data.creator?.full_name || data.creator_name || 'System',
             verified_by_name: data.verified_by_user?.full_name,
             has_endorsed,
             has_bookmarked,
@@ -317,7 +322,7 @@ export const libraryAPI = {
 
         return {
             ...data,
-            creator_name: data.creator?.full_name || 'Unknown',
+            creator_name: data.creator?.full_name || data.creator_name || 'System',
         };
     },
 
@@ -342,7 +347,7 @@ export const libraryAPI = {
 
         return {
             ...data,
-            creator_name: data.creator?.full_name || 'Unknown',
+            creator_name: data.creator?.full_name || data.creator_name || 'System',
             verified_by_name: data.verified_by_user?.full_name,
         };
     },
@@ -388,7 +393,7 @@ export const libraryAPI = {
                 },
             ]);
 
-            // Growth signal: user explored a resource (Witnessing dimension — absorbing, growing inward)
+            // Growth signal: user explored a resource (Witnessing dimension â€” absorbing, growing inward)
             void growthSignalsAPI.emitSignal(userId, 'resource_read', {
                 resource_id: resourceId,
             }).catch(() => { });
@@ -508,7 +513,7 @@ export const libraryAPI = {
                 resource_id: resourceId,
             });
 
-            // Impact Ripple: the resource creator gets a warm echo —
+            // Impact Ripple: the resource creator gets a warm echo â€”
             // "a teacher in your school kept your resource close"
             const { data: resource } = await supabase
                 .from('nodes')
@@ -552,7 +557,7 @@ export const libraryAPI = {
 
         return {
             ...data,
-            creator_name: data.creator?.full_name || 'Unknown',
+            creator_name: data.creator?.full_name || data.creator_name || 'System',
             verified_by_name: data.verified_by_user?.full_name,
         };
     },
@@ -584,7 +589,7 @@ resource: nodes!resource_engagements_resource_id_fkey(
 
                 return {
                     ...resource,
-                    creator_name: resource.creator?.full_name || 'Unknown',
+                    creator_name: resource.creator?.full_name || resource.creator_name || 'System',
                     has_bookmarked: true,
                 } as LibraryResource;
             })
@@ -599,114 +604,233 @@ resource: nodes!resource_engagements_resource_id_fkey(
      * Get all collections with optional filtering
      */
     async getCollections(filters: CollectionFilters = {}): Promise<ResourceCollection[]> {
+        // 1. Fetch explicit collections from the DB
         let query = supabase
             .from('collections')
             .select(`
-  *,
-  creator: users!resource_collections_creator_id_fkey(full_name)
-      `);
+                *,
+                creator: users!resource_collections_creator_id_fkey(full_name),
+                collection_nodes(node_id)
+            `);
+
+        // RLS alignment: For guests/unauthenticated users, allow public OR verified collections
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+            query = query.or('is_public.eq.true,verified.eq.true');
+        }
 
         if (filters.subject) query = query.eq('subject', filters.subject);
         if (filters.visibility) query = query.eq('visibility', filters.visibility);
         if (filters.creator_id) query = query.eq('creator_id', filters.creator_id);
-        if (filters.grades && filters.grades.length > 0) {
-            query = query.overlaps('grades', filters.grades);
-        }
+        
         if (filters.search) {
             const term = filters.search.trim().replace(/'/g, "''");
-            query = query.or(
-                `name.ilike.%${term}%,description.ilike.%${term}%`
-            );
+            query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`);
         }
 
         query = query.order('created_at', { ascending: false });
+        
+        // Use a generous limit for explicit data if we're combining, but respect filter limit if provided
+        const explicitLimit = filters.limit || 20;
+        query = query.limit(explicitLimit);
 
-        if (filters.limit) query = query.limit(filters.limit);
-        if (filters.offset) query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1);
+        const { data: explicitData, error } = await query;
+        if (error) throw new APIError(`Failed to fetch collections: ${error.message}`, error.code, error);
 
-        const { data, error } = await query;
-        if (error) {
-            console.error('[LibraryAPI] Failed to fetch collections:', {
-                code: error.code,
-                message: error.message,
-                details: error.details,
-                hint: error.hint
-            });
-            throw new APIError(`Failed to fetch collections: ${error.message}`, error.code, error);
-        }
+        // Map explicit collections with their resources
+        const explicitCollections = await Promise.all(
+            (explicitData || []).map(async (col: any) => {
+                let nodeIds = (col.collection_nodes || []).map((cn: any) => cn.node_id);
+                if (nodeIds.length === 0 && col.resource_ids?.length > 0) {
+                    nodeIds = col.resource_ids;
+                }
 
-        // Fetch resources for each collection
-        const collectionsWithResources = await Promise.all(
-            (data || []).map(async (collection: any) => {
-                if (collection.resource_ids && collection.resource_ids.length > 0) {
-                    const { data: resources } = await supabase
+                let resources: LibraryResource[] = [];
+                if (nodeIds.length > 0) {
+                    const { data: resData } = await supabase
                         .from('nodes')
                         .select('*')
-                        .in('id', collection.resource_ids);
-
-                    return {
-                        ...collection,
-                        creator_name: collection.creator?.full_name || 'Unknown',
-                        resources: resources || [],
-                    };
+                        .in('id', nodeIds.slice(0, 5));
+                    resources = resData || [];
                 }
 
                 return {
-                    ...collection,
-                    creator_name: collection.creator?.full_name || 'Unknown',
-                    resources: [],
+                    ...col,
+                    creator_name: col.creator?.full_name || 'System',
+                    resources,
+                    resource_ids: nodeIds,
                 };
             })
         );
 
-        return collectionsWithResources;
+        const activeExplicit = explicitCollections.filter(col => col.resource_ids?.length > 0);
+
+        // 2. Synthesize Virtual Collections from Subjects & Topics (Dynamic)
+        // We only synthesize virtuals if we are not specifically looking for a single user's private collections
+        let subjectVirtuals: ResourceCollection[] = [];
+        let topicVirtuals: ResourceCollection[] = [];
+
+        if (!filters.creator_id || filters.visibility === 'public') {
+            const [{ data: subjectsData }, { data: topicsData }] = await Promise.all([
+                supabase.rpc('get_node_subjects_count'),
+                supabase.rpc('get_node_topics_count')
+            ]);
+            
+            const capitalize = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+
+            // Search filtering for virtuals
+            let filteredSubjects = subjectsData || [];
+            let filteredTopics = topicsData || [];
+
+            if (filters.search) {
+                const term = filters.search.toLowerCase();
+                filteredSubjects = filteredSubjects.filter((s: any) => s.subject.toLowerCase().includes(term));
+                filteredTopics = filteredTopics.filter((t: any) => t.topic.toLowerCase().includes(term));
+            }
+
+            subjectVirtuals = filteredSubjects
+                .sort((a: any, b: any) => b.count - a.count)
+                .slice(0, filters.limit || 10)
+                .map((s: any) => ({
+                    id: `subject:${s.subject}`,
+                    name: capitalize(s.subject),
+                    description: `Dynamic collection of ${s.count} resources in ${s.subject}`,
+                    creator_id: 'system',
+                    creator_name: 'Gurudevi',
+                    visibility: 'public',
+                    resources: [], 
+                    resource_ids: [], 
+                    sequence_order: [],
+                    subjects: [s.subject],
+                    topics: [],
+                    grades: [],
+                    school_id: explicitCollections[0]?.school_id || '',
+                    is_virtual: true,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                    forks: 0,
+                    used_by_count: s.count,
+                    endorsements: 0,
+                }));
+
+            topicVirtuals = filteredTopics
+                .sort((a: any, b: any) => b.count - a.count)
+                .slice(0, filters.limit || 10)
+                .map((t: any) => ({
+                    id: `topic:${t.topic}`,
+                    name: capitalize(t.topic),
+                    description: `Dynamic collection for ${t.topic}`,
+                    creator_id: 'system',
+                    creator_name: 'Gurudevi',
+                    visibility: 'public',
+                    resources: [], 
+                    resource_ids: [], 
+                    sequence_order: [],
+                    subjects: [],
+                    topics: [t.topic],
+                    grades: [],
+                    school_id: explicitCollections[0]?.school_id || '',
+                    is_virtual: true,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                    forks: 0,
+                    used_by_count: t.count,
+                    endorsements: 0,
+                }));
+        }
+
+        const combined = [...activeExplicit, ...subjectVirtuals, ...topicVirtuals];
+        return filters.limit ? combined.slice(0, filters.limit) : combined;
     },
 
     /**
      * Get a single collection by ID
      */
     async getCollectionById(id: string, userId?: string): Promise<ResourceCollection> {
-        const { data, error } = await supabase
-            .from('collections')
-            .select(`
-  *,
-  creator: users!resource_collections_creator_id_fkey(full_name)
-    `)
-            .eq('id', id)
-            .single();
-
-        if (error) {
-            throw new APIError('Failed to fetch collection', error.code, error);
+        // Handle Virtual Collections (Subjects or Topics)
+        if (id.startsWith('subject:') || id.startsWith('topic:')) {
+            const isSubject = id.startsWith('subject:');
+            const term = id.split(':')[1] || '';
+            const filters = isSubject ? { subject: term } : { topic: term };
+            const resources = await this.getResources({ ...filters, limit: 50 });
+            
+            return {
+                id,
+                name: capitalize(term),
+                description: `Dynamic collection for ${term}`,
+                creator_id: 'system',
+                creator_name: 'Gurudevi',
+                visibility: 'public',
+                resources,
+                resource_ids: resources.map(r => r.id!),
+                sequence_order: resources.map((_, i) => i),
+                subjects: isSubject ? [term] : [],
+                topics: !isSubject ? [term] : [],
+                grades: [],
+                school_id: '',
+                is_virtual: true,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                forks: 0,
+                used_by_count: resources.length,
+                endorsements: 0,
+            };
         }
 
-        // Fetch resources
-        let resources: LibraryResource[] = [];
-        if (data.resource_ids && data.resource_ids.length > 0) {
-            const { data: resourcesData } = await supabase
+        // We use a regex to ensure the userId is a valid UUID before passing to Supabase
+        const isUUID = userId && /^[0-9a-f]{8}-[0-9a-f]{4}-[12345][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId);
+
+        let query = supabase
+            .from('collections')
+            .select(`
+                *,
+                creator: users!resource_collections_creator_id_fkey(full_name),
+                collection_nodes!library_collection_items_collection_id_fkey(
+                    nodes!library_collection_items_item_id_fkey(*)
+                )
+            `)
+            .eq('id', id);
+
+        // For anonymous users or guests with local IDs, only fetch public/verified collections
+        if (!isUUID) {
+            query = query.or('is_public.eq.true,verified.eq.true');
+        }
+
+        const { data, error } = await query.single();
+
+        if (error) throw new APIError('Failed to fetch collection', error.code, error);
+
+        // Combine resources from junction table and array fallback
+        let resources: LibraryResource[] = (data.collection_nodes || []).map((cn: any) => ({
+            ...cn.nodes,
+            creator_name: cn.nodes?.creator_name || 'System', // Use denormalized name from node
+        }));
+
+        if (resources.length === 0 && data.resource_ids?.length > 0) {
+            const { data: resData } = await supabase
                 .from('nodes')
                 .select('*')
                 .in('id', data.resource_ids);
-
-            resources = resourcesData || [];
+            resources = resData || [];
         }
 
-        // Check if user has endorsed
+        // Check for endorsements
         let has_endorsed = false;
         if (userId) {
-            const { data: endorsementData } = await supabase
+            const { data: endData } = await supabase
                 .from('collection_endorsements')
                 .select('id')
                 .eq('collection_id', id)
                 .eq('user_id', userId)
-                .single();
-
-            has_endorsed = !!endorsementData;
+                .maybeSingle();
+            has_endorsed = !!endData;
         }
 
         return {
             ...data,
-            creator_name: data.creator?.full_name || 'Unknown',
+            creator_name: data.creator?.full_name || data.creator_name || 'System',
             resources,
+            resource_ids: resources.map(r => r.id),
             has_endorsed,
         };
     },
@@ -759,7 +883,7 @@ resource: nodes!resource_engagements_resource_id_fkey(
 
         return {
             ...data,
-            creator_name: data.creator?.full_name || 'Unknown',
+            creator_name: data.creator?.full_name || data.creator_name || 'System',
             resources,
         };
     },
@@ -837,7 +961,7 @@ resource: nodes!resource_engagements_resource_id_fkey(
 
         return {
             ...data,
-            creator_name: data.creator?.full_name || 'Unknown',
+            creator_name: data.creator?.full_name || data.creator_name || 'System',
             resources: original.resources,
         };
     },

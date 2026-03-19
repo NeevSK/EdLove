@@ -69,13 +69,14 @@ export default function GroupDetailsScreen() {
     const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
     const { t } = useTranslation();
     const { groupId } = route.params;
-    const { role } = useUserRole();
+    const { role, isGuest } = useUserRole();
     const user = useStore(state => state.user);
     const colors = useThemedColors();
     const { showToast } = useLotusToast();
     const { joinGroup, isJoiningGroup, posts, fetchPosts } = useCommunity();
 
     const [group, setGroup] = useState<any>(null);
+    const [isMember, setIsMember] = useState(false);
     const [loading, setLoading] = useState(true);
     const [showAdmin, setShowAdmin] = useState(false);
     const [reportPostId, setReportPostId] = useState<string | undefined>(undefined);
@@ -89,13 +90,28 @@ export default function GroupDetailsScreen() {
         const fetchGroup = async () => {
             setLoading(true);
             try {
+                // Fetch group details
                 const { data, error } = await supabase
                     .from('community_groups')
                     .select('*, creator:users!community_groups_created_by_fkey(full_name, avatar_url)')
                     .eq('id', groupId)
                     .single();
 
-                if (data) setGroup(data);
+                if (data) {
+                    setGroup(data);
+                    
+                    // Check if current user is a member
+                    if (user?.id) {
+                        const { data: memberData } = await supabase
+                            .from('community_group_members')
+                            .select('id')
+                            .eq('group_id', groupId)
+                            .eq('user_id', user.id)
+                            .single();
+                        
+                        setIsMember(!!memberData);
+                    }
+                }
             } catch (err) {
                 console.error(err);
             } finally {
@@ -104,16 +120,33 @@ export default function GroupDetailsScreen() {
         };
         fetchGroup();
         fetchPosts(groupId);
-    }, [groupId]);
+    }, [groupId, user?.id]);
 
     const handleJoin = async () => {
-        if (!user) return;
+        if (isGuest || !user) {
+            showToast({
+                message: t('community.groups.joinAuthRequired') || "To join this group, let's create an account first!",
+                type: 'info'
+            });
+            navigation.navigate('Auth' as any);
+            return;
+        }
+
         try {
             await joinGroup({ groupId, userId: user.id, joinPolicy: group?.join_policy || 'open' });
-            showToast({
-                message: t('community.groups.joinRequested'),
-                type: 'success'
-            });
+            
+            if (group?.join_policy === 'open') {
+                setIsMember(true);
+                showToast({
+                    message: t('community.groups.joinedSuccess') || 'Welcome to the circle!',
+                    type: 'success'
+                });
+            } else {
+                showToast({
+                    message: t('community.groups.joinRequested'),
+                    type: 'success'
+                });
+            }
         } catch (err) {
             showToast({
                 message: t('common.error'),
@@ -279,13 +312,14 @@ export default function GroupDetailsScreen() {
                                         {!isAdmin && (
                                             <Box mt="$2">
                                                 <SanctuaryButton
-                                                    action="primary"
-                                                    variant="solid"
-                                                    onPress={handleJoin}
+                                                    action={isMember ? "secondary" : "primary"}
+                                                    variant={isMember ? "outline" : "solid"}
+                                                    onPress={isMember ? () => {} : () => { handleJoin(); }}
                                                     isLoading={isJoiningGroup}
-                                                    leftIcon={UserPlus}
+                                                    leftIcon={isMember ? Users : UserPlus}
+                                                    isDisabled={isMember}
                                                 >
-                                                    {t('community.groups.join')}
+                                                    {isMember ? (t('community.groups.member') || 'Member') : t('community.groups.join')}
                                                 </SanctuaryButton>
                                             </Box>
                                         )}

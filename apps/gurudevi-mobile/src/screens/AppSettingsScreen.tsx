@@ -255,16 +255,7 @@ export default function AppSettingsScreen({ navigation }: any) {
           description={t('settings.appearance.description')}
         />
 
-        <SettingsOption
-          colors={colors}
-          icon={themeMode === 'dark' ? <Moon size={24} color={Theme.colors.sacredWhite} /> : <Sun size={24} color={Theme.colors.sacredWhite} />}
-          title={t('settings.theme.title')}
-          description={getTemporalDescription()}
-          value={getThemeLabel()}
-          onPress={() => setShowThemeModal(true)}
-          accessibilityLabel={t('settings.theme.title')}
-          accessibilityHint={t('settings.theme.hint')}
-        />
+        {/* Theme select disabled - light mode only enforced */}
 
         <SettingsOption
           colors={colors}
@@ -546,45 +537,6 @@ export default function AppSettingsScreen({ navigation }: any) {
         </Box>
       </ScrollView>
 
-      {/* Theme Selection Modal */}
-      {showThemeModal && (
-        <SelectionModal
-          colors={colors}
-          title={t('settings.theme.select')}
-          options={[
-            {
-              id: 'system',
-              label: t('settings.theme.system'),
-              description: t('settings.theme.system_full'),
-              icon: <Smartphone size={24} color={colors.action} />,
-              isSelected: themeMode === 'system',
-            },
-            {
-              id: 'auto',
-              label: t('settings.theme.auto'),
-              description: t('settings.theme.auto_full'),
-              icon: <Sparkles size={24} color={Theme.colors.gurudeviViolet} />,
-              isSelected: themeMode === 'auto',
-            },
-            {
-              id: 'light',
-              label: t('settings.theme.light'),
-              description: t('settings.theme.light_full'),
-              icon: <Sun size={24} color={Theme.colors.templeGold} />,
-              isSelected: themeMode === 'light',
-            },
-            {
-              id: 'dark',
-              label: t('settings.theme.dark'),
-              description: t('settings.theme.dark_full'),
-              icon: <Moon size={24} color={Theme.colors.shadowViolet} />,
-              isSelected: themeMode === 'dark',
-            },
-          ]}
-          onSelect={(id) => handleThemeChange(id as any)}
-          onClose={() => setShowThemeModal(false)}
-        />
-      )}
 
       {/* Fidelity Selection Modal */}
       {showFidelityModal && (

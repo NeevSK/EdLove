@@ -13,7 +13,7 @@ import { Home, School, Users, Library, User, Sparkles } from 'lucide-react-nativ
 import { Session } from '@supabase/supabase-js';
 import * as Font from 'expo-font';
 import { supabase, useStore, UserRole, SchoolType, initSentry, initPostHog, trackEvent, identifyUser, identityAPI, authAPI, APIError } from '@repo/core';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import ReactDOM from 'react-dom';
 import * as Linking from 'expo-linking';
 
@@ -119,7 +119,7 @@ const fetchAndSetUserProfile = async (internalUserId: string, onComplete?: () =>
       // role was cleared, or (c) user who completed auth but skipped the role selection step.
       if (!isEffectivelyOnboarded && navigationRef.isReady()) {
         const rootState = navigationRef.current?.getRootState();
-        const currentRoute = rootState?.routes[rootState.index]?.name;
+        const currentRoute = rootState?.routes?.[rootState?.index ?? -1]?.name;
         if (currentRoute === 'Welcome') {
           console.log('🧭 App: Authenticated user needs onboarding — navigating from Welcome to Onboarding');
           navigationRef.navigate('Onboarding' as never);
@@ -418,7 +418,11 @@ function App() {
         <GluestackUIProvider config={config}>
           <Center sx={{ flex: 1, backgroundColor: Theme.colors.obsidian }}>
             <VStack space="md" alignItems="center">
-              <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+              <Spinner 
+                accessibilityLabel="Loading Sanctuary"
+                size="large" 
+                color={Theme.colors.sanctuarySaffron} 
+              />
               <Text sx={{ color: Theme.colors.sacredWhite, fontSize: '$sm' as any }}>
                 Initializing Sanctuary...
               </Text>
@@ -438,24 +442,51 @@ function App() {
         <GluestackUIProvider config={config}>
           <SanctuaryGlobalStyles />
           <FABProvider>
-            <AppContent
-              currentTab={currentTab}
-              setCurrentTab={setCurrentTab}
-              session={session}
-              needsWelcome={needsWelcome}
-              onboardingCompleted={onboardingCompleted}
-              isProfileLoading={isProfileLoading}
-              showWelcome={showWelcome}
-              setShowWelcome={setShowWelcome}
-              toast={toast}
-              hideToast={hideToast}
-            />
+            {Platform.OS === 'web' && (
+              <Text 
+                accessibilityRole="header" 
+                aria-level={1}
+                style={styles.visuallyHidden}
+              >
+                Gurudevi
+              </Text>
+            )}
+            <View 
+              accessibilityRole={Platform.OS === 'web' ? ('main' as any) : undefined}
+              style={{ flex: 1 }}
+            >
+              <AppContent
+                currentTab={currentTab}
+                setCurrentTab={setCurrentTab}
+                session={session}
+                needsWelcome={needsWelcome}
+                onboardingCompleted={onboardingCompleted}
+                isProfileLoading={isProfileLoading}
+                showWelcome={showWelcome}
+                setShowWelcome={setShowWelcome}
+                toast={toast}
+                hideToast={hideToast}
+              />
+            </View>
           </FABProvider>
         </GluestackUIProvider>
       </EnvironmentProvider>
     </QueryClientProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  visuallyHidden: {
+    position: 'absolute',
+    width: 1,
+    height: 1,
+    padding: 0,
+    margin: -1,
+    overflow: 'hidden',
+    borderWidth: 0,
+    opacity: 0,
+  },
+});
 
 // ── OnboardingWrapper ─────────────────────────────────────────────────────────
 // A proper named React component so useStore can be called at component level,
@@ -490,10 +521,15 @@ function OnboardingWrapper({ session }: { session: any }) {
 function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardingCompleted, isProfileLoading, showWelcome, setShowWelcome, toast, hideToast }: any) {
   // Web Auth Guard: Prevent direct URL access to /app/* if not onboarded
 
+  // Stable callback for tab changes to avoid re-render cycles in child navigators
+  const handleTabChange = React.useCallback((tab: string) => {
+    setCurrentTab(tab as any);
+  }, [setCurrentTab]);
+
   useEffect(() => {
     if (Platform.OS === 'web' && navigationRef.isReady()) {
       const state = navigationRef.current?.getRootState();
-      const currentRoute = state?.routes[state.index]?.name;
+      const currentRoute = state?.routes?.[state?.index ?? -1]?.name;
 
       // If web and not onboarded/session, and trying to hit anything other than Welcome/Auth/QR
       // Allow access for authenticated users (including anonymous guests) and specific routes
@@ -563,7 +599,7 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
 
     if (!session || onboardingCompleted || !navigationRef.isReady()) return;
     const rootState = navigationRef.current?.getRootState();
-    const currentRoute = rootState?.routes[rootState.index]?.name;
+    const currentRoute = rootState?.routes?.[rootState?.index ?? -1]?.name;
     if (currentRoute === 'Welcome') {
       console.log('🧭 AppContent: Session exists, no effective onboarding — advancing to Onboarding');
       navigationRef.navigate('Onboarding' as never);
@@ -732,7 +768,7 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
                     <RootStack.Screen name="Main">
                       {() => (
                         <ErrorBoundary name="Main Tabs">
-                          <TabNavigator onTabChange={(tab: any) => setCurrentTab(tab)} />
+                          <TabNavigator onTabChange={handleTabChange} />
                         </ErrorBoundary>
                       )}
                     </RootStack.Screen>

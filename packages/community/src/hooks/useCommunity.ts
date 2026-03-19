@@ -10,16 +10,21 @@ export const COMMUNITY_KEYS = {
     posts: (groupId?: string, date?: string) => [...COMMUNITY_KEYS.all, 'posts', groupId || 'all', date || 'now'] as const,
 };
 
-export const useCommunity = (groupId?: string) => {
+export const useCommunity = (groupId?: string, options: { searchQuery?: string; isPublicOnly?: boolean } = {}) => {
     const queryClient = useQueryClient();
     const storeUser = useStore(state => state.user);
     const viewDate = useTemporalStore(state => state.viewDate);
 
     // Fetch Groups with Infinite Scroll
     const groupsInfiniteQuery = useInfiniteQuery({
-        queryKey: COMMUNITY_KEYS.groups(),
+        queryKey: [...COMMUNITY_KEYS.groups(), options.searchQuery, options.isPublicOnly],
         queryFn: async ({ pageParam = 0 }) => {
-            return communityAPI.getGroups({ limit: 10, offset: pageParam });
+            return communityAPI.getGroups({ 
+                limit: 10, 
+                offset: pageParam,
+                search: options.searchQuery,
+                is_public: options.isPublicOnly
+            });
         },
         initialPageParam: 0,
         getNextPageParam: (lastPage, allPages) => {

@@ -50,7 +50,7 @@ export const colors = {
     // Text Colors - Light Mode
     inkTruth: '#2A2318',            // Deep Ink (Primary Text)
     bark: '#544A3D',                // Secondary Text
-    willow: '#8C8273',              // Tertiary Text
+    willow: '#72695E',              // The Shadow (Muted) — Adjusted from #72695E for WCAG AA
 
     // Text Colors - Dark Mode (higher contrast for accessibility)
     sacredWhite: '#FCF9F2',         // Bone/Sacred White
@@ -109,7 +109,7 @@ export const colors = {
     text: '#2A2318',                // inkTruth
     textPrimary: '#2A2318',
     textSecondary: '#544A3D',       // bark
-    textTertiary: '#8C8273',        // willow
+    textTertiary: '#72695E',        // willow
 
     background: '#F5EDD6',          // vellum
     backgroundLight: '#F5EDD6',
@@ -233,7 +233,7 @@ export const corners = {
 // SHADOWS - Soft & Sanctuary
 // ============================================================================
 
-export const shadows = {
+const shadowDefinitions = {
     none: {
         shadowColor: 'transparent',
         shadowOffset: { width: 0, height: 0 },
@@ -288,6 +288,28 @@ export const shadows = {
         elevation: 10,
         boxShadow: '0 0 20px rgba(246, 191, 140, 0.6)',
     },
+};
+
+const isWeb = typeof window !== 'undefined';
+
+export const shadows: typeof shadowDefinitions = Object.entries(shadowDefinitions).reduce((acc, [key, value]) => {
+    // @ts-ignore
+    acc[key] = (isWeb && value.boxShadow) ? { boxShadow: value.boxShadow } : value;
+    return acc;
+}, {} as any);
+
+/**
+ * Filter shadow props for web to avoid deprecation warnings.
+ * Usage: <View style={{ ...Theme.spacing.md, ...getShadowStyle(Theme.shadows.md) }} />
+ */
+export const getShadowStyle = (shadow: any) => {
+    if (typeof window !== 'undefined' || (typeof process !== 'undefined' && process.env.BROWSER)) {
+        // On web, just return boxShadow if it exists
+        if (shadow.boxShadow) {
+            return { boxShadow: shadow.boxShadow };
+        }
+    }
+    return shadow;
 };
 
 // ============================================================================
@@ -483,8 +505,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#F6BF8C', radius: 14, opacity: 0.35 },
                 reward: { color: '#FDD925', radius: 20, opacity: 0.45 },
             },
-            accent: { action: '#F6BF8C', reward: '#FDD925', danger: '#FF6347', muted: '#8C8273' },
-            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#8C8273' },
+            accent: { action: '#F6BF8C', reward: '#FDD925', danger: '#FF6347', muted: '#72695E' },
+            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
         },
     },
 
@@ -518,8 +540,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#F6BF8C', radius: 16, opacity: 0.40 },
                 reward: { color: '#DA70D6', radius: 22, opacity: 0.45 },
             },
-            accent: { action: '#F6BF8C', reward: '#DA70D6', danger: '#FF6347', muted: '#8C8273' },
-            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#8C8273' },
+            accent: { action: '#F6BF8C', reward: '#DA70D6', danger: '#FF6347', muted: '#72695E' },
+            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
         },
     },
 
@@ -553,8 +575,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#8FBC8F', radius: 16, opacity: 0.38 },
                 reward: { color: '#F6BF8C', radius: 22, opacity: 0.50 },
             },
-            accent: { action: '#8BBF7A', reward: '#F6BF8C', danger: '#FF6347', muted: '#8C8273' },
-            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#2A2318', muted: '#8C8273' },
+            accent: { action: '#8BBF7A', reward: '#F6BF8C', danger: '#FF6347', muted: '#72695E' },
+            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#2A2318', muted: '#72695E' },
         },
     },
 
@@ -588,8 +610,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#3B82F6', radius: 14, opacity: 0.35 },
                 reward: { color: '#FDD925', radius: 20, opacity: 0.48 },
             },
-            accent: { action: '#2563EB', reward: '#FDD925', danger: '#FF6347', muted: '#8C8273' },
-            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#8C8273' },
+            accent: { action: '#2563EB', reward: '#FDD925', danger: '#FF6347', muted: '#72695E' },
+            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
         },
     },
 
@@ -623,8 +645,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#F6BF8C', radius: 16, opacity: 0.40 },
                 reward: { color: '#DA70D6', radius: 22, opacity: 0.45 },
             },
-            accent: { action: '#F6BF8C', reward: '#DA70D6', danger: '#FF6347', muted: '#8C8273' },
-            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#8C8273' },
+            accent: { action: '#F6BF8C', reward: '#DA70D6', danger: '#FF6347', muted: '#72695E' },
+            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
         },
     },
 
@@ -659,7 +681,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 reward: { color: '#8B5CF6', radius: 24, opacity: 0.55 },
             },
             accent: { action: '#FDD925', reward: '#8B5CF6', danger: '#FF6347', muted: '#524A3F' },
-            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#8C8273' },
+            text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
         },
     },
 };
@@ -679,20 +701,20 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
  *   text.muted     → mistGray       (#64748B)
  */
 export const CLASSIC_TOKENS = {
-    gradientNodes: ['#2A2318', '#3D3528', '#2A2318'],
+    gradientNodes: ['#F5EDD6', '#FAF7ED', '#E8E2CF'], // Vellum → Silk → Linen
     glass: {
-        surface: { bg: 'rgba(42, 35, 24, 0.72)', opacity: 0.72, blurAmount: 36, border: 'rgba(252,249,242,0.12)' },
-        modal: { bg: 'rgba(26, 22, 16, 0.85)', opacity: 0.85, blurAmount: 24, border: 'rgba(252,249,242,0.08)' },
-        interact: { bg: 'rgba(61, 53, 40, 0.35)', opacity: 0.35, blurAmount: 8, border: 'rgba(252,249,242,0.12)' },
+        surface: { bg: 'rgba(250, 247, 237, 0.95)', opacity: 0.95, blurAmount: 28, border: 'rgba(42,35,24,0.05)' },
+        modal: { bg: 'rgba(245, 237, 214, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(42,35,24,0.04)' },
+        interact: { bg: 'rgba(232, 226, 207, 0.50)', opacity: 0.50, blurAmount: 8, border: 'rgba(42,35,24,0.08)' },
     },
     glow: {
-        soft: { color: '#6B6480', radius: 10, opacity: 0.15 },
-        primary: { color: '#E67E22', radius: 20, opacity: 0.35 },
-        action: { color: '#3B82F6', radius: 16, opacity: 0.50 },
-        reward: { color: '#FDD925', radius: 22, opacity: 0.55 },
+        soft: { color: '#6B6480', radius: 10, opacity: 0.10 },
+        primary: { color: '#3A7A9A', radius: 18, opacity: 0.25 },
+        action: { color: '#3A7A9A', radius: 14, opacity: 0.35 },
+        reward: { color: '#FDD925', radius: 20, opacity: 0.45 },
     },
-    accent: { action: '#3B82F6', reward: '#FDD925', danger: '#FF6347', muted: '#3D3528' },
-    text: { primary: '#FCF9F2', secondary: '#C8BFB0', inverse: '#2A2318', muted: '#968E80' },
+    accent: { action: '#3A7A9A', reward: '#FDD925', danger: '#FF6347', muted: '#72695E' },
+    text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
 } as const satisfies PhaseTokens;
 
 /** The single resolver — this is what all components call via useTheme() */
