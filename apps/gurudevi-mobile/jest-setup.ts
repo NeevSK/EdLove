@@ -146,6 +146,9 @@ jest.mock('@repo/ui', () => {
         // ── Wrapper ──────────────────────────────────────────────────────────
         ScreenWrapper: ({ children }: any) => React.createElement(React.Fragment, null, children),
         EnvironmentProvider: ({ children }: any) => React.createElement(React.Fragment, null, children),
+        ExternalLinkProvider: ({ children }: any) => React.createElement(React.Fragment, null, children),
+        openExternalURL: jest.fn().mockResolvedValue(true),
+        showExternalLinkOptions: jest.fn().mockResolvedValue(true),
         // ── ProgressIndicator (inlined for ProgressIndicator.test.tsx) ───────
         ProgressIndicator: ({ currentStep, totalSteps, showStepCount = true }: any) => {
             const dots = Array.from({ length: totalSteps }, (_: any, i: number) =>

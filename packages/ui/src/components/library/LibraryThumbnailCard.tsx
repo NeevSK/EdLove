@@ -85,9 +85,10 @@ export interface LibraryThumbnailCardProps {
     thumbnailUrl?: string;
     endorsements?: number;
     verified?: boolean;
-    /** Copyright/usage notice — shown as a subtle footer badge on externally-sourced content */
+    /** Copyright/usage notice – shown as a subtle footer badge on externally-sourced content */
     copyrightNotice?: string;
     onPress: () => void;
+    onLongPress?: () => void;
     href?: string;
     target?: '_blank' | '_self';
 }
@@ -105,6 +106,7 @@ export function LibraryThumbnailCard({
     verified = false,
     copyrightNotice,
     onPress,
+    onLongPress,
     href,
     target = '_self',
 }: LibraryThumbnailCardProps) {
@@ -233,6 +235,7 @@ export function LibraryThumbnailCard({
     return (
         <PressableAny
             onPress={onPress}
+            onLongPress={onLongPress}
             style={({ hovered }: any) => [
                 styles.pressable,
                 Platform.OS === 'web' && hovered && { opacity: 0.9, cursor: 'pointer' }

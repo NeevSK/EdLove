@@ -7,7 +7,7 @@ import { NavigationContainer, type LinkingOptions } from '@react-navigation/nati
 import { navigationRef } from './src/navigation/navigationRef';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GluestackUIProvider, Spinner, Center, VStack, Text, SanctuaryGlobalStyles, FABProvider, LotusPetalFAB } from '@repo/ui';
+import { GluestackUIProvider, Spinner, Center, VStack, Text, SanctuaryGlobalStyles, FABProvider, LotusPetalFAB, ExternalLinkProvider } from '@repo/ui';
 import { config } from "./gluestack-ui.config";
 import { Home, School, Users, Library, User, Sparkles } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
@@ -610,8 +610,9 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
 
     <SafeAreaProvider>
       <ToastProvider>
-        <ErrorBoundary name="App Root">
-          <NavigationContainer
+        <ExternalLinkProvider>
+          <ErrorBoundary name="App Root">
+            <NavigationContainer
             ref={navigationRef}
             onReady={() => {
               if (navigationRef.isReady()) {
@@ -867,7 +868,8 @@ function AppContent({ currentTab, setCurrentTab, session, needsWelcome, onboardi
               frequency={phase === 'night' ? 0.45 : 0.65}
             />
             */}
-        </ErrorBoundary>
+          </ErrorBoundary>
+        </ExternalLinkProvider>
       </ToastProvider>
     </SafeAreaProvider>
   );

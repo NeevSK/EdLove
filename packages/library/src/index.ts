@@ -1,6 +1,7 @@
 export * from './api/library';
 export * from './types';
 export * from './constants/shelf';
+export * from './utils/externalLinks';
 export * from './hooks/useLibrary';
 export * from './components/ResourceList';
 export { default as AddResourceModal } from './components/AddResourceModal';

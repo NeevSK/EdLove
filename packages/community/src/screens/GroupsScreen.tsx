@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { FlatList, ActivityIndicator } from 'react-native';
+import React, { useState, useCallback, useMemo } from 'react';
+import { FlatList, ActivityIndicator, TextInput, Platform } from 'react-native';
 import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, PositiveInvitation, Theme, FadeInDown, SanctuaryButton, SanctuaryFlashList, Heading } from '@repo/ui';
 import Animated from 'react-native-reanimated';
 import GroupCard from '../components/GroupCard';
@@ -22,7 +22,7 @@ interface GroupsScreenProps {
 
 export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateGroup, onNavigateToGroup }: GroupsScreenProps) {
     const { t } = useTranslation();
-    const [activeSubTab, setActiveSubTab] = useState<GroupsSubTab>('sanctuary');
+    const [activeSubTab, setActiveSubTab] = useState<GroupsSubTab>(userId ? 'sanctuary' : 'galaxy');
     const [searchQuery, setSearchQuery] = useState('');
 
     const {
@@ -40,8 +40,19 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
     });
 
     const colors = useThemedColors();
+    const isGuest = !userId;
 
-    const activeGroups = activeSubTab === 'sanctuary' ? sanctuaryGroups : galaxyGroups;
+    const activeGroups = useMemo(() => 
+        activeSubTab === 'sanctuary' ? sanctuaryGroups : galaxyGroups,
+    [activeSubTab, sanctuaryGroups, galaxyGroups]);
+
+    const handleSearchChange = useCallback((text: string) => {
+        setSearchQuery(text);
+    }, []);
+
+    const handleClearSearch = useCallback(() => {
+        setSearchQuery('');
+    }, []);
 
     const renderSearchBar = () => (
         <Animated.View entering={FadeInDown.delay(100).springify()}>
@@ -59,22 +70,22 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                     }}
                 >
                     <Compass size={18} color={colors.textSecondary} />
-                    <input
+                    <TextInput
                         style={{ 
                             flex: 1, 
-                            border: 'none', 
-                            background: 'transparent', 
                             fontSize: 15, 
                             color: colors.text,
-                            outline: 'none',
-                            height: '100%'
+                            height: '100%',
+                            paddingHorizontal: 0, // Remove default padding for clean look
+                            ...(Platform.OS === 'web' ? { outline: 'none' } : {})
                         }}
                         placeholder={activeSubTab === 'sanctuary' ? "Search your groups..." : "Discover groups in the galaxy..."}
+                        placeholderTextColor={colors.textSecondary}
                         value={searchQuery}
-                        onChange={(e: any) => setSearchQuery(e.target.value)}
+                        onChangeText={handleSearchChange}
                     />
                     {searchQuery ? (
-                        <Pressable onPress={() => setSearchQuery('')}>
+                        <Pressable onPress={handleClearSearch}>
                             <Text sx={{ color: colors.textSecondary, fontSize: 18 }}>×</Text>
                         </Pressable>
                     ) : null}
@@ -223,7 +234,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
         );
     };
 
-    const renderItem = ({ item, index }: { item: Group, index: number }) => {
+    const renderItem = useCallback(({ item, index }: { item: Group, index: number }) => {
         const animationDelay = Math.min(index * 150, 1500);
         return (
             <Animated.View entering={FadeInDown.duration(400).delay(animationDelay).springify()}>
@@ -237,7 +248,17 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                 />
             </Animated.View>
         );
-    };
+    }, [onNavigateToGroup]);
+
+    const keyExtractor = useCallback((item: Group) => item.id, []);
+
+    const ListEmptyComponent = useMemo(() => getEmptyComponent(), [loading, activeSubTab, colors]);
+
+    const handleEndReached = useCallback(() => {
+        if (hasNextGroups && !isFetchingNextGroups) {
+            fetchNextGroups();
+        }
+    }, [hasNextGroups, isFetchingNextGroups, fetchNextGroups]);
 
     return (
         <Box sx={{ flex: 1 }}>
@@ -247,18 +268,14 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
             <SanctuaryFlashList
                 data={activeGroups as any}
                 renderItem={renderItem}
-                keyExtractor={(item) => item.id}
+                keyExtractor={keyExtractor}
                 estimatedItemSize={Theme.listSizes.communityCard}
-                onEndReached={() => {
-                    if (hasNextGroups && !isFetchingNextGroups) {
-                        fetchNextGroups();
-                    }
-                }}
+                onEndReached={handleEndReached}
                 onEndReachedThreshold={0.5}
                 ListFooterComponent={isFetchingNextGroups ? (
                     <ActivityIndicator size="small" color={colors.action} style={{ padding: 20 }} />
                 ) : null}
-                ListEmptyComponent={getEmptyComponent()}
+                ListEmptyComponent={ListEmptyComponent}
                 contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, paddingBottom: 120 }}
             />
         </Box>

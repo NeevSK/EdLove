@@ -35,6 +35,7 @@ export function LibraryThumbnailCard({
     endorsements = 0,
     verified = false,
     onPress,
+    onLongPress,
     isLocked = false
 }: any) {
     const cfg = TYPE_CONFIG[type] || TYPE_CONFIG.other;
@@ -44,6 +45,11 @@ export function LibraryThumbnailCard({
         <div
             className="sanctuary-card"
             onClick={onPress}
+            onContextMenu={(event) => {
+                if (!onLongPress) return;
+                event.preventDefault();
+                onLongPress();
+            }}
             style={{
                 width: '100%',
                 height: '240px',

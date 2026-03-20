@@ -30,6 +30,7 @@ interface SanctuaryCardProps {
     children: any;
     footer?: any;
     onPress?: () => void;
+    onLongPress?: () => void;
     href?: string;
     target?: '_blank' | '_self';
     elevated?: boolean;
@@ -54,6 +55,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
     children,
     footer,
     onPress,
+    onLongPress,
     href,
     target = '_self',
     elevated = false,
@@ -217,6 +219,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
         return (
             <PressableAny
                 onPress={onPress}
+                onLongPress={onLongPress}
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
                 onHoverIn={Platform.OS === 'web' ? () => setHovered(true) : undefined}

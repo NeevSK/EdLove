@@ -22,6 +22,7 @@ import {
     Clapperboard,
     Cpu,
     AlertTriangle,
+    ArrowLeftRight,
 } from 'lucide-react-native';
 import {
     Actionsheet,
@@ -81,6 +82,7 @@ function resolveDisplayType(type: string): DisplayResourceType {
 export interface ResourceListProps {
     resources: LibraryResource[];
     onOpenResource?: (resource: LibraryResource) => void;
+    onOpenResourceOptions?: (resource: LibraryResource) => void;
     onPullToDesk?: (resource: LibraryResource) => void;
     ListHeaderComponent?: React.ReactElement | null;
     ListFooterComponent?: React.ReactElement | null;
@@ -93,6 +95,7 @@ export interface ResourceListProps {
 export function ResourceList({
     resources,
     onOpenResource,
+    onOpenResourceOptions,
     onPullToDesk,
     ListHeaderComponent,
     ListFooterComponent,
@@ -127,6 +130,7 @@ export function ResourceList({
                         subject={item.subjects?.[0] || ''}
                         thumbnailUrl={item.media?.url || (item as any).thumbnail_url || (item.type === 'video' || item.type === 'movie_trailer' ? getYoutubeThumbnail(item.url) : undefined)}
                         onPress={() => onOpenResource?.(item)}
+                        onLongPress={item.url ? () => onOpenResourceOptions?.(item) : undefined}
                     />
                 </Box>
             );
@@ -136,6 +140,7 @@ export function ResourceList({
             <ResourceRow
                 resource={item}
                 onOpen={() => onOpenResource?.(item)}
+                onOpenAnotherWay={item.url ? () => onOpenResourceOptions?.(item) : undefined}
                 onFlashPlay={() => handleFlashPlay(item)}
                 onPullToDesk={onPullToDesk ? () => onPullToDesk(item) : undefined}
             />
@@ -175,6 +180,9 @@ export function ResourceList({
                 resource={flashPlayResource}
                 onClose={handleCloseFlashPlay}
                 onReportBroken={handleReportBroken}
+                onOpenAnotherWay={() => {
+                    if (flashPlayResource) onOpenResourceOptions?.(flashPlayResource);
+                }}
                 onOpenFull={() => {
                     if (flashPlayResource) onOpenResource?.(flashPlayResource);
                     handleCloseFlashPlay();
@@ -191,11 +199,12 @@ export function ResourceList({
 interface ResourceRowProps {
     resource: LibraryResource;
     onOpen: () => void;
+    onOpenAnotherWay?: () => void;
     onFlashPlay: () => void;
     onPullToDesk?: () => void;
 }
 
-function ResourceRow({ resource, onOpen, onFlashPlay, onPullToDesk }: ResourceRowProps) {
+function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, onPullToDesk }: ResourceRowProps) {
     const colors = useThemedColors();
     const displayType = resolveDisplayType(resource.type);
     const config = TYPE_CONFIG[displayType];
@@ -283,6 +292,17 @@ function ResourceRow({ resource, onOpen, onFlashPlay, onPullToDesk }: ResourceRo
                                 {''}
                             </SanctuaryButton>
                         )}
+                        {onOpenAnotherWay && (
+                            <SanctuaryButton
+                                onPress={onOpenAnotherWay}
+                                variant="ghost"
+                                size="xs"
+                                action="secondary"
+                                leftIcon={ArrowLeftRight}
+                            >
+                                {''}
+                            </SanctuaryButton>
+                        )}
                     </HStack>
                 </HStack>
             </SanctuaryCard>
@@ -298,10 +318,11 @@ interface FlashPlaySheetProps {
     resource: LibraryResource | null;
     onClose: () => void;
     onOpenFull: () => void;
+    onOpenAnotherWay?: () => void;
     onReportBroken: (id: string) => void;
 }
 
-function FlashPlaySheet({ resource, onClose, onOpenFull, onReportBroken }: FlashPlaySheetProps) {
+function FlashPlaySheet({ resource, onClose, onOpenFull, onOpenAnotherWay, onReportBroken }: FlashPlaySheetProps) {
     const colors = useThemedColors();
     const [resonantIslands, setResonantIslands] = useState<any[]>([]);
 
@@ -401,6 +422,16 @@ function FlashPlaySheet({ resource, onClose, onOpenFull, onReportBroken }: Flash
                                 {resource.link_status === 'broken' ? 'Broken Link' : 'Open Resonance'}
                             </SanctuaryButton>
                         </Box>
+                        {onOpenAnotherWay && resource.url && resource.link_status !== 'broken' && (
+                            <SanctuaryButton
+                                onPress={onOpenAnotherWay}
+                                variant="outline"
+                                action="secondary"
+                                leftIcon={ArrowLeftRight}
+                            >
+                                {''}
+                            </SanctuaryButton>
+                        )}
                         {resource.link_status !== 'broken' && (
                             <SanctuaryButton
                                 onPress={() => onReportBroken(resource.id)}

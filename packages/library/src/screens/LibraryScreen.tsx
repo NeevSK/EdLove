@@ -34,6 +34,7 @@ import {
     FadeInDown,
     HorizontalChipRow,
     openExternalURL,
+    showExternalLinkOptions,
 } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
@@ -53,6 +54,7 @@ import {
 import { LIBRARY_UI_CATEGORIES } from '../constants/categories';
 import { libraryAPI } from '../api/library';
 import { SHELF_DEFS, getOrderedShelfDefs } from '../constants/shelf';
+import { buildLibraryExternalLinkOptions } from '../utils/externalLinks';
 
 // Local shelf definitions removed in favor of shared constants
 
@@ -272,8 +274,18 @@ export default function LibraryScreen() {
             navigation.navigate('VideoPlayer', { resourceId: resource.id, title: resource.title, url: resource.url, creator: resource.creator_name });
             return;
         }
-        openExternalURL(resource.url).catch(err => console.error("Couldn't load page", err));
+        openExternalURL(resource.url, buildLibraryExternalLinkOptions(resource)).catch(err => console.error("Couldn't load page", err));
     }, [navigation]);
+
+    const handleOpenResourceOptions = useCallback((resource: LibraryResource) => {
+        if (!resource.url || resource.type === 'pdf' || resource.type === 'video' || resource.type === 'movie_trailer') {
+            return;
+        }
+
+        showExternalLinkOptions(resource.url, buildLibraryExternalLinkOptions(resource)).catch((err) =>
+            console.error("Couldn't show external link options", err)
+        );
+    }, []);
 
     const handleAddResource = useCallback(async () => {
         try {
@@ -340,6 +352,7 @@ export default function LibraryScreen() {
                             verified={res.verified}
                             copyrightNotice={res.copyright_notice}
                             onPress={() => handleOpenResource(res)}
+                            onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
                         />
                     ))}
                 </SmartShelf>
@@ -479,6 +492,7 @@ export default function LibraryScreen() {
                         <ResourceList
                             resources={resources}
                             onOpenResource={handleOpenResource}
+                            onOpenResourceOptions={handleOpenResourceOptions}
                             onPullToDesk={(res) => console.log('Pull to desk', res.id)}
                             viewMode={viewMode === 'grid' ? 'grid' : 'list'}
                             ListHeaderComponent={<Box sx={{ p: Theme.spacing.md, pb: 0 }}>
@@ -530,6 +544,7 @@ export default function LibraryScreen() {
                                         type={res.type}
                                         thumbnailUrl={res.thumbnailUrl}
                                         onPress={() => handleOpenResource(res)}
+                                        onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
                                     />
                                 ))}
                             </SmartShelf>

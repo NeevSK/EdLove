@@ -275,7 +275,7 @@ export default function CreateClassroomModal({
         if (!createdIds?.classroomId) return;
         const cId = createdIds.classroomId;
         handleClose();
-        navigation.navigate('ClassroomDetails' as never, { id: cId } as never);
+        (navigation as any).navigate('ClassroomDetails', { id: cId });
     };
 
     const handleScan = async (qrData: string) => {

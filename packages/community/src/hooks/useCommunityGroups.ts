@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useCommunity } from './useCommunity';
-import type { Group, CommunityGroup } from '../types';
+import type { CommunityGroup } from '../types';
 
 export interface UseCommunityGroupsOptions {
     schoolId?: string;
@@ -10,6 +10,13 @@ export interface UseCommunityGroupsOptions {
 }
 
 export function useCommunityGroups(options: UseCommunityGroupsOptions = {}) {
+    const { searchQuery, isPublicOnly, schoolId } = options;
+
+    const communityOptions = useMemo(() => ({ 
+        searchQuery, 
+        isPublicOnly 
+    }), [searchQuery, isPublicOnly]);
+
     const {
         groups,
         loading,
@@ -17,10 +24,7 @@ export function useCommunityGroups(options: UseCommunityGroupsOptions = {}) {
         fetchNextGroups,
         hasNextGroups,
         isFetchingNextGroups
-    } = useCommunity(undefined, { 
-        searchQuery: options.searchQuery, 
-        isPublicOnly: options.isPublicOnly 
-    });
+    } = useCommunity(undefined, communityOptions);
 
     // Fix type conflicts by ensuring we check all possible type aliases
     const classroomGroups = useMemo(() =>
@@ -38,14 +42,14 @@ export function useCommunityGroups(options: UseCommunityGroupsOptions = {}) {
 
     // "My Sanctuary": school-specific joined groups (school_id matches)
     const sanctuaryGroups = useMemo(
-        () => (groups as CommunityGroup[] || []).filter((g) => g.is_member && g.school_id === options.schoolId),
-        [groups, options.schoolId]
+        () => (groups as CommunityGroup[] || []).filter((g) => g.is_member && (schoolId ? g.school_id === schoolId : true)),
+        [groups, schoolId]
     );
 
     // "Global Galaxy": groups not in the user's school or not joined
     const galaxyGroups = useMemo(
-        () => (groups as CommunityGroup[] || []).filter((g) => !g.is_member || g.school_id !== options.schoolId),
-        [groups, options.schoolId]
+        () => (groups as CommunityGroup[] || []).filter((g) => !g.is_member || (schoolId ? g.school_id !== schoolId : true)),
+        [groups, schoolId]
     );
 
     return {

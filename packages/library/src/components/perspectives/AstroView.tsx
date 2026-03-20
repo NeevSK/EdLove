@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import Svg, { Circle, Line, G, Text as SvgText } from 'react-native-svg';
 import Animated, { 
     useSharedValue, 
@@ -58,17 +58,17 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
 
     const combinedGesture = Gesture.Simultaneous(pinchGesture, panGesture);
 
-    const animatedStyle = useAnimatedStyle(() => ({
+    const animatedStyle: any = useAnimatedStyle(() => ({
         transform: [
             { translateX: translateX.value },
             { translateY: translateY.value },
             { scale: scale.value }
-        ]
+        ] as any
     }));
 
     return (
         <GestureDetector gesture={combinedGesture}>
-            <Animated.View style={[{ flex: 1 }, animatedStyle]}>
+            <Animated.View style={[{ flex: 1 }, animatedStyle] as any}>
                 <Svg 
                     width={layout.bounds.width + 1000} 
                     height={layout.bounds.height + 1000} 

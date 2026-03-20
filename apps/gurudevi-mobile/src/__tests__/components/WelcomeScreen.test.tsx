@@ -40,8 +40,8 @@ describe('WelcomeScreen', () => {
 
     it('calls authAPI.signInAnonymously when guest CTA is pressed', async () => {
         mockSignInAnonymously.mockResolvedValue({ data: { session: {} }, error: null });
-        const mockOnNext = jest.fn();
-        const { getByText } = await render(<WelcomeScreen onNext={mockOnNext} />);
+        const mockOnGuest = jest.fn();
+        const { getByText } = await render(<WelcomeScreen onGuest={mockOnGuest} />);
         fireEvent.press(getByText('welcome.exploreAsGuest'));
         await waitFor(() => expect(mockSignInAnonymously).toHaveBeenCalled());
     });

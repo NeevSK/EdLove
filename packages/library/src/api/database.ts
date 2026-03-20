@@ -246,7 +246,10 @@ export const knowledgeDB = {
     async getFirstAsync<T>(query: string, params: (string | number | null)[]): Promise<T | null> {
         if (!this.db) return null;
         try {
-            return await this.db.getFirstAsync<T>(query, params);
+            const db = this.db as SQLite.SQLiteDatabase & {
+                getFirstAsync: <Row>(sql: string, bindParams?: SQLite.SQLiteBindParams) => Promise<Row | null>;
+            };
+            return await db.getFirstAsync<T>(query, params);
         } catch (error) {
             console.error('getFirstAsync failed:', error);
             return null;

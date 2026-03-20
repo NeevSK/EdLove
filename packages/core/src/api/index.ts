@@ -41,6 +41,7 @@ import { privacyAPI } from './privacy';
 import { echoAPI } from './echo';
 import { studentPotentialAPI } from './studentPotential';
 import { mappingAPI } from './mapping';
+import { historyAPI } from './history';
 
 export * from './mockData';
 export * from './types';
@@ -66,6 +67,7 @@ export * from './schoolForest';
 export * from './contextualChallenges';
 export * from './privacy';
 export * from './mapping';
+export * from './history';
 // Staff management types/API only exported selectively or implicitly required
 
 // Simplified named exports for direct access
@@ -114,6 +116,7 @@ export {
     echoAPI,
     studentPotentialAPI,
     mappingAPI,
+    historyAPI,
 };
 
 /**
@@ -168,6 +171,7 @@ export const api = {
     echo: echoAPI,
     studentPotential: studentPotentialAPI,
     mapping: mappingAPI,
+    history: historyAPI,
 };
 
 export default api;

@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import {
     LibraryThumbnailCard,
     openExternalURL,
+    showExternalLinkOptions,
     WebScreenHeader,
     useRegisterFAB,
     SmartShelf,
@@ -36,7 +37,8 @@ import {
     getOrderedShelfDefs, 
     LibraryResource, 
     CreateResourceInput,
-    UniversalPerspective 
+    UniversalPerspective,
+    buildLibraryExternalLinkOptions,
 } from '@repo/library';
 import { useNavigation } from '@react-navigation/native';
 import { StackFallback } from '../components/web/WebScreenShimmer';
@@ -123,8 +125,18 @@ export default function LibraryScreen() {
             });
             return;
         }
-        openExternalURL(resource.url).catch((err: any) => console.error("Couldn't load page", err));
+        openExternalURL(resource.url, buildLibraryExternalLinkOptions(resource)).catch((err: any) => console.error("Couldn't load page", err));
     }, [navigation]);
+
+    const handleOpenResourceOptions = useCallback((resource: LibraryResource) => {
+        if (!resource.url || resource.type === 'pdf' || resource.type === 'video' || resource.type === 'movie_trailer') {
+            return;
+        }
+
+        showExternalLinkOptions(resource.url, buildLibraryExternalLinkOptions(resource)).catch((err: any) =>
+            console.error("Couldn't show external link options", err)
+        );
+    }, []);
 
     const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
     const handleBookmark = useCallback(async (resource: LibraryResource) => {
@@ -394,6 +406,7 @@ export default function LibraryScreen() {
                                                                     endorsements={res.endorsements}
                                                                     verified={res.verified}
                                                                     onPress={() => handleOpenResource(res)}
+                                                                    onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
                                                                 />
                                                             </div>
                                                         ))}
@@ -416,6 +429,7 @@ export default function LibraryScreen() {
                                                                 endorsements={res.endorsements}
                                                                 verified={res.verified}
                                                                 onPress={() => handleOpenResource(res)}
+                                                                onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
                                                             />
                                                         </div>
                                                     ))}
@@ -437,6 +451,7 @@ export default function LibraryScreen() {
                                                 endorsements={res.endorsements}
                                                 verified={res.verified}
                                                 onPress={() => handleOpenResource(res)}
+                                                onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
                                             />
                                         ))}
                                     </div>
@@ -577,6 +592,7 @@ export default function LibraryScreen() {
                                                             endorsements={res.endorsements}
                                                             verified={res.verified}
                                                             onPress={() => handleOpenResource(res)}
+                                                            onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
                                                         />
                                                     </div>
                                                 ))}

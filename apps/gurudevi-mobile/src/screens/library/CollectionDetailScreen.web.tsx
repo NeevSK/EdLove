@@ -5,14 +5,16 @@ import {
     LibraryThumbnailCard, 
     WebScreenHeader, 
     useTheme, 
-    openExternalURL 
+    openExternalURL,
+    showExternalLinkOptions,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { 
     useCollection, 
     LibraryResource, 
     libraryAPI,
-    LIBRARY_UI_CATEGORIES
+    LIBRARY_UI_CATEGORIES,
+    buildLibraryExternalLinkOptions,
 } from '@repo/library';
 import { useStore, growthSignalsAPI, impactRipplesAPI } from '@repo/core';
 import { ArrowLeft, Play } from 'lucide-react-native';
@@ -50,8 +52,18 @@ export default function CollectionDetailScreen() {
             });
             return;
         }
-        openExternalURL(resource.url).catch((err: any) => console.error("Couldn't load page", err));
+        openExternalURL(resource.url, buildLibraryExternalLinkOptions(resource, 'Collection')).catch((err: any) => console.error("Couldn't load page", err));
     }, [navigation]);
+
+    const handleOpenResourceOptions = useCallback((resource: LibraryResource) => {
+        if (!resource.url || resource.type === 'pdf' || resource.type === 'video' || resource.type === 'movie_trailer') {
+            return;
+        }
+
+        showExternalLinkOptions(resource.url, buildLibraryExternalLinkOptions(resource, 'Collection')).catch((err: any) =>
+            console.error("Couldn't show external link options", err)
+        );
+    }, []);
 
     const getYoutubeThumbnail = (url?: string) => {
         if (!url) return undefined;
@@ -138,6 +150,7 @@ export default function CollectionDetailScreen() {
                             endorsements={res.endorsements}
                             verified={res.verified}
                             onPress={() => handleOpenResource(res)}
+                            onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
                         />
                     ))}
                     {collection.resources.length === 0 && (

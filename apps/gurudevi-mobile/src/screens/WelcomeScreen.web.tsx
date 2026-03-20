@@ -297,7 +297,12 @@ function RightPanel({
                         <Pressable
                             onPress={(e) => {
                                 e.stopPropagation();
-                                openExternalURL('https://neevsk.org/privacy');
+                                openExternalURL('https://neevsk.org/privacy', {
+                                    title: 'Privacy Pact',
+                                    sourceLabel: 'Welcome',
+                                    sourceBadge: 'External policy',
+                                    trustLevel: 'verified',
+                                });
                             }}
                             accessibilityRole="link"
                             accessibilityLabel="Read Privacy Pact"
