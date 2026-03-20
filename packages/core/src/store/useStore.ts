@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { SafeZustandStorage } from '../lib/storageWrapper';
 import { UserRole, User } from '../types';
 import { SchoolType } from '../constants/SriLankanSchools';
+import type { Session } from '@supabase/supabase-js';
 
 // ============================================================================
 // DESK ITEM - Minimal offline-first representation for Personal Desk
@@ -28,6 +29,10 @@ interface AppState {
     setUserRole: (role: UserRole | null) => void;
     schoolType: SchoolType | null;
     setSchoolType: (type: SchoolType | null) => void;
+    authSession: Session | null;
+    authSessionResolved: boolean;
+    setAuthSession: (session: Session | null) => void;
+    setAuthSessionResolved: (resolved: boolean) => void;
     themeMode: ThemeMode;
     setThemeMode: (mode: ThemeMode) => void;
     onboardingCompleted: boolean;
@@ -70,6 +75,10 @@ export const useStore = create<AppState>()(
             setUserRole: (role) => set({ userRole: role }),
             schoolType: null,
             setSchoolType: (type) => set({ schoolType: type }),
+            authSession: null,
+            authSessionResolved: false,
+            setAuthSession: (authSession) => set({ authSession }),
+            setAuthSessionResolved: (authSessionResolved) => set({ authSessionResolved }),
             themeMode: 'light', // Default to light mode (dark mode disabled)
             setThemeMode: (mode) => set({ themeMode: mode }),
             onboardingCompleted: false,

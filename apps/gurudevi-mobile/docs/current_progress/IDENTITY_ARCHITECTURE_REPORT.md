@@ -39,7 +39,7 @@ We refactored the entire functional surface area:
 To reach 100% architectural perfection, the following "polishing" steps are recommended:
 
 ### I. Web Parity Audit (Estimated: 4-6 hours)
-While Mobile is now a "Professional Sanctuary," the Web implementation (`packages/self/src/hooks` and `apps/gurudevi-web`) requires a similar sweep to ensure zero legacy `auth.uid()` dependencies remain in the UI layer.
+While Mobile is now a "Professional Sanctuary," the Web implementation (`packages/self/src/hooks` and `apps/gurudevi-marketingWeb`) requires a similar sweep to ensure zero legacy `auth.uid()` dependencies remain in the UI layer.
 
 ### II. Identity Healing Logic (Estimated: 2-3 hours)
 Strengthen the `identityAPI.getMyInternalId()` fallback to proactively "heal" legacy users who might still have orphaned identities. This ensures 100% data integrity during the transition period.

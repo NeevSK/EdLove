@@ -10,6 +10,8 @@ export type ClassroomStackParamList = {
     Timetable: { schoolId?: string };
     SchoolForest: undefined;
     PublicProfile: { id: string; type: 'user' | 'school' | 'classroom' | 'community' };
+    FormBuilder: undefined;
+    PublicForm: { slug: string };
 };
 
 /** Minimal profile shape passed to FullProfile screen.  Use proper fields instead of `any`. */

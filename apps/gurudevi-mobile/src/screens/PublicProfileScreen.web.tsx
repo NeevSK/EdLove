@@ -1,33 +1,38 @@
 import React from 'react';
 import { useRoute } from '@react-navigation/native';
-import ProfileScreenWeb from './ProfileScreen.web';
-import SchoolProfileScreenWeb from './SchoolProfileScreen.web';
-import ClassroomProfileScreenWeb from './ClassroomProfileScreen.web';
-import CommunityProfileScreenWeb from './CommunityProfileScreen.web';
+import { useEntity, EntityType } from '@repo/core';
+import { EntityView } from '@repo/ui';
+import { Box, Center, Spinner } from '@repo/ui';
 
 export default function PublicProfileScreenWeb() {
     const route = useRoute<any>();
     const { id, type } = route.params || {};
+    
+    const { entity, loading, error } = useEntity(type as EntityType, id);
 
-    if (type === 'user') {
-        return <ProfileScreenWeb userId={id} isPublic={true} />;
+    if (loading) {
+        return (
+            <Center sx={{ height: '100vh' }}>
+                <Spinner size="large" />
+            </Center>
+        );
     }
 
-    if (type === 'school') {
-        return <SchoolProfileScreenWeb schoolId={id} />;
-    }
-
-    if (type === 'classroom') {
-        return <ClassroomProfileScreenWeb classroomId={id} />;
-    }
-
-    if (type === 'community') {
-        return <CommunityProfileScreenWeb communityId={id} />;
+    if (error || !entity) {
+        return (
+            <Box sx={{ padding: '40px', textAlign: 'center', color: 'var(--ink-ghost)' }}>
+                Profile Not Found or Error Loading
+            </Box>
+        );
     }
 
     return (
-        <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-ghost)' }}>
-            Profile Not Found
-        </div>
+        <Box sx={{ maxWidth: 1200, margin: '0 auto', padding: '$6' }}>
+            <EntityView 
+                definition={entity.definition}
+                instance={entity}
+                mode="view"
+            />
+        </Box>
     );
 }

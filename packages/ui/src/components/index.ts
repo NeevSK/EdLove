@@ -4,9 +4,13 @@ export { default as SanctuaryCard } from './SanctuaryCard';
 export { default as SanctuaryButton } from './SanctuaryButton';
 export { default as SanctuaryInput } from './SanctuaryInput';
 export { default as SkeletonLoader, SkeletonCard, SkeletonAvatar, SkeletonTextLine } from './SkeletonLoader';
+
+
 export { default as SanctuaryToast } from './SanctuaryToast';
 export { default as NotificationDrawer } from './NotificationDrawer';
 export { default as PositiveInvitation } from './PositiveInvitation';
+export { default as CitizenGate } from './CitizenGate';
+export type { CitizenGateProps } from './CitizenGate';
 export { default as SandboxBanner } from './SandboxBanner';
 export * from './library/LibraryResourceCard';
 export * from './library/CollectionCard';
@@ -63,3 +67,7 @@ export { ResonanceProvider, useResonanceAesthetics } from './ResonanceProvider';
 export { JourneyHistoryCard } from './JourneyHistoryCard';
 export type { JourneyEvent } from './JourneyHistoryCard';
 export * from './ResonantHeatmap';
+export { default as EntityModal } from './EntityModal';
+export type { EntityModalProps } from './EntityModal';
+export { default as EntityView } from './EntityView';
+export type { EntityViewProps } from './EntityView';

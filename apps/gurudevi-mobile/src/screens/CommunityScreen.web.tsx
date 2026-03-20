@@ -15,7 +15,7 @@ import {
     Box,
     SanctuaryFlashList,
 } from '@repo/ui';
-import { useUserRole, useStore } from '@repo/core';
+import { useCapabilities, usePendingGateAction, useUserRole, useStore, setPendingGateAction } from '@repo/core';
 import {
     useCommunity,
     useCommunityGroups,
@@ -40,6 +40,7 @@ import {
     Flame,
     Plus,
     PenLine,
+    ArrowRight,
     Globe,
     Lock,
     Bell,
@@ -56,8 +57,10 @@ type GroupsSubTab = 'joined' | 'global';
 export default function CommunityScreen() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const { role, isGuest } = useUserRole();
+    const { role } = useUserRole();
+    const caps = useCapabilities();
     const { user } = useStore();
+    const pending = usePendingGateAction();
 
     const [activeTab, setActiveTab] = useState<CommunityTab>('feed');
     const [groupsSubTab, setGroupsSubTab] = useState<GroupsSubTab>('joined');
@@ -102,14 +105,36 @@ export default function CommunityScreen() {
 
     // Fetch DMs when activeTab is 'dms'
     useEffect(() => {
-        if (activeTab === 'dms') {
+        if (activeTab === 'dms' && caps.community.canDM) {
             setLoadingDMs(true);
             communityAPI.getDirectConversations()
                 .then(data => setConversations(data as any[]))
                 .catch(console.error)
                 .finally(() => setLoadingDMs(false));
+        } else if (activeTab === 'dms' && !caps.community.canDM) {
+            setConversations([]);
         }
-    }, [activeTab]);
+    }, [activeTab, caps.community.canDM]);
+
+    // Resume-after-upgrade: open Create Group modal if it was the gated action.
+    useEffect(() => {
+        if (!pending.action) return;
+        if (pending.action.kind !== 'community_open_create_group') return;
+        if (!caps.community.canCreateGroup) return;
+        setShowCreateGroup(true);
+        pending.clear().catch(() => { });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pending.action, caps.community.canCreateGroup]);
+
+    // Feed should be group-bounded: if the user has joined groups and no specific group is selected,
+    // default the feed to the first joined group.
+    useEffect(() => {
+        if (activeTab !== 'feed') return;
+        if (!caps.community.canViewFeed) return;
+        if (selectedGroupId !== 'all' && selectedGroupId !== 'my' && selectedGroupId !== 'pulse') return;
+        const firstJoined = joinedGroups?.[0]?.id;
+        if (firstJoined) setSelectedGroupId(firstJoined);
+    }, [activeTab, caps.community.canViewFeed, joinedGroups, selectedGroupId]);
 
     // Client-side search filter — runs over fetched posts and groups
     const q = searchQuery.toLowerCase().trim();
@@ -134,16 +159,23 @@ export default function CommunityScreen() {
         <div className="sanctuary-screen">
             <div className="sanctuary-container">
                 {/* 1. GREETING */}
-                <WebScreenHeader
-                    title={t('community.title') || "The Heart"}
-                    note={t('community.subtitle') || "Ecosystem Resonance"}
-                    timeText={isEcosystemRole ? "Architect's Stream" : "Global Resonance"}
-                    actions={!isGuest && (
+                    <WebScreenHeader
+                        title={t('community.title') || "The Heart"}
+                        note={t('community.subtitle') || "Ecosystem Resonance"}
+                        timeText={isEcosystemRole ? "Architect's Stream" : "Global Resonance"}
+                    actions={(caps.community.canPost || caps.community.canCreateGroup) ? (
                         <>
                             <button
                                 className="premium-button"
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}
-                                onClick={() => setShowCreatePost(true)}
+                                onClick={() => {
+                                    if (!caps.community.canPost) {
+                                        setPendingGateAction({ kind: 'community_open_create_group', createdAt: Date.now() }).catch(() => { });
+                                        navigation.navigate('Auth');
+                                        return;
+                                    }
+                                    setShowCreatePost(true);
+                                }}
                             >
                                 <PenLine size={15} />
                                 {t('community.actions.newPost') || "New Post"}
@@ -151,7 +183,14 @@ export default function CommunityScreen() {
                             <button
                                 className="secondary-button"
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}
-                                onClick={() => setShowCreateGroup(true)}
+                                onClick={() => {
+                                    if (!caps.community.canCreateGroup) {
+                                        setPendingGateAction({ kind: 'community_open_create_group', createdAt: Date.now() }).catch(() => { });
+                                        navigation.navigate('Auth');
+                                        return;
+                                    }
+                                    setShowCreateGroup(true);
+                                }}
                             >
                                 <Plus size={15} />
                                 {t('community.actions.newGroup') || "New Group"}
@@ -189,7 +228,7 @@ export default function CommunityScreen() {
                                 )}
                             </div>
                         </>
-                    )}
+                    ) : undefined}
                 />
 
                 {/* 2. COMMUNITY GRID */}
@@ -310,14 +349,54 @@ export default function CommunityScreen() {
 
                         {activeTab === 'feed' && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                                {isLoadingPosts ? (
+                                {!caps.community.canViewFeed ? (
+                                    <div className="sanctuary-card" style={{ padding: '28px' }}>
+                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}>
+                                            The Feed is born from Groups
+                                        </h3>
+                                        <p style={{ marginTop: 8, marginBottom: 16, color: 'var(--ink-ghost)' }}>
+                                            As a wanderer, you can discover groups and explore the ecosystem. Upgrade your account to join circles and let your feed emerge.
+                                        </p>
+                                        <PositiveInvitation
+                                            title="Become a Citizen"
+                                            description="Create an account to join groups, post, and build resonance."
+                                            type="guest"
+                                            context="community"
+                                            actionLabel="Create account"
+                                            onAction={() => navigation.navigate('Auth')}
+                                        />
+                                        <div style={{ marginTop: 12, display: 'flex', justifyContent: 'center' }}>
+                                            <button
+                                                className="secondary-button"
+                                                onClick={() => setActiveTab('groups')}
+                                            >
+                                                Explore groups
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (!joinedGroups || joinedGroups.length === 0) ? (
+                                    <div className="sanctuary-card" style={{ padding: '28px' }}>
+                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}>
+                                            Your feed will appear after you join a group
+                                        </h3>
+                                        <p style={{ marginTop: 8, marginBottom: 16, color: 'var(--ink-ghost)' }}>
+                                            Posts live inside circles. Discover a group first, then your feed becomes meaningful.
+                                        </p>
+                                        <button
+                                            className="premium-button"
+                                            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                                            onClick={() => setActiveTab('groups')}
+                                        >
+                                            Explore Groups <ArrowRight size={16} />
+                                        </button>
+                                    </div>
+                                ) : isLoadingPosts ? (
                                     <StackFallback variant="cards" />
                                 ) : (() => {
-                                    const visiblePosts = (filteredPosts || []).filter(p => {
-                                        if (selectedGroupId === 'all') return true;
-                                        if (selectedGroupId === 'pulse') return p.post_type === 'announcement' || Object.values(p.reactions || {}).reduce((a: number, b) => a + (b as number), 0) > 5;
-                                        return p.group_id === selectedGroupId;
-                                    });
+                                    const isConcreteGroup = selectedGroupId !== 'all' && selectedGroupId !== 'my' && selectedGroupId !== 'pulse';
+                                    const visiblePosts = isConcreteGroup
+                                        ? (filteredPosts || []).filter(p => p.group_id === selectedGroupId)
+                                        : [];
                                     if (visiblePosts.length === 0) {
                                         return (
                                             <div style={{ padding: '80px 40px', textAlign: 'center' }}>
@@ -464,7 +543,22 @@ export default function CommunityScreen() {
 
                         {activeTab === 'dms' && (
                             <div className="sanctuary-card" style={{ padding: '0', overflow: 'hidden' }}>
-                                {loadingDMs ? (
+                                {!caps.community.canDM ? (
+                                    <div style={{ padding: '56px 32px', textAlign: 'center' }}>
+                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}>Messages are for Citizens</h3>
+                                        <p style={{ marginTop: 10, marginBottom: 18, color: 'var(--ink-ghost)' }}>
+                                            Upgrade your account to start private conversations.
+                                        </p>
+                                        <PositiveInvitation
+                                            title="Unlock Messages"
+                                            description="Create an account to join groups and connect 1:1."
+                                            type="guest"
+                                            context="community"
+                                            actionLabel="Create account"
+                                            onAction={() => navigation.navigate('Auth')}
+                                        />
+                                    </div>
+                                ) : loadingDMs ? (
                                     <div style={{ padding: '40px', textAlign: 'center' }}>
                                         <ActivityIndicator color="var(--action)" />
                                     </div>

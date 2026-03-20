@@ -1,0 +1,40 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import SupportForm from "../components/SupportForm.svelte";
+---
+
+<Layout title="Support & Feedback">
+  <Header />
+
+  <main class="flex-grow py-24 px-8">
+    <div class="max-w-4xl mx-auto space-y-16">
+      <div class="text-center space-y-4">
+        <h1 class="text-5xl font-bold text-charcoal-truth">Support & Feedback</h1>
+        <p class="text-xl text-mud-brown">
+          If something feels broken, confusing, or heavy — tell us. Gurudevi is a healing ecosystem, and your signals help
+          it self-repair.
+        </p>
+      </div>
+
+      <SupportForm client:load />
+
+      <section class="bg-temple-stone/50 p-10 rounded-3xl border border-mud-brown/10 space-y-4">
+        <h2 class="text-2xl font-bold text-peacock-blue">Institutional inquiries</h2>
+        <p class="text-mud-brown">
+          If you are a Principal or School Head and want to onboard your school, email us and we’ll guide the transition.
+        </p>
+        <a
+          href="mailto:institutional@gurudevi.lk?subject=Gurudevi%20Institutional%20Onboarding"
+          class="inline-block px-8 py-3 bg-sanctuary-saffron text-white rounded-full font-bold hover:bg-peacock-blue transition-all"
+        >
+          Email Institutional Support
+        </a>
+      </section>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+

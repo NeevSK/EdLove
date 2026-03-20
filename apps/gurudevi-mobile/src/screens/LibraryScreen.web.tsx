@@ -8,9 +8,11 @@ import {
     SmartShelf,
 } from '@repo/ui';
 import {
-    useRoleFeatures,
     useStore,
     useUserRole,
+    useCapabilities,
+    usePendingGateAction,
+    setPendingGateAction,
     growthSignalsAPI,
     impactRipplesAPI,
     supabase
@@ -47,7 +49,8 @@ export default function LibraryScreen() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const { role } = useUserRole();
-    const { isGuest } = useRoleFeatures();
+    const caps = useCapabilities();
+    const pending = usePendingGateAction();
     const { user, showToast } = useStore();
 
     const [searchQuery, setSearchQuery] = useState('');
@@ -64,6 +67,16 @@ export default function LibraryScreen() {
         }, 500);
         return () => clearTimeout(handler);
     }, [searchQuery]);
+
+    // Resume-after-upgrade: open Add Resource modal if it was the gated action.
+    React.useEffect(() => {
+        if (!pending.action) return;
+        if (pending.action.kind !== 'library_open_add_resource') return;
+        if (!caps.library.canUpload) return;
+        setShowAddResource(true);
+        pending.clear().catch(() => { });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pending.action, caps.library.canUpload]);
 
     const isTeacherOrCurator = role === 'teacher' || role === 'principal' || role === 'founder';
     const isSearchMode = searchQuery.trim().length > 0 || selectedCategoryId !== 'All';
@@ -172,15 +185,22 @@ export default function LibraryScreen() {
         }
     }, [user?.id, showToast]);
 
-    const handleAddResourcePress = useCallback(() => setShowAddResource(true), []);
+    const handleAddResourcePress = useCallback(() => {
+        if (!caps.library.canUpload) {
+            setPendingGateAction({ kind: 'library_open_add_resource', createdAt: Date.now() }).catch(() => { });
+            navigation.navigate('Auth');
+            return;
+        }
+        setShowAddResource(true);
+    }, [caps.library.canUpload, navigation]);
     
     // Register FAB globally - memoized to prevent infinite loop or excessive updates
     const fabConfig = useMemo(() => ({
         tabType: 'library' as const,
         onPress: handleAddResourcePress,
         icon: <Plus size={24} color="#FFF" />,
-        visible: isTeacherOrCurator && !isGuest
-    }), [handleAddResourcePress, isTeacherOrCurator, isGuest]);
+        visible: isTeacherOrCurator && caps.library.canUpload
+    }), [handleAddResourcePress, isTeacherOrCurator, caps.library.canUpload]);
 
     useRegisterFAB(fabConfig);
 
@@ -194,14 +214,14 @@ export default function LibraryScreen() {
                     timeText="Curated Wisdom"
                     actions={(
                         <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-                            {isTeacherOrCurator && !isGuest && (
+                            {isTeacherOrCurator && (
                                 <button
-                                    className="premium-button"
+                                    className={caps.library.canUpload ? "premium-button" : "secondary-button"}
                                     style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
-                                    onClick={() => setShowAddResource(true)}
+                                    onClick={handleAddResourcePress}
                                 >
                                     <Plus size={15} />
-                                    Contribute Resource
+                                    {caps.library.canUpload ? 'Contribute Resource' : 'Unlock Contributions'}
                                 </button>
                             )}
                             <button
@@ -619,7 +639,7 @@ export default function LibraryScreen() {
 
 
             {/* Add Resource Modal — teachers/curators can contribute */}
-            {isTeacherOrCurator && !isGuest && (
+            {isTeacherOrCurator && caps.library.canUpload && (
                 <AddResourceModal
                     isOpen={showAddResource}
                     onClose={() => setShowAddResource(false)}

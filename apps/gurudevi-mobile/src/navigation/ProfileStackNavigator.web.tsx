@@ -1,8 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Theme, useThemedColors } from '@repo/ui';
+import { useTheme } from '@repo/ui';
 import { ProfileStackParamList } from '@repo/core';
-import { StackFallback } from '../components/web/WebScreenShimmer';
 
 // Static imports instead of React.lazy for stability on web
 import ProfileScreenWeb from '../screens/ProfileScreen.web';
@@ -13,14 +12,14 @@ import { PrivacyLedgerScreen } from '@repo/self';
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
 export default function ProfileStackNavigatorWeb() {
-    const colors = useThemedColors();
+    const { scene } = useTheme();
 
     return (
         <Stack.Navigator
             id="ProfileStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: colors.primary },
+                contentStyle: { backgroundColor: scene.canvas.bg },
                 animation: 'slide_from_right',
             }}
         >

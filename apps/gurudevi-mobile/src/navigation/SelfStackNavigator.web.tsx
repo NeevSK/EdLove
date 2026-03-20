@@ -1,6 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Theme, useTheme } from '@repo/ui';
+import { useTheme } from '@repo/ui';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 import { SelfStackParamList } from '@repo/core';
 
@@ -16,7 +16,7 @@ function ScreenFallback() {
 }
 
 export default function SelfStackNavigatorWeb() {
-    const { gradientNodes } = useTheme();
+    const { scene } = useTheme();
 
     return (
         <React.Suspense fallback={<ScreenFallback />}>
@@ -25,7 +25,7 @@ export default function SelfStackNavigatorWeb() {
             screenOptions={{
                 headerShown: false,
                 contentStyle: {
-                    backgroundColor: gradientNodes[0],
+                    backgroundColor: scene.canvas.bg,
                     overflow: 'visible',
                     minHeight: '100%',
                 },

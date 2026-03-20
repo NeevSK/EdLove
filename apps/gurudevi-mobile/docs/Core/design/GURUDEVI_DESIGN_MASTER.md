@@ -27,7 +27,10 @@ If a lower-priority doc conflicts with higher-priority truth, the lower-priority
 
 These files form the active design constitution:
 
+- `gurudevi-aesthetic-doctrine.md` (higher-order aesthetic doctrine: layout, light, material, typography)
 - `gurudevi-design-language.md` (palette + visual laws)
+- `gurudevi-scene-token-hierarchy.md` (shared scene layer stack and readable text pairings across mobile and web)
+- `gurudevi-token-resolution.md` (token architecture for world, phase, profile, and readability)
 - `gurudevi-space-specifications.md` (space-level intent and behavior)
 - `gurudevi-design-retina.md` (implementation/QA laws)
 - `gurudevi-component-library.md` (component contracts)
@@ -99,6 +102,10 @@ For any design-system change:
 
 ## 7) Change Log
 
+- **2026-03-20**: Retuned Gurudevi dark-phase palettes toward sanctuary graphite with blue-violet undertones so guarded dark mode no longer depends on the older brown-black night world.
+- **2026-03-20**: Added `gurudevi-scene-token-hierarchy.md` to formalize the shared layer grammar for world, chrome, canvas, surfaces, elevation, and readable text roles across web and mobile.
+- **2026-03-20**: Added `gurudevi-token-resolution.md` to define a manageable token architecture for world, phase, future theme profiles, and derived readability.
+- **2026-03-20**: Added `gurudevi-aesthetic-doctrine.md` to formalize the higher-order UI doctrine connecting Swiss clarity, silk elegance, ecological aliveness, and sacred illumination.
 - **2026-02-27**: Created design master governance doc; confirmed Skia canonical location as `packages/ui/src/components-native` with `@gurudevi/ui/native` import path.
 - **2026-02-27**: Added execution priority matrix + Skia dark-overlay runbook in `docs/current_progress/March/1st_week/2026-02-27-priority-matrix-and-skia-runbook.md`.
 

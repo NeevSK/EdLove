@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useThemedColors } from '@repo/ui';
-import { useUserRole, useStore, useRoleFeatures } from '@repo/core';
+import { CitizenGate, useThemedColors } from '@repo/ui';
+import { useCapabilities, useUserRole, useStore } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -42,7 +42,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
     const navigation = useNavigation<any>();
     const colors = useThemedColors();
     const { role } = useUserRole();
-    const { isGuest } = useRoleFeatures();
+    const caps = useCapabilities();
     const { user } = useStore();
     const { profile, loading: isProfileLoading, updateField, rewards, refresh } = useProfile(userId);
     const completionResult = useProfileCompletion(profile, (role as any) ?? null);
@@ -222,7 +222,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                 </div>
                                 
                                 {/* Show edit button only for own profile */}
-                                {isOwnProfile && !isGuest && (
+                                {isOwnProfile && caps.identity.isRegistered && (
                                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                                         <button
                                             className="secondary-button"
@@ -257,20 +257,22 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                 )}
 
                                 {/* Show account creation for guest ON OWN profile only (if that's even possible) */}
-                                {isOwnProfile && isGuest && (
-                                    <button
-                                        className="premium-button"
-                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}
-                                        onClick={() => (navigation as any).navigate('Auth')}
-                                    >
-                                        Create Account
-                                    </button>
+                                {isOwnProfile && !caps.identity.isRegistered && (
+                                    <div style={{ marginTop: '12px' }}>
+                                        <CitizenGate
+                                            context="profile"
+                                            title="Upgrade to edit your profile"
+                                            description="Create an account to save your identity across devices and unlock citizen features."
+                                            actionLabel="Create account"
+                                            onAction={() => (navigation as any).navigate('Auth')}
+                                        />
+                                    </div>
                                 )}
                             </div>
                         </div>
 
                         {/* ── RIGHT: QR code panel (authenticated users only) ── */}
-                        {isGuest ? null :
+                        {!caps.identity.isRegistered ? null :
                         <div style={{
                             display: 'flex',
                             flexDirection: 'column',
@@ -322,7 +324,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                 </div>
 
                 {/* ─── INLINE EDIT PANEL ─── */}
-                {editForm && !isGuest && (
+                {editForm && caps.identity.isRegistered && (
                     <div className="sanctuary-card" style={{ padding: '32px', marginBottom: '24px', border: '2px solid var(--action)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                             <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>Edit Profile</h3>

@@ -54,7 +54,7 @@ Gurudevi/
     gurudevi-mobile/     ← Expo 55, RN 0.83
                             iOS + Android
                             expo-router
-    gurudevi-web/        ← either expo-router web
+    gurudevi-marketingWeb/        ← either expo-router web
                             OR React + Vite (TBD)
                             keep components compatible
   packages/

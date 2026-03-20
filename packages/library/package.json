@@ -1,52 +1,52 @@
 {
-    "name": "@repo/library",
-    "version": "0.0.1",
-    "main": "src/index.ts",
-    "types": "src/index.ts",
-    "exports": {
-        ".": "./src/index.ts",
-        "./package.json": "./package.json"
-    },
-    "scripts": {
-        "lint": "eslint .",
-        "check-types": "tsc --noEmit",
-        "clean": "rm -rf .turbo node_modules dist"
-    },
-    "dependencies": {
-        "@repo/core": "workspace:*",
-        "@repo/graphics": "workspace:*",
-        "@repo/ui": "workspace:*",
-        "d3": "^7.9.0",
-        "expo-location": "~18.0.7",
-        "lucide-react-native": "^0.563.0",
-        "react-i18next": "^16.5.4",
-        "react-native-gifted-charts": "^1.4.76",
-        "react-native-linear-gradient": "^2.8.3",
-        "react-native-maps": "^1.27.2"
-    },
-    "devDependencies": {
-        "@repo/eslint-config": "workspace:*",
-        "@repo/typescript-config": "workspace:*",
-        "@types/d3": "^7.4.3",
-        "@types/react": "~19.1.10",
-        "@types/react-native-maps": "^0.24.2",
-        "eslint": "^9.38.0",
-        "react-i18next": "^16.5.4",
-        "tailwindcss": "~3.4.17",
-        "typescript": "~5.9.2"
-    },
-    "peerDependencies": {
-        "@repo/ui": "*",
-        "expo-audio": "*",
-        "expo-file-system": "*",
-        "expo-linking": "*",
-        "expo-sharing": "*",
-        "expo-sqlite": "*",
-        "expo-video": "*",
-        "lucide-react-native": "*",
-        "react": "*",
-        "react-i18next": "*",
-        "react-native": "*",
-        "react-native-reanimated": "*"
-    }
+  "name": "@repo/library",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "check-types": "tsc --noEmit",
+    "clean": "rm -rf .turbo node_modules dist"
+  },
+  "dependencies": {
+    "@maplibre/maplibre-react-native": "^10.4.2",
+    "@repo/core": "workspace:*",
+    "@repo/graphics": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "d3": "^7.9.0",
+    "expo-location": "~18.0.7",
+    "lucide-react-native": "^0.563.0",
+    "react-i18next": "^16.5.4",
+    "react-native-gifted-charts": "^1.4.76",
+    "react-native-linear-gradient": "^2.8.3",
+    "react-native-maps": "^1.27.2"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/d3": "^7.4.3",
+    "@types/react": "~19.1.10",
+    "eslint": "^9.38.0",
+    "react-i18next": "^16.5.4",
+    "tailwindcss": "~3.4.17",
+    "typescript": "~5.9.2"
+  },
+  "peerDependencies": {
+    "@repo/ui": "*",
+    "expo-audio": "*",
+    "expo-file-system": "*",
+    "expo-linking": "*",
+    "expo-sharing": "*",
+    "expo-sqlite": "*",
+    "expo-video": "*",
+    "lucide-react-native": "*",
+    "react": "*",
+    "react-i18next": "*",
+    "react-native": "*",
+    "react-native-reanimated": "*"
+  }
 }

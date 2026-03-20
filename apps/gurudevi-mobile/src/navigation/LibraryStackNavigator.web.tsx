@@ -1,6 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Theme, useTheme } from '@repo/ui';
+import { useTheme } from '@repo/ui';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 import { LibraryStackParamList } from '@repo/core';
 
@@ -29,7 +29,7 @@ function ScreenFallback() {
 }
 
 export default function LibraryStackNavigatorWeb() {
-    const { gradientNodes } = useTheme();
+    const { scene } = useTheme();
 
     return (
         <React.Suspense fallback={<ScreenFallback />}>
@@ -37,7 +37,7 @@ export default function LibraryStackNavigatorWeb() {
             id="LibraryStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: gradientNodes[0] },
+                contentStyle: { backgroundColor: scene.canvas.bg },
             }}
         >
             <Stack.Screen name="LibraryHome" component={LibraryScreenWeb} />

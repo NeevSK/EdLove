@@ -30,7 +30,7 @@ import { useCommunityGroups } from '../hooks/useCommunityGroups';
 import { Group, Post } from '../types';
 import GroupMemberManagement from '../components/GroupMemberManagement';
 import { PinnedResourcesShelf } from '../components/PinnedResourcesShelf';
-import { useUserRole, useStore, supabase, CommunityStackParamList } from '@repo/core';
+import { clearPendingGateAction, getPendingGateAction, setPendingGateAction, useCapabilities, useStore, supabase, CommunityStackParamList } from '@repo/core';
 // @ts-ignore
 import { isDemo } from '@repo/core';
 import Animated from 'react-native-reanimated';
@@ -69,8 +69,9 @@ export default function GroupDetailsScreen() {
     const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
     const { t } = useTranslation();
     const { groupId } = route.params;
-    const { role, isGuest } = useUserRole();
+    const caps = useCapabilities();
     const user = useStore(state => state.user);
+    const role = caps.identity.role;
     const colors = useThemedColors();
     const { showToast } = useLotusToast();
     const { joinGroup, isJoiningGroup, posts, fetchPosts } = useCommunity();
@@ -123,7 +124,8 @@ export default function GroupDetailsScreen() {
     }, [groupId, user?.id]);
 
     const handleJoin = async () => {
-        if (isGuest || !user) {
+        if (!caps.community.canJoinGroup || !user?.id) {
+            await setPendingGateAction({ kind: 'community_join_group', createdAt: Date.now(), groupId, joinPolicy: group?.join_policy || 'open' });
             showToast({
                 message: t('community.groups.joinAuthRequired') || "To join this group, let's create an account first!",
                 type: 'info'
@@ -154,6 +156,25 @@ export default function GroupDetailsScreen() {
             });
         }
     };
+
+    // Resume-after-upgrade: if the user attempted to join this group while wandering, replay now.
+    useEffect(() => {
+        let cancelled = false;
+        const maybeReplayJoin = async () => {
+            if (!caps.community.canJoinGroup) return;
+            if (!user?.id) return;
+            if (isMember) return;
+            const pending = await getPendingGateAction();
+            if (!pending || pending.kind !== 'community_join_group') return;
+            if (pending.groupId !== groupId) return;
+            if (cancelled) return;
+            await clearPendingGateAction();
+            await handleJoin();
+        };
+        maybeReplayJoin().catch(() => { });
+        return () => { cancelled = true; };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [caps.community.canJoinGroup, groupId, user?.id, isMember, group?.join_policy]);
 
     if (loading) {
         return (

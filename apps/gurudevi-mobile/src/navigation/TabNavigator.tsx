@@ -3,22 +3,17 @@ import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { Theme, SanctuaryBackground, UniversalModal, Box, VStack, HStack, Text, hapticLight } from '@repo/ui';
+import { Theme, SanctuaryBackground, Box, VStack, HStack, Text, hapticLight } from '@repo/ui';
 import { ErrorBoundary, AchievementUnlockOverlay } from '@repo/ui';
 import { Modal, TouchableOpacity } from 'react-native';
 import { X } from 'lucide-react-native';
 import { BreathGuide } from '@repo/self';
-import { BlurView } from 'expo-blur';
-import { useWindowDimensions, StyleSheet } from 'react-native';
 import { useTheme } from '@repo/ui';
-import { TemporalGlass } from '@repo/ui/native';
 
 // Icons
 import {
   User,
-  BookOpen,
   Users,
-  LayoutGrid,
   Library,
   Heart,
   School
@@ -28,17 +23,10 @@ import ClassroomStackNavigator from './ClassroomStackNavigator';
 import ProfileStackNavigator from './ProfileStackNavigator';
 import CommunityStackNavigator from './CommunityStackNavigator';
 import LibraryStackNavigator from './LibraryStackNavigator';
-import { useThemedColors } from '@repo/ui';
-import { useUserRole, useRewards, useTracking, useStore } from '@repo/core';
+import { useUserRole, useRewards, useStore } from '@repo/core';
 
 // Screens
-import {
-  SelfScreen,
-  LibraryScreen,
-  ProfileScreen
-} from '../screens';
-import { CommunityScreen, Group, Post, useCommunityGroups } from '@repo/community';
-// Assuming this is a local component, not a screen
+import { SelfScreen } from '../screens';
 
 
 const Tab = createBottomTabNavigator();
@@ -50,13 +38,10 @@ interface TabNavigatorProps {
 export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   const { t } = useTranslation();
   const { role } = useUserRole();
-  const colors = useThemedColors();
-  const { phase, isDark } = useTheme();
-  const { width } = useWindowDimensions();
+  const { scene, text, accent } = useTheme();
   const [currentTab, setCurrentTab] = React.useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
   const insets = useSafeAreaInsets();
   const { newAchievements } = useRewards();
-  const { exploredFeatures } = useTracking();
   const { isBreathingOpen, setBreathingOpen } = useStore();
   const [showCelebration, setShowCelebration] = React.useState(false);
   const [currentAchievement, setCurrentAchievement] = React.useState('');
@@ -104,9 +89,9 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           headerShown: false,
           tabBarHideOnKeyboard: true, // Universal keyboard behavior
           tabBarStyle: {
-            backgroundColor: colors.secondary, // Solid color aligned with Global Header
+            backgroundColor: scene.chrome.bg,
             borderTopWidth: 1,
-            borderTopColor: colors.border,
+            borderTopColor: scene.chrome.border,
             height: 60 + insets.bottom,
             paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
             paddingTop: 8,
@@ -115,19 +100,19 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             left: 0,
             right: 0,
             elevation: 8,
-            shadowColor: '#000',
+            shadowColor: Theme.colors.shadowViolet,
             shadowOffset: { width: 0, height: -2 },
-            shadowOpacity: 0.1,
+            shadowOpacity: 0.12,
             shadowRadius: 4,
           },
-          tabBarActiveTintColor: colors.action,
-          tabBarInactiveTintColor: colors.textTertiary,
+          tabBarActiveTintColor: accent.action,
+          tabBarInactiveTintColor: text.secondary,
           tabBarLabelStyle: {
             fontSize: 12,
             fontFamily: 'Inter_500Medium',
             marginBottom: insets.bottom > 0 ? 0 : 4,
           },
-          tabBarBackground: () => <View style={StyleSheet.absoluteFill} />,
+          tabBarBackground: () => <View style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }} />,
         }}
       >
         {/* 1. Profile Tab */}
@@ -238,20 +223,20 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         presentationStyle="pageSheet"
         onRequestClose={() => setBreathingOpen(false)}
       >
-        <Box flex={1} sx={{ backgroundColor: colors.primary }}>
+        <Box flex={1} sx={{ backgroundColor: scene.canvas.bg }}>
           <Box sx={{
             paddingTop: 50,
             paddingBottom: Theme.spacing.md,
             paddingHorizontal: Theme.spacing.md,
             borderBottomWidth: 1,
-            borderBottomColor: colors.border
+            borderBottomColor: scene.chrome.border
           }}>
             <HStack justifyContent="space-between" alignItems="center">
               <VStack>
-                <Text color={colors.text} sx={{ fontSize: '$lg' as any, fontWeight: '700' }}>
+                <Text color={text.onCanvas} sx={{ fontSize: '$lg' as any, fontWeight: '700' }}>
                   {t('self.breathingReset') || 'Breathing Reset'}
                 </Text>
-                <Text color={colors.textSecondary} sx={{ fontSize: '$xs' as any }}>
+                <Text color={text.secondary} sx={{ fontSize: '$xs' as any }}>
                   1 minute of peace
                 </Text>
               </VStack>
@@ -263,12 +248,12 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
                 style={{
                   padding: 8,
                   borderRadius: Theme.corners.full,
-                  backgroundColor: colors.tertiary,
-                  borderColor: colors.border,
+                  backgroundColor: scene.interactive.bg,
+                  borderColor: scene.interactive.border,
                   borderWidth: 1,
                 }}
               >
-                <X size={24} color={colors.text} />
+                <X size={24} color={text.onInteractive} />
               </TouchableOpacity>
             </HStack>
           </Box>

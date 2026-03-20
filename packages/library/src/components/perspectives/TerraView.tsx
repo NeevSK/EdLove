@@ -1,6 +1,7 @@
 import React, { useRef, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import { UnifiedMapView } from '../maps/UnifiedMapView';
+import { UnifiedMarker } from '../maps/UnifiedMarker';
 import { Theme, useThemedColors } from '@repo/ui';
 import type { 
     PerspectiveViewProps, 
@@ -10,7 +11,7 @@ import type {
 /**
  * TerraView — The "Geographical" Perspective (Native).
  * 
- * Renders nodes on a real-world map using react-native-maps.
+ * Renders nodes on a real-world map using a unified map component.
  * Features custom dark-mode styling for the "Sanctuary" aesthetic.
  */
 export const TerraView: React.FC<PerspectiveViewProps> = ({
@@ -18,7 +19,7 @@ export const TerraView: React.FC<PerspectiveViewProps> = ({
     onNodePress,
 }) => {
     const colors = useThemedColors();
-    const mapRef = useRef<MapView>(null);
+    const mapRef = useRef<any>(null);
 
     // Filter nodes with geo data
     const geoNodes = useMemo(() => data.nodes.filter(n => n.geo), [data.nodes]);
@@ -66,19 +67,17 @@ export const TerraView: React.FC<PerspectiveViewProps> = ({
 
     return (
         <View style={styles.container}>
-            <MapView
+            <UnifiedMapView
                 ref={mapRef}
                 style={styles.map}
-                provider={PROVIDER_GOOGLE}
-                initialRegion={initialRegion}
+                region={initialRegion}
                 customMapStyle={mapStyle}
-                showsUserLocation={false}
-                showsMyLocationButton={false}
                 rotateEnabled={false}
             >
                 {geoNodes.map((node) => (
-                    <Marker
+                    <UnifiedMarker
                         key={node.id}
+                        id={node.id}
                         coordinate={{
                             latitude: node.geo!.lat,
                             longitude: node.geo!.lng,
@@ -89,7 +88,7 @@ export const TerraView: React.FC<PerspectiveViewProps> = ({
                         pinColor={node.type === 'school' ? Theme.colors.sanctuarySaffron : colors.action}
                     />
                 ))}
-            </MapView>
+            </UnifiedMapView>
         </View>
     );
 };

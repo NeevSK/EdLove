@@ -23,7 +23,6 @@ import {
 } from '../gluestack';
 import { Theme } from '../theme/Theme';
 import { useTheme } from '../hooks/useTheme';
-import { useThemedColors } from '../hooks/useThemedColors';
 import { hapticLight } from '../utils/haptics';
 import { TemporalGlass } from '../components-native/TemporalGlass';
 import { UserAvatar } from './UserAvatar';
@@ -67,8 +66,7 @@ export default function GlobalHeader({
     const { role } = useUserRole(); // Get current role from store
     const user = useStore((state: any) => state.user); // Get user details
     const navigation = useNavigation<any>();
-    const colors = useThemedColors();
-    const { glass, text, accent, isDark, blurEnabled, phase } = useTheme();
+    const { glass, text, accent, isDark, blurEnabled, phase, scene } = useTheme();
     const insets = useSafeAreaInsets();
 
     const [showNotifications, setShowNotifications] = useState(false);
@@ -132,7 +130,7 @@ export default function GlobalHeader({
                 <BlurView
                     intensity={blurEnabled ? 36 : 0}
                     tint={isDark ? 'dark' : 'light'}
-                    style={{ flex: 1, backgroundColor: glass.surface.bg }}
+                    style={{ flex: 1, backgroundColor: scene.chrome.bg }}
                 />
                 <TemporalGlass
                     width={Dimensions.get('window').width}
@@ -163,12 +161,12 @@ export default function GlobalHeader({
                                     padding: 8,
                                     borderRadius: 12,
                                 }}>
-                                    <ChevronLeft size={24} color={text.primary} />
+                                    <ChevronLeft size={24} color={text.onChrome} />
                                 </Box>
                             </Pressable>
                         ) : showMenu && (
                             <Pressable onPress={() => navigation.openDrawer && navigation.openDrawer()}>
-                                <Menu color={text.primary} size={24} />
+                                <Menu color={text.onChrome} size={24} />
                             </Pressable>
                         )}
 
@@ -211,7 +209,7 @@ export default function GlobalHeader({
                                 </HStack>
                             )}
                             <Text
-                                color={text.primary}
+                                color={text.onChrome}
                                 sx={{
                                     fontSize: '$lg' as any,
                                     fontFamily: Theme.typography.fontFamily.english,
@@ -238,9 +236,9 @@ export default function GlobalHeader({
                                     backgroundColor: isSearchActive ? glass.interact.bg : 'transparent'
                                 }}>
                                     {isSearchActive ? (
-                                        <X size={22} color={text.primary} />
+                                        <X size={22} color={text.onChrome} />
                                     ) : (
-                                        <Search size={22} color={text.primary} />
+                                        <Search size={22} color={text.onChrome} />
                                     )}
                                 </Box>
                             </TouchableOpacity>
@@ -252,7 +250,7 @@ export default function GlobalHeader({
                                 setShowNotifications(true);
                             }}>
                                 <Box sx={{ position: 'relative' }}>
-                                    <Bell size={24} color={text.primary} />
+                                    <Bell size={24} color={text.onChrome} />
                                     {/* Notification Dot */}
                                     {unreadCount > 0 && (
                                         <Box sx={{
@@ -264,7 +262,7 @@ export default function GlobalHeader({
                                             borderRadius: 4,
                                             backgroundColor: accent.action,
                                             borderWidth: 1.5,
-                                            borderColor: glass.surface.bg // Matches the Porcelain header background
+                                            borderColor: scene.chrome.bg
                                         }} />
                                     )}
                                 </Box>

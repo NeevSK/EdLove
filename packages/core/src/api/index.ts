@@ -42,6 +42,7 @@ import { echoAPI } from './echo';
 import { studentPotentialAPI } from './studentPotential';
 import { mappingAPI } from './mapping';
 import { historyAPI } from './history';
+import { formTemplatesAPI } from './formTemplates';
 
 export * from './mockData';
 export * from './types';
@@ -117,6 +118,7 @@ export {
     studentPotentialAPI,
     mappingAPI,
     historyAPI,
+    formTemplatesAPI,
 };
 
 /**
@@ -172,6 +174,7 @@ export const api = {
     studentPotential: studentPotentialAPI,
     mapping: mappingAPI,
     history: historyAPI,
+    forms: formTemplatesAPI,
 };
 
 export default api;

@@ -1,0 +1,16 @@
+{
+  "name": "@repo/form-builder",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@repo/ui": "workspace:*",
+    "@repo/core": "workspace:*",
+    "@repo/scanner-kit": "workspace:*",
+    "lucide-react-native": "^0.563.0"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  }
+}

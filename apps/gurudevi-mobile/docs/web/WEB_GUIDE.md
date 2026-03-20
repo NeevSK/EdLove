@@ -4,65 +4,73 @@ This document clarifies the distinction between the two web environments in the 
 
 ## 1. The Environments
 
-| Feature | `apps/gurudevi-mobile` (App Web) | `apps/gurudevi-web` (Marketing) |
+| Feature | `apps/gurudevi-mobile` (Platform Web App) | `apps/gurudevi-marketingWeb` (Marketing Site) |
 | :--- | :--- | :--- |
-| **Purpose** | The "Real" Application (Library, Map, Profile, etc.) | Public Landing Page, FAQ, About, Privacy |
-| **Technology** | React Native Web (Expo) + Tailwind | Astro + Svelte + Tailwind |
-| **Developer Experience** | High-Fidelity App Shell, Auth, Data | SEO Optimized, Static Content |
-| **URL Path** | `/` (typically handles app routing) | `/` (marketing content) |
+| Purpose | The "real app" (Library, Map, Profile, etc.) | Public landing page, FAQ, About, Privacy |
+| Technology | React Native Web (Expo) + Metro | Astro + Svelte + Tailwind |
+| Developer experience | High-fidelity app shell, auth, data | SEO optimized, static content |
+| Domain | `platform.gurudevi.edlove.org` (GitHub Pages) | `gurudevi.edlove.org` (eventually `gurudevi.lk`) |
+
+Notes:
+
+- Deployment for the **platform web app** is handled by `.github/workflows/web-deploy.yml` which exports `apps/gurudevi-mobile/dist/` and deploys to GitHub Pages.
+- Web-specific behavior is implemented via `*.web.tsx` files (and web-only utilities like `*.web.ts`).
 
 ---
 
-## 2. How to Run Locally
+## 2. How to run locally
 
-### A. To run the Application (Web version of Mobile)
-This is where the **Library**, **Map Screen**, and **Vault** live.
-1. Open a terminal in the root or `apps/gurudevi-mobile`.
+### A. Run the platform web app (web version of mobile)
+
+This is where the **Library**, **Map**, and other "real app" surfaces live.
+
+1. Open a terminal in the repo root (or `apps/gurudevi-mobile`).
 2. Run:
    ```bash
    pnpm --filter gurudevi-mobile web
    ```
-3. This will start the Expo dev server and open the app in your browser (typically `localhost:8081`).
+3. This starts the Expo dev server and opens the app in your browser (typically `http://localhost:8081`).
 
-### B. To run the Marketing Site (Astro)
-This is for the public-facing content.
-1. Open a terminal in the root or `apps/gurudevi-web`.
+### B. Run the marketing site (Astro)
+
+1. Open a terminal in the repo root (or `apps/gurudevi-marketingWeb`).
 2. Run:
    ```bash
-   pnpm --filter apps-gurudevi-web dev
+   pnpm --filter apps-gurudevi-marketing-web dev
    ```
-3. This will start the Astro dev server (typically `localhost:4321`).
+3. This starts the Astro dev server (typically `http://localhost:4321`).
 
 ---
 
-## 3. Key Files for Web Developers
+## 3. Key files for web developers (platform app)
 
-If you are looking to modify the "Real App" experience on web:
-- **Global Styles**: [SanctuaryGlobalStyles.tsx](file:///c:/Users/Naween/projects/polymath-platform/packages/ui/src/components/SanctuaryGlobalStyles.tsx) (CSS Variables, Scrollbars).
-- **Library Web**: [LibraryScreen.web.tsx](file:///c:/Users/Naween/projects/polymath-platform/packages/library/src/screens/LibraryScreen.web.tsx) (Desktop-native Grid).
-- **Map Web**: [MapScreen.web.tsx](file:///c:/Users/Naween/projects/polymath-platform/packages/library/src/screens/MapScreen.web.tsx) (D3 Knowledge Map).
-- **Location Shim**: [SanctuaryLocation.web.ts](file:///c:/Users/Naween/projects/polymath-platform/packages/ui/src/utils/SanctuaryLocation.web.ts) (Native Browser APIs).
+- Global styles: [packages/ui/src/components/SanctuaryGlobalStyles.tsx](../../../../packages/ui/src/components/SanctuaryGlobalStyles.tsx) (CSS variables, scrollbars)
+- Library web: [packages/library/src/screens/LibraryScreen.web.tsx](../../../../packages/library/src/screens/LibraryScreen.web.tsx) (desktop-native grid)
+- Map web: [packages/library/src/screens/MapScreen.web.tsx](../../../../packages/library/src/screens/MapScreen.web.tsx) (D3 knowledge map)
+- Location shim: [packages/ui/src/utils/SanctuaryLocation.web.ts](../../../../packages/ui/src/utils/SanctuaryLocation.web.ts) (native browser APIs)
 
 ---
 
-## 4. Current Web strategy: "Idealistic Web"
+## 4. Current web strategy: "Idealistic Web"
+
 We are moving away from "stretched mobile" shims towards native web standards:
-- **CSS Grid** instead of Flexbox for desktop layouts.
-- **Native `<a>` tags** for better SEO and user ergonomics (Open in New Tab).
-- **IndexedDB (Dexie)** for local searching to ensure high performance.
-- **Glassmorphism** (`backdrop-blur`) for a premium desktop feel.
+
+- CSS Grid instead of Flexbox for desktop layouts.
+- Native `<a>` tags for better SEO and ergonomics (open in new tab).
+- IndexedDB (Dexie) for local searching to ensure high performance.
+- Glassmorphism (`backdrop-blur`) for a premium desktop feel.
 
 ---
 
----
+## 5. Troubleshooting: "Unable to deserialize cloned data"
 
-## 6. Troubleshooting: "Unable to deserialize cloned data"
-If you see this error in your terminal, it means the **Metro Bundler cache** is corrupted (common after large code changes).
+If you see this error in your terminal, it means the Metro bundler cache is corrupted (common after large code changes).
 
-### Fix:
-1. Stop the current running terminal (`Ctrl+C`).
-2. Run the command with the `--clear` flag:
+Fix:
+
+1. Stop the running dev server (`Ctrl+C`).
+2. Re-run with:
    ```bash
    pnpm --filter gurudevi-mobile web --clear
    ```
-   *Note: This will rebuild the cache and may take a minute or two.*
+

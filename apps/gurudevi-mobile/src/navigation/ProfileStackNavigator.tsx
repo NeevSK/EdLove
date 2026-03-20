@@ -5,20 +5,20 @@ import ProfileScreen from '../screens/ProfileScreen';
 import FullProfileScreen from '../screens/profile/FullProfileScreen';
 import MuteHubScreen from '../screens/profile/MuteHubScreen';
 import { PrivacyLedgerScreen } from '@repo/self';
-import { useThemedColors } from '@repo/ui';
+import { useTheme } from '@repo/ui';
 
 const Stack = createNativeStackNavigator();
 
 export default function ProfileStackNavigator() {
     const { t } = useTranslation();
-    const colors = useThemedColors();
+    const { scene } = useTheme();
 
     return (
         <Stack.Navigator
             id="ProfileStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: colors.secondary }, // contentStyle for native-stack
+                contentStyle: { backgroundColor: scene.canvas.bg }, // contentStyle for native-stack
             }}
         >
             <Stack.Screen name="ProfileMain" component={ProfileScreen} />

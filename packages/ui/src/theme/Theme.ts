@@ -9,6 +9,7 @@
  */
 
 import type { TemporalPhase } from '../context/types';
+import { compositeColorOverBackground, getTextOnBackground } from '../utils/colorUtils';
 
 // ============================================================================
 // COLORS - Sanctuary Palette
@@ -472,16 +473,100 @@ export interface PhaseTokens {
     text: TextTokens;
 }
 
+export type ThemeProfile = 'sanctuary';
+
+export interface SceneLayerToken {
+    bg: string;
+    border: string;
+}
+
+export interface SceneTokens {
+    world: SceneLayerToken;
+    chrome: SceneLayerToken;
+    canvas: SceneLayerToken;
+    surface: SceneLayerToken;
+    elevated: SceneLayerToken;
+    interactive: SceneLayerToken;
+}
+
+export interface SceneTextTokens {
+    onWorld: string;
+    onChrome: string;
+    onCanvas: string;
+    onSurface: string;
+    onElevated: string;
+    onInteractive: string;
+    onAccent: string;
+    onDanger: string;
+}
+
+export interface ResolvedThemeTokens extends Omit<PhaseTokens, 'text'> {
+    profile: ThemeProfile;
+    scene: SceneTokens;
+    text: TextTokens & SceneTextTokens;
+}
+
+function resolveSceneText(bg: string, base: string, fallback: string): string {
+    try {
+        const effectiveBg = bg.startsWith('#')
+            ? bg
+            : compositeColorOverBackground(bg, base);
+
+        return getTextOnBackground(effectiveBg, colors.inkTruth, colors.sacredWhite);
+    } catch {
+        return fallback;
+    }
+}
+
+function createSceneTokens(tokens: PhaseTokens): SceneTokens {
+    return {
+        world: { bg: tokens.gradientNodes[0], border: 'transparent' },
+        chrome: { bg: tokens.glass.surface.bg, border: tokens.glass.surface.border },
+        canvas: { bg: tokens.gradientNodes[1], border: tokens.glass.surface.border },
+        surface: { bg: tokens.glass.surface.bg, border: tokens.glass.surface.border },
+        elevated: { bg: tokens.glass.modal.bg, border: tokens.glass.modal.border },
+        interactive: { bg: tokens.glass.interact.bg, border: tokens.glass.interact.border },
+    };
+}
+
+function enrichThemeTokens(
+    tokens: PhaseTokens,
+    profile: ThemeProfile = 'sanctuary'
+): ResolvedThemeTokens {
+    const scene = createSceneTokens(tokens);
+    const sceneText: SceneTextTokens = {
+        onWorld: resolveSceneText(scene.world.bg, scene.world.bg, tokens.text.primary),
+        onChrome: resolveSceneText(scene.chrome.bg, scene.world.bg, tokens.text.primary),
+        onCanvas: resolveSceneText(scene.canvas.bg, scene.world.bg, tokens.text.primary),
+        onSurface: resolveSceneText(scene.surface.bg, scene.canvas.bg, tokens.text.primary),
+        onElevated: resolveSceneText(scene.elevated.bg, scene.canvas.bg, tokens.text.primary),
+        onInteractive: resolveSceneText(scene.interactive.bg, scene.surface.bg, tokens.text.primary),
+        onAccent: getTextOnBackground(tokens.accent.action, colors.inkTruth, colors.sacredWhite),
+        onDanger: getTextOnBackground(tokens.accent.danger, colors.inkTruth, colors.sacredWhite),
+    };
+
+    return {
+        ...tokens,
+        profile,
+        scene,
+        text: {
+            ...tokens.text,
+            ...sceneText,
+            inverse: sceneText.onAccent,
+        },
+    };
+}
+
 /** Full matrix: phase → themeMode → resolved tokens */
 export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: PhaseTokens }> = {
 
     predawn: {
         dark: {
-            gradientNodes: ['#1A1610', '#2A2318', '#3D3528'], // Obsidian → Ink → Shroud
+            gradientNodes: ['#11141B', '#171C27', '#232B3B'], // Obsidian → Ink → Shroud
             glass: {
-                surface: { bg: 'rgba(42, 35, 24, 0.95)', opacity: 0.95, blurAmount: 28, border: 'rgba(252,249,242,0.12)' },
-                modal: { bg: 'rgba(26, 22, 16, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(252,249,242,0.08)' },
-                interact: { bg: 'rgba(61, 53, 40, 0.40)', opacity: 0.40, blurAmount: 8, border: 'rgba(252,249,242,0.15)' },
+                surface: { bg: 'rgba(23, 28, 39, 0.94)', opacity: 0.94, blurAmount: 28, border: 'rgba(232,235,255,0.10)' },
+                modal: { bg: 'rgba(17, 20, 27, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(232,235,255,0.07)' },
+                interact: { bg: 'rgba(35, 43, 59, 0.40)', opacity: 0.40, blurAmount: 8, border: 'rgba(232,235,255,0.14)' },
             },
             glow: {
                 soft: { color: '#6B6480', radius: 12, opacity: 0.15 },
@@ -489,8 +574,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#F6BF8C', radius: 16, opacity: 0.50 },
                 reward: { color: '#FDD925', radius: 24, opacity: 0.60 },
             },
-            accent: { action: '#F6BF8C', reward: '#FDD925', danger: '#FF6347', muted: '#3D3528' },
-            text: { primary: '#FCF9F2', secondary: '#C8BFB0', inverse: '#1A1610', muted: '#968E80' },
+            accent: { action: '#F6BF8C', reward: '#FDD925', danger: '#FF6347', muted: '#394458' },
+            text: { primary: '#FCF9F2', secondary: '#D3D8E3', inverse: '#11141B', muted: '#9AA3B5' },
         },
         light: {
             gradientNodes: ['#F5EDD6', '#FAF7ED', '#E8E2CF'], // Vellum → Silk → Linen
@@ -512,11 +597,11 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
 
     dawn: {
         dark: {
-            gradientNodes: ['#2A2318', '#3D3528', '#544A3D'],
+            gradientNodes: ['#151922', '#1D2430', '#2A3344'],
             glass: {
-                surface: { bg: 'rgba(42, 35, 24, 0.95)', opacity: 0.95, blurAmount: 28, border: 'rgba(252,249,242,0.12)' },
-                modal: { bg: 'rgba(26, 22, 16, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(252,249,242,0.08)' },
-                interact: { bg: 'rgba(61, 53, 40, 0.35)', opacity: 0.35, blurAmount: 8, border: 'rgba(252,249,242,0.15)' },
+                surface: { bg: 'rgba(29, 36, 48, 0.94)', opacity: 0.94, blurAmount: 28, border: 'rgba(232,235,255,0.11)' },
+                modal: { bg: 'rgba(21, 25, 34, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(232,235,255,0.08)' },
+                interact: { bg: 'rgba(42, 51, 68, 0.38)', opacity: 0.38, blurAmount: 8, border: 'rgba(232,235,255,0.15)' },
             },
             glow: {
                 soft: { color: '#F6BF8C', radius: 12, opacity: 0.18 },
@@ -524,8 +609,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#F6BF8C', radius: 16, opacity: 0.55 },
                 reward: { color: '#DA70D6', radius: 24, opacity: 0.60 },
             },
-            accent: { action: '#F6BF8C', reward: '#DA70D6', danger: '#FF6347', muted: '#3D3528' },
-            text: { primary: '#FCF9F2', secondary: '#C8BFB0', inverse: '#2A2318', muted: '#968E80' },
+            accent: { action: '#F6BF8C', reward: '#DA70D6', danger: '#FF6347', muted: '#3F4A61' },
+            text: { primary: '#FCF9F2', secondary: '#D3D8E3', inverse: '#151922', muted: '#9AA3B5' },
         },
         light: {
             gradientNodes: ['#F5EDD6', '#FFFBF5', '#FAF7ED'], // Vellum -> Silk -> Silk (Warm light)
@@ -547,11 +632,11 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
 
     morning: {
         dark: {
-            gradientNodes: ['#2A2318', '#3D3528', '#2A2318'],
+            gradientNodes: ['#171C25', '#202838', '#2D3A4F'],
             glass: {
-                surface: { bg: 'rgba(42, 35, 24, 0.95)', opacity: 0.95, blurAmount: 28, border: 'rgba(252,249,242,0.15)' },
-                modal: { bg: 'rgba(26, 22, 16, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(252,249,242,0.10)' },
-                interact: { bg: 'rgba(61, 53, 40, 0.40)', opacity: 0.40, blurAmount: 8, border: 'rgba(252,249,242,0.18)' },
+                surface: { bg: 'rgba(32, 40, 56, 0.94)', opacity: 0.94, blurAmount: 28, border: 'rgba(232,235,255,0.12)' },
+                modal: { bg: 'rgba(23, 28, 37, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(232,235,255,0.09)' },
+                interact: { bg: 'rgba(45, 58, 79, 0.40)', opacity: 0.40, blurAmount: 8, border: 'rgba(232,235,255,0.16)' },
             },
             glow: {
                 soft: { color: '#8FBC8F', radius: 12, opacity: 0.20 },
@@ -559,8 +644,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#8FBC8F', radius: 16, opacity: 0.55 },
                 reward: { color: '#F6BF8C', radius: 24, opacity: 0.65 },
             },
-            accent: { action: '#8BBF7A', reward: '#F6BF8C', danger: '#FF6347', muted: '#3D3528' },
-            text: { primary: '#FCF9F2', secondary: '#C8BFB0', inverse: '#2A2318', muted: '#968E80' },
+            accent: { action: '#8BBF7A', reward: '#F6BF8C', danger: '#FF6347', muted: '#43506A' },
+            text: { primary: '#FCF9F2', secondary: '#D4DAE5', inverse: '#171C25', muted: '#A0A9BC' },
         },
         light: {
             gradientNodes: ['#F5EDD6', '#DCFCE7', '#FAF7ED'],
@@ -582,11 +667,11 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
 
     afternoon: {
         dark: {
-            gradientNodes: ['#2A2318', '#3D3528', '#2A2318'],
+            gradientNodes: ['#151B26', '#1F2A3B', '#2E4060'],
             glass: {
-                surface: { bg: 'rgba(42, 35, 24, 0.95)', opacity: 0.95, blurAmount: 28, border: 'rgba(252,249,242,0.12)' },
-                modal: { bg: 'rgba(26, 22, 16, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(252,249,242,0.10)' },
-                interact: { bg: 'rgba(61, 53, 40, 0.30)', opacity: 0.30, blurAmount: 8, border: 'rgba(252,249,242,0.15)' },
+                surface: { bg: 'rgba(31, 42, 59, 0.94)', opacity: 0.94, blurAmount: 28, border: 'rgba(232,235,255,0.10)' },
+                modal: { bg: 'rgba(21, 27, 38, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(232,235,255,0.08)' },
+                interact: { bg: 'rgba(46, 64, 96, 0.36)', opacity: 0.36, blurAmount: 8, border: 'rgba(232,235,255,0.14)' },
             },
             glow: {
                 soft: { color: '#3B82F6', radius: 12, opacity: 0.20 },
@@ -594,8 +679,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#3B82F6', radius: 16, opacity: 0.55 },
                 reward: { color: '#FDD925', radius: 24, opacity: 0.65 },
             },
-            accent: { action: '#2563EB', reward: '#FDD925', danger: '#FF6347', muted: '#3D3528' },
-            text: { primary: '#FCF9F2', secondary: '#C8BFB0', inverse: '#1A1610', muted: '#968E80' },
+            accent: { action: '#2563EB', reward: '#FDD925', danger: '#FF6347', muted: '#3E4F71' },
+            text: { primary: '#FCF9F2', secondary: '#D4DAE5', inverse: '#151B26', muted: '#9FAABD' },
         },
         light: {
             gradientNodes: ['#F5EDD6', '#E0F2FE', '#F5EDD6'],
@@ -617,11 +702,11 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
 
     dusk: {
         dark: {
-            gradientNodes: ['#2A2318', '#3D3528', '#2A2318'],
+            gradientNodes: ['#151822', '#201F35', '#302A4A'],
             glass: {
-                surface: { bg: 'rgba(42, 35, 24, 0.95)', opacity: 0.95, blurAmount: 28, border: 'rgba(252,249,242,0.12)' },
-                modal: { bg: 'rgba(26, 22, 16, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(252,249,242,0.08)' },
-                interact: { bg: 'rgba(61, 53, 40, 0.40)', opacity: 0.40, blurAmount: 8, border: 'rgba(252,249,242,0.15)' },
+                surface: { bg: 'rgba(32, 31, 53, 0.94)', opacity: 0.94, blurAmount: 28, border: 'rgba(232,235,255,0.10)' },
+                modal: { bg: 'rgba(21, 24, 34, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(232,235,255,0.07)' },
+                interact: { bg: 'rgba(48, 42, 74, 0.40)', opacity: 0.40, blurAmount: 8, border: 'rgba(232,235,255,0.14)' },
             },
             glow: {
                 soft: { color: '#F6BF8C', radius: 14, opacity: 0.20 },
@@ -629,8 +714,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#F6BF8C', radius: 18, opacity: 0.60 },
                 reward: { color: '#DA70D6', radius: 26, opacity: 0.70 },
             },
-            accent: { action: '#F6BF8C', reward: '#DA70D6', danger: '#FF6347', muted: '#3D3528' },
-            text: { primary: '#FCF9F2', secondary: '#C8BFB0', inverse: '#1A1610', muted: '#968E80' },
+            accent: { action: '#F6BF8C', reward: '#DA70D6', danger: '#FF6347', muted: '#473E68' },
+            text: { primary: '#FCF9F2', secondary: '#D7DBE8', inverse: '#151822', muted: '#A39DBB' },
         },
         light: {
             gradientNodes: ['#F5EDD6', '#FFF7ED', '#FAF7ED'],
@@ -652,11 +737,11 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
 
     night: {
         dark: {
-            gradientNodes: ['#1A1610', '#2A2318', '#3D3528'],
+            gradientNodes: ['#0F131C', '#171E2B', '#242F46'],
             glass: {
-                surface: { bg: 'rgba(42, 35, 24, 0.95)', opacity: 0.95, blurAmount: 28, border: 'rgba(253,217,37,0.08)' },
-                modal: { bg: 'rgba(26, 22, 16, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(253,217,37,0.06)' },
-                interact: { bg: 'rgba(61, 53, 40, 0.42)', opacity: 0.42, blurAmount: 8, border: 'rgba(253,217,37,0.12)' },
+                surface: { bg: 'rgba(23, 30, 43, 0.95)', opacity: 0.95, blurAmount: 28, border: 'rgba(253,217,37,0.08)' },
+                modal: { bg: 'rgba(15, 19, 28, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(253,217,37,0.06)' },
+                interact: { bg: 'rgba(36, 47, 70, 0.42)', opacity: 0.42, blurAmount: 8, border: 'rgba(253,217,37,0.12)' },
             },
             glow: {
                 soft: { color: '#FDD925', radius: 14, opacity: 0.18 },
@@ -664,8 +749,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
                 action: { color: '#FDD925', radius: 18, opacity: 0.58 },
                 reward: { color: '#8B5CF6', radius: 28, opacity: 0.70 },
             },
-            accent: { action: '#FDD925', reward: '#8B5CF6', danger: '#FF6347', muted: '#3D3528' },
-            text: { primary: '#FCF9F2', secondary: '#CAC2B8', inverse: '#1A1610', muted: '#968E80' },
+            accent: { action: '#FDD925', reward: '#8B5CF6', danger: '#FF6347', muted: '#3E4C67' },
+            text: { primary: '#FCF9F2', secondary: '#D8DDE9', inverse: '#0F131C', muted: '#A0A9BE' },
         },
         light: {
             gradientNodes: ['#F5EDD6', '#FAF7ED', '#E8E2CF'], // Night Light: Vellum -> Silk -> Linen (Never black)
@@ -700,7 +785,7 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
  *   text.inverse   → deepIndigo     (#0F172A)  / charcoalTruth
  *   text.muted     → mistGray       (#64748B)
  */
-export const CLASSIC_TOKENS = {
+const CLASSIC_BASE_TOKENS = {
     gradientNodes: ['#F5EDD6', '#FAF7ED', '#E8E2CF'], // Vellum → Silk → Linen
     glass: {
         surface: { bg: 'rgba(250, 247, 237, 0.95)', opacity: 0.95, blurAmount: 28, border: 'rgba(42,35,24,0.05)' },
@@ -717,10 +802,20 @@ export const CLASSIC_TOKENS = {
     text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
 } as const satisfies PhaseTokens;
 
+export const CLASSIC_TOKENS = enrichThemeTokens(CLASSIC_BASE_TOKENS);
+
+export function resolveClassicTokens(isDark: boolean): ResolvedThemeTokens {
+    if (isDark) {
+        return enrichThemeTokens(phaseMatrix.night.dark);
+    }
+
+    return CLASSIC_TOKENS;
+}
+
 /** The single resolver — this is what all components call via useTheme() */
 export function resolvePhaseTokens(
     phase: TemporalPhase,
     isDark: boolean
-): PhaseTokens {
-    return phaseMatrix[phase][isDark ? 'dark' : 'light'];
+): ResolvedThemeTokens {
+    return enrichThemeTokens(phaseMatrix[phase][isDark ? 'dark' : 'light']);
 }

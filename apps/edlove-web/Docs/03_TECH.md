@@ -128,7 +128,7 @@ Three additional sites exist as **subdomains** temporarily:
 ```
 /apps
   /edlove-web → deploys to edlove.org
-  /gurudevi-web → deploys to gurudevi.edlove.org  
+  /gurudevi-marketingWeb → deploys to gurudevi.edlove.org  
   /intuitui-web → deploys to intuitui.edlove.org
   /neevsk-web → deploys to neevsk.edlove.org
 ```

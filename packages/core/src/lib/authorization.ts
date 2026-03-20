@@ -46,6 +46,11 @@ export async function requireAuth() {
     if (!session) {
         throw new APIError('Not authenticated', 'UNAUTHENTICATED');
     }
+    // Wanderers (anonymous sessions) are allowed to browse, but must upgrade to perform
+    // any authenticated/citizen action that calls requireAuth().
+    if ((session.user as any)?.is_anonymous === true || !session.user.email) {
+        throw new APIError('Account upgrade required', 'ACCOUNT_REQUIRED');
+    }
 
     const internalId = await identityAPI.getMyInternalId();
     if (!internalId) {

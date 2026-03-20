@@ -18,7 +18,7 @@
  */
 
 import React, { useState } from 'react';
-import { useUserRole, useStore } from '@repo/core';
+import { useCapabilities, usePendingGateAction, useUserRole, useStore, setPendingGateAction } from '@repo/core';
 import {
     Modal, ModalBackdrop, ModalContent, ModalHeader, ModalBody, ModalFooter,
     Heading, VStack, HStack, Box, Text, Input, InputField, Button, ButtonText,
@@ -64,6 +64,7 @@ function GuestDemoView({ role }: { role: string }) {
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const demoRole = roleToDemo(role);
     const meta = ROLE_META[demoRole];
+    const navigation = useNavigation<any>();
 
     const handleRefresh = () => {
         setRefreshTrigger(prev => prev + 1);
@@ -72,6 +73,27 @@ function GuestDemoView({ role }: { role: string }) {
     return (
         <div style={{ paddingBottom: '80px' }}>
             <SandboxBanner />
+
+            <div className="sanctuary-card" style={{ padding: '18px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                    <div>
+                        <div style={{ fontWeight: 900, fontSize: '14px' }}>Explore as a Wanderer</div>
+                        <div style={{ color: 'var(--ink-ghost)', fontSize: '12px', marginTop: '4px' }}>
+                            Try the {meta.title} demo. Upgrade to create/join real classrooms and save progress across devices.
+                        </div>
+                    </div>
+                    <button
+                        className="premium-button"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}
+                        onClick={() => {
+                            setPendingGateAction({ kind: 'classroom_open_create_join', createdAt: Date.now() }).catch(() => { });
+                            navigation.navigate('Auth');
+                        }}
+                    >
+                        <LogIn size={16} /> Create account
+                    </button>
+                </div>
+            </div>
 
             {demoRole === 'principal' && (
                 <PrincipalSchoolView
@@ -166,11 +188,35 @@ function AuthRoleView({ role, schoolId, userId }: { role: string; schoolId: stri
 export default function ClassroomScreenWeb() {
     const { role, userId } = useUserRole();
     const { user } = useStore();
+    const schoolType = useStore((s) => s.schoolType);
+    const caps = useCapabilities();
+    const pending = usePendingGateAction();
     const navigation = useNavigation<any>();
 
-    const isAnonymous   = !user;                           // no supabase user at all
-    const hasSchool     = !!(user?.school_id);             // authenticated + has school
-    const isNewAuthUser = !!user && !hasSchool;            // authenticated but no school yet
+    const isWanderer = caps.identity.isAnonymous;
+
+    const isTeacherLike =
+        role === 'teacher' || role === 'grade_head' || role === 'section_head';
+    const isPrincipalLike =
+        role === 'principal' || role === 'founder' || role === 'admin' || role === 'developer';
+
+    const hasSchoolId = !!user?.school_id && user.school_id !== 'mock-school';
+    const hasTeacherContext = isTeacherLike && hasSchoolId; // personal_workspace is valid here
+    const hasPrincipalContext = isPrincipalLike && hasSchoolId && schoolType !== 'personal_workspace';
+    const hasStudentContext = role === 'student' && hasSchoolId && schoolType !== 'personal_workspace';
+
+    const hasContext = hasTeacherContext || hasPrincipalContext || hasStudentContext;
+    const needsSetup = !isWanderer && !!user && !hasContext;
+    const isCitizenReady = !isWanderer && !!user && hasContext;
+
+    // Resume-after-upgrade: if we gated a classroom create/join action, clear once we're in citizen flow.
+    React.useEffect(() => {
+        if (!pending.action) return;
+        if (pending.action.kind !== 'classroom_open_create_join') return;
+        if (isWanderer) return;
+        pending.clear().catch(() => { });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pending.action, isWanderer]);
 
     // Edge case: no role set at all — shouldn't happen after onboarding
     if (!role) {
@@ -205,23 +251,13 @@ export default function ClassroomScreenWeb() {
                 <div style={{ marginTop: 24 }} />
                 
                 {/* Path 1: Anonymous guest with role → own-role demo + sign-up CTAs */}
-                {isAnonymous && <GuestDemoView role={role} />}
+                {isWanderer && <GuestDemoView role={role} />}
 
                 {/* Path 2: Authenticated, no school yet → role-specific setup wizard */}
-                {isNewAuthUser && (
-                    role === 'principal' ? (
-                        <AuthRoleView 
-                            role={role} 
-                            schoolId="demo-school" 
-                            userId={user.id} 
-                        />
-                    ) : (
-                        <NoSchoolView />
-                    )
-                )}
+                {needsSetup && <NoSchoolView />}
 
                 {/* Path 3: Authenticated with school → real data + "Try Demo" overlay */}
-                {hasSchool && (
+                {isCitizenReady && (
                     <AuthRoleView
                         role={role}
                         schoolId={user!.school_id!}

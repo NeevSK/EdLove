@@ -58,7 +58,7 @@ Expo Router v4 (SDK 52+) is file-based routing built *on top of* React Navigatio
 
 3. **The only real benefit we're leaving on the table is SEO** (static HTML per route). For an app behind auth (teachers, students, principals), SEO is not a meaningful concern today.
 
-4. **If SEO becomes important** — for a public landing page, teacher discovery, school onboarding — the right answer is the existing `apps/gurudevi-web` Astro site, not migrating the app router.
+4. **If SEO becomes important** — for a public landing page, teacher discovery, school onboarding — the right answer is the existing `apps/gurudevi-marketingWeb` Astro site, not migrating the app router.
 
 ### 2e. When to reconsider
 

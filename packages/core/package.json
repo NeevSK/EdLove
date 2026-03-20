@@ -1,42 +1,42 @@
 {
-    "name": "@repo/core",
-    "version": "0.0.1",
-    "main": "src/index.ts",
-    "types": "src/index.ts",
-    "exports": {
-        ".": "./src/index.ts",
-        "./src/api/mockData": "./src/api/mockData.ts",
-        "./package.json": "./package.json"
-    },
-    "scripts": {
-        "lint": "eslint .",
-        "check-cycles": "node ../../scripts/refactor/check-barrel-imports.mjs",
-        "clean": "rm -rf .turbo node_modules"
-    },
-    "peerDependencies": {
-        "@react-native-async-storage/async-storage": "2.2.0",
-        "@supabase/supabase-js": "^2.39.0",
-        "expo-constants": "*",
-        "expo-secure-store": "~55.0.8",
-        "react": "*",
-        "react-native": "*",
-        "react-native-mmkv": "*",
-        "react-native-url-polyfill": "*",
-        "zustand": "^4.5.0",
-        "@sentry/react-native": "*"
-    },
-    "devDependencies": {
-        "@supabase/supabase-js": "^2.39.0",
-        "@tanstack/react-query": "^5.17.0",
-        "@types/react": "~18.2.45",
-        "eslint": "^9.38.0",
-        "@repo/eslint-config": "workspace:*",
-        "typescript": "^5.3.3",
-        "tailwindcss": "~3.4.17",
-        "zustand": "^4.5.0"
-    },
-    "dependencies": {
-        "@tanstack/react-query": "^5.17.0",
-        "posthog-react-native": "^4.35.1"
-    }
+  "name": "@repo/core",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./src/api/mockData": "./src/api/mockData.ts",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "check-cycles": "node ../../scripts/refactor/check-barrel-imports.mjs",
+    "clean": "rm -rf .turbo node_modules"
+  },
+  "peerDependencies": {
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "expo-constants": "*",
+    "expo-secure-store": "~55.0.8",
+    "react": "*",
+    "react-native": "*",
+    "react-native-mmkv": "*",
+    "react-native-url-polyfill": "*",
+    "zustand": "^4.5.0",
+    "@sentry/react-native": "*"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "@tanstack/react-query": "^5.90.20",
+    "@types/react": "~19.1.10",
+    "eslint": "^9.38.0",
+    "@repo/eslint-config": "workspace:*",
+    "typescript": "~5.9.2",
+    "tailwindcss": "~3.4.17",
+    "zustand": "^5.0.10"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.20",
+    "posthog-react-native": "^4.35.1"
+  }
 }

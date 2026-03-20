@@ -934,7 +934,7 @@ export function SanctuaryGlobalStyles() {
   if (Platform.OS !== 'web') return null;
 
   const {
-    accent, glass, text, isDark, gradientNodes,
+    accent, text, isDark, gradientNodes, scene,
     textOnAccent, textOnReward,
     accentRgb, rewardRgb, surfaceRgb,
     phase,
@@ -943,11 +943,25 @@ export function SanctuaryGlobalStyles() {
   const dynamicCss = `
     :root {
       /* Sanctuary Core Tokens (Dynamic) */
-      --color-background: ${gradientNodes[0]};
-      --color-text-primary: ${text.primary};
+      --color-background: ${scene.canvas.bg};
+      --color-text-primary: ${text.onCanvas};
       --color-text-secondary: ${text.secondary};
       --color-accent: ${accent.action};
-      --color-glass-border: ${glass.surface.border};
+      --color-glass-border: ${scene.surface.border};
+
+      /* Scene hierarchy */
+      --scene-world: ${scene.world.bg};
+      --scene-world-border: ${scene.world.border};
+      --scene-chrome: ${scene.chrome.bg};
+      --scene-chrome-border: ${scene.chrome.border};
+      --scene-canvas: ${scene.canvas.bg};
+      --scene-canvas-border: ${scene.canvas.border};
+      --scene-surface: ${scene.surface.bg};
+      --scene-surface-border: ${scene.surface.border};
+      --scene-elevated: ${scene.elevated.bg};
+      --scene-elevated-border: ${scene.elevated.border};
+      --scene-interactive: ${scene.interactive.bg};
+      --scene-interactive-border: ${scene.interactive.border};
 
       /* High-Fidelity Design Palette (Vellum/Ink) */
       --water:       #3a7a9a;
@@ -1005,40 +1019,47 @@ export function SanctuaryGlobalStyles() {
       --text-secondary: ${text.secondary};
       --text-inverse:   ${text.inverse};
       --text-muted:     ${text.muted};
+      --text-on-world:  ${text.onWorld};
+      --text-on-chrome: ${text.onChrome};
+      --text-on-canvas: ${text.onCanvas};
+      --text-on-surface:${text.onSurface};
+      --text-on-elevated:${text.onElevated};
+      --text-on-interactive:${text.onInteractive};
+      --text-on-danger: ${text.onDanger};
 
       /* Phase identifier — useful for CSS [data-phase="morning"] overrides */
       --phase: "${phase}";
 
       /* Backgrounds */
-      --background:     ${isDark ? '#111218' : '#F5EDD6'};
-      --background-alt: ${isDark ? 'rgba(40,42,58,0.65)' : 'rgba(255,255,255,0.55)'};
-      --surface:        ${glass.surface.bg};
-      --glass-surface:  ${glass.surface.bg};
-      --glass-interact: ${isDark ? 'rgba(50,52,68,0.70)' : 'rgba(255,255,255,0.75)'};
+      --background:     ${scene.canvas.bg};
+      --background-alt: ${scene.surface.bg};
+      --surface:        ${scene.surface.bg};
+      --glass-surface:  ${scene.surface.bg};
+      --glass-interact: ${scene.interactive.bg};
 
       /* World/shell background layers */
-      --world-bg:           ${isDark ? 'radial-gradient(circle at 50% 50%, #1a1b26 0%, #111218 100%)' : 'linear-gradient(135deg, #f8f4eb 0%, #edf1f4 100%)'};
-      --topbar-bg:          ${isDark ? 'rgba(26,27,38,0.45)' : 'rgba(255,255,255,0.45)'};
-      --sidebar-bg:         ${isDark ? 'rgba(26,27,38,0.45)' : 'rgba(255,255,255,0.30)'};
-      --card-bg:            ${isDark ? 'rgba(40,42,58,0.45)' : 'rgba(255,255,255,0.50)'};
-      --card-bg-hover:      ${isDark ? 'rgba(50,52,68,0.55)' : 'rgba(255,255,255,0.65)'};
-      --btn-secondary-bg:   ${isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.65)'};
-      --btn-secondary-border: ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'};
-      --btn-secondary-hover: ${isDark ? 'rgba(255,255,255,0.13)' : 'rgba(255,255,255,0.90)'};
+      --world-bg:           linear-gradient(135deg, ${gradientNodes[0]} 0%, ${gradientNodes[1]} 55%, ${gradientNodes[2]} 100%);
+      --topbar-bg:          ${scene.chrome.bg};
+      --sidebar-bg:         ${scene.chrome.bg};
+      --card-bg:            ${scene.surface.bg};
+      --card-bg-hover:      ${scene.elevated.bg};
+      --btn-secondary-bg:   ${scene.interactive.bg};
+      --btn-secondary-border: ${scene.interactive.border};
+      --btn-secondary-hover: ${scene.elevated.bg};
       --profile-gem-bg:     ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(58,122,154,0.12)'};
       --profile-gem-border: ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(58,122,154,0.20)'};
       --tab-bg:             ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'};
       --tab-bg-hover:       ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.07)'};
       --tab-active-bg:      ${isDark ? 'rgba(58,122,154,0.22)' : 'rgba(58,122,154,0.10)'};
-      --mobile-panel-bg:    ${isDark ? 'rgba(26,27,38,0.88)' : 'rgba(255,255,255,0.88)'};
+      --mobile-panel-bg:    ${scene.chrome.bg};
 
       /* Ink */
-      --ink:         ${isDark ? text.primary : '#2a2820'};
+      --ink:         ${text.onCanvas};
       --ink-soft:    ${text.secondary};
       --ink-ghost:   #7a7068;
 
       /* Borders & Shadows */
-      --border:       ${glass.surface.border};
+      --border:       ${scene.surface.border};
       --border-light: rgba(255,255,255,0.7);
       --shadow-sm:    0 2px 8px rgba(107,100,128,0.07);
       --shadow-md:    0 8px 24px rgba(107,100,128,0.10);

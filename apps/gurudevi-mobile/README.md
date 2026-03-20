@@ -7,6 +7,35 @@
 
 ---
 
+## Web platform (React Native Web)
+
+The Gurudevi **platform web app** is built from this same codebase (React Native Web via Expo/Metro).
+
+- Local dev: `pnpm web` (or `pnpm --filter gurudevi-mobile web` from repo root)
+- Build export: `pnpm build:web` (outputs to `dist/`)
+- Hosting/domain: `platform.gurudevi.edlove.org` on GitHub Pages
+- CI deploy: `.github/workflows/web-deploy.yml` uploads `apps/gurudevi-mobile/dist/` to Pages
+- Web-specific UI/files: use `*.web.tsx` (and `*.web.ts`) where needed
+
+More details: [docs/web/WEB_GUIDE.md](docs/web/WEB_GUIDE.md)
+
+---
+
+## Branch flow (solo, pipeline)
+
+Promotion pipeline:
+
+`main-innovate` -> `main-dev` -> `main-QA` -> `main-preview` -> `main`
+
+Guidelines:
+
+- Merge forward only (avoid back-merges from `main` unless it's a critical hotfix sync).
+- Keep each branch buildable so promotion is always possible.
+
+Reference: `docs/BRANCHING_MODEL.md` (repo root)
+
+---
+
 ## 🚀 Quick Start
 
 ```bash
