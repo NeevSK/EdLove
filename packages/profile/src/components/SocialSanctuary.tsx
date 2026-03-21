@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Linking, Share, Platform } from 'react-native';
-import { Text, GlassCard, useThemedColors, Icon, SanctuaryCard, Theme, openExternalURL } from '@repo/ui';
+import { View, StyleSheet, TouchableOpacity, Share, Platform } from 'react-native';
+import { Text, GlassCard, useThemedColors, Icon, SanctuaryCard, Theme, openExternalURL, showExternalLinkOptions } from '@repo/ui';
 import { useSocialLinks } from '../hooks/useSocialLinks';
 import { SocialLink, SocialPlatform } from '@repo/core';
 import * as Clipboard from 'expo-clipboard';
@@ -57,10 +57,31 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
         }
 
         try {
-            await openExternalURL(url);
+            await openExternalURL(url, {
+                title: `${link.platform.charAt(0).toUpperCase() + link.platform.slice(1)} link`,
+                sourceLabel: 'Profile',
+                sourceBadge: 'Public social link',
+                trustLevel: 'external',
+            });
         } catch (error) {
             console.error('Failed to open URL:', error);
         }
+    };
+
+    const handleOpenOptions = async (link: SocialLink) => {
+        let url = link.url;
+        if (link.platform === 'whatsapp' && !url.startsWith('http')) {
+            url = `https://wa.me/${url.replace(/[^0-9]/g, '')}`;
+        } else if (!url.startsWith('http')) {
+            url = `https://${url}`;
+        }
+
+        await showExternalLinkOptions(url, {
+            title: `${link.platform.charAt(0).toUpperCase() + link.platform.slice(1)} link`,
+            sourceLabel: 'Profile',
+            sourceBadge: 'Public social link',
+            trustLevel: 'external',
+        });
     };
 
     const shareProfile = async () => {
@@ -110,6 +131,7 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
                         <TouchableOpacity
                             key={link.id}
                             onPress={() => handlePress(link)}
+                            onLongPress={() => handleOpenOptions(link)}
                             activeOpacity={0.7}
                         >
                             <GlassCard style={styles.linkCard}>

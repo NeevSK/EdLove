@@ -21,20 +21,24 @@ import {
 import { useTranslation } from 'react-i18next';
 import { MapPin, Mail, Phone, Shield, Edit3, Check, X, User as UserIcon, FileText, Fingerprint, Briefcase, GraduationCap, BookOpen, School, AtSign } from 'lucide-react-native';
 import { hapticLight, hapticError } from '@repo/ui';
-import { useStore, identityAPI } from '@repo/core';
-import {
-    IdentityCard,
-    AddSocialLinkModal,
-    StaffPresencePulse
-} from '@repo/profile';
-
 import Reanimated, {
     useSharedValue,
     useAnimatedStyle,
     withTiming,
 } from 'react-native-reanimated';
-
-import { useProfile, EditableItem, UserProfile, useProfileCompletion, AvatarDisplay, ContactLinktree, GiveThuthimalModal } from '@repo/profile';
+import {
+    IdentityCard,
+    AddSocialLinkModal,
+    StaffPresencePulse,
+    UserProfile,
+    useProfileCompletion,
+    AvatarDisplay,
+    ContactLinktree,
+    GiveThuthimalModal,
+    EditableItem
+} from '@repo/profile';
+import { useEntity, EntityInstance, useStore } from '@repo/core';
+import { EntityView } from '@repo/ui';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ProfileStackParamList } from '../../types/navigation';
 
@@ -44,58 +48,28 @@ const CARD_WIDTH = SCREEN_WIDTH - Theme.spacing.xl * 2;
 type FullProfileScreenProps = NativeStackScreenProps<ProfileStackParamList, 'FullProfile'>;
 
 export default function FullProfileScreen({ route, navigation }: FullProfileScreenProps) {
-    const { profile: initialProfile } = route.params;
-    const { updateField } = useProfile();
+    const { profile: initialParams } = route.params;
+    // initialParams might be a partial or FullProfileParams, cast to UserProfile for safety
+    const initialProfile = initialParams as unknown as UserProfile;
+    
     const { t } = useTranslation();
     const colors = useThemedColors();
-    const { user } = useStore();
+    const { user: currentUser } = useStore();
     const bottomPadding = useBottomTabPadding();
-    const [profile, setProfile] = useState<any>(initialProfile);
+    
+    // Initialize Entity System
+    const { entity, updateInstance, loading: isLoading } = useEntity<UserProfile>('user', initialProfile?.id);
+    
+    const profile = (entity?.data as UserProfile) || initialProfile;
     const { role } = useEnvironment();
     const completionResult = useProfileCompletion(profile, role ?? null);
+
     const [showCelebration, setShowCelebration] = useState(false);
-    const [editingField, setEditingField] = useState<string | null>(null);
     const [showSocialModal, setShowSocialModal] = useState(false);
     const [showThuthimalModal, setShowThuthimalModal] = useState(false);
-    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-    const [currentUserName, setCurrentUserName] = useState<string>('');
 
-    // Per-field edit state: { fieldKey: { value, saved, saving, error } }
-    interface EditState {
-        value: any;
-        saved: boolean;
-        saving: boolean;
-        error: string | null;
-    }
-    const [fieldStates, setFieldStates] = useState<Record<string, EditState>>({});
-
-    // Track all auto-dismiss timers so they can be cleared on unmount
-    const dismissTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
-
-    useEffect(() => {
-        if (initialProfile) {
-            setProfile(initialProfile);
-        }
-    }, [initialProfile]);
-
-    // Resolve current session user
-    useEffect(() => {
-        if (user) {
-            setCurrentUserId(user.id);
-            setCurrentUserName(user.full_name || user.email || '');
-        } else {
-            identityAPI.getMyInternalId().then((id) => {
-                if (id) setCurrentUserId(id);
-            });
-        }
-    }, [user]);
-
-    // Clear all pending dismiss timers when the screen unmounts
-    useEffect(() => {
-        return () => {
-            dismissTimers.current.forEach(id => clearTimeout(id));
-        };
-    }, []);
+    const currentUserId = currentUser?.id;
+    const currentUserName = currentUser?.full_name || currentUser?.email || '';
 
     // Animated opacity for bar fade-out on completion
     const barOpacity = useSharedValue(1);
@@ -117,16 +91,15 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
             }, 2000);
             return () => clearTimeout(timer);
         }
-    }, [completionResult.isComplete, completionResult.hasSeenCompletionCelebration, completionResult, hapticSuccess, barOpacity]);
+    }, [completionResult.isComplete, completionResult.hasSeenCompletionCelebration]);
 
     if (!profile) return null;
 
     // True when the signed-in user is viewing someone else's profile
-    const isOtherProfile = currentUserId !== null && currentUserId !== profile.id;
+    const isOtherProfile = currentUserId !== undefined && currentUserId !== profile.id;
     const isTeacherProfile = ['teacher', 'principal', 'grade_head', 'section_head'].includes(profile.role);
 
     const handleSave = async (field: string, value: any) => {
-        // Handle array-based professional fields transformation before passing to hook
         let valueToSave = value;
         if ((field === 'subjects_taught' || field === 'qualifications') && typeof value === 'string') {
             valueToSave = value.split(',').map(s => s.trim()).filter(s => s !== '');
@@ -134,11 +107,11 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
             valueToSave = parseInt(value, 10) || 0;
         }
 
-        const result = await updateField(field as keyof UserProfile, valueToSave);
-        if (result) {
-            setProfile((prev: any) => ({ ...prev, [field]: valueToSave }));
+        const success = await updateInstance({ [field]: valueToSave });
+        if (success) {
+             hapticSuccess();
         }
-        return result;
+        return success;
     };
 
     return (
@@ -167,7 +140,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                             size={72}
                             editable={!isOtherProfile}
                             onAvatarUpdated={async (url) => {
-                                await updateField('avatar_url', url);
+                                await updateInstance({ avatar_url: url });
                                 hapticSuccess();
                             }}
                         />

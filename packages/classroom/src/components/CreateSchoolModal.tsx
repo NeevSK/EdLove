@@ -36,6 +36,7 @@ import {
     identityAPI, 
     communityAPI, 
     useSchoolCreation,
+    useEntity,
     SRI_LANKAN_PROVINCES,
     SRI_LANKAN_DISTRICTS,
     SRI_LANKAN_SCHOOL_TYPES,
@@ -70,7 +71,18 @@ export default function CreateSchoolModal({
     const colors = useThemedColors();
     const { text, glass } = useTheme();
     
-    // Use persistent store for cross-session/isomorphic creation
+    // Use unified entity hook for logic, but keep custom step state for the wizard UI
+    const { 
+        instance: schoolInstance,
+        updateInstance,
+        create,
+        isLoading: isEntityLoading
+    } = useEntity({
+        type: 'school',
+        id: initialData?.id,
+        mode: isEdit ? 'edit' : 'create'
+    });
+
     const { 
         state, 
         updateStep, 
@@ -119,13 +131,13 @@ export default function CreateSchoolModal({
 
             let school;
             if (isEdit && initialData) {
-                school = await api.school.update(initialData.id, payload);
+                school = await updateInstance(payload);
                 hapticSuccess();
                 onSuccess(school);
                 handleClose();
             } else {
                 payload.created_by = userId;
-                school = await api.school.create(payload);
+                school = await create(payload);
 
                 let communityGroupId: string | undefined;
                 try {

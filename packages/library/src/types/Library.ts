@@ -120,6 +120,7 @@ export interface ResourceCollection {
 
     // Metadata
     school_id: string;
+    is_virtual?: boolean; // If derived from subjects/topics
     original_collection_id?: string; // If forked
     created_at: string;
     updated_at: string;
@@ -128,6 +129,7 @@ export interface ResourceCollection {
 export interface ResourceFilters {
     type?: ResourceType;
     subject?: string; // Kept for filtering compat, maps to 'subjects'
+    topic?: string;   // Added for single topic filtering
     subjects?: string[];
     topics?: string[];
     grades?: number[];

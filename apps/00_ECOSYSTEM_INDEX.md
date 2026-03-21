@@ -1,45 +1,67 @@
-# EDLOVE WEB ECOSYSTEM INDEX
+# EdLove Web Ecosystem Index
 
-**Welcome to the EdLove Web Monorepo.**
+Welcome to the EdLove ecosystem monorepo.
 
-This ecosystem consists of one main "House" (EdLove.org) and three satellite "Subdomains".
+This ecosystem consists of one main "House" (EdLove.org) and several satellites/subdomains.
 Each application is independent but philosophically connected.
 
-## 🧭 NAVIGATOR
+## Navigator
 
-### 1. The Main House
-- **App**: `edlove-web`
-- **Identity**: Educational Transformation Ecosystem
-- **Context**: [READ THIS FIRST](file:///c:/Users/Naween/projects/polymath-platform/apps/edlove-web/CONTEXT.md)
-- **Status**: ✅ Active Construction (Phase 1)
+### 1) The Main House
 
-### 2. The Satellites
+- App: `edlove-web`
+- Identity: Educational Transformation Ecosystem (hub)
+- Context (read first): [edlove-web/CONTEXT.md](./edlove-web/CONTEXT.md)
+- Status: Active construction (Phase 1)
 
-#### Gurudevi Web
-- **App**: `gurudevi-web`
-- **Identity**: Teacher Sanctuary & Companion
-- **Context**: [READ CONTEXT](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-web/CONTEXT.md)
-- **Relation**: The web counterpart to the Gurudevi mobile app.
+### 2) Satellites
+
+#### Gurudevi Public Site (Marketing)
+
+- App: `gurudevi-marketingWeb`
+- Identity: Public landing / marketing / information site
+- Context: [gurudevi-marketingWeb/CONTEXT.md](./gurudevi-marketingWeb/CONTEXT.md)
+- Relation: Public-facing pages (About, FAQ, Privacy, etc.). Not the operational platform web app.
+
+#### Gurudevi Platform (Web App)
+
+- App: `gurudevi-mobile` (web build via Metro resolution)
+- Identity: The "real app" on web (React Native Web)
+- Context: [gurudevi-mobile/README.md](./gurudevi-mobile/README.md)
+- Web guide: [gurudevi-mobile/docs/web/WEB_GUIDE.md](./gurudevi-mobile/docs/web/WEB_GUIDE.md)
+- Relation: Built from `apps/gurudevi-mobile` using `*.web.tsx` overrides.
+- Domain/hosting: `platform.gurudevi.edlove.org` via GitHub Pages (build output: `apps/gurudevi-mobile/dist/`)
+
+#### Gurudevi Mobile
+
+- App: `gurudevi-mobile`
+- Identity: Operational engine (teachers, principals, students)
+- Context: [gurudevi-mobile/README.md](./gurudevi-mobile/README.md)
+- Relation: Primary product; pillar packages live under `../packages/*`.
 
 #### Intuitui Web
-- **App**: `intuitui-web`
-- **Identity**: Systems Intelligence Studio
-- **Context**: [READ CONTEXT](file:///c:/Users/Naween/projects/polymath-platform/apps/intuitui-web/CONTEXT.md)
-- **Relation**: The professional practice of the architect (Neev).
 
-#### NeevSk Web
-- **App**: `neevsk-web`
-- **Identity**: Personal Digital Archive
-- **Context**: [READ CONTEXT](file:///c:/Users/Naween/projects/polymath-platform/apps/neevsk-web/CONTEXT.md)
-- **Relation**: The personal/philosophical space of the creator.
+- App: `intuitui-web`
+- Identity: Systems Intelligence Studio
+- Context: [intuitui-web/CONTEXT.md](./intuitui-web/CONTEXT.md)
+- Relation: The professional practice of the architect (Neev).
+
+#### Neevsk Web
+
+- App: `neevsk-web`
+- Identity: Personal Digital Archive
+- Context: [neevsk-web/CONTEXT.md](./neevsk-web/CONTEXT.md)
+- Relation: Personal/philosophical space of the creator.
+
+---
+
+## Agent instructions
+
+1. Always identify which app you are working on.
+2. Read that app's `CONTEXT.md` (or `gurudevi-mobile/README.md`) before starting major work.
+3. Respect the design constraints defined in the context docs.
 
 ---
 
-## 🤖 AGENT INSTRUCTIONS
+Last updated: 20 March 2026
 
-1.  **Always identify which app you are working on.**
-2.  **Read the `CONTEXT.md` of that specific app.** It contains the "Source of Truth" for that specific domain.
-3.  **Respect the design constraints** defined in the context. EdLove is the design parent, but each subdomain has its own aesthetic flavor.
-
----
-**Last Updated**: 12 February 2026

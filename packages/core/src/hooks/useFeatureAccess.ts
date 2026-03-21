@@ -1,6 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { authAPI } from '../api/auth';
-import { UserRole } from '../types';
+import { useCallback } from 'react';
+import { useAccessState } from './useAccessState';
 
 export interface FeatureAccess {
     canCreateClassroom: boolean;
@@ -17,24 +16,7 @@ export interface FeatureAccess {
  * Hook to manage feature access levels for anonymous vs registered users
  */
 export function useFeatureAccess(): FeatureAccess {
-    const [isAnonymous, setIsAnonymous] = useState(false);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const checkAnonymous = async () => {
-            try {
-                const anon = await authAPI.isAnonymous();
-                setIsAnonymous(anon);
-            } catch (error) {
-                console.error('Error checking user access:', error);
-                setIsAnonymous(false);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        checkAnonymous();
-    }, []);
+    const { isAnonymous } = useAccessState();
 
     const promptAccountCreation = useCallback((feature: 'classroom' | 'community' | 'library' | 'self' | 'general') => {
         // This will be handled by the component using GuestConversionPrompt

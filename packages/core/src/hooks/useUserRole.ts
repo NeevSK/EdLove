@@ -17,7 +17,11 @@ interface UseUserRoleReturn {
     schoolId: string | null;
     userId: string | null;
     isAuthenticated: boolean;
+    /** @deprecated Use isAnonymous or needsSchoolContext depending on intent. */
     isGuest: boolean;
+    isAnonymous: boolean;
+    hasSchoolContext: boolean;
+    needsSchoolContext: boolean;
     user: any | null; // Full user object for convergence checks
 }
 
@@ -28,11 +32,12 @@ export function useUserRole(): UseUserRoleReturn & { refresh: () => Promise<void
     const setUser = useStore(state => state.setUser);
     const setSchoolType = useStore(state => state.setSchoolType);
 
-    // Offline-first identity logic
-    // An authenticated user without a school_id is still treated as guest/limited-access
-    // because school-scoped features require a valid school context.
     const schoolId = user?.school_id || null;
-    const isGuest = !user || !user.school_id || schoolId === 'mock-school';
+    const hasSchoolContext = !!schoolId && schoolId !== 'mock-school';
+    const needsSchoolContext = !hasSchoolContext;
+    const isAnonymous = !user || (user as any)?.is_anonymous === true;
+    // "Guest" is the wanderer (anonymous) identity. School setup is tracked separately.
+    const isGuest = isAnonymous;
 
 
     const refresh = async () => {
@@ -85,6 +90,9 @@ export function useUserRole(): UseUserRoleReturn & { refresh: () => Promise<void
         userId: user?.id || null,
         isAuthenticated: !!user,
         isGuest,
+        isAnonymous,
+        hasSchoolContext,
+        needsSchoolContext,
         user,
         refresh
     };

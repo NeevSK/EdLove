@@ -36,7 +36,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
-import { hapticLight, hapticSuccess, openExternalURL } from '@repo/ui';
+import { hapticLight, hapticSuccess, openExternalURL, showExternalLinkOptions } from '@repo/ui';
 import { useResources } from '../hooks/useResources';
 import { api, ClassroomResource, useStore, useSafeMutation } from '@repo/core';
 
@@ -120,11 +120,30 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
 
     const handleOpenResource = (resource: ClassroomResource) => {
         if (resource.url) {
-            openExternalURL(resource.url).catch(err => {
+            openExternalURL(resource.url, {
+                title: resource.title,
+                sourceLabel: 'Classroom',
+                sourceBadge: resource.type === 'pdf' ? 'Shared document' : 'Shared resource',
+                trustLevel: 'external',
+            }).catch(err => {
                 showToast('Could not open link', 'error');
                 console.error("Couldn't open page", err);
             });
         }
+    };
+
+    const handleOpenResourceOptions = (resource: ClassroomResource) => {
+        if (!resource.url) return;
+
+        showExternalLinkOptions(resource.url, {
+            title: resource.title,
+            sourceLabel: 'Classroom',
+            sourceBadge: resource.type === 'pdf' ? 'Shared document' : 'Shared resource',
+            trustLevel: 'external',
+        }).catch((err) => {
+            showToast('Could not open link options', 'error');
+            console.error("Couldn't show link options", err);
+        });
     };
 
     const filteredResources = resources.filter((r: ClassroomResource) => {
@@ -185,6 +204,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                         <Pressable
                             key={resource.id}
                             onPress={() => handleOpenResource(resource)}
+                            onLongPress={() => resource.url && handleOpenResourceOptions(resource)}
                             sx={{
                                 backgroundColor: colors.secondary,
                                 borderRadius: Theme.corners.comfortable,

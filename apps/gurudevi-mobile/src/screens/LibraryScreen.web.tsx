@@ -2,14 +2,17 @@ import React, { useState, useMemo, useCallback } from 'react';
 import {
     LibraryThumbnailCard,
     openExternalURL,
+    showExternalLinkOptions,
     WebScreenHeader,
     useRegisterFAB,
     SmartShelf,
 } from '@repo/ui';
 import {
-    useRoleFeatures,
     useStore,
     useUserRole,
+    useCapabilities,
+    usePendingGateAction,
+    setPendingGateAction,
     growthSignalsAPI,
     impactRipplesAPI,
     supabase
@@ -36,7 +39,8 @@ import {
     getOrderedShelfDefs, 
     LibraryResource, 
     CreateResourceInput,
-    UniversalPerspective 
+    UniversalPerspective,
+    buildLibraryExternalLinkOptions,
 } from '@repo/library';
 import { useNavigation } from '@react-navigation/native';
 import { StackFallback } from '../components/web/WebScreenShimmer';
@@ -45,14 +49,34 @@ export default function LibraryScreen() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const { role } = useUserRole();
-    const { isGuest } = useRoleFeatures();
+    const caps = useCapabilities();
+    const pending = usePendingGateAction();
     const { user, showToast } = useStore();
 
     const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
     const [selectedCategoryId, setSelectedCategoryId] = useState('All');
     const [selectedSort, setSelectedSort] = useState<'recent' | 'popular' | 'most_endorsed' | 'most_bookmarked'>('recent');
     const [viewMode, setViewMode] = useState<'shelf' | 'grid' | 'list' | 'map'>('shelf');
     const [showAddResource, setShowAddResource] = useState(false);
+
+    // Search Debouncing
+    React.useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearchQuery(searchQuery);
+        }, 500);
+        return () => clearTimeout(handler);
+    }, [searchQuery]);
+
+    // Resume-after-upgrade: open Add Resource modal if it was the gated action.
+    React.useEffect(() => {
+        if (!pending.action) return;
+        if (pending.action.kind !== 'library_open_add_resource') return;
+        if (!caps.library.canUpload) return;
+        setShowAddResource(true);
+        pending.clear().catch(() => { });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pending.action, caps.library.canUpload]);
 
     const isTeacherOrCurator = role === 'teacher' || role === 'principal' || role === 'founder';
     const isSearchMode = searchQuery.trim().length > 0 || selectedCategoryId !== 'All';
@@ -63,9 +87,9 @@ export default function LibraryScreen() {
 
     const libraryFilters = useMemo(() => (
         isSearchMode
-            ? { type: resourceTypeFilter, search: searchQuery || undefined, sort_by: selectedSort, limit: 100 }
+            ? { type: resourceTypeFilter, search: debouncedSearchQuery || undefined, sort_by: selectedSort, limit: 100 }
             : { limit: 100, sort_by: selectedSort }
-    ), [isSearchMode, resourceTypeFilter, searchQuery, selectedSort]);
+    ), [isSearchMode, resourceTypeFilter, debouncedSearchQuery, selectedSort]);
 
     const {
         resources,
@@ -75,7 +99,7 @@ export default function LibraryScreen() {
         hasNextResources,
         isFetchingNextResources,
         collections,
-    } = useLibrary(libraryFilters);
+    } = useLibrary(libraryFilters, libraryFilters);
 
     // Grouping logic for shelves
     const trending = useMemo(() =>
@@ -114,8 +138,18 @@ export default function LibraryScreen() {
             });
             return;
         }
-        openExternalURL(resource.url).catch((err: any) => console.error("Couldn't load page", err));
+        openExternalURL(resource.url, buildLibraryExternalLinkOptions(resource)).catch((err: any) => console.error("Couldn't load page", err));
     }, [navigation]);
+
+    const handleOpenResourceOptions = useCallback((resource: LibraryResource) => {
+        if (!resource.url || resource.type === 'pdf' || resource.type === 'video' || resource.type === 'movie_trailer') {
+            return;
+        }
+
+        showExternalLinkOptions(resource.url, buildLibraryExternalLinkOptions(resource)).catch((err: any) =>
+            console.error("Couldn't show external link options", err)
+        );
+    }, []);
 
     const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
     const handleBookmark = useCallback(async (resource: LibraryResource) => {
@@ -149,15 +183,26 @@ export default function LibraryScreen() {
             });
             showToast('Could not save bookmark. Please try again.', 'error');
         }
-    }, [user?.id]);
+    }, [user?.id, showToast]);
+
+    const handleAddResourcePress = useCallback(() => {
+        if (!caps.library.canUpload) {
+            setPendingGateAction({ kind: 'library_open_add_resource', createdAt: Date.now() }).catch(() => { });
+            navigation.navigate('Auth');
+            return;
+        }
+        setShowAddResource(true);
+    }, [caps.library.canUpload, navigation]);
     
-    // Register FAB globally
-    useRegisterFAB({
-        tabType: 'library',
-        onPress: () => setShowAddResource(true),
+    // Register FAB globally - memoized to prevent infinite loop or excessive updates
+    const fabConfig = useMemo(() => ({
+        tabType: 'library' as const,
+        onPress: handleAddResourcePress,
         icon: <Plus size={24} color="#FFF" />,
-        visible: isTeacherOrCurator && !isGuest
-    });
+        visible: isTeacherOrCurator && caps.library.canUpload
+    }), [handleAddResourcePress, isTeacherOrCurator, caps.library.canUpload]);
+
+    useRegisterFAB(fabConfig);
 
     return (
         <div className="sanctuary-screen">
@@ -169,14 +214,14 @@ export default function LibraryScreen() {
                     timeText="Curated Wisdom"
                     actions={(
                         <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-                            {isTeacherOrCurator && !isGuest && (
+                            {isTeacherOrCurator && (
                                 <button
-                                    className="premium-button"
+                                    className={caps.library.canUpload ? "premium-button" : "secondary-button"}
                                     style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '4px', fontSize: '13px' }}
-                                    onClick={() => setShowAddResource(true)}
+                                    onClick={handleAddResourcePress}
                                 >
                                     <Plus size={15} />
-                                    Contribute Resource
+                                    {caps.library.canUpload ? 'Contribute Resource' : 'Unlock Contributions'}
                                 </button>
                             )}
                             <button
@@ -250,12 +295,12 @@ export default function LibraryScreen() {
                                 fontFamily: 'var(--font-body, DM Sans, sans-serif)',
                                 flexShrink: 0,
                             }}
-                            aria-label={t('library.sort.label') || 'Sort library resources'}
+                            aria-label={t('library.sort.label')}
                         >
-                            <option value="recent">{t('library.sort.recent') || 'Most Recent'}</option>
-                            <option value="popular">{t('library.sort.popular') || 'Most Popular'}</option>
-                            <option value="most_endorsed">{t('library.sort.endorsed') || 'Most Endorsed'}</option>
-                            <option value="most_bookmarked">{t('library.sort.bookmarked') || 'Most Bookmarked'}</option>
+                            <option value="recent">{t('library.sort.recent')}</option>
+                            <option value="popular">{t('library.sort.popular')}</option>
+                            <option value="most_endorsed">{t('library.sort.endorsed')}</option>
+                            <option value="most_bookmarked">{t('library.sort.bookmarked')}</option>
                         </select>
 
                         {/* View mode toggle (Always visible in search, relevant for results) */}
@@ -341,11 +386,30 @@ export default function LibraryScreen() {
                             /* SEARCH / FILTERED RESULTS VIEW - Switches between modes */
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                                 <div style={{ fontSize: '14px', color: 'var(--ink-ghost)', marginBottom: '16px' }}>
-                                    {searchQuery ? `Found ${resources.length} findings for "${searchQuery}"` : `Showing ${selectedCategoryId} curated findings`}
+                                    {debouncedSearchQuery 
+                                        ? t('library.foundResults', { count: resources.length, query: debouncedSearchQuery })
+                                        : t('library.showingCurated', { category: selectedCategoryId })
+                                    }
                                 </div>
                                 
                                 {viewMode === 'shelf' && (
                                     <>
+                                        {collections.length > 0 && (
+                                            <SmartShelf title="📚 Matching Collections">
+                                                <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '16px' }}>
+                                                    {collections.map(col => (
+                                                        <div key={`search-col-${col.id}`} style={{ width: '320px', flexShrink: 0 }}>
+                                                            <LibraryThumbnailCard
+                                                                title={col.name}
+                                                                type="collection"
+                                                                subject={col.subjects?.[0] || 'Curated'}
+                                                                onPress={() => navigation.navigate('CollectionDetail', { id: col.id, title: col.name })}
+                                                            />
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </SmartShelf>
+                                        )}
                                         {orderedShelfDefs.map(shelf => {
                                             const shelfItems = resources.filter(res => shelf.types.includes(res.type));
                                             if (shelfItems.length === 0) return null;
@@ -362,6 +426,7 @@ export default function LibraryScreen() {
                                                                     endorsements={res.endorsements}
                                                                     verified={res.verified}
                                                                     onPress={() => handleOpenResource(res)}
+                                                                    onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
                                                                 />
                                                             </div>
                                                         ))}
@@ -384,6 +449,7 @@ export default function LibraryScreen() {
                                                                 endorsements={res.endorsements}
                                                                 verified={res.verified}
                                                                 onPress={() => handleOpenResource(res)}
+                                                                onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
                                                             />
                                                         </div>
                                                     ))}
@@ -405,6 +471,7 @@ export default function LibraryScreen() {
                                                 endorsements={res.endorsements}
                                                 verified={res.verified}
                                                 onPress={() => handleOpenResource(res)}
+                                                onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
                                             />
                                         ))}
                                     </div>
@@ -444,7 +511,7 @@ export default function LibraryScreen() {
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--action)', fontSize: '13px', fontWeight: '600' }}>
                                                     <Play size={14} fill="currentColor" />
-                                                    View
+                                                    {t('library.view')}
                                                 </div>
                                             </div>
                                         ))}
@@ -466,7 +533,7 @@ export default function LibraryScreen() {
                                                     target: resources[i+1].id,
                                                     relationship: 'related'
                                                 })),
-                                                context: { title: 'Knowledge Constellation' }
+                                                context: { title: t('library.knowledgeConstellation') }
                                             } as any}
                                             onNodePress={(node) => {
                                                 const res = resources.find(r => r.id === node.id);
@@ -484,24 +551,44 @@ export default function LibraryScreen() {
                                     <SmartShelf title="Featured Collections">
                                         <div style={{ display: 'flex', gap: '20px' }}>
                                             {collections.map((col: any) => (
-                                                <div key={`col-${col.id}`} style={{ 
-                                                    width: '240px', 
-                                                    height: '140px', 
-                                                    borderRadius: '16px', 
-                                                    background: 'var(--action-soft)', 
-                                                    padding: '20px',
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    justifyContent: 'center',
-                                                    cursor: 'pointer',
-                                                    border: '1px solid var(--border)',
-                                                    transition: 'transform 0.2s',
-                                                }}
-                                                className="sanctuary-card"
+                                                <div 
+                                                    key={`col-${col.id}`} 
+                                                    style={{ 
+                                                        width: '240px', 
+                                                        height: '140px', 
+                                                        borderRadius: '16px', 
+                                                        background: 'var(--action-soft)', 
+                                                        padding: '24px',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        justifyContent: 'center',
+                                                        cursor: 'pointer',
+                                                        border: '1px solid var(--border)',
+                                                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                                        position: 'relative',
+                                                        overflow: 'hidden'
+                                                    }}
+                                                    className="sanctuary-card"
+                                                    onClick={() => navigation.navigate('CollectionDetail', { id: col.id, title: col.name })}
                                                 >
-                                                    <div style={{ fontSize: '12px', color: 'var(--action)', fontWeight: '800', marginBottom: '8px' }}>COLLECTION</div>
-                                                    <div style={{ fontWeight: '700', fontSize: '16px', color: 'var(--ink)' }}>{col.name}</div>
-                                                    <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '4px' }}>{col.resource_ids?.length ?? 0} items</div>
+                                                    <div style={{ fontSize: '11px', color: 'var(--action)', fontWeight: '800', marginBottom: '8px', letterSpacing: '0.05em' }}>
+                                                        {col.is_virtual ? t('library.dynamic') : t('library.collection')}
+                                                    </div>
+                                                    <div style={{ fontWeight: '700', fontSize: '18px', color: 'var(--ink)', lineHeight: '1.2' }}>{col.name}</div>
+                                                    <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', marginTop: '8px', fontWeight: '500' }}>
+                                                        {col.used_by_count ?? col.resource_ids?.length ?? 0} {t('library.resources')}
+                                                    </div>
+                                                    
+                                                    {/* Subtle accent line */}
+                                                    <div style={{ 
+                                                        position: 'absolute', 
+                                                        bottom: 0, 
+                                                        left: 0, 
+                                                        right: 0, 
+                                                        height: '4px', 
+                                                        background: 'var(--action)', 
+                                                        opacity: 0.3 
+                                                    }} />
                                                 </div>
                                             ))}
                                         </div>
@@ -525,6 +612,7 @@ export default function LibraryScreen() {
                                                             endorsements={res.endorsements}
                                                             verified={res.verified}
                                                             onPress={() => handleOpenResource(res)}
+                                                            onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
                                                         />
                                                     </div>
                                                 ))}
@@ -542,7 +630,7 @@ export default function LibraryScreen() {
                                 onClick={() => fetchNextResources()}
                                 disabled={isFetchingNextResources}
                             >
-                                {isFetchingNextResources ? 'Loading…' : 'Load More Findings'}
+                                {isFetchingNextResources ? t('library.loadingMore') : t('library.loadMoreFindings')}
                             </button>
                         )}
                     </div>
@@ -551,7 +639,7 @@ export default function LibraryScreen() {
 
 
             {/* Add Resource Modal — teachers/curators can contribute */}
-            {isTeacherOrCurator && !isGuest && (
+            {isTeacherOrCurator && caps.library.canUpload && (
                 <AddResourceModal
                     isOpen={showAddResource}
                     onClose={() => setShowAddResource(false)}

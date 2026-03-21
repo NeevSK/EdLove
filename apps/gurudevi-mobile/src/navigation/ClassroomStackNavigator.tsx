@@ -8,21 +8,21 @@ import {
     FounderDashboard,
     FounderSchoolView
 } from '@repo/classroom';
-import { Theme, useTheme } from '@repo/ui';
+import { useTheme } from '@repo/ui';
 import { ClassroomStackParamList } from '@repo/core';
 import { SchoolCreationScreen } from '../screens'; // Added
 
 const Stack = createNativeStackNavigator<ClassroomStackParamList>();
 
 export default function ClassroomStackNavigator() {
-    const { gradientNodes } = useTheme();
+    const { scene } = useTheme();
 
     return (
         <Stack.Navigator
             id="ClassroomStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: gradientNodes[0] },
+                contentStyle: { backgroundColor: scene.canvas.bg },
             }}
         >
             <Stack.Screen name="ClassroomList" component={ClassroomScreen} />

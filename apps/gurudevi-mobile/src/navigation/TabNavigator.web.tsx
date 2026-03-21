@@ -1,9 +1,8 @@
 import React from "react";
-import { View, Platform } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import { ErrorBoundary, AchievementUnlockOverlay, useTheme, UniversalModal, Box, VStack, HStack, Text, hapticLight, Theme } from "@repo/ui";
+import { ErrorBoundary, AchievementUnlockOverlay, useTheme, UniversalModal, Box, HStack, Text, Theme } from "@repo/ui";
 import { BreathGuide } from "@repo/self";
 import { useUserRole, useRewards, useNotifications, useStore } from "@repo/core";
 import {
@@ -150,7 +149,7 @@ export default function TabNavigator({
 }) {
   const { t } = useTranslation();
   const { role, userId } = useUserRole();
-  const { isDark } = useTheme();
+  const { scene, text } = useTheme();
   const { newAchievements } = useRewards();
   const { unreadCount } = useNotifications(userId);
   const navigation = useNavigation();
@@ -255,6 +254,17 @@ export default function TabNavigator({
     }
   }, [activeTab, t]);
 
+  // Sync active tab to parent state via effect to avoid "setState during render" warnings.
+  // Using a stable callback from parent and checking values prevents infinite loops.
+  React.useEffect(() => {
+    if (activeTab) {
+      const mainTabs = ["Self", "Community", "Classroom", "Library", "Profile"];
+      if (mainTabs.includes(activeTab)) {
+        onTabChange?.(activeTab.toLowerCase());
+      }
+    }
+  }, [activeTab, onTabChange]);
+
   const getClassroomLabel = () => {
     if (role === "principal") return t("tabs.mySchool");
     if (role === "founder") return t("tabs.school");
@@ -279,7 +289,7 @@ export default function TabNavigator({
 
   return (
     <div className="vellum-app-shell">
-      <div className="world-bg" />
+      <div className="world-bg" aria-hidden="true" />
 
       {/* ── TOP BAR ── */}
       <header className="top-bar">
@@ -488,19 +498,11 @@ export default function TabNavigator({
               screenListeners={{
                 state: (e) => {
                   const s = (e.data as any)?.state;
-                  if (!s || s.index === undefined) return;
+                  if (!s || s.index === undefined || !s.routes) return;
                   const routeName = s.routes[s.index]?.name;
-                  if (routeName) {
-                    // Guard against repeated same-value updates from nested navigation
-                    // state events to avoid unnecessary re-render churn.
-                    setActiveTab((prev) => {
-                      if (prev === routeName) return prev;
-                      const mainTabs = ["Self", "Community", "Classroom", "Library", "Profile"];
-                      if (mainTabs.includes(routeName)) {
-                        onTabChange?.(routeName.toLowerCase());
-                      }
-                      return routeName;
-                    });
+                  if (routeName && routeName !== activeTab) {
+                    // Update local tab state — the useEffect above handles notifying parent
+                    setActiveTab(routeName);
                   }
                 },
               }}
@@ -656,7 +658,9 @@ export default function TabNavigator({
         onClose={() => setBreathingOpen(false)}
       >
         <Box sx={{ 
-          backgroundColor: 'var(--background)',
+          backgroundColor: scene.elevated.bg,
+          borderColor: scene.elevated.border,
+          borderWidth: 1,
           borderRadius: '$xl' as any,
           padding: Theme.spacing.xl, 
           alignItems: 'center',
@@ -664,12 +668,22 @@ export default function TabNavigator({
           width: '90%'
         }}>
           <HStack justifyContent="space-between" alignItems="center" sx={{ width: '100%', marginBottom: Theme.spacing.md }}>
-            <Text color="var(--ink)" sx={{ fontSize: '$lg' as any, fontWeight: '700' }}>
+            <Text color={text.onElevated} sx={{ fontSize: '$lg' as any, fontWeight: '700' }}>
               {t('self.breathingReset') || 'Breathing Reset'}
             </Text>
             <button 
               onClick={() => setBreathingOpen(false)}
-              style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)' }}
+              style={{
+                background: scene.interactive.bg,
+                border: `1px solid ${scene.interactive.border}`,
+                borderRadius: 9999,
+                cursor: 'pointer',
+                color: text.onInteractive,
+                padding: 8,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
               <X size={24} />
             </button>

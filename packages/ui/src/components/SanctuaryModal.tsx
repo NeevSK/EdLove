@@ -65,7 +65,7 @@ export default function SanctuaryModal({
     showCloseButton = true,
     size = 'md',
 }: SanctuaryModalProps) {
-    const { glass, text, isDark } = useTheme();
+    const { scene, text, isDark } = useTheme();
 
     return (
         <Modal
@@ -85,9 +85,8 @@ export default function SanctuaryModal({
             <ModalContent
                 sx={{
                     width: '90%',
-                    // Glass Protocol: phase + world aware background
-                    backgroundColor: glass.modal.bg,
-                    borderColor: glass.modal.border,
+                    backgroundColor: scene.elevated.bg,
+                    borderColor: scene.elevated.border,
                     borderWidth: 1,
                     borderRadius: Theme.corners.generous,
                     // Shadow Violet only â€” never black
@@ -106,7 +105,7 @@ export default function SanctuaryModal({
                         <VStack {...({ flex: 1 } as any)}>
                             <Heading
                                 size="md"
-                                {...({ color: text.primary } as any)}
+                                {...({ color: text.onElevated } as any)}
                             >
                                 {title}
                             </Heading>
@@ -124,7 +123,7 @@ export default function SanctuaryModal({
                         <ModalCloseButton>
                             <Icon
                                 as={CloseIcon}
-                                {...({ color: text.muted } as any)}
+                                {...({ color: text.onElevated } as any)}
                             />
                         </ModalCloseButton>
                     )}

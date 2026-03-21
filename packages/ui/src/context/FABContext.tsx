@@ -73,7 +73,7 @@ export const useRegisterFAB = (config: Partial<FABState>) => {
         config.tabType, 
         config.visible, 
         config.onPress, 
-        config.icon,
+        // config.icon, // REMOVED: This causes infinite loops if the icon is a new JSX element
         config.onBreathingReset,
         config.hasActiveGaps
     ]);

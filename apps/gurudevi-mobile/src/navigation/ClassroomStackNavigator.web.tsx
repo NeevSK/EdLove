@@ -1,6 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Theme, useTheme } from '@repo/ui';
+import { useTheme } from '@repo/ui';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 import { ClassroomStackParamList } from '@repo/core';
 
@@ -29,6 +29,12 @@ const TimetableScreen = React.lazy(() =>
 const SchoolForestScreen = React.lazy(() =>
     import('../screens/SchoolForestScreen.web')
 );
+const FormBuilderScreen = React.lazy(() =>
+    import('../screens/classroom/FormBuilderScreen.web')
+);
+const PublicFormScreen = React.lazy(() =>
+    import('../screens/classroom/PublicFormScreen.web')
+);
 
 const Stack = createNativeStackNavigator<ClassroomStackParamList>();
 
@@ -37,7 +43,7 @@ function ScreenFallback() {
 }
 
 export default function ClassroomStackNavigatorWeb() {
-    const { gradientNodes } = useTheme();
+    const { scene } = useTheme();
 
     return (
         <React.Suspense fallback={<ScreenFallback />}>
@@ -45,7 +51,7 @@ export default function ClassroomStackNavigatorWeb() {
             id="ClassroomStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: gradientNodes[0] },
+                contentStyle: { backgroundColor: scene.canvas.bg },
             }}
         >
             <Stack.Screen name="ClassroomList" component={ClassroomScreenWeb} />
@@ -58,6 +64,8 @@ export default function ClassroomStackNavigatorWeb() {
             <Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} />
             <Stack.Screen name="Timetable" component={TimetableScreen} />
             <Stack.Screen name="SchoolForest" component={SchoolForestScreen} />
+            <Stack.Screen name="FormBuilder" component={FormBuilderScreen} />
+            <Stack.Screen name="PublicForm" component={PublicFormScreen} />
         </Stack.Navigator>
         </React.Suspense>
     );

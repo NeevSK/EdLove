@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import { VStack, Text, Center, Box } from '../gluestack';
 import { Theme } from '../theme/Theme';
-import { useThemedColors } from '../hooks/useThemedColors';
+import { useTheme } from '../hooks/useTheme';
 import SanctuaryButton from './SanctuaryButton';
 import { LucideIcon } from 'lucide-react-native';
 
@@ -22,7 +22,7 @@ export default function EmptyState({
     onAction,
     minHeight = 300
 }: EmptyStateProps) {
-    const colors = useThemedColors();
+    const { scene, text, accent } = useTheme();
 
     return (
         <Center sx={{
@@ -33,15 +33,17 @@ export default function EmptyState({
             <VStack space="md" alignItems="center" maxWidth={300}>
                 <Box sx={{
                     padding: Theme.spacing.lg,
-                    backgroundColor: colors.tertiary,
+                    backgroundColor: scene.interactive.bg,
+                    borderColor: scene.interactive.border,
+                    borderWidth: 1,
                     borderRadius: Theme.corners.full,
                     marginBottom: Theme.spacing.sm
                 }}>
-                    <Icon size={48} color={colors.action} strokeWidth={1.5} />
+                    <Icon size={48} color={accent.action} strokeWidth={1.5} />
                 </Box>
 
                 <Text
-                    color={colors.text}
+                    color={text.onCanvas}
                     fontSize="$xl"
                     fontWeight="$bold"
                     textAlign="center"
@@ -50,7 +52,7 @@ export default function EmptyState({
                 </Text>
 
                 <Text
-                    color={colors.textSecondary}
+                    color={text.secondary}
                     textAlign="center"
                     fontSize="$md"
                     sx={{ lineHeight: 24 }}

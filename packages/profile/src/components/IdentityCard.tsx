@@ -23,19 +23,38 @@ import { User, GraduationCap, Briefcase, Crown, ShieldAlert, Compass } from 'luc
 import { QRCodeGenerator, QRBuilder } from '@repo/scanner-kit';
 import type { UserProfile } from '../types';
 import { AvatarDisplay } from './AvatarDisplay';
+import { EntityInstance } from '@repo/core';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_WIDTH = SCREEN_WIDTH - Theme.spacing.xl * 2;
 const CARD_HEIGHT = 220;
 
 interface IdentityCardProps {
-    profile: UserProfile | null;
+    profile?: UserProfile | null;
+    instance?: EntityInstance;
     onEdit?: () => void;
     onViewFullProfile?: () => void;
     style?: any;
 }
 
-export default function IdentityCard({ profile, onEdit, onViewFullProfile, style }: IdentityCardProps) {
+export default function IdentityCard({ profile: initialProfile, instance, onEdit, onViewFullProfile, style }: IdentityCardProps) {
+    const profile = useMemo(() => {
+        if (initialProfile) return initialProfile;
+        if (instance) {
+            return {
+                id: instance.id,
+                full_name: instance.data?.full_name || instance.data?.name,
+                avatar_url: instance.data?.avatar_url || instance.data?.image,
+                role: instance.data?.role,
+                school_name: instance.data?.school_name,
+                nic_number: instance.data?.nic_number,
+                index_number: instance.data?.index_number,
+                username: instance.data?.username,
+            } as UserProfile;
+        }
+        return null;
+    }, [initialProfile, instance]);
+
     const { t } = useTranslation();
     const colors = useThemedColors();
     const isFlipped = useSharedValue(0);

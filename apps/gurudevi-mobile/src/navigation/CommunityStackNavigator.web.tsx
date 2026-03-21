@@ -1,6 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Theme, useTheme } from '@repo/ui';
+import { useTheme } from '@repo/ui';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 import { CommunityStackParamList } from '@repo/core';
 
@@ -35,7 +35,7 @@ function ScreenFallback() {
 }
 
 export default function CommunityStackNavigatorWeb() {
-    const { gradientNodes } = useTheme();
+    const { scene } = useTheme();
 
     return (
         <React.Suspense fallback={<ScreenFallback />}>
@@ -43,7 +43,7 @@ export default function CommunityStackNavigatorWeb() {
             id="CommunityStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: gradientNodes[0] },
+                contentStyle: { backgroundColor: scene.canvas.bg },
             }}
         >
             <Stack.Screen name="CommunityMain" component={CommunityScreenWeb} />

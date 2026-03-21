@@ -1,8 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, Platform, KeyboardAvoidingView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useEnvironment } from '../context';
-import { getThemeColors } from '../utils/themeColors';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { useTheme } from '../hooks/useTheme';
 
 interface ScreenWrapperProps {
     children: React.ReactNode;
@@ -33,18 +31,17 @@ export default function ScreenWrapper({
     children,
     scrollable = true,
     scroll,
+    backgroundColor,
     style,
-    refreshControl,
-    hasBottomTab = false
+    refreshControl
 }: ScreenWrapperProps) {
-    const insets = useSafeAreaInsets();
-    const { isDark, temporalPhase } = useEnvironment();
-    const colors = getThemeColors(isDark, temporalPhase);
+    const { scene } = useTheme();
 
     const isScrollable = scroll ?? scrollable;
+    const resolvedBackground = backgroundColor || scene.canvas.bg;
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: resolvedBackground }]}>
             {isScrollable ? (
                 <ScrollView
                     style={styles.scrollView}

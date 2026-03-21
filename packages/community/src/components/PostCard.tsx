@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Image, Platform, Share, ActivityIndicator, Animated, Linking } from 'react-native';
-import { Box, HStack, VStack, Text, Avatar, AvatarFallbackText, AvatarImage } from '@repo/ui';
+import { StyleSheet, TouchableOpacity, Image, Platform, Share, ActivityIndicator, Animated } from 'react-native';
+import { Box, HStack, VStack, Text, Avatar, AvatarFallbackText, AvatarImage, openExternalURL } from '@repo/ui';
 import { MoreHorizontal, Heart, MessageCircle, Sparkles, Share2, CheckCircle2, AlertTriangle, FileText, Video, Music, Link2, BookOpen, Lock, Clock, Check, Trophy, X as XIcon } from 'lucide-react-native';
 import { SanctuaryCard, Theme, useThemedColors, LivingGlow } from '@repo/ui';
 import { formatDistanceToNow } from 'date-fns';
@@ -115,20 +115,14 @@ const PostCard = React.memo(function PostCard({
                     if (!media_url) {
                         return;
                     }
-                    if (Platform.OS === 'web') {
-                        window.open(media_url, '_blank');
-                        return;
-                    }
-                    // Basic URL validation before attempting to open on native
-                    const isHttpUrl = media_url.startsWith('http://') || media_url.startsWith('https://');
-                    if (!isHttpUrl) {
-                        return;
-                    }
-                    try {
-                        Linking.openURL(media_url);
-                    } catch (e) {
-                        // Silently fail to avoid crashing the app if the URL cannot be opened
-                    }
+                    openExternalURL(media_url, {
+                        title: mediaLabel,
+                        sourceLabel: 'Community',
+                        sourceBadge: 'Shared attachment',
+                        trustLevel: 'external',
+                    }).catch(() => {
+                        // Non-fatal: attachment open failures should not destabilize the feed
+                    });
                 }}
                 style={[styles.attachmentChip, { borderColor: colors.action }]}
                 accessibilityLabel={`Open ${mediaLabel}`}

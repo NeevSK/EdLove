@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { FlatList, ActivityIndicator } from 'react-native';
+import React, { useState, useCallback, useMemo } from 'react';
+import { FlatList, ActivityIndicator, TextInput, Platform } from 'react-native';
 import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, PositiveInvitation, Theme, FadeInDown, SanctuaryButton, SanctuaryFlashList, Heading } from '@repo/ui';
 import Animated from 'react-native-reanimated';
 import GroupCard from '../components/GroupCard';
@@ -22,6 +22,9 @@ interface GroupsScreenProps {
 
 export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateGroup, onNavigateToGroup }: GroupsScreenProps) {
     const { t } = useTranslation();
+    const [activeSubTab, setActiveSubTab] = useState<GroupsSubTab>(userId ? 'sanctuary' : 'galaxy');
+    const [searchQuery, setSearchQuery] = useState('');
+
     const {
         sanctuaryGroups,
         galaxyGroups,
@@ -29,12 +32,67 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
         fetchNextGroups,
         hasNextGroups,
         isFetchingNextGroups
-    } = useCommunityGroups({ schoolId, userId });
+    } = useCommunityGroups({ 
+        schoolId, 
+        userId,
+        searchQuery,
+        isPublicOnly: activeSubTab === 'galaxy' && !searchQuery
+    });
 
     const colors = useThemedColors();
-    const [activeSubTab, setActiveSubTab] = useState<GroupsSubTab>('sanctuary');
+    const isGuest = !userId;
 
-    const activeGroups = activeSubTab === 'sanctuary' ? sanctuaryGroups : galaxyGroups;
+    const activeGroups = useMemo(() => 
+        activeSubTab === 'sanctuary' ? sanctuaryGroups : galaxyGroups,
+    [activeSubTab, sanctuaryGroups, galaxyGroups]);
+
+    const handleSearchChange = useCallback((text: string) => {
+        setSearchQuery(text);
+    }, []);
+
+    const handleClearSearch = useCallback(() => {
+        setSearchQuery('');
+    }, []);
+
+    const renderSearchBar = () => (
+        <Animated.View entering={FadeInDown.delay(100).springify()}>
+            <Box px="$4" mb="$3">
+                <HStack 
+                    space="sm" 
+                    alignItems="center" 
+                    sx={{ 
+                        backgroundColor: colors.secondary, 
+                        borderRadius: Theme.corners.comfortable,
+                        paddingHorizontal: Theme.spacing.md,
+                        height: 48,
+                        borderWidth: 1,
+                        borderColor: colors.border
+                    }}
+                >
+                    <Compass size={18} color={colors.textSecondary} />
+                    <TextInput
+                        style={{ 
+                            flex: 1, 
+                            fontSize: 15, 
+                            color: colors.text,
+                            height: '100%',
+                            paddingHorizontal: 0, // Remove default padding for clean look
+                            ...(Platform.OS === 'web' ? { outline: 'none' } : {})
+                        }}
+                        placeholder={activeSubTab === 'sanctuary' ? "Search your groups..." : "Discover groups in the galaxy..."}
+                        placeholderTextColor={colors.textSecondary}
+                        value={searchQuery}
+                        onChangeText={handleSearchChange}
+                    />
+                    {searchQuery ? (
+                        <Pressable onPress={handleClearSearch}>
+                            <Text sx={{ color: colors.textSecondary, fontSize: 18 }}>×</Text>
+                        </Pressable>
+                    ) : null}
+                </HStack>
+            </Box>
+        </Animated.View>
+    );
 
     const renderSubTabs = () => (
         <Animated.View entering={FadeInDown.delay(150).springify()}>
@@ -176,7 +234,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
         );
     };
 
-    const renderItem = ({ item, index }: { item: Group, index: number }) => {
+    const renderItem = useCallback(({ item, index }: { item: Group, index: number }) => {
         const animationDelay = Math.min(index * 150, 1500);
         return (
             <Animated.View entering={FadeInDown.duration(400).delay(animationDelay).springify()}>
@@ -190,27 +248,34 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                 />
             </Animated.View>
         );
-    };
+    }, [onNavigateToGroup]);
+
+    const keyExtractor = useCallback((item: Group) => item.id, []);
+
+    const ListEmptyComponent = useMemo(() => getEmptyComponent(), [loading, activeSubTab, colors]);
+
+    const handleEndReached = useCallback(() => {
+        if (hasNextGroups && !isFetchingNextGroups) {
+            fetchNextGroups();
+        }
+    }, [hasNextGroups, isFetchingNextGroups, fetchNextGroups]);
 
     return (
         <Box sx={{ flex: 1 }}>
             {renderSubTabs()}
+            {renderSearchBar()}
             {renderGalaxyActions()}
             <SanctuaryFlashList
                 data={activeGroups as any}
                 renderItem={renderItem}
-                keyExtractor={(item) => item.id}
+                keyExtractor={keyExtractor}
                 estimatedItemSize={Theme.listSizes.communityCard}
-                onEndReached={() => {
-                    if (hasNextGroups && !isFetchingNextGroups) {
-                        fetchNextGroups();
-                    }
-                }}
+                onEndReached={handleEndReached}
                 onEndReachedThreshold={0.5}
                 ListFooterComponent={isFetchingNextGroups ? (
                     <ActivityIndicator size="small" color={colors.action} style={{ padding: 20 }} />
                 ) : null}
-                ListEmptyComponent={getEmptyComponent()}
+                ListEmptyComponent={ListEmptyComponent}
                 contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, paddingBottom: 120 }}
             />
         </Box>

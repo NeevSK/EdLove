@@ -87,7 +87,7 @@ export default function CommunityHearth({
     if (manifestos && manifestos.length > 0) {
         manifestos.forEach((manifesto, index) => {
             slides.push({
-                key: `manifesto-${index}`,
+                key: `manifesto-${manifesto.id}`,
                 content: (
                     <VStack space="sm">
                         <HStack space="xs" alignItems="center">

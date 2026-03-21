@@ -9,7 +9,7 @@
  *   const { textOnAccent, textOnReward, accentRgb } = useTheme(); // adaptive text
  */
 import { useEnvironment } from '../context/EnvironmentContext';
-import { resolvePhaseTokens, CLASSIC_TOKENS, PhaseTokens } from '../theme/Theme';
+import { resolvePhaseTokens, resolveClassicTokens, ResolvedThemeTokens } from '../theme/Theme';
 import { getTextOnBackground, hexToRgbComponents } from '../utils/colorUtils';
 import type { TemporalPhase, ThemeMode } from '../context/types';
 
@@ -42,7 +42,7 @@ export interface AdaptiveTokens {
     surfaceRgb: string;
 }
 
-export interface UseThemeReturn extends PhaseTokens, AdaptiveTokens {
+export interface UseThemeReturn extends ResolvedThemeTokens, AdaptiveTokens {
     isDark: boolean;
     phase: TemporalPhase;
     /** Whether animations should run (based on device tier + fidelity) */
@@ -68,7 +68,7 @@ export function useTheme(): UseThemeReturn {
 
     const tokens = enableLivingTheme
         ? resolvePhaseTokens(temporalPhase, isDark)
-        : CLASSIC_TOKENS;
+        : resolveClassicTokens(isDark);
 
     const animationsEnabled = enableLivingTheme && effectiveFidelity === 'high';
     const blurEnabled = effectiveFidelity === 'high' && reality.deviceTier !== 'low';

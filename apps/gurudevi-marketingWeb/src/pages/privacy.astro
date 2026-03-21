@@ -1,0 +1,42 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="Privacy Policy">
+	<Header />
+	
+	<main class="flex-grow py-24 px-8">
+		<article class="max-w-4xl mx-auto space-y-12">
+			<h1 class="text-4xl font-bold text-charcoal-truth">Privacy Policy</h1>
+			<p class="text-mud-brown text-lg">
+				Last Updated: February 12, 2026
+			</p>
+			
+			<section class="space-y-6 text-mud-brown leading-relaxed">
+				<h2 class="text-2xl font-bold text-peacock-blue">1. Our Commitment</h2>
+				<p>
+					Gurudevi is built on the foundation of care and trust. We do not engage in surveillance or data exploitation. Our platform is designed to protect the "inner ecology" of every user.
+				</p>
+				
+				<h2 class="text-2xl font-bold text-peacock-blue">2. Data Collection</h2>
+				<p>
+					We only collect data necessary for the operation of the education ecology, such as attendance and classroom resources. Personal reflections and journals remain private to the user unless explicitly shared.
+				</p>
+				
+				<h2 class="text-2xl font-bold text-peacock-blue">3. Boundaries</h2>
+				<p>
+					Role-based views ensure that higher-level administrators see patterns and institutional health indicators, not the private lives or individual struggles of teachers or students.
+				</p>
+
+				<h2 class="text-2xl font-bold text-peacock-blue">4. Account deletion</h2>
+				<p>
+					You can request account deletion at any time. See <a href="/delete-account" class="text-sanctuary-saffron font-bold hover:text-peacock-blue transition-colors">Delete Account</a> for the steps.
+				</p>
+			</section>
+		</article>
+	</main>
+	
+	<Footer />
+</Layout>

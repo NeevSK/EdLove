@@ -45,7 +45,7 @@ export const FounderVisionScreen: React.FC = () => {
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.container, { backgroundColor: colors.primary }]}>
             <View style={styles.header}>
                 <HStack justifyContent="space-between" alignItems="center">
                     <VStack>

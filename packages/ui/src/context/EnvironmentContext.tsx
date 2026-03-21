@@ -39,6 +39,10 @@ const STORAGE_KEYS = {
     ENABLE_LIVING_THEME: '@gurudevi/enable_living_theme',
 };
 
+// Dark mode is reintroduced behind a development guard until the remaining
+// screen-level hardcoded colors are migrated to scene tokens.
+const ENABLE_EXPERIMENTAL_DARK_MODE = typeof __DEV__ !== 'undefined' ? __DEV__ : false;
+
 // Create the context
 const EnvironmentContext = createContext<EnvironmentContextValue | undefined>(undefined);
 
@@ -75,10 +79,11 @@ export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
     });
 
     // Compute derived state
-    const isDark =
+    const isDark = ENABLE_EXPERIMENTAL_DARK_MODE && (
         themeMode === 'dark' ||
         (themeMode === 'system' && systemColorScheme === 'dark') ||
-        (themeMode === 'auto' && shouldUseDarkTheme(temporalPhase));
+        (themeMode === 'auto' && shouldUseDarkTheme(temporalPhase))
+    );
     const effectiveFidelity = computeEffectiveFidelity(fidelityLevel, reality.deviceTier);
 
     /**

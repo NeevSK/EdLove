@@ -1,3 +1,4 @@
+import { useMemo, useCallback } from 'react';
 import { storage, StorageKeys, requireAuth, useStore, growthSignalsAPI, useTemporalStore } from '@repo/core';
 import { CommunityPost, CommunityGroup, Group, Post } from '../types';
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
@@ -10,16 +11,21 @@ export const COMMUNITY_KEYS = {
     posts: (groupId?: string, date?: string) => [...COMMUNITY_KEYS.all, 'posts', groupId || 'all', date || 'now'] as const,
 };
 
-export const useCommunity = (groupId?: string) => {
+export const useCommunity = (groupId?: string, options: { searchQuery?: string; isPublicOnly?: boolean } = {}) => {
     const queryClient = useQueryClient();
     const storeUser = useStore(state => state.user);
     const viewDate = useTemporalStore(state => state.viewDate);
 
     // Fetch Groups with Infinite Scroll
     const groupsInfiniteQuery = useInfiniteQuery({
-        queryKey: COMMUNITY_KEYS.groups(),
+        queryKey: [...COMMUNITY_KEYS.groups(), options.searchQuery, options.isPublicOnly],
         queryFn: async ({ pageParam = 0 }) => {
-            return communityAPI.getGroups({ limit: 10, offset: pageParam });
+            return communityAPI.getGroups({ 
+                limit: 10, 
+                offset: pageParam,
+                search: options.searchQuery,
+                is_public: options.isPublicOnly
+            });
         },
         initialPageParam: 0,
         getNextPageParam: (lastPage, allPages) => {
@@ -194,21 +200,30 @@ export const useCommunity = (groupId?: string) => {
         },
     });
 
-    return {
-        groups: groupsInfiniteQuery.data?.pages.flat() || [],
+    const groups = useMemo(() => groupsInfiniteQuery.data?.pages.flat() || [], [groupsInfiniteQuery.data?.pages]);
+    const posts = useMemo(() => postsInfiniteQuery.data?.pages.flat() || [], [postsInfiniteQuery.data?.pages]);
+
+    const fetchGroups = useCallback(() => groupsInfiniteQuery.refetch(), [groupsInfiniteQuery]);
+    const fetchPosts = useCallback((gid?: string) => 
+        queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(gid || 'all', viewDate) }), 
+        [queryClient, viewDate]
+    );
+
+    return useMemo(() => ({
+        groups,
         isLoadingGroups: groupsInfiniteQuery.isLoading,
         isFetchingNextGroups: groupsInfiniteQuery.isFetchingNextPage,
         hasNextGroups: groupsInfiniteQuery.hasNextPage,
         fetchNextGroups: groupsInfiniteQuery.fetchNextPage,
 
-        posts: postsInfiniteQuery.data?.pages.flat() || [],
+        posts,
         isLoadingPosts: postsInfiniteQuery.isLoading,
         isFetchingNextPosts: postsInfiniteQuery.isFetchingNextPage,
         hasNextPosts: postsInfiniteQuery.hasNextPage,
         fetchNextPosts: postsInfiniteQuery.fetchNextPage,
 
-        fetchGroups: () => groupsInfiniteQuery.refetch(),
-        fetchPosts: (gid?: string) => queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(gid || 'all', viewDate) }),
+        fetchGroups,
+        fetchPosts,
 
         createPost: createPostMutation.mutateAsync,
         isCreatingPost: createPostMutation.isPending,
@@ -229,5 +244,30 @@ export const useCommunity = (groupId?: string) => {
         error: (groupsInfiniteQuery.error || postsInfiniteQuery.error)
             ? ((groupsInfiniteQuery.error || postsInfiniteQuery.error) as any)?.message || 'An error occurred'
             : null,
-    };
+    }), [
+        groups, 
+        groupsInfiniteQuery.isLoading, 
+        groupsInfiniteQuery.isFetchingNextPage, 
+        groupsInfiniteQuery.hasNextPage, 
+        groupsInfiniteQuery.fetchNextPage,
+        posts,
+        postsInfiniteQuery.isLoading,
+        postsInfiniteQuery.isFetchingNextPage,
+        postsInfiniteQuery.hasNextPage,
+        postsInfiniteQuery.fetchNextPage,
+        fetchGroups,
+        fetchPosts,
+        createPostMutation.mutateAsync,
+        createPostMutation.isPending,
+        createGroupMutation.mutateAsync,
+        createGroupMutation.isPending,
+        joinGroupMutation.mutateAsync,
+        joinGroupMutation.isPending,
+        toggleReactionMutation.mutateAsync,
+        toggleReactionMutation.isPending,
+        deletePostMutation.mutateAsync,
+        deletePostMutation.isPending,
+        groupsInfiniteQuery.error,
+        postsInfiniteQuery.error
+    ]);
 };

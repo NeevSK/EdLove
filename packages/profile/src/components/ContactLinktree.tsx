@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { Linking, Platform, TouchableOpacity } from 'react-native';
+import { Platform, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import {
     VStack,
@@ -20,6 +20,7 @@ import {
     LivingGlow,
     FadeInDown,
     openExternalURL,
+    showExternalLinkOptions,
 } from '@repo/ui';
 import {
     Phone,
@@ -120,26 +121,62 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
 
         const uri = config.getUri(value);
 
+        const webUrl = uri.startsWith('http') ? uri
+            : uri.startsWith('whatsapp://') ? `https://wa.me/${value.replace(/\D/g, '')}`
+            : null;
+
         if (Platform.OS === 'web') {
-            // On web, always open in a new tab — never replace the running app
-            const webUrl = uri.startsWith('http') ? uri
-                : uri.startsWith('whatsapp://') ? `https://wa.me/${value.replace(/\D/g, '')}`
-                : null;
-            if (webUrl) { openExternalURL(webUrl); }
+            if (webUrl) {
+                openExternalURL(webUrl, {
+                    title: config.label,
+                    sourceLabel: 'Profile',
+                    sourceBadge: 'Public contact link',
+                    trustLevel: 'external',
+                });
+            } else {
+                openExternalURL(uri);
+            }
             return;
         }
 
-        const supported = await Linking.canOpenURL(uri);
-        if (supported) {
-            await Linking.openURL(uri);
-        } else {
-            // Fallback if app not installed
+        try {
+            await openExternalURL(uri, {
+                title: config.label,
+                sourceLabel: 'Profile',
+                sourceBadge: 'Public contact link',
+                trustLevel: uri.startsWith('http') ? 'external' : undefined,
+            });
+        } catch {
             if (uri.startsWith('whatsapp://')) {
-                await Linking.openURL(`https://wa.me/${value.replace(/\D/g, '')}`);
+                await openExternalURL(`https://wa.me/${value.replace(/\D/g, '')}`, {
+                    title: config.label,
+                    sourceLabel: 'Profile',
+                    sourceBadge: 'Public contact link',
+                    trustLevel: 'external',
+                });
             } else if (!uri.startsWith('http')) {
                 console.warn('Unhandled URI scheme:', uri);
             }
         }
+    }, []);
+
+    const handleLinkOptions = useCallback(async (provider: string, value: string) => {
+        const config = PROVIDER_CONFIG[provider];
+        if (!config) return;
+
+        const uri = config.getUri(value);
+        const webUrl = uri.startsWith('http') ? uri
+            : uri.startsWith('whatsapp://') ? `https://wa.me/${value.replace(/\D/g, '')}`
+            : null;
+
+        if (!webUrl) return;
+
+        await showExternalLinkOptions(webUrl, {
+            title: config.label,
+            sourceLabel: 'Profile',
+            sourceBadge: 'Public contact link',
+            trustLevel: 'external',
+        });
     }, []);
 
     const handleCopyProfileLink = useCallback(async () => {
@@ -276,6 +313,7 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                             <SanctuaryCard
                                 variant="glass"
                                 onPress={() => isEditing ? handleEditLink(link) : handlePress(link.platform, link.url)}
+                                onLongPress={() => !isEditing && handleLinkOptions(link.platform, link.url)}
                             >
                                 <HStack space="md" alignItems="center" sx={{ padding: Theme.spacing.md }}>
                                     <Box

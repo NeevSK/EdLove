@@ -1,9 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Platform, KeyboardAvoidingView, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Theme } from '../theme/Theme';
-import { useEnvironment } from '../context';
-import { getThemeColors } from '../utils/themeColors';
+import { useTheme } from '../hooks/useTheme';
 
 interface ScreenWrapperProps {
     children: React.ReactNode;
@@ -38,8 +36,7 @@ export default function ScreenWrapper({
     noTopInset = false
 }: ScreenWrapperProps) {
     const insets = useSafeAreaInsets();
-    const { isDark, temporalPhase } = useEnvironment();
-    const colors = getThemeColors(isDark, temporalPhase);
+    const { isDark, scene } = useTheme();
 
     const safeAreaStyle = {
         paddingTop: noTopInset ? 0 : insets.top,
@@ -47,10 +44,7 @@ export default function ScreenWrapper({
         paddingLeft: insets.left,
         paddingRight: insets.right,
     };
-
-    const gradientColors = isDark
-        ? [colors.primary, colors.secondary] // Deep indigo gradient
-        : [colors.primary, colors.secondary]; // Light porcelain gradient
+    const resolvedBackground = backgroundColor || scene.canvas.bg;
 
     return (
         <KeyboardAvoidingView
@@ -59,10 +53,10 @@ export default function ScreenWrapper({
         >
             <StatusBar
                 barStyle={isDark ? 'light-content' : 'dark-content'}
-                backgroundColor={colors.primary}
+                backgroundColor={resolvedBackground}
             />
 
-            <View style={[styles.container, safeAreaStyle, { backgroundColor: backgroundColor || colors.primary }]}>
+            <View style={[styles.container, safeAreaStyle, { backgroundColor: resolvedBackground }]}>
                 {(scroll ?? scrollable) ? (
                     <ScrollView
                         style={{ flex: 1 }}

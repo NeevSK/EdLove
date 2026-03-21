@@ -30,6 +30,7 @@ interface SanctuaryCardProps {
     children: any;
     footer?: any;
     onPress?: () => void;
+    onLongPress?: () => void;
     href?: string;
     target?: '_blank' | '_self';
     elevated?: boolean;
@@ -54,6 +55,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
     children,
     footer,
     onPress,
+    onLongPress,
     href,
     target = '_self',
     elevated = false,
@@ -61,7 +63,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
     style,
     accessibilityLabel
 }) => {
-    const { isDark, glass, glow, blurEnabled } = useTheme();
+    const { isDark, scene, text, blurEnabled } = useTheme();
 
     // Hover state — only meaningful on web (desktop pointer devices)
     const [hovered, setHovered] = useState(false);
@@ -85,15 +87,16 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
     // ============================================================================
 
     const cardStyles = useMemo(() => {
+        const layer = elevated ? scene.elevated : scene.surface;
+        const layerText = elevated ? text.onElevated : text.onSurface;
+
         return {
             container: {
                 borderRadius: Theme.corners.generous,
                 overflow: 'hidden' as const, // For BlurView
                 borderWidth: 1,
-                borderColor: useGlass ? glass.surface.border : Theme.colors.border,
-                backgroundColor: useGlass
-                    ? glass.surface.bg
-                    : (isDark ? Theme.colors.shroud : Theme.colors.silk), // Level 2 Surface
+                borderColor: layer.border,
+                backgroundColor: layer.bg,
             },
             elevated: {
                 shadowColor: Theme.colors.shadowViolet,
@@ -113,7 +116,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
                 fontWeight: typography.h3.fontWeight as TextStyle['fontWeight'],
                 letterSpacing: typography.h3.letterSpacing,
                 lineHeight: typography.h3.lineHeight,
-                color: isDark ? Theme.colors.sacredWhite : Theme.colors.inkTruth,
+                color: layerText,
                 marginBottom: Theme.spacing.md,
             },
             footerContainer: {
@@ -121,12 +124,12 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
             },
             footerBorder: {
                 height: 1,
-                backgroundColor: Theme.colors.border,
+                backgroundColor: layer.border,
                 marginBottom: Theme.spacing.md,
                 opacity: 0.3,
             },
         };
-    }, [isDark, useGlass, elevated, glass, glow]);
+    }, [elevated, scene, text]);
 
     // ============================================================================
     // ANIMATION: LIFT EFFECT (when pressable)
@@ -217,6 +220,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
         return (
             <PressableAny
                 onPress={onPress}
+                onLongPress={onLongPress}
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
                 onHoverIn={Platform.OS === 'web' ? () => setHovered(true) : undefined}

@@ -14,7 +14,6 @@ import {
 } from '../gluestack';
 import { AlertCircle } from 'lucide-react-native';
 import { Theme } from '../theme/Theme';
-import { useThemedColors } from '../hooks/useThemedColors';
 import { useTheme } from '../hooks/useTheme';
 
 interface SanctuaryInputProps {
@@ -59,8 +58,7 @@ export default function SanctuaryInput({
     accessibilityHint
 }: SanctuaryInputProps) {
     const hasError = isInvalid || !!error;
-    const colors = useThemedColors();
-    const { accent, glass, text } = useTheme();
+    const { accent, scene, text } = useTheme();
 
     return (
         <FormControl isInvalid={hasError} isDisabled={isDisabled}>
@@ -89,8 +87,8 @@ export default function SanctuaryInput({
                 }}
                 {...({ size: 'md' } as any)}
                 sx={{
-                    borderColor: hasError ? colors.error : glass.surface.border,
-                    backgroundColor: glass.surface.bg,
+                    borderColor: hasError ? Theme.colors.error : scene.interactive.border,
+                    backgroundColor: scene.interactive.bg,
                     borderRadius: Theme.corners.comfortable,
                     minHeight: multiline ? (24 * numberOfLines + 24) : 48,
                     paddingHorizontal: Theme.spacing.md,
@@ -98,11 +96,11 @@ export default function SanctuaryInput({
                     ':focus': {
                         borderColor: accent.action,
                         borderWidth: 2,
-                        backgroundColor: glass.surface.bg
+                        backgroundColor: scene.interactive.bg
                     },
                     ':disabled': {
                         opacity: 0.5,
-                        backgroundColor: colors.primary
+                        backgroundColor: scene.surface.bg
                     }
                 }}
             >
@@ -119,7 +117,7 @@ export default function SanctuaryInput({
                     autoFocus={autoFocus}
                     type={type}
                     keyboardType={keyboardType as any}
-                    color={text.primary}
+                    color={text.onInteractive}
                     placeholderTextColor={text.muted}
                     multiline={multiline}
                     numberOfLines={numberOfLines}
@@ -139,8 +137,8 @@ export default function SanctuaryInput({
 
             {hasError && (
                 <FormControlError sx={{ marginTop: '$1' as any }}>
-                    <FormControlErrorIcon as={AlertCircle} color={colors.error} {...({ size: 'xs' } as any)} />
-                    <FormControlErrorText color={colors.error} sx={{ fontSize: '$xs' as any, marginLeft: '$1' as any }}>
+                    <FormControlErrorIcon as={AlertCircle} color={Theme.colors.error} {...({ size: 'xs' } as any)} />
+                    <FormControlErrorText color={Theme.colors.error} sx={{ fontSize: '$xs' as any, marginLeft: '$1' as any }}>
                         {error || 'Invalid input'}
                     </FormControlErrorText>
                 </FormControlError>

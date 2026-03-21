@@ -20,7 +20,7 @@ import {
     Switch
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { useAccountDeletion, useTracking, useStore } from '@repo/core';
+import { useAccountDeletion, useCapabilities, useTracking, useStore } from '@repo/core';
 import { hapticSuccess, hapticLight, hapticError } from '@repo/ui';
 import {
     ProfileSkeleton,
@@ -63,24 +63,25 @@ const CARD_WIDTH = Math.min(SCREEN_WIDTH, 600) - Theme.spacing.xl;
 // --- Internal Sub-Components ---
 
 const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, completionResult, cardWidth = CARD_WIDTH }: any) => {
-    const isGuest = !profile || profile?.is_anonymous === true;
+    const caps = useCapabilities();
+    const isWanderer = caps.identity.isAnonymous;
 
     return (
         <Center>
             <IdentityCard
                 profile={profile}
                 onViewFullProfile={() => {
-                    if (isGuest) {
+                    if (isWanderer) {
                         // For guests, viewing profile is a 'blocked' action that triggers shake
                         onGuestAction?.();
                     }
                     hapticLight();
-                    navigation.navigate(isGuest ? 'Auth' : 'FullProfile', { profile });
+                    navigation.navigate(isWanderer ? 'Auth' : 'FullProfile', { profile });
                 }}
             />
 
             {/* Progress bar — registered users only, between card and button */}
-            {!isGuest && (
+            {caps.identity.isRegistered && (
                 <SanctuaryProgressBar
                     percentage={completionResult.percentage}
                     isComplete={completionResult.isComplete}
@@ -92,7 +93,7 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
             <TouchableOpacity
                 onPress={() => {
                     hapticLight();
-                    if (isGuest) {
+                    if (isWanderer) {
                         // Intentional "Create Account" click - do NOT shake, just navigate
                         navigation.navigate('Auth');
                     } else {
@@ -101,7 +102,7 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
                 }}
                 accessible={true}
                 accessibilityRole="button"
-                accessibilityLabel={isGuest ? t('auth.createAccount') : t('profile.viewEditProfile')}
+                accessibilityLabel={isWanderer ? t('auth.createAccount') : t('profile.viewEditProfile')}
                 style={{
                     marginTop: Theme.spacing.lg,
                     width: cardWidth,
@@ -121,13 +122,13 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
                 }}
             >
                 <HStack space="sm" alignItems="center">
-                    {isGuest ? (
+                    {isWanderer ? (
                         <UserPlus size={18} color={colors.action} />
                     ) : (
                         <Edit3 size={18} color={colors.action} />
                     )}
                     <Text color={colors.text} bold>
-                        {isGuest
+                        {isWanderer
                             ? t('auth.createAccount')
                             : t('profile.viewEditProfile')}
                     </Text>

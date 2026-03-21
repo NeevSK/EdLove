@@ -34,6 +34,7 @@ import {
     FadeInDown,
     HorizontalChipRow,
     openExternalURL,
+    showExternalLinkOptions,
 } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
@@ -53,6 +54,7 @@ import {
 import { LIBRARY_UI_CATEGORIES } from '../constants/categories';
 import { libraryAPI } from '../api/library';
 import { SHELF_DEFS, getOrderedShelfDefs } from '../constants/shelf';
+import { buildLibraryExternalLinkOptions } from '../utils/externalLinks';
 
 // Local shelf definitions removed in favor of shared constants
 
@@ -159,6 +161,7 @@ export default function LibraryScreen() {
     const { isGuest } = useRoleFeatures();
 
     const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
     const [selectedCategoryId, setSelectedCategoryId] = useState('All');
     const [selectedSort, setSelectedSort] = useState<'recent' | 'popular' | 'most_endorsed' | 'most_bookmarked'>('recent');
     const [viewMode, setViewMode] = useState<'shelf' | 'grid' | 'list'>('shelf');
@@ -167,6 +170,14 @@ export default function LibraryScreen() {
     const [isSyncing, setIsSyncing] = useState(false);
     const [fallbackAttempted, setFallbackAttempted] = useState(false);
     const isFetchingPublicRef = React.useRef(false);
+
+    // Search Debouncing
+    React.useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearchQuery(searchQuery);
+        }, 500);
+        return () => clearTimeout(handler);
+    }, [searchQuery]);
 
     const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
@@ -181,9 +192,9 @@ export default function LibraryScreen() {
 
     const libraryFilters = useMemo(() => (
         isSearchMode
-            ? { type: resourceTypeFilter, search: searchQuery || undefined, sort_by: selectedSort, limit: 60 }
+            ? { type: resourceTypeFilter, search: debouncedSearchQuery || undefined, sort_by: selectedSort, limit: 60 }
             : { limit: 60 }
-    ), [isSearchMode, resourceTypeFilter, searchQuery, selectedSort]);
+    ), [isSearchMode, resourceTypeFilter, debouncedSearchQuery, selectedSort]);
 
     const {
         resources: rawResources,
@@ -195,7 +206,7 @@ export default function LibraryScreen() {
         hasNextResources,
         isFetchingNextResources,
         syncLibrary,
-    } = useLibrary(libraryFilters);
+    } = useLibrary(libraryFilters, libraryFilters);
 
     const [publicCollections, setPublicCollections] = useState<any[]>([]);
     const [isFetchingPublic, setIsFetchingPublic] = useState(false);
@@ -216,7 +227,10 @@ export default function LibraryScreen() {
             isFetchingPublicRef.current = true;
             setIsFetchingPublic(true);
             libraryAPI.getCollections({ limit: 10, visibility: 'public' })
-                .then(setPublicCollections)
+                .then(cols => {
+                    setPublicCollections(cols);
+                    setFallbackAttempted(true); // Successfully attempted, don't loop
+                })
                 .catch(err => {
                     console.error('Failed to fetch public fallback:', err);
                     setFallbackAttempted(true); // Stop retrying on failure
@@ -260,8 +274,18 @@ export default function LibraryScreen() {
             navigation.navigate('VideoPlayer', { resourceId: resource.id, title: resource.title, url: resource.url, creator: resource.creator_name });
             return;
         }
-        openExternalURL(resource.url).catch(err => console.error("Couldn't load page", err));
+        openExternalURL(resource.url, buildLibraryExternalLinkOptions(resource)).catch(err => console.error("Couldn't load page", err));
     }, [navigation]);
+
+    const handleOpenResourceOptions = useCallback((resource: LibraryResource) => {
+        if (!resource.url || resource.type === 'pdf' || resource.type === 'video' || resource.type === 'movie_trailer') {
+            return;
+        }
+
+        showExternalLinkOptions(resource.url, buildLibraryExternalLinkOptions(resource)).catch((err) =>
+            console.error("Couldn't show external link options", err)
+        );
+    }, []);
 
     const handleAddResource = useCallback(async () => {
         try {
@@ -287,11 +311,11 @@ export default function LibraryScreen() {
     })), []);
 
     const sortChips = useMemo(() => [
-        { label: '🕒 Recent', value: 'recent' },
-        { label: '🔥 Popular', value: 'popular' },
-        { label: '🌟 Endorsed', value: 'most_endorsed' },
-        { label: '🔖 Saved', value: 'most_bookmarked' },
-    ], []);
+        { label: `🕒 ${t('library.sort.recent')}`, value: 'recent' },
+        { label: `🔥 ${t('library.sort.popular')}`, value: 'popular' },
+        { label: `🌟 ${t('library.sort.most_endorsed')}`, value: 'most_endorsed' },
+        { label: `🔖 ${t('library.sort.most_bookmarked')}`, value: 'most_bookmarked' },
+    ], [t]);
 
     const handleEndReached = useCallback(() => {
         if (hasNextResources && !isFetchingNextResources) fetchNextResources();
@@ -328,6 +352,7 @@ export default function LibraryScreen() {
                             verified={res.verified}
                             copyrightNotice={res.copyright_notice}
                             onPress={() => handleOpenResource(res)}
+                            onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
                         />
                     ))}
                 </SmartShelf>
@@ -428,24 +453,46 @@ export default function LibraryScreen() {
                         <ScrollView style={{ flex: 1 }}>
                             <Box sx={{ p: Theme.spacing.md }}>
                                 <Text sx={{ fontSize: 13, color: colors.textSecondary, marginBottom: Theme.spacing.md }}>
-                                    {searchQuery ? `Found ${resources.length} findings for "${searchQuery}"` : `Showing curated findings`}
+                                    {searchQuery ? `Found ${resources.length} findings and ${collections.length} collections for "${searchQuery}"` : `Showing curated findings`}
                                 </Text>
+
+                                {collections.length > 0 && (
+                                    <Box sx={{ mb: Theme.spacing.lg }}>
+                                        <SmartShelf title="📚 Matching Collections">
+                                            {collections.map((col: any) => (
+                                                <CollectionCard
+                                                    key={col.id}
+                                                    title={col.name}
+                                                    creator={col.creator_name}
+                                                    resourceCount={col.resource_ids?.length ?? 0}
+                                                    subjectTag={col.subjects?.[0] || ''}
+                                                    onPress={() => navigation.navigate('CollectionDetail', { id: col.id, title: col.name })}
+                                                />
+                                            ))}
+                                        </SmartShelf>
+                                    </Box>
+                                )}
                                 
                                 {orderedShelfDefs.map(shelf => {
+                                    // Memoize or at least keep local to avoid double-filtering in larger components
                                     const shelfItems = resources.filter(res => shelf.types.includes(res.type));
                                     if (shelfItems.length === 0) return null;
                                     return renderShelf(shelf.label, shelfItems);
                                 })}
 
-                                {resources.filter(res => !orderedShelfDefs.some(s => s.types.includes(res.type))).length > 0 && 
-                                    renderShelf('Diverse Findings', resources.filter(res => !orderedShelfDefs.some(s => s.types.includes(res.type))))
-                                }
+                                {resources.filter(res => !orderedShelfDefs.some(s => s.types.includes(res.type))).length > 0 && (
+                                    (() => {
+                                        const diverseItems = resources.filter(res => !orderedShelfDefs.some(s => s.types.includes(res.type)));
+                                        return renderShelf('Diverse Findings', diverseItems);
+                                    })()
+                                )}
                             </Box>
                         </ScrollView>
                     ) : (
                         <ResourceList
                             resources={resources}
                             onOpenResource={handleOpenResource}
+                            onOpenResourceOptions={handleOpenResourceOptions}
                             onPullToDesk={(res) => console.log('Pull to desk', res.id)}
                             viewMode={viewMode === 'grid' ? 'grid' : 'list'}
                             ListHeaderComponent={<Box sx={{ p: Theme.spacing.md, pb: 0 }}>
@@ -497,6 +544,7 @@ export default function LibraryScreen() {
                                         type={res.type}
                                         thumbnailUrl={res.thumbnailUrl}
                                         onPress={() => handleOpenResource(res)}
+                                        onLongPress={res.url ? () => handleOpenResourceOptions(res) : undefined}
                                     />
                                 ))}
                             </SmartShelf>

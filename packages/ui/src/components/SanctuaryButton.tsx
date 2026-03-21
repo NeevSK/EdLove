@@ -34,7 +34,7 @@ export default function SanctuaryButton({
     accessibilityLabel,
     accessibilityHint
 }: SanctuaryButtonProps) {
-    const { accent, glass, textOnAccent, textOnReward } = useTheme();
+    const { accent, scene, text, textOnReward } = useTheme();
 
     // Determine colors based on action and variant
     const getBgColor = () => {
@@ -42,7 +42,7 @@ export default function SanctuaryButton({
 
         switch (action) {
             case 'primary': return accent.action;
-            case 'secondary': return glass.surface.bg;
+            case 'secondary': return scene.interactive.bg;
             case 'negative': return accent.danger;
             case 'positive': return accent.reward;
             default: return accent.action;
@@ -51,14 +51,12 @@ export default function SanctuaryButton({
 
     const getTextColor = () => {
         if (variant === 'solid') {
-            // Use WCAG-computed adaptive text color — handles bright phases like
-            // Temple Gold (#FDD925) that need dark ink text instead of sacredWhite.
             switch (action) {
-                case 'primary': return textOnAccent;
+                case 'primary': return text.onAccent;
                 case 'positive': return textOnReward;
-                case 'negative': return Theme.colors.sacredWhite;
-                case 'secondary': return accent.action;
-                default: return textOnAccent;
+                case 'negative': return text.onDanger;
+                case 'secondary': return text.onInteractive;
+                default: return text.onAccent;
             }
         }
 
@@ -110,7 +108,7 @@ export default function SanctuaryButton({
                     transform: [{ scale: 0.98 }]
                 },
                 // Custom handling for 'secondary' styling that might conflict with Gluestack defaults
-                ...(variant === 'solid' && action === 'secondary' ? { backgroundColor: glass.surface.bg } : {}),
+                ...(variant === 'solid' && action === 'secondary' ? { backgroundColor: scene.interactive.bg } : {}),
                 ...style
             }}
         >

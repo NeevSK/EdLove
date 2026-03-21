@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import Svg, { Path, G, Circle, Text as SvgText } from 'react-native-svg';
 import Animated, { 
     useSharedValue, 
@@ -55,12 +55,12 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({
 
     const combinedGesture = Gesture.Simultaneous(pinchGesture, panGesture);
 
-    const animatedStyle = useAnimatedStyle(() => ({
+    const animatedStyle: any = useAnimatedStyle(() => ({
         transform: [
             { translateX: translateX.value },
             { translateY: translateY.value },
             { scale: scale.value }
-        ]
+        ] as any
     }));
 
     // Generate SVG path for tree links (curved connectors)
@@ -92,7 +92,7 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({
 
     return (
         <GestureDetector gesture={combinedGesture}>
-            <Animated.View style={[{ flex: 1 }, animatedStyle]}>
+            <Animated.View style={[{ flex: 1 }, animatedStyle] as any}>
                 <Svg 
                     width={layout.bounds.width + 1000} 
                     height={layout.bounds.height + 1000} 

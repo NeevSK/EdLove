@@ -1,11 +1,12 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Theme, useTheme } from '@repo/ui';
+import { useTheme } from '@repo/ui';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 import { LibraryStackParamList } from '@repo/core';
 
 // Web-specific screens — lazy loaded for code splitting
 const LibraryScreenWeb = React.lazy(() => import('../screens/LibraryScreen.web'));
+const CollectionDetailScreenWeb = React.lazy(() => import('../screens/library/CollectionDetailScreen.web'));
 
 // Package screens (Metro auto-resolves .web.tsx for each)
 const PDFViewerScreen = React.lazy(() =>
@@ -28,7 +29,7 @@ function ScreenFallback() {
 }
 
 export default function LibraryStackNavigatorWeb() {
-    const { gradientNodes } = useTheme();
+    const { scene } = useTheme();
 
     return (
         <React.Suspense fallback={<ScreenFallback />}>
@@ -36,10 +37,11 @@ export default function LibraryStackNavigatorWeb() {
             id="LibraryStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: gradientNodes[0] },
+                contentStyle: { backgroundColor: scene.canvas.bg },
             }}
         >
             <Stack.Screen name="LibraryHome" component={LibraryScreenWeb} />
+            <Stack.Screen name="CollectionDetail" component={CollectionDetailScreenWeb} />
             <Stack.Screen name="PDFViewer" component={PDFViewerScreen} />
             <Stack.Screen name="VideoPlayer" component={VideoPlayerScreen} />
             <Stack.Screen name="LibraryMap" component={MapScreen} />

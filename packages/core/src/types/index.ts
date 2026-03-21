@@ -19,4 +19,5 @@ export * from './PrincipalNote';
 export * from './Assignment';
 export * from './StaffAttendance';
 export * from './StaffLeave';
+export * from './Form';
 export type { UserRole } from '../constants/SriLankanSchools';

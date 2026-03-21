@@ -19,7 +19,7 @@ interface EditableItemProps {
     label: string;
     value?: string;
     field: string;
-    placeholder: string;
+    placeholder?: string;
     onSave: (field: string, value: any) => Promise<any>;
     multiline?: boolean;
     disabled?: boolean;

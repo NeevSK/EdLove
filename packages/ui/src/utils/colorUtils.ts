@@ -40,6 +40,73 @@ export function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
+interface ParsedColor {
+  r: number;
+  g: number;
+  b: number;
+  a: number;
+}
+
+function clampChannel(value: number): number {
+  return Math.max(0, Math.min(255, value));
+}
+
+function componentToHex(value: number): string {
+  return clampChannel(Math.round(value)).toString(16).padStart(2, '0');
+}
+
+function parseCssColor(color: string): ParsedColor {
+  if (!color || typeof color !== 'string') {
+    throw new Error(`colorUtils.parseCssColor: expected a color string, got ${typeof color}`);
+  }
+
+  const value = color.trim();
+
+  if (value.startsWith('#')) {
+    const [r, g, b] = hexToRgb(value);
+    return { r, g, b, a: 1 };
+  }
+
+  const rgbaMatch = value.match(/^rgba?\(([^)]+)\)$/i);
+  if (!rgbaMatch) {
+    throw new Error(`colorUtils.parseCssColor: unsupported color "${color}"`);
+  }
+
+  const parts = rgbaMatch[1]!.split(',').map((part) => part.trim());
+  if (parts.length < 3) {
+    throw new Error(`colorUtils.parseCssColor: invalid rgb/rgba color "${color}"`);
+  }
+
+  const r = Number.parseFloat(parts[0] ?? '0');
+  const g = Number.parseFloat(parts[1] ?? '0');
+  const b = Number.parseFloat(parts[2] ?? '0');
+  const alpha = parts[3] !== undefined ? Number.parseFloat(parts[3]) : 1;
+
+  return {
+    r: clampChannel(r),
+    g: clampChannel(g),
+    b: clampChannel(b),
+    a: Math.max(0, Math.min(1, Number.isFinite(alpha) ? alpha : 1)),
+  };
+}
+
+export function colorToHex(color: string): string {
+  const { r, g, b } = parseCssColor(color);
+  return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
+}
+
+export function compositeColorOverBackground(foreground: string, background: string): string {
+  const fg = parseCssColor(foreground);
+  const bg = parseCssColor(background);
+
+  const alpha = fg.a;
+  const r = fg.r * alpha + bg.r * (1 - alpha);
+  const g = fg.g * alpha + bg.g * (1 - alpha);
+  const b = fg.b * alpha + bg.b * (1 - alpha);
+
+  return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
+}
+
 /**
  * Extract `r,g,b` components as a bare string — for use inside CSS
  * `rgba(var(--action-rgb), 0.15)` patterns.
@@ -54,7 +121,7 @@ export function hexToRgbComponents(hex: string): string {
  * https://www.w3.org/TR/WCAG21/#dfn-relative-luminance
  */
 export function getRelativeLuminance(hex: string): number {
-  const [r, g, b] = hexToRgb(hex).map(c => {
+  const [r, g, b] = hexToRgb(colorToHex(hex)).map(c => {
     const s = c / 255;
     return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
   });

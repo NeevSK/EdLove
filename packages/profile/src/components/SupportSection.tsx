@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linking, TouchableOpacity, Platform } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import {
     Box,
     VStack,
@@ -17,7 +17,11 @@ export default function SupportSection() {
     const colors = useThemedColors();
     const { t } = useTranslation();
     const handleSupport = () => {
-        openExternalURL('mailto:support@gurudevi.org').catch(() => {
+        openExternalURL('mailto:support@gurudevi.org', {
+            title: 'Support',
+            sourceLabel: 'Profile',
+            sourceBadge: 'Support contact',
+        }).catch(() => {
             // No email client available — nothing actionable to show without a toast context here
         });
     };

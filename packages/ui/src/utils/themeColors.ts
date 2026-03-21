@@ -1,12 +1,14 @@
 /**
- * getThemeColors - Dynamic Theme Color Selector
- * 
- * Returns the appropriate color palette based on theme mode and temporal phase
- * Usage: const colors = getThemeColors(isDark, temporalPhase);
+ * Compatibility adapter for older components that still consume the flatter
+ * `ThemeColors` shape. New code should prefer `useTheme()` directly.
+ *
+ * The key rule: there is only one resolver for living theme tokens.
+ * This file maps those canonical tokens into the legacy shape instead of
+ * maintaining a second parallel theme system.
  */
 
-import { colors as baseColors } from '../theme/Theme';
 import { TemporalPhase } from '../context/types';
+import { ResolvedThemeTokens, resolveClassicTokens, resolvePhaseTokens, Theme } from '../theme/Theme';
 
 export interface ThemeColors {
     // Backgrounds
@@ -36,182 +38,59 @@ export interface ThemeColors {
     black: string;
 }
 
-
+type ThemeColorSource = Pick<ResolvedThemeTokens, 'scene' | 'text' | 'accent' | 'glow'> & {
+    isDark: boolean;
+};
 
 /**
- * Get theme colors based on dark mode status and temporal phase
- * Temporal phase modulates the base theme for contextual adaptation
+ * Convert the canonical living-theme token set into the flatter `ThemeColors`
+ * shape used by older components. This keeps legacy consumers working while
+ * allowing the app to rely on one resolver.
+ */
+export function toThemeColors(source: ThemeColorSource): ThemeColors {
+    return {
+        primary: source.scene.canvas.bg,
+        secondary: source.scene.surface.bg,
+        tertiary: source.scene.elevated.bg,
+
+        text: source.text.onCanvas,
+        textPrimary: source.text.onCanvas,
+        textSecondary: source.text.secondary,
+        textTertiary: source.text.muted,
+
+        action: source.accent.action,
+        success: Theme.colors.success,
+        error: Theme.colors.error,
+        warning: Theme.colors.warning,
+
+        border: source.scene.surface.border,
+        overlay: source.scene.interactive.bg,
+        shadow: source.isDark ? Theme.colors.shadowDeep : Theme.colors.shadowAmbient,
+        glow: source.glow.primary.color,
+        backgroundDark: source.scene.chrome.bg,
+        obsidian: source.scene.world.bg,
+        black: source.scene.world.bg,
+    };
+}
+
+/**
+ * Legacy helper retained for compatibility. It now delegates to the canonical
+ * phase resolver instead of maintaining a separate modulation path.
  */
 export function getThemeColors(isDark: boolean, temporalPhase?: TemporalPhase): ThemeColors {
-    // Get base colors for dark/light
-    const baseTheme = getBaseThemeColors(isDark);
+    const tokens = temporalPhase
+        ? resolvePhaseTokens(temporalPhase, isDark)
+        : resolveClassicTokens(isDark);
 
-    // If no temporal phase specified, return base theme
-    if (!temporalPhase) {
-        return baseTheme;
-    }
-
-    // Modulate based on temporal phase
-    return modulateForTemporalPhase(baseTheme, temporalPhase, isDark);
+    return toThemeColors({
+        ...tokens,
+        isDark,
+    });
 }
 
-/**
- * Get base theme colors without temporal modulation
- */
-function getBaseThemeColors(isDark: boolean): ThemeColors {
-    if (isDark) {
-        return {
-            // Dark mode backgrounds
-            primary: baseColors.obsidian,
-            secondary: baseColors.ink,
-            tertiary: baseColors.shroud,
-
-            // Dark mode text
-            text: baseColors.sacredWhite,
-            textPrimary: baseColors.sacredWhite,
-            textSecondary: baseColors.starlightGray,
-            textTertiary: baseColors.mistGray,
-
-            // Actions (same in both modes)
-            action: baseColors.sanctuarySaffron,
-            success: baseColors.sageGreen,
-            error: baseColors.emberRed,
-            warning: baseColors.amberGlow,
-
-            // Functional
-            border: 'rgba(252,249,242,0.1)',
-            overlay: baseColors.shadowAmbient,
-            shadow: baseColors.shadowDeep,
-            glow: baseColors.shadowAmbient, // Default glow for dark mode
-            backgroundDark: baseColors.backgroundDark,
-            obsidian: baseColors.obsidian,
-            black: baseColors.black,
-        };
-
-
-    } else {
-        return {
-            // Light mode backgrounds
-            primary: baseColors.vellum,
-            secondary: baseColors.silk,
-            tertiary: baseColors.linen,
-
-            // Light mode text
-            text: baseColors.inkTruth,
-            textPrimary: baseColors.inkTruth,
-            textSecondary: baseColors.bark,
-            textTertiary: baseColors.willow,
-
-            // Actions (same in both modes)
-            action: baseColors.sanctuarySaffron,
-            success: baseColors.sageGreen,
-            error: baseColors.emberRed,
-            warning: baseColors.amberGlow,
-
-            // Functional
-            border: 'rgba(42,35,24,0.1)',
-            overlay: baseColors.shadowAmbient,
-            shadow: baseColors.shadowAmbient,
-            glow: baseColors.shadowFocus, // Default glow for light mode
-            backgroundDark: baseColors.vellum, // Use vellum for light mode "dark" background
-            obsidian: baseColors.silk,
-            black: baseColors.inkTruth, // Use inkTruth for light mode "black"
-        };
-
-
-    }
-}
-
-/**
- * Example usage in components:
- * 
- * import { useEnvironment } from '../context';
- * import { getThemeColors } from '../utils/themeColors';
- * 
- * function MyComponent() {
- *     const { isDark, temporalPhase } = useEnvironment();
- *     const colors = getThemeColors(isDark, temporalPhase);
- *     
- *     return (
- *         <Box sx={{ backgroundColor: colors.primary }}>
- *             <Text color={colors.text}>Hello</Text>
- *         </Box>
- *     );
- * }
- */
-
-/**
- * Modulate theme colors based on temporal phase
- * Each phase has subtle color shifts that create the right mood
- */
-function modulateForTemporalPhase(
-    baseTheme: ThemeColors,
-    phase: TemporalPhase,
-    isDark: boolean
-): ThemeColors {
-    switch (phase) {
-        case 'dawn':
-            // Dawn: Threshold. Warm emerging. First saffron warmth.
-            return {
-                ...baseTheme,
-                primary: isDark ? '#1F1A12' : '#FDF3E7', // Saffron Ground hints
-                action: baseColors.sanctuarySaffron,
-                glow: baseColors.amberGlow,
-            };
-
-        case 'predawn':
-            // Predawn: Still. Hushed. Cool violet.
-            return {
-                ...baseTheme,
-                primary: isDark ? '#14110B' : '#F5EDD6',
-                action: baseColors.twilightBlue,
-                glow: '#6B6480', // Shadow Violet glow
-            };
-
-        case 'morning':
-            // Morning: Most alive. Dalu luminous. Post-rain quality.
-            return {
-                ...baseTheme,
-                action: baseColors.sanctuarySaffron,
-                success: baseColors.sageGreen,
-                glow: '#8BBF7A', // Dalu Green glow
-            };
-
-        case 'afternoon':
-            // Afternoon: Warming. Saffron building.
-            return {
-                ...baseTheme,
-                action: baseColors.sanctuarySaffron,
-                glow: '#E67E22', // Saffron glow
-            };
-
-        case 'dusk':
-            // Dusk: Violet returning.
-            return {
-                ...baseTheme,
-                action: baseColors.twilightBlue,
-                glow: '#6B6480',
-            };
-
-        case 'night':
-            // Night: Deepest. Jewel.
-            return {
-                ...baseTheme,
-                action: baseColors.gurudeviViolet,
-                textSecondary: isDark
-                    ? baseColors.mistGray
-                    : baseColors.willow,
-                glow: baseColors.gurudeviBlue,
-            };
-
-        default:
-            return baseTheme;
-    }
-}
-
-// Export base colors for direct access
+// Deprecated name retained for call sites that expect an object export.
 export const themeColors = {
-    primary: baseColors.sanctuarySaffron,
-    secondary: baseColors.sageGreen,
-    tertiary: baseColors.shroud,
+    primary: Theme.colors.sanctuarySaffron,
+    secondary: Theme.colors.sageGreen,
+    tertiary: Theme.colors.shroud,
 };

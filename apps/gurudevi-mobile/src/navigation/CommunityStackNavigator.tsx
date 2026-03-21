@@ -2,21 +2,21 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GroupDetailsScreen, GroupChatScreen, UserPublicProfileScreen } from '@repo/community';
 import { CommunityScreen } from '../screens';
-import { useThemedColors } from '@repo/ui';
+import { useTheme } from '@repo/ui';
 
 import { CommunityStackParamList } from '@repo/core';
 
 const Stack = createNativeStackNavigator<CommunityStackParamList>();
 
 export default function CommunityStackNavigator() {
-    const colors = useThemedColors();
+    const { scene } = useTheme();
 
     return (
         <Stack.Navigator
             id="CommunityStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: colors.secondary },
+                contentStyle: { backgroundColor: scene.canvas.bg },
             }}
         >
             <Stack.Screen name="CommunityMain" component={CommunityScreen} />

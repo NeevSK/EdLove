@@ -1,21 +1,20 @@
-﻿import React from 'react';
+import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Theme } from '../theme/Theme';
 import { useTheme } from '../hooks/useTheme';
-import { useThemedColors } from '../hooks/useThemedColors';
 
 export interface SanctuaryChipProps {
     label: string;
     selected?: boolean;
     onPress?: () => void;
-    /** 'filter' = pill-shaped, 'tag' = hashtag-style, 'category' = wider category pill */
     variant?: 'filter' | 'tag' | 'category';
     size?: 'sm' | 'md';
 }
 
 /**
- * SanctuaryChip â€” canonical chip/pill component for filters, tags, and categories.
- * Uses living theme tokens. No hardcoded hex values.
+ * SanctuaryChip - canonical chip/pill component for filters, tags, and categories.
+ * Uses the scene token hierarchy so the chip always resolves against the
+ * current interactive layer rather than hardcoded glass colors.
  */
 export const SanctuaryChip: React.FC<SanctuaryChipProps> = ({
     label,
@@ -24,8 +23,7 @@ export const SanctuaryChip: React.FC<SanctuaryChipProps> = ({
     variant = 'filter',
     size = 'md',
 }) => {
-    const { accent, textOnAccent } = useTheme();
-    const colors = useThemedColors();
+    const { accent, scene, text } = useTheme();
     const isSmall = size === 'sm';
 
     return (
@@ -34,8 +32,8 @@ export const SanctuaryChip: React.FC<SanctuaryChipProps> = ({
             style={[
                 styles.chip,
                 {
-                    borderColor: selected ? accent.action : colors.border,
-                    backgroundColor: selected ? accent.action : Theme.colors.glass.dark.highlight,
+                    borderColor: selected ? accent.action : scene.interactive.border,
+                    backgroundColor: selected ? accent.action : scene.interactive.bg,
                 },
                 isSmall && styles.small,
             ]}
@@ -47,7 +45,7 @@ export const SanctuaryChip: React.FC<SanctuaryChipProps> = ({
                 style={[
                     styles.label,
                     {
-                        color: selected ? textOnAccent : colors.textSecondary,
+                        color: selected ? text.onAccent : text.onInteractive,
                         fontWeight: selected ? '700' : '500',
                     },
                     isSmall && styles.smallLabel,
@@ -79,4 +77,3 @@ const styles = StyleSheet.create({
         fontSize: Theme.typography.fontSize.xs,
     },
 });
-

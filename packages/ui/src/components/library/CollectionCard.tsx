@@ -18,7 +18,6 @@ import {
     StyleSheet,
     Text,
     ImageBackground,
-    useColorScheme,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BadgeCheck, BookOpen, Bookmark } from 'lucide-react-native';
