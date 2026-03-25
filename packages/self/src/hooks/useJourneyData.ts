@@ -4,7 +4,7 @@ import { useJournalEntries } from './useJournalEntries';
 import { useEnergyForecast } from './useEnergyForecast';
 import { useDecisionJournal } from './useDecisionJournal';
 import { useWisdom } from './useWisdom';
-import { useResonanceStore, useUserRole, useNaturePaths, useBanyanGrowth } from '@repo/core';
+import { useResonanceStore, usePermissions, useNaturePaths, useBanyanGrowth } from '@repo/core';
 
 export interface JourneyEvent {
     id: string;
@@ -28,7 +28,8 @@ export interface JourneyEvent {
  */
 export const useJourneyData = () => {
     const { resonanceDate, viewMode, timelineFocus } = useResonanceStore();
-    const { role, userId } = useUserRole();
+    const { can, context } = usePermissions();
+    const { userId } = context;
     
     // 1. Core Streams (Shared by all)
     const { logs: moodLogs, loading: loadingMoods } = useMoodLogs(userId || undefined);
@@ -73,12 +74,11 @@ export const useJourneyData = () => {
         });
 
         // --- Role-Aware: Student Path ---
-        if (role === 'student' && studentPaths) {
-            // River advancement as an event
+        if (can('manage', 'StudentDashboard') && studentPaths) {
             events.push({
                 id: `river-${studentPaths.river_stage}`,
                 type: 'path',
-                timestamp: resonanceDate, // Approximate for current state
+                timestamp: resonanceDate,
                 title: `River Flow: ${studentPaths.river_stage}`,
                 content: `Your learning has reached the ${studentPaths.river_stage} stage.`,
                 intensity: 0.9,
@@ -87,7 +87,7 @@ export const useJourneyData = () => {
         }
 
         // --- Role-Aware: Teacher/Principal Banyan ---
-        if ((role === 'teacher' || role === 'principal') && banyanGrowth) {
+        if (can('manage', 'TeacherDashboard') && banyanGrowth) {
             events.push({
                 id: `banyan-${banyanGrowth.banyan_stage}`,
                 type: 'growth',
@@ -100,7 +100,7 @@ export const useJourneyData = () => {
         }
 
         // --- Role-Aware: Principal/Teacher Energy ---
-        if ((role === 'principal' || role === 'teacher')) {
+        if (can('manage', 'TeacherDashboard')) {
             energyForecasts.forEach(forecast => {
                 events.push({
                     id: forecast.id,
@@ -115,7 +115,7 @@ export const useJourneyData = () => {
         }
 
         // --- Role-Aware: Principal Decisions ---
-        if (role === 'principal') {
+        if (can('manage', 'PrincipalDashboard')) {
             decisions.forEach(decision => {
                 events.push({
                     id: decision.id,
@@ -130,7 +130,7 @@ export const useJourneyData = () => {
         }
 
         // --- Role-Aware: Founder Wisdom ---
-        if (role === 'founder') {
+        if (can('manage', 'FounderDashboard')) {
             wisdomNotes.forEach(note => {
                 events.push({
                     id: note.id,
@@ -143,7 +143,6 @@ export const useJourneyData = () => {
                 });
             });
         }
-
 
         // --- Chronological Sort ---
         const sorted = events.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
@@ -163,7 +162,7 @@ export const useJourneyData = () => {
         // --- Focus Filter ---
         if (timelineFocus === 'all') return sorted;
         return sorted.filter(event => event.type === timelineFocus);
-    }, [moodLogs, journalEntries, studentPaths, banyanGrowth, energyForecasts, decisions, wisdomNotes, viewMode, resonanceDate, timelineFocus, role]);
+    }, [moodLogs, journalEntries, studentPaths, banyanGrowth, energyForecasts, decisions, wisdomNotes, viewMode, resonanceDate, timelineFocus, can]);
 
     return {
         journey,

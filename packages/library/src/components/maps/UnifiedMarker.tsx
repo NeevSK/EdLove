@@ -1,6 +1,6 @@
 import React from 'react';
 import { Marker, Callout } from 'react-native-maps';
-import ML from '@maplibre/maplibre-react-native';
+import * as MapLibreGL from '@maplibre/maplibre-react-native';
 import { useMap } from './MapProvider';
 import { View, Text, StyleSheet } from 'react-native';
 
@@ -30,7 +30,7 @@ export const UnifiedMarker: React.FC<UnifiedMarkerProps> = ({
 
     if (provider === 'maplibre') {
         return (
-            <ML.PointAnnotation
+            <MapLibreGL.PointAnnotation
                 id={id || `marker-${coordinate.latitude}-${coordinate.longitude}`}
                 coordinate={[coordinate.longitude, coordinate.latitude]}
                 onSelected={onPress}
@@ -38,13 +38,13 @@ export const UnifiedMarker: React.FC<UnifiedMarkerProps> = ({
                 {(children as React.ReactElement) || (
                     <View style={[styles.dot, { backgroundColor: pinColor || '#FF0000' }]} />
                 )}
-                <ML.Callout>
+                <MapLibreGL.Callout>
                     <View style={styles.callout}>
                         <Text style={styles.calloutTitle}>{title}</Text>
                         {description && <Text style={styles.calloutDesc}>{description}</Text>}
                     </View>
-                </ML.Callout>
-            </ML.PointAnnotation>
+                </MapLibreGL.Callout>
+            </MapLibreGL.PointAnnotation>
         );
     }
 

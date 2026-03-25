@@ -12,7 +12,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { 
     useStore, 
-    useUserRole, 
+    usePermissions, 
     useResonanceStore, 
     useJourneyHistory 
 } from '@repo/core';
@@ -50,7 +50,9 @@ export default function PrincipalSelfView() {
     const colors = useThemedColors();
 
     // State & Kernel Hooks
-    const { userId, isGuest } = useUserRole();
+    const { context } = usePermissions();
+    const userId = context.userId;
+    const isGuest = !userId;
     const user = useStore(state => state.user);
     const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
     const { logs: moodHistory, addMoodLog, isLoading: loadingMoods } = useMoodLogs(userId ?? undefined);
@@ -109,7 +111,7 @@ export default function PrincipalSelfView() {
     return (
         <ScreenWrapper scroll={false} noTopInset={true}>
             <BaseSelfView
-                role="principal"
+                perspective="principal"
                 description={t('self.principalDescription', 'A restorative space for leadership clarity and personal rhythm.')}
                 domains={[
                     {

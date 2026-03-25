@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CommunityPresence.web.tsx
  *
  * Web override. Uses the same Supabase realtime presence + DB fallback logic
@@ -6,29 +6,26 @@
  * Metro resolves this over CommunityPresence.tsx on the web platform.
  */
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { supabase } from '@repo/core';
+import { usePermissions, supabase } from '@repo/core';
 import { Users, WifiOff } from 'lucide-react-native';
-
-type PresenceRole = 'teacher' | 'student' | 'admin' | 'principal' | 'section_head' | 'grade_head' | 'founder' | 'developer';
 
 interface CommunityPresenceProps {
     compact?: boolean;
     userId: string;
-    userRole: PresenceRole;
 }
 
-function getWatcherConfig(role: PresenceRole) {
-    if (role === 'student') return { targetRoles: ['student'], channelName: 'presence:students', isCumulative: false };
-    if (role === 'principal' || role === 'founder' || role === 'developer') return { targetRoles: ['teacher','student','section_head','grade_head','principal','developer'], channelName: 'presence:school', isCumulative: true };
-    return { targetRoles: ['teacher','section_head','grade_head','principal'], channelName: 'presence:educators', isCumulative: false };
-}
-
-export default function CommunityPresence({ compact = false, userId, userRole = 'teacher' }: CommunityPresenceProps) {
+export default function CommunityPresence({ compact = false, userId }: CommunityPresenceProps) {
     const [count, setCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [isOffline, setIsOffline] = useState(false);
+    const { can, context } = usePermissions();
+    const userRole = context.roles[0] || 'student';
 
-    const { targetRoles, channelName, isCumulative } = useMemo(() => getWatcherConfig(userRole), [userRole]);
+    const { targetRoles, channelName, isCumulative } = useMemo(() => {
+        if (can('manage', 'PrincipalDashboard')) return { targetRoles: ['teacher','student','section_head','grade_head','principal','developer'], channelName: 'presence:school', isCumulative: true };
+        if (can('manage', 'TeacherDashboard')) return { targetRoles: ['teacher','section_head','grade_head','principal'], channelName: 'presence:educators', isCumulative: false };
+        return { targetRoles: ['student'], channelName: 'presence:students', isCumulative: false };
+    }, [can]);
 
     const fetchCount = useCallback(async () => {
         try {
@@ -44,10 +41,8 @@ export default function CommunityPresence({ compact = false, userId, userRole = 
 
     useEffect(() => {
         fetchCount();
-        // Update own last_seen_at
         if (userId) supabase.from('users').update({ last_seen_at: new Date().toISOString() }).eq('id', userId).then(() => {});
 
-        // Realtime presence
         const ch = supabase.channel(channelName).on('presence', { event: 'sync' }, fetchCount).subscribe();
         const selfCh = supabase.channel(`self:${userId}`).subscribe(async status => {
             if (status === 'SUBSCRIBED' && userId) {
@@ -70,9 +65,9 @@ export default function CommunityPresence({ compact = false, userId, userRole = 
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: isOffline ? '#6B7280' : '#22C55E', animation: isOffline ? 'none' : 'pulse 2s infinite' }} />
                 <span style={{ fontSize: '11px', color: 'var(--ink-ghost)', fontWeight: '600' }}>
-                    {isLoading ? '…' : isOffline ? 'Offline' : `${count} ${label} online`}
+                    {isLoading ? '' : isOffline ? 'Offline' : `  online`}
                 </span>
-                <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
+                <style>{@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }}</style>
             </div>
         );
     }
@@ -82,14 +77,14 @@ export default function CommunityPresence({ compact = false, userId, userRole = 
             {isOffline ? <WifiOff size={16} color="var(--ink-ghost)" /> : <Users size={16} color="#22C55E" />}
             <div>
                 <div style={{ fontSize: '12px', fontWeight: '700' }}>
-                    {isLoading ? 'Checking presence…' : isOffline ? 'Offline' : `${count} ${label} online`}
+                    {isLoading ? 'Checking presence' : isOffline ? 'Offline' : `  online`}
                 </div>
                 {!isOffline && !isLoading && count > 0 && (
                     <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>You are not alone in this.</div>
                 )}
             </div>
             <div style={{ marginLeft: 'auto', width: '8px', height: '8px', borderRadius: '50%', background: isOffline ? '#6B7280' : '#22C55E', animation: isOffline ? 'none' : 'pulse 2s infinite' }} />
-            <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
+            <style>{@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }}</style>
         </div>
     );
 }

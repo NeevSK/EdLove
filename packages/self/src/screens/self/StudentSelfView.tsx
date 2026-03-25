@@ -12,7 +12,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import {
     useStore,
-    useUserRole,
+    usePermissions,
     useResonanceStore,
     useJourneyHistory
 } from '@repo/core';
@@ -54,7 +54,8 @@ export default function StudentSelfView() {
     const colors = useThemedColors();
 
     // State & Kernel Hooks
-    const { userId } = useUserRole();
+    const { context } = usePermissions();
+    const userId = context.userId;
     const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
     const { logs: moodHistory, addMoodLog, isLoading: loadingMoods } = useMoodLogs(userId ?? undefined);
     const { forecasts, isLoading: loadingEnergy } = useEnergyForecast(userId ?? undefined);
@@ -113,7 +114,7 @@ export default function StudentSelfView() {
     return (
         <ScreenWrapper scroll={false} noTopInset={true}>
             <BaseSelfView
-                role="student"
+                perspective="student"
                 description={t('self.studentDescription', 'A steady space to grow your mind and heart.')}
                 domains={[
                     {

@@ -8,7 +8,7 @@
  */
 import React from 'react';
 import { useOrientationInference } from '../hooks/useOrientationInference';
-import { useUserRole } from '@repo/core';
+import { usePermissions } from '@repo/core';
 import type { MoodLog, EnergyForecast } from '../types/Wellbeing';
 import type { OrientationSeeds } from '@repo/profile';
 import { Sparkles } from 'lucide-react-native';
@@ -64,12 +64,13 @@ export function ResonancePatternCard({
     gradeNumber,
     onExplore,
 }: ResonancePatternCardProps) {
-    const { role } = useUserRole();
+    const { context } = usePermissions();
+    const authority = context.roles[0];
     const { seeds: inferredSeeds, isDefault, confidence, dataQuality } = useOrientationInference({
         explicitSeeds: orientationSeeds,
         moodLogs,
         energyForecasts,
-        role,
+        authority,
         gradeNumber,
     });
 
@@ -181,7 +182,7 @@ export function ResonancePatternCard({
             {/* Confidence footnote */}
             <div style={{ marginTop: '16px', fontSize: '11px', color: 'var(--ink-ghost)', borderTop: '1px solid var(--border)', paddingTop: '12px' }}>
                 Pattern confidence: {Math.round(confidence * 100)}% · {
-                    isDefault ? 'Role defaults — usage will refine this.' :
+                    isDefault ? 'Perspective defaults — usage will refine this.' :
                     dataQuality === 'strong' ? 'Strong signal from onboarding + behavior.' :
                     'Emerging from your usage patterns.'
                 }

@@ -35,7 +35,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Mic, Flame } from 'lucide-react-native';
 import { Theme, typography } from '@repo/ui';
-import { supabase, useSafeMutation } from '@repo/core';
+import { supabase, useSafeMutation, usePermissions } from '@repo/core';
 import { hapticLight, hapticMedium, SkeletonCard, SkeletonLoader, PositiveInvitation } from '@repo/ui';
 import { useFireJournal } from '../hooks/useFireJournal';
 import { useTemporalStore } from '@repo/core';
@@ -52,9 +52,11 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
     const navigation = useNavigation<any>();
     const [content, setContent] = useState('');
     const [isBurning, setIsBurning] = useState(false);
+    const { context } = usePermissions();
+    const activeUserId = userId || context.userId;
     const isPastView = useTemporalStore(state => state.isPastView);
     // Use useFireJournal to keep cache in sync
-    const { journalHistory, refreshData, isLoading } = useFireJournal(userId);
+    const { journalHistory, refreshData, isLoading } = useFireJournal(activeUserId ?? undefined);
     const [showSuccess, setShowSuccess] = useState(false);
     const { t } = useTranslation();
 
@@ -123,7 +125,7 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                     {
                         content_preview: text.substring(0, 100), // Store preview only
                         is_burned: true,
-                        user_id: userId,
+                        user_id: activeUserId,
                         created_at: new Date().toISOString(),
                     },
                 ]);
@@ -139,7 +141,7 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
 
     const handleBurn = async () => {
         if (!content.trim()) return;
-        if (!userId) return;
+        if (!activeUserId) return;
 
         hapticMedium();
         setIsBurning(true); // Trigger animation immediately
@@ -259,7 +261,7 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
         }, 2000);
     };
 
-    if (isLoading && userId) {
+    if (isLoading && activeUserId) {
         return (
             <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
                 <SkeletonCard height={40} />
@@ -272,7 +274,7 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
         );
     }
 
-    if (!userId) {
+    if (!activeUserId) {
         return (
             <PositiveInvitation
                 type="guest"

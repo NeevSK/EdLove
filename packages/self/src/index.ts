@@ -3,6 +3,7 @@ export * from './api/self';
 export * from './api/dailyContent';
 export * from './constants/wellbeing';
 export * from './constants/selfRegistry';
+export { registerSelfVows } from './lib/vows';
 
 // Hooks
 export * from './hooks/useTimetable';

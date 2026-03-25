@@ -4,9 +4,9 @@ import {
     requireAuth,
     requireClassroomAccess,
     requireStudentAccess,
-    UserRole,
-    hasRole,
-    STAFF_ROLES,
+    AuthorityTier,
+    getPlatformAccessContext,
+    can as canCapability,
     growthSignalsAPI,
     impactRipplesAPI,
 } from '@repo/core';
@@ -14,7 +14,7 @@ import { Platform } from 'react-native';
 
 import {
     LibraryResource,
-    ResourceCollection,
+    LibraryCollection,
     ResourceFilters,
     CollectionFilters,
     CreateResourceInput,
@@ -293,7 +293,7 @@ export const libraryAPI = {
                     uses_count: 0,
                     endorsements: 0,
                     bookmarks: 0,
-                    verified: hasRole(creatorRole as UserRole, STAFF_ROLES), // Auto-verify for staff
+                    verified: canCapability('knowledge.verify', getPlatformAccessContext({ role: creatorRole } as any), {}).allowed, // Auto-verify for staff
                 },
             ])
             .select(`
@@ -603,7 +603,7 @@ resource: nodes!resource_engagements_resource_id_fkey(
     /**
      * Get all collections with optional filtering
      */
-    async getCollections(filters: CollectionFilters = {}): Promise<ResourceCollection[]> {
+    async getCollections(filters: CollectionFilters = {}): Promise<LibraryCollection[]> {
         // 1. Fetch explicit collections from the DB
         let query = supabase
             .from('collections')
@@ -615,8 +615,19 @@ resource: nodes!resource_engagements_resource_id_fkey(
 
         // RLS alignment: For guests/unauthenticated users, allow public OR verified collections
         const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-            query = query.or('is_public.eq.true,verified.eq.true');
+        const userId = session?.user?.id;
+
+        if (!userId) {
+            query = query.or('visibility.eq.public,verified.eq.true');
+        } else {
+            // Enhanced sharding: 
+            // - Personal: creator_id = userId & visibility = 'personal'
+            // - Shared: (visibility = 'shared' AND school_id matches) OR (visibility = 'class' ...)
+            // - Public: visibility = 'public'
+            // For now, simpler OR for visibility logic
+            if (!filters.creator_id) {
+                query = query.or(`visibility.in.(public,shared),verified.eq.true,and(creator_id.eq.${userId},visibility.eq.personal)`);
+            }
         }
 
         if (filters.subject) query = query.eq('subject', filters.subject);
@@ -667,8 +678,8 @@ resource: nodes!resource_engagements_resource_id_fkey(
 
         // 2. Synthesize Virtual Collections from Subjects & Topics (Dynamic)
         // We only synthesize virtuals if we are not specifically looking for a single user's private collections
-        let subjectVirtuals: ResourceCollection[] = [];
-        let topicVirtuals: ResourceCollection[] = [];
+        let subjectVirtuals: LibraryCollection[] = [];
+        let topicVirtuals: LibraryCollection[] = [];
 
         if (!filters.creator_id || filters.visibility === 'public') {
             const [{ data: subjectsData }, { data: topicsData }] = await Promise.all([
@@ -746,7 +757,7 @@ resource: nodes!resource_engagements_resource_id_fkey(
     /**
      * Get a single collection by ID
      */
-    async getCollectionById(id: string, userId?: string): Promise<ResourceCollection> {
+    async getCollectionById(id: string, userId?: string): Promise<LibraryCollection> {
         // Handle Virtual Collections (Subjects or Topics)
         if (id.startsWith('subject:') || id.startsWith('topic:')) {
             const isSubject = id.startsWith('subject:');
@@ -774,6 +785,7 @@ resource: nodes!resource_engagements_resource_id_fkey(
                 forks: 0,
                 used_by_count: resources.length,
                 endorsements: 0,
+                has_bookmarked: false,
             };
         }
 
@@ -838,7 +850,7 @@ resource: nodes!resource_engagements_resource_id_fkey(
     /**
      * Create a new collection
      */
-    async createCollection(input: CreateCollectionInput, creatorId: string): Promise<ResourceCollection> {
+    async createCollection(input: CreateCollectionInput, creatorId: string): Promise<LibraryCollection> {
         const { data, error } = await supabase
             .from('collections')
             .insert([
@@ -891,37 +903,104 @@ resource: nodes!resource_engagements_resource_id_fkey(
     /**
      * Add a resource to a collection
      */
-    async addToCollection(collectionId: string, resourceId: string): Promise<void> {
+    async addToCollection(collection_id: string, node_id: string): Promise<void> {
+        // 1. Maintain the array-based field for backward compatibility
+        const { data: collection } = await supabase
+            .from('collections')
+            .select('resource_ids, sequence_order')
+            .eq('id', collection_id)
+            .single();
+
+        if (collection) {
+            const newResourceIds = [...(collection.resource_ids || []), node_id];
+            const newSequenceOrder = [...(collection.sequence_order || []), newResourceIds.length - 1];
+
+            await supabase
+                .from('collections')
+                .update({
+                    resource_ids: newResourceIds,
+                    sequence_order: newSequenceOrder,
+                })
+                .eq('id', collection_id);
+        }
+
+        // 2. Insert into the formal junction table (upgrade)
+        const { error } = await supabase
+            .from('collection_nodes')
+            .insert([{ collection_id, node_id }]);
+
+        if (error && error.code !== '23505') { // Ignore unique constraint violation
+            throw new APIError('Failed to add resource to collection junction', error.code, error);
+        }
+    },
+
+    /**
+     * Remove a resource from a collection
+     */
+    async removeFromCollection(collectionId: string, resourceId: string): Promise<void> {
+        // 1. Update the array-based field
         const { data: collection } = await supabase
             .from('collections')
             .select('resource_ids, sequence_order')
             .eq('id', collectionId)
             .single();
 
-        if (!collection) {
-            throw new APIError('Collection not found');
+        if (collection) {
+            const index = collection.resource_ids.indexOf(resourceId);
+            if (index !== -1) {
+                const newResourceIds = collection.resource_ids.filter((id: string) => id !== resourceId);
+                const newSequenceOrder = collection.sequence_order.filter((_: any, i: number) => i !== index);
+                
+                await supabase
+                    .from('collections')
+                    .update({
+                        resource_ids: newResourceIds,
+                        sequence_order: newSequenceOrder,
+                    })
+                    .eq('id', collectionId);
+            }
         }
 
-        const newResourceIds = [...(collection.resource_ids || []), resourceId];
-        const newSequenceOrder = [...(collection.sequence_order || []), newResourceIds.length - 1];
-
+        // 2. Delete from junction table
         const { error } = await supabase
-            .from('collections')
-            .update({
-                resource_ids: newResourceIds,
-                sequence_order: newSequenceOrder,
-            })
-            .eq('id', collectionId);
+            .from('collection_nodes')
+            .delete()
+            .eq('collection_id', collectionId)
+            .eq('node_id', resourceId);
 
         if (error) {
-            throw new APIError('Failed to add resource to collection', error.code, error);
+            throw new APIError('Failed to remove resource from collection', error.code, error);
         }
+    },
+
+    /**
+     * Update collection metadata (CRUD)
+     */
+    async updateCollection(id: string, updates: Partial<LibraryCollection>): Promise<LibraryCollection> {
+        const { data, error } = await supabase
+            .from('collections')
+            .update(updates)
+            .eq('id', id)
+            .select(`
+                *,
+                creator: users!resource_collections_creator_id_fkey(full_name)
+            `)
+            .single();
+
+        if (error) {
+            throw new APIError('Failed to update collection', error.code, error);
+        }
+
+        return {
+            ...data,
+            creator_name: data.creator?.full_name || data.creator_name || 'System',
+        };
     },
 
     /**
      * Fork (duplicate) a collection
      */
-    async forkCollection(collectionId: string, userId: string): Promise<ResourceCollection> {
+    async forkCollection(collectionId: string, userId: string): Promise<LibraryCollection> {
         const original = await this.getCollectionById(collectionId);
 
         const { data, error } = await supabase

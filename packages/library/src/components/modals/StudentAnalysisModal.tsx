@@ -44,6 +44,8 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
+    const [aiInsights, setAiInsights] = useState<string | null>(null);
+    const [loadingAI, setLoadingAI] = useState(false);
     
     const [analysis, setAnalysis] = useState<Partial<StudentPotentialAnalysis>>({
         cognitive_flow: 50,
@@ -132,6 +134,18 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
             alert('Failed to export analysis.');
         } finally {
             setIsExporting(false);
+        }
+    };
+
+    const handleGetAIInsights = async () => {
+        setLoadingAI(true);
+        try {
+            const insights = await studentPotentialAPI.getAIInsights(studentName, analysis);
+            setAiInsights(insights);
+        } catch (error) {
+            console.error('[StudentAnalysisModal] AI Insight Error:', error);
+        } finally {
+            setLoadingAI(false);
         }
     };
 
@@ -258,8 +272,18 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                             {/* Stats Summary */}
                             <GlassCard style={styles.slidersCard}>
                                 <View style={styles.sectionHeader}>
-                                    <Sparkles size={16} color={Theme.colors.sanctuarySaffron} />
-                                    <Text style={styles.sectionTitle}>Nurturing Dimensions</Text>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                                        <Sparkles size={16} color={Theme.colors.sanctuarySaffron} />
+                                        <Text style={styles.sectionTitle}>Nurturing Dimensions</Text>
+                                    </View>
+                                    <TouchableOpacity 
+                                        onPress={handleGetAIInsights}
+                                        disabled={loadingAI}
+                                        style={styles.aiScoutButton}
+                                    >
+                                        {loadingAI ? <ActivityIndicator size="small" color={Theme.colors.sanctuarySaffron} /> : <Sparkles size={16} color={Theme.colors.sanctuarySaffron} />}
+                                        <Text style={styles.aiScoutText}>AI Scout</Text>
+                                    </TouchableOpacity>
                                 </View>
                                 <View style={styles.statsGrid}>
                                     {[
@@ -294,6 +318,17 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                     ))}
                                 </View>
                             </GlassCard>
+
+                            {/* AI Insights Section */}
+                            {aiInsights && (
+                                <GlassCard style={styles.aiInsightsCard}>
+                                    <View style={styles.sectionHeader}>
+                                        <Sparkles size={16} color={Theme.colors.sanctuarySaffron} />
+                                        <Text style={styles.sectionTitle}>AI Potential Insights</Text>
+                                    </View>
+                                    <Text style={styles.aiInsightsText}>{aiInsights}</Text>
+                                </GlassCard>
+                            )}
 
                             {/* Silver Lining Analysis */}
                             <GlassCard style={styles.notesCard}>
@@ -426,6 +461,35 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         textTransform: 'uppercase',
         letterSpacing: 1,
+    },
+    aiScoutButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 12,
+        backgroundColor: 'rgba(255, 179, 0, 0.1)',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 179, 0, 0.2)',
+    },
+    aiScoutText: {
+        fontSize: 11,
+        fontWeight: '800',
+        color: Theme.colors.sanctuarySaffron,
+        textTransform: 'uppercase',
+    },
+    aiInsightsCard: {
+        padding: 20,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 179, 0, 0.3)',
+    },
+    aiInsightsText: {
+        fontSize: 14,
+        lineHeight: 22,
+        color: 'rgba(255,255,255,0.85)',
+        fontStyle: 'italic',
     },
     statsGrid: {
         gap: 12,

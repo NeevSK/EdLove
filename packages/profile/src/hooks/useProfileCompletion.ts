@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { UserRole } from '@repo/core';
+import type { AuthorityTier } from '@repo/core';
 import type { UserProfile } from '../types';
 import { PROFILE_SECTIONS } from '../config/profileSections';
 import { isFieldFilled } from '../lib/isFieldFilled';
@@ -20,7 +20,7 @@ export interface ProfileCompletionResult {
 
 export function useProfileCompletion(
   profile: UserProfile | null,
-  role: UserRole | null,
+  role: AuthorityTier | null,
 ): ProfileCompletionResult {
   // Default true prevents flash-showing overlay on mount for already-completed profiles
   const [hasSeenCelebration, setHasSeenCelebration] = useState(true);
@@ -51,7 +51,7 @@ export function useProfileCompletion(
     const eligibleSections = PROFILE_SECTIONS.filter(section => {
       if (!section.countInCompletion) return false;
       if (section.roles === 'all') return true;
-      return (section.roles as UserRole[]).includes(role);
+      return (section.roles as AuthorityTier[]).includes(role);
     });
 
     let totalWeight = 0;

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   VStack,
@@ -15,7 +15,7 @@ import {
 import { Sparkles, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
-import { supabase, useSafeMutation } from '@repo/core';
+import { supabase, useSafeMutation, usePermissions } from '@repo/core';
 import { hapticLight, hapticSuccess, SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useJoyJar } from '../hooks/useJoyJar';
 import { JoyMoment } from '../types';
@@ -29,8 +29,10 @@ interface JoyJarProps {
 export default function JoyJar({ userId, disabled }: JoyJarProps) {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
+  const { context } = usePermissions();
+  const activeUserId = userId || context.userId;
   // Resilient Data Hook
-  const { joyMoments, refreshData, isLoading } = useJoyJar(userId);
+  const { joyMoments, refreshData, isLoading } = useJoyJar(activeUserId ?? undefined);
 
   const [showForm, setShowForm] = useState(false);
 
@@ -48,7 +50,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
       const { error } = await supabase
         .from('joy_moments')
         .insert({
-          user_id: userId,
+          user_id: activeUserId,
           student_name: variables.studentName,
           moment_description: variables.description,
           category: variables.category
@@ -69,7 +71,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
   );
 
   const handleSaveMoment = async () => {
-    if (!userId || !momentDescription.trim()) return;
+    if (!activeUserId || !momentDescription.trim()) return;
 
     hapticLight();
     await mutate({
@@ -86,7 +88,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
     { id: 'other', label: t('self.other'), emoji: '✨' }
   ];
 
-  if (isLoading && userId) {
+  if (isLoading && activeUserId) {
     return (
       <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}>
         <SkeletonCard height={48} />
@@ -96,7 +98,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
     );
   }
 
-  if (!userId) {
+  if (!activeUserId) {
     return (
       <PositiveInvitation
         type="guest"

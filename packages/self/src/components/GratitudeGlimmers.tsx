@@ -15,7 +15,7 @@ import {
 import { Heart, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
-import { supabase, useSafeMutation } from '@repo/core';
+import { supabase, useSafeMutation, usePermissions } from '@repo/core';
 import { GratitudeEntry } from '../types';
 import { hapticLight, hapticSuccess, SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useGratitude } from '../hooks/useGratitude';
@@ -29,8 +29,10 @@ interface GratitudeGlimmersProps {
 export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmersProps) {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
+  const { context } = usePermissions();
+  const activeUserId = userId || context.userId;
   // Resilient Data Hook
-  const { entries, refreshData, isLoading } = useGratitude(userId);
+  const { entries, refreshData, isLoading } = useGratitude(activeUserId ?? undefined);
 
   const [showForm, setShowForm] = useState(false);
 
@@ -44,7 +46,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
       const { error } = await supabase
         .from('gratitude_entries')
         .insert({
-          user_id: userId,
+          user_id: activeUserId,
           content: variables.content,
           category: variables.category
         });
@@ -77,7 +79,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
     { id: 'personal-win', label: t('self.personalWin'), emoji: '🌟', color: Theme.colors.sageGreen }
   ];
 
-  if (isLoading && userId) {
+  if (isLoading && activeUserId) {
     return (
       <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}>
         <SkeletonCard height={48} />
@@ -87,7 +89,7 @@ export default function GratitudeGlimmers({ userId, disabled }: GratitudeGlimmer
     );
   }
 
-  if (!userId) {
+  if (!activeUserId) {
     return (
       <PositiveInvitation
         type="guest"

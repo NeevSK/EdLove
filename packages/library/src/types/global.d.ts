@@ -18,3 +18,10 @@ declare module 'culori' {
   export function formatRgb(color: Color): string;
   export function converter(mode: string): (color: Color) => any;
 }
+
+declare module 'react-native-gifted-charts' {
+  import * as React from 'react';
+
+  export const BarChart: React.ComponentType<any>;
+  export const PieChart: React.ComponentType<any>;
+}

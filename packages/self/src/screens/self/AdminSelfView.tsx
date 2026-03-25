@@ -9,7 +9,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import {
     useStore,
-    useUserRole
+    usePermissions
 } from '@repo/core';
 
 // Kernel Imports from @repo/self (Breaking require cycle)
@@ -36,7 +36,8 @@ export default function AdminSelfView() {
     const colors = useThemedColors();
 
     // State & Kernel Hooks
-    const { userId } = useUserRole();
+    const { context } = usePermissions();
+    const userId = context.userId;
     const user = useStore(state => state.user);
     const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
     const { logs: moodHistory, addMoodLog, isLoading: loadingMoods } = useMoodLogs(userId ?? undefined);
@@ -64,7 +65,7 @@ export default function AdminSelfView() {
     return (
         <ScreenWrapper scroll={false} noTopInset={true}>
             <BaseSelfView
-                role="admin"
+                perspective="admin"
                 description={t('self.adminDescription', 'Operational clarity from a source of inner stillness.')}
                 domains={[
                     {

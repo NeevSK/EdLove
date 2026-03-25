@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import {
     supabase,
     useStore,
-    useUserRole,
+    usePermissions,
     useResonanceStore,
     useJourneyHistory,
     useBanyanGrowth
@@ -54,7 +54,8 @@ export default function TeacherSelfView() {
     const colors = useThemedColors();
 
     // State & Kernel Hooks
-    const { userId } = useUserRole();
+    const { context } = usePermissions();
+    const userId = context.userId;
     const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
     const { logs: moodHistory, addMoodLog, isLoading: loadingMoods } = useMoodLogs(userId ?? undefined);
     const { forecasts, isLoading: loadingEnergy } = useEnergyForecast(userId ?? undefined);
@@ -112,7 +113,7 @@ export default function TeacherSelfView() {
     return (
         <ScreenWrapper scroll={false} noTopInset={true}>
             <BaseSelfView
-                role="teacher"
+                perspective="teacher"
                 description={t('self.teacherDescription', 'Refine your craft, nurture your spirit.')}
                 domains={[
                     {

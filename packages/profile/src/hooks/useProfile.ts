@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useUserRole, useRewards, handleAPIError, useMutationQueue, supabase, identityAPI, authAPI } from '@repo/core';
+import { usePermissions, useRewards, handleAPIError, useMutationQueue, supabase, identityAPI, authAPI } from '@repo/core';
 import { profileAPI } from '../api/profile';
 import { UserProfile } from '../types';
 import { ProfileValidator } from '../lib/validator';
@@ -8,7 +8,8 @@ export function useProfile(userId?: string) {
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-    const { role: currentUserRole } = useUserRole();
+    const { context } = usePermissions();
+    const currentUserAuthority = context.roles[0];
     const { rewards, isLoading: isRewardsLoading } = useRewards();
     const addToQueue = useMutationQueue(state => state.addToQueue);
 
@@ -25,7 +26,7 @@ export function useProfile(userId?: string) {
             if (data) {
                 setProfile({
                     ...data,
-                    role: data.role ?? (!userId ? currentUserRole : undefined) ?? 'teacher',
+                    authority: data.role ?? (!userId ? currentUserAuthority : undefined) ?? 'teacher',
                     school_name: data.schools?.name || null
                 } as UserProfile);
             }
@@ -39,7 +40,7 @@ export function useProfile(userId?: string) {
             setLoading(false);
             setRefreshing(false);
         }
-    }, [userId, currentUserRole]);
+    }, [userId, currentUserAuthority]);
 
     useEffect(() => {
         fetchProfile();

@@ -34,7 +34,7 @@ import Animated, {
 import { Mic, Square, Play, Trash2, Check } from 'lucide-react-native';
 import { useAudioRecorder, useAudioPlayer, AudioModule, RecordingPresets, useAudioPlayerStatus, setAudioModeAsync } from 'expo-audio';
 import { Theme, typography } from '@repo/ui';
-import { supabase } from '@repo/core';
+import { supabase, usePermissions } from '@repo/core';
 import { hapticLight, hapticMedium } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 
@@ -47,6 +47,8 @@ interface VoiceJournalingProps {
 type RecordingState = 'idle' | 'recording' | 'recorded' | 'playing';
 
 export default function VoiceJournaling({ userId, onComplete, disabled }: VoiceJournalingProps) {
+    const { context } = usePermissions();
+    const activeUserId = userId || context.userId;
     const [recordingState, setRecordingState] = useState<RecordingState>('idle');
     const [recordingDuration, setRecordingDuration] = useState(0);
     const [recordingUri, setRecordingUri] = useState<string | null>(null);
@@ -162,7 +164,7 @@ export default function VoiceJournaling({ userId, onComplete, disabled }: VoiceJ
     };
 
     const saveRecording = async () => {
-        if (!recordingUri || !userId) return;
+        if (!recordingUri || !activeUserId) return;
 
         try {
             hapticMedium();
@@ -171,7 +173,7 @@ export default function VoiceJournaling({ userId, onComplete, disabled }: VoiceJ
                 .from('voice_journals')
                 .insert([
                     {
-                        user_id: userId,
+                        user_id: activeUserId,
                         duration_seconds: recordingDuration,
                         created_at: new Date().toISOString(),
                     },

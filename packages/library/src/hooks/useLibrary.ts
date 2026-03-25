@@ -1,20 +1,20 @@
-import { useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { Platform } from 'react-native';
 import { libraryAPI } from '../api/library';
-import { ResourceFilters, CollectionFilters } from '../types';
+import { ResourceFilters, CollectionFilters, CreateResourceInput } from '../types';
 
 // Keys for React Query
 export const LIBRARY_KEYS = {
     all: ['library'] as const,
     resources: (filters: ResourceFilters = {}) => [...LIBRARY_KEYS.all, 'resources', filters] as const,
     collections: (filters: CollectionFilters = {}) => [...LIBRARY_KEYS.all, 'collections', filters] as const,
+    collection: (id: string) => [...LIBRARY_KEYS.all, 'collection', id] as const,
     resource: (id: string) => [...LIBRARY_KEYS.all, 'resource', id] as const,
+    bookmarked: (userId: string) => [...LIBRARY_KEYS.all, 'bookmarked', userId] as const,
     sync: () => [...LIBRARY_KEYS.all, 'sync'] as const,
 };
 import { knowledgeSync } from '../api/sync';
-import { knowledgeDB } from '../api/database';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 
 export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilters: CollectionFilters = {}) => {
     const queryClient = useQueryClient();
@@ -57,7 +57,7 @@ export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilt
 
     // Create Resource Mutation
     const createResourceMutation = useMutation({
-        mutationFn: async ({ input, creatorId, creatorRole }: { input: any, creatorId: string, creatorRole: string }) => {
+        mutationFn: async ({ input, creatorId, creatorRole }: { input: CreateResourceInput, creatorId: string, creatorRole: string }) => {
             return libraryAPI.createResource(input, creatorId, creatorRole);
         },
         onSuccess: () => {
@@ -72,6 +72,30 @@ export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilt
         },
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resources() });
+            queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resource(variables.resourceId) });
+        },
+    });
+
+    // Bookmark Mutation
+    const bookmarkMutation = useMutation({
+        mutationFn: async ({ resourceId, userId }: { resourceId: string, userId: string }) => {
+            return libraryAPI.bookmarkResource(resourceId, userId);
+        },
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resources() });
+            queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.bookmarked(variables.userId) });
+            queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resource(variables.resourceId) });
+        },
+    });
+
+    // Add to Collection Mutation
+    const addToCollectionMutation = useMutation({
+        mutationFn: async ({ collectionId, resourceId }: { collectionId: string, resourceId: string }) => {
+            return libraryAPI.addToCollection(collectionId, resourceId);
+        },
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
+            queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(variables.collectionId) });
             queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resource(variables.resourceId) });
         },
     });
@@ -104,6 +128,10 @@ export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilt
         isCreatingResource: createResourceMutation.isPending,
 
         endorseResource: endorseMutation.mutateAsync,
+        bookmarkResource: bookmarkMutation.mutateAsync,
+        isBookmarking: bookmarkMutation.isPending,
+        addToCollection: addToCollectionMutation.mutateAsync,
+        isAddingToCollection: addToCollectionMutation.isPending,
 
         syncLibrary,
 
@@ -113,17 +141,32 @@ export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilt
             : null,
     };
 };
-
 export const useCollection = (id: string, userId?: string) => {
-    const { data, isLoading, error, refetch } = useInfiniteQuery({
-        queryKey: LIBRARY_KEYS.resource(id), // Reusing resource key pattern for collection detail
+    const { data, isLoading, error, refetch } = useQuery({
+        queryKey: LIBRARY_KEYS.collection(id),
         queryFn: () => libraryAPI.getCollectionById(id, userId),
-        initialPageParam: 0,
-        getNextPageParam: () => undefined, // Detail is a single fetch for now
+        enabled: !!id,
     });
 
     return {
-        collection: data?.pages[0],
+        collection: data ?? null,
+        isLoading,
+        error: error ? (error as Error).message : null,
+        refetch,
+    };
+};
+
+export const useBookmarkedResources = (userId?: string) => {
+    const { data, isLoading, error, refetch } = useInfiniteQuery({
+        queryKey: LIBRARY_KEYS.bookmarked(userId || ''),
+        queryFn: () => userId ? libraryAPI.getBookmarkedResources(userId) : Promise.resolve([]),
+        enabled: !!userId,
+        initialPageParam: 0,
+        getNextPageParam: () => undefined,
+    });
+
+    return {
+        resources: data?.pages[0] || [],
         isLoading,
         error: error ? (error as Error).message : null,
         refetch,

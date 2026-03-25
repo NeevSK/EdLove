@@ -35,7 +35,7 @@ import {
     Search
 } from 'lucide-react-native';
 import { libraryAPI } from '../api/library';
-import { useUserRole } from '@repo/core';
+import { usePermissions } from '@repo/core';
 import { SRI_LANKAN_PROVINCES, SRI_LANKAN_DISTRICTS } from '@repo/core';
 import { KnowledgeTopology, KnowledgeNode } from '../types/Library';
 import { AstroView } from '../components/perspectives/AstroView';
@@ -77,6 +77,8 @@ const getAvailablePerspectives = (topology: any) => {
 
 export default function MapScreen() {
     const colors = useThemedColors();
+    const { context } = usePermissions();
+    const role = context.roles[0];
     const navigation = useNavigation();
     const { width, height } = useWindowDimensions();
     

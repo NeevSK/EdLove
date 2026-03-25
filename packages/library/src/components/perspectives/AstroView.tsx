@@ -6,7 +6,7 @@ import Animated, {
     useAnimatedStyle, 
     withSpring 
 } from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, GestureUpdateEvent, PinchGestureHandlerEventPayload, PanGestureHandlerEventPayload } from 'react-native-gesture-handler';
 import { Theme, useThemedColors, Text } from '@repo/ui';
 import type { 
     PerspectiveViewProps, 
@@ -39,15 +39,15 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
 
     // Gestures
     const pinchGesture = Gesture.Pinch()
-        .onUpdate((e) => {
-            scale.value = savedScale.value * e.scale;
+        .onUpdate((e: GestureUpdateEvent<PinchGestureHandlerEventPayload>) => {
+            scale.value = savedScale.value * (e.scale || 1);
         })
         .onEnd(() => {
             savedScale.value = scale.value;
         });
 
     const panGesture = Gesture.Pan()
-        .onUpdate((e) => {
+        .onUpdate((e: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
             translateX.value = savedTranslateX.value + e.translationX;
             translateY.value = savedTranslateY.value + e.translationY;
         })
@@ -58,17 +58,17 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
 
     const combinedGesture = Gesture.Simultaneous(pinchGesture, panGesture);
 
-    const animatedStyle: any = useAnimatedStyle(() => ({
+    const animatedStyle = useAnimatedStyle(() => ({
         transform: [
             { translateX: translateX.value },
             { translateY: translateY.value },
             { scale: scale.value }
-        ] as any
+        ]
     }));
 
     return (
         <GestureDetector gesture={combinedGesture}>
-            <Animated.View style={[{ flex: 1 }, animatedStyle] as any}>
+            <Animated.View style={[{ flex: 1 }, animatedStyle]}>
                 <Svg 
                     width={layout.bounds.width + 1000} 
                     height={layout.bounds.height + 1000} 
@@ -100,37 +100,32 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
                     })}
 
                     {/* Render Nodes */}
-                    {data.nodes.map((node) => {
+                    {data.nodes.map((node, i) => {
                         const pos = layout.positions.get(node.id);
                         if (!pos) return null;
 
                         const isSelected = selectedNode?.id === node.id;
-                        const isTopic = node.type === 'topic';
-
+                        
                         return (
-                            <G key={node.id} onPress={() => onNodePress?.(node as any)}>
+                            <G 
+                                key={`node-${node.id}`} 
+                                onPress={() => onNodePress?.(node)}
+                            >
                                 <Circle
                                     cx={pos.x}
                                     cy={pos.y}
-                                    r={isTopic ? 24 : 16}
-                                    fill={isTopic ? Theme.colors.sanctuarySaffron : colors.textPrimary}
-                                    fillOpacity={isSelected ? 0.2 : 0.05}
-                                />
-                                <Circle
-                                    cx={pos.x}
-                                    cy={pos.y}
-                                    r={isTopic ? 8 : 4}
-                                    fill={isTopic ? Theme.colors.sanctuarySaffron : colors.textPrimary}
-                                    stroke={colors.secondary}
-                                    strokeWidth={isSelected ? 3 : 1}
+                                    r={isSelected ? 10 : 6}
+                                    fill={isSelected ? Theme.colors.sanctuarySaffron : colors.gurudeviBlue}
+                                    stroke={colors.card}
+                                    strokeWidth={2}
                                 />
                                 <SvgText
-                                    x={pos.x + 12}
-                                    y={pos.y + 4}
-                                    fill={colors.textPrimary}
-                                    fontSize={isTopic ? 14 : 10}
-                                    fontWeight={isTopic ? "bold" : "normal"}
-                                    opacity={isTopic || isSelected ? 1 : 0.6}
+                                    x={pos.x}
+                                    y={pos.y + 20}
+                                    fontSize="12"
+                                    fill={colors.text}
+                                    textAnchor="middle"
+                                    fontWeight={isSelected ? "bold" : "normal"}
                                 >
                                     {node.label}
                                 </SvgText>

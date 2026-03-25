@@ -1,6 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { LucideIcon, BookOpen, Sparkles, Target, User, MessageCircle, Leaf, Zap, Brain, Lightbulb } from 'lucide-react-native';
+import { FeatureGuard } from '@repo/core';
 
 const styles = StyleSheet.create({
     sectionContainer: {
