@@ -4,4 +4,4 @@
  * Thin adapter pointing to @repo/core implementation.
  * Follows the "Library First" and "Thin App Layer" architectural rules.
  */
-export { default } from '@repo/core/src/screens/NotificationsScreen.web';
+export { default } from '@repo/core/screens/NotificationsScreen.web';
