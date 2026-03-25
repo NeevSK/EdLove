@@ -1,0 +1,34 @@
+{
+  "name": "@repo/admin",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@repo/core": "workspace:*",
+    "@repo/people": "workspace:*",
+    "@repo/scanner-kit": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@repo/analytics": "workspace:*",
+    "expo-clipboard": "~55.0.9",
+    "lucide-react-native": "^0.563.0",
+    "react-i18next": "^16.5.4"
+  },
+  "devDependencies": {
+    "@types/react": "~19.1.10",
+    "@repo/eslint-config": "workspace:*",
+    "typescript": "~5.9.2",
+    "eslint": "^9.38.0"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  }
+}
