@@ -108,9 +108,9 @@ async function staleWhileRevalidate(cacheName, request) {
       return response;
     })
     .catch(error => {
-      // Silently handle network errors during development/initial load
-      console.warn('[SW] Network fetch failed, using cache:', request.url, error);
-      return null;
+      // On network error, log and return a fallback Response so we never resolve to null
+      console.warn('[SW] Network fetch failed, using cache or fallback:', request.url, error);
+      return Response.error();
     });
   return cached || networkFetch;
 }
