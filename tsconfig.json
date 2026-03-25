@@ -1,0 +1,22 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/analytics" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/graphics" },
+    { "path": "./packages/admin" },
+    { "path": "./packages/classroom" },
+    { "path": "./packages/core" }
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@repo/analytics": ["./packages/analytics/src"],
+      "@repo/ui": ["./packages/ui/src"],
+      "@repo/graphics": ["./packages/graphics/src"],
+      "@repo/admin": ["./packages/admin/src"],
+      "@repo/classroom": ["./packages/classroom/src"],
+      "@repo/core": ["./packages/core/src"]
+    }
+  }
+}
