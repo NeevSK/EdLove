@@ -40,7 +40,7 @@ import {
     type RiverStage,
     type CrystalTier,
 } from '@repo/core';
-import { UserRole } from '@repo/core';
+import { usePermissions } from '@repo/core';
 import { communityAPI } from "@repo/community/api";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -49,7 +49,6 @@ import { communityAPI } from "@repo/community/api";
 
 interface LivingJourneyPanelProps {
     userId: string;
-    role: UserRole;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -344,39 +343,44 @@ function WhisperedMomentsRow({ moments, colors, t }: WhisperedMomentsRowProps) {
 // MAIN PANEL
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default function LivingJourneyPanel({ userId, role }: LivingJourneyPanelProps) {
+export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) {
+    const { can } = usePermissions();
     const colors = useThemedColors();
     const { t } = useTranslation();
 
-    const [growthState, setGrowthState] = useState<UserGrowthState | null>(null);
+    const [growth, setGrowth] = useState<UserGrowthState | null>(null);
     const [moon, setMoon] = useState<MoonPhase | null>(null);
-    const [whisperedMoments, setWhisperedMoments] = useState<
+    const [moments, setMoments] = useState<
         Array<{ key: string; name_en: string; name_si: string }>
     >([]);
     const [resonance, setResonance] = useState({ likes: 0, comments: 0, shares: 0 });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Moon is pure computation — instant, no network needed
-        setMoon(moonPhaseAPI.getCurrentMoonPhase());
+        const fetchData = async () => {
+            try {
+                // Moon is pure computation — instant, no network needed
+                setMoon(moonPhaseAPI.getCurrentMoonPhase());
 
-        // Growth state requires DB fetch
-        Promise.all([
-            userGrowthStateAPI.getOrCreateState(userId),
-            // @ts-ignore - moments might be optional or different type
-            userGrowthStateAPI.getWhisperedMoments(userId),
-            communityAPI.getCommunityResonance(userId),
-        ])
-            .then(([state, moments, resonanceData]) => {
-                setGrowthState(state);
-                setWhisperedMoments(moments ?? []);
+                // Fetch growth state, moments, and resonance in parallel
+                const [state, momentsData, resonanceData] = await Promise.all([
+                    userGrowthStateAPI.getOrCreateState(userId),
+                    userGrowthStateAPI.getWhisperedMoments(userId),
+                    communityAPI.getCommunityResonance(userId)
+                ]);
+
+                if (state) setGrowth(state);
+                if (momentsData) setMoments(momentsData);
                 if (resonanceData) setResonance(resonanceData);
-            })
-            .catch((err) => {
+
+            } catch (err) {
                 console.error('Error fetching growth journey:', err);
-                // Silent failure — panel shows gracefully with defaults
-            })
-            .finally(() => setLoading(false));
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
     }, [userId]);
 
     if (loading) {
@@ -401,7 +405,7 @@ export default function LivingJourneyPanel({ userId, role }: LivingJourneyPanelP
     }
 
     // 1. Data Guards (Defensive Coding)
-    if (!growthState) {
+    if (!growth) {
         return (
             <Box sx={{ p: Theme.spacing.xl, alignItems: 'center' }}>
                 <Text color={colors.textSecondary}>{t('profile.noJourneyData') || 'No journey data found'}</Text>
@@ -409,21 +413,20 @@ export default function LivingJourneyPanel({ userId, role }: LivingJourneyPanelP
         );
     }
 
-    const bhumi = growthState.bhumi_stage ?? 'bijam'; // Kept original logic for bhumi
-    const banyan = (growthState.banyan_stage as BanyanStage | undefined) ?? 'sapling'; // Kept original logic for banyan
-    const river = (growthState.river_stage as RiverStage | undefined) ?? 'trickle'; // Kept original logic for river
-    const crystal = (growthState.crystal_tier as CrystalTier | undefined) ?? 'spark'; // Kept original logic for crystal
+    const bhumi = growth.bhumi_stage ?? 'bijam';
+    const banyan = (growth.banyan_stage as BanyanStage | undefined) ?? 'sapling';
+    const river = (growth.river_stage as RiverStage | undefined) ?? 'trickle';
+    const crystal = (growth.crystal_tier as CrystalTier | undefined) ?? 'spark';
 
-    const bhumiData = BHUMI_NARRATIVES[bhumi]; // This bhumiData is for narratives, not the growthState itself.
+    const bhumiData = BHUMI_NARRATIVES[bhumi];
 
-    const isTeacherRole = ['teacher', 'principal', 'grade_head', 'section_head', 'developer'].includes(role);
-    const isStudentRole = role === 'student';
+    const isTeacherRole = can('read', 'TeacherPulse') || can('read', 'PrincipalPulse') || can('read', 'FounderPulse');
+    const isStudentRole = can('read', 'StudentPulse');
 
     // 2. Animation Gating (Ensuring web-safe defaults)
     const enteringAnimation = Platform.OS === 'web'
-        ? undefined  // Skip complex entering animations on web if they cause "element" issues
+        ? undefined  // Skip complex entering animations on web
         : FadeInDown.springify();
-
 
     return (
         <Animated.View entering={enteringAnimation}>
@@ -513,7 +516,7 @@ export default function LivingJourneyPanel({ userId, role }: LivingJourneyPanelP
 
                     {/* Whispered Moments — all users */}
                     <WhisperedMomentsRow
-                        moments={whisperedMoments}
+                        moments={moments}
                         colors={colors}
                         t={t}
                     />

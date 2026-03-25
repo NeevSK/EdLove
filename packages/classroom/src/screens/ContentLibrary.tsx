@@ -28,8 +28,7 @@ import {
     InputField,
     Textarea,
     TextareaInput,
-    SmartShelf,
-    CollectionCard
+    SmartShelf
 } from '@repo/ui';
 import { Alert, Platform } from 'react-native';
 import {
@@ -48,13 +47,13 @@ import { Theme } from '@repo/ui';
 import { hapticLight, hapticSuccess } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { libraryAPI } from '@repo/library';
+import { libraryAPI, CollectionCard, LibraryResourceCard } from '@repo/library';
 import { useRoute } from '@react-navigation/native';
 import { GlobalHeader } from '@repo/ui';
 import { ScreenWrapper } from '@repo/ui';
 import { useResources } from '../hooks';
 import { useStore, useSafeMutation, api, ClassroomResource } from '@repo/core';
-import { SkeletonCard, PositiveInvitation, LibraryResourceCard, ResourceType } from '@repo/ui';
+import { SkeletonCard, PositiveInvitation, ResourceType } from '@repo/ui';
 
 export default function ContentLibrary() {
     const route = useRoute<any>(); // Should be typed if possible
@@ -422,12 +421,28 @@ export default function ContentLibrary() {
                             {deskItems.map((item) => (
                                 <CollectionCard
                                     key={item.id}
-                                    title={item.title}
-                                    creator="From Desk"
-                                    resourceCount={1}
-                                    subjectTag={item.type}
-                                    thumbnailUrl={item.thumbnailUrl}
-                                    verified={true}
+                                    collection={{
+                                        id: item.id,
+                                        name: item.title,
+                                        description: 'Imported from Personal Desk',
+                                        creator_id: user?.id || 'desk',
+                                        creator_name: 'From Desk',
+                                        visibility: 'private',
+                                        resources: [],
+                                        resource_ids: [item.id],
+                                        sequence_order: [0],
+                                        subjects: [item.type],
+                                        topics: [],
+                                        grades: [],
+                                        forks: 0,
+                                        used_by_count: 1,
+                                        endorsements: 0,
+                                        thumbnail_url: item.thumbnailUrl,
+                                        is_official: true,
+                                        school_id: '',
+                                        created_at: item.addedAt || new Date().toISOString(),
+                                        updated_at: item.addedAt || new Date().toISOString(),
+                                    }}
                                     onPress={() => {
                                         const doImport = () => {
                                             if (!user?.id) {
@@ -701,3 +716,4 @@ export default function ContentLibrary() {
         </ScreenWrapper >
     );
 }
+

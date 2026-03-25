@@ -12,7 +12,7 @@ import { useDynamicSelfFeatures } from '../hooks/useDynamicSelfFeatures';
  * This component implements the "Discovery Hub" with circular feature icons.
  */
 export function BaseSelfView({
-    role,
+    perspective,
     description,
     domains,
     sideBar,
@@ -21,8 +21,8 @@ export function BaseSelfView({
     nightRitual,
     voiceJournal,
 }: BaseSelfViewProps) {
-    // Default background based on role
-    const surfaceBg = role === 'student' ? '#F5F3FF' : '#FFF7ED';
+    // Default background based on perspective
+    const surfaceBg = perspective === 'student' ? '#F5F3FF' : '#FFF7ED';
 
     const allFeatures = React.useMemo(() => [
         ...domains.flatMap(domain =>
@@ -82,7 +82,7 @@ export function BaseSelfView({
             {/* Global Header Restored */}
             <GlobalHeader
                 isSelfView={true}
-                subtitle={role.toUpperCase()}
+                subtitle={perspective.toUpperCase()}
                 title="Sadhana"
             />
 

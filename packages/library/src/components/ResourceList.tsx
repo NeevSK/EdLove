@@ -45,39 +45,12 @@ import { getMediaUrl, formatFileSize, formatDuration } from '@repo/core';
 import { libraryAPI } from '../api/library';
 import type { LibraryResource } from '../types';
 import { Alert } from 'react-native';
-import { LibraryThumbnailCard } from '@repo/ui';
-
-// ============================================================================
-// CONSTANTS & CONFIG
-// ============================================================================
-
-type DisplayResourceType =
-    | 'pdf' | 'video' | 'link' | 'doc' | 'note' | 'other'
-    | 'map' | 'infographic' | 'story' | 'circular' | 'movie_trailer' | 'tech_guide';
-
-const TYPE_CONFIG: Record<
-    DisplayResourceType,
-    { icon: React.ComponentType<any>; color: string; label: string }
-> = {
-    pdf: { icon: File, color: Theme.colors.emberRed, label: 'PDF' },
-    video: { icon: Video, color: Theme.colors.skyBlue, label: 'Video' },
-    link: { icon: Link, color: Theme.colors.sanctuarySaffron, label: 'Link' },
-    doc: { icon: FileText, color: Theme.colors.ink, label: 'Doc' },
-    note: { icon: StickyNote, color: Theme.colors.sageGreen, label: 'Note' },
-    map: { icon: Map, color: '#10B981', label: 'Map' },
-    infographic: { icon: BarChart2, color: '#F59E0B', label: 'Visual' },
-    story: { icon: BookMarked, color: Theme.colors.gurudeviViolet, label: 'Story' },
-    circular: { icon: FileText, color: '#EF4444', label: 'Circular' },
-    movie_trailer: { icon: Clapperboard, color: '#EC4899', label: 'Film' },
-    tech_guide: { icon: Cpu, color: Theme.colors.gurudeviBlue, label: 'Tech' },
-    other: { icon: BookOpen, color: Theme.colors.starlightGray, label: 'File' },
-};
-
-function resolveDisplayType(type: string): DisplayResourceType {
-    if (type in TYPE_CONFIG) return type as DisplayResourceType;
-    if (['lesson', 'reading', 'guide', 'worksheet', 'pedagogy'].includes(type)) return 'doc';
-    return 'other';
-}
+import { LibraryThumbnailCard } from './LibraryThumbnailCard';
+import { 
+    ResourceRow, 
+    RESOURCE_TYPE_CONFIG as TYPE_CONFIG, 
+    resolveResourceDisplayType as resolveDisplayType 
+} from './ResourceRow';
 
 export interface ResourceListProps {
     resources: LibraryResource[];
@@ -188,124 +161,6 @@ export function ResourceList({
                     handleCloseFlashPlay();
                 }}
             />
-        </Box>
-    );
-}
-
-// ============================================================================
-// RESOURCE ROW
-// ============================================================================
-
-interface ResourceRowProps {
-    resource: LibraryResource;
-    onOpen: () => void;
-    onOpenAnotherWay?: () => void;
-    onFlashPlay: () => void;
-    onPullToDesk?: () => void;
-}
-
-function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, onPullToDesk }: ResourceRowProps) {
-    const colors = useThemedColors();
-    const displayType = resolveDisplayType(resource.type);
-    const config = TYPE_CONFIG[displayType];
-    const Icon = config.icon;
-
-    const fileSize = formatFileSize(resource.media?.bytes);
-    const duration = formatDuration(resource.media?.duration);
-    const metaParts = [
-        resource.media?.format?.toUpperCase(),
-        fileSize,
-        duration,
-    ].filter(Boolean);
-
-    return (
-        <Box sx={{ marginBottom: Theme.spacing.sm }}>
-            <SanctuaryCard onPress={onOpen}>
-                <HStack space="md" alignItems="center" sx={{ padding: Theme.spacing.sm }}>
-                    {/* File Type Icon - Refined Glass Effect */}
-                    <Box
-                        sx={{
-                            width: 48,
-                            height: 48,
-                            borderRadius: Theme.corners.comfortable,
-                            backgroundColor: `${config.color}15`,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            borderWidth: 1,
-                            borderColor: `${config.color}30`,
-                        }}
-                    >
-                        <Icon color={config.color} size={20} />
-                        <Text size="2xs" bold color={config.color} sx={{ marginTop: Theme.spacing.xs }}>{config.label}</Text>
-                    </Box>
-
-                    {/* Content */}
-                    <VStack sx={{ flex: 1, gap: 2 }}>
-                        <Text color={colors.text} size="sm" bold numberOfLines={1}>{resource.title}</Text>
-                        <HStack space="xs" alignItems="center">
-                            <Text size="xs" color={colors.textSecondary}>{resource.subjects?.[0] || ''}</Text>
-                            {metaParts.length > 0 && (
-                                <>
-                                    <Box sx={{ width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border }} />
-                                    <Text size="xs" color={colors.textTertiary}>{metaParts.join(' · ')}</Text>
-                                </>
-                            )}
-                        </HStack>
-                        <HStack space="xs" alignItems="center">
-                            {resource.verified && (
-                                <Box sx={{ backgroundColor: Theme.colors.sageGreen, borderRadius: 4, paddingHorizontal: 4 }}>
-                                    <Text size="2xs" color="white" bold>VERIFIED</Text>
-                                </Box>
-                            )}
-                            {resource.is_community && (
-                                <Box sx={{ backgroundColor: Theme.colors.skyBlue, borderRadius: 4, paddingHorizontal: 4 }}>
-                                    <Text size="2xs" color="white" bold>COMMUNITY</Text>
-                                </Box>
-                            )}
-                            {resource.link_status === 'broken' && (
-                                <Box sx={{ backgroundColor: Theme.colors.emberRed, borderRadius: 4, paddingHorizontal: 4 }}>
-                                    <Text size="2xs" color="white" bold>BROKEN LINK</Text>
-                                </Box>
-                            )}
-                        </HStack>
-                    </VStack>
-
-                    {/* Actions */}
-                    <HStack space="xs" alignItems="center">
-                        <SanctuaryButton
-                            onPress={onFlashPlay}
-                            variant="ghost"
-                            size="xs"
-                            action="secondary"
-                            leftIcon={Play}
-                        >
-                            {''}
-                        </SanctuaryButton>
-                        {onPullToDesk && (
-                            <SanctuaryButton
-                                onPress={onPullToDesk}
-                                variant="ghost"
-                                size="xs"
-                                action="secondary"
-                                leftIcon={Bookmark}
-                            >
-                                {''}
-                            </SanctuaryButton>
-                        )}
-                        {onOpenAnotherWay && (
-                            <SanctuaryButton
-                                onPress={onOpenAnotherWay}
-                                variant="ghost"
-                                size="xs"
-                                action="secondary"
-                                leftIcon={ArrowLeftRight}
-                            >
-                                {''}
-                            </SanctuaryButton>
-                        )}
-                    </HStack>
-                </HStack>
-            </SanctuaryCard>
         </Box>
     );
 }

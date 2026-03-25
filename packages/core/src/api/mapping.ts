@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { KnowledgeTopology } from '@repo/graphics';
+import { KnowledgeTopology } from '../types/topology';
 
 export interface MappingTopology extends KnowledgeTopology {
     id: string;

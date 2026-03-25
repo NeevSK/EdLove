@@ -1,4 +1,4 @@
-import { UserRole, SocialLink, StaffAttendance, StaffLeave } from '@repo/core';
+import { AuthorityTier, SocialLink, StaffAttendance, StaffLeave } from '@repo/core';
 
 export interface ProfileStats {
     classes_taught?: number;
@@ -45,7 +45,7 @@ export interface UserProfile extends ProfileStats {
     email: string;
     full_name: string;
     username?: string;
-    role: UserRole;
+    role: AuthorityTier;
     avatar_url?: string;
     is_anonymous?: boolean;
     public_profile?: boolean;

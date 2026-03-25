@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { storage } from '@repo/core';
-import { useUserRole } from '@repo/core';
+import { usePermissions } from '@repo/core';
 
 const USAGE_STATS_KEY = 'self_feature_usage_stats';
 const PINNED_FEATURES_KEY = 'self_pinned_features';
@@ -18,7 +18,8 @@ interface FeatureStats {
  * via local storage while maintaining external resonance.
  */
 export function useFeatureActivity() {
-    const { userId } = useUserRole();
+    const { context } = usePermissions();
+    const { userId } = context;
 
     const getStats = useCallback((): FeatureStats => {
         if (!userId) return {};

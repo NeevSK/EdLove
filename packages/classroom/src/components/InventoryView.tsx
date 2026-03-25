@@ -42,6 +42,7 @@ import {
     InventoryCategory,
     InventoryCondition,
     InventoryItem,
+    CLASSROOM_RESOURCE_SCOPE,
     api,
     useStore,
     useSafeMutation,
@@ -103,6 +104,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                 classroom_id: classroomId,
                 school_id: user?.school_id || '', // Provided by store
                 teacher_id: user?.id || '',       // Provided by store
+                ...CLASSROOM_RESOURCE_SCOPE,
                 item_name: variables.item_name,
                 quantity: variables.quantity,
                 reason: variables.reason

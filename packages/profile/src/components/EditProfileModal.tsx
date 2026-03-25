@@ -28,7 +28,7 @@ import {
 import { X, Save, ChevronDown, Camera } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
-import { supabase, useStore, UserRole, uploadToCloudinary, handleAPIError } from '@repo/core';
+import { supabase, useStore, AuthorityTier, uploadToCloudinary, handleAPIError } from '@repo/core';
 import { hapticSuccess, hapticLight, hapticError } from '@repo/ui';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -46,11 +46,16 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
     const [phone, setPhone] = useState('');
     const [bio, setBio] = useState('');
     const [loading, setLoading] = useState(false);
-    const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
+    const [selectedRole, setSelectedRole] = useState<AuthorityTier | null>(null);
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const [nicNumber, setNicNumber] = useState('');
     const [indexNumber, setIndexNumber] = useState('');
-    const setStoreRole = useStore(state => state.setUserRole);
+    const updateAuthority = (tier: AuthorityTier) => {
+        const user = useStore.getState().user;
+        if (user) {
+            useStore.getState().setUser({ ...user, authority: tier });
+        }
+    };
 
     useEffect(() => {
         if (currentProfile) {
@@ -132,7 +137,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
 
             // Update local store immediately for instant feedback
             if (updates.role) {
-                setStoreRole(updates.role);
+                if (selectedRole) updateAuthority(selectedRole);
             }
 
             hapticSuccess();
@@ -319,7 +324,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                     <Text {...({ color: text.secondary, size: "sm", mb: "$1" } as any)}>{t('profile.role')} (Developer Access)</Text>
                                     <Select
                                         selectedValue={selectedRole || 'student'}
-                                        onValueChange={(value: string | null) => setSelectedRole(value as UserRole)}
+                                        onValueChange={(value: string | null) => setSelectedRole(value as AuthorityTier)}
                                     >
                                         <SelectTrigger
                                             variant="outline"

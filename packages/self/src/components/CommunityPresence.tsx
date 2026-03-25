@@ -28,81 +28,69 @@ import Animated, {
     Easing,
 } from 'react-native-reanimated';
 import { Users, WifiOff } from 'lucide-react-native';
-import { supabase } from '@repo/core';
+import { supabase, usePermissions } from '@repo/core';
 import { Theme, useThemedColors } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-
-// Extended role type to include principal (and other staff roles that see cumulative counts)
-type PresenceRole = 'teacher' | 'student' | 'admin' | 'principal' | 'section_head' | 'grade_head' | 'founder' | 'developer';
-
 
 interface CommunityPresenceProps {
     compact?: boolean;
     hidePadding?: boolean;
     userVibe?: string;
     userId: string;
-    userRole: PresenceRole;
 }
 
 /**
- * PRESENCE LOGIC (corrected 2026-03-02):
- *  - Students   → see STUDENT count  (comfort: "my peers are here")
- *  - Teachers   → see EDUCATOR count (solidarity: "other educators are present")
- *  - Principals → see full SCHOOL count (oversight)
+ * PRESENCE LOGIC (Refactored to POA 2026-03-24):
+ *  - PrincipalPulse → see full SCHOOL count (oversight)
+ *  - TeacherPulse   → see EDUCATOR count (solidarity)
+ *  - StudentPulse   → see STUDENT count  (comfort)
  */
-function getWatcherConfig(role: PresenceRole): {
-    targetRoles: string[];
-    channelName: string;
-    isCumulative: boolean;
-} {
-    if (role === 'student') {
-        return {
-            targetRoles: ['student'],
-            channelName: 'presence:students',
-            isCumulative: false,
-        };
-    }
-    if (role === 'principal' || role === 'founder' || role === 'developer') {
-        return {
-            targetRoles: ['teacher', 'student', 'section_head', 'grade_head', 'principal', 'developer'],
-            channelName: 'presence:school',
-            isCumulative: true,
-        };
-    }
-
-    // teacher, section_head, grade_head, admin → see other educators
-    return {
-        targetRoles: ['teacher', 'section_head', 'grade_head', 'principal'],
-        channelName: 'presence:educators',
-        isCumulative: false,
-    };
-}
-
 export default function CommunityPresence({
     compact = false,
     hidePadding = false,
     userVibe = 'active',
     userId,
-    userRole = 'teacher'
 }: CommunityPresenceProps) {
     const { t } = useTranslation();
+    const { can, context } = usePermissions();
+    const userRole = context.roles[0];
     const colors = useThemedColors();
-    const [onlineCount, setOnlineCount] = useState<number>(0);
+
+    const [onlineCount, setOnlineCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [isOffline, setIsOffline] = useState(false);
-    const [dominantVibe, setDominantVibe] = useState('Focused');
+    const [dominantVibe, setDominantVibe] = useState(userVibe);
 
     const pulseScale = useSharedValue(1);
     const pulseOpacity = useSharedValue(0.6);
 
-    const { targetRoles, channelName, isCumulative } = useMemo(
-        () => getWatcherConfig(userRole as PresenceRole),
-        [userRole]
-    );
+    const { targetRoles, channelName, isCumulative, perspective } = useMemo(() => {
+        if (can('read', 'PrincipalPulse')) {
+            return {
+                targetRoles: ['teacher', 'student', 'section_head', 'grade_head', 'principal', 'developer'],
+                channelName: 'presence:school',
+                isCumulative: true,
+                perspective: 'principal'
+            };
+        }
+        if (can('read', 'TeacherPulse')) {
+             return {
+                targetRoles: ['teacher', 'section_head', 'grade_head', 'principal'],
+                channelName: 'presence:educators',
+                isCumulative: false,
+                perspective: 'teacher'
+            };
+        }
+        return {
+            targetRoles: ['student'],
+            channelName: 'presence:students',
+            isCumulative: false,
+            perspective: 'student'
+        };
+    }, [can]);
 
     // DB fallback: count users who were last_seen_at in the past 5 minutes
     const fetchOnlineUsers = useCallback(async () => {
-        if (!userRole) return;
         try {
             const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
             let query = supabase
@@ -145,7 +133,7 @@ export default function CommunityPresence({
 
         fetchOnlineUsers();
 
-        if (!userId || !userRole) return;
+        if (!userId) return;
 
         // ─── Channel A: Self-Tracking ─────────────────────────────────────────
         // The user announces THEIR OWN presence here. Role-namespaced so a teacher's
@@ -164,7 +152,6 @@ export default function CommunityPresence({
                 await selfChannel.track({
                     user_id: userId,
                     vibe: userVibe,
-                    role: userRole,
                     online_at: new Date().toISOString(),
                 });
             }
@@ -201,7 +188,7 @@ export default function CommunityPresence({
             supabase.removeChannel(watcherChannel);
             clearInterval(heartbeat);
         };
-    }, [userId, userVibe, userRole, channelName, fetchOnlineUsers, pulseOpacity, pulseScale]);
+    }, [userId, userVibe, channelName, fetchOnlineUsers, pulseOpacity, pulseScale]);
 
     const pulseStyle = useAnimatedStyle(() => ({
         transform: [{ scale: pulseScale.value }],
@@ -226,17 +213,17 @@ export default function CommunityPresence({
 
     // Role-aware label: who am I seeing?
     const roleLabel = useMemo(() => {
-        if (userRole === 'student') return t('community.students');
-        if (userRole === 'principal' || userRole === 'founder' || userRole === 'developer') return t('community.members');
+        if (perspective === 'student') return t('community.students');
+        if (perspective === 'principal') return t('community.members');
         return t('community.educators'); // teachers see other educators
-    }, [userRole, t]);
+    }, [perspective, t]);
 
     // Motivational message based on role
     const motivationText = useMemo(() => {
-        if (userRole === 'student') return t('community.studentMotivation');
-        if (userRole === 'principal' || userRole === 'founder' || userRole === 'developer') return t('community.principalMotivation');
+        if (perspective === 'student') return t('community.studentMotivation');
+        if (perspective === 'principal') return t('community.principalMotivation');
         return t('community.teacherMotivation');
-    }, [userRole, t]);
+    }, [perspective, t]);
 
     if (isLoading) {
         return (

@@ -18,8 +18,8 @@ import { compositeColorOverBackground, getTextOnBackground } from '../utils/colo
 export const colors = {
     // Primary Actions & Highlights
     // Gurudevi Gold - The Master Thread (Brand)
-    gurudeviBlue: '#2563EB',        // Electric Cyber Blue (Focus) - higher contrast
-    gurudeviViolet: '#8B5CF6',      // Deep Insight (Wisdom)
+    gurudeviBlue: '#7DD4C0',        // Aurora Blue (focused clarity without SaaS harshness)
+    gurudeviViolet: '#B8A9E0',      // Aurora Violet (depth / library mood)
 
     sanctuarySaffron: '#F6BF8C',    // Primary actions, warmth (Vibrant Saffron per Design Retina)
     saffronMuted: '#C4956A',        // Secondary usage, morning mist
@@ -564,8 +564,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         dark: {
             gradientNodes: ['#11141B', '#171C27', '#232B3B'], // Obsidian → Ink → Shroud
             glass: {
-                surface: { bg: 'rgba(23, 28, 39, 0.94)', opacity: 0.94, blurAmount: 28, border: 'rgba(232,235,255,0.10)' },
-                modal: { bg: 'rgba(17, 20, 27, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(232,235,255,0.07)' },
+                surface: { bg: 'rgba(23, 28, 39, 0.94)', opacity: 0.94, blurAmount: 40, border: 'rgba(232,235,255,0.10)' },
+                modal: { bg: 'rgba(17, 20, 27, 0.98)', opacity: 0.98, blurAmount: 36, border: 'rgba(232,235,255,0.07)' },
                 interact: { bg: 'rgba(35, 43, 59, 0.40)', opacity: 0.40, blurAmount: 8, border: 'rgba(232,235,255,0.14)' },
             },
             glow: {
@@ -580,8 +580,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         light: {
             gradientNodes: ['#F5EDD6', '#FAF7ED', '#E8E2CF'], // Vellum → Silk → Linen
             glass: {
-                surface: { bg: 'rgba(250, 247, 237, 0.95)', opacity: 0.95, blurAmount: 28, border: 'rgba(42,35,24,0.05)' },
-                modal: { bg: 'rgba(245, 237, 214, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(42,35,24,0.04)' },
+                surface: { bg: 'rgba(250, 247, 237, 0.95)', opacity: 0.95, blurAmount: 40, border: 'rgba(42,35,24,0.05)' },
+                modal: { bg: 'rgba(245, 237, 214, 0.98)', opacity: 0.98, blurAmount: 36, border: 'rgba(42,35,24,0.04)' },
                 interact: { bg: 'rgba(232, 226, 207, 0.50)', opacity: 0.50, blurAmount: 8, border: 'rgba(42,35,24,0.08)' },
             },
             glow: {
@@ -599,8 +599,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         dark: {
             gradientNodes: ['#151922', '#1D2430', '#2A3344'],
             glass: {
-                surface: { bg: 'rgba(29, 36, 48, 0.94)', opacity: 0.94, blurAmount: 28, border: 'rgba(232,235,255,0.11)' },
-                modal: { bg: 'rgba(21, 25, 34, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(232,235,255,0.08)' },
+                surface: { bg: 'rgba(29, 36, 48, 0.94)', opacity: 0.94, blurAmount: 40, border: 'rgba(232,235,255,0.11)' },
+                modal: { bg: 'rgba(21, 25, 34, 0.98)', opacity: 0.98, blurAmount: 36, border: 'rgba(232,235,255,0.08)' },
                 interact: { bg: 'rgba(42, 51, 68, 0.38)', opacity: 0.38, blurAmount: 8, border: 'rgba(232,235,255,0.15)' },
             },
             glow: {
@@ -615,8 +615,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         light: {
             gradientNodes: ['#F5EDD6', '#FFFBF5', '#FAF7ED'], // Vellum -> Silk -> Silk (Warm light)
             glass: {
-                surface: { bg: 'rgba(245, 237, 214, 0.95)', opacity: 0.95, blurAmount: 28, border: 'rgba(246,191,140,0.10)' },
-                modal: { bg: 'rgba(250, 247, 237, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(246,191,140,0.08)' },
+                surface: { bg: 'rgba(245, 237, 214, 0.95)', opacity: 0.95, blurAmount: 40, border: 'rgba(246,191,140,0.10)' },
+                modal: { bg: 'rgba(250, 247, 237, 0.98)', opacity: 0.98, blurAmount: 36, border: 'rgba(246,191,140,0.08)' },
                 interact: { bg: 'rgba(242, 217, 37, 0.50)', opacity: 0.50, blurAmount: 8, border: 'rgba(246,191,140,0.15)' },
             },
             glow: {
@@ -634,8 +634,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         dark: {
             gradientNodes: ['#171C25', '#202838', '#2D3A4F'],
             glass: {
-                surface: { bg: 'rgba(32, 40, 56, 0.94)', opacity: 0.94, blurAmount: 28, border: 'rgba(232,235,255,0.12)' },
-                modal: { bg: 'rgba(23, 28, 37, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(232,235,255,0.09)' },
+                surface: { bg: 'rgba(32, 40, 56, 0.94)', opacity: 0.94, blurAmount: 40, border: 'rgba(232,235,255,0.12)' },
+                modal: { bg: 'rgba(23, 28, 37, 0.98)', opacity: 0.98, blurAmount: 36, border: 'rgba(232,235,255,0.09)' },
                 interact: { bg: 'rgba(45, 58, 79, 0.40)', opacity: 0.40, blurAmount: 8, border: 'rgba(232,235,255,0.16)' },
             },
             glow: {
@@ -650,8 +650,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         light: {
             gradientNodes: ['#F5EDD6', '#DCFCE7', '#FAF7ED'],
             glass: {
-                surface: { bg: 'rgba(245, 237, 214, 0.95)', opacity: 0.95, blurAmount: 28, border: 'rgba(143,188,143,0.10)' },
-                modal: { bg: 'rgba(250, 247, 237, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(143,188,143,0.08)' },
+                surface: { bg: 'rgba(245, 237, 214, 0.95)', opacity: 0.95, blurAmount: 40, border: 'rgba(143,188,143,0.10)' },
+                modal: { bg: 'rgba(250, 247, 237, 0.98)', opacity: 0.98, blurAmount: 36, border: 'rgba(143,188,143,0.08)' },
                 interact: { bg: 'rgba(220,252,231,0.60)', opacity: 0.60, blurAmount: 8, border: 'rgba(143,188,143,0.15)' },
             },
             glow: {
@@ -669,8 +669,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         dark: {
             gradientNodes: ['#151B26', '#1F2A3B', '#2E4060'],
             glass: {
-                surface: { bg: 'rgba(31, 42, 59, 0.94)', opacity: 0.94, blurAmount: 28, border: 'rgba(232,235,255,0.10)' },
-                modal: { bg: 'rgba(21, 27, 38, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(232,235,255,0.08)' },
+                surface: { bg: 'rgba(31, 42, 59, 0.94)', opacity: 0.94, blurAmount: 40, border: 'rgba(232,235,255,0.10)' },
+                modal: { bg: 'rgba(21, 27, 38, 0.98)', opacity: 0.98, blurAmount: 36, border: 'rgba(232,235,255,0.08)' },
                 interact: { bg: 'rgba(46, 64, 96, 0.36)', opacity: 0.36, blurAmount: 8, border: 'rgba(232,235,255,0.14)' },
             },
             glow: {
@@ -685,8 +685,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         light: {
             gradientNodes: ['#F5EDD6', '#E0F2FE', '#F5EDD6'],
             glass: {
-                surface: { bg: 'rgba(245, 237, 214, 0.95)', opacity: 0.95, blurAmount: 28, border: 'rgba(59,130,246,0.10)' },
-                modal: { bg: 'rgba(250, 247, 237, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(59,130,246,0.06)' },
+                surface: { bg: 'rgba(245, 237, 214, 0.95)', opacity: 0.95, blurAmount: 40, border: 'rgba(59,130,246,0.10)' },
+                modal: { bg: 'rgba(250, 247, 237, 0.98)', opacity: 0.98, blurAmount: 36, border: 'rgba(59,130,246,0.06)' },
                 interact: { bg: 'rgba(224,242,254,0.65)', opacity: 0.65, blurAmount: 8, border: 'rgba(59,130,246,0.15)' },
             },
             glow: {
@@ -704,8 +704,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         dark: {
             gradientNodes: ['#151822', '#201F35', '#302A4A'],
             glass: {
-                surface: { bg: 'rgba(32, 31, 53, 0.94)', opacity: 0.94, blurAmount: 28, border: 'rgba(232,235,255,0.10)' },
-                modal: { bg: 'rgba(21, 24, 34, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(232,235,255,0.07)' },
+                surface: { bg: 'rgba(32, 31, 53, 0.94)', opacity: 0.94, blurAmount: 40, border: 'rgba(232,235,255,0.10)' },
+                modal: { bg: 'rgba(21, 24, 34, 0.98)', opacity: 0.98, blurAmount: 36, border: 'rgba(232,235,255,0.07)' },
                 interact: { bg: 'rgba(48, 42, 74, 0.40)', opacity: 0.40, blurAmount: 8, border: 'rgba(232,235,255,0.14)' },
             },
             glow: {
@@ -720,8 +720,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         light: {
             gradientNodes: ['#F5EDD6', '#FFF7ED', '#FAF7ED'],
             glass: {
-                surface: { bg: 'rgba(245, 237, 214, 0.95)', opacity: 0.95, blurAmount: 28, border: 'rgba(246,191,140,0.12)' },
-                modal: { bg: 'rgba(250, 247, 237, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(246,191,140,0.10)' },
+                surface: { bg: 'rgba(245, 237, 214, 0.95)', opacity: 0.95, blurAmount: 40, border: 'rgba(246,191,140,0.12)' },
+                modal: { bg: 'rgba(250, 247, 237, 0.98)', opacity: 0.98, blurAmount: 36, border: 'rgba(246,191,140,0.10)' },
                 interact: { bg: 'rgba(255, 247, 237, 0.60)', opacity: 0.60, blurAmount: 8, border: 'rgba(246,191,140,0.15)' },
             },
             glow: {
@@ -739,8 +739,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         dark: {
             gradientNodes: ['#0F131C', '#171E2B', '#242F46'],
             glass: {
-                surface: { bg: 'rgba(23, 30, 43, 0.95)', opacity: 0.95, blurAmount: 28, border: 'rgba(253,217,37,0.08)' },
-                modal: { bg: 'rgba(15, 19, 28, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(253,217,37,0.06)' },
+                surface: { bg: 'rgba(23, 30, 43, 0.95)', opacity: 0.95, blurAmount: 40, border: 'rgba(253,217,37,0.08)' },
+                modal: { bg: 'rgba(15, 19, 28, 0.98)', opacity: 0.98, blurAmount: 36, border: 'rgba(253,217,37,0.06)' },
                 interact: { bg: 'rgba(36, 47, 70, 0.42)', opacity: 0.42, blurAmount: 8, border: 'rgba(253,217,37,0.12)' },
             },
             glow: {
@@ -755,8 +755,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         light: {
             gradientNodes: ['#F5EDD6', '#FAF7ED', '#E8E2CF'], // Night Light: Vellum -> Silk -> Linen (Never black)
             glass: {
-                surface: { bg: 'rgba(245, 237, 214, 0.95)', opacity: 0.95, blurAmount: 28, border: 'rgba(253,217,37,0.18)' },
-                modal: { bg: 'rgba(250, 247, 237, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(253,217,37,0.12)' },
+                surface: { bg: 'rgba(245, 237, 214, 0.95)', opacity: 0.95, blurAmount: 40, border: 'rgba(253,217,37,0.18)' },
+                modal: { bg: 'rgba(250, 247, 237, 0.98)', opacity: 0.98, blurAmount: 36, border: 'rgba(253,217,37,0.12)' },
                 interact: { bg: 'rgba(232, 226, 207, 0.60)', opacity: 0.60, blurAmount: 8, border: 'rgba(253,217,37,0.20)' },
             },
             glow: {
@@ -788,8 +788,8 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
 const CLASSIC_BASE_TOKENS = {
     gradientNodes: ['#F5EDD6', '#FAF7ED', '#E8E2CF'], // Vellum → Silk → Linen
     glass: {
-        surface: { bg: 'rgba(250, 247, 237, 0.95)', opacity: 0.95, blurAmount: 28, border: 'rgba(42,35,24,0.05)' },
-        modal: { bg: 'rgba(245, 237, 214, 0.98)', opacity: 0.98, blurAmount: 24, border: 'rgba(42,35,24,0.04)' },
+        surface: { bg: 'rgba(250, 247, 237, 0.95)', opacity: 0.95, blurAmount: 40, border: 'rgba(42,35,24,0.05)' },
+        modal: { bg: 'rgba(245, 237, 214, 0.98)', opacity: 0.98, blurAmount: 36, border: 'rgba(42,35,24,0.04)' },
         interact: { bg: 'rgba(232, 226, 207, 0.50)', opacity: 0.50, blurAmount: 8, border: 'rgba(42,35,24,0.08)' },
     },
     glow: {

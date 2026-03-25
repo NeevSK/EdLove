@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { SchoolJoinRequest, ClassroomJoinRequest, RequestStatus } from '../types/Onboarding';
-import { UserRole } from '../types';
+import { Role } from '../schemas/role.schema';
 
 /**
  * Onboarding API (Triple Helix BDD Implementation)
@@ -11,7 +11,7 @@ export const onboardingAPI = {
      * SCHOOL JOIN FLOW
      */
 
-    async requestSchoolJoin(userId: string, schoolId: string, role: UserRole): Promise<SchoolJoinRequest> {
+    async requestSchoolJoin(userId: string, schoolId: string, role: Role): Promise<SchoolJoinRequest> {
         const { data, error } = await supabase
             .from('school_join_requests')
             .insert([{ user_id: userId, school_id: schoolId, role, status: 'pending' }])
@@ -86,7 +86,7 @@ export const onboardingAPI = {
                 .insert([{
                     group_id: group.id,
                     user_id: userId,
-                    role: role === 'student' ? 'member' : 'admin',
+                    capacity: role === 'student' ? 'member' : 'admin',
                     status: 'pending'
                 }]);
         }
@@ -239,7 +239,7 @@ export const onboardingAPI = {
             .from('users')
             .update({
                 full_name: fullName,
-                role_label: roleLabel,
+                authority_label: roleLabel,
                 bio,
                 index_number: indexNumber,
                 nic_number: nicNumber,

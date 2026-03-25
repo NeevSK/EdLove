@@ -17,7 +17,7 @@ export const attendanceAPI = {
      */
     async getByDate(classroomId: string, date: string): Promise<AttendanceRecord[]> {
         // Verify authorization - user must have access to classroom
-        await requireClassroomAccess(classroomId);
+        await requireClassroomAccess(classroomId, 'attendance.student.read');
 
         const { data, error } = await supabase
             .from('attendance')
@@ -42,7 +42,7 @@ export const attendanceAPI = {
         date: string
     ): Promise<AttendanceRecord> {
         // Verify authorization - teacher must have access to classroom
-        await requireClassroomAccess(classroomId);
+        await requireClassroomAccess(classroomId, 'attendance.student.take');
 
         const { data, error } = await supabase
             .from('attendance')
@@ -104,7 +104,7 @@ export const attendanceAPI = {
         }
 
         // Verify authorization for the classroom
-        await requireClassroomAccess(classroomId);
+        await requireClassroomAccess(classroomId, 'attendance.student.take');
 
         const { data, error } = await supabase
             .from('attendance')

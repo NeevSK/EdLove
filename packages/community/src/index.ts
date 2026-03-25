@@ -6,6 +6,7 @@ export * from './hooks/useManifestos';
 export * from './hooks/useCommunityGroups';
 export * from './hooks/useComments';
 export * from './hooks/useNotifications';
+export * from './hooks/useCommunityProfile';
 export * from './api/sacredMissions';
 
 // Components
@@ -22,8 +23,11 @@ export { CommentSheet } from './components/CommentSheet';
 
 // Screens
 export { default as CommunityScreen } from './screens/CommunityScreen';
+export { default as CommunityScreenWeb } from './screens/CommunityScreen.web';
 export { default as GroupsScreen } from './screens/GroupsScreen';
 export { default as GroupDetailsScreen } from './screens/GroupDetailsScreen';
+export { default as GroupDetailsScreenWeb } from './screens/GroupDetailsScreen.web';
+export { default as AnnouncementsScreen } from './screens/AnnouncementsScreen';
 export { default as GroupChatScreen } from './screens/GroupChatScreen';
 export { default as BaseChatScreen } from './screens/BaseChatScreen';
 export type { ChatMessage, SubscriptionConfig, BaseChatScreenProps } from './screens/BaseChatScreen';

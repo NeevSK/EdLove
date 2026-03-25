@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { useUserRole } from './useUserRole';
+import { usePermissions } from './usePermissions';
 import { useResonanceStore } from '../store/useResonanceStore';
 import { useTracking } from './useTracking';
 
@@ -20,7 +20,8 @@ export interface SnapshotMoment {
  * into a persistent "Moment".
  */
 export function useManualSnapshot() {
-    const { userId } = useUserRole();
+    const { context } = usePermissions();
+    const userId = context.userId;
     const { resonanceDate } = useResonanceStore();
     const { trackSnapshot } = useTracking();
     const [isSaving, setIsSaving] = useState(false);

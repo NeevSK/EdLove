@@ -1,26 +1,21 @@
-
 import React from 'react';
 import { EntityDefinition, EntityInstance, EntityMode } from '@repo/core';
-import { Box, VStack, Text } from '../gluestack';
-import { IdentityCard } from '@repo/profile';
+import { VStack, Text } from '../gluestack';
+import IdentityCard from './IdentityCard';
+import { SkeletonTextLine } from './SkeletonLoader';
 
 export interface EntityViewProps {
     definition: EntityDefinition;
     instance?: EntityInstance;
     mode: EntityMode;
-    onAction?: (action: string, payload?: any) => void;
+    onAction?: (action: string, payload?: unknown) => void;
 }
 
 export default function EntityView({
     definition,
     instance,
-    mode,
-    onAction
+    mode
 }: EntityViewProps) {
-    // Resolve which component to render based on the definition and mode
-    const components = (definition.components || {}) as any;
-    const componentName = components[mode] || components.view;
-    
     // Fallback logic for when specific components aren't provided
     // For 'public' mode, if no 'public' component exists, we fallback to 'view'
     // but with restricted permissions/data in the future.
@@ -38,7 +33,7 @@ export default function EntityView({
                 <VStack space="sm">
                     <Text>ID: {instance.id}</Text>
                     {mode === 'public' && <Text color="$textLight500">Public Profile View</Text>}
-                    {mode === 'view' && <IdentityCard instance={instance} />}
+                    {mode === 'view' && <IdentityCard data={instance as any} />}
                 </VStack>
             ) : (
                 <SkeletonTextLine />
@@ -46,5 +41,3 @@ export default function EntityView({
         </VStack>
     );
 }
-
-import { SkeletonTextLine } from './SkeletonLoader';

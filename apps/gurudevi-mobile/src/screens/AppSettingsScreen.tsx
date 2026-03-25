@@ -501,6 +501,16 @@ export default function AppSettingsScreen({ navigation }: any) {
           )}
         />
 
+        <SettingsOption
+          colors={colors}
+          icon={<Zap size={24} color={Theme.colors.sacredWhite} />}
+          title="Trube Lab"
+          description="Tune living surfaces as solo, duet, or orchestra compositions."
+          onPress={() => navigation.navigate('TrubeLab')}
+          accessibilityLabel="Open Trube Lab"
+          accessibilityHint="Experiment with living surface compositions and lighting."
+        />
+
         {/* Gentle guidance footer */}
         <Box
           sx={{

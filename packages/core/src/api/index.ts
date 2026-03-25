@@ -23,7 +23,7 @@ import { communityAPI } from './community';
 import { staffManagementAPI as _staffManagementAPI } from './staffManagement';
 import { createResonantProxy } from './resonantProxy';
 const staffManagementAPI = createResonantProxy('staffManagement', _staffManagementAPI);
-import { ReliefCoordinator, TimetableScheduler } from './agents';
+// AI logic moved to @repo/ai
 import { sacredMissionsAPI } from './sacredMissions';
 import { isDemo, demoAPI } from './demo';
 import { growthSignalsAPI } from './growthSignals';
@@ -49,7 +49,7 @@ export * from './types';
 export * from './assignments'; // Export assignments/submissions API
 export * from './thuthimal'; // Restore types and thuthimalAPI
 export * from './sacredMissions'; // Export mission types
-export * from './agents'; // Export agent types
+// Export agent types moved to @repo/ai
 export * from './resonantProxy';
 export * from './classroomNotes';
 export * from './principalNotes';
@@ -98,8 +98,6 @@ export {
     principalNotesAPI,
     communityAPI,
     staffManagementAPI,
-    ReliefCoordinator,
-    TimetableScheduler,
     sacredMissionsAPI,
     demoAPI,
     growthSignalsAPI,
@@ -152,9 +150,8 @@ export const api = {
     classroomNotes: classroomNotesAPI,
     principalNotes: principalNotesAPI,
     community: communityAPI,
+    community_group: communityAPI,
     staffManagement: staffManagementAPI,
-    relief: ReliefCoordinator,
-    scheduler: TimetableScheduler,
     missions: sacredMissionsAPI,
     demo: demoAPI,
     // Growth Model v3.0 — Full Nature-Inspired Growth Ecosystem

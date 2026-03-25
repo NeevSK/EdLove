@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { naturePathsAPI, RiverStage, CrystalTier } from '../api/naturePaths';
-import { useUserRole } from './useUserRole';
+import { usePermissions } from './usePermissions';
 
 /**
  * useNaturePaths
@@ -8,7 +8,8 @@ import { useUserRole } from './useUserRole';
  * A hook to fetch and manage a student's nature path state (River & Crystal).
  */
 export const useNaturePaths = () => {
-    const { userId } = useUserRole();
+    const { context } = usePermissions();
+    const userId = context.userId;
     const [paths, setPaths] = useState<{
         river_stage: RiverStage;
         crystal_tier: CrystalTier;

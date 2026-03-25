@@ -2,6 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import ProfileScreen from '../screens/ProfileScreen';
+import TrubeLabScreen from '../screens/TrubeLabScreen';
 import FullProfileScreen from '../screens/profile/FullProfileScreen';
 import MuteHubScreen from '../screens/profile/MuteHubScreen';
 import { PrivacyLedgerScreen } from '@repo/self';
@@ -43,6 +44,15 @@ export default function ProfileStackNavigator() {
             <Stack.Screen
                 name="MuteHub"
                 component={MuteHubScreen}
+                options={{
+                    headerShown: false,
+                    presentation: 'modal',
+                    animation: 'slide_from_bottom',
+                }}
+            />
+            <Stack.Screen
+                name="TrubeLab"
+                component={TrubeLabScreen}
                 options={{
                     headerShown: false,
                     presentation: 'modal',

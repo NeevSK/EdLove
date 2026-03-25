@@ -15,8 +15,11 @@ import {
     Pressable,
     SanctuaryModal,
     useTheme,
+    useThemedColors,
     Heading,
     Icon,
+    hapticLight,
+    hapticSuccess,
 } from '@repo/ui';
 import { Theme } from '@repo/ui';
 import GuestConversionPrompt from '../shared/GuestConversionPrompt';
@@ -25,16 +28,14 @@ import { ScannerModal, resolveQR } from '@repo/scanner-kit';
 import { ScanLine, Globe } from 'lucide-react-native';
 import { 
     useEntity, 
-    EntityMode, 
     api, 
     identityAPI, 
     communityAPI, 
     handleAPIError,
-    supabase 
+    supabase,
+    useStore
 } from '@repo/core';
 import { useTranslation } from 'react-i18next';
-import { hapticLight, hapticSuccess } from '@repo/haptics';
-import SanctuaryInput from '../shared/SanctuaryInput';
 
 // Constants for Classroom logic
 const CLASSROOM_THEMES = [
@@ -94,12 +95,14 @@ export default function CreateClassroomModal({
 }: CreateClassroomModalProps) {
     const { t } = useTranslation();
     const navigation = useNavigation();
-    const { colors, glass, text, accent } = useTheme();
+    const colors = useThemedColors();
+    const { glass, text, accent } = useTheme();
+    const { user, setUser } = useStore();
 
     // useEntity for core logic
-    const { create, updateInstance, isSubmitting: isEntitySubmitting } = useEntity({
+    const { create, updateInstance } = useEntity({
         type: 'classroom',
-        mode: mode === 'edit' ? EntityMode.EDIT : EntityMode.CREATE,
+        mode: mode === 'edit' ? 'edit' : 'create',
         id: initialData?.id
     });
 
@@ -300,6 +303,16 @@ export default function CreateClassroomModal({
                 }
             }
 
+            // Sync school_id to Supabase profile and local store if a school context exists
+            // EXCEPTION: Personal classrooms (no schoolId in create mode) do not update the user's school association.
+            const targetSchoolId = result?.school_id || (mode === 'create' ? schoolId : undefined);
+            if (targetSchoolId && userId && (mode === 'create' || mode === 'join')) {
+                await identityAPI.updateProfile(userId, { school_id: targetSchoolId });
+                if (user) {
+                    setUser({ ...user, school_id: targetSchoolId } as any);
+                }
+            }
+
             hapticSuccess();
             if (mode === 'create') {
                 updateStep(3);
@@ -335,6 +348,15 @@ export default function CreateClassroomModal({
                     const result = await api.classrooms.update(classroomId, {
                         teacher_id: userId
                     });
+
+                    // Sync school_id if joining via scan
+                    if (result?.school_id) {
+                        await identityAPI.updateProfile(userId, { school_id: result.school_id });
+                        if (user) {
+                            setUser({ ...user, school_id: result.school_id } as any);
+                        }
+                    }
+
                     onSuccess(result);
                     handleClose();
                     hapticSuccess();
@@ -445,7 +467,6 @@ export default function CreateClassroomModal({
                                     flex: 1,
                                     backgroundColor: Theme.colors.sanctuarySaffron,
                                     borderRadius: Theme.corners.comfortable,
-                               Ident: 1,
                                 }}
                             >
                                 <ButtonText {...({ color: text.inverse } as any)}>
@@ -509,14 +530,34 @@ export default function CreateClassroomModal({
                             )}
 
                             {(mode === 'create' || mode === 'edit') && (
-                                <SanctuaryInput
-                                    label="Classroom Handle (unique ID)"
-                                    placeholder="e.g. grade-10-maths"
-                                    value={state.details.handle}
-                                    onChangeText={(text: string) => updateDetails({ handle: text.toLowerCase().replace(/[^a-z0-9_-]/g, '') })}
-                                    helperText="Used for your classroom's QR codes and deep links."
-                                    leftIcon={Globe}
-                                />
+                                <FormControl>
+                                    <FormControlLabel>
+                                        <FormControlLabelText sx={{ color: colors.textSecondary }}>
+                                            Classroom Handle (unique ID)
+                                        </FormControlLabelText>
+                                    </FormControlLabel>
+                                    <Input
+                                        sx={{
+                                            backgroundColor: colors.tertiary,
+                                            borderColor: colors.border,
+                                            height: 56,
+                                            borderRadius: Theme.corners.generous
+                                        }}
+                                    >
+                                        <InputField
+                                            placeholder="e.g. grade-10-maths"
+                                            value={state.details.handle}
+                                            onChangeText={(textValue: string) =>
+                                                updateDetails({ handle: textValue.toLowerCase().replace(/[^a-z0-9_-]/g, '') })
+                                            }
+                                            color={colors.text}
+                                            placeholderTextColor={colors.textTertiary}
+                                        />
+                                    </Input>
+                                    <Text sx={{ color: colors.textTertiary, fontSize: Theme.typography.fontSize.xs, marginTop: Theme.spacing.xs }}>
+                                        Used for your classroom&apos;s QR codes and deep links.
+                                    </Text>
+                                </FormControl>
                             )}
 
                             {(mode === 'create' || mode === 'edit') && (

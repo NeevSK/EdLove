@@ -5,7 +5,7 @@ import Animated, {
     useSharedValue, 
     useAnimatedStyle, 
 } from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, GestureUpdateEvent, PinchGestureHandlerEventPayload, PanGestureHandlerEventPayload } from 'react-native-gesture-handler';
 import { Theme, useThemedColors } from '@repo/ui';
 import type { 
     PerspectiveViewProps, 
@@ -36,15 +36,15 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({
     const savedTranslateY = useSharedValue(0);
 
     const pinchGesture = Gesture.Pinch()
-        .onUpdate((e) => {
-            scale.value = savedScale.value * e.scale;
+        .onUpdate((e: GestureUpdateEvent<PinchGestureHandlerEventPayload>) => {
+            scale.value = savedScale.value * (e.scale || 1);
         })
         .onEnd(() => {
             savedScale.value = scale.value;
         });
 
     const panGesture = Gesture.Pan()
-        .onUpdate((e) => {
+        .onUpdate((e: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
             translateX.value = savedTranslateX.value + e.translationX;
             translateY.value = savedTranslateY.value + e.translationY;
         })
@@ -55,12 +55,12 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({
 
     const combinedGesture = Gesture.Simultaneous(pinchGesture, panGesture);
 
-    const animatedStyle: any = useAnimatedStyle(() => ({
+    const animatedStyle = useAnimatedStyle(() => ({
         transform: [
             { translateX: translateX.value },
             { translateY: translateY.value },
             { scale: scale.value }
-        ] as any
+        ]
     }));
 
     // Generate SVG path for tree links (curved connectors)
@@ -92,52 +92,48 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({
 
     return (
         <GestureDetector gesture={combinedGesture}>
-            <Animated.View style={[{ flex: 1 }, animatedStyle] as any}>
+            <Animated.View style={[{ flex: 1 }, animatedStyle]}>
                 <Svg 
                     width={layout.bounds.width + 1000} 
                     height={layout.bounds.height + 1000} 
                     viewBox={`${layout.bounds.minX - 500} ${layout.bounds.minY - 500} ${layout.bounds.width + 1000} ${layout.bounds.height + 1000}`}
                 >
-                    {renderLinks()}
+                    <G>
+                        {renderLinks()}
+                        
+                        {data.nodes.map((node, i) => {
+                            const pos = layout.positions.get(node.id);
+                            if (!pos) return null;
 
-                    {data.nodes.map((node) => {
-                        const pos = layout.positions.get(node.id);
-                        if (!pos) return null;
-
-                        const isSelected = selectedNode?.id === node.id;
-                        const isPrimary = node.type === 'topic' || !node.parentId;
-
-                        return (
-                            <G key={node.id} onPress={() => onNodePress?.(node as any)}>
-                                <Circle
-                                    cx={pos.x}
-                                    cy={pos.y}
-                                    r={isPrimary ? 20 : 12}
-                                    fill={isSelected ? Theme.colors.sanctuarySaffron : (isPrimary ? colors.secondary : colors.textPrimary)}
-                                    fillOpacity={isSelected ? 0.3 : 0.1}
-                                />
-                                <Circle
-                                    cx={pos.x}
-                                    cy={pos.y}
-                                    r={isPrimary ? 6 : 4}
-                                    fill={isPrimary ? Theme.colors.sanctuarySaffron : colors.textPrimary}
-                                    stroke={colors.primary}
-                                    strokeWidth={2}
-                                />
-                                <SvgText
-                                    x={pos.x}
-                                    y={pos.y + (isPrimary ? 34 : 24)}
-                                    fill={colors.textPrimary}
-                                    fontSize={isPrimary ? 12 : 10}
-                                    fontWeight={isPrimary ? "bold" : "normal"}
-                                    textAnchor="middle"
-                                    opacity={isSelected || isPrimary ? 1 : 0.7}
+                            const isSelected = selectedNode?.id === node.id;
+                            
+                            return (
+                                <G 
+                                    key={`node-${node.id}`} 
+                                    onPress={() => onNodePress?.(node)}
                                 >
-                                    {node.label}
-                                </SvgText>
-                            </G>
-                        );
-                    })}
+                                    <Circle
+                                        cx={pos.x}
+                                        cy={pos.y}
+                                        r={isSelected ? 12 : 8}
+                                        fill={colors.card}
+                                        stroke={isSelected ? Theme.colors.sanctuarySaffron : colors.textTertiary}
+                                        strokeWidth={isSelected ? 3 : 2}
+                                    />
+                                    <SvgText
+                                        x={pos.x}
+                                        y={pos.y + 25}
+                                        fontSize="10"
+                                        fill={colors.text}
+                                        textAnchor="middle"
+                                        fontWeight={isSelected ? "bold" : "normal"}
+                                    >
+                                        {node.label}
+                                    </SvgText>
+                                </G>
+                            );
+                        })}
+                    </G>
                 </Svg>
             </Animated.View>
         </GestureDetector>

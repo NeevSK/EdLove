@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
-import { useUserRole } from './useUserRole';
+import { usePermissions } from './usePermissions';
 
 export interface HeatmapData {
     date: string;
@@ -15,7 +15,8 @@ export interface HeatmapData {
  * Aggregates resonance activity into a grid format for yearly/monthly visualization.
  */
 export function useResonantHeatmap(year: number) {
-    const { userId } = useUserRole();
+    const { context } = usePermissions();
+    const userId = context.userId;
 
     const { data: rawData = [], isLoading } = useQuery({
         queryKey: ['resonant_heatmap', userId, year],

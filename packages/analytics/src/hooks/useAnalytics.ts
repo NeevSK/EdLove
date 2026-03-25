@@ -1,0 +1,143 @@
+import { Platform } from 'react-native';
+import { usePostHog } from 'posthog-react-native';
+import { posthogAnalytics as posthogWeb } from '../engine/PostHogAnalytics.web';
+import { posthogAnalytics } from '../engine/PostHogAnalytics';
+
+// Use the existing singleton for convenience, but we'll prefer the provider-based approach where possible
+const posthogNative = posthogAnalytics;
+
+import { useResonance } from '@repo/core';
+
+export function useAnalytics() {
+  const posthog = usePostHog();
+  const { registerPulse } = useResonance();
+
+  const track = (event: string, properties?: Record<string, any>) => {
+    registerPulse(0.15); // Trigger a pulse for any track event
+    if (Platform.OS === 'web') {
+      posthogWeb.track(event, properties);
+    } else {
+      if (posthog) {
+        posthog.capture(event, properties);
+      } else {
+        posthogNative.track(event, properties);
+      }
+    }
+  };
+
+  const identify = (userId: string, properties?: Record<string, any>) => {
+    registerPulse(0.3); // Identity is a strong event
+    if (Platform.OS === 'web') {
+      posthogWeb.identify(userId, properties);
+    } else {
+      if (posthog) {
+        posthog.identify(userId, properties);
+      } else {
+        posthogNative.identify(userId, properties);
+      }
+    }
+  };
+
+  const screen = (name: string, properties?: Record<string, any>) => {
+    registerPulse(0.1); // Screen views are constant background pulse
+    if (Platform.OS === 'web') {
+      posthogWeb.screen(name, properties);
+    } else {
+      if (posthog) {
+        posthog.screen(name, properties);
+      } else {
+        posthogNative.screen(name, properties);
+      }
+    }
+  };
+
+  const reset = () => {
+    if (Platform.OS === 'web') {
+      posthogWeb.reset();
+    } else {
+      if (posthog) {
+        posthog.reset();
+      } else {
+        posthogNative.reset();
+      }
+    }
+  };
+
+  return {
+    track,
+    identify,
+    screen,
+    reset,
+  };
+}
+
+import { useQuery } from '@tanstack/react-query';
+import { StudentPerformanceMetrics, ClassAnalytics } from '../types/AnalyticsTypes';
+import { PerformanceAnalyzer } from '../engine/PerformanceAnalyzer';
+import { Predictor } from '../ml/Predictor';
+import { InsightGenerator } from '../ml/InsightGenerator';
+
+const performanceAnalyzer = new PerformanceAnalyzer();
+const predictor = new Predictor();
+const insightGenerator = new InsightGenerator();
+
+export function useStudentPerformance(
+  studentId: string, 
+  classId: string, 
+  timeRange?: { startDate: string; endDate: string }
+) {
+  return useQuery({
+    queryKey: ['student-performance', studentId, classId, timeRange],
+    queryFn: () => performanceAnalyzer.analyzeStudentPerformance(studentId, classId, timeRange),
+    enabled: !!studentId && !!classId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+export function useClassPerformance(classId: string) {
+  return useQuery({
+    queryKey: ['class-performance', classId],
+    queryFn: () => performanceAnalyzer.analyzeClassPerformance(classId),
+    enabled: !!classId,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+}
+
+export function usePredictions(request: {
+  studentId: string;
+  predictionType: 'gpa' | 'dropout_risk' | 'performance_trend';
+  timeHorizon: 'month' | 'quarter' | 'semester' | 'year';
+}) {
+  return useQuery({
+    queryKey: ['predictions', request.studentId, request.predictionType, request.timeHorizon],
+    queryFn: () => predictor.predict(request),
+    enabled: !!request.studentId,
+    staleTime: 30 * 60 * 1000, // 30 minutes
+  });
+}
+
+export function usePerformanceData(studentId: string, classId: string) {
+  const performance = useStudentPerformance(studentId, classId);
+  const predictions = usePredictions({
+    studentId,
+    predictionType: 'gpa',
+    timeHorizon: 'semester'
+  });
+
+  const insights = performance.data 
+    ? insightGenerator.generateStudentInsights(performance.data)
+    : [];
+
+  const recommendations = performance.data
+    ? insightGenerator.generateRecommendations(performance.data)
+    : [];
+
+  return {
+    performance,
+    predictions,
+    insights,
+    recommendations,
+    isLoading: performance.isLoading || predictions.isLoading,
+    error: performance.error || predictions.error,
+  };
+}

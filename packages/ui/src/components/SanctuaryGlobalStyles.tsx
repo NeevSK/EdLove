@@ -14,7 +14,7 @@ import { hexToRgba } from '../utils/colorUtils';
 const STATIC_CSS = `
     /* ── RESET ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; outline: none !important; }
-    body { 
+    body {
       font-family: var(--font-body); 
       color: var(--ink); 
       /* overflow: clip (not hidden) — doesn't create a scroll container,
@@ -24,7 +24,10 @@ const STATIC_CSS = `
       overscroll-behavior-y: none;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      background-color: var(--color-background);
+      background:
+        radial-gradient(circle at 18% 18%, var(--action-soft), transparent 32%),
+        radial-gradient(circle at 82% 12%, var(--reward-soft), transparent 28%),
+        var(--world-bg);
     }
     button { background: none; border: none; cursor: pointer; font-family: inherit; transition: var(--transition-snap); }
 
@@ -77,10 +80,10 @@ const STATIC_CSS = `
       z-index: 1100;
 
       background: var(--topbar-bg);
-      backdrop-filter: blur(28px) saturate(1.8);
-      -webkit-backdrop-filter: blur(28px) saturate(1.8);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+      backdrop-filter: blur(40px) saturate(1.35);
+      -webkit-backdrop-filter: blur(40px) saturate(1.35);
+      border-bottom: 1px solid var(--scene-chrome-border);
+      box-shadow: 0 10px 32px rgba(107,100,128,0.08);
     }
 
     .top-bar-left {
@@ -114,9 +117,9 @@ const STATIC_CSS = `
       background: var(--sidebar-bg);
       /* Reduced blur (16px) vs topbar (28px) — avoids stacking two heavy
          backdrop-filter compositing layers on mid-range Android devices. */
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-right: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(36px) saturate(1.2);
+      -webkit-backdrop-filter: blur(36px) saturate(1.2);
+      border-right: 1px solid var(--scene-chrome-border);
     }
     .sidebar.collapsed { width: 64px; }
     .sidebar.collapsed .sidebar-item { justify-content: center; padding: 12px 0; gap: 0; width: 100%; }
@@ -130,7 +133,7 @@ const STATIC_CSS = `
       display: flex;
       align-items: center;
       padding: 0 16px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      border-bottom: 1px solid var(--scene-chrome-border);
     }
 
     .sidebar-toggle {
@@ -140,14 +143,14 @@ const STATIC_CSS = `
       align-items: center;
       justify-content: center;
       border-radius: 10px;
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: var(--scene-interactive);
+      border: 1px solid var(--scene-interactive-border);
       color: var(--ink-soft);
       cursor: pointer;
       transition: var(--transition-smooth);
     }
     .sidebar-toggle:hover {
-      background: rgba(255, 255, 255, 0.5);
+      background: var(--scene-elevated);
       transform: scale(1.1);
     }
 
@@ -181,13 +184,13 @@ const STATIC_CSS = `
     }
     .sidebar-item:hover {
       color: var(--ink-soft);
-      background: rgba(255, 255, 255, 0.4);
+      background: var(--scene-interactive);
       transform: translateX(8px);
     }
     .sidebar-item.active {
       color: var(--water);
-      background: rgba(255, 255, 255, 0.7);
-      box-shadow: 0 4px 12px rgba(90, 154, 186, 0.08);
+      background: linear-gradient(135deg, var(--scene-elevated), var(--scene-interactive));
+      box-shadow: 0 10px 24px rgba(107,100,128,0.10);
     }
     .sidebar-item::before {
       content: '';
@@ -228,8 +231,8 @@ const STATIC_CSS = `
       gap: 12px;
       padding: 12px;
       border-radius: 16px;
-      background: rgba(255, 255, 255, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: var(--scene-interactive);
+      border: 1px solid var(--scene-interactive-border);
       cursor: pointer;
       width: 100%;
       text-align: left;
@@ -237,7 +240,7 @@ const STATIC_CSS = `
     }
     .sidebar-profile-btn:hover {
       transform: translateY(-2px);
-      background: rgba(255, 255, 255, 0.6);
+      background: var(--scene-elevated);
       box-shadow: var(--shadow-sm);
     }
 
@@ -265,25 +268,28 @@ const STATIC_CSS = `
       position: relative;
       border-radius: 20px;
       overflow: hidden;
-      background: var(--card-bg);
-      backdrop-filter: blur(20px) saturate(1.6);
-      -webkit-backdrop-filter: blur(20px) saturate(1.6);
-      border: 1px solid rgba(255, 255, 255, 0.4);
+      background:
+        linear-gradient(165deg, rgba(var(--surface-rgb), 0.94) 0%, rgba(var(--surface-rgb), 0.84) 100%);
+      backdrop-filter: blur(36px) saturate(1.18);
+      -webkit-backdrop-filter: blur(36px) saturate(1.18);
+      border: 1px solid var(--scene-surface-border);
       box-shadow: 
-        inset 0 1px 0 rgba(255, 255, 255, 0.5),
-        0 4px 24px rgba(0, 0, 0, 0.04),
-        0 8px 32px rgba(90, 154, 186, 0.05);
+        inset 0 1px 0 rgba(252,249,242,0.34),
+        inset 0 -18px 32px rgba(107,100,128,0.03),
+        0 12px 32px rgba(107,100,128,0.08),
+        0 22px 48px rgba(var(--action-rgb), 0.05);
       transition: var(--transition-smooth);
       will-change: transform;
     }
 
     .sanctuary-card:hover {
       transform: translateY(-6px);
-      background: var(--card-bg-hover);
+      background:
+        linear-gradient(165deg, var(--card-bg-hover) 0%, var(--scene-surface) 100%);
       box-shadow: 
-        inset 0 1px 0 rgba(255, 255, 255, 0.6),
-        0 24px 48px rgba(0, 0, 0, 0.08),
-        0 12px 24px rgba(90, 154, 186, 0.1);
+        inset 0 1px 0 rgba(252,249,242,0.42),
+        0 24px 48px rgba(107,100,128,0.14),
+        0 14px 28px rgba(var(--action-rgb), 0.08);
     }
 
     /* Texture Overlay on Cards */
@@ -301,8 +307,8 @@ const STATIC_CSS = `
     .sanctuary-glass-hub {
       backdrop-filter: blur(24px) saturate(1.8);
       -webkit-backdrop-filter: blur(24px) saturate(1.8);
-      background: rgba(var(--surface-rgb), 0.72);
-      border-bottom: 1px solid rgba(var(--action-rgb), 0.08);
+      background: rgba(var(--surface-rgb), 0.78);
+      border-bottom: 1px solid var(--scene-surface-border);
       z-index: 100;
     }
 
@@ -315,7 +321,7 @@ const STATIC_CSS = `
     .sanctuary-sidebar-glass {
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      background: rgba(var(--surface-rgb), 0.15);
+      background: rgba(var(--surface-rgb), 0.52);
     }
 
     /* Inner Light Gloss for Card Variants */
@@ -343,9 +349,9 @@ const STATIC_CSS = `
       font-size: 14px;
       font-weight: 700;
       letter-spacing: 0.01em;
-      background: var(--action);
+      background: linear-gradient(135deg, var(--action) 0%, color-mix(in srgb, var(--action) 76%, var(--reward) 24%) 100%);
       color: var(--text-on-action);
-      box-shadow: 0 4px 16px var(--action-glow);
+      box-shadow: 0 10px 28px var(--action-glow);
       transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
       white-space: nowrap;
     }
@@ -368,11 +374,11 @@ const STATIC_CSS = `
       font-family: var(--font-body);
       font-size: 14px;
       font-weight: 600;
-      background: var(--btn-secondary-bg);
+      background: linear-gradient(180deg, var(--btn-secondary-bg) 0%, var(--scene-surface) 100%);
       color: var(--ink);
       border: 1px solid var(--btn-secondary-border);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(36px);
+      -webkit-backdrop-filter: blur(36px);
       transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
       white-space: nowrap;
     }
@@ -497,9 +503,90 @@ const STATIC_CSS = `
       color: var(--ink);
     }
     .top-tab.active {
-      background: var(--tab-active-bg);
-      border-color: var(--water);
-      color: var(--water);
+      background: linear-gradient(135deg, var(--tab-active-bg), var(--action-soft));
+      border-color: var(--action-border);
+      color: var(--action);
+      box-shadow: 0 8px 20px rgba(var(--action-rgb), 0.10);
+    }
+
+    .sanctuary-search-shell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--scene-interactive-border);
+      background:
+        linear-gradient(180deg, var(--scene-elevated) 0%, var(--scene-interactive) 100%);
+      backdrop-filter: blur(36px) saturate(1.14);
+      -webkit-backdrop-filter: blur(36px) saturate(1.14);
+      box-shadow: inset 0 1px 0 rgba(252,249,242,0.28), 0 10px 24px rgba(107,100,128,0.05);
+    }
+    .sanctuary-search-shell input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 14px;
+      outline: none;
+    }
+    .sanctuary-icon-well {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, var(--action-soft), rgba(var(--reward-rgb), 0.08));
+      border: 1px solid rgba(var(--action-rgb), 0.16);
+      color: var(--action);
+      box-shadow: inset 0 1px 0 rgba(252,249,242,0.2);
+    }
+    .sanctuary-icon-well.soft {
+      width: 52px;
+      height: 52px;
+      border-radius: 20px;
+    }
+    .sanctuary-hero-panel {
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      background:
+        linear-gradient(180deg, rgba(var(--surface-rgb), 0.30) 0%, rgba(42,35,24,0.08) 100%);
+      border: 1px solid var(--scene-surface-border);
+      box-shadow: 0 20px 44px rgba(107,100,128,0.12);
+    }
+    .sanctuary-hero-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, transparent 0%, rgba(42,35,24,0.18) 48%, rgba(42,35,24,0.78) 100%);
+      pointer-events: none;
+    }
+    .sanctuary-map-stage {
+      border-radius: 24px;
+      border: 1px solid var(--scene-surface-border);
+      background:
+        radial-gradient(circle at 20% 18%, var(--action-soft), transparent 28%),
+        radial-gradient(circle at 78% 14%, var(--reward-soft), transparent 24%),
+        linear-gradient(180deg, var(--scene-elevated) 0%, var(--scene-surface) 100%);
+      overflow: hidden;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: var(--action-soft);
+      color: var(--action);
+      border: 1px solid rgba(var(--action-rgb), 0.18);
     }
 
     /* ──────────────────────────────────────────────────────────────────
@@ -746,11 +833,11 @@ const STATIC_CSS = `
       gap: 8px;
       margin-bottom: 24px;
       padding: 6px;
-      background: rgba(255, 255, 255, 0.4);
-      backdrop-filter: blur(20px) saturate(1.8);
-      -webkit-backdrop-filter: blur(20px) saturate(1.8);
+      background: linear-gradient(180deg, var(--scene-elevated) 0%, var(--scene-interactive) 100%);
+      backdrop-filter: blur(36px) saturate(1.12);
+      -webkit-backdrop-filter: blur(36px) saturate(1.12);
       border-radius: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid var(--scene-interactive-border);
     }
     .sub-nav-item {
       flex: 1;
@@ -766,13 +853,13 @@ const STATIC_CSS = `
       transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .sub-nav-item.active {
-      background: white;
-      color: var(--water);
-      box-shadow: 0 8px 24px rgba(90, 154, 186, 0.12);
+      background: linear-gradient(180deg, var(--scene-elevated) 0%, var(--scene-surface) 100%);
+      color: var(--action);
+      box-shadow: 0 8px 24px rgba(var(--action-rgb), 0.12);
       transform: scale(1.02);
     }
     .sub-nav-item:hover:not(.active) {
-      background: rgba(255, 255, 255, 0.2);
+      background: var(--scene-interactive);
       color: var(--ink-soft);
     }
 
@@ -861,7 +948,7 @@ const STATIC_CSS = `
       position: fixed;
       inset: 0;
       z-index: 999;
-      background: rgba(0,0,0,0.45);
+      background: rgba(42,35,24,0.22);
       backdrop-filter: blur(2px);
       -webkit-backdrop-filter: blur(2px);
       animation: fadeIn 0.2s ease;
@@ -1057,6 +1144,7 @@ export function SanctuaryGlobalStyles() {
       --ink:         ${text.onCanvas};
       --ink-soft:    ${text.secondary};
       --ink-ghost:   #7a7068;
+      --error:       #FF6347;
 
       /* Borders & Shadows */
       --border:       ${scene.surface.border};

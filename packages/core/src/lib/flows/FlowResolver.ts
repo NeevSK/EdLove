@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { schoolAPI } from '../../api/school';
 // Note: We'll use dynamic imports or passing refs for communityAPI to avoid circular deps if necessary, 
 // but for now let's assume core is the base.
-import { UserRole } from '../../types';
+import { AuthorityTier } from '../../types';
 
 export type FlowOutcome = 'success' | 'error' | 'pending_auth' | 'redirect';
 
@@ -48,7 +48,7 @@ export class FlowResolver {
                     return await this.executeJoinGroup(payload.group_id, userId, payload.handle);
 
                 case 'claim_invite':
-                    return await this.executeClaimInvite(payload.invite_code, payload.school_id, payload.role as UserRole, userId);
+                    return await this.executeClaimInvite(payload.invite_code, payload.school_id, payload.role as AuthorityTier, userId);
 
                 case 'user_invite':
                     return {
@@ -204,7 +204,7 @@ export class FlowResolver {
         };
     }
 
-    private static async executeClaimInvite(inviteCode: string, schoolId: string, role: UserRole, userId: string): Promise<FlowResult> {
+    private static async executeClaimInvite(inviteCode: string, schoolId: string, role: AuthorityTier, userId: string): Promise<FlowResult> {
         try {
             console.log(`[FlowResolver] Executing transactional invite claim for code: ${inviteCode}`);
 

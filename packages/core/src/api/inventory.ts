@@ -1,10 +1,11 @@
 ﻿/**
  * Inventory API
  * 
- * API methods for managing physical classroom inventory
+ * API methods for managing classroom-scoped resources and supply requests.
  */
 
 import { supabase } from '../lib/supabase';
+import { resolveResourceOwnerContext } from '../lib/inventoryScope';
 import { APIError } from './types';
 import type { InventoryItem, InventoryRequest } from './types';
 
@@ -104,9 +105,21 @@ export const inventoryAPI = {
     async createRequest(
         request: Omit<InventoryRequest, 'id' | 'created_at' | 'status'> & { school_id: string }
     ): Promise<InventoryRequest> {
+        const ownerContext = resolveResourceOwnerContext({
+            ownerContext: request.owner_context,
+            classroomId: request.classroom_id,
+        });
+
+        if (ownerContext !== 'classroom') {
+            throw new APIError(
+                'Institution-owned requests must be handled through admin inventory flows.',
+                'INVALID_SCOPE'
+            );
+        }
+
         const { data, error } = await supabase
             .from('inventory_requests')
-            .insert([{ ...request, status: 'pending' }])
+            .insert([{ ...request, owner_context: ownerContext, status: 'pending' }])
             .select()
             .single();
 

@@ -12,7 +12,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { 
     useStore, 
-    useUserRole, 
+    usePermissions, 
     useResonanceStore, 
     useJourneyHistory
 } from '@repo/core';
@@ -49,7 +49,8 @@ export default function FounderSelfView() {
     const colors = useThemedColors();
 
     // State & Kernel Hooks
-    const { userId } = useUserRole();
+    const { context } = usePermissions();
+    const userId = context.userId;
     const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
     const { logs: moodHistory, addMoodLog, isLoading: loadingMoods } = useMoodLogs(userId ?? undefined);
     const { forecasts, isLoading: loadingEnergy } = useEnergyForecast(userId ?? undefined);
@@ -107,7 +108,7 @@ export default function FounderSelfView() {
     return (
         <ScreenWrapper scroll={false} noTopInset={true}>
             <BaseSelfView
-                role="founder"
+                perspective="founder"
                 description={t('self.founderDescription', 'The steady eye of the hurricane - a space for vision and personal pulse.')}
                 domains={[
                     {

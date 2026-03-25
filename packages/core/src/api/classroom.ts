@@ -11,7 +11,7 @@ export const lessonsAPI = {
      * Get all lessons for a classroom
      */
     async getAll(classroomId: string): Promise<Lesson[]> {
-        await requireClassroomAccess(classroomId);
+        await requireClassroomAccess(classroomId, 'classroom.read.assigned');
         const { data, error } = await supabase
             .from('lessons')
             .select('*')
@@ -26,7 +26,7 @@ export const lessonsAPI = {
     },
 
     async getByDate(classroomId: string, date: string): Promise<Lesson[]> {
-        await requireClassroomAccess(classroomId);
+        await requireClassroomAccess(classroomId, 'classroom.read.assigned');
         const { data, error } = await supabase
             .from('lessons')
             .select('*')
@@ -45,7 +45,7 @@ export const lessonsAPI = {
      * Create a new lesson
      */
     async create(lesson: Omit<Lesson, 'id' | 'created_at' | 'updated_at'>): Promise<Lesson> {
-        await requireClassroomAccess(lesson.classroom_id);
+        await requireClassroomAccess(lesson.classroom_id, 'classroom.manage.own');
         const { data, error } = await supabase
             .from('lessons')
             .insert([lesson])
@@ -71,7 +71,7 @@ export const lessonsAPI = {
             .single();
 
         if (lesson) {
-            await requireClassroomAccess(lesson.classroom_id);
+            await requireClassroomAccess(lesson.classroom_id, 'classroom.manage.own');
         }
 
         const { data, error } = await supabase
@@ -113,7 +113,7 @@ export const studentsAPI = {
      */
     async getAll(classId?: string): Promise<Student[]> {
         if (classId) {
-            await requireClassroomAccess(classId);
+            await requireClassroomAccess(classId, 'classroom.read.assigned');
         } else {
             // If no classId, user must be authenticated. 
             // RLS will handle the rest, but we should at least check session.

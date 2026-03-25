@@ -1,0 +1,12 @@
+{
+  "name": "TrubeArt",
+  "idls": [
+    "src/native/TrubeDriver.nitro.ts"
+  ],
+  "android": {
+    "package": "com.repo.trubeart"
+  },
+  "ios": {
+    "moduleName": "TrubeArt"
+  }
+}

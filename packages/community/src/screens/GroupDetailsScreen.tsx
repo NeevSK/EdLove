@@ -71,7 +71,7 @@ export default function GroupDetailsScreen() {
     const { groupId } = route.params;
     const caps = useCapabilities();
     const user = useStore(state => state.user);
-    const role = caps.identity.role;
+    const authority = caps.identity.authority;
     const colors = useThemedColors();
     const { showToast } = useLotusToast();
     const { joinGroup, isJoiningGroup, posts, fetchPosts } = useCommunity();
@@ -128,7 +128,6 @@ export default function GroupDetailsScreen() {
             await setPendingGateAction({ kind: 'community_join_group', createdAt: Date.now(), groupId, joinPolicy: group?.join_policy || 'open' });
             showToast({
                 message: t('community.groups.joinAuthRequired') || "To join this group, let's create an account first!",
-                type: 'info'
             });
             navigation.navigate('Auth' as any);
             return;
@@ -188,8 +187,8 @@ export default function GroupDetailsScreen() {
 
     if (!group) return null;
 
-    // Admin: circle creator OR users with the 'principal' role
-    const isAdmin = group.created_by === user?.id || role === 'principal';
+    // Admin: circle creator OR users with 'principal' authority
+    const isAdmin = group.created_by === user?.id || authority === 'principal';
 
     if (showAdmin && isAdmin) {
         return (

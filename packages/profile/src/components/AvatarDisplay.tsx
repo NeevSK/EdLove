@@ -6,7 +6,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { supabase } from '@repo/core';
-import { useTheme, getInitialsFromName } from '@repo/ui';
+import { useTheme, UserAvatar } from '@repo/ui';
 import { Camera } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -157,28 +157,22 @@ export function AvatarDisplay({
     });
   }, [peekable, userId, peekType, navigation]);
 
-  // Display source priority: local cache > remote URL > initials
+  // Display source priority: local cache > remote URL
   const displayUri = localCachePath || avatarUrl || null;
-  const initials = getInitialsFromName(fullName);
   const borderRadius = size / 2;
 
   const containerStyle = [
-    { width: size, height: size, borderRadius },
-    styles.container,
+    { width: size, height: size, borderRadius, overflow: 'hidden' as const },
     style,
   ];
 
-  const content = displayUri ? (
-    <Image
-      source={{ uri: displayUri }}
-      style={[styles.image, { width: size, height: size, borderRadius }]}
+  const content = (
+    <UserAvatar
+      avatarUrl={displayUri}
+      fullName={fullName}
+      size={size}
+      borderRadius={borderRadius}
     />
-  ) : (
-    <View style={[styles.initialsContainer, { backgroundColor: accent.action, borderRadius }]}>
-      <Text style={[styles.initials, { fontSize: size * 0.35, color: text.inverse }]}>
-        {initials}
-      </Text>
-    </View>
   );
 
   if (!editable) {
@@ -207,18 +201,6 @@ export function AvatarDisplay({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    overflow: 'hidden',
-  },
-  image: {
-    resizeMode: 'cover',
-  },
-  initialsContainer: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   initials: {
     fontWeight: '700',
   },

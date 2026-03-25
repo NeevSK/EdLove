@@ -10,9 +10,9 @@
  *  1. Explicit seeds  — set during onboarding orientation step
  *  2. Behavioral signals — mood_logs + energy_forecasts, subject to
  *       data-quality guardrails (see DATA QUALITY section below)
- *  3. Role-based defaults — grounded in educational-psychology lit
+ *  3. Authority-based defaults — grounded in educational-psychology lit
  *       (Vygotsky, Kolb; teachers=reflective/deep, students=social/active)
- *  4. Neutral fallback (all 50) — only when role is unknown
+ *  4. Neutral fallback (all 50) — only when authority is unknown
  *
  * DATA QUALITY GUARDRAILS
  * ───────────────────────
@@ -41,7 +41,7 @@
  *                      behavioralWeight for that dim is halved.
  *
  * The resulting `behavioralWeight` (0–1) scales how much the behavioral
- * layer moves the needle away from role defaults.  Explicit seeds are
+ * layer moves the needle away from authority defaults.  Explicit seeds are
  * never down-weighted — they represent deliberate user intent.
  *
  * EPHEMERALITY
@@ -52,7 +52,7 @@
  */
 
 import { useMemo } from 'react';
-import type { UserRole } from '@repo/core';
+import { AuthorityTier } from '@repo/core';
 import type { MoodLog, EnergyForecast } from '../types';
 import type { OrientationSeeds } from '@repo/profile';
 
@@ -70,17 +70,17 @@ const ENERGY_MIN_SAMPLES = 5;
 const HALF_LIFE_MS = 14 * 24 * 60 * 60 * 1000;
 
 // ============================================================================
-// ROLE-BASED DEFAULTS
+// AUTHORITY-BASED DEFAULTS
 // ============================================================================
 
-interface RoleDefaults {
+interface AuthorityDefaults {
     depth_breadth: number;
     reflect_act: number;
     solo_social: number;
     steady_surge: number;
 }
 
-const ROLE_DEFAULTS: Record<string, RoleDefaults> = {
+const AUTHORITY_DEFAULTS: Record<string, AuthorityDefaults> = {
     student: { depth_breadth: 60, reflect_act: 65, solo_social: 65, steady_surge: 60 },
     teacher: { depth_breadth: 35, reflect_act: 35, solo_social: 55, steady_surge: 40 },
     grade_head: { depth_breadth: 30, reflect_act: 30, solo_social: 55, steady_surge: 35 },
@@ -90,7 +90,7 @@ const ROLE_DEFAULTS: Record<string, RoleDefaults> = {
     admin: { depth_breadth: 50, reflect_act: 50, solo_social: 55, steady_surge: 50 },
 };
 
-function studentGradeAdjustment(gradeNumber: number | null | undefined): Partial<RoleDefaults> {
+function studentGradeAdjustment(gradeNumber: number | null | undefined): Partial<AuthorityDefaults> {
     if (!gradeNumber) return {};
     if (gradeNumber <= 5) return { solo_social: 75, reflect_act: 72, depth_breadth: 68 };
     if (gradeNumber <= 9) return { solo_social: 65, reflect_act: 60, depth_breadth: 58 };
@@ -320,13 +320,13 @@ type Dim = typeof DIMS[number];
 function mergeLayers(
     explicit: OrientationSeeds | null | undefined,
     signals: QualifiedSignals,
-    roleDefaults: RoleDefaults,
+    authorityDefaults: AuthorityDefaults,
     overallBehavioralQuality: number,
 ): OrientationSeeds {
     const merged: Record<string, number> = {};
 
     for (const dim of DIMS) {
-        const roleDef = roleDefaults[dim];
+        const authorityDef = authorityDefaults[dim];
         const sig = signals[dim as keyof QualifiedSignals];
 
         if (explicit) {
@@ -335,25 +335,25 @@ function mergeLayers(
 
             if (sig && overallBehavioralQuality > 0.4) {
                 const drift = sig.weight * overallBehavioralQuality * 0.1; // max 10% drift
-                const baseVal = hasExplicit ? (explicitValue as number) : roleDef;
+                const baseVal = hasExplicit ? (explicitValue as number) : authorityDef;
                 merged[dim] = clamp(baseVal * (1 - drift) + sig.value * drift);
             } else {
-                merged[dim] = hasExplicit ? (explicitValue as number) : roleDef;
+                merged[dim] = hasExplicit ? (explicitValue as number) : authorityDef;
             }
         } else if (sig) {
             // Behavioral signal present — blend proportionally to quality
             const blendRatio = sig.weight * overallBehavioralQuality; // 0–1
-            merged[dim] = clamp(roleDef * (1 - blendRatio) + sig.value * blendRatio);
+            merged[dim] = clamp(authorityDef * (1 - blendRatio) + sig.value * blendRatio);
         } else {
-            // Role default only
-            merged[dim] = roleDef;
+            // Authority default only
+            merged[dim] = authorityDef;
         }
     }
 
-    const db = merged['depth_breadth'] ?? roleDefaults.depth_breadth;
-    const ra = merged['reflect_act'] ?? roleDefaults.reflect_act;
-    const ss = merged['solo_social'] ?? roleDefaults.solo_social;
-    const sz = merged['steady_surge'] ?? roleDefaults.steady_surge;
+    const db = merged['depth_breadth'] ?? authorityDefaults.depth_breadth;
+    const ra = merged['reflect_act'] ?? authorityDefaults.reflect_act;
+    const ss = merged['solo_social'] ?? authorityDefaults.solo_social;
+    const sz = merged['steady_surge'] ?? authorityDefaults.steady_surge;
 
     const source: OrientationSeeds['source'] = explicit
         ? (Object.keys(signals).length > 0 ? 'mixed' : 'seeded')
@@ -381,8 +381,8 @@ export interface UseOrientationInferenceInput {
     moodLogs?: MoodLog[];
     /** Recent energy forecasts from useEnergyForecast */
     energyForecasts?: EnergyForecast[];
-    /** User's role — used for role defaults */
-    role?: UserRole | null;
+    /** User's authority — used for authority defaults */
+    authority?: AuthorityTier | null;
     /** Student grade number — narrows student defaults */
     gradeNumber?: number | null;
 }
@@ -397,14 +397,14 @@ export interface UseOrientationInferenceResult {
     /**
      * Confidence 0–1: overall trustworthiness of the fingerprint.
      * Explicit seeds → ≥0.9; rich behavioral data → 0.5–0.8;
-     * role defaults only → 0.2.
+     * authority defaults only → 0.2.
      */
     confidence: number;
     /**
      * Human-readable data quality band for UI use.
      * 'strong'   — explicit seeds OR consistent multi-week behavioral data
      * 'emerging' — behavioral signals present but still accumulating
-     * 'default'  — role-based baseline only, no behavioral data yet
+     * 'default'  — authority-based baseline only, no behavioral data yet
      */
     dataQuality: DataQuality;
 }
@@ -416,17 +416,17 @@ export function useOrientationInference(
         explicitSeeds,
         moodLogs = [],
         energyForecasts = [],
-        role,
+        authority,
         gradeNumber,
     } = input;
 
     return useMemo(() => {
         const now = Date.now();
 
-        // 1. Role defaults
-        const NEUTRAL: RoleDefaults = { depth_breadth: 50, reflect_act: 50, solo_social: 50, steady_surge: 50 };
-        const base: RoleDefaults = role ? (ROLE_DEFAULTS[role] ?? NEUTRAL) : NEUTRAL;
-        const roleDefaults: RoleDefaults = role === 'student'
+        // 1. Authority defaults
+        const NEUTRAL: AuthorityDefaults = { depth_breadth: 50, reflect_act: 50, solo_social: 50, steady_surge: 50 };
+        const base: AuthorityDefaults = authority ? (AUTHORITY_DEFAULTS[authority] ?? NEUTRAL) : NEUTRAL;
+        const authorityDefaults: AuthorityDefaults = authority === 'student'
             ? { ...base, ...studentGradeAdjustment(gradeNumber) }
             : base;
 
@@ -436,7 +436,7 @@ export function useOrientationInference(
         );
 
         // 3. Merge all layers
-        const seeds = mergeLayers(explicitSeeds ?? null, signals, roleDefaults, behavioralQuality);
+        const seeds = mergeLayers(explicitSeeds ?? null, signals, authorityDefaults, behavioralQuality);
 
         // 4. Metadata
         const hasExplicit = !!explicitSeeds;
@@ -460,6 +460,6 @@ export function useOrientationInference(
             confidence,
             dataQuality,
         };
-    }, [explicitSeeds, moodLogs, energyForecasts, role, gradeNumber]);
+    }, [explicitSeeds, moodLogs, energyForecasts, authority, gradeNumber]);
 }
 

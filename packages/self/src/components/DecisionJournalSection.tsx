@@ -12,7 +12,7 @@ import {
     PositiveInvitation,
     ScrollView
 } from '@repo/ui';
-import { supabase, useSafeMutation } from '@repo/core';
+import { supabase, useSafeMutation, usePermissions } from '@repo/core';
 import { useDecisionJournal } from '../hooks/useDecisionJournal';
 import { useNavigation } from '@react-navigation/native';
 
@@ -24,15 +24,17 @@ interface DecisionJournalSectionProps {
 
 export default function DecisionJournalSection({ userId, colors, t }: DecisionJournalSectionProps) {
     const navigation = useNavigation<any>();
+    const { context } = usePermissions();
+    const activeUserId = userId || context.userId;
     const [decisionText, setDecisionText] = useState('');
-    const { decisions, refreshData } = useDecisionJournal(userId ?? undefined);
+    const { decisions, refreshData } = useDecisionJournal(activeUserId ?? undefined);
 
     const { mutate, isLoading: isSaving } = useSafeMutation(
         async (text: string) => {
             const { error } = await supabase
                 .from('decision_journals')
                 .insert({
-                    user_id: userId,
+                    user_id: activeUserId,
                     decision_text: text,
                     is_reviewed: false
                 });
@@ -56,12 +58,12 @@ export default function DecisionJournalSection({ userId, colors, t }: DecisionJo
     );
 
     const handleSave = async () => {
-        if (!userId || !decisionText.trim()) return;
+        if (!activeUserId || !decisionText.trim()) return;
         hapticLight();
         await mutate(decisionText.trim());
     };
 
-    if (!userId) {
+    if (!activeUserId) {
         return <PositiveInvitation type="guest" onAction={() => navigation.navigate('Auth' as never)} />;
     }
 

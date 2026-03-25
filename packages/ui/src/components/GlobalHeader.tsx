@@ -29,7 +29,7 @@ import { UserAvatar } from './UserAvatar';
 import SanctuaryInput from './SanctuaryInput';
 import NotificationDrawer from './NotificationDrawer';
 
-import { useUserRole, useStore, useNotifications } from '@repo/core';
+import { useStore, useNotifications, usePermissions } from '@repo/core';
 
 export interface GlobalHeaderProps {
     title?: string;
@@ -63,7 +63,9 @@ export default function GlobalHeader({
     avatarUrl
 }: GlobalHeaderProps) {
     const { t } = useTranslation();
-    const { role } = useUserRole(); // Get current role from store
+    const { context, can } = usePermissions();
+    const { userId } = context;
+
     const user = useStore((state: any) => state.user); // Get user details
     const navigation = useNavigation<any>();
     const { glass, text, accent, isDark, blurEnabled, phase, scene } = useTheme();
@@ -84,21 +86,23 @@ export default function GlobalHeader({
     const displayName = userName || (user?.user_metadata?.full_name?.split(' ')[0]) || '';
     const userFullName = userName || user?.user_metadata?.full_name || '';
 
-    // Get role icon and label
+
+
+    // Get role icon and label (Capability-driven)
     const getRoleContext = () => {
-        switch (role) {
-            case 'teacher':
-                return { icon: GraduationCap, label: 'Teacher' };
-            case 'principal':
-            case 'admin':
-                return { icon: Crown, label: 'Principal' };
-            case 'student':
-            default:
-                return { icon: School, label: 'Student' };
+        if (can('manage', 'PrincipalDashboard')) {
+            return { icon: Crown, emoji: '🏛️', label: t('roles.principal') || 'Principal' };
         }
+        if (can('manage', 'TeacherDashboard')) {
+            return { icon: GraduationCap, emoji: '🌱', label: t('roles.teacher') || 'Teacher' };
+        }
+        if (can('manage', 'StudentDashboard')) {
+            return { icon: School, emoji: '📚', label: t('roles.student') || 'Student' };
+        }
+        return { icon: School, emoji: '🌿', label: t('roles.member') || 'Member' };
     };
 
-    const { icon: RoleIcon, label: RoleLabel } = getRoleContext();
+    const { icon: RoleIcon, emoji: RoleEmoji, label: RoleLabel } = getRoleContext();
 
     // Determine greeting based on time of day
     const getGreetingDetails = () => {
@@ -111,6 +115,9 @@ export default function GlobalHeader({
     const { text: greetingText, emoji } = getGreetingDetails();
 
     const headerHeight = insets.top + (isSearchActive ? 120 : 80);
+
+    // Identity display logic: Students usually see their full name, staff see their title/role.
+    const showFullNameAsPrimary = can('manage', 'StudentDashboard');
 
     return (
         <Box sx={{
@@ -178,7 +185,7 @@ export default function GlobalHeader({
                                     <UserAvatar
                                         avatarUrl={avatarUrl || user?.user_metadata?.avatar_url}
                                         fullName={userFullName}
-                                        role={role}
+                                        fallbackEmoji={RoleEmoji}
                                         size={32}
                                         borderRadius={12}
                                     />
@@ -216,7 +223,7 @@ export default function GlobalHeader({
                                     fontWeight: 'bold'
                                 }}
                             >
-                                {title ? title : (isSelfView ? (role === 'student' ? userFullName : RoleLabel) : displayName)}
+                                {title ? title : (isSelfView ? (showFullNameAsPrimary ? userFullName : RoleLabel) : displayName)}
                             </Text>
                         </VStack>
                     </HStack>

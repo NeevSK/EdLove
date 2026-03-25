@@ -15,6 +15,11 @@
     "i18n:no-inline-fallbacks": "node scripts/i18n/check-inline-fallbacks.js",
     "i18n:check": "pnpm run i18n:audit && pnpm run i18n:no-inline-fallbacks",
     "identity:check": "node scripts/check-identity-alignment.mjs",
+    "migration:web:inventory": "node scripts/refactor/generate-web-migration-manifest.mjs",
+    "migration:web:imports": "node scripts/refactor/find-app-domain-imports.mjs",
+    "migration:web:codemod": "node scripts/refactor/apply-web-migration-codemod.mjs",
+    "migration:web:check": "node scripts/refactor/check-web-boundaries.mjs",
+    "migration:web:barrels": "node scripts/refactor/generate-barrels.mjs",
     "ai:fix": "node scripts/ts-fix.mjs",
     "prepare": "husky"
   },
@@ -40,27 +45,32 @@
       "react-test-renderer": "19.2.0",
       "@types/react": "19.2.14",
       "@types/react-dom": "19.2.1",
-      "@types/react-native": "workspace:@repo/types-shim",
-      "glob": "^11.0.0",
+      "@types/react-native": "link:./packages/types-shim",
+      "@types/posthog-js": "npm:posthog-js@*",
       "rimraf": "^6.0.0",
+      "glob": "^11.0.0",
       "inflight": "*",
       "abab": "*",
       "domexception": "*",
       "whatwg-encoding": "*",
       "nitro-modules": "0.33.9",
       "@sentry/react-native": "~7.11.0",
-      "expo": "~55.0.4",
+      "expo": "~55.0.8",
       "@expo/log-box": "55.0.7",
-      "expo-asset": "55.0.8",
-      "expo-constants": "55.0.7",
-      "expo-file-system": "55.0.10",
+      "expo-asset": "55.0.10",
+      "expo-constants": "55.0.9",
+      "expo-file-system": "55.0.11",
       "expo-font": "55.0.4",
       "expo-keep-awake": "55.0.4",
-      "expo-modules-core": "55.0.13",
+      "expo-modules-core": "55.0.17",
       "@expo/dom-webview": "55.0.3",
-      "expo-image-picker": "55.0.10",
-      "expo-location": "55.1.2",
-      "expo-sharing": "55.0.11"
+      "expo-image-picker": "55.0.13",
+      "expo-location": "55.1.4",
+      "expo-sharing": "55.0.14",
+      "expo-audio": "55.0.9",
+      "expo-linking": "55.0.8",
+      "expo-sqlite": "55.0.11",
+      "expo-video": "55.0.11"
     },
     "onlyBuiltDependencies": [
       "@sentry/cli",
@@ -70,7 +80,8 @@
       "sharp",
       "turbo",
       "supabase",
-      "@shopify/react-native-skia"
+      "@shopify/react-native-skia",
+      "react-native-nitro-modules"
     ]
   },
   "packageManager": "pnpm@10.30.2",
@@ -84,9 +95,10 @@
   "version": "1.0.0",
   "dependencies": {
     "@shopify/react-native-skia": "2.4.18",
-    "expo": "~55.0.4",
+    "expo": "~55.0.8",
     "react": "19.2.0",
     "react-native": "0.83.2",
+    "react-native-gesture-handler": "2.30.0",
     "semver": "^7.6.3"
   }
 }

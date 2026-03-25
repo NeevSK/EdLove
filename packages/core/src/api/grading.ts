@@ -27,7 +27,7 @@ export const gradingAPI = {
         feedback?: string
     ): Promise<StudentGrade> {
         // Verify authorization - teacher must have access to classroom
-        await requireClassroomAccess(classroomId);
+        await requireClassroomAccess(classroomId, 'classroom.manage.own');
 
         const { grade, gpa } = marksToGPA(marks);
 
@@ -82,7 +82,7 @@ export const gradingAPI = {
      */
     async getReportCard(studentId: string): Promise<StudentGrade[]> {
         // Verify authorization - user must have access to student data
-        await requireStudentAccess(studentId);
+        await requireStudentAccess(studentId, 'student.record.read.self');
 
         const { data, error } = await supabase
             .from('grades')
@@ -102,7 +102,7 @@ export const gradingAPI = {
      */
     async getClassroomGrades(classroomId: string): Promise<StudentGrade[]> {
         // Verify authorization - user must have access to classroom
-        await requireClassroomAccess(classroomId);
+        await requireClassroomAccess(classroomId, 'classroom.read.assigned');
 
         const { data, error } = await supabase
             .from('grades')
@@ -122,7 +122,7 @@ export const gradingAPI = {
      */
     async getGradingSettings(classroomId: string): Promise<ClassroomGradingSettings> {
         // Verify authorization - user must have access to classroom
-        await requireClassroomAccess(classroomId);
+        await requireClassroomAccess(classroomId, 'classroom.read.assigned');
 
         const { data, error } = await supabase
             .from('classroom_grading_settings')
@@ -153,7 +153,7 @@ export const gradingAPI = {
         settings: Omit<ClassroomGradingSettings, 'classroom_id'>
     ): Promise<ClassroomGradingSettings> {
         // Verify authorization - teacher must have access to classroom
-        await requireClassroomAccess(classroomId);
+        await requireClassroomAccess(classroomId, 'classroom.manage.own');
 
         const { data, error } = await supabase
             .from('classroom_grading_settings')
@@ -195,7 +195,7 @@ export const gradingAPI = {
         }
 
         // Verify authorization - teacher must have access to classroom
-        await requireClassroomAccess(grade.classroom_id);
+        await requireClassroomAccess(grade.classroom_id, 'classroom.manage.own');
 
         const { error } = await supabase
             .from('grades')

@@ -1,7 +1,7 @@
 
 import { FormConfig } from '../forms/form-manager';
 
-export type EntityType = 'user' | 'group' | 'school' | 'classroom' | 'social_link';
+export type EntityType = 'user' | 'group' | 'school' | 'classroom' | 'social_link' | 'community_group';
 
 export type EntityMode = 'view' | 'public' | 'create' | 'edit' | 'preview' | 'compact';
 

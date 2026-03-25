@@ -16,7 +16,7 @@ export interface ThuthimalGift {
   gift_token: string;
   gifter_id: string;
   gifter_name: string;
-  recipient_role: 'teacher' | 'principal';
+  recipient_tier: 'teacher' | 'principal';
   recipient_id: string | null;
   claimed: boolean;
   claimed_at: string | null;
@@ -27,7 +27,7 @@ export interface ThuthimalGift {
 
 export interface CreateGiftInput {
   gifterName: string;
-  recipientRole: 'teacher' | 'principal';
+  recipientTier: 'teacher' | 'principal';
   /** Optional: specify a specific recipient by ID */
   recipientId?: string;
   /** Optional: ISO date string for expiry */
@@ -57,7 +57,7 @@ export const thuthimalAPI = {
       .insert({
         gifter_id: gifterId,
         gifter_name: input.gifterName,
-        recipient_role: input.recipientRole,
+        recipient_tier: input.recipientTier,
         recipient_id: input.recipientId ?? null,
         expires_at: input.expiresAt ?? null,
         message: input.message ?? null,
@@ -113,15 +113,15 @@ export const thuthimalAPI = {
    * Preview an unclaimed gift token (for display before claiming).
    * Returns null if token is already claimed or expired.
    */
-  async previewGift(giftToken: string): Promise<Pick<ThuthimalGift, 'gifter_name' | 'recipient_role'> | null> {
+  async previewGift(giftToken: string): Promise<Pick<ThuthimalGift, 'gifter_name' | 'recipient_tier'> | null> {
     const { data, error } = await supabase
       .from('thuthimal_gifts')
-      .select('gifter_name, recipient_role')
+      .select('gifter_name, recipient_tier')
       .eq('gift_token', giftToken)
       .eq('claimed', false)
       .maybeSingle();
 
     if (error || !data) return null;
-    return data as Pick<ThuthimalGift, 'gifter_name' | 'recipient_role'>;
+    return data as Pick<ThuthimalGift, 'gifter_name' | 'recipient_tier'>;
   },
 };

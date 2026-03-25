@@ -1,12 +1,12 @@
-﻿import React from 'react';
+import React from 'react';
 import { SanctuaryStatsCard } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
-import { UserRole } from '@repo/core';
+import { AuthorityTier } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import { BookOpen, Users, Clock, Star, Activity, Database, Globe } from 'lucide-react-native';
 
 interface UserStatsCardProps {
-    role: UserRole;
+    role: AuthorityTier;
     stats?: {
         classesTaught?: number;
         studentsCount?: number;
@@ -28,7 +28,7 @@ export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
             case 'section_head':
             case 'grade_head':
             case 'principal':
-            case 'developer':
+            case 'developer': // Developer still falls through to teacher content
                 return {
                     title: t('profile.impact.teacher'),
                     items: [
@@ -61,7 +61,7 @@ export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
                     progressLabel: t('profile.stats.foundingSpirit'),
                     progressValue: 100
                 };
-            case 'admin':
+            case 'platform_admin':
                 return {
                     title: t('profile.impact.admin'),
                     items: [

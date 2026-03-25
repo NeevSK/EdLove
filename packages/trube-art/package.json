@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@repo/trube-art",
+  "version": "0.1.0",
+  "description": "Living light surfaces for React Native and Skia.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "artifacts",
+    "README.md",
+    "package.json"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./native": {
+      "types": "./dist/native/index.d.ts",
+      "default": "./dist/native/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node --experimental-specifier-resolution=node ./scripts/generate-approval-artifacts.mjs",
+    "check-types": "tsc --noEmit",
+    "clean": "rimraf dist artifacts",
+    "export:artifacts": "node --experimental-specifier-resolution=node ./scripts/generate-approval-artifacts.mjs",
+    "lint": "eslint .",
+    "prepack": "pnpm run clean && pnpm run build"
+  },
+  "keywords": [
+    "react-native",
+    "skia",
+    "shader",
+    "visual-art",
+    "generative-art",
+    "design-system"
+  ],
+  "peerDependencies": {
+    "@shopify/react-native-skia": "2.4.18",
+    "react": "*",
+    "react-native": "*",
+    "react-native-nitro-modules": ">= 0.20.0",
+    "react-native-reanimated": ">= 4.0.0-alpha",
+    "react-native-wgpu": ">= 0.1.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@types/node": "^25.5.0",
+    "@types/react": "~19.1.10",
+    "@webgpu/types": "^0.1.54",
+    "eslint": "^9.38.0",
+    "react-native-nitro-modules": "~0.21.0",
+    "react-native-reanimated": "~4.2.1-nitro",
+    "react-native-wgpu": "~0.1.5",
+    "rimraf": "^6.0.1",
+    "typegpu": "~0.3.2",
+    "typescript": "~5.9.2"
+  }
+}

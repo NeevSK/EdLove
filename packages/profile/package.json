@@ -17,7 +17,8 @@
     "@eslint/eslintrc": "^3.3.5",
     "@repo/core": "workspace:*",
     "@repo/ui": "workspace:*",
-    "expo-clipboard": "^55.0.8",
+    "@repo/people": "workspace:*",
+    "expo-clipboard": "~55.0.9",
     "lucide-react-native": "^0.563.0",
     "react-i18next": "^16.5.4"
   },

@@ -26,7 +26,7 @@ export interface SelfViewDomain {
 }
 
 export interface BaseSelfViewProps {
-    role: string;
+    perspective: string;
     title?: string;
     description?: string;
 

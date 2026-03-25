@@ -36,7 +36,7 @@ import { Theme, typography } from '@repo/ui';
 import * as Haptics from 'expo-haptics';
 import BreathGuide from './BreathGuide';
 import { useTranslation } from 'react-i18next';
-import { supabase, useStore, useSafeMutation, useTemporalStore } from '@repo/core';
+import { supabase, useStore, useSafeMutation, useTemporalStore, usePermissions } from '@repo/core';
 import { useThemedColors, SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useMoodLogs } from '../hooks/useMoodLogs';
 import { useNavigation } from '@react-navigation/native';
@@ -54,6 +54,8 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
     const navigation = useNavigation<any>();
     const { t } = useTranslation();
     const colors = useThemedColors();
+    const { context } = usePermissions();
+    const activeUserId = userId || context.userId;
 
     const MOOD_STATES = useMemo(() => [
         { value: 1, label: t('self.moodHeavy'), emoji: '😔', color: Theme.colors.shroud, glow: 0, image: LOTUS_BUD, scale: 0.8 },
@@ -68,7 +70,7 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
     const isPastView = useTemporalStore(state => state.isPastView);
 
     // Resilient Data
-    const { moodHistory, refreshData, isLoading, addMoodLog } = useMoodLogs(userId);
+    const { moodHistory, refreshData, isLoading, addMoodLog } = useMoodLogs(activeUserId ?? undefined);
     const showToast = useStore(state => state.showToast);
 
     // Get last saved time from cache/history
@@ -151,7 +153,7 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
 
     const handleSlidingComplete = async (value: number) => {
         // Auto-save to database when user releases slider
-        if (userId) {
+        if (activeUserId) {
             await saveMoodLog(value);
         }
     };
@@ -171,7 +173,7 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
     );
 
     const saveMoodLog = async (mood: number) => {
-        if (!userId) return;
+        if (!activeUserId) return;
         await mutate(mood);
     };
 
@@ -185,7 +187,7 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
         );
     }
 
-    if (!userId) {
+    if (!activeUserId) {
         return (
             <PositiveInvitation
                 type="guest"

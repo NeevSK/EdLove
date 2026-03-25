@@ -1,8 +1,12 @@
+/// <reference path="./types/apca-w3.d.ts" />
+/// <reference path="./types/culori.d.ts" />
+
 export * from './theme/Theme';
 export * from './context';
 export * from './hooks/useTheme';
 export * from './hooks/useThemedColors';
 export * from './gluestack';
+export { default as AppSettingsScreenWeb } from './screens/AppSettingsScreen.web';
 
 export * from './components/BreathAnimation';
 export * from './components/DailyResonanceCard';

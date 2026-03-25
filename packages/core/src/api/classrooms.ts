@@ -10,7 +10,8 @@ import {
     requireTeacherAccess,
     requireStudentAccess,
     requireSchoolAccess,
-    requireClassroomAccess
+    requireClassroomAccess,
+    requireAuth,
 } from '../lib/authorization';
 
 // Interface for the join result from classroom_students query
@@ -47,7 +48,7 @@ export const classroomsAPI = {
      * Fetches through the classroom_students linking table
      */
     async getByStudent(studentId: string, params: PaginationParams = {}): Promise<Classroom[]> {
-        await requireStudentAccess(studentId);
+        await requireStudentAccess(studentId, 'student.record.read.self');
         let query = supabase
             .from('classroom_students')
             .select(`
@@ -88,7 +89,7 @@ export const classroomsAPI = {
      * Used by principals to see all classrooms
      */
     async getBySchool(schoolId: string, params: PaginationParams = {}): Promise<Classroom[]> {
-        await requireSchoolAccess(schoolId);
+        await requireSchoolAccess(schoolId, 'school.read');
         let query = supabase
             .from('classrooms')
             .select('*')
@@ -124,7 +125,7 @@ export const classroomsAPI = {
             } as Classroom;
         }
 
-        await requireClassroomAccess(id);
+        await requireClassroomAccess(id, 'classroom.read.assigned');
         const { data, error } = await supabase
             .from('classrooms')
             .select('*')
@@ -146,6 +147,12 @@ export const classroomsAPI = {
      * Create a new classroom
      */
     async create(classroom: Omit<Classroom, 'id' | 'created_at' | 'updated_at'>): Promise<Classroom> {
+        if (classroom.school_id) {
+            await requireSchoolAccess(classroom.school_id, 'classroom.create');
+        } else {
+            await requireAuth();
+        }
+
         const { data, error } = await supabase
             .from('classrooms')
             .insert([classroom])
@@ -163,6 +170,8 @@ export const classroomsAPI = {
      * Update a classroom
      */
     async update(id: string, updates: Partial<Classroom>): Promise<Classroom> {
+        await requireClassroomAccess(id, 'classroom.manage.own');
+
         const { data, error } = await supabase
             .from('classrooms')
             .update(updates)
@@ -181,6 +190,8 @@ export const classroomsAPI = {
      * Delete a classroom
      */
     async delete(id: string): Promise<void> {
+        await requireClassroomAccess(id, 'classroom.manage.own');
+
         const { error } = await supabase
             .from('classrooms')
             .delete()
@@ -195,6 +206,7 @@ export const classroomsAPI = {
      * Join an existing classroom (for teachers)
      */
     async join(classroomId: string, teacherId: string): Promise<Classroom> {
+        await requireTeacherAccess(teacherId);
         return this.update(classroomId, { teacher_id: teacherId });
     }
 };

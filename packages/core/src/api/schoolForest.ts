@@ -23,7 +23,7 @@
  */
 
 import { supabase } from '../lib/supabase';
-import { requireAuth } from '../lib/authorization';
+import { requireAuth, requireSchoolAccess } from '../lib/authorization';
 import { impactRipplesAPI } from './impactRipples';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -206,13 +206,8 @@ export const schoolForestAPI = {
      * falls back to live `growth_events` computation if the table is empty.
      */
     async getForestOverview(schoolId: string): Promise<SchoolForestState> {
-        // Only principals, grade heads, and developers may view the school forest
-        const user = await requireAuth();
-        const allowedRoles = ['principal', 'grade_head', 'section_head', 'developer', 'founder', 'admin'];
-        const userRole = (user as any).user_metadata?.role ?? (user as any).app_metadata?.role;
-        if (!allowedRoles.includes(userRole)) {
-            throw new Error('Forbidden: School Forest is accessible to principals only');
-        }
+        // Only those with forest reading capability may view the school forest
+        await requireSchoolAccess(schoolId, 'school.forest.read');
 
         const now = new Date();
 

@@ -2,42 +2,15 @@
 // LIBRARY RESOURCE TYPES
 // ============================================================================
 
-import { UserRole } from '@repo/core';
+import { AuthorityTier, BaseResource, ResourceFormat, ResourceType } from '@repo/core';
 
-export type ResourceType =
-    | 'lesson'
-    | 'worksheet'
-    | 'guide'           // teacher guides
-    | 'reading'
-    | 'pedagogy'
-    | 'video'
-    | 'link'
-    | 'other'
-    | 'pdf'
-    | 'doc'
-    | 'note'
-    // Holistic library expansion
-    | 'map'             // real maps, visual maps, infographics, mind maps, brochures
-    | 'infographic'     // standalone infographics / visual explainers
-    | 'story'           // stories for students and teachers
-    | 'circular'        // official circulars from the Education Ministry (SL)
-    | 'movie_trailer'   // inspiring YouTube trailers — local, Indian, international
-    | 'tech_guide';     // technology guides for teachers
+export type { ResourceFormat, ResourceType }; // Re-export for package consumers
 
-export type ResourceFormat = 'text' | 'video' | 'interactive' | 'audio' | 'document';
 export type ResourceDifficulty = 'beginner' | 'intermediate' | 'advanced';
 export type ResourceLanguage = 'english' | 'sinhala' | 'tamil';
-export type ResourceVisibility = 'private' | 'class' | 'grade' | 'school' | 'public';
+export type ResourceVisibility = 'private' | 'class' | 'grade' | 'school' | 'public' | 'shared' | 'personal';
 
-export interface LibraryResource {
-    id: string;
-    title: string;
-    description: string;
-    type: ResourceType;
-    format: ResourceFormat;
-    url?: string;
-    file_path?: string;
-
+export interface LibraryResource extends BaseResource {
     // Categorization
     subjects: string[];
     topics: string[];
@@ -57,7 +30,7 @@ export interface LibraryResource {
     visibility: ResourceVisibility;
     creator_id: string;
     creator_name: string;
-    creator_role: UserRole;
+    creator_role: AuthorityTier;
 
     // Quality indicators
     verified: boolean;
@@ -85,8 +58,6 @@ export interface LibraryResource {
     // Metadata
     tags: string[];
     school_id: string;
-    created_at: string;
-    updated_at: string;
     media?: import('@repo/core').MediaAsset; // Abstracted Media Asset
 
     // Link Reliability
@@ -95,7 +66,7 @@ export interface LibraryResource {
     fail_count?: number;
 }
 
-export interface ResourceCollection {
+export interface LibraryCollection {
     id: string;
     name: string;
     description: string;
@@ -117,6 +88,9 @@ export interface ResourceCollection {
     used_by_count: number;
     endorsements: number;
     has_endorsed?: boolean;
+    has_bookmarked?: boolean;
+    thumbnail_url?: string;
+    is_official?: boolean;
 
     // Metadata
     school_id: string;
@@ -138,7 +112,7 @@ export interface ResourceFilters {
     visibility?: ResourceVisibility;
     source?: 'core' | 'community';
     verified_only?: boolean;
-    creator_role?: UserRole;
+    creator_role?: AuthorityTier;
     tags?: string[];
     search?: string;
     sort_by?: 'recent' | 'popular' | 'most_used' | 'most_endorsed' | 'most_bookmarked';
@@ -151,6 +125,7 @@ export interface CollectionFilters {
     grades?: number[];
     visibility?: ResourceVisibility;
     creator_id?: string;
+    userId?: string;
     search?: string;
     limit?: number;
     offset?: number;
@@ -208,7 +183,7 @@ export interface CreateCollectionInput {
 export const LIBRARY_UI_CATEGORIES = [
     { id: 'All', en: 'All', si: 'සියල්ල', ta: 'அனைத்தும்' },
     { id: 'lesson', en: 'Lessons', si: 'පාඩම්', ta: 'பாடங்கள்' },
-    { id: 'worksheet', en: 'Worksheets', si: 'වැඩපත්', ta: 'பயிற்සිத் தாள்கள்' },
+    { id: 'worksheet', en: 'Worksheets', si: 'වැඩපත්', ta: 'பயிற்சித் தாள்கள்' },
     { id: 'guide', en: 'Guides', si: 'මඟපෙන්වන්නන්', ta: 'வழிகாட்டிகள்' },
     { id: 'video', en: 'Videos', si: 'වීඩියෝ', ta: 'வீடியோக்கள்' },
     { id: 'pedagogy', en: 'Pedagogy', si: 'ශික්ෂණ විද්‍යාව', ta: 'கற்பித்தல் முறை' },

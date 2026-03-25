@@ -36,6 +36,8 @@ export interface ThemeColors {
     backgroundDark: string;
     obsidian: string;
     black: string;
+    gurudeviBlue: string;
+    card: string;
 }
 
 type ThemeColorSource = Pick<ResolvedThemeTokens, 'scene' | 'text' | 'accent' | 'glow'> & {
@@ -70,6 +72,8 @@ export function toThemeColors(source: ThemeColorSource): ThemeColors {
         backgroundDark: source.scene.chrome.bg,
         obsidian: source.scene.world.bg,
         black: source.scene.world.bg,
+        gurudeviBlue: Theme.colors.gurudeviBlue,
+        card: source.scene.surface.bg,
     };
 }
 
@@ -93,4 +97,6 @@ export const themeColors = {
     primary: Theme.colors.sanctuarySaffron,
     secondary: Theme.colors.sageGreen,
     tertiary: Theme.colors.shroud,
+    gurudeviBlue: Theme.colors.gurudeviBlue,
+    card: Theme.colors.silk,
 };

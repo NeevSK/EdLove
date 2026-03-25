@@ -17,6 +17,7 @@ export { default as SelfScreen } from './SelfScreen';
 export { default as ProfileScreen } from './ProfileScreen';
 export { default as AppSettingsScreen } from './AppSettingsScreen';
 export { default as NotificationsScreen } from './NotificationsScreen';
+export { default as TrubeLabScreen } from './TrubeLabScreen';
 
 export { default as SchoolCreationScreen } from './SchoolCreationScreen';
 export { default as AIAssistantScreen } from './AIAssistantScreen';

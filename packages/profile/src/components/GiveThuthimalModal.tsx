@@ -21,13 +21,11 @@ interface GiveThuthimalModalProps {
     recipientId: string;
     recipientName: string;
     /** Role of the recipient — used to attribute the gift correctly. Defaults to 'teacher'. */
-    recipientRole?: string;
+    recipientTier?: string;
+    /** ID of the giver. */
     giverId: string;
+    /** Name of the giver. */
     giverName: string;
-    /** @deprecated Use recipientId. Kept for backwards-compatibility. */
-    teacherId?: string;
-    /** @deprecated Use recipientName. Kept for backwards-compatibility. */
-    teacherName?: string;
 }
 
 export function GiveThuthimalModal({
@@ -35,16 +33,10 @@ export function GiveThuthimalModal({
     onClose,
     recipientId,
     recipientName,
-    recipientRole = 'teacher',
+    recipientTier = 'teacher',
     giverId,
     giverName,
-    // Legacy props — resolve to canonical names for callers that haven't migrated yet
-    teacherId,
-    teacherName,
 }: GiveThuthimalModalProps) {
-    const resolvedRecipientId = recipientId ?? teacherId ?? '';
-    const resolvedRecipientName = recipientName ?? teacherName ?? 'this person';
-
     const colors = useThemedColors();
     const { showToast } = useLotusToast();
     const [isSending, setIsSending] = useState(false);
@@ -56,8 +48,8 @@ export function GiveThuthimalModal({
         try {
             await thuthimalAPI.createGift(giverId, {
                 gifterName: giverName,
-                recipientRole: recipientRole as 'teacher' | 'principal',
-                recipientId: resolvedRecipientId,
+                recipientTier: recipientTier as 'teacher' | 'principal',
+                recipientId: recipientId,
                 message: message.trim() || undefined,
             });
             hapticSuccess();
@@ -70,7 +62,7 @@ export function GiveThuthimalModal({
         } finally {
             setIsSending(false);
         }
-    }, [isSending, giverId, giverName, recipientRole, resolvedRecipientId, message, showToast, onClose]);
+    }, [isSending, giverId, giverName, recipientTier, recipientId, message, showToast, onClose]);
 
     return (
         <Modal
@@ -108,7 +100,7 @@ export function GiveThuthimalModal({
                         </HStack>
 
                         <Text size="sm" color={colors.textSecondary}>
-                            Send a Thuthimal gift to {resolvedRecipientName}. They will receive a notification when the gift is claimed.
+                            Send a Thuthimal gift to {recipientName}. They will receive a notification when the gift is claimed.
                         </Text>
 
                         {/* Optional personal message */}

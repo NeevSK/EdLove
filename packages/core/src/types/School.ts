@@ -1,4 +1,5 @@
-import { UserRole } from '../constants/SriLankanSchools';
+import { AuthorityTier } from '../permissions/schemas/role.schema';
+import type { TenantKind } from './Tenancy';
 
 export interface School {
     id: string;
@@ -6,6 +7,7 @@ export interface School {
     type: string; // Legacy field
     handle: string | null;
     status: 'active' | 'pending' | 'rejected';
+    tenant_kind?: TenantKind;
     official_type?: string; 
     province_id?: string;
     district_id?: string;
@@ -45,7 +47,7 @@ export interface Announcement {
 export interface InviteCode {
     code: string;
     school_id: string;
-    role: UserRole;
+    authority: AuthorityTier;
     created_by: string;
     used: boolean;
     created_at: string;

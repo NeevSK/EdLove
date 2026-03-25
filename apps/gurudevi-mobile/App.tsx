@@ -12,7 +12,34 @@ import { config } from "./gluestack-ui.config";
 import { Home, School, Users, Library, User, Sparkles } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
 import * as Font from 'expo-font';
-import { supabase, useStore, UserRole, SchoolType, initSentry, initPostHog, trackEvent, identifyUser, identityAPI, authAPI, APIError, getPendingGateAction, SyncManager } from '@repo/core';
+import { bootCoreCapabilities } from '@repo/core';
+import { registerPeopleVows } from '@repo/people';
+import { registerAdminVows, registerAdminCapabilities } from '@repo/admin';
+import { registerClassroomVows, registerClassroomCapabilities } from '@repo/classroom';
+import { registerSelfVows } from '@repo/self';
+
+function bootstrapCapabilitiesAndVows() {
+  const globalAny = globalThis as any;
+
+  if (globalAny.__gurudeviCapabilitiesBootstrapped) {
+    return;
+  }
+
+  globalAny.__gurudeviCapabilitiesBootstrapped = true;
+
+  // Initialize core capabilities & POA Vows
+  bootCoreCapabilities();
+  registerAdminCapabilities();
+  registerClassroomCapabilities();
+
+  registerPeopleVows();
+  registerAdminVows();
+  registerClassroomVows();
+  registerSelfVows();
+}
+
+bootstrapCapabilitiesAndVows();
+import { AnalyticsProvider } from '@repo/analytics/components';
 import { Platform, StyleSheet, View } from 'react-native';
 import ReactDOM from 'react-dom';
 import * as Linking from 'expo-linking';
@@ -23,8 +50,6 @@ if (Platform.OS === 'web' && process.env.NODE_ENV === 'development') {
   axe(React, ReactDOM, 1000);
 }
 
-import { PostHogProvider } from 'posthog-react-native';
-import * as Sentry from '@sentry/react-native';
 import { fontAssets } from './src/constants/Fonts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { EnvironmentProvider } from '@repo/ui';
@@ -122,6 +147,7 @@ function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [currentTab, setCurrentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
   const onboardingCompleted = useStore((state) => state.onboardingCompleted);
+  const currentUser = useStore((state) => state.user);
   const [showWelcome, setShowWelcome] = useState(true);
   const toast = useStore((state) => state.toast);
   const hideToast = useStore((state) => state.hideToast);
@@ -136,6 +162,26 @@ function App() {
   useEffect(() => {
     LanguageUtils.init();
   }, []);
+
+  useEffect(() => {
+    if (!currentUser?.id) {
+      clearSentryUser();
+      return;
+    }
+
+    setSentryUser({
+      id: currentUser.id,
+      email: currentUser.email ?? undefined,
+      username: currentUser.full_name ?? undefined,
+    });
+
+    identifyUser(currentUser.id, {
+      email: currentUser.email ?? undefined,
+      full_name: currentUser.full_name ?? undefined,
+      role: currentUser.role ?? undefined,
+      school_id: currentUser.school_id ?? undefined,
+    });
+  }, [currentUser?.id, currentUser?.email, currentUser?.full_name, currentUser?.role, currentUser?.school_id]);
 
   useEffect(() => {
     async function loadFonts() {
@@ -386,19 +432,18 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
                         Library: 'library',
                         NotificationsPanel: 'notifications',
                         SettingsPanel: 'settings',
-                      },
-                    },
+                        },
+                     },
                     PublicForm: 'f/:slug',
                   },
                 },
               }}
             >
-              <PostHogProvider
+              <AnalyticsProvider
                 apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
                 options={{
                   host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
                 }}
-                autocapture={false}
               >
                 <RootStack.Navigator
                   screenOptions={{ headerShown: false }}
@@ -478,7 +523,7 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
                     </>
                   )}
                 </RootStack.Navigator>
-              </PostHogProvider>
+              </AnalyticsProvider>
             </NavigationContainer>
             <SyncManager />
             <NetworkStatusBanner />
@@ -486,6 +531,7 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
             {Platform.OS === 'web' && <PWAInstallBanner />}
             {toast && (
               <SanctuaryToast
+                visible={!!toast}
                 message={toast.message}
                 type={toast.type}
                 duration={toast.duration}

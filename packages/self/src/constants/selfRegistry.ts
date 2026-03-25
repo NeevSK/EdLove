@@ -15,8 +15,6 @@ export interface SelfModuleRegistry {
     };
 }
 
-export type UserRole = 'teacher' | 'principal' | 'founder' | 'admin' | 'student';
-
 /**
  * Emoji mapping for common features to add soul to the UI.
  */
@@ -90,7 +88,7 @@ export const FEATURE_DISCOVERY_DATA: Record<string, { whatIsIt: string; whereToF
     },
     'school_pulse': {
         whatIsIt: 'A real-time overview of your school\'s collective energy and engagement levels.',
-        whereToFind: 'In the Working domain of the Principal dashboard.'
+        whereToFind: 'In the Working domain of the Leadership dashboard.'
     },
     'decisions': {
         whatIsIt: 'A structured space to track and reflect on institutional choices using "Strategic Wisdom".',
@@ -122,19 +120,19 @@ export const FEATURE_DISCOVERY_DATA: Record<string, { whatIsIt: string; whereToF
     },
     'systemic_overview': {
         whatIsIt: 'High-level analytics across the entire educational ecosystem.',
-        whereToFind: 'Executive layer of the Founder dashboard.'
+        whereToFind: 'Executive layer of the Strategic dashboard.'
     },
     'strategic_wisdom': {
         whatIsIt: 'Long-term planning tools and philosophical guidance for institutional growth.',
-        whereToFind: 'Under the Strategic domain for Founders.'
+        whereToFind: 'Under the Strategic domain for Leadership.'
     },
     'system_health': {
         whatIsIt: 'Technical monitoring and operational status of the Gurudevi platform.',
-        whereToFind: 'In the Working domain for Administrators.'
+        whereToFind: 'In the Working domain for Platform Guardians.'
     },
     'user_resonance': {
         whatIsIt: 'Tools to monitor and improve the quality of interactions across the user base.',
-        whereToFind: 'Admin dashboard, focusing on community health.'
+        whereToFind: 'Guardian dashboard, focusing on community health.'
     },
     'mirrors': {
         whatIsIt: 'A collection of "Life Reflections" derived from your interactions and moods.',
@@ -145,8 +143,8 @@ export const FEATURE_DISCOVERY_DATA: Record<string, { whatIsIt: string; whereToF
         whereToFind: 'The Reminders tab in your Discovery Hub.'
     },
     'teacher_pulse': {
-        whatIsIt: 'A real-time reflection of your instructional impact and professional growth.',
-        whereToFind: 'Located in the working layer of your Teacher sanctuary.'
+         whatIsIt: 'A real-time reflection of your instructional impact and professional growth.',
+        whereToFind: 'Located in the working layer of your Educator sanctuary.'
     },
     'mood_lotus': {
         whatIsIt: 'An interactive visualization of your emotional state over time.',
@@ -178,45 +176,22 @@ export const FEATURE_DISCOVERY_DATA: Record<string, { whatIsIt: string; whereToF
     },
     'strategic_pulse': {
         whatIsIt: 'High-level orchestration of institutional health and direction.',
-        whereToFind: 'Leadership hub for Principals and Founders.'
+        whereToFind: 'Leadership hub for Strategic Orchestration.'
     },
     'decision_mirror': {
         whatIsIt: 'Reflect on the legacy of your choices through the lens of Strategic Wisdom.',
-        whereToFind: 'Governance layer of the Principal dashboard.'
+        whereToFind: 'Governance layer of the Leadership dashboard.'
     },
     'vision_lab': {
         whatIsIt: 'A technical and philosophical space for prototyping the future of Gurudevi.',
-        whereToFind: 'Reserved for the Founder core.'
+        whereToFind: 'Reserved for the Strategic core.'
     },
     'philosophy_lab': {
         whatIsIt: 'A workspace for refining the foundational principles of our educational ecosystem.',
-        whereToFind: 'Founder and Principal wisdom layers.'
+        whereToFind: 'Strategic and Leadership wisdom layers.'
     },
     'ecosystem_dash': {
         whatIsIt: 'Collective analytics representing the health of the entire Gurudevi biosphere.',
-        whereToFind: 'Global dashboard for Founders.'
-    }
-};
-
-export const ROLE_LAYERS: Record<UserRole, { personal: string[]; working: string[] }> = {
-    principal: {
-        personal: ['energy_pulse', 'voice_journaling'],
-        working: ['school_pulse', 'decisions', 'wisdom', 'reflections']
-    },
-    teacher: {
-        personal: ['energy_pulse', 'breath_presence', 'journal', 'voice_journaling'],
-        working: ['banyan_path', 'faculty_resonance']
-    },
-    student: {
-        personal: ['mood_checkin', 'study_rhythm'],
-        working: ['goals', 'grades']
-    },
-    founder: {
-        personal: ['energy_pulse', 'voice_journaling'],
-        working: ['systemic_overview', 'strategic_wisdom']
-    },
-    admin: {
-        personal: ['energy_pulse'],
-        working: ['system_health', 'user_resonance']
+        whereToFind: 'Global dashboard for Ecosystem Guardians.'
     }
 };

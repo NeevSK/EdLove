@@ -1,12 +1,13 @@
-﻿/**
+/**
  * Resources API
  * 
  * API methods for managing classroom resources
  */
 
 import { supabase } from '../lib/supabase';
+import { resolveResourceOwnerContext } from '../lib/inventoryScope';
 import { APIError } from './types';
-import type { ClassroomResource } from './types';
+import type { ClassroomResource, ResourceOwnerContext } from './types';
 
 export const resourcesAPI = {
     /**
@@ -31,11 +32,24 @@ export const resourcesAPI = {
      * Create a new resource
      */
     async create(
-        resource: Omit<ClassroomResource, 'id' | 'created_at' | 'updated_at'>
+        resource: Omit<ClassroomResource, 'id' | 'created_at' | 'updated_at'> & { owner_context?: ResourceOwnerContext }
     ): Promise<ClassroomResource> {
+        const ownerContext = resolveResourceOwnerContext({
+            ownerContext: resource.owner_context,
+            classroomId: resource.classroom_id,
+        });
+
+        if (ownerContext !== 'classroom') {
+            throw new APIError(
+                'Institution-owned items must be created through admin inventory, not classroom resources.',
+                'INVALID_SCOPE'
+            );
+        }
+
+        const { owner_context, ...classroomResource } = resource;
         const { data, error } = await supabase
             .from('classroom_resources')
-            .insert([resource])
+            .insert([classroomResource])
             .select()
             .single();
 

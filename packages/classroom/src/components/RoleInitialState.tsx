@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Box, VStack, HStack, Text, Heading, Pressable, Center, Button, ButtonText } from '@repo/ui';
 import {
     BookOpen,
@@ -42,7 +42,8 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
     const { t } = useTranslation();
     const colors = useThemedColors();
     const setDemoMode = useStore((state) => state.setDemoMode);
-    const setUserRole = useStore((state) => state.setUserRole);
+    // Removed legacy setUserRole call as it's no longer in the store.
+    // Authority is derived from the user object.
 
     const getRoleContent = () => {
         switch (role) {
@@ -118,6 +119,18 @@ export default function RoleInitialState({ role, onCreatePress, onJoinPress, onS
                     actionType: 'setup',
                     samples: [
                         { id: 's1', title: "Vision Manifesto", subtitle: "Philosophy of Care", icon: Heart, color: Theme.colors.emberRed },
+                    ]
+                };
+            case 'platform_admin':
+            case 'developer':
+                return {
+                    title: "Celestial Oversight",
+                    description: "Administrative tools for monitoring the entire ecosystem.",
+                    icon: Shield,
+                    primaryAction: "Admin Dashboard",
+                    actionType: 'setup',
+                    samples: [
+                        { id: 'demo', title: "System Health", subtitle: "Real-time metrics", icon: Activity, color: Theme.colors.sanctuarySaffron },
                     ]
                 };
             default:

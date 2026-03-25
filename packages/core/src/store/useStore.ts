@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { SafeZustandStorage } from '../lib/storageWrapper';
-import { UserRole, User } from '../types';
+import { User } from '../types';
 import { SchoolType } from '../constants/SriLankanSchools';
 import type { Session } from '@supabase/supabase-js';
 
@@ -21,12 +21,10 @@ export interface DeskItem {
 export type ThemeMode = 'light' | 'dark' | 'auto' | 'system';
 
 interface AppState {
-    teacherName: string;
-    setTeacherName: (name: string) => void;
+    userName: string;
+    setUserName: (name: string) => void;
     user: User | null;
     setUser: (user: User | null) => void;
-    userRole: UserRole | null;
-    setUserRole: (role: UserRole | null) => void;
     schoolType: SchoolType | null;
     setSchoolType: (type: SchoolType | null) => void;
     authSession: Session | null;
@@ -62,17 +60,17 @@ interface AppState {
     hideToast: () => void;
     isBreathingOpen: boolean;
     setBreathingOpen: (isOpen: boolean) => void;
+    realClassCount: number | null;
+    setRealClassCount: (count: number | null) => void;
 }
 
 export const useStore = create<AppState>()(
     persist(
         (set) => ({
-            teacherName: 'Gurudevi',
-            setTeacherName: (name) => set({ teacherName: name }),
+            userName: 'Gurudevi',
+            setUserName: (name) => set({ userName: name }),
             user: null,
-            setUser: (user) => set({ user, userRole: user?.role || null }),
-            userRole: null,
-            setUserRole: (role) => set({ userRole: role }),
+            setUser: (user) => set({ user }),
             schoolType: null,
             setSchoolType: (type) => set({ schoolType: type }),
             authSession: null,
@@ -96,6 +94,8 @@ export const useStore = create<AppState>()(
             restoreSamples: () => set({ dismissedSampleIds: [] }),
             isBreathingOpen: false,
             setBreathingOpen: (isOpen) => set({ isBreathingOpen: isOpen }),
+            realClassCount: null,
+            setRealClassCount: (count) => set({ realClassCount: count }),
             isBridging: false,
             setIsBridging: (isBridging) => set({ isBridging }),
             demoLogs: [],
@@ -126,15 +126,15 @@ export const useStore = create<AppState>()(
             name: 'gurudevi-storage',
             storage: createJSONStorage(() => SafeZustandStorage),
             partialize: (state) => ({
-                teacherName: state.teacherName,
+                userName: state.userName,
                 user: state.user,
-                userRole: state.userRole,
                 schoolType: state.schoolType,
                 themeMode: state.themeMode,
                 onboardingCompleted: state.onboardingCompleted,
                 isExplorerMode: state.isExplorerMode,
                 dismissedSampleIds: state.dismissedSampleIds,
                 deskItems: state.deskItems,
+                realClassCount: state.realClassCount,
                 // demoLogs, justFinishedOnboarding, isBridging, and toast are session-only
             }),
         }

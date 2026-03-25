@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
     VStack,
     HStack,
@@ -38,7 +38,7 @@ import { Theme } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 import { hapticLight, hapticSuccess, openExternalURL, showExternalLinkOptions } from '@repo/ui';
 import { useResources } from '../hooks/useResources';
-import { api, ClassroomResource, useStore, useSafeMutation } from '@repo/core';
+import { api, CLASSROOM_RESOURCE_SCOPE, ClassroomResource, useStore, useSafeMutation } from '@repo/core';
 
 interface ResourcesViewProps {
     classroomId: string;
@@ -68,6 +68,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
             return api.resources.create({
                 classroom_id: classroomId,
                 teacher_id: user?.id || '',
+                ...CLASSROOM_RESOURCE_SCOPE,
                 title: variables.title,
                 type: variables.type,
                 url: variables.type === 'link' || variables.type === 'pdf' ? variables.content : undefined,

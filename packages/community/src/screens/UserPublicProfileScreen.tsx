@@ -31,14 +31,14 @@ type Nav = NativeStackNavigationProp<CommunityStackParamList, "UserProfile">;
 interface PublicUser {
   id: string;
   full_name: string;
-  role: string;
+  authority: string;
   avatar_url?: string | null;
   bio?: string | null;
   school_name?: string | null;
   public_profile?: boolean;
 }
 
-const ROLE_LABELS: Record<string, string> = {
+const AUTHORITY_LABELS: Record<string, string> = {
   student: "Student",
   teacher: "Teacher",
   grade_head: "Grade Head",
@@ -75,7 +75,7 @@ export default function UserPublicProfileScreen() {
       // Fetch public fields only
       const { data: userData } = await supabase
         .from('users')
-        .select('id, full_name, role, avatar_url, public_profile, bio, school:schools(name)')
+        .select('id, full_name, authority, avatar_url, public_profile, bio, school:schools(name)')
         .eq('id', userId)
         .single();
 
@@ -83,7 +83,7 @@ export default function UserPublicProfileScreen() {
         setUser({
           id: userData.id,
           full_name: userData.full_name,
-          role: userData.role,
+          authority: userData.authority,
           avatar_url: userData.avatar_url,
           bio: userData.bio,
           public_profile: userData.public_profile ?? true,
@@ -127,7 +127,7 @@ export default function UserPublicProfileScreen() {
     .toUpperCase()
     .slice(0, 2);
 
-  const roleLabel = ROLE_LABELS[user?.role ?? ""] ?? user?.role ?? "";
+  const authorityLabel = AUTHORITY_LABELS[user?.authority ?? ""] ?? user?.authority ?? "";
 
   const isPrivate = user && user.public_profile === false && currentUserId !== userId;
 
@@ -138,7 +138,7 @@ export default function UserPublicProfileScreen() {
       const conversationId = await communityAPI.getOrCreateDirectConversation(userId);
       navigation.navigate('DirectMessage', {
         conversationId,
-        userName: user?.full_name || userName
+        userName: user?.full_name || userName || 'Explorer'
       });
     } catch (err) {
       console.error("Failed to initiate DM", err);
@@ -159,7 +159,7 @@ export default function UserPublicProfileScreen() {
     <ScreenWrapper scroll={false} noTopInset={true}>
       <GlobalHeader
         title={user?.full_name ?? userName}
-        subtitle={roleLabel}
+        subtitle={authorityLabel}
         showBack
         onBack={() => navigation.goBack()}
       />
@@ -179,7 +179,7 @@ export default function UserPublicProfileScreen() {
               <UserAvatar
                 avatarUrl={user?.avatar_url}
                 fullName={user?.full_name ?? userName}
-                role={user?.role}
+                authority={user?.authority}
                 size={120}
               />
 
@@ -188,11 +188,11 @@ export default function UserPublicProfileScreen() {
                   {user?.full_name ?? userName}
                 </Text>
 
-                {/* Role badge */}
+                {/* Authority badge */}
                 <HStack space="xs" alignItems="center">
                   <BadgeCheck color={Theme.colors.sanctuarySaffron} size={14} />
                   <Text color={colors.textSecondary} size="sm">
-                    {roleLabel}
+                    {authorityLabel}
                   </Text>
                 </HStack>
 

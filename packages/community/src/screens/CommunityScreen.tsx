@@ -13,7 +13,7 @@ import { useCommunity } from '../hooks/useCommunity';
 import { useCommunityFilters } from '../hooks/useCommunityFilters';
 import { useCommunityGroups } from '../hooks/useCommunityGroups';
 import { Post, Group } from '../types';
-import { useUserRole, useTracking, supabase, isDemo, useTemporalStore } from '@repo/core';
+import { useTracking, supabase, isDemo, useTemporalStore, FeatureGuard, useStore } from '@repo/core';
 import { TemporalNavigator } from '@repo/ui';
 import { CommunityPresence } from '@repo/self';
 import ManifestoCard from '../components/ManifestoCard';
@@ -33,7 +33,10 @@ type FeedFilter = 'all' | string;
 export default function CommunityScreen() {
     const { t } = useTranslation();
     const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
-    const { role: userRole, schoolId, userId, isGuest } = useUserRole();
+    const { schoolId, userId } = useStore((state: any) => ({
+        schoolId: state.user?.school_id,
+        userId: state.user?.id
+    }));
     const {
         posts,
         groups,
@@ -134,7 +137,6 @@ export default function CommunityScreen() {
             <Box mt="$4">
                 <CommunityHearth
                     manifestos={manifestos}
-                    userRole={userRole}
                     userId={userId || 'guest'}
                     onPressSpotlight={(postId) => {
                         // Spotlight usually leads to a specific post view or group
@@ -165,23 +167,27 @@ export default function CommunityScreen() {
                     />
                 </Animated.View>
 
-                {/* Main Content Area with Guest Gating */}
-                {activeTab === 'feed' ? (
-                    isGuest ? (
-                        <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}>
-                            <VStack space="md" sx={{ paddingVertical: Theme.spacing.md }}>
-                                {renderCommunityHearth()}
-                                <Box px="$4">
-                                    <PositiveInvitation
-                                        type="guest"
-                                        title={t('community.guestTitle')}
-                                        description={t('community.guestDesc')}
-                                        onAction={() => navigation.navigate('Auth' as never)}
-                                    />
-                                </Box>
-                            </VStack>
-                        </ScrollView>
-                    ) : (
+                {/* Main Content Area with Capability-Based Gating */}
+                {activeTab === 'feed' && (
+                    <FeatureGuard 
+                        action="read" 
+                        subject="CommunityFeed"
+                        fallback={
+                            <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}>
+                                <VStack space="md" sx={{ paddingVertical: Theme.spacing.md }}>
+                                    {renderCommunityHearth()}
+                                    <Box px="$4">
+                                        <PositiveInvitation
+                                            type="guest"
+                                            title={t('community.guestTitle')}
+                                            description={t('community.guestDesc')}
+                                            onAction={() => navigation.navigate('Auth' as never)}
+                                        />
+                                    </Box>
+                                </VStack>
+                            </ScrollView>
+                        }
+                    >
                         <SanctuaryFlashList
                             data={listData}
                             keyExtractor={(item) => item.id}
@@ -261,7 +267,24 @@ export default function CommunityScreen() {
                             }
                             contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}
                         />
-                    )) : activeTab === 'groups' ? (
+                    </FeatureGuard>
+                )}
+
+                {activeTab === 'groups' && (
+                    <FeatureGuard 
+                        action="read" 
+                        subject="CommunityGroups"
+                        fallback={
+                            <VStack sx={{ flex: 1, justifyContent: 'center', padding: Theme.spacing.xl }}>
+                                <PositiveInvitation
+                                    type="guest"
+                                    title={t('community.groups.guestTitle')}
+                                    description={t('community.groups.guestDesc')}
+                                    onAction={() => navigation.navigate('Auth' as never)}
+                                />
+                            </VStack>
+                        }
+                    >
                         <GroupsScreen
                             userId={userId ?? undefined}
                             schoolId={schoolId || undefined}
@@ -271,19 +294,26 @@ export default function CommunityScreen() {
                                 navigation.navigate('GroupDetails', { groupId });
                             }}
                         />
-                    ) : (
-                    isGuest ? (
-                        <VStack sx={{ flex: 1, justifyContent: 'center', padding: Theme.spacing.xl }}>
-                            <PositiveInvitation
-                                type="guest"
-                                title={t('community.dms.guestTitle')}
-                                description={t('community.dms.guestDesc')}
-                                onAction={() => navigation.navigate('Auth' as never)}
-                            />
-                        </VStack>
-                    ) : (
+                    </FeatureGuard>
+                )}
+
+                {activeTab === 'dms' && (
+                    <FeatureGuard 
+                        action="read" 
+                        subject="DirectMessages"
+                        fallback={
+                            <VStack sx={{ flex: 1, justifyContent: 'center', padding: Theme.spacing.xl }}>
+                                <PositiveInvitation
+                                    type="guest"
+                                    title={t('community.dms.guestTitle')}
+                                    description={t('community.dms.guestDesc')}
+                                    onAction={() => navigation.navigate('Auth' as never)}
+                                />
+                            </VStack>
+                        }
+                    >
                         <DirectMessagesListScreen />
-                    )
+                    </FeatureGuard>
                 )}
 
                 <CreatePostModal

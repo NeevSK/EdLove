@@ -95,6 +95,7 @@ const WEB_SHIMS = {
     'react-native-nitro-modules': path.resolve(projectRoot, 'src/shims/nitro-modules-web.js'),
     '@react-native-community/netinfo': path.resolve(projectRoot, 'src/shims/netinfo-web.js'),
     '@shopify/react-native-skia': path.resolve(projectRoot, 'src/shims/skia-web.js'),
+    'react-native-gesture-handler': path.resolve(projectRoot, 'src/shims/gesture-handler-web.js'),
 };
 
 const defaultResolveRequest = config.resolver.resolveRequest;

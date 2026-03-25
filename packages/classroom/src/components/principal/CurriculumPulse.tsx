@@ -23,15 +23,8 @@ import {
     ProgressFilledTrack,
 } from '@repo/ui';
 import { BookOpen, Zap, Clock } from 'lucide-react-native';
-import { supabase } from '@repo/core';
+import { insightsAPI, type GradeProgress } from '@repo/admin';
 import { useTranslation } from 'react-i18next';
-
-interface GradeProgress {
-    grade: string;
-    coverage: number;
-    is_reform: boolean;
-    last_updated: string;
-}
 
 export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
     const { t } = useTranslation();
@@ -45,18 +38,8 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
 
     const fetchCurriculumProgress = async () => {
         try {
-            const { data, error } = await supabase
-                .from('curriculum_progress')
-                .select('*')
-                .eq('school_id', schoolId)
-                .order('grade', { ascending: true });
-
-            if (error) {
-                console.error('Error fetching curriculum progress:', error);
-                setMockData();
-            } else {
-                setProgress(data || []);
-            }
+            const data = await insightsAPI.listCurriculumProgress(schoolId);
+            setProgress(data);
         } catch (err) {
             setMockData();
         } finally {

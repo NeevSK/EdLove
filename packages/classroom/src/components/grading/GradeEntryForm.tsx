@@ -26,7 +26,7 @@ import {
     Theme
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { marksToGPA } from '@repo/core';
+import { marksToGPA } from '@repo/analytics';
 
 interface GradeEntryFormProps {
     studentName: string;

@@ -1,4 +1,4 @@
-import { KnowledgeTopology } from '../types/KnowledgeTopology';
+import { KnowledgeTopology } from '@repo/core';
 
 export interface RadarPoint {
     attribute: string;

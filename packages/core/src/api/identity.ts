@@ -116,6 +116,20 @@ export const identityAPI = {
     },
 
     /**
+     * Updates the user's profile in the `users` table.
+     */
+    async updateProfile(userId: string, updates: any) {
+        const { error } = await supabase
+            .from('users')
+            .update(updates)
+            .eq('id', userId);
+
+        if (error) {
+            throw new APIError('Failed to update user profile', error.code, error);
+        }
+    },
+
+    /**
      * Clears the identity cache (e.g., on logout).
      */
     clearCache() {

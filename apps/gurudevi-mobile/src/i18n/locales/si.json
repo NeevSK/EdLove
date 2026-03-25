@@ -399,6 +399,28 @@
       "manageHierarchy": "🏫 පාසල් ධුරාවලිය කළමනාකරණය කරන්න",
       "inviteStaff": "✉️ කාර්ය මණ්ඩලය සහ ශිෂ්‍යයින්ට ආරාධනා කරන්න"
     },
+    "ia": {
+      "scope": {
+        "institutional": "Institutional",
+        "classroom": "Classroom",
+        "crossEcosystem": "Cross-Ecosystem"
+      },
+      "help": {
+        "institutional": "Institutional scope: school-wide governance and operations.",
+        "classroom": "Classroom scope: learning delivery, student progress, and class execution.",
+        "crossEcosystem": "Cross-ecosystem scope: bridges institutional operations with community and culture."
+      },
+      "actions": {
+        "hierarchy": "School Structure",
+        "invites": "Role Invites",
+        "timetable": "Timetable Planning",
+        "logbook": "Leadership Logbook",
+        "hierarchyCta": "Shape School Structure",
+        "invitesCta": "Invite Faculty Roles",
+        "profileCta": "Institution Profile",
+        "commonsCta": "Open Community Commons"
+      }
+    },
     "resources": {
       "title": "සම්පත් අවශ්‍යතා",
       "subtitle": "ඔබේ ගුරුවරුන්ට අවශ්‍ය දේ සමඟ ඔවුන්ට සහාය වන්න",

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUserRole, useStore } from '@repo/core';
+import { usePermissions, useStore } from '@repo/core';
 
 export interface WebScreenHeaderProps {
     title?: React.ReactNode;
@@ -22,7 +22,8 @@ export const WebScreenHeader: React.FC<WebScreenHeaderProps> = ({
     showPersonalizedGreeting
 }) => {
     const { t } = useTranslation();
-    const { role } = useUserRole();
+    const { context, can } = usePermissions();
+    const { roles } = context;
     const { user } = useStore();
 
     // Determine greeting based on time of day (DRY from GlobalHeader)
@@ -39,9 +40,9 @@ export const WebScreenHeader: React.FC<WebScreenHeaderProps> = ({
     let displayTimeText = timeText || greetingText;
     if (showPersonalizedGreeting) {
         const userName = (user as any)?.user_metadata?.full_name?.split(' ')[0] || user?.full_name?.split(' ')[0] || '';
-        const roleLabel = role ? role.charAt(0).toUpperCase() + role.slice(1) : '';
+        const roleLabel = roles[0] ? roles[0].charAt(0).toUpperCase() + roles[0].slice(1) : '';
         
-        if (role === 'principal' || role === 'teacher') {
+        if (can('manage', 'TeacherDashboard') || can('manage', 'PrincipalDashboard')) {
             displayTimeText = `${greetingText}, ${roleLabel}`;
         } else {
             displayTimeText = `${greetingText}, ${userName}`;

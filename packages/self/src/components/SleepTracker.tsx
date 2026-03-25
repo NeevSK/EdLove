@@ -36,7 +36,7 @@ import Animated, {
 import { Moon, Sun, Cloud, Stars } from 'lucide-react-native';
 import { Theme, typography } from '@repo/ui';
 import { hapticLight, hapticSuccess } from '@repo/ui';
-import { useSafeMutation } from '@repo/core';
+import { useSafeMutation, usePermissions } from '@repo/core';
 import { useSleepTracker } from '../hooks/useSleepTracker';
 import { useTranslation } from 'react-i18next';
 
@@ -46,8 +46,10 @@ interface SleepTrackerProps {
 }
 
 export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
+    const { context } = usePermissions();
+    const activeUserId = userId || context.userId;
     // Resilient Data Hook
-    const { sleepLogs, refreshData } = useSleepTracker(userId);
+    const { sleepLogs, refreshData } = useSleepTracker(activeUserId ?? undefined);
     const { t, i18n } = useTranslation();
 
     const [sleepQuality, setSleepQuality] = useState(3);
@@ -82,7 +84,7 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
     };
 
     useEffect(() => {
-        if (userId) {
+        if (activeUserId) {
             checkTodayLog();
         }
 
@@ -104,11 +106,11 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
             -1,
             true
         );
-    }, [userId]);
+    }, [activeUserId]);
 
     // Check if logged today based on hook data
     useEffect(() => {
-        if (!userId || !sleepLogs.length) return;
+        if (!activeUserId || !sleepLogs.length) return;
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -119,7 +121,7 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
             setHasLoggedToday(true);
             setSleepQuality(todayLog.quality);
         }
-    }, [sleepLogs, userId]);
+    }, [sleepLogs, activeUserId]);
 
     const { mutate: saveLog, isLoading: isSaving } = useSafeMutation(
         async (quality: number) => {
@@ -127,7 +129,7 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                 .from('sleep_logs')
                 .insert([
                     {
-                        user_id: userId,
+                        user_id: activeUserId,
                         quality: quality,
                         created_at: new Date().toISOString(),
                     },
@@ -144,7 +146,7 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
     );
 
     const saveSleepLog = async () => {
-        if (!userId) return;
+        if (!activeUserId) return;
         hapticLight();
         await saveLog(sleepQuality);
     };

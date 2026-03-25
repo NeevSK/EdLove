@@ -6,7 +6,12 @@ import { ClassroomStackParamList } from '@repo/core';
 
 // Web-specific screens — lazy loaded for code splitting
 const ClassroomScreenWeb = React.lazy(() => import('../screens/ClassroomScreen.web'));
-const ClassroomDetailScreenWeb = React.lazy(() => import('../screens/ClassroomDetailScreen.web'));
+const TeacherClassroomDashboardWeb = React.lazy(() =>
+    import('@repo/classroom').then(m => ({ default: m.TeacherClassroomDashboard }))
+);
+const StudentClassroomDashboardWeb = React.lazy(() =>
+    import('@repo/classroom').then(m => ({ default: m.StudentClassroomDashboard }))
+);
 
 // Web-native attendance and gradebook (HTML/CSS, no RN gesture handlers)
 const AttendanceScreen = React.lazy(() => import('../screens/AttendanceScreen.web'));
@@ -17,8 +22,8 @@ const StudentProfileScreen = React.lazy(() =>
 const FounderDashboard = React.lazy(() =>
     import('@repo/classroom').then(m => ({ default: m.FounderDashboard }))
 );
-const FounderSchoolView = React.lazy(() =>
-    import('@repo/classroom').then(m => ({ default: m.FounderSchoolView }))
+const FounderSchoolDashboard = React.lazy(() =>
+    import('@repo/classroom').then(m => ({ default: m.FounderSchoolDashboard }))
 );
 const SchoolCreationScreen = React.lazy(() =>
     import('../screens/SchoolCreationScreen')
@@ -55,12 +60,13 @@ export default function ClassroomStackNavigatorWeb() {
             }}
         >
             <Stack.Screen name="ClassroomList" component={ClassroomScreenWeb} />
-            <Stack.Screen name="ClassroomDetails" component={ClassroomDetailScreenWeb} />
+            <Stack.Screen name="TeacherClassroomDashboard" component={TeacherClassroomDashboardWeb} />
+            <Stack.Screen name="StudentClassroomDashboard" component={StudentClassroomDashboardWeb} />
             <Stack.Screen name="Attendance" component={AttendanceScreen} />
             <Stack.Screen name="Gradebook" component={GradebookScreen} />
             <Stack.Screen name="StudentProfile" component={StudentProfileScreen} />
             <Stack.Screen name="FounderDashboard" component={FounderDashboard} />
-            <Stack.Screen name="FounderSchoolView" component={FounderSchoolView} />
+            <Stack.Screen name="FounderSchoolDashboard" component={FounderSchoolDashboard} />
             <Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} />
             <Stack.Screen name="Timetable" component={TimetableScreen} />
             <Stack.Screen name="SchoolForest" component={SchoolForestScreen} />

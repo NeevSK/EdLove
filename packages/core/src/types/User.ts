@@ -1,15 +1,15 @@
-import { UserRole } from '../constants/SriLankanSchools';
-export type { UserRole };
+import type { AuthorityTier, PlatformAuthority, SchoolAuthority, WorkCapacity } from './Authority';
+import type { Membership, TenantKind } from './Tenancy';
 
 /**
  * User Profile Interface
- * Represents a Gurudevi user with role and school context
+ * Represents a Gurudevi user with authority and school context
  */
 export interface User {
     id: string;                  // Internal Gurudevi User UUID (from public.users, resolved via auth_identities)
     email: string;               // User's email address
     full_name: string;           // Display name
-    role: UserRole;              // User's role in the system
+    authority: AuthorityTier;     // User's authority level
     school_id: string;           // UUID of the school they belong to
     username?: string;           // Unique handle for the user
     created_at: string;          // ISO timestamp
@@ -18,10 +18,15 @@ export interface User {
     is_anonymous?: boolean;      // Flag for anonymous/guest users
     profile_completed: boolean;  // Flag for "No Trust" barrier
     bio?: string;                // User bio
-    role_label?: string;         // Personalized role label (e.g. "Physics Teacher")
+    authority_label?: string;         // Personalized authority label (e.g. "Physics Teacher")
     index_number?: string;       // Mandatory for students
     nic_number?: string;         // Mandatory for teachers
     organization_name?: string;  // Name of the user's organization/school
+    tenant_kind?: TenantKind;    // Distinguishes internal, customer, demo, and sandbox tenants
+    platform_authorities?: PlatformAuthority[];
+    school_authority?: SchoolAuthority | null;
+    work_capacities?: WorkCapacity[];
+    school_memberships?: Membership[];
     onboarding_completed?: boolean; // Flag indicating if user has completed onboarding
     onboarding_completed_at?: string; // Timestamp when onboarding was completed
     public_profile?: boolean;      // Visibility flag for community profile (optional — defaults to false if absent)
@@ -64,7 +69,7 @@ export interface SignUpData {
     avatar_url: string | null;
     username: string | null;
     full_name: string;
-    role: UserRole;
+    authority: AuthorityTier;
     school_id?: string;          // Optional - can be selected or created during signup
 }
 

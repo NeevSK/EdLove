@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView, useWindowDimensions } from 'react-native';
-import { BarChart, PieChart } from 'react-native-gifted-charts';
 import { 
     Theme, 
     useThemedColors,
@@ -14,6 +13,15 @@ import { Network, Orbit, TrendingUp, Layers } from 'lucide-react-native';
 import type { 
     PerspectiveViewProps, 
 } from '@repo/graphics';
+
+// The charts package ships runtime code correctly in this workspace, but some package-local
+// TypeScript programs do not pick up its ambient typings consistently through transitive imports.
+// Requiring it here keeps the dependency local to the native-only perspective while preserving type safety.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { BarChart, PieChart } = require('react-native-gifted-charts') as {
+    BarChart: React.ComponentType<any>;
+    PieChart: React.ComponentType<any>;
+};
 
 /**
  * JyotiView — The "Insight / Statistical" Perspective (Native).

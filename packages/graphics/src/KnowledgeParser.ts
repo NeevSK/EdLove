@@ -1,6 +1,4 @@
-import type { KnowledgeTopology } from './types/KnowledgeTopology';
-import type { GraphNode } from './types/GraphNode';
-import type { GraphLink } from './types/GraphLink';
+import type { KnowledgeTopology, GraphNode, GraphLink } from '@repo/core';
 
 /**
  * KnowledgeParser — The "Universal Translator" for the Retina Graphics Engine.

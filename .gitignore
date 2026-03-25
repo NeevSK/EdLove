@@ -47,3 +47,6 @@ yarn-error.log*
 .claude/
 ## Generated audit artifacts
 audit-results.json
+
+# Geo Archive Artifacts
+.geo_archive/

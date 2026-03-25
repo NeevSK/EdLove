@@ -1,4 +1,4 @@
-﻿﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   Box,
   VStack,
@@ -14,7 +14,7 @@ import {
 import { Lightbulb, Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@repo/ui';
-import { supabase, useSafeMutation } from '@repo/core';
+import { supabase, useSafeMutation, usePermissions } from '@repo/core';
 import { hapticLight, hapticSuccess, SkeletonCard, PositiveInvitation } from '@repo/ui';
 import { useWisdom } from '../hooks/useWisdom';
 import { WisdomNote } from '../types';
@@ -27,8 +27,10 @@ interface WisdomSeedsProps {
 export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
+  const { context } = usePermissions();
+  const activeUserId = userId || context.userId;
   // Resilient Data Hook
-  const { notes, refreshData, isLoading } = useWisdom(userId);
+  const { notes, refreshData, isLoading } = useWisdom(activeUserId ?? undefined);
 
   const [showForm, setShowForm] = useState(false);
 
@@ -41,7 +43,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
       const { error } = await supabase
         .from('wisdom_notes')
         .insert({
-          user_id: userId,
+          user_id: activeUserId,
           insight: insightText
         });
       if (error) throw error;
@@ -58,7 +60,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
   );
 
   const handleSave = async () => {
-    if (!userId || !insight.trim()) return;
+    if (!activeUserId || !insight.trim()) return;
 
     hapticLight();
     await mutate(insight.trim());
@@ -72,7 +74,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
     "Connection before content"
   ];
 
-  if (isLoading && userId) {
+  if (isLoading && activeUserId) {
     return (
       <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}>
         <SkeletonCard height={48} />
@@ -82,7 +84,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
     );
   }
 
-  if (!userId) {
+  if (!activeUserId) {
     return (
       <PositiveInvitation
         type="guest"

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  SanctuaryModal,
   useThemedColors,
   hapticSuccess,
   VStack,
@@ -14,13 +15,14 @@ import { CheckCircle, QrCode } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { QRBuilder, QRCodeGenerator } from "@repo/scanner-kit";
-import { EntityModal, EntityView } from "@repo/ui";
+import { EntityModal } from "@repo/ui";
 import { EntityDefinition } from "@repo/core";
 
 interface CreateGroupModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreated?: (groupId: string) => void;
+  onSuccess?: (group: any) => void;
   mode?: "create" | "edit";
   initialData?: any;
 }
@@ -29,10 +31,11 @@ export default function CreateGroupModal({
   isOpen,
   onClose,
   onCreated,
+  onSuccess,
   mode = "create",
   initialData,
 }: CreateGroupModalProps) {
-  const { t } = useTranslation();
+  useTranslation();
   const colors = useThemedColors();
   const navigation = useNavigation<any>();
   const [createdGroupId, setCreatedGroupId] = useState<string | null>(null);
@@ -47,16 +50,15 @@ export default function CreateGroupModal({
     hapticSuccess();
     setCreatedGroupId(group.id);
     onCreated?.(group.id);
+    onSuccess?.(group);
   };
 
   if (createdGroupId) {
     const groupQRValue = QRBuilder.group(createdGroupId);
     return (
-      <EntityModal
+      <SanctuaryModal
         isOpen={isOpen}
         onClose={onClose}
-        definition={groupDefinition}
-        mode="view"
         title="Community Founded!"
       >
         <VStack sx={{ gap: Theme.spacing.xl, alignItems: 'center', paddingVertical: Theme.spacing.lg }}>
@@ -89,7 +91,7 @@ export default function CreateGroupModal({
             <Text color="white" bold>Enter Group Space</Text>
           </SanctuaryButton>
         </VStack>
-      </EntityModal>
+      </SanctuaryModal>
     );
   }
 

@@ -14,7 +14,7 @@ import {
     SkeletonCard,
     useTheme
 } from '@repo/ui';
-import { useUserRole, useStore, dailyContentAPI, usePendingActions } from '@repo/core';
+import { usePermissions, useStore, dailyContentAPI, usePendingActions } from '@repo/core';
 import { ClassroomStackParamList } from '@repo/core'; // Keep core as it's cross-domain
 import { useTranslation } from 'react-i18next';
 import { Sparkles, Calendar, BookOpen, Clock, CheckCircle } from 'lucide-react-native';
@@ -27,9 +27,10 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
  */
 export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void }) {
     const { t } = useTranslation();
-    const { role } = useUserRole();
+    const { can, context } = usePermissions();
+    const authority = context.roles[0];
     const user = useStore((state) => state.user);
-    const teacherName = useStore((state) => state.teacherName);
+    const userName = useStore((state) => state.userName);
     const { isDark, accent, glass, glow, text, gradientNodes } = useTheme();
     const colors = useThemedColors();
     const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
@@ -78,7 +79,7 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
                             {getGreeting()},
                         </Text>
                         <Heading size="2xl" sx={{ color: colors.text, fontFamily: 'Outfit_700Bold' }}>
-                            {teacherName}
+                            {userName}
                         </Heading>
                     </VStack>
                 </BreathAnimation>
