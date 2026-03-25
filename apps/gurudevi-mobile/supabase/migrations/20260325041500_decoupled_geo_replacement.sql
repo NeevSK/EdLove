@@ -154,7 +154,9 @@ CREATE POLICY "Allow public read access to geo metadata" ON geo_gn_divisions FOR
 CREATE POLICY "Allow public read access to geo metadata" ON geo_postal_towns FOR SELECT USING (true);
 CREATE POLICY "Allow public read access to schooling factual data" ON edu_schools FOR SELECT USING (true);
 CREATE POLICY "Allow public read access to school stats" ON edu_school_registry_stats FOR SELECT USING (true);
-CREATE POLICY "Allow public read access to school contacts" ON edu_school_contacts FOR SELECT USING (true);
+CREATE POLICY "Allow authenticated read access to school contacts" ON edu_school_contacts
+    FOR SELECT
+    USING (auth.role() = 'authenticated');
 
 -- 9. INDEXES
 CREATE INDEX IF NOT EXISTS idx_edu_schools_name_trgm ON edu_schools USING gin (name gin_trgm_ops);
