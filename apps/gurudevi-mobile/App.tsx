@@ -18,15 +18,27 @@ import { registerAdminVows, registerAdminCapabilities } from '@repo/admin';
 import { registerClassroomVows, registerClassroomCapabilities } from '@repo/classroom';
 import { registerSelfVows } from '@repo/self';
 
-// Initialize core capabilities & POA Vows
-bootCoreCapabilities();
-registerAdminCapabilities();
-registerClassroomCapabilities();
+function bootstrapCapabilitiesAndVows() {
+  const globalAny = globalThis as any;
 
-registerPeopleVows();
-registerAdminVows();
-registerClassroomVows();
-registerSelfVows();
+  if (globalAny.__gurudeviCapabilitiesBootstrapped) {
+    return;
+  }
+
+  globalAny.__gurudeviCapabilitiesBootstrapped = true;
+
+  // Initialize core capabilities & POA Vows
+  bootCoreCapabilities();
+  registerAdminCapabilities();
+  registerClassroomCapabilities();
+
+  registerPeopleVows();
+  registerAdminVows();
+  registerClassroomVows();
+  registerSelfVows();
+}
+
+bootstrapCapabilitiesAndVows();
 import { AnalyticsProvider } from '@repo/analytics/components';
 import { Platform, StyleSheet, View } from 'react-native';
 import ReactDOM from 'react-dom';
