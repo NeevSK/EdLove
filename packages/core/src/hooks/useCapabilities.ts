@@ -1,14 +1,23 @@
 import { useMemo } from 'react';
-import { useAccessState } from './useAccessState';
+import { usePermissions } from '../permissions/hooks/usePermissions';
 import { useStore } from '../store/useStore';
-import type { UserRole } from '../types';
+import { useTenantContext } from './useTenantContext';
+import { can as evaluateCapability, getPlatformAccessContext, getResolvedCapabilities } from '../lib/capabilities';
+import type {
+  AuthorityTier,
+  CapabilityKey,
+  CapabilityResource,
+  PlatformAccessContext,
+  PolicyDecision,
+  TenantContext,
+} from '../types';
 
 export interface Capabilities {
   identity: {
     isAnonymous: boolean;
     isRegistered: boolean;
     needsOnboarding: boolean;
-    role: UserRole | null;
+    authority: AuthorityTier | null;
   };
   community: {
     canDiscoverGroups: boolean;
@@ -32,84 +41,113 @@ export interface Capabilities {
     canUseLocal: boolean;
     canSyncCloud: boolean;
   };
+  policy: {
+    tenant: TenantContext;
+    platformAccess: PlatformAccessContext;
+    capabilities: CapabilityKey[];
+    can: (capability: CapabilityKey, resource?: CapabilityResource) => boolean;
+    evaluate: (capability: CapabilityKey, resource?: CapabilityResource) => PolicyDecision;
+  };
 }
 
 export function useCapabilities(): Capabilities {
-  const access = useAccessState();
+  const { context, can: canFn, ability } = usePermissions();
   const schoolType = useStore((s) => s.schoolType);
+  const tenant = useTenantContext();
+  const onboardingCompleted = useStore((s) => s.onboardingCompleted);
 
   return useMemo(() => {
-    const role = access.role;
-    const isAnonymous = access.isAnonymous;
-    const isRegistered = access.isRegistered;
-    const needsOnboarding = access.stage === 'needs_onboarding';
+    const isAnonymous = context.isAnonymous;
+    const isRegistered = !isAnonymous && !!context.email;
+    const needsOnboarding = !onboardingCompleted;
 
-    const hasSession = access.sessionResolved && !!access.session?.user;
-    const hasSchoolId = !!access.schoolId && !access.isDemoSchool;
-    const isPersonalWorkspace = schoolType === 'personal_workspace';
+    const platformAccess = getPlatformAccessContext(useStore.getState().user, { tenantKind: tenant.tenantKind });
+    const capabilities = getResolvedCapabilities(platformAccess);
+    
+    // Evaluate using ability from usePermissions
+    const evaluate = (capability: CapabilityKey, resource?: CapabilityResource) => {
+        // Bridge legacy CapabilityKey to AppAbility Subjects/Actions
+        let action: any = 'read';
+        let subject: any = capability;
 
-    const isTeacherLike =
-      role === 'teacher' || role === 'grade_head' || role === 'section_head';
-    const isPrincipalLike =
-      role === 'principal' || role === 'founder' || role === 'admin' || role === 'developer';
+        if (capability.includes('.')) {
+            const parts = capability.split('.');
+            // Common mapping logic for legacy dots
+            if (parts.includes('manage')) action = 'manage';
+            if (parts.includes('create')) action = 'create';
+            if (parts.includes('delete')) action = 'delete';
+            if (parts.includes('update')) action = 'update';
 
-    // Community policy (current code requires a school_id to post; groups/join require upgrade).
-    const canDiscoverGroups = hasSession && !needsOnboarding;
-    const canJoinGroup = isRegistered && !needsOnboarding;
-    const canCreateGroup = isRegistered && !needsOnboarding;
-    const canPost = isRegistered && !needsOnboarding && hasSchoolId;
-    const canDM = isRegistered && !needsOnboarding;
+            // Map legacy namespaces to AppAbility Subjects
+            if (parts[0] === 'school') subject = 'School';
+            else if (parts[0] === 'classroom') subject = 'Classroom';
+            else if (parts[0] === 'student') subject = 'Student';
+            else if (parts[0] === 'staff') subject = 'Staff';
+            else if (parts[0] === 'inventory') subject = 'Inventory';
+            else if (parts[0] === 'attendance') subject = 'Attendance';
+            else if (parts[0] === 'leave') subject = 'LeaveApproval';
+            else subject = parts[0].charAt(0).toUpperCase() + parts[0].slice(1); // Fallback title case
+        }
 
-    // Feed is intentionally empty until you have groups. We still treat "view feed"
-    // as allowed once registered; UI can decide to show empty-state when no groups joined.
-    const canViewFeed = isRegistered && !needsOnboarding;
+        // Special mappings for specific functional keys
+        if (capability === 'classroom.school.manage') { action = 'manage'; subject = 'School'; }
+        if (capability === 'app.local.use') { action = 'read'; subject = 'Ecosystem'; }
 
-    // Library policy: browsing is open post-onboarding; uploads require upgrade.
-    const canBrowsePublic = hasSession && !needsOnboarding;
-    const canViewVerified = hasSession && !needsOnboarding;
-    const canUpload = isRegistered && !needsOnboarding;
+        // Evaluation
+        const allowed = ability.can(action, subject);
+        
+        return { 
+            allowed, 
+            capability,
+            action,
+            reason: allowed ? 'Granted by POA' : 'Denied by POA'
+        } as PolicyDecision;
+    };
 
-    // Classroom policy:
-    // - Demo always available.
-    // - Teachers can use personal_workspace as a valid context for classroom creation/use.
-    // - Principals must affiliate with a non-personal school for school-level features.
-    const canViewDemo = hasSession;
-    const canUsePersonalWorkspaceClassroom = isRegistered && !needsOnboarding && isTeacherLike && isPersonalWorkspace;
-    const canUsePrincipalSchoolManagement =
-      isRegistered && !needsOnboarding && isPrincipalLike && hasSchoolId && !isPersonalWorkspace;
-
-    // Self policy: local-only always; cloud sync only once upgraded.
-    const canUseLocal = hasSession;
-    const canSyncCloud = isRegistered && !needsOnboarding;
+    const can = (cap: CapabilityKey, res?: CapabilityResource) => evaluate(cap, res).allowed;
 
     return {
-      identity: { isAnonymous, isRegistered, needsOnboarding, role },
+      identity: {
+        isAnonymous,
+        isRegistered,
+        needsOnboarding,
+        authority: context.roles[0] || null,
+      },
       community: {
-        canDiscoverGroups,
-        canViewFeed,
-        canJoinGroup,
-        canCreateGroup,
-        canPost,
-        canDM,
+        canDiscoverGroups: can('community.groups.discover'),
+        canViewFeed: can('community.feed.view'),
+        canJoinGroup: can('community.groups.join'),
+        canCreateGroup: can('community.groups.create'),
+        canPost: can('community.feed.post'), // Assuming this key exists or would be mapped
+        canDM: can('community.dm.create'),
       },
-      library: { canBrowsePublic, canViewVerified, canUpload },
+      library: {
+        canBrowsePublic: can('library.browse'),
+        canViewVerified: can('library.verified.view'),
+        canUpload: can('library.upload'),
+      },
       classroom: {
-        canViewDemo,
-        canUsePersonalWorkspaceClassroom,
-        canUsePrincipalSchoolManagement,
+        canViewDemo: can('app.local.use'), // Mapping demo access to local use for now
+        canUsePersonalWorkspaceClassroom: can('classroom.personal.use'),
+        canUsePrincipalSchoolManagement: can('classroom.school.manage'),
       },
-      self: { canUseLocal, canSyncCloud },
+      self: {
+        canUseLocal: can('app.local.use'),
+        canSyncCloud: can('app.cloud.sync'),
+      },
+      policy: {
+        tenant,
+        platformAccess,
+        capabilities,
+        can: (capability, resource) => evaluate(capability, resource).allowed,
+        evaluate,
+      },
     };
   }, [
-    access.isAnonymous,
-    access.isDemoSchool,
-    access.isRegistered,
-    access.role,
-    access.schoolId,
-    access.session,
-    access.sessionResolved,
-    access.stage,
+    context,
+    ability,
+    onboardingCompleted,
     schoolType,
+    tenant,
   ]);
 }
-

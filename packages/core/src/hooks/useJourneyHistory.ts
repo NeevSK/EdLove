@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useResonanceStore } from '../store/useResonanceStore';
-import { useUserRole } from './useUserRole';
+import { usePermissions } from './usePermissions';
 import { supabase } from '../lib/supabase';
 
 export interface JourneyEvent {
@@ -27,7 +27,8 @@ export interface HolisticView {
  * Supports Daily/Weekly holistic views.
  */
 export function useJourneyHistory(section?: string, feature?: string) {
-    const { userId, role } = useUserRole();
+    const { context } = usePermissions();
+    const { userId } = context;
     const { phase, resonanceDate, viewScale, timelineFocus } = useResonanceStore();
 
     // Fetch Mood Logs for the current context
@@ -172,7 +173,7 @@ export function useJourneyHistory(section?: string, feature?: string) {
         events,
         holisticView,
         isLoading: moodLoading || journalLoading,
-        role,
+        authority,
         currentScale: viewScale,
         phase,
         timelineFocus

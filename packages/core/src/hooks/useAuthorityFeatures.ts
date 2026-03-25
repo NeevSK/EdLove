@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { useUserRole } from './useUserRole';
+import { usePermissions } from './usePermissions';
 import { useFeatureAccess } from './useFeatureAccess';
-import { UserRole } from '../types';
+import { type AuthorityTier } from '../types/Authority';
 
-export interface RoleFeatures {
+export interface AuthorityFeatures {
     // Visibility flags
     showClassroom: boolean;
     showCommunity: boolean;
@@ -17,17 +17,21 @@ export interface RoleFeatures {
     canManageSchool: boolean;
 
     // Status flags
-    isGuest: boolean;
-    role: UserRole | null;
+    isAnonymous: boolean;
+    authority: AuthorityTier | null;
 }
 
 /**
- * Hook to provide role-specific feature sets, accounting for guest status.
+ * Hook to provide authority-specific feature sets, accounting for anonymity.
  * This should be the primary interface for UI-level feature gating.
  */
-export function useRoleFeatures(): RoleFeatures {
-    const { role } = useUserRole();
+export function useAuthorityFeatures(): AuthorityFeatures {
+    const { can, context } = usePermissions();
+    const isUserAnonymous = !context.userId;
     const { isGuest } = useFeatureAccess();
+    
+    // Combining store anonymity with feature-level guest status
+    const isAnonymous = isUserAnonymous || isGuest;
 
     const features = useMemo(() => {
         // Base features for everyone
@@ -37,18 +41,19 @@ export function useRoleFeatures(): RoleFeatures {
             showLibrary: true,
             showSelf: true,
             showManagement: false,
-            canCreateContent: !isGuest,
-            canInteract: !isGuest,
+            canCreateContent: !isAnonymous,
+            canInteract: !isAnonymous,
             canManageSchool: false,
-            isGuest,
-            role,
+            isAnonymous,
+            authority,
         };
 
-        // Role-specific overrides
-        switch (role) {
+        // Authority-specific overrides
+        switch (authority) {
             case 'founder':
-            case 'principal':
+            case 'admin':
             case 'developer':
+            case 'principal':
                 return {
                     ...base,
                     showManagement: true,
@@ -56,8 +61,6 @@ export function useRoleFeatures(): RoleFeatures {
                     canCreateContent: true,
                 };
             case 'teacher':
-            case 'grade_head':
-            case 'section_head':
                 return {
                     ...base,
                     canCreateContent: true,
@@ -69,7 +72,7 @@ export function useRoleFeatures(): RoleFeatures {
                     canInteract: true,
                 };
             default:
-                // Guests or undefined role
+                // Guests or undefined authority
                 return {
                     ...base,
                     showManagement: false,
@@ -77,7 +80,7 @@ export function useRoleFeatures(): RoleFeatures {
                     canInteract: false,
                 };
         }
-    }, [role, isGuest]);
+    }, [authority, isAnonymous]);
 
     return features;
 }

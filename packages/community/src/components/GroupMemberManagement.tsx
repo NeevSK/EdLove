@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { VStack, HStack, Text, Button, Theme, useThemedColors, ScreenWrapper, LoadingOverlay, hapticLight, Box, Pressable, useLotusToast } from '@repo/ui';
 import { UserCheck, UserX, Shield, Settings, Info } from 'lucide-react-native';
-import { UserRole, useUserRole } from '@repo/core';
+import { usePermissions } from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CommunityStackParamList } from '@repo/core';
@@ -24,7 +24,8 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
     const [loading, setLoading] = useState(true);
     const [policy, setPolicy] = useState<string>('restricted');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const { userId } = useUserRole();
+    const { context, can } = usePermissions();
+    const userId = context.userId;
 
     useEffect(() => {
         loadData();
@@ -160,7 +161,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                         <Text sx={{ fontWeight: '600' }}>{request.user?.full_name}</Text>
                                         <HStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
                                             <Shield size={12} color={colors.textSecondary} />
-                                            <Text sx={{ fontSize: 12, color: colors.textSecondary }}>{request.user?.role.toUpperCase()}</Text>
+                                            <Text sx={{ fontSize: 12, color: colors.textSecondary }}>{request.user?.authority.toUpperCase()}</Text>
                                         </HStack>
                                         <HStack space="md" alignItems="center" mt="$1">
                                             {request.user?.index_number && (
@@ -197,14 +198,14 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                     )}
                 </VStack>
 
-                {/* Active Members & Role Management */}
+                {/* Active Members & Capacity Management */}
                 <VStack sx={{ gap: Theme.spacing.md }}>
                     <Text sx={{ fontWeight: '700' }}>Active Members ({activeMembers.length})</Text>
                     {activeMembers.map((member) => {
-                        const isOwner = member.role === 'owner';
-                        const isAdmin = member.role === 'admin';
+                        const isOwner = member.capacity === 'owner';
+                        const isAdmin = member.capacity === 'admin';
                         const isMe = member.user_id === userId;
-                        const canManage = currentUserMemberRecord?.role === 'owner' && !isMe && !isOwner;
+                        const canManage = can('manage', { __typename: 'CommunityGroup', groupId, memberId: member.user_id } as any);
 
                         return (
                             <Pressable
@@ -237,7 +238,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                                         fontWeight: (isOwner || isAdmin) ? '700' : '400',
                                                         color: isOwner ? Theme.colors.sanctuarySaffron : (isAdmin ? colors.textPrimary : colors.textSecondary)
                                                     }}>
-                                                        {member.role.toUpperCase()}
+                                                        {member.capacity.toUpperCase()}
                                                     </Text>
                                                 </HStack>
                                             </VStack>
@@ -247,7 +248,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                                             <HStack sx={{ gap: Theme.spacing.sm }}>
                                                 <Button
                                                     label={isAdmin ? "Demote" : "Promote"}
-                                                    onPress={() => handleRoleChange(member.user_id, isAdmin ? 'member' : 'admin')}
+                                                    onPress={() => handleCapacityChange(member.user_id, isAdmin ? 'member' : 'admin')}
                                                     variant="outline"
                                                     sx={{ height: 32, paddingHorizontal: 12 }}
                                                 />
@@ -283,13 +284,13 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
         </ScreenWrapper>
     );
 
-    async function handleRoleChange(targetUserId: string, newRole: 'admin' | 'member') {
+    async function handleCapacityChange(targetUserId: string, newCapacity: 'admin' | 'member') {
         try {
             setLoading(true);
-            await communityAPI.updateMemberRole(groupId, targetUserId, newRole);
+            await communityAPI.updateMemberAuthority(groupId, targetUserId, newCapacity);
             hapticLight();
             showToast({
-                message: newRole === 'admin' ? "Guardian mantle bestowed." : "Relieved of administrative duties.",
+                message: newCapacity === 'admin' ? "Guardian mantle bestowed." : "Relieved of administrative duties.",
                 type: 'success'
             });
             await loadData();

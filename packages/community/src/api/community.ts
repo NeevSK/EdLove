@@ -128,13 +128,13 @@ export const communityAPI = {
     /**
      * Create a new post
      */
-    async createPost(post: any, userId: string, userRole: string, schoolId: string) {
+    async createPost(post: any, userId: string, userAuthority: string, schoolId: string) {
         const { data, error } = await supabase
             .from('community_posts')
             .insert([{
                 ...post,
                 author_id: userId,
-                author_role: userRole,
+                author_authority: userAuthority,
                 school_id: schoolId,
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString()
@@ -149,7 +149,7 @@ export const communityAPI = {
     /**
      * Create a new group
      */
-    async createGroup(group: any, userId: string, userRole: string) {
+    async createGroup(group: any, userId: string, userAuthority: string) {
         const { data, error } = await supabase
             .from('community_groups')
             .insert([{
@@ -195,7 +195,7 @@ export const communityAPI = {
             .insert([{
                 group_id: created.id,
                 user_id: userId,
-                role: 'owner',
+                capacity: 'owner',
                 status: 'active',
             }]);
 
@@ -219,7 +219,7 @@ export const communityAPI = {
             .upsert([{
                 group_id: groupId,
                 user_id: userId,
-                role: 'member',
+                capacity: 'member',
                 status,
             }], { onConflict: 'group_id,user_id' })
             .select()
@@ -323,7 +323,7 @@ export const communityAPI = {
                 *,
                 user:users!community_group_members_user_id_fkey(
                     full_name,
-                    role,
+                    authority:role,
                     avatar_url,
                     index_number,
                     nic_number
@@ -362,7 +362,7 @@ export const communityAPI = {
                 *,
                 user:users!community_group_members_user_id_fkey(
                     full_name,
-                    role,
+                    authority:role,
                     avatar_url,
                     index_number,
                     nic_number
@@ -370,19 +370,22 @@ export const communityAPI = {
             `)
             .eq('group_id', groupId)
             .eq('status', 'active')
-            .order('role', { ascending: true }); // Manual sort might be needed for owner priority
+            .order('capacity', { ascending: true }); // Manual sort might be needed for owner priority
 
         if (error) throw error;
-        return data;
+        return (data || []).map((member: any) => ({
+            ...member,
+            capacity: member.capacity || member.role || 'member'
+        }));
     },
 
     /**
      * Update a member's role (only owner can do this via RLS)
      */
-    async updateMemberRole(groupId: string, userId: string, newRole: 'admin' | 'member') {
+    async updateMemberAuthority(groupId: string, userId: string, newCapacity: 'admin' | 'member') {
         const { data, error } = await supabase
             .from('community_group_members')
-            .update({ role: newRole })
+            .update({ capacity: newCapacity })
             .eq('group_id', groupId)
             .eq('user_id', userId)
             .select()
@@ -839,7 +842,7 @@ export const communityAPI = {
                     id,
                     full_name,
                     avatar_url,
-                    role
+                    authority:role
                 )
             `)
             .eq('post_id', postId)
@@ -872,7 +875,7 @@ export const communityAPI = {
             author_id: c.author_id,
             author_name: c.is_anonymous ? 'Anonymous' : (c.author?.full_name ?? 'Unknown'),
             author_avatar: c.is_anonymous ? null : (c.author?.avatar_url ?? null),
-            author_role: c.author?.role ?? 'student',
+            author_authority: c.author?.authority ?? 'student',
         } as Comment));
     },
 
@@ -927,7 +930,7 @@ export const communityAPI = {
             author_id: data.author_id,
             author_name: isAnonymous ? 'Anonymous' : (me?.full_name ?? 'Me'),
             author_avatar: isAnonymous ? null : (me?.avatar_url ?? null),
-            author_role: me?.role ?? 'student',
+            author_authority: (me as any)?.authority ?? 'student',
         } as Comment;
     },
 

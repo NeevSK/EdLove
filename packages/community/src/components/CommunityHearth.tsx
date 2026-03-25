@@ -17,14 +17,13 @@ import { ScrollView, useWindowDimensions, NativeSyntheticEvent, NativeScrollEven
 import Animated, { LinearTransition } from 'react-native-reanimated';
 import { Post } from '../index';
 import { CommunityPresence } from '@repo/self';
-import { UserRole } from '@repo/core';
+
 
 const AUTO_SWIPE_INTERVAL = 8000;
 
 interface CommunityHearthProps {
     manifestos?: SanctuaryManifesto[];
     spotlightPost?: Post;
-    userRole?: UserRole | string | null;
     userVibe?: string;
     userId: string;
     onEndorseManifesto?: (id: string) => void;
@@ -34,7 +33,6 @@ interface CommunityHearthProps {
 export default function CommunityHearth({
     manifestos,
     spotlightPost,
-    userRole = 'teacher',
     userVibe = 'active',
     userId,
     onEndorseManifesto,
@@ -81,7 +79,7 @@ export default function CommunityHearth({
 
     slides.push({
         key: 'presence',
-        content: <CommunityPresence compact={false} hidePadding={true} userRole={userRole as any} userVibe={userVibe} userId={userId} />
+        content: <CommunityPresence compact={false} hidePadding={true} userVibe={userVibe} userId={userId} />
     });
 
     if (manifestos && manifestos.length > 0) {

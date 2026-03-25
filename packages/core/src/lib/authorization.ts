@@ -16,6 +16,40 @@ import { authAPI } from '../api/auth';
 import { identityAPI } from '../api/identity';
 import { APIError } from '../api/types';
 import { isDemo } from '../api/demo';
+import { can, getPlatformAccessContext, requireCapability } from './capabilities';
+import type { CapabilityKey, CapabilityResource } from '../types/Policy';
+
+interface AccessProfile {
+    id: string;
+    role: string | null;
+    school_id: string | null;
+    section_id?: string | null;
+    grade_id?: string | null;
+    tenant_kind?: string | null;
+    platform_roles?: string[] | null;
+    school_role?: string | null;
+    work_roles?: string[] | null;
+}
+
+async function loadAccessProfile(userId: string): Promise<AccessProfile> {
+    const { data: userData } = await supabase
+        .from('users')
+        .select('id, role, school_id, section_id, grade_id, tenant_kind, platform_roles, school_role, work_roles')
+        .eq('id', userId)
+        .single();
+
+    if (!userData) {
+        throw new APIError('User profile not found', 'NOT_FOUND');
+    }
+
+    return userData as AccessProfile;
+}
+
+function buildAccessContext(profile: AccessProfile) {
+    return getPlatformAccessContext(profile as any, {
+        tenantKind: (profile.tenant_kind as any) ?? null,
+    });
+}
 
 /**
  * Ensures user is authenticated
@@ -77,7 +111,11 @@ export async function requireTeacherAccess(teacherId: string) {
     const user = await requireAuth();
 
     if (user.id !== teacherId) {
-        throw new APIError('Unauthorized access to teacher data', 'FORBIDDEN');
+        const actor = await loadAccessProfile(user.id);
+        const context = buildAccessContext(actor);
+        if (!context.hasGlobalAccess) {
+            throw new APIError('Unauthorized access to teacher data', 'FORBIDDEN');
+        }
     }
 
     return user;
@@ -88,24 +126,21 @@ export async function requireTeacherAccess(teacherId: string) {
  * - Teachers can access classrooms they own
  * - Students can access classrooms they're enrolled in
  * - Principals can access all classrooms in their school
- * - Section heads can access classrooms in their section
- * 
- * @param classroomId - Classroom ID to verify access
- * @throws APIError if not authenticated or unauthorized
- * @returns Current user
- */
-export async function requireClassroomAccess(classroomId: string) {
-    const user = await requireAuth();
 
-    // Get user role from metadata
-    const userRole = user.user_metadata?.role || user.app_metadata?.role;
+/**
+ * Verifies user can access the specified classroom.
+ */
+export async function requireClassroomAccess(
+    classroomId: string,
+    capability: CapabilityKey = 'classroom.read.assigned',
+) {
+    const user = await requireAuth();
 
     // Bypass check for sample classrooms (demo/onboarding)
     if (classroomId.startsWith('sample-')) {
         return user;
     }
 
-    // Check if user is the teacher of this classroom
     const { data: classroom, error } = await supabase
         .from('classrooms')
         .select('teacher_id, school_id, section_id, grade_id')
@@ -116,62 +151,30 @@ export async function requireClassroomAccess(classroomId: string) {
         throw new APIError('Classroom not found', 'NOT_FOUND');
     }
 
-    // If user is the teacher, grant access
-    if (classroom.teacher_id === user.id) {
-        return user;
-    }
+    const actor = await loadAccessProfile(user.id);
+    const context = buildAccessContext(actor);
+    const resource: CapabilityResource = {
+        schoolId: classroom.school_id,
+        sectionId: classroom.section_id,
+        gradeId: classroom.grade_id,
+        classroomId,
+        ownerUserId: classroom.teacher_id,
+        scope: {
+            type: 'classroom',
+            id: classroomId,
+            schoolId: classroom.school_id,
+        },
+    };
 
-    // For non-teacher roles, verify against the DB to ensure role/school_id are up to date
-    const { data: userData } = await supabase
-        .from('users')
-        .select('role, school_id, section_id, grade_id')
-        .eq('id', user.id)
-        .single();
-
-    if (!userData) {
-        throw new APIError('User profile not found', 'NOT_FOUND');
-    }
-
-    const actualRole = userData.role;
-    const actualSchoolId = userData.school_id;
-    const actualSectionId = userData.section_id;
-    const actualGradeId = userData.grade_id;
-
-    // Administrative roles (Principals/Founders) have access to all classrooms in their school
-    const ADMIN_ROLES = ['principal', 'founder', 'admin', 'developer'];
-    if (ADMIN_ROLES.includes(actualRole)) {
-        if (classroom.school_id === actualSchoolId) {
-            return user;
-        }
-    }
-
-    // Section heads have access to classrooms in their section
-    if (actualRole === 'section_head') {
-        if (classroom.section_id === actualSectionId) {
-            return user;
-        }
-    }
-
-    // Grade heads have access to classrooms in their grade
-    if (actualRole === 'grade_head') {
-        if (classroom.grade_id === actualGradeId) {
-            return user;
-        }
-    }
-
-    // Check if user is a student in this classroom
-    const { data: enrollment } = await supabase
-        .from('classroom_students')
-        .select('id')
-        .eq('classroom_id', classroomId)
-        .eq('student_id', user.id)
-        .single();
-
-    if (!enrollment) {
-        throw new APIError('Unauthorized access to classroom', 'FORBIDDEN');
+    // Use consolidated logic
+    const decision = can(capability, context, resource);
+    if (!decision.allowed) {
+        throw new APIError(decision.reason || 'Unauthorized access to classroom', 'FORBIDDEN');
     }
 
     return user;
+
+    throw new APIError(decision.reason || 'Unauthorized access to classroom', 'FORBIDDEN');
 }
 
 /**
@@ -183,32 +186,47 @@ export async function requireClassroomAccess(classroomId: string) {
  * @throws APIError if not authenticated or unauthorized
  * @returns Current user
  */
-export async function requireStudentAccess(studentId: string) {
+/**
+ * Verifies user can access the specified student's data.
+ */
+export async function requireStudentAccess(
+    studentId: string,
+    capability: CapabilityKey = 'student.record.read.self',
+) {
     const user = await requireAuth();
-
-    // Students can only access their own data
-    if (user.id === studentId) {
-        return user;
-    }
-
-    // Check if user is a teacher with access to this student using a single JOIN query
-    // Authorization rule: Teachers can access students enrolled in their classrooms
-    const { data: sharedClassroom } = await supabase
-        .from('classroom_students')
-        .select(`
-            classroom_id,
-            classrooms!inner(id, teacher_id)
-        `)
-        .eq('student_id', studentId)
-        .eq('classrooms.teacher_id', user.id)
-        .limit(1)
+    
+    const { data: studentUser } = await supabase
+        .from('users')
+        .select('id, school_id')
+        .eq('id', studentId)
         .single();
 
-    if (!sharedClassroom) {
-        throw new APIError('Unauthorized access to student data', 'FORBIDDEN');
+    if (!studentUser) {
+        throw new APIError('Student not found', 'NOT_FOUND');
+    }
+
+    const actor = await loadAccessProfile(user.id);
+    const context = buildAccessContext(actor);
+    const resource: CapabilityResource = {
+        schoolId: studentUser.school_id,
+        ownerUserId: studentId,
+        studentId,
+        scope: {
+            type: 'student',
+            id: studentId,
+            schoolId: studentUser.school_id,
+        },
+    };
+
+    // Use consolidated logic
+    const decision = can(capability, context, resource);
+    if (!decision.allowed) {
+        throw new APIError(decision.reason || 'Unauthorized access to student data', 'FORBIDDEN');
     }
 
     return user;
+
+    throw new APIError(decision.reason || 'Unauthorized access to student data', 'FORBIDDEN');
 }
 
 /**
@@ -219,30 +237,17 @@ export async function requireStudentAccess(studentId: string) {
  * @throws APIError if not authenticated or unauthorized
  * @returns Current user
  */
-export async function requireSchoolAccess(schoolId: string) {
+export async function requireSchoolAccess(
+    schoolId: string,
+    capability: CapabilityKey = 'school.read',
+) {
     const user = await requireAuth();
-
-    // Live verification against the DB
-    const { data: userData } = await supabase
-        .from('users')
-        .select('role, school_id')
-        .eq('id', user.id)
-        .single();
-
-    if (!userData) {
-        throw new APIError('User profile not found', 'NOT_FOUND');
-    }
-
-    const actualRole = userData.role;
-    const actualSchoolId = userData.school_id;
-
-    // Staff roles (Principal, Teacher, Grade Head, Section Head, etc.) can access their own school's data
-    const STAFF_ROLES = ['principal', 'teacher', 'grade_head', 'section_head', 'founder', 'admin', 'developer'];
-
-    if (STAFF_ROLES.includes(actualRole) && actualSchoolId === schoolId) {
-        return user;
-    }
-
-    throw new APIError('Unauthorized access to school data', 'FORBIDDEN');
+    const actor = await loadAccessProfile(user.id);
+    const context = buildAccessContext(actor);
+    requireCapability(capability, context, {
+        schoolId,
+        scope: { type: 'school', id: schoolId, schoolId },
+    });
+    return user;
 }
 

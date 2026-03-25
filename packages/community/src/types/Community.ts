@@ -3,7 +3,7 @@
 // Educational Ecology Support System
 // ============================================================================
 
-import { UserRole, Announcement } from '@repo/core';
+import { AuthorityTier, Announcement } from '@repo/core';
 
 export interface AnnouncementWithAuthor extends Announcement {
     author_name?: string;
@@ -48,7 +48,7 @@ export interface CommunityPost {
     id: string;
     author_id: string;
     author_name: string;
-    author_role: UserRole;
+    author_authority: AuthorityTier;
     author_avatar?: string;
     content: string;
 
@@ -99,7 +99,7 @@ export interface Comment {
     post_id: string;
     author_id: string;
     author_name: string;
-    author_role: UserRole;
+    author_authority: AuthorityTier;
     author_avatar?: string | null;
     content: string;
     is_anonymous: boolean;
@@ -118,7 +118,7 @@ export interface PostFilters {
     post_type?: PostType;
     visibility?: PostVisibility;
     subject?: string;
-    author_role?: UserRole;
+    author_authority?: AuthorityTier;
     tags?: string[];
     has_answer?: boolean;
     feedback_status?: FeedbackStatus;
@@ -322,7 +322,7 @@ export interface CommunityGroup {
     // Visibility & Access
     visibility: PostVisibility;
     is_public: boolean;
-    allowed_roles?: UserRole[]; // If specified, only these roles can see/join
+    allowed_authorities?: AuthorityTier[]; // If specified, only these authorities can see/join
 
     // Membership
     member_count: number;
@@ -353,10 +353,10 @@ export interface GroupMember {
     group_id: string;
     user_id: string;
     user_name: string;
-    user_role: UserRole;
+    user_authority: AuthorityTier;
     user_avatar?: string;
 
-    // Member role in group
+    capacity: 'owner' | 'admin' | 'member';
     is_admin: boolean;
     is_moderator: boolean;
 
@@ -370,7 +370,7 @@ export interface GroupJoinRequest {
     group_id: string;
     user_id: string;
     user_name: string;
-    user_role: UserRole;
+    user_authority: AuthorityTier;
     message?: string;
     status: 'pending' | 'approved' | 'rejected';
     created_at: string;
@@ -398,7 +398,7 @@ export interface CreateGroupInput {
     type: GroupType;
     join_policy: GroupJoinPolicy;
     visibility: PostVisibility;
-    allowed_roles?: UserRole[];
+    allowed_authorities?: AuthorityTier[];
     allow_posts?: boolean;
     allow_announcements?: boolean;
     require_post_approval?: boolean;

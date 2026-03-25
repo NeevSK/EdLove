@@ -58,7 +58,7 @@ export const useCommunity = (groupId?: string, options: { searchQuery?: string; 
             if (!schoolId) {
                 throw new Error('No school context — please complete your profile before posting.');
             }
-            return communityAPI.createPost(input, user.id, storeUser?.role ?? 'teacher', schoolId);
+            return communityAPI.createPost(input, user.id, storeUser?.authority ?? 'teacher', schoolId);
         },
         onMutate: async (newPost) => {
             // Optimistic Update
@@ -74,7 +74,7 @@ export const useCommunity = (groupId?: string, options: { searchQuery?: string; 
                         created_at: new Date().toISOString(),
                         reactions: {},
                         author_name: 'Me',
-                        author_role: storeUser?.role ?? 'teacher',
+                        author_authority: storeUser?.authority ?? 'teacher',
                         post_type: newPost.post_type || 'discussion',
                         visibility: 'school',
                         media_url: newPost.media_url,

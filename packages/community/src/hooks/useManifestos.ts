@@ -6,12 +6,12 @@ export const MANIFESTO_KEYS = {
     school: (schoolId: string) => [...MANIFESTO_KEYS.all, 'school', schoolId] as const,
 };
 
-export const useManifestos = (schoolId: string, userId?: string) => {
+export const useManifestos = (schoolId: string | undefined, userId?: string) => {
     const queryClient = useQueryClient();
 
     const manifestosQuery = useQuery({
-        queryKey: MANIFESTO_KEYS.school(schoolId),
-        queryFn: () => sacredMissionsAPI.getManifestos(schoolId, userId),
+        queryKey: MANIFESTO_KEYS.school(schoolId!),
+        queryFn: () => sacredMissionsAPI.getManifestos(schoolId!, userId),
         enabled: !!schoolId,
     });
 
@@ -19,11 +19,11 @@ export const useManifestos = (schoolId: string, userId?: string) => {
         mutationFn: ({ manifestoId, commitment }: { manifestoId: string; commitment?: string }) =>
             sacredMissionsAPI.endorseManifesto(manifestoId, userId!, commitment),
         onMutate: async ({ manifestoId }) => {
-            await queryClient.cancelQueries({ queryKey: MANIFESTO_KEYS.school(schoolId) });
-            const previousManifestos = queryClient.getQueryData<SanctuaryManifesto[]>(MANIFESTO_KEYS.school(schoolId));
+            await queryClient.cancelQueries({ queryKey: MANIFESTO_KEYS.school(schoolId!) });
+            const previousManifestos = queryClient.getQueryData<SanctuaryManifesto[]>(MANIFESTO_KEYS.school(schoolId!));
 
             if (previousManifestos) {
-                queryClient.setQueryData<SanctuaryManifesto[]>(MANIFESTO_KEYS.school(schoolId), (old) =>
+                queryClient.setQueryData<SanctuaryManifesto[]>(MANIFESTO_KEYS.school(schoolId!), (old) =>
                     old?.map(m => m.id === manifestoId
                         ? { ...m, has_endorsed: true, endorsement_count: (m.endorsement_count || 0) + 1 }
                         : m
@@ -34,11 +34,11 @@ export const useManifestos = (schoolId: string, userId?: string) => {
         },
         onError: (err, newTodo, context: any) => {
             if (context?.previousManifestos) {
-                queryClient.setQueryData(MANIFESTO_KEYS.school(schoolId), context.previousManifestos);
+                queryClient.setQueryData(MANIFESTO_KEYS.school(schoolId!), context.previousManifestos);
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: MANIFESTO_KEYS.school(schoolId) });
+            queryClient.invalidateQueries({ queryKey: MANIFESTO_KEYS.school(schoolId!) });
         },
     });
 
@@ -46,11 +46,11 @@ export const useManifestos = (schoolId: string, userId?: string) => {
         mutationFn: (manifestoId: string) =>
             sacredMissionsAPI.unendorseManifesto(manifestoId, userId!),
         onMutate: async (manifestoId) => {
-            await queryClient.cancelQueries({ queryKey: MANIFESTO_KEYS.school(schoolId) });
-            const previousManifestos = queryClient.getQueryData<SanctuaryManifesto[]>(MANIFESTO_KEYS.school(schoolId));
+            await queryClient.cancelQueries({ queryKey: MANIFESTO_KEYS.school(schoolId!) });
+            const previousManifestos = queryClient.getQueryData<SanctuaryManifesto[]>(MANIFESTO_KEYS.school(schoolId!));
 
             if (previousManifestos) {
-                queryClient.setQueryData<SanctuaryManifesto[]>(MANIFESTO_KEYS.school(schoolId), (old) =>
+                queryClient.setQueryData<SanctuaryManifesto[]>(MANIFESTO_KEYS.school(schoolId!), (old) =>
                     old?.map(m => m.id === manifestoId
                         ? { ...m, has_endorsed: false, endorsement_count: Math.max((m.endorsement_count || 0) - 1, 0) }
                         : m
@@ -61,11 +61,11 @@ export const useManifestos = (schoolId: string, userId?: string) => {
         },
         onError: (err, newTodo, context: any) => {
             if (context?.previousManifestos) {
-                queryClient.setQueryData(MANIFESTO_KEYS.school(schoolId), context.previousManifestos);
+                queryClient.setQueryData(MANIFESTO_KEYS.school(schoolId!), context.previousManifestos);
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: MANIFESTO_KEYS.school(schoolId) });
+            queryClient.invalidateQueries({ queryKey: MANIFESTO_KEYS.school(schoolId!) });
         },
     });
 

@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import { naturePathsAPI, BanyanStage } from '../api/naturePaths';
-import { useUserRole } from './useUserRole';
+import { usePermissions } from './usePermissions';
 
 /**
  * useBanyanGrowth
  * 
  * A hook to fetch and manage a teacher's or principal's Banyan growth state.
  */
-export const useBanyanGrowth = () => {
-    const { userId } = useUserRole();
+export function useBanyanGrowth() {
+    const { context } = usePermissions();
+    const userId = context.userId;
     const [banyan, setBanyan] = useState<{
         banyan_stage: BanyanStage;
         peer_mentored_count: number;

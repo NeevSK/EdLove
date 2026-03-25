@@ -94,5 +94,29 @@ export const studentPotentialAPI = {
         }
 
         return data as StudentPotentialAnalysis;
+    },
+
+    /**
+     * Get AI-driven insights and intervention suggestions based on current analysis
+     */
+    async getAIInsights(studentName: string, analysis: Partial<StudentPotentialAnalysis>): Promise<string> {
+        try {
+            const response = await supabase.functions.invoke('ai-assistant', {
+                body: {
+                    message: `Analyze potential for student "${studentName}" based on these dimensions: Cognitive: ${analysis.cognitive_flow}%, Emotional: ${analysis.emotional_resonance}%, Social: ${analysis.social_weaving}%, Creative: ${analysis.creative_spark}%, Practical: ${analysis.practical_mastery}%. Current Silver Lining: "${analysis.silver_lining || 'None recorded'}". Provide 3 nurturing intervention suggestions.`,
+                    context: {
+                        type: 'student_potential_insight',
+                        studentName,
+                        analysis
+                    }
+                }
+            });
+
+            if (response.data?.reply) return response.data.reply;
+            throw new Error('No reply from AI scout');
+        } catch (error) {
+            console.error('[studentPotentialAPI] AI Insight error:', error);
+            return "Unable to reach the AI Potential Scout right now. Please try again later.";
+        }
     }
 };

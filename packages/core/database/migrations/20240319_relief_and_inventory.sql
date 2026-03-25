@@ -35,7 +35,11 @@ ALTER TABLE public.relief_assignments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.inventory_items ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Principals can manage relief assignments" ON public.relief_assignments
-    FOR ALL USING (auth.uid() IN (SELECT id FROM public.users WHERE school_id = relief_assignments.school_id AND role IN ('principal', 'founder')));
+    FOR ALL
+    USING (public.get_my_id() IN (SELECT id FROM public.users WHERE school_id = relief_assignments.school_id AND role IN ('principal', 'founder')))
+    WITH CHECK (public.get_my_id() IN (SELECT id FROM public.users WHERE school_id = relief_assignments.school_id AND role IN ('principal', 'founder')));
 
 CREATE POLICY "Principals can manage inventory" ON public.inventory_items
-    FOR ALL USING (auth.uid() IN (SELECT id FROM public.users WHERE school_id = inventory_items.school_id AND role IN ('principal', 'founder')));
+    FOR ALL
+    USING (public.get_my_id() IN (SELECT id FROM public.users WHERE school_id = inventory_items.school_id AND role IN ('principal', 'founder')))
+    WITH CHECK (public.get_my_id() IN (SELECT id FROM public.users WHERE school_id = inventory_items.school_id AND role IN ('principal', 'founder')));

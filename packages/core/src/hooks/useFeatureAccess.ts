@@ -1,5 +1,4 @@
-import { useCallback } from 'react';
-import { useAccessState } from './useAccessState';
+import { usePermissions } from '../permissions/hooks/usePermissions';
 
 export interface FeatureAccess {
     canCreateClassroom: boolean;
@@ -16,7 +15,8 @@ export interface FeatureAccess {
  * Hook to manage feature access levels for anonymous vs registered users
  */
 export function useFeatureAccess(): FeatureAccess {
-    const { isAnonymous } = useAccessState();
+    const { context } = usePermissions();
+    const { isAnonymous } = context;
 
     const promptAccountCreation = useCallback((feature: 'classroom' | 'community' | 'library' | 'self' | 'general') => {
         // This will be handled by the component using GuestConversionPrompt

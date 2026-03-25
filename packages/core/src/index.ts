@@ -1,10 +1,15 @@
 export * from './api';
 export * from './offline/resilience';
 export * from './hooks';
+export * from './context/ResonanceContext';
 export * from './store/useStore';
 export * from './store/useTemporalStore';
 export * from './store/useResonanceStore';
 export * from './utils/temporalUtils';
+export { AuthScreenWeb } from './screens/AuthScreen.web';
+export { default as NotificationsScreenWeb } from './screens/NotificationsScreen.web';
+export { default as OnboardingScreenWeb } from './screens/OnboardingScreen.web';
+export { default as WelcomeScreenWeb } from './screens/WelcomeScreen.web';
 
 export * from './types';
 export * from './constants/SriLankanSchools';
@@ -22,7 +27,12 @@ export * from './lib/storage';
 export * from './lib/storageWrapper';
 export * from './lib/guestDataManager';
 export * from './lib/cloudinary';
+export * from './lib/capabilities';
+export * from './lib/ProtocolRegistry';
+export * from './lib/Intent';
+export * from './types/Protocol';
 export * from './lib/pendingGateAction';
+export * from './lib/inventoryScope';
 export { isDemo } from './api/demo';
 export * from './lib/flows/FlowResolver';
 export * from './lib/guestDataSync';
@@ -33,3 +43,12 @@ export * from './forms/dynamic-loader';
 export * from './forms/analytics';
 export * from './entities/entity-protocol';
 export * from './entities/useEntity';
+
+// Protocol-Oriented Authority (POA)
+export * from './permissions/composer';
+export * from './permissions/hooks/usePermissions';
+export * from './permissions/guards/FeatureGuard';
+export * from './permissions/guards/RouteGuard';
+// Resolving ambiguities for roles and tenancy types
+export type { Role } from './permissions/schemas/role.schema';
+export type { UserContext } from './permissions/schemas/user.schema';

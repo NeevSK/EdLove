@@ -34,7 +34,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { CommunityStackParamList } from "@repo/core";
-import { useUserRole, supabase, useStore } from "@repo/core";
+import { usePermissions, supabase, useStore } from "@repo/core";
 import { GiveThuthimalModal } from "@repo/profile/components/GiveThuthimalModal";
 import { communityAPI } from "../api/community";
 
@@ -58,7 +58,8 @@ export default function UserPublicProfileScreen() {
     userName?: string;
   };
   const userId = userIdParam || id || "";
-  const { userId: currentUserId } = useUserRole();
+  const { context, can } = usePermissions();
+  const currentUserId = context.userId;
   const currentUser = useStore(state => state.user);
   const { glass, text, accent } = useTheme();
   const colors = useThemedColors();
@@ -90,7 +91,7 @@ export default function UserPublicProfileScreen() {
       // Fetch profile data directly using supabase
       const { data, error } = await supabase
         .from('users')
-        .select('id, full_name, role, avatar_url, public_profile, username, bio, school:schools(name)')
+        .select('id, full_name, authority:role, avatar_url, public_profile, username, bio, school:schools(name)')
         .eq('id', userId)
         .single();
 
@@ -162,7 +163,6 @@ export default function UserPublicProfileScreen() {
                 <UserAvatar
                   avatarUrl={user?.avatar_url}
                   fullName={user?.full_name || userName}
-                  role={user?.role}
                   size={120}
                 />
               </HStack>
@@ -189,7 +189,7 @@ export default function UserPublicProfileScreen() {
             <VStack sx={{ gap: 12 }}>
               {user?.school_name && <InfoRow icon={<MapPin size={16} />} text={user.school_name} />}
               <InfoRow icon={<Calendar size={16} />} text={t("community.profile.memberOfGurudevi") || "Member of Gurudevi"} />
-              <InfoRow icon={<Shield size={16} />} text={user?.role?.toUpperCase() || 'MEMBER'} />
+              <InfoRow icon={<Shield size={16} />} text={user?.authority?.toUpperCase() || 'MEMBER'} />
             </VStack>
 
             {isPrivate && (
@@ -220,7 +220,7 @@ export default function UserPublicProfileScreen() {
                     </Text>
                   </HStack>
                 </Button>
-                {(user?.role === 'teacher' || user?.role === 'principal') && currentUser && (
+                {can('create', { __typename: 'Thuthimal', recipientId: userId } as any) && currentUser && (
                   <Button
                     action="secondary"
                     onPress={() => setShowThuthimal(true)}
@@ -242,7 +242,7 @@ export default function UserPublicProfileScreen() {
                 onClose={() => setShowThuthimal(false)}
                 recipientId={userId}
                 recipientName={user?.full_name ?? userName}
-                recipientRole={user?.role ?? 'teacher'}
+                recipientTier={user?.authority ?? 'teacher'}
                 giverId={currentUser.id}
                 giverName={currentUser.full_name ?? 'A Colleague'}
               />

@@ -20,7 +20,7 @@ export const SRI_LANKAN_SCHOOL_TYPES = {
     },
     Type_2: {
         key: 'Type_2',
-        en: 'Type 2 (Up to O/L)',
+        en: 'Type_2 (Up to O/L)',
         si: 'දෙවන වර්ගය (O/L දක්වා)',
         ta: 'வகை 2 (O/L வரை)',
         description: 'Schools up to GCE O/L only',
@@ -106,78 +106,6 @@ export const SCHOOL_SECTIONS = {
 export type SectionType = keyof typeof SCHOOL_SECTIONS;
 
 /**
- * User Roles with Hierarchy
- */
-export const USER_ROLES = {
-    principal: {
-        key: 'principal',
-        en: 'Principal',
-        si: 'විදුහල්පතිවරයා',
-        ta: 'அதிபர்',
-        level: 1, // Highest
-        navigationTab: 'school', // Shows entire school
-    },
-    section_head: {
-        key: 'section_head',
-        en: 'Section Head',
-        si: 'අංශ ප්‍රධානී',
-        ta: 'பிரிவு தலைவர்',
-        level: 2,
-        navigationTab: 'section', // Shows their section only
-    },
-    grade_head: {
-        key: 'grade_head',
-        en: 'Grade Head',
-        si: 'ශ්‍රේණි ප්‍රධානී',
-        ta: 'வකුප්පු தலைவர்',
-        level: 3,
-        navigationTab: 'grade', // Shows their grade only
-    },
-    teacher: {
-        key: 'teacher',
-        en: 'Teacher',
-        si: 'ගුරුවරයා',
-        ta: 'ஆசிரியர்',
-        level: 4,
-        navigationTab: 'classroom', // Shows assigned classes only
-    },
-    student: {
-        key: 'student',
-        en: 'Student',
-        si: 'ශිෂ්‍යයා',
-        ta: 'மாணவர்',
-        level: 5,
-        navigationTab: 'classroom', // Shows own class only
-    },
-    developer: {
-        key: 'developer',
-        en: 'Developer',
-        si: 'සංවර්ධක',
-        ta: 'உருவாக்குபவர்',
-        level: 0, // System level
-        navigationTab: 'profile',
-    },
-    admin: {
-        key: 'admin',
-        en: 'Admin',
-        si: 'පරිපාලක',
-        ta: 'நிர்வாகி',
-        level: 0, // System level
-        navigationTab: 'profile',
-    },
-    founder: {
-        key: 'founder',
-        en: 'Founder',
-        si: 'නිර්මාතෘ',
-        ta: 'நிறுவனர்',
-        level: 0, // System level
-        navigationTab: 'profile',
-    },
-} as const;
-
-export type UserRole = keyof typeof USER_ROLES;
-
-/**
  * Sri Lankan Provinces
  */
 export const SRI_LANKAN_PROVINCES = [
@@ -215,9 +143,9 @@ export const SRI_LANKAN_DISTRICTS = [
 
     // Northern Province (NP)
     { id: 'JA', provinceId: 'NP', en: 'Jaffna', si: 'යාපනය', ta: 'யாழ்ப்பாணம்' },
-    { id: 'KI', provinceId: 'NP', en: 'Kilinochchi', si: 'කිලිනොච්චිය', ta: 'கிளிநொச்சி' },
+    { id: 'KI', provinceId: 'NP', en: 'Kilinochchi', si: 'කිලිනොච්චිය', ta: 'கிளிநොச்சி' },
     { id: 'MN', provinceId: 'NP', en: 'Mannar', si: 'මන්නාරම', ta: 'மன்னார்' },
-    { id: 'VA', provinceId: 'NP', en: 'Vavuniya', si: 'වවුனියාව', ta: 'வவுனியா' },
+    { id: 'VA', provinceId: 'NP', en: 'Vavuniya', si: 'වවුනියාව', ta: 'வவுனியா' },
     { id: 'MU', provinceId: 'NP', en: 'Mullaitivu', si: 'මුලතිව්', ta: 'முல்லைத்தீவு' },
 
     // Eastern Province (EP)
@@ -270,7 +198,7 @@ export const RELIGIOUS_AFFILIATIONS = [
  */
 export const SYLLABUS_VERSIONS = [
     { id: 'legacy', en: 'Existing Syllabus', si: 'පවතින විෂය නිර්දේශය', ta: 'தற்போதுள்ள பாடத்திட்டம்' },
-    { id: 'reform2026', en: 'New Reform (2026)', si: 'නව ප්‍රතිසංස්කරණ (2026)', ta: 'புதிய சீர்திருத்தம் (2026)' },
+    { id: 'reform2026', en: 'New Reform (2026)', si: 'නව ප්‍රතිසංස්කරණ (2026)', ta: 'නව ප්‍රතිසංස්කරණ (2026)' },
 ] as const;
 
 /**
@@ -349,7 +277,7 @@ export const LIBRARY_RESOURCE_CATEGORIES = [
     { id: 'infographic', en: 'Infographics', si: 'තොරතුරු රූප', ta: 'தகவல் வரைகலைகள்' },
     { id: 'story', en: 'Stories', si: 'කථා', ta: 'கதைகள்' },
     { id: 'circular', en: 'Edu Circulars', si: 'රජයේ චක්‍රලේඛ', ta: 'அரசு சுற்றறிக்கைகள்' },
-    { id: 'movie_trailer', en: 'Inspiring Films', si: 'ආනුභාවී චිත්‍රපට', ta: 'ஊக்கமளிக்கும் திரைப்படங்கள்' },
+    { id: 'movie_trailer', en: 'Inspiring Films', si: 'ආනුභාවී චිත්‍රපට', ta: 'ஊக்கමளிக்கும் திரைப்படங்கள்' },
     { id: 'tech_guide', en: 'Tech Guides', si: 'තාක්ෂණ මාර්ගෝපදේශ', ta: 'தொழில்நுட்ப வழிகாட்டிகள்' },
     { id: 'other', en: 'Other Resources', si: 'වෙනත් සම්පත්', ta: 'மற்ற வளங்கள்' },
 ] as const;
@@ -360,7 +288,7 @@ export const LIBRARY_RESOURCE_CATEGORIES = [
 export const CLASSROOM_THEMES = [
     { id: 'saffron', color: '#F59E0B', en: 'Saffron', si: 'සැෆ්රන්', ta: 'குங்குமப்பூ' },
     { id: 'ocean', color: '#0EA5E9', en: 'Ocean', si: 'සාගර', ta: 'கடல்' },
-    { id: 'emerald', color: '#10B981', en: 'Emerald', si: 'මරකත', ta: 'மரகதம்' },
+    { id: 'emerald', color: '#10B981', en: 'Emerald', si: 'මරකත', ta: 'මරකත' },
     { id: 'orchid', color: '#8B5CF6', en: 'Orchid', si: 'ඕකිඩ්', ta: 'ஆர்க்கிடு' },
     { id: 'rose', color: '#F43F5E', en: 'Rose', si: 'රෝස', ta: 'ரோஜா' },
     { id: 'slate', color: '#64748B', en: 'Slate', si: 'ස්ලෙට්', ta: 'ஸ்லேட்' },
@@ -384,16 +312,6 @@ export function getSectionLabel(
     language: 'en' | 'si' | 'ta' = 'en'
 ): string {
     return SCHOOL_SECTIONS[section]?.[language] || section;
-}
-
-/**
- * Get role display name by language
- */
-export function getRoleLabel(
-    role: UserRole,
-    language: 'en' | 'si' | 'ta' = 'en'
-): string {
-    return USER_ROLES[role]?.[language] || role;
 }
 
 /**

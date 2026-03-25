@@ -75,7 +75,7 @@ export function useComments(postId: string | null) {
                 author_id: 'me',
                 author_name: isAnonymous ? 'Anonymous' : 'Me',
                 author_avatar: null,
-                author_role: 'student',
+                author_authority: 'student',
             };
 
             queryClient.setQueryData<Comment[]>(

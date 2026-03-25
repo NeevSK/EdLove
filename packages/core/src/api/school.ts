@@ -7,7 +7,7 @@ import {
     Announcement,
     InviteCode,
     SchoolStats,
-    UserRole
+    AuthorityTier
 } from '../types';
 
 // ============================================================================
@@ -167,7 +167,7 @@ export const schoolAPI = {
      */
     async generateInviteCode(
         school_id: string,
-        role: UserRole,
+        authority: AuthorityTier,
         createdBy: string
     ): Promise<InviteCode> {
         // Generate a random 8-character code
@@ -179,7 +179,7 @@ export const schoolAPI = {
                 {
                     code,
                     school_id,
-                    role,
+                    role: authority,
                     created_by: createdBy,
                     used: false,
                 },
@@ -272,7 +272,7 @@ export const schoolAPI = {
     async getStudentsBySchool(schoolId: string): Promise<any[]> {
         const { data, error } = await supabase
             .from('users')
-            .select('id, full_name, role')
+            .select('id, full_name, authority_label')
             .eq('school_id', schoolId)
             .eq('role', 'student')
             .order('full_name', { ascending: true });
