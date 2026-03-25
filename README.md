@@ -13,6 +13,7 @@ A single monorepo for the EdLove education ecosystem:
 - Source-of-truth map: [docs/PROJECT_MAP.md](./docs/PROJECT_MAP.md)
 - Openness/licensing decision (pending): [docs/OPENNESS_DECISION.md](./docs/OPENNESS_DECISION.md)
 - Branch pipeline (solo, scalable): [docs/BRANCHING_MODEL.md](./docs/BRANCHING_MODEL.md)
+- Codex skill usage guide: [docs/SKILL_PLAYBOOK.md](./docs/SKILL_PLAYBOOK.md)
 
 App contexts (read before working in an app):
 

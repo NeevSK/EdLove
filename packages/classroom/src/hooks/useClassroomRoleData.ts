@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase, useUserRole, useStore } from '@repo/core';
+import { supabase, usePermissions, AuthorityTier, useStore } from '@repo/core';
 
 export interface ClassroomRoleData {
     userId: string;
@@ -9,8 +9,10 @@ export interface ClassroomRoleData {
 }
 
 export function useClassroomRoleData(refreshTrigger: number = 0) {
-    const { role, userId, schoolId, user: localUser } = useUserRole();
-    const setUser = useStore(state => state.setUser);
+    const { context } = usePermissions();
+    const { roles, userId, schoolId } = context;
+    const role = roles[0];
+    const { realClassCount: storeClassCount, setRealClassCount, setUser, user: localUser } = useStore();
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<ClassroomRoleData | null>(null);
 
@@ -24,14 +26,16 @@ export function useClassroomRoleData(refreshTrigger: number = 0) {
 
         // Set initial data immediately so UI doesn't wait
         setData(prev => {
-            if (prev && prev.userId === userId && prev.schoolId === schoolId && prev.profileCompleted === !!localUser?.profile_completed) {
+            const currentClassCount = storeClassCount !== null ? storeClassCount : (prev?.realClassCount || 0);
+            
+            if (prev && prev.userId === userId && prev.schoolId === schoolId && prev.profileCompleted === !!localUser?.profile_completed && prev.realClassCount === currentClassCount) {
                 return prev;
             }
             return {
                 userId,
                 schoolId,
                 profileCompleted: !!localUser?.profile_completed,
-                realClassCount: prev?.realClassCount || 0
+                realClassCount: currentClassCount
             };
         });
 
@@ -49,7 +53,11 @@ export function useClassroomRoleData(refreshTrigger: number = 0) {
                         : Promise.resolve({ count: 0 }),
 
                 // Verify profile status in background
-                supabase.from('users').select('school_id, profile_completed, role, full_name, email').eq('id', userId).maybeSingle()
+                supabase
+                    .from('users')
+                    .select('school_id, profile_completed, role, full_name, email, platform_roles, school_role, work_roles, tenant_kind')
+                    .eq('id', userId)
+                    .maybeSingle()
             ]);
 
             realClassCount = classesCheck.count || 0;
@@ -61,7 +69,11 @@ export function useClassroomRoleData(refreshTrigger: number = 0) {
                 const hasSignificantChanges = 
                     serverUser.profile_completed !== localUser?.profile_completed || 
                     serverUser.school_id !== localUser?.school_id ||
-                    serverUser.role !== localUser?.role ||
+                    serverUser.role !== localUser?.authority ||
+                    JSON.stringify(serverUser.platform_roles) !== JSON.stringify((localUser as any)?.platform_authorities) ||
+                    serverUser.school_role !== (localUser as any)?.school_authority ||
+                    JSON.stringify(serverUser.work_roles) !== JSON.stringify((localUser as any)?.work_capacities) ||
+                    serverUser.tenant_kind !== (localUser as any)?.tenant_kind ||
                     serverUser.full_name !== localUser?.full_name ||
                     serverUser.email !== localUser?.email;
                                   
@@ -69,6 +81,11 @@ export function useClassroomRoleData(refreshTrigger: number = 0) {
                     console.log('🔄 useClassroomRoleData: Syncing user data from server (Changes detected)');
                     setUser({ ...localUser, ...serverUser, id: userId } as any);
                 }
+            }
+
+            // Sync class count back to store if different
+            if (realClassCount !== storeClassCount) {
+                setRealClassCount(realClassCount);
             }
 
             setData({
@@ -82,7 +99,7 @@ export function useClassroomRoleData(refreshTrigger: number = 0) {
         } finally {
             setLoading(false);
         }
-    }, [userId, schoolId, role, setUser, localUser?.profile_completed, localUser?.school_id, localUser?.role]);
+    }, [userId, schoolId, role, setUser, setRealClassCount, storeClassCount, localUser?.profile_completed, localUser?.school_id]);
 
     useEffect(() => {
         fetchData();

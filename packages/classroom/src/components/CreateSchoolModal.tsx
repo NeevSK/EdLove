@@ -37,6 +37,7 @@ import {
     communityAPI, 
     useSchoolCreation,
     useEntity,
+    useStore,
     SRI_LANKAN_PROVINCES,
     SRI_LANKAN_DISTRICTS,
     SRI_LANKAN_SCHOOL_TYPES,
@@ -68,8 +69,11 @@ export default function CreateSchoolModal({
 }: CreateSchoolModalProps) {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
+    const user = useStore((state) => state.user);
+    const setUser = useStore((state) => state.setUser);
     const colors = useThemedColors();
     const { text, glass } = useTheme();
+    const isEdit = !!initialData;
     
     // Use unified entity hook for logic, but keep custom step state for the wizard UI
     const { 
@@ -97,7 +101,6 @@ export default function CreateSchoolModal({
     const [error, setError] = useState<string | null>(null);
     const [createdIds, setCreatedIds] = useState<{ schoolId: string; groupId?: string } | null>(null);
 
-    const isEdit = !!initialData;
     const currentStep = state.step;
 
     // Derived Location Data
@@ -138,6 +141,14 @@ export default function CreateSchoolModal({
             } else {
                 payload.created_by = userId;
                 school = await create(payload);
+
+                // Sync school_id to both Supabase profile and local store
+                if (userId) {
+                    await identityAPI.updateProfile(userId, { school_id: school.id });
+                }
+                if (user) {
+                    setUser({ ...user, school_id: school.id } as any);
+                }
 
                 let communityGroupId: string | undefined;
                 try {

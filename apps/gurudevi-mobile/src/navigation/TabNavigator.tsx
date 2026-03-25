@@ -23,10 +23,12 @@ import ClassroomStackNavigator from './ClassroomStackNavigator';
 import ProfileStackNavigator from './ProfileStackNavigator';
 import CommunityStackNavigator from './CommunityStackNavigator';
 import LibraryStackNavigator from './LibraryStackNavigator';
-import { useUserRole, useRewards, useStore } from '@repo/core';
+import SelfStackNavigator from './SelfStackNavigator';
+import { useUserRole, useRewards, useStore, usePermissions } from '@repo/core';
+import { TrubeBackdrop } from '../components/trube/TrubeBackdrop';
 
 // Screens
-import { SelfScreen } from '../screens';
+// SelfScreen moved to SelfStackNavigator
 
 
 const Tab = createBottomTabNavigator();
@@ -53,10 +55,15 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
     }
   }, [newAchievements]);
 
-  // Dynamic Label Logic
+  const { can } = usePermissions();
+  
+  // Dynamic Label Logic (Capability-driven)
   const getClassroomLabel = () => {
-    if (role === 'principal') return t('tabs.mySchool') || 'My School';
-    if (role === 'founder') return t('tabs.school');
+    if (can('manage', 'PrincipalDashboard')) return t('tabs.mySchool') || 'My School';
+    if (can('manage', 'FounderDashboard')) return t('tabs.school');
+    // For section/grade heads, we might need more granular capability checks or 
+    // simply fallback to the current labels if they are still determined by role 
+    // for now, but we've shifted the most critical ones to CASL semantic subjects.
     if (role === 'section_head') return t('tabs.section');
     if (role === 'grade_head') return t('tabs.grade') || t('tabs.classroom');
     return t('tabs.classroom');
@@ -66,6 +73,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
     <View style={{ flex: 1 }}>
       {/* Living backdrop — renders behind all tabs */}
       <SanctuaryBackground />
+      <TrubeBackdrop />
 
       <Tab.Navigator
         id="MainTabs"
@@ -164,8 +172,8 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           }}
         >
           {() => (
-            <ErrorBoundary name="Self Screen">
-              <SelfScreen />
+            <ErrorBoundary name="Self Tab">
+              <SelfStackNavigator />
             </ErrorBoundary>
           )}
         </Tab.Screen>

@@ -21,20 +21,9 @@ import {
     ButtonText,
 } from '@repo/ui';
 import { MessageSquare, Heart, AlertTriangle, CheckCircle2, ChevronRight, Send } from 'lucide-react-native';
-import { supabase, useStore } from '@repo/core';
+import { useStore } from '@repo/core';
+import { insightsAPI, type FeedbackEcho } from '@repo/admin';
 import { useTranslation } from 'react-i18next';
-
-interface FeedbackEcho {
-    id: string;
-    source: 'teacher' | 'student';
-    category: 'support' | 'morale' | 'facility' | 'recognition';
-    content: string;
-    priority: 'low' | 'medium' | 'high';
-    is_read: boolean;
-    created_at: string;
-    principal_response?: string;
-    responded_at?: string;
-}
 
 const CATEGORY_ICONS = {
     support: MessageSquare,
@@ -59,18 +48,8 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
 
     const fetchFeedback = async () => {
         try {
-            const { data, error } = await supabase
-                .from('school_echo_feedback')
-                .select('*')
-                .eq('school_id', schoolId)
-                .order('created_at', { ascending: false })
-                .limit(5);
-
-            if (error) {
-                setMockData();
-            } else {
-                setFeedback(data || []);
-            }
+            const data = await insightsAPI.listFeedbackEchoes(schoolId, 5);
+            setFeedback(data || []);
         } catch {
             setMockData();
         } finally {
@@ -80,7 +59,7 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
 
     const handleMarkRead = async (id: string) => {
         try {
-            await supabase.from('school_echo_feedback').update({ is_read: true }).eq('id', id);
+            await insightsAPI.markEchoRead(id);
             setFeedback(prev => prev.map(e => e.id === id ? { ...e, is_read: true } : e));
         } catch { /**/ }
     };
@@ -89,13 +68,7 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
         if (!replyText.trim() || !user?.id) return;
         setSavingReply(true);
         try {
-            const now = new Date().toISOString();
-            await supabase.from('school_echo_feedback').update({
-                principal_response: replyText.trim(),
-                responded_by: user.id,
-                responded_at: now,
-                is_read: true,
-            }).eq('id', id);
+            const now = await insightsAPI.replyToEcho(id, user.id, replyText.trim());
             setFeedback(prev => prev.map(e =>
                 e.id === id ? { ...e, principal_response: replyText.trim(), responded_at: now, is_read: true } : e
             ));
@@ -107,9 +80,9 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
 
     const setMockData = () => {
         setFeedback([
-            { id: '1', source: 'teacher', category: 'support', content: 'Need guidance on the 2026 Mathematics syllabus transition for Grade 6.', priority: 'high', is_read: false, created_at: new Date().toISOString() },
-            { id: '2', source: 'student', category: 'morale', content: 'The new common area is great! Everyone is enjoying the study space.', priority: 'low', is_read: true, created_at: new Date(Date.now() - 3600000).toISOString() },
-            { id: '3', source: 'teacher', category: 'facility', content: 'Multimedia projector in Room 4 is flickering intermittently.', priority: 'medium', is_read: false, created_at: new Date(Date.now() - 86400000).toISOString() },
+            { id: '1', school_id: schoolId, source: 'teacher', category: 'support', content: 'Need guidance on the 2026 Mathematics syllabus transition for Grade 6.', priority: 'high', is_read: false, created_at: new Date().toISOString() },
+            { id: '2', school_id: schoolId, source: 'student', category: 'morale', content: 'The new common area is great! Everyone is enjoying the study space.', priority: 'low', is_read: true, created_at: new Date(Date.now() - 3600000).toISOString() },
+            { id: '3', school_id: schoolId, source: 'teacher', category: 'facility', content: 'Multimedia projector in Room 4 is flickering intermittently.', priority: 'medium', is_read: false, created_at: new Date(Date.now() - 86400000).toISOString() },
         ]);
     };
 

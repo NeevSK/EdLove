@@ -395,6 +395,7 @@ jobs:
   sentry-upload:
     needs: [prep, prebundle, build]
     runs-on: ubuntu-latest
+    continue-on-error: true
     if: |
       needs.build.result == 'success' &&
       needs.prebundle.outputs.sourcemaps_available == 'true' &&

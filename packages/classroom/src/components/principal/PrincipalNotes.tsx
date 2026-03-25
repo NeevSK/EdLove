@@ -54,8 +54,7 @@ import {
     X,
     ChevronDown,
 } from 'lucide-react-native';
-import { api } from '@repo/core';
-import type { PrincipalNote } from '@repo/core';
+import { notesAPI, type PrincipalNote } from '@repo/admin';
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -161,7 +160,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
 
     const fetchNotes = useCallback(async () => {
         try {
-            const data = await api.principalNotes.getAll(schoolId);
+            const data = await notesAPI.listBySchool(schoolId);
             setNotes(data || []);
         } catch (err) {
             console.error('PrincipalNotes: fetch error', err);
@@ -178,7 +177,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
         if (!draft.trim()) return;
         setSaving(true);
         try {
-            const created = await api.principalNotes.create({
+            const created = await notesAPI.create({
                 school_id: schoolId,
                 content: draft.trim(),
                 note_type: draftType,
@@ -197,7 +196,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
         // Only todos are check-off-able
         if (note.note_type !== 'todo') return;
         try {
-            const updated = await api.principalNotes.update(note.id, { is_done: !note.is_done });
+            const updated = await notesAPI.update(note.id, { is_done: !note.is_done });
             setNotes((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
         } catch {
             showToast({ message: 'Could not update note.', type: 'error' });
@@ -207,7 +206,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
     const handleTogglePin = async (note: PrincipalNote) => {
         if (note.is_done) return; // don't pin completed items
         try {
-            const updated = await api.principalNotes.update(note.id, { is_pinned: !note.is_pinned });
+            const updated = await notesAPI.update(note.id, { is_pinned: !note.is_pinned });
             setNotes((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
         } catch {
             showToast({ message: 'Could not update note.', type: 'error' });
@@ -216,7 +215,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
 
     const handleDelete = async (id: string) => {
         try {
-            await api.principalNotes.delete(id);
+            await notesAPI.remove(id);
             setNotes((prev) => prev.filter((n) => n.id !== id));
             showToast({ message: 'Note deleted.', type: 'success' });
         } catch {

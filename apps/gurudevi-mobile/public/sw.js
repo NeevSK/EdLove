@@ -99,12 +99,18 @@ async function cacheFirst(cacheName, request) {
 async function staleWhileRevalidate(cacheName, request) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
-  const networkFetch = fetch(request).then(response => {
-    const url = new URL(request.url);
-    if (response.ok && (url.protocol === 'http:' || url.protocol === 'https:')) {
-      cache.put(request, response.clone());
-    }
-    return response;
-  });
+  const networkFetch = fetch(request)
+    .then(response => {
+      const url = new URL(request.url);
+      if (response.ok && (url.protocol === 'http:' || url.protocol === 'https:')) {
+        cache.put(request, response.clone());
+      }
+      return response;
+    })
+    .catch(error => {
+      // Silently handle network errors during development/initial load
+      console.warn('[SW] Network fetch failed, using cache:', request.url, error);
+      return null;
+    });
   return cached || networkFetch;
 }

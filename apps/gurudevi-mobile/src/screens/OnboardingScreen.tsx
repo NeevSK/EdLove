@@ -13,6 +13,8 @@ import { ProgressIndicator } from '@repo/ui';
 import { OrientationCaptureStep } from '@repo/self';
 import type { OrientationSeeds } from '@repo/profile';
 
+const JOURNEY_PILLARS = ['Self', 'Classroom', 'Community', 'Library'];
+
 interface OnboardingScreenProps {
     onComplete: (name: string, role: UserRole, wantsAccount?: boolean) => void;
     isAnonymous?: boolean;
@@ -27,6 +29,82 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
     const [role, setRole] = useState<UserRole>('teacher');
     const [isCompleting, setIsCompleting] = useState(false);
     const toast = useToast();
+
+    const StepShell = ({
+        step,
+        title,
+        subtitle,
+        children,
+    }: {
+        step: string;
+        title: string;
+        subtitle: string;
+        children: React.ReactNode;
+    }) => (
+        <VStack flex={1} px="$5" pt="$5" pb="$6">
+            <Box
+                sx={{
+                    borderRadius: Theme.corners.generous,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    backgroundColor: colors.secondary,
+                    overflow: 'hidden',
+                    shadowColor: Theme.colors.shadowViolet,
+                    shadowOffset: { width: 0, height: 14 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 24,
+                    elevation: 4,
+                }}
+            >
+                <Box
+                    sx={{
+                        px: Theme.spacing.lg,
+                        py: Theme.spacing.lg,
+                        backgroundColor: colors.overlay,
+                        borderBottomWidth: 1,
+                        borderBottomColor: colors.border,
+                    }}
+                >
+                    <VStack space="md">
+                        <HStack space="sm" sx={{ flexWrap: 'wrap' }}>
+                            {JOURNEY_PILLARS.map((pillar) => (
+                                <Box
+                                    key={pillar}
+                                    sx={{
+                                        px: Theme.spacing.sm,
+                                        py: '$1',
+                                        borderRadius: Theme.corners.full,
+                                        backgroundColor: `${colors.primary}CC`,
+                                        borderWidth: 1,
+                                        borderColor: colors.border,
+                                    }}
+                                >
+                                    <Text size="xs" color={colors.textSecondary} bold>
+                                        {pillar}
+                                    </Text>
+                                </Box>
+                            ))}
+                        </HStack>
+                        <ProgressIndicator currentStep={currentStep} totalSteps={7} />
+                        <VStack space="xs">
+                            <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.8 }}>
+                                {step}
+                            </Text>
+                            <Heading size="2xl" color={colors.text}>
+                                {title}
+                            </Heading>
+                            <Text color={colors.textSecondary}>
+                                {subtitle}
+                            </Text>
+                        </VStack>
+                    </VStack>
+                </Box>
+                <Box sx={{ px: Theme.spacing.lg, py: Theme.spacing.xl }}>
+                    {children}
+                </Box>
+            </Box>
+        </VStack>
+    );
 
     // ── Restore saved progress or pre-fill from existing auth ─────────────
     React.useEffect(() => {
@@ -232,43 +310,45 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
     // --- Renderers ---
 
     const renderNameStep = () => (
-        <VStack space="xl" mt="$8" px="$6">
-            <ProgressIndicator currentStep={0} totalSteps={7} />
-            <Heading size="2xl" color={colors.action} textAlign="center">
-                {t('onboarding.nameTitle') || 'Welcome! What should we call you?'}
-            </Heading>
-            <Text color={colors.textSecondary} textAlign="center">
-                {t('onboarding.nameSubtitle') || "Let's start your journey with a name."}
-            </Text>
-            <Input variant="outline" size="xl" sx={{ borderColor: colors.textTertiary, borderRadius: Theme.corners.comfortable, mt: '$4' }}>
-                <InputField
-                    placeholder={t('onboarding.namePlaceholder')}
-                    value={name}
-                    onChangeText={setName}
-                    color={colors.text}
-                />
-            </Input>
-            <Button size="lg" onPress={handleNext} isDisabled={!canProceed} sx={{ backgroundColor: colors.action, mt: '$6' }}>
-                <ButtonText color={Theme.colors.sacredWhite}>{t('onboarding.continue')}</ButtonText>
-            </Button>
-            <Button
-                variant="link"
-                onPress={() => {
-                    hapticLight();
-                    if (navigation.canGoBack()) {
-                        navigation.goBack();
-                    } else {
-                        navigation.reset({
-                            index: 0,
-                            routes: [{ name: 'Welcome' }],
-                        });
-                    }
-                }}
-                sx={{ mt: '$2' }}
-            >
-                <ButtonText color={colors.textTertiary}>{t('onboarding.backToWelcome') || 'Back to Welcome'}</ButtonText>
-            </Button>
-        </VStack>
+        <StepShell
+            step="STEP 1 · ARRIVAL"
+            title={t('onboarding.nameTitle') || 'Welcome! What should we call you?'}
+            subtitle={t('onboarding.nameSubtitle') || "Let's start your journey with a name."}
+        >
+            <VStack space="lg">
+                <Input variant="outline" size="xl" sx={{ borderColor: colors.textTertiary, borderRadius: Theme.corners.comfortable }}>
+                    <InputField
+                        placeholder={t('onboarding.namePlaceholder')}
+                        value={name}
+                        onChangeText={setName}
+                        color={colors.text}
+                    />
+                </Input>
+                <Text color={colors.textSecondary} size="sm">
+                    This name becomes the gentle way Gurudevi addresses you across your sanctuary surfaces.
+                </Text>
+                <Button size="lg" onPress={handleNext} isDisabled={!canProceed} sx={{ backgroundColor: colors.action, mt: '$2' }}>
+                    <ButtonText color={Theme.colors.sacredWhite}>{t('onboarding.continue')}</ButtonText>
+                </Button>
+                <Button
+                    variant="link"
+                    onPress={() => {
+                        hapticLight();
+                        if (navigation.canGoBack()) {
+                            navigation.goBack();
+                        } else {
+                            navigation.reset({
+                                index: 0,
+                                routes: [{ name: 'Welcome' }],
+                            });
+                        }
+                    }}
+                    sx={{ mt: '$1' }}
+                >
+                    <ButtonText color={colors.textTertiary}>{t('onboarding.backToWelcome') || 'Back to Welcome'}</ButtonText>
+                </Button>
+            </VStack>
+        </StepShell>
     );
 
     const ROLE_OPTIONS: Array<{ value: UserRole; emoji: string; descKey: string }> = [
@@ -399,19 +479,67 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
 
     return (
         <ScreenWrapper>
-            <VStack flex={1}>
-                {isCompleting ? (
-                    <Center flex={1}>
-                        <Text color={colors.text}>Finalizing your sanctuary...</Text>
-                    </Center>
-                ) : (
-                    <>
-                        {currentStep === 0 && renderNameStep()}
-                        {currentStep === 1 && renderRoleStep()}
-                        {currentStep >= 2 && currentStep <= 6 && renderTourStep(currentStep)}
-                    </>
-                )}
-            </VStack>
+            <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: -50,
+                        right: -40,
+                        width: 180,
+                        height: 180,
+                        borderRadius: 90,
+                        backgroundColor: `${colors.action}12`,
+                    }}
+                />
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        left: -20,
+                        bottom: 100,
+                        width: 160,
+                        height: 160,
+                        borderRadius: 80,
+                        backgroundColor: `${Theme.colors.gurudeviBlue}12`,
+                    }}
+                />
+                <VStack flex={1}>
+                    <VStack px="$6" pt="$5" pb="$2" space="sm">
+                        <HStack space="sm" sx={{ flexWrap: 'wrap' }}>
+                            {JOURNEY_PILLARS.map((pillar) => (
+                                <Box
+                                    key={pillar}
+                                    sx={{
+                                        px: Theme.spacing.sm,
+                                        py: '$1',
+                                        borderRadius: Theme.corners.full,
+                                        backgroundColor: `${colors.secondary}CC`,
+                                        borderWidth: 1,
+                                        borderColor: colors.border,
+                                    }}
+                                >
+                                    <Text size="xs" color={colors.textSecondary} bold>
+                                        {pillar}
+                                    </Text>
+                                </Box>
+                            ))}
+                        </HStack>
+                        <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.8 }}>
+                            SANCTUARY JOURNEY
+                        </Text>
+                    </VStack>
+                    {isCompleting ? (
+                        <Center flex={1}>
+                            <Text color={colors.text}>Finalizing your sanctuary...</Text>
+                        </Center>
+                    ) : (
+                        <>
+                            {currentStep === 0 && renderNameStep()}
+                            {currentStep === 1 && renderRoleStep()}
+                            {currentStep >= 2 && currentStep <= 6 && renderTourStep(currentStep)}
+                        </>
+                    )}
+                </VStack>
+            </Box>
         </ScreenWrapper>
     );
 }

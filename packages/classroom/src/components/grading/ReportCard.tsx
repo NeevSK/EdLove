@@ -15,7 +15,7 @@ import {
     Theme
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { StudentGrade, marksToGPA } from '@repo/core';
+import { StudentGrade, marksToGPA, calculateRanks } from '@repo/analytics';
 
 interface ReportCardProps {
     studentName: string;

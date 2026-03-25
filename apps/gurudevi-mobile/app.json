@@ -113,7 +113,12 @@
           "uploadSourceMaps": false
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-image",
+      "expo-router",
+      "expo-sharing",
+      "expo-sqlite",
+      "expo-video"
     ],
     "owner": "neevsk",
     "runtimeVersion": {

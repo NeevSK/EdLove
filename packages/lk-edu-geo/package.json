@@ -1,0 +1,51 @@
+{
+  "name": "@intuitui-labs/lk-edu-geo",
+  "version": "1.0.0",
+  "description": "Sri Lanka educational and administrative geo data",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./data": "./data/lk-edu-data.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "data"
+  ],
+  "keywords": [
+    "sri-lanka",
+    "lk",
+    "education",
+    "geo",
+    "schools",
+    "districts",
+    "provinces",
+    "gn-divisions",
+    "educational-zones"
+  ],
+  "packageManager": "pnpm@10.x",
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "test": "vitest",
+    "validate": "tsx scripts/validate.ts",
+    "import:xlsx": "tsx scripts/import-xlsx.ts",
+    "import:pdf": "tsx scripts/import-pdf.ts"
+  },
+  "devDependencies": {
+    "@nishansanjuka/srilanka_geographics": "^0.0.1",
+    "@repo/core": "workspace:*",
+    "@types/glob": "^9.0.0",
+    "glob": "^11.0.1",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8",
+    "xlsx": "^0.18.5"
+  }
+}

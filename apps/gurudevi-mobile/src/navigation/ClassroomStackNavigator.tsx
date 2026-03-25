@@ -2,11 +2,12 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
     ClassroomScreen,
-    ClassroomDashboard,
     AttendanceScreen,
     GradebookScreen,
     FounderDashboard,
-    FounderSchoolView
+    FounderSchoolDashboard,
+    TeacherClassroomDashboard,
+    StudentClassroomDashboard
 } from '@repo/classroom';
 import { useTheme } from '@repo/ui';
 import { ClassroomStackParamList } from '@repo/core';
@@ -26,12 +27,13 @@ export default function ClassroomStackNavigator() {
             }}
         >
             <Stack.Screen name="ClassroomList" component={ClassroomScreen} />
-            <Stack.Screen name="ClassroomDetails" component={ClassroomDashboard} />
+            <Stack.Screen name="TeacherClassroomDashboard" component={TeacherClassroomDashboard} />
+            <Stack.Screen name="StudentClassroomDashboard" component={StudentClassroomDashboard} />
             <Stack.Screen name="Attendance" component={AttendanceScreen} />
             <Stack.Screen name="Gradebook" component={GradebookScreen} />
             <Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} />
             <Stack.Screen name="FounderDashboard" component={FounderDashboard} />
-            <Stack.Screen name="FounderSchoolView" component={FounderSchoolView} />
+            <Stack.Screen name="FounderSchoolDashboard" component={FounderSchoolDashboard} />
         </Stack.Navigator>
     );
 }

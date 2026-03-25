@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-03-21T08:15:53.866Z",
+  "sources": [],
+  "overrides": {
+    "semantics": {
+      "intent": {
+        "bug": [],
+        "feature": [],
+        "question": [],
+        "support": [],
+        "meta": []
+      },
+      "needsInfo": {
+        "repro": [],
+        "expected": [],
+        "actual": [],
+        "environment": [],
+        "version": [],
+        "logs": [],
+        "testPlan": []
+      },
+      "environmentTokens": [
+        "windows",
+        "win11",
+        "win10",
+        "mac",
+        "macos",
+        "linux",
+        "ubuntu",
+        "debian",
+        "node",
+        "npm",
+        "pnpm",
+        "yarn"
+      ],
+      "relationship": {
+        "linkKeywords": [],
+        "duplicateHints": []
+      },
+      "errors": {
+        "signatures": [],
+        "keywords": []
+      }
+    }
+  }
+}

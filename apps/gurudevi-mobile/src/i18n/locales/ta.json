@@ -315,6 +315,28 @@
       "manageHierarchy": "🏫 பள்ளி படிநிலையை நிர்வகிக்கவும்",
       "inviteStaff": "✉️ ஊழியர்கள் மற்றும் மாணவர்களை அழைக்கவும்"
     },
+    "ia": {
+      "scope": {
+        "institutional": "Institutional",
+        "classroom": "Classroom",
+        "crossEcosystem": "Cross-Ecosystem"
+      },
+      "help": {
+        "institutional": "Institutional scope: school-wide governance and operations.",
+        "classroom": "Classroom scope: learning delivery, student progress, and class execution.",
+        "crossEcosystem": "Cross-ecosystem scope: bridges institutional operations with community and culture."
+      },
+      "actions": {
+        "hierarchy": "School Structure",
+        "invites": "Role Invites",
+        "timetable": "Timetable Planning",
+        "logbook": "Leadership Logbook",
+        "hierarchyCta": "Shape School Structure",
+        "invitesCta": "Invite Faculty Roles",
+        "profileCta": "Institution Profile",
+        "commonsCta": "Open Community Commons"
+      }
+    },
     "resources": {
       "title": "வளத் தேவைகள்",
       "subtitle": "உங்கள் ஆசிரியர்களுக்குத் தேவையானவற்றைக் கொண்டு அவர்களுக்கு ஆதரவளிக்கவும்",

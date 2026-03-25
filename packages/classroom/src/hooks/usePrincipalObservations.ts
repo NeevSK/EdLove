@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@repo/core';
+import { observationsAPI } from '@repo/admin';
 
 export function usePrincipalObservations(userId: string, schoolId: string, viewDate: string) {
     const [observations, setObservations] = useState<any[]>([]);
@@ -10,14 +10,8 @@ export function usePrincipalObservations(userId: string, schoolId: string, viewD
         if (!userId) return;
         setLoading(true);
         try {
-            const { data } = await supabase
-                .from('principal_observations')
-                .select('*')
-                .eq('principal_id', userId)
-                .lte('created_at', viewDate + 'T23:59:59.999Z')
-                .order('created_at', { ascending: false })
-                .limit(10);
-            setObservations(data ?? []);
+            const data = await observationsAPI.listByDate(userId, viewDate, 10);
+            setObservations(data);
         } catch (err) {
             console.error('Failed to load observations:', err);
         } finally {
@@ -33,12 +27,12 @@ export function usePrincipalObservations(userId: string, schoolId: string, viewD
         if (!content.trim() || !userId || !schoolId) return;
         setSaving(true);
         try {
-            const { data } = await supabase.from('principal_observations').insert({
-                principal_id: userId,
-                school_id: schoolId,
+            const data = await observationsAPI.create({
+                principalId: userId,
+                schoolId,
                 type,
-                content: content.trim(),
-            }).select().single();
+                content: content.trim()
+            });
             if (data) setObservations(prev => [data, ...prev]);
             return data;
         } catch (err) {

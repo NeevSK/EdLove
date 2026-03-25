@@ -26,7 +26,7 @@ import {
 } from '@repo/ui';
 import { QrCode, CheckCircle2 } from 'lucide-react-native';
 import { Theme } from '@repo/ui';
-import { api } from '@repo/core';
+import { api, identityAPI, supabase, useStore } from '@repo/core';
 import { hapticSuccess } from '@repo/ui';
 import { useThemedColors } from '@repo/ui';
 
@@ -42,12 +42,33 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
     const [successData, setSuccessData] = useState<any>(null);
     const colors = useThemedColors();
     const { text } = useTheme();
+    const { user, setUser } = useStore();
 
     const handleClaim = async () => {
         if (!inviteCode.trim()) return;
         try {
             setLoading(true);
             const result = await api.classroomStudents.claimStudent(inviteCode.trim());
+            
+            // Sync school_id if the classroom belongs to a school
+            if (result?.class_id) {
+                const { data: classroom } = await supabase
+                    .from('classrooms')
+                    .select('school_id')
+                    .eq('id', result.class_id)
+                    .single();
+                
+                if (classroom?.school_id) {
+                    const userId = await identityAPI.getMyInternalId();
+                    if (userId) {
+                        await identityAPI.updateProfile(userId, { school_id: classroom.school_id });
+                        if (user) {
+                            setUser({ ...user, school_id: classroom.school_id } as any);
+                        }
+                    }
+                }
+            }
+
             setSuccessData(result);
             hapticSuccess();
         } catch (error: any) {

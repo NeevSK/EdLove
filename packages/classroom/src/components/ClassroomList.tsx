@@ -20,7 +20,7 @@ import { Box, Text, Heading, VStack, HStack } from '@repo/ui';
 import { BookOpen, Users, ChevronRight, ClipboardCheck, Plus, Zap, Trash2, Edit2 } from 'lucide-react-native';
 import { Theme, typography } from '@repo/ui';
 import { api, Classroom, MOCK_CLASSROOMS, identityAPI } from '@repo/core';
-import { useUserRole, useStore, supabase } from '@repo/core';
+import { useStore, supabase, usePermissions } from '@repo/core';
 import { useToast, Toast, ToastTitle, ToastDescription } from '@repo/ui';
 import { hapticLight, hapticSuccess } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
@@ -46,11 +46,12 @@ export default function ClassroomList({
     refreshTrigger: externalRefreshTrigger = 0,
     emptyContent
 }: ClassroomListProps) {
-    const { role } = useUserRole();
+    const { can, context } = usePermissions();
+    const role = context.roles[0];
     const { isGuest } = useFeatureAccess();
-    // Only teachers and grade heads create classrooms — principals create the school
-    // structure (hierarchy/sections), students never create classrooms.
-    const canCreateClassroom = !isGuest && (role === 'teacher' || role === 'grade_head');
+    
+    // Capability-based check for classroom creation
+    const canCreateClassroom = can('create', 'Classroom');
     const [classrooms, setClassrooms] = useState<Classroom[]>([]);
     const [loading, setLoading] = useState(true);
     const { t } = useTranslation();
@@ -116,21 +117,21 @@ export default function ClassroomList({
                 let data: Classroom[] = [];
 
                 if (isGuest) {
-                    if (role === 'teacher') {
+                    if (can('manage', 'TeacherDashboard')) {
                         const sampleId = 'sample-c1';
                         const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
                         if (sample && !dismissedSampleIds.includes(sampleId)) {
                             (sample as any).is_sample = true;
                             data = [sample];
                         }
-                    } else if (role === 'principal') {
+                    } else if (can('manage', 'PrincipalDashboard')) {
                         const sampleSchoolId = 'sample-school-1';
                         const sampleSchool = MOCK_CLASSROOMS.find((c: any) => c.id === sampleSchoolId);
                         if (sampleSchool && !dismissedSampleIds.includes(sampleSchoolId)) {
                             (sampleSchool as any).is_sample = true;
                             data = [sampleSchool];
                         }
-                    } else if (role === 'student' || !role) {
+                    } else if (can('manage', 'StudentDashboard') || !role) {
                         const sampleId = 'sample-c1';
                         const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
                         if (sample && !dismissedSampleIds.includes(sampleId)) {
@@ -148,18 +149,18 @@ export default function ClassroomList({
                     const pagination = { limit: PAGE_SIZE, offset: 0 };
                     let realData: Classroom[] = [];
 
-                    if (role === 'teacher') {
+                    if (can('manage', 'TeacherDashboard')) {
                         realData = await api.classrooms.getByTeacher(userId, pagination);
-                    } else if (role === 'student') {
+                    } else if (can('manage', 'StudentDashboard')) {
                         realData = await api.classrooms.getByStudent(userId, pagination);
-                    } else if (role === 'principal') {
+                    } else if (can('manage', 'PrincipalDashboard')) {
                         // Principals check their school_id from their own user record in 'users' table
                         const { data: userData } = await supabase
                             .from('users')
                             .select('school_id')
                             .eq('id', userId)
                             .single();
-
+                        
                         const schoolId = userData?.school_id;
                         if (schoolId) {
                             realData = await api.classrooms.getBySchool(schoolId, pagination);
@@ -173,9 +174,9 @@ export default function ClassroomList({
                     } else {
                         // If no real data, try to show sample if not dismissed
                         let sampleToShow: any = null;
-                        if (role === 'teacher' || role === 'student' || !role) {
+                        if (can('manage', 'TeacherDashboard') || can('manage', 'StudentDashboard') || !role) {
                             sampleToShow = MOCK_CLASSROOMS.find((c: any) => c.id === 'sample-c1');
-                        } else if (role === 'principal') {
+                        } else if (can('manage', 'PrincipalDashboard')) {
                             sampleToShow = MOCK_CLASSROOMS.find((c: any) => c.id === 'sample-school-1');
                         }
 
@@ -227,11 +228,11 @@ export default function ClassroomList({
             const pagination = { limit: PAGE_SIZE, offset: page * PAGE_SIZE };
             let newData: Classroom[] = [];
 
-            if (role === 'teacher') {
+            if (can('manage', 'TeacherDashboard')) {
                 newData = await api.classrooms.getByTeacher(userId, pagination);
-            } else if (role === 'student') {
+            } else if (can('manage', 'StudentDashboard')) {
                 newData = await api.classrooms.getByStudent(userId, pagination);
-            } else if (role === 'principal') {
+            } else if (can('manage', 'PrincipalDashboard')) {
                 const { data: userData } = await supabase
                     .from('users')
                     .select('school_id')

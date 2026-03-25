@@ -20,6 +20,7 @@ import {
     TrendingDown,
     Activity
 } from 'lucide-react-native';
+import { reportingAPI } from '@repo/admin';
 import { api, AttendanceReport, AcademicCycle } from '@repo/core';
 import { useTranslation } from 'react-i18next';
 import { TouchableOpacity } from 'react-native';
@@ -50,7 +51,7 @@ export default function AttendanceReportScreen({ schoolId, classroomId, onBack }
 
             if (targetCycle) {
                 setSelectedCycleId(targetCycle.id);
-                const data = await api.staffManagement.getAttendanceReport(
+                const data = await reportingAPI.getAttendanceReport(
                     schoolId,
                     targetCycle.start_date,
                     targetCycle.end_date,

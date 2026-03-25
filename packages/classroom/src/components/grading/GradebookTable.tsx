@@ -15,7 +15,7 @@ import {
 } from '@repo/ui';
 import { FlatList, ListRenderItemInfo } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { StudentGrade, ClassroomGradingSettings, marksToGPA, calculateRanks } from '@repo/core';
+import { StudentGrade, ClassroomGradingSettings, marksToGPA, calculateRanks } from '@repo/analytics';
 
 interface GradebookTableProps {
     grades: StudentGrade[];

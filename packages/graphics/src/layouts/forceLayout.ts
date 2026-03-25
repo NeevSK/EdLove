@@ -1,6 +1,4 @@
-import type { GraphNode } from '../types/GraphNode';
-import type { GraphLink } from '../types/GraphLink';
-import type { KnowledgeTopology, LayoutResult } from '../types/KnowledgeTopology';
+import type { KnowledgeTopology, LayoutResult, GraphNode, GraphLink } from '@repo/core';
 
 // D3 force simulation — pure JS, no rendering, works in RN Hermes
 import {

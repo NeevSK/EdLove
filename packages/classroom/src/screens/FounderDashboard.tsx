@@ -115,7 +115,7 @@ export default function FounderDashboard() {
                                     const schoolId = user?.school_id || schools.find(s => s.id === user?.school_id)?.id;
 
                                     if (schoolId) {
-                                        navigation.navigate('FounderSchoolView', {
+                                        navigation.navigate('FounderSchoolDashboard', {
                                             schoolId: schoolId,
                                             userId: user?.id || 'founder-id'
                                         });
@@ -232,9 +232,9 @@ export default function FounderDashboard() {
                                         key={school.id}
                                         school={school}
                                         onPress={() => {
-                                            navigation.navigate('FounderSchoolView', {
+                                            navigation.navigate('FounderSchoolDashboard', {
                                                 schoolId: school.id,
-                                                userId: stats?.total_users ? 'founder-id' : 'founder-id' // Ideally pass real user id from store
+                                                userId: stats?.total_users ? 'founder-id' : 'founder-id'
                                             });
                                         }}
                                     />

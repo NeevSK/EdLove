@@ -26,20 +26,20 @@ export class PaymentService {
     // 2. Record in Ledger (Double Entry)
     const tx = await Ledger.recordTransaction(
       {
-        date: new Date().toISOString().split('T')[0],
+        date: new Date().toISOString().split('T')[0] ?? new Date().toISOString(),
         description: `Payment ${paymentIntentId} via ${payment.provider || 'unknown'}`,
         referenceNo: payment.external_id || undefined,
         metadata: { payment_id: paymentIntentId }
       },
       [
         {
-          account_id: accounts.debit_account_id, // e.g., "Cash at Bank"
+          accountId: accounts.debit_account_id, // e.g., "Cash at Bank"
           amount: payment.amount,
           side: 'debit',
           description: 'Payment collection'
         },
         {
-          account_id: accounts.credit_account_id, // e.g., "Student Fees Receivable" or "Sales Income"
+          accountId: accounts.credit_account_id, // e.g., "Student Fees Receivable" or "Sales Income"
           amount: payment.amount,
           side: 'credit',
           description: 'Fee settlement'

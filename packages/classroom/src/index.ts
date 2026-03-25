@@ -1,5 +1,13 @@
-export * from './screens';
+export { ClassroomDetailScreenWeb } from './screens/ClassroomDetailScreen.web';
+export { default as ClassroomScreen } from './screens/ClassroomScreen.web';
+export { default as DemoPlaygroundPanel } from './screens/DemoPlaygroundPanel.web';
+export { default as NoSchoolView } from './screens/NoSchoolView.web';
+export { default as TimetableScreen } from './screens/TimetableScreen.web';
+export { default as ClassroomProfileScreenWeb } from './screens/ClassroomProfileScreen.web';
 export * from './components';
 export * from './hooks';
+export * from './analytics';
 export * from './logic/reportGenerator';
-
+export { default as QuickAnalytics } from './components/QuickAnalytics';
+export { registerClassroomVows } from './lib/vows';
+export { registerClassroomCapabilities } from './lib/capabilities';

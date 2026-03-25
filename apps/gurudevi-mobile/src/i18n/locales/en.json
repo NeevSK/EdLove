@@ -333,6 +333,28 @@
       "manageHierarchy": "≡ƒÅ½ Manage School Hierarchy",
       "inviteStaff": "Γ£ë∩╕Å Invite Staff & Students"
     },
+    "ia": {
+      "scope": {
+        "institutional": "Institutional",
+        "classroom": "Classroom",
+        "crossEcosystem": "Cross-Ecosystem"
+      },
+      "help": {
+        "institutional": "Institutional scope: school-wide governance and operations.",
+        "classroom": "Classroom scope: learning delivery, student progress, and class execution.",
+        "crossEcosystem": "Cross-ecosystem scope: bridges institutional operations with community and culture."
+      },
+      "actions": {
+        "hierarchy": "School Structure",
+        "invites": "Role Invites",
+        "timetable": "Timetable Planning",
+        "logbook": "Leadership Logbook",
+        "hierarchyCta": "Shape School Structure",
+        "invitesCta": "Invite Faculty Roles",
+        "profileCta": "Institution Profile",
+        "commonsCta": "Open Community Commons"
+      }
+    },
     "resources": {
       "title": "Resource Needs",
       "subtitle": "Support your teachers with what they need",
