@@ -3,7 +3,7 @@
  * Core types for the Environment Context system
  */
 
-import { UserRole } from '@repo/core';
+import { AuthorityTier } from '@repo/core';
 
 /**
  * Temporal Phase - Time of day affecting theme and behavior
@@ -58,7 +58,7 @@ export interface RealityState {
  */
 export interface EnvironmentState {
     // Role & Identity
-    role: UserRole | null;
+    authority: AuthorityTier | null;
 
     // Theme & Visual
     themeMode: ThemeMode;

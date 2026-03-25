@@ -6,23 +6,15 @@ import { getInitialsFromName } from '../utils/stringUtils';
 export interface UserAvatarProps {
     avatarUrl?: string | null;
     fullName?: string | null;
-    /** User role string — drives the fallback emoji when name is also absent */
-    role?: string | null;
+    /** Fallback emoji when name/photo is absent */
+    fallbackEmoji?: string | null;
     size?: number;
     /** Corner radius. Defaults to circular (size/2). Pass a fixed value for squircle style. */
     borderRadius?: number;
     style?: object;
+    authority?: string | null;
 }
 
-/** Role → fallback emoji mapping (no external dependency) */
-const ROLE_ICONS: Record<string, string> = {
-    teacher: '🌱',
-    student: '📚',
-    principal: '🏛️',
-    founder: '🌸',
-    admin: '🛡️',
-    developer: '🛡️',
-};
 const DEFAULT_ICON = '🌿';
 
 /** Deterministic background colour from user's name using theme palette */
@@ -42,21 +34,22 @@ function getAvatarColor(name?: string | null): string {
 
 /**
  * UserAvatar — display-only avatar component.
- * Fallback hierarchy: profile photo → initials → role emoji → default emoji.
+ * Fallback hierarchy: profile photo → initials → authority emoji → default emoji.
  * Lives in @repo/ui to be safely consumed by GlobalHeader without circular deps.
  */
 export const UserAvatar: React.FC<UserAvatarProps> = ({
     avatarUrl,
     fullName,
-    role,
+    fallbackEmoji,
     size = 40,
     borderRadius,
     style,
+    authority,
 }) => {
     const radius = borderRadius ?? size / 2;
     const bgColor = getAvatarColor(fullName);
     const initials = getInitialsFromName(fullName);
-    const fallbackIcon = role ? (ROLE_ICONS[role] ?? DEFAULT_ICON) : DEFAULT_ICON;
+    const finalFallback = fallbackEmoji || DEFAULT_ICON;
 
     if (avatarUrl) {
         return (
@@ -78,7 +71,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     return (
         <View
             accessible={true}
-            accessibilityLabel={fullName ? `Avatar of ${fullName}` : (role ? `Avatar for ${role} role` : 'User avatar')}
+            accessibilityLabel={fullName ? `Avatar of ${fullName}` : 'User avatar'}
             accessibilityRole="image"
             style={[
                 styles.base,
@@ -87,7 +80,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
             ]}
         >
             <Text style={[styles.label, { fontSize: size * 0.35 }]}>
-                {initials || fallbackIcon}
+                {initials || finalFallback}
             </Text>
         </View>
     );

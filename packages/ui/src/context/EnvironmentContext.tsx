@@ -58,8 +58,9 @@ interface EnvironmentProviderProps {
  * Wraps the app and provides environment state to all components
  */
 export function EnvironmentProvider({ children }: EnvironmentProviderProps) {
-    // Get role and theme from global store
-    const role = useStore((state: any) => state.userRole);
+    // Get authority and theme from global store
+    const user = useStore((state: any) => state.user);
+    const role = (user as any)?.authority;
     const themeMode = useStore((state: any) => state.themeMode);
     const setStoredThemeMode = useStore((state: any) => state.setThemeMode);
 
