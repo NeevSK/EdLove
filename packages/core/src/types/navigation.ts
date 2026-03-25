@@ -1,12 +1,13 @@
 export type ClassroomStackParamList = {
     ClassroomList: undefined;
-    ClassroomDetails: { classroomId: string; classroomName?: string };
+    TeacherClassroomDashboard: { classroomId: string; classroomName?: string };
+    StudentClassroomDashboard: { classroomId: string; classroomName?: string };
     Attendance: { classroomId: string; classroomName?: string; date?: string };
     Gradebook: { classroomId: string; classroomName?: string };
     StudentProfile: { studentId: string; classroomId: string; studentName?: string; classroomStudentId: string };
     SchoolCreation: undefined;
     FounderDashboard: undefined;
-    FounderSchoolView: { schoolId: string; userId: string };
+    FounderSchoolDashboard: { schoolId: string; userId: string };
     Timetable: { schoolId?: string };
     SchoolForest: undefined;
     PublicProfile: { id: string; type: 'user' | 'school' | 'classroom' | 'community' };
