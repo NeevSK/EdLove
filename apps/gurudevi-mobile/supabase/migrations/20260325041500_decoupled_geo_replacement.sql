@@ -5,6 +5,10 @@
 -- Rename the existing flat table to an archival name to avoid data loss during cutover.
 ALTER TABLE IF EXISTS public.school_registry RENAME TO school_registry_legacy;
 
+-- Provide a compatibility view so existing consumers of public.school_registry continue to work.
+CREATE OR REPLACE VIEW public.school_registry AS
+SELECT *
+FROM public.school_registry_legacy;
 -- 1. EXTENSIONS
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
