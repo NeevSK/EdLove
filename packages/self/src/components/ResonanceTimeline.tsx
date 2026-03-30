@@ -20,37 +20,37 @@ export const ResonanceTimeline: React.FC = () => {
 
     if (loading) {
         return (
-            <View style={styles.center}
-                <ActivityIndicator color={Theme.colors.resonance.present} /
+            <View style={styles.center}>
+                <ActivityIndicator color={Theme.colors.resonance.present} />
                 <Text style={styles.loadingText}>Synthesizing Journey Path...</Text
-            </View
+            ></View>
         );
     }
 
     if (journey.length === 0) {
         return (
-            <View style={styles.center}
+            <View style={styles.center}>
                 <Text style={styles.emptyText}>No resonance data found for this period.</Text
-            </View
+            ></View>
         );
     }
 
     return (
-        <ScrollView 
+        <ScrollView >
             style={styles.container} 
             contentContainerStyle={styles.contentContainer}
             showsVerticalScrollIndicator={false}
         
-            <View style={styles.header}
+            <View style={styles.header}>
                 <Text style={styles.dateLabel}>{viewDate}</Text
-                <Text style={styles.scaleLabel}>{viewScale.toUpperCase()} JOURNEY</Text
-            </View
+                ><Text style={styles.scaleLabel}>{viewScale.toUpperCase()} JOURNEY</Text
+            ></View>
 
             {journey.map((event, index: number) => (
                 event.type === 'path' ? (
-                    <GenesisNode key={event.id} timestamp={event.timestamp} /
+                    <GenesisNode key={event.id} timestamp={event.timestamp} />
                 ) : (
-                    <TimelineEvent
+                    <TimelineEvent>
                         key={event.id}
                         type={event.type as any}
                         title={event.title}
@@ -62,7 +62,7 @@ export const ResonanceTimeline: React.FC = () => {
                 )
             ))}
 
-        </ScrollView
+        </ScrollView>
     );
 };
 

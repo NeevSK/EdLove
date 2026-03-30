@@ -43,7 +43,7 @@ export default function PrincipalAdminWidget({ onAction }: PrincipalAdminWidgetP
             backgroundColor: (color || Theme.colors.sanctuarySaffron) + '22',
           }}
                   <LucideIcon size={24} color={color || Theme.colors.sanctuarySaffron} /        ></Box        ><TrendingUp size={16} color={colors.textTertiary} opacity={0.3} /      ></HStack
-      <VStack        <Text >color={colors.text} sx={{ fontSize: 14, fontWeight: '700' }}          {label}>
+      ><VStack        <Text >color={colors.text} sx={{ fontSize: 14, fontWeight: '700' }}          {label}>
         </Text        ><Text color={colors.textSecondary} sx={{ fontSize: 11 }}          {description}
         </Text      </VStack    </Pressable  );
 
@@ -89,5 +89,5 @@ export default function PrincipalAdminWidget({ onAction }: PrincipalAdminWidgetP
                 borderRadius: Theme.corners.full,
               }}
                           <Text color={colors.action} sx={{ fontSize: 12, fontWeight: '700' }}                View All>
-              </Text            </Pressable          </HStack        </Box      </VStack    </VStack  );>
+              </Text            ></Pressable          </HStack        </Box      </VStack    </VStack  );>
 }

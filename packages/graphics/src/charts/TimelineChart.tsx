@@ -94,19 +94,19 @@ export function TimelineChart({
                   ]}
                 /                {showIcons && (
                   <Text style={styles.eventIcon}                    {getEventIcon(event.type, event.icon)}>
-                  </Text                )}
+                  </Text                >)}
               </View              >
               {/* Event content */}
               <View style={styles.eventContent}                <Text style={styles.eventTitle}                  {event.title}>
                 </Text                >
                 {event.description && (
                   <Text style={styles.eventDescription}                    {event.description}>
-                  </Text                )}
+                  </Text                >)}
                 
                 {showDates && (
                   <Text style={styles.eventDate}                    {formatTime(event.date)}>
-                  </Text                )}
-              </View            </View          ))}
+                  </Text                >)}
+              </View            ></View          >))}
         </VStack      </ScrollView    </Card  );
 }
 

@@ -28,10 +28,10 @@ export const DailyResonanceCard = ({
     const colors = useThemedColors();
 
     return (
-        <GlassCard
-            <VStack space="md"
-                <HStack space="sm" alignItems="center"
-                    <View
+        <GlassCard>
+            <VStack >space="md">
+                <HStack space="sm" alignItems="center">
+                    <View>
                         style={{
                             backgroundColor: type === 'motivation'
                                 ? `${Theme.colors.sanctuarySaffron}26` // 15% opacity
@@ -40,12 +40,12 @@ export const DailyResonanceCard = ({
                             borderRadius: Theme.corners.comfortable
                         }}
                     
-                        <Icon
+                        <Icon>
                             size={20}
                             color={type === 'motivation' ? Theme.colors.sanctuarySaffron : colors.action}
                         /
-                    </View
-                    <Text
+                    </View>
+                    <Text>
                         style={{
                             color: colors.textSecondary,
                             fontSize: Theme.typography.fontSize.sm,
@@ -54,11 +54,11 @@ export const DailyResonanceCard = ({
                         }}
                     
                         {title.toUpperCase()}
-                    </Text
-                </HStack
+                    </Text>
+                </HStack>
 
-                <VStack space="xs"
-                    <Text
+                <VStack space="xs">
+                    <Text>
                         style={{
                             color: colors.text,
                             fontSize: Theme.typography.fontSize.lg,
@@ -67,9 +67,9 @@ export const DailyResonanceCard = ({
                         }}
                     
                         "{content}"
-                    </Text
+                    </Text>
                     {author && (
-                        <Text
+                        <Text>
                             style={{
                                 color: colors.textTertiary,
                                 fontSize: Theme.typography.fontSize.sm,
@@ -80,11 +80,11 @@ export const DailyResonanceCard = ({
                             }}
                         
                              {author}
-                        </Text
+                        </Text>
                     )}
-                </VStack
-            </VStack
-        </GlassCard
+                </VStack>
+            </VStack>
+        </GlassCard>
     );
 };
 

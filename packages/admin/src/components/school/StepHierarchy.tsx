@@ -52,7 +52,7 @@ export default function StepHierarchy({ data, onUpdate }: StepHierarchyProps) {
                                 backgroundColor: data.levels.includes(level.id) ? `${Theme.colors.sanctuarySaffron}10` : colors.secondary,
                             }}
                                                     <HStack justifyContent="space-between" alignItems="center"                                <Text color={data.levels.includes(level.id) ? Theme.colors.sanctuarySaffron : colors.text}>{t(level.labelKey)}</Text                                >{data.levels.includes(level.id) && <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} />}
-                            </HStack                        </Pressable                    ))}
+                            </HStack                        ></Pressable                    ))}
                 </VStack            </Box
             <Box sx={{ marginTop: '$4' as any }}                <Heading size="sm" sx={{ marginBottom: '$2' as any }}>{t('schoolSetup.orgSections')}</Heading                ><Text size="xs" color={colors.textSecondary} sx={{ marginBottom: '$4' as any }}                    {t('schoolSetup.orgSectionsDesc')}
                 </Text>
@@ -67,5 +67,5 @@ export default function StepHierarchy({ data, onUpdate }: StepHierarchyProps) {
                         alignItems: 'center',
                         justifyContent: 'center'
                     }}
-                                    <Plus size={24} color={colors.textTertiary} /                    ><Text size="sm" color={colors.textTertiary} sx={{ marginTop: '$2' as any }}>{t('schoolSetup.addCustomSection')}</Text                ></Box            </Box        </VStack    );
+                                    <Plus size={24} color={colors.textTertiary} /                    ><Text size="sm" color={colors.textTertiary} sx={{ marginTop: '$2' as any }}>{t('schoolSetup.addCustomSection')}</Text                ></Box            ></Box        ></VStack    );
 }

@@ -112,7 +112,7 @@ export default function TeacherSelfView() {
 
     return (
         <ScreenWrapper scroll={false} noTopInset={true}>
-            <BaseSelfView>
+            <BaseSelfView/>
                 perspective="teacher"
                 description={t('self.teacherDescription', 'Refine your craft, nurture your spirit.')}
                 domains={[
@@ -163,7 +163,7 @@ export default function TeacherSelfView() {
                                 id: 'mood-picker',
                                 label: 'Mood Tracking',
                                 content: (
-                                    <MoodPickerCard>
+                                    <MoodPickerCard/>
                                         isOpen={isMoodPickerOpen}
                                         onToggle={() => setIsMoodPickerOpen(!isMoodPickerOpen)}
                                         onSelect={handleMoodSelect}
@@ -185,7 +185,7 @@ export default function TeacherSelfView() {
                                 label: 'Energy Rhythm',
                                 content: (
                                     <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
-                                        <EnergyBarChart>
+                                        <EnergyBarChart/>
                                             bars={forecasts.slice().reverse()}
                                             height={80}
                                         /

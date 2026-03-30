@@ -167,25 +167,25 @@ export default function GuestDataSyncModal({
                                         <Text {...({ color: text.secondary, size: "sm" } as any)}>Mood Logs</Text
                                         ><Text {...({ color: text.primary, bold: true } as any)}>{summary.moodLogs}</Text
                                     ></HStack
-                                )}
+                                >)}
                                 {summary.journalEntries > 0 && (
                                     <HStack justifyContent="space-between">
                                         <Text {...({ color: text.secondary, size: "sm" } as any)}>Journal Entries</Text
                                         ><Text {...({ color: text.primary, bold: true } as any)}>{summary.journalEntries}</Text
                                     ></HStack
-                                )}
+                                >)}
                                 {summary.students > 0 && (
                                     <HStack justifyContent="space-between">
                                         <Text {...({ color: text.secondary, size: "sm" } as any)}>Students</Text
                                         ><Text {...({ color: text.primary, bold: true } as any)}>{summary.students}</Text
                                     ></HStack
-                                )}
+                                >)}
                                 <Box sx={{ height: 1, backgroundColor: glass.interact.border, marginVertical: 4 }} /
                                 ><HStack justifyContent="space-between"
                                     <Text {...({ color: text.primary, bold: true, size: "sm" } as any)}>Total Items</Text
                                     ><Text {...({ color: accent.action, bold: true } as any)}>{summary.total}</Text
                                 ></HStack
-                            </VStack>
+                            ></VStack>
                         </Box>
                     </
                 )}

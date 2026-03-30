@@ -109,7 +109,7 @@ export default function ClassroomScreen() {
                                 onToggleHidden={setSurfaceHidden}
                                 onTogglePinned={setSurfacePinned}
                                 onMoveToNextZone={setSurfaceZone}
-                            /                        ></Box                    </ScreenWrapper>
+                            /                        ></Box                    ></ScreenWrapper>
                     <CreateSchoolModal>
                         isOpen={isCreateSchoolOpen}
                         onClose={() => setIsCreateSchoolOpen(false)}
@@ -132,7 +132,7 @@ export default function ClassroomScreen() {
                             setIsClaimInviteOpen(false);
                             fetchRoleData();
                         }}
-                    /                </Box            );
+                    /                </Box            >);
         }
 
         return (
@@ -146,7 +146,7 @@ export default function ClassroomScreen() {
                                     hapticLight();
                                     navigation.navigate('Auth' as never);
                                 }}
-                            /                        ></Box                    </ScreenWrapper                }
+                            /                        ></Box                    ></ScreenWrapper                }
                             <ScreenWrapper scroll={false} noTopInset={true}                    <Box sx={{ flex: 1, padding: Theme.spacing.lg }}                        <GlobalHeader title={t('classroom.journeyTitle') || 'Learning Journey'} subtitle={t('classroom.mySanctuary') || 'My Sanctuary'} /                        ><ClassroomList
                             refreshTrigger={refreshTrigger}
                             onClassroomPress={(classroom) => {

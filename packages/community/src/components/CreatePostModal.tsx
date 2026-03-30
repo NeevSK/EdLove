@@ -231,7 +231,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                                         borderRadius: Theme.corners.comfortable,
                                         height: 48,
                                     }}>
-                                        <InputField>
+                                        <InputField/>
                                             placeholder={`Option ${idx + 1}`}
                                             value={opt}
                                             onChangeText={(val: string) => updatePollOption(idx, val)}
@@ -289,7 +289,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                                     <Users size={14} color={text.secondary} /
                                     ><Text {...({ color: text.primary, size: '$sm' } as any)}>Allow multiple choices</Text
                                 ></HStack
-                                <Switch>
+                                ><Switch/>
                                     value={pollAllowMultiple}
                                     onValueChange={setPollAllowMultiple}
                                     trackColor={{ false: glass.interact.border, true: accent.action }}
@@ -435,7 +435,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                         
                             <Trash2 size={16} color={text.inverse} /
                         ></TouchableOpacity
-                        {isUploading && (
+                        >{isUploading && (
                             <Box sx={{
                                 position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
                                 backgroundColor: 'rgba(107,100,128,0.40)',
@@ -458,7 +458,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                     ><TouchableOpacity style={{ padding: 8, backgroundColor: glass.interact.bg, borderRadius: 8 }}
                         <Mic size={20} color={text.secondary} /
                     ></TouchableOpacity
-                    <TouchableOpacity>
+                    ><TouchableOpacity>
                         onPress={() => { if (isPollMode) resetPoll(); else setIsPollMode(true); }}
                         style={{
                             padding: 8,
@@ -468,7 +468,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                     
                         <BarChart3 size={20} color={isPollMode ? text.inverse : text.secondary} /
                     ></TouchableOpacity
-                </HStack>
+                ></HStack>
             </VStack>
         </SanctuaryModal>
     );

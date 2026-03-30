@@ -27,12 +27,12 @@ export default function ThuthimalBadge({ gifterName = 'Anonymous', giftedAt, com
     if (compact) {
         // Compact version for Profile screen header
         return (
-            <View style={styles.compactContainer}
-                <Flower2 size={16} color={Theme.colors.sanctuarySaffron} /
-                <Text style={styles.compactText}
+            <View style={styles.compactContainer}>
+                <Flower2 size={16} color={Theme.colors.sanctuarySaffron} />
+                <Text style={styles.compactText}>
                     {t('thuthimalBadge.sinhala')}
-                </Text
-            </View
+                </Text>
+            </View>
         );
     }
 
@@ -47,36 +47,36 @@ export default function ThuthimalBadge({ gifterName = 'Anonymous', giftedAt, com
             shadowRadius: 15,
             elevation: 5,
             borderLeftColor: Theme.colors.sanctuarySaffron,
-        }]}
+        }]}>
             {/* Icon and Title Row */}
-            <View style={styles.header}
-                <Flower2 size={24} color={Theme.colors.sanctuarySaffron} /
+            <View style={styles.header}>
+                <Flower2 size={24} color={Theme.colors.sanctuarySaffron} />
                 <Text style={styles.title}>{t('thuthimalBadge.title')}</Text
-                <Text style={styles.sinhala}>{t('thuthimalBadge.sinhala')}</Text
-            </View
+                ><Text style={styles.sinhala}>{t('thuthimalBadge.sinhala')}</Text
+            ></View>
 
             {/* Message */}
-            <View style={styles.messageContainer}
+            <View style={styles.messageContainer}>
                 <Text style={styles.messageLabel}>{t('thuthimalBadge.giftedBy')}</Text
-                <Text style={styles.gifterName}>{displayName}</Text
-            </View
+                ><Text style={styles.gifterName}>{displayName}</Text
+            ></View>
 
             {/* Meaning */}
-            <Text style={styles.meaning}
+            <Text style={styles.meaning}>
                 {t('thuthimalBadge.meaning')}
-            </Text
+            </Text>
 
             {/* Date if provided */}
             {giftedAt && (
-                <Text style={styles.date}
+                <Text style={styles.date}>
                     {t('thuthimalBadge.giftedOn', { date: new Date(giftedAt).toLocaleDateString(i18n.language, {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
                     }) })}
-                </Text
+                </Text>
             )}
-        </View
+        </View>
     );
 }
 

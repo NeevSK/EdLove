@@ -49,17 +49,17 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({ schoolId
     };
 
     return (
-        <div
+        <div>
             <button >onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--glass-surface)', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: '600', marginBottom: '24px' }}>
                 <ArrowLeft size={14} /> Back to Dashboard
             </button>
             <h2 style={{ margin: '0 0 4px', fontSize: '24px', fontWeight: '800' }}>\uD83C\uDFDB\uFE0F System Hierarchy</h2
-            <p style={{ margin: '0 0 24px', color: 'var(--ink-ghost)', fontSize: '14px' }}>Grades, sections and class structure for your school.</p
+            ><p style={{ margin: '0 0 24px', color: 'var(--ink-ghost)', fontSize: '14px' }}>Grades, sections and class structure for your school.</p
             
-            <div className="sanctuary-card" style={{ padding: '24px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '14px', opacity: isPastView ? 0.6 : 1 }}
+            ><div className="sanctuary-card" style={{ padding: '24px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '14px', opacity: isPastView ? 0.6 : 1 }}>
                 <h4 style={{ margin: 0, fontSize: '13px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)' }}>Add Section</h4
                 ><div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}
-                    <input 
+                    <input >
                         value={newSectionGrade} 
                         onChange={e => setNewSectionGrade(e.target.value)} 
                         disabled={isPastView} 
@@ -77,7 +77,7 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({ schoolId
                         onClick={handleCreateSection} 
                         disabled={!newSectionName.trim() || saving || isPastView} 
                         className="premium-button" 
-                        style={{ background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        style={{ background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '6px' }}
                     
                         {saving ? '\u23F3' : <><Plus size={14} /> Add</>}
                     </button>
@@ -87,9 +87,9 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({ schoolId
             {loading ? <SkeletonCard /> : sections.length === 0 ? (
                 <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic' }}>No sections yet \u2014 add one above.</p
             >) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
                     {sections.map(s => (
-                        <div key={s.id} className="sanctuary-card" style={{ padding: '18px 20px', borderLeft: '3px solid var(--lotus)' }}
+                        <div key={s.id} className="sanctuary-card" style={{ padding: '18px 20px', borderLeft: '3px solid var(--lotus)' }}>
                             <div style={{ fontWeight: '800', fontSize: '16px' }}>{s.name}</div
                             >{s.grade && <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '4px' }}>{s.grade}</div>}
                         </div>

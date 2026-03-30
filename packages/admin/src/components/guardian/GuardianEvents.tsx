@@ -41,7 +41,7 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({
             }
           ]}
                   {new Date(event.date).getDate()}
-        </Text        <Text 
+        </Text        ><Text 
           style={[
             styles.eventDateMonth,
             { 
@@ -51,7 +51,7 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({
             }
           ]}
                   {new Date(event.date).toLocaleDateString('en', { month: 'short' })}
-        </Text      </View      <View style={styles.eventDetails}        <Text 
+        </Text      ></View      <View style={styles.eventDetails}        <Text 
           style={[
             styles.eventTitle,
             { 
@@ -87,7 +87,7 @@ export const GuardianEvents: React.FC<GuardianEventsProps> = ({
 
   return (
     <View style={styles.eventsList}      {events.slice(0, limit).map(renderEventItem)}>
-    </View  );
+    </View  >);
 };
 
 const styles = StyleSheet.create({

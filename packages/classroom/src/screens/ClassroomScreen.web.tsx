@@ -53,7 +53,7 @@ export default function ClassroomScreenWeb() {
                 /                
                 <Box sx={{ marginTop: 24 }}                    {/* Path 1: Anonymous guest or wanderer */}>
                     {isWanderer && (
-                        <Box sx={{ padding: 40, alignItems: 'center', opacity: 0.8 }}                            <Box sx={{ fontSize: 32, marginBottom: 16 }}>=-</Box                            ><Box sx={{ fontSize: 18, fontWeight: '600' }}>Welcome, Wanderer</Box                            ><Box sx={{ color: '$textLight' }}>Exploring the public curriculum and library.</Box                        ></Box                    )}
+                        <Box sx={{ padding: 40, alignItems: 'center', opacity: 0.8 }}                            <Box sx={{ fontSize: 32, marginBottom: 16 }}>=-</Box                            ><Box sx={{ fontSize: 18, fontWeight: '600' }}>Welcome, Wanderer</Box                            ><Box sx={{ color: '$textLight' }}>Exploring the public curriculum and library.</Box                        ></Box                    >)}
 
                     {/* Path 2: 1st Class Citizen - Direct Component Resolution */}
                     {isCitizenReady && (

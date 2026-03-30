@@ -75,7 +75,7 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                         ></div>
                     )}
                     <Text style={{ fontSize: '16px', fontWeight: '700', color: 'var(--ink)' }}                        {title}>
-                    </Text                    {scopeMeta && (>
+                    </Text                    >{scopeMeta && (>
                         <span>
                             title={scopeHelpText}
                             style={{
@@ -89,7 +89,7 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                                 letterSpacing: '0.4px',
                             }}
                                                     {scopeBadgeLabel}
-                        </span                    )}
+                        </span                    >)}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     {/* Info Icon (\u24D8) */}>
@@ -156,8 +156,8 @@ export const InstitutionalArcCard: React.FC<InstitutionalArcCardProps> = ({
                     </Text>
                     {scopeMeta && (
                         <Box style={{ background: 'var(--background-alt)', padding: '12px', borderRadius: '12px' }}                            <Text style={{ fontSize: '12px', fontWeight: '700', marginBottom: '6px', color: 'var(--ink-ghost)' }}                                {scopeBadgeLabel}>
-                            </Text                            <Text style={{ fontSize: '13px', color: 'var(--ink-subtle)' }}                                {scopeHelpText}>
-                            </Text                        ></Box                    )}
+                            </Text                            ><Text style={{ fontSize: '13px', color: 'var(--ink-subtle)' }}                                {scopeHelpText}>
+                            </Text                        ></Box                    >)}
                     
                     {featureInfo?.howToUse && (
                         <Box style={{ background: 'var(--surface-subtle)', padding: '12px', borderRadius: '12px' }}>

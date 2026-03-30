@@ -19,7 +19,7 @@ export const GuardianNotifications: React.FC<GuardianNotificationsProps> = ({
   const isDesktop = screenWidth > 1024;
 
   const renderNotificationItem = (notification: any) => (
-    <TouchableOpacity
+    <TouchableOpacity>
       key={notification.id}
       style={[
         styles.notificationItem,
@@ -30,7 +30,7 @@ export const GuardianNotifications: React.FC<GuardianNotificationsProps> = ({
         }
       ]}
       onPress={() => onNotificationPress(notification)}
-          <View style={styles.notificationContent}        <Text 
+          <View style={styles.notificationContent}        <Text >
           style={[
             styles.notificationTitle,
             { 
@@ -64,7 +64,7 @@ export const GuardianNotifications: React.FC<GuardianNotificationsProps> = ({
         </Text      </View    </TouchableOpacity  );
 
   return (
-    <View style={styles.notificationsList}      {notifications.slice(0, limit).map(renderNotificationItem)}
+    <View style={styles.notificationsList}      {notifications.slice(0, limit).map(renderNotificationItem)}>
     </View  );
 };
 

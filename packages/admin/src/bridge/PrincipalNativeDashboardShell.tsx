@@ -47,7 +47,7 @@ function ZoneButton({
               backgroundColor: isActive ? `${Theme.colors.gurudeviBlue}24` : Theme.colors.linen,
             }}
                       <Text sx={{ fontSize: 10, fontWeight: '800', color: isActive ? Theme.colors.gurudeviBlue : Theme.colors.bark }}              {count}>
-            </Text          </Box        </HStack        <Text sx={{ fontSize: 11, lineHeight: 16, color: Theme.colors.bark, marginTop: 6 }}          {detail}>
+            </Text          ></Box        </HStack        <Text sx={{ fontSize: 11, lineHeight: 16, color: Theme.colors.bark, marginTop: 6 }}          {detail}>
         </Text      ></Box    </TouchableOpacity  );
 }
 
@@ -108,7 +108,7 @@ export function PrincipalNativeDashboardShell({
             count={zoneCounts.outlook}
             isActive={activeZone === 'outlook'}
             onPress={onZoneChange}
-          /        ></HStack      </Box>
+          /        ></HStack      ></Box>
       <ScrollView        <VStack >sx={{ gap: Theme.spacing.lg, padding: Theme.spacing.lg, paddingBottom: 120 }}          {error ? (>
             <Box>
               sx={{
@@ -118,7 +118,7 @@ export function PrincipalNativeDashboardShell({
                 borderWidth: 1,
                 borderColor: Theme.colors.emberRed,
               }}
-                          <Text sx={{ color: Theme.colors.inkTruth }}>{error}</Text            ></Box          ) : null}
+                          <Text sx={{ color: Theme.colors.inkTruth }}>{error}</Text            ></Box          >) : null}
 
           {isLoading ? (
             <VStack sx={{ gap: Theme.spacing.md }}              <SkeletonCard height={120} /              ><SkeletonCard height={220} /              ><SkeletonCard height={220} /            ></VStack          ) : (

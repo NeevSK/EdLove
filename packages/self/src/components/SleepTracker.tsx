@@ -256,13 +256,13 @@ export default function SleepTracker({ userId, disabled }: SleepTrackerProps) {
                             orientation="horizontal"
                         
                             <SliderTrack sx={{ height: 12, borderRadius: 6, backgroundColor: Theme.colors.ink }}>
-                                <SliderFilledTrack>
+                                <SliderFilledTrack/>
                                     sx={{
                                         backgroundColor: currentQuality?.color,
                                     }}
                                 /
                             ></SliderTrack>
-                            <SliderThumb>
+                            <SliderThumb/>
                                 sx={{
                                     backgroundColor: currentQuality?.color,
                                     borderWidth: 4,

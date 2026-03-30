@@ -41,13 +41,13 @@ export const TemporalGlass: React.FC<TemporalGlassProps> = ({
     const edges = PHASE_EDGES[phase] || PHASE_EDGES.midday;
 
     return (
-        <View style={[{ width, height }, style]}
+        <View style={[{ width, height }, style]}>
             {/* Skia luminous border  phase-aware color */}
-            <Canvas style={StyleSheet.absoluteFill} pointerEvents="none"
+            <Canvas style={StyleSheet.absoluteFill} pointerEvents="none">
                 {cornerRadius > 0 ? (
                     <
                         {/* Outer luminous edge  only for rounded cards */}
-                        <RoundedRect
+                        <RoundedRect>
                             x={0.5}
                             y={0.5}
                             width={width - 1}
@@ -56,15 +56,15 @@ export const TemporalGlass: React.FC<TemporalGlassProps> = ({
                             style="stroke"
                             strokeWidth={1}
                         
-                            <LinearGradient
+                            <LinearGradient>
                                 start={vec(width / 2, 0)}
                                 end={vec(width / 2, height)}
                                 colors={[edges.top, edges.bottom]}
                             /
-                        </RoundedRect
+                        </RoundedRect>
 
                         {/* Inner top highlight */}
-                        <RoundedRect
+                        <RoundedRect>
                             x={2}
                             y={2}
                             width={width - 4}
@@ -73,14 +73,14 @@ export const TemporalGlass: React.FC<TemporalGlassProps> = ({
                             style="stroke"
                             strokeWidth={0.5}
                         
-                            <Paint color={edges.top} opacity={0.6}
-                                <BlurMask blur={4} style="normal" /
-                            </Paint
-                        </RoundedRect
+                            <Paint color={edges.top} opacity={0.6}>
+                                <BlurMask blur={4} style="normal" />
+                            </Paint>
+                        </RoundedRect>
                     </
                 ) : (
                     // Flat bar mode (tab bar)  only a 1px top edge gradient, no rect border
-                    <RoundedRect
+                    <RoundedRect>
                         x={0}
                         y={0}
                         width={width}
@@ -88,19 +88,19 @@ export const TemporalGlass: React.FC<TemporalGlassProps> = ({
                         r={0}
                         style="fill"
                     
-                        <LinearGradient
+                        <LinearGradient>
                             start={vec(0, 0)}
                             end={vec(width, 0)}
                             colors={[edges.bottom, edges.top, edges.bottom]}
                         /
-                    </RoundedRect
+                    </RoundedRect>
                 )}
-            </Canvas
+            </Canvas>
 
             {/* Existing BlurView children  completely unchanged */}
-            <View style={[StyleSheet.absoluteFill, { borderRadius: cornerRadius, overflow: 'hidden' }]}
+            <View style={[StyleSheet.absoluteFill, { borderRadius: cornerRadius, overflow: 'hidden' }]}>
                 {children}
-            </View
-        </View
+            </View>
+        </View>
     );
 };

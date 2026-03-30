@@ -116,7 +116,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
 
   if (!userId) {
     return (
-      <PositiveInvitation>
+      <PositiveInvitation/>
         type="guest"
         onAction={() => navigation.navigate('Auth' as never)}
       /
@@ -181,7 +181,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                 borderColor: Theme.colors.transparent
               }}
             
-              <InputField>
+              <InputField/>
                 placeholder={t('self.prepItem')}
                 value={itemText}
                 onChangeText={setItemText}
@@ -270,7 +270,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                 onPress={() => handleDelete(item.id)}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               
-                <Trash2>
+                <Trash2/>
                   color={Theme.colors.dimGray}
                   size={18}
                 />

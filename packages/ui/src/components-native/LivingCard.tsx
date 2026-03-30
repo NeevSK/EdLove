@@ -51,11 +51,11 @@ export const LivingCard: React.FC<LivingCardProps> = ({
         : 'rgba(235, 228, 215, 0.98)'; // Linen-ish
 
     return (
-        <View style={[{ width, height }, style]}
+        <View style={[{ width, height }, style]}>
             {/* Skia living background */}
-            <Canvas style={StyleSheet.absoluteFill}
+            <Canvas style={StyleSheet.absoluteFill}>
                 {/* Base rounded rect */}
-                <RoundedRect
+                <RoundedRect>
                     x={0}
                     y={0}
                     width={width}
@@ -66,28 +66,28 @@ export const LivingCard: React.FC<LivingCardProps> = ({
 
                 {/* Subsurface scattering  warm center, cool edges */}
                 {warmCenter && (
-                    <Group
-                        <RoundedRect
+                    <Group>
+                        <RoundedRect>
                             x={0}
                             y={0}
                             width={width}
                             height={height}
                             r={cornerRadius}
                         
-                            <RadialGradient
+                            <RadialGradient>
                                 c={vec(centerX, centerY * 0.6)}  // Center slightly high  light from above
                                 r={radius}
                                 colors={[warmCenterColor, coolEdgeColor]}
                                 positions={[0, 1]}
                             /
-                        </RoundedRect
-                    </Group
+                        </RoundedRect>
+                    </Group>
                 )}
 
                 {/* Fine grain texture  organic surface */}
-                <Rect x={0} y={0} width={width} height={height}
-                    <Turbulence freqX={0.8} freqY={0.8} octaves={3} seed={5} /
-                    <ColorMatrix
+                <Rect x={0} y={0} width={width} height={height}>
+                    <Turbulence freqX={0.8} freqY={0.8} octaves={3} seed={5} />
+                    <ColorMatrix>
                         matrix={[
                             1, 0, 0, 0, 0.01,
                             0, 1, 0, 0, 0.005,
@@ -95,14 +95,14 @@ export const LivingCard: React.FC<LivingCardProps> = ({
                             0, 0, 0, grainOpacity, 0,
                         ]}
                     /
-                </Rect
-            </Canvas
+                </Rect>
+            </Canvas>
 
             {/* Children  existing card content completely unchanged */}
-            <View style={[StyleSheet.absoluteFill, { borderRadius: cornerRadius, overflow: 'hidden' }]}
+            <View style={[StyleSheet.absoluteFill, { borderRadius: cornerRadius, overflow: 'hidden' }]}>
                 {children}
-            </View
-        </View
+            </View>
+        </View>
     );
 };
 

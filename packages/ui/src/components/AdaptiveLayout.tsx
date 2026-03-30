@@ -49,26 +49,26 @@ export const AdaptiveLayout = ({
 
     if (isTablet && renderSidebar && renderContent) {
         return (
-            <View style={styles.tabletContainer}
-                <View style={[styles.sidebarColumn, { width: sidebarWidth, borderRightColor: colors.border }]}
+            <View style={styles.tabletContainer}>
+                <View style={[styles.sidebarColumn, { width: sidebarWidth, borderRightColor: colors.border }]}>
                     {scrollable ? (
-                        <ScrollView showsVerticalScrollIndicator={false}
+                        <ScrollView showsVerticalScrollIndicator={false}>
                             {renderSidebar()}
-                        </ScrollView
+                        </ScrollView>
                     ) : (
                         renderSidebar()
                     )}
-                </View
-                <View style={styles.contentColumn}
+                </View>
+                <View style={styles.contentColumn}>
                     {scrollable ? (
-                        <ScrollView showsVerticalScrollIndicator={false}
+                        <ScrollView showsVerticalScrollIndicator={false}>
                             {renderContent()}
-                        </ScrollView
+                        </ScrollView>
                     ) : (
                         renderContent()
                     )}
-                </View
-            </View
+                </View>
+            </View>
         );
     }
 

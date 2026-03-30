@@ -19,32 +19,32 @@ export default function PublicProfileScreenWeb() {
     if (type === 'user') {
         if (isProfileLoading) {
             return (
-                <Center sx={{ height: '100vh' }}                    <Spinner size="large" /                </Center            );
+                <Center sx={{ height: '100vh' }}                    <Spinner size="large" /                ></Center            );>
         }
 
         if (!profile) {
             return (
-                <Box sx={{ padding: '40px', textAlign: 'center', color: 'var(--ink-ghost)' }}                    Profile Not Found or Error Loading
+                <Box sx={{ padding: '40px', textAlign: 'center', color: 'var(--ink-ghost)' }}                    Profile Not Found or Error Loading>
                 </Box            );
         }
 
         return (
-            <Box sx={{ maxWidth: 1200, margin: '0 auto', padding: '$6' }}                <IdentityCard data={profile as unknown as IdentityData} /            </Box        );
+            <Box sx={{ maxWidth: 1200, margin: '0 auto', padding: '$6' }}                <IdentityCard data={profile as unknown as IdentityData} /            ></Box        );>
     }
 
     if (isLoading) {
         return (
-            <Center sx={{ height: '100vh' }}                <Spinner size="large" /            </Center        );
+            <Center sx={{ height: '100vh' }}                <Spinner size="large" /            ></Center        );>
     }
 
     if (error || !instance) {
         return (
-            <Box sx={{ padding: '40px', textAlign: 'center', color: 'var(--ink-ghost)' }}                Profile Not Found or Error Loading
+            <Box sx={{ padding: '40px', textAlign: 'center', color: 'var(--ink-ghost)' }}                Profile Not Found or Error Loading>
             </Box        );
     }
 
     return (
-        <Box sx={{ maxWidth: 1200, margin: '0 auto', padding: '$6' }}            <EntityView 
+        <Box sx={{ maxWidth: 1200, margin: '0 auto', padding: '$6' }}            <EntityView >
                 definition={instance.definition} 
                 instance={instance} 
                 mode="view" 

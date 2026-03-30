@@ -245,17 +245,17 @@ export default function PrincipalDashboardWeb({
 
   if (showOnboarding) {
     return (
-      <div style={{ minHeight: '100vh', background: 'var(--background)' }}        <WebScreenHeader title="Gurudevi Principal" note="Educational Management Sanctuary" /        <PrincipalOnboardingViewComponent onTryDemo={handleTryDemo} onCreateSchool={handleCreateSchool} onJoinSchool={handleJoinSchool} isGuest={isGuest} /        <CreateSchoolModalComponent isOpen={isCreateSchoolOpen} onClose={() => setIsCreateSchoolOpen(false)} onSuccess={() => onRefresh?.()} /      </div    );
+      <div style={{ minHeight: '100vh', background: 'var(--background)' }}        <WebScreenHeader title="Gurudevi Principal" note="Educational Management Sanctuary" /        ><PrincipalOnboardingViewComponent onTryDemo={handleTryDemo} onCreateSchool={handleCreateSchool} onJoinSchool={handleJoinSchool} isGuest={isGuest} /        ><CreateSchoolModalComponent isOpen={isCreateSchoolOpen} onClose={() => setIsCreateSchoolOpen(false)} onSuccess={() => onRefresh?.()} /      </div    );
   }
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--background)' }}      {isDemo && <SandboxBanner />}
-      <div style={{ padding: '0px 24px 40px' }}        <PrincipalWorkspaceContainer
+      <div style={{ padding: '0px 24px 40px' }}        <PrincipalWorkspaceContainer>
           activeView={activeView}
           onActiveViewChange={navigatePrincipalView}
           renderView={({ activeView: nextView }: { activeView: PrincipalWorkspaceView }) => renderPrincipalView(nextView)}
           renderMain={() => (
-            <DashboardContentComponent
+            <DashboardContentComponent>
               school={school ?? null}
               user={user ?? null}
               stats={schoolStats ?? null}

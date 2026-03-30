@@ -209,7 +209,7 @@ export function CollectionCard<T = any>({
                         resourceCount={resourceCount}
                         subjectTag={subjectTag}
                         verified={verified}
-                        onPullToDesk={onPullToDesk ? () => onPullToDesk(contextData as T) : undefined}
+                        onPullToDesk={onPullToDesk ? () =/> onPullToDesk(contextData as T) : undefined}
                         absolute
                     /
                 ></View>

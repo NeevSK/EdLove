@@ -84,7 +84,7 @@ export default function QuickAnalytics({
             value={`#${rank}`}
             subtitle={`of ${rank ? rank + 20 : 'N/A'} students`}
             color={Theme.colors.gurudeviBlue}
-          /          >
+          /          />
           ><AnalyticsWidget
             title="Attendance Rate"
             value={`${(attendanceRate * 100).toFixed(1)}%`}
@@ -92,7 +92,7 @@ export default function QuickAnalytics({
             trend={attendanceRate > 0.9 ? 'up' : attendanceRate < 0.7 ? 'down' : 'stable'}
             color={attendanceRate > 0.9 ? Theme.colors.success : attendanceRate < 0.7 ? Theme.colors.error : Theme.colors.warning}
           /        ></VStack        
-        {/* Progress Visualization */}
+        >{/* Progress Visualization */}
         <Card          <Text >style={styles.sectionTitle}>\uD83D\uDCC8 Progress Overview</Text          ><VStack space="sm" style={styles.progressContainer}            <ProgressRing
               value={averageGPA}
               max={4.0}

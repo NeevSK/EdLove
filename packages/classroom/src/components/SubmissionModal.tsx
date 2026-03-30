@@ -279,7 +279,7 @@ export default function SubmissionModal({
                                 minHeight: 200,
                             }}
                         
-                            <TextareaInput>
+                            <TextareaInput/>
                                 placeholder={
                                     t('submission.answerPlaceholder') ||
                                     'Type your answer here...'>

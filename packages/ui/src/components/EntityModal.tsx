@@ -31,7 +31,7 @@ export default function EntityModal({
 
         if (specializedComponent) {
             return (
-                <EntityView 
+                <EntityView >
                     definition={definition} 
                     instance={instance} 
                     mode={mode} 
@@ -45,18 +45,18 @@ export default function EntityModal({
         // Fallback to standard views/forms
         if (mode === 'create' || mode === 'edit') {
             return (
-                <VStack space="md"
+                <VStack space="md">
                     <Text>{mode === 'create' ? 'Creating' : 'Editing'} {definition.type}</Text
-                    {/* Default FormManager-powered form or generic FormBuilder */}
-                    <Box bg="$backgroundLight100" p={20} rounded="$md"
+                    >{/* Default FormManager-powered form or generic FormBuilder */}
+                    <Box bg="$backgroundLight100" p={20} rounded="$md">
                         <Text color="$textLight500">Standard Form for {definition.type}</Text
-                    </Box
-                </VStack
+                    ></Box>
+                </VStack>
             );
         }
 
         return (
-            <EntityView 
+            <EntityView >
                 definition={definition} 
                 instance={instance} 
                 mode={mode} 
@@ -65,14 +65,14 @@ export default function EntityModal({
     };
 
     return (
-        <SanctuaryModal
+        <SanctuaryModal>
             isOpen={isOpen}
             onClose={onClose}
             title={displayTitle}
         
-            <Box p={16}
+            <Box p={16}>
                 {renderContent()}
-            </Box
-        </SanctuaryModal
+            </Box>
+        </SanctuaryModal>
     );
 }

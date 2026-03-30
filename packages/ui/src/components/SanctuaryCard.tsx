@@ -164,26 +164,26 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
     // ============================================================================
 
     const InnerContent = () => (
-        <View style={cardStyles.contentPadding}
+        <View style={cardStyles.contentPadding}>
             {/* Title Section */}
             {title && (
                 <Text nativeID="card-title" style={cardStyles.title}>{title}</Text
-            )}
+            >)}
 
             {/* Children Content */}
-            <View style={{ gap: Theme.spacing.md }}
+            <View style={{ gap: Theme.spacing.md }}>
                 {/* @ts-ignore */}
                 {children}
-            </View
+            </View>
 
             {/* Footer Section */}
             {footer && (
-                <View style={cardStyles.footerContainer}
-                    <View style={cardStyles.footerBorder} /
+                <View style={cardStyles.footerContainer}>
+                    <View style={cardStyles.footerBorder} />
                     {footer}
-                </View
+                </View>
             )}
-        </View
+        </View>
     );
 
     // ============================================================================
@@ -202,23 +202,23 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
                 elevated && cardStyles.elevated,
                 onPress && animatedStyle,
                 style
-            ]}
+            ]}>
         
             {useGlass && (
-                <BlurView
+                <BlurView>
                     intensity={36} // Retina Protocol: 36 is the magic number
                     tint={isDark ? 'dark' : 'light'}
                     style={StyleSheet.absoluteFill}
                 /
             )}
-            <InnerContent /
-        </Animated.View
+            <InnerContent />
+        </Animated.View>
     );
 
     if (onPress || href) {
         const PressableAny = Pressable as any;
         return (
-            <PressableAny
+            <PressableAny>
                 onPress={onPress}
                 onLongPress={onLongPress}
                 onPressIn={handlePressIn}
@@ -237,7 +237,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
                 }}
             
                 {renderCard()}
-            </PressableAny
+            </PressableAny>
         );
     }
 

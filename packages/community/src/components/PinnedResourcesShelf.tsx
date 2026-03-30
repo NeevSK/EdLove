@@ -27,25 +27,25 @@ export const PinnedResourcesShelf: React.FC<PinnedResourcesShelfProps> = ({
     if (!resources || resources.length === 0) return null;
 
     return (
-        <Box mb="$3"
-            <Text size="xs" bold color={Theme.colors.mistGray} px="$1" mb="$2" style={{ letterSpacing: 1 }}
+        <Box mb="$3">
+            <Text size="xs" bold color={Theme.colors.mistGray} px="$1" mb="$2" style={{ letterSpacing: 1 }}>
                 PINNED RESOURCES
-            </Text
-            <ScrollView
+            </Text>
+            <ScrollView>
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{ paddingHorizontal: 4 }}
                 accessibilityLabel="Pinned resources"
                 accessibilityRole="scrollbar"
             
-                <HStack space="sm"
+                <HStack space="sm">
                     {resources.map((resource) => (
-                        <TouchableOpacity
+                        <TouchableOpacity>
                             key={resource.id}
                             onPress={() => onResourcePress?.(resource)}
                             activeOpacity={0.75}
                         
-                            <Box
+                            <Box>
                                 sx={{
                                     width: 140,
                                     backgroundColor: Theme.colors.shroud,
@@ -55,39 +55,39 @@ export const PinnedResourcesShelf: React.FC<PinnedResourcesShelfProps> = ({
                                     borderColor: Theme.colors.glass.dark.border,
                                 }}
                             
-                                <VStack space="xs"
-                                    <HStack space="xs" alignItems="center"
+                                <VStack space="xs">
+                                    <HStack space="xs" alignItems="center">
                                         {getResourceIcon(resource.type)}
-                                        <Text
+                                        <Text>
                                             size="xs"
                                             color={Theme.colors.mistGray}
                                             style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}
                                         
                                             {resource.type}
-                                        </Text
-                                    </HStack
-                                    <Text
+                                        </Text>
+                                    </HStack>
+                                    <Text>
                                         size="sm"
                                         bold
                                         color={Theme.colors.sacredWhite}
                                         numberOfLines={2}
                                     
                                         {resource.title}
-                                    </Text
-                                    <Text
+                                    </Text>
+                                    <Text>
                                         size="xs"
                                         color={Theme.colors.dimGray}
                                         numberOfLines={1}
                                     
                                         {resource.subjects?.[0] || ''}
-                                    </Text
-                                </VStack
-                            </Box
-                        </TouchableOpacity
+                                    </Text>
+                                </VStack>
+                            </Box>
+                        </TouchableOpacity>
                     ))}
-                </HStack
-            </ScrollView
-        </Box
+                </HStack>
+            </ScrollView>
+        </Box>
     );
 };
 

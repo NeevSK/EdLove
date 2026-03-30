@@ -41,33 +41,33 @@ export default function DynamicFormDemo() {
     });
 
     return (
-        <VStack space="xl" padding="$4"
-            <Box
-                <Text size="xl" fontWeight="$bold">Dynamic Form Preview</Text
-                <Text size="sm" color="$textSecondary"
+        <VStack space="xl" padding="$4">
+            <Box>
+                <Text >size="xl" fontWeight="$bold">Dynamic Form Preview</Text
+                ><Text size="sm" color="$textSecondary">
                     This form was generated entirely from a JSON object.
-                </Text
-            </Box
+                </Text>
+            </Box>
 
             {!submittedData ? (
-                <NativeForm 
+                <NativeForm >
                     manager={manager} 
                     submitLabel="Share Resonance" 
                 /
             ) : (
-                <Box padding="$4" backgroundColor="$backgroundSecondary" borderRadius="$md"
+                <Box padding="$4" backgroundColor="$backgroundSecondary" borderRadius="$md">
                     <Text fontWeight="$bold">Thank you for sharing!</Text
-                    <Text size="xs" mt="$2">Data received: {JSON.stringify(submittedData, null, 2)}</Text
-                    <SanctuaryButton 
+                    ><Text size="xs" mt="$2">Data received: {JSON.stringify(submittedData, null, 2)}</Text
+                    ><SanctuaryButton >
                         onPress={() => setSubmittedData(null)} 
                         variant="outline" 
                         size="sm" 
                         style={{ marginTop: 12 }}
                     
                         Reset Demo
-                    </SanctuaryButton
-                </Box
+                    </SanctuaryButton>
+                </Box>
             )}
-        </VStack
+        </VStack>
     );
 }

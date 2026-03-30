@@ -49,7 +49,7 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
     };
 
     return (
-        <div
+        <div>
             style={{
                 position: 'fixed',
                 top: 'var(--top-bar-h, 64px)',
@@ -74,14 +74,14 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
                 gap: '12px',
                 flexShrink: 0,
                 flexWrap: 'wrap',
-            }}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
-                    <Zap size={15} color="var(--amber-glow)" fill="var(--amber-glow)" /
-                    <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--amber-glow)' }}
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Zap size={15} color="var(--amber-glow)" fill="var(--amber-glow)" />
+                    <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--amber-glow)' }}>
                         Demo  {ROLE_LABEL[role]} view with simulated data
-                    </span
-                </div
-                <button
+                    </span>
+                </div>
+                <button>
                     onClick={onClose}
                     style={{
                         display: 'flex', alignItems: 'center', gap: '6px',
@@ -92,11 +92,11 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
                     }}
                 
                     <X size={13} /> Exit demo
-                </button
-            </div
+                </button>
+            </div>
 
             {/*  Scrollable demo content  */}
-            <div
+            <div>
                 style={{
                     flex: 1,
                     overflowY: 'auto',
@@ -105,13 +105,13 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
             
                 {role === 'teacher' && <TeacherDashboard />}
                 {role === 'principal' && (
-                    <PrincipalDashboard
+                    <PrincipalDashboard>
                         schoolId="mock-school"
                         userId="mock-principal"
                     /
                 )}
                 {role === 'student' && <StudentDashboard />}
-            </div
-        </div
+            </div>
+        </div>
     );
 }

@@ -285,7 +285,7 @@ export default function AttendanceSheet({
                             <Box sx={{ paddingLeft: Theme.spacing.sm }}>
                                 <Search color={colors.textSecondary} size={20} /
                             ></Box
-                            <InputField>
+                            ><InputField/>
                                 placeholder={t('common.searchPlaceholder') || 'Search students...'}
                                 value={searchQuery}
                                 onChangeText={setSearchQuery}

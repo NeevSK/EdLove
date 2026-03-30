@@ -27,8 +27,8 @@ export default function SupportSection() {
     };
 
     const SupportItem = ({ icon: Icon, title, subtitle, onPress }: { icon: any, title: string, subtitle: string, onPress: () => void }) => (
-        <TouchableOpacity onPress={onPress}
-            <HStack
+        <TouchableOpacity onPress={onPress}>
+            <HStack>
                 alignItems="center"
                 justifyContent="space-between"
                 sx={{
@@ -38,56 +38,56 @@ export default function SupportSection() {
                     mb: Theme.spacing.sm
                 }}
             
-                <HStack space="md" alignItems="center"
-                    <Box sx={{ p: 8, bg: `${colors.action}20`, borderRadius: 8 }}
-                        <Icon size={20} color={colors.action} /
-                    </Box
-                    <VStack
+                <HStack space="md" alignItems="center">
+                    <Box sx={{ p: 8, bg: `${colors.action}20`, borderRadius: 8 }}>
+                        <Icon size={20} color={colors.action} />
+                    </Box>
+                    <VStack>
                         <Text color={colors.text} bold>{title}</Text
                         <Text color={colors.textSecondary} size="xs">{subtitle}</Text
-                    </VStack
-                </HStack
-                <ChevronRight size={20} color={colors.textTertiary} /
-            </HStack
-        </TouchableOpacity
+                    </VStack>
+                </HStack>
+                <ChevronRight size={20} color={colors.textTertiary} />
+            </HStack>
+        </TouchableOpacity>
     );
 
     return (
-        <VStack space="md" mt={Theme.spacing.lg}
-            <Heading color={colors.textSecondary as any} size="sm" mb="$2"
+        <VStack space="md" mt={Theme.spacing.lg}>
+            <Heading color={colors.textSecondary as any} size="sm" mb="$2">
                 {t('support.title')}
-            </Heading
+            </Heading>
 
-            <SupportItem
+            <SupportItem>
                 icon={MessageCircle}
                 title={t('support.contactSupport')}
                 subtitle={t('support.contactSupportDesc')}
                 onPress={handleSupport}
             /
-            <SupportItem
+            <SupportItem>
                 icon={LifeBuoy}
                 title={t('support.faqs')}
                 subtitle={t('support.faqsDesc')}
                 onPress={() => { }}
             /
-            <SupportItem
+            <SupportItem>
                 icon={AlertTriangle}
                 title={t('support.reportIssue')}
                 subtitle={t('support.reportIssueDesc')}
                 onPress={handleSupport}
             /
-            <SupportItem
+            <SupportItem>
                 icon={Info}
                 title={t('support.about')}
                 subtitle={t('support.aboutDesc')}
                 onPress={() => { }}
             /
-            <SupportItem
+            <SupportItem>
                 icon={Star}
                 title={t('support.rateUs')}
                 subtitle={t('support.rateUsDesc')}
                 onPress={() => { }}
             /
-        </VStack
+        </VStack>
     );
 }

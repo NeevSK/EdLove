@@ -147,7 +147,7 @@ export default function TimetableScreen() {
                             ><div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--ink)' }}>No timetable yet</div
                             ><button className="premium-button" onClick={generate}>Generate Timetable</button
                         ></div
-                    ) : classroomIds.length === 0 ? (
+                    >) : classroomIds.length === 0 ? (
                         <div style={{ color: 'var(--ink-ghost)', fontSize: '14px', textAlign: 'center', paddingTop: '40px' }}>
                             No classrooms found. Add classrooms in your school settings first.>
                         </div>

@@ -79,10 +79,10 @@ const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
     const isValidComponent = typeof Icon === 'function' || (typeof Icon === 'object' && Icon !== null);
 
     return (
-        <Center sx={{ flex: 1, padding: Theme.spacing.xl, minHeight: 250 }}
-            <VStack alignItems="center" sx={{ maxWidth: 300, gap: Theme.spacing.xl }}
+        <Center sx={{ flex: 1, padding: Theme.spacing.xl, minHeight: 250 }}>
+            <VStack alignItems="center" sx={{ maxWidth: 300, gap: Theme.spacing.xl }}>
 
-                <Box
+                <Box>
                     sx={{
                         width: 64,
                         height: 64,
@@ -93,31 +93,31 @@ const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
                     }}
                 
                     {isValidComponent ? (
-                        <Icon size={32} color={colors.action} /
+                        <Icon size={32} color={colors.action} />
                     ) : (
-                        <Sparkles size={32} color={colors.action} /
+                        <Sparkles size={32} color={colors.action} />
                     )}
-                </Box
+                </Box>
 
-                <VStack alignItems="center" sx={{ gap: Theme.spacing.xs }}
-                    <Heading
+                <VStack alignItems="center" sx={{ gap: Theme.spacing.xs }}>
+                    <Heading>
                         size="md"
                         textAlign="center"
                         color={colors.text}
                     
                         {title || messages.title}
-                    </Heading
-                    <Text
+                    </Heading>
+                    <Text>
                         sx={{ fontSize: 14 }}
                         textAlign="center"
                         color={colors.textSecondary}
                     
                         {description || messages.desc}
-                    </Text
-                </VStack
+                    </Text>
+                </VStack>
 
                 {onAction && (
-                    <Button
+                    <Button>
                         size="md"
                         action="primary"
                         onPress={() => {
@@ -131,10 +131,10 @@ const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
                         }}
                     
                         <ButtonText color={textOnAccent}>{actionLabel || messages.action}</ButtonText
-                    </Button
+                    ></Button>
                 )}
-            </VStack
-        </Center
+            </VStack>
+        </Center>
     );
 };
 

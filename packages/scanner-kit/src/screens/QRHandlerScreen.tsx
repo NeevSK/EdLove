@@ -109,31 +109,31 @@ export default function QRHandlerScreen() {
         : Theme.colors.sanctuarySaffron;
 
   return (
-    <ScreenWrapper
-      <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}
-        <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}
+    <ScreenWrapper>
+      <Box >sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}>
+        <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}>
           {status === 'processing' && (
-            <Spinner size="large" color={Theme.colors.sanctuarySaffron} /
+            <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
           )}
           {status === 'success' && (
             <Text sx={{ fontSize: 56 }}>\u2705</Text
-          )}
+          >)}
           {status === 'error' && (
             <Text sx={{ fontSize: 56 }}>\u26A0\uFE0F</Text
-          )}
-          <Heading
+          >)}
+          <Heading>
             sx={{ textAlign: 'center', fontSize: Theme.typography.fontSize.xl }}
             color={statusColor as any}
           
             {status === 'processing' ? t('qrHandler.processing') : status === 'success' ? t('qrHandler.done') : t('qrHandler.error')}
-          </Heading
-          <Text
+          </Heading>
+          <Text>
             sx={{ textAlign: 'center', color: colors.textSecondary }}
           
             {status === 'processing' ? t('qrHandler.processingMessage') : message}
-          </Text
-        </VStack
-      </Box
-    </ScreenWrapper
+          </Text>
+        </VStack>
+      </Box>
+    </ScreenWrapper>
   );
 }

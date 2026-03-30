@@ -190,7 +190,7 @@ export default function MoodLotus({ userId, onMoodChange, disabled }: MoodLotusP
 
     if (!activeUserId) {
         return (
-            <PositiveInvitation>
+            <PositiveInvitation/>
                 type="guest"
                 onAction={() => navigation.navigate('Auth' as never)}
             /

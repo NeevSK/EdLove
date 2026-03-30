@@ -84,7 +84,7 @@ export default function AttendanceReportScreen({ schoolId, classroomId, onBack }
                     <SkeletonCard height={150} /
                     ><SkeletonCard height={300} /
                 ></VStack
-            </Box>
+            ></Box>
         );
     }
 
@@ -181,7 +181,7 @@ export default function AttendanceReportScreen({ schoolId, classroomId, onBack }
                                 <Box sx={{ height: 100, justifyContent: 'center', alignItems: 'center' }}>
                                     <Text sx={{ color: colors.textTertiary }}>No data for this period</Text
                                 ></Box
-                            )}
+                            >)}
                         </VStack>
                     </Box>
 

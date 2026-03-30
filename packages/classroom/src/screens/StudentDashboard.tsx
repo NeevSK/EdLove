@@ -80,10 +80,10 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
 
     return (
         <Box sx={{ flex: 1, backgroundColor: colors.primary }}            {isDemoExperience ? <SandboxBanner /> : null}
-            <ScrollView
+            <ScrollView>
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ padding: Theme.spacing.lg }}
-                            <Animated.View entering={FadeInDown.duration(400)}                    <WorkspaceCanvas
+                            <Animated.View entering={FadeInDown.duration(400)}                    <WorkspaceCanvas>
                         surfaces={dashboardSurfaces}
                         layout={layout}
                         title={t('classroom.studentDashboardHeading') || 'Your Learning Journey'}
@@ -104,7 +104,7 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
                             if (!resolved) return null;
 
                             return (
-                                <Box sx={{ flexDirection: 'row', gap: Theme.spacing.sm, flexWrap: 'wrap' }}                                    <TouchableOpacity
+                                <Box sx={{ flexDirection: 'row', gap: Theme.spacing.sm, flexWrap: 'wrap' }}                                    <TouchableOpacity>
                                         onPress={() => setSurfacePinned(resolved.surfaceId, !resolved.pinned)}
                                         style={{
                                             paddingHorizontal: Theme.spacing.md,
@@ -114,7 +114,7 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
                                             borderWidth: 1,
                                             borderColor: 'rgba(42, 35, 24, 0.08)',
                                         }}
-                                                                            <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}                                            {resolved.pinned ? 'Unpin' : 'Pin'}
+                                                                            <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}                                            {resolved.pinned ? 'Unpin' : 'Pin'}>
                                         </Text                                    </TouchableOpacity                                    <TouchableOpacity
                                         onPress={() =                                            setSurfaceZone(
                                                 resolved.surfaceId,
@@ -129,8 +129,8 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
                                             borderWidth: 1,
                                             borderColor: 'rgba(42, 35, 24, 0.08)',
                                         }}
-                                                                            <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}                                            Move zone
+                                                                            <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}                                            Move zone>
                                         </Text                                    </TouchableOpacity                                </Box                            );
                         }}
-                    /                </Animated.View            </ScrollView        </Box    );
+                    /                ></Animated.View            </ScrollView        </Box    );
 }

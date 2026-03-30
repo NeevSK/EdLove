@@ -191,7 +191,7 @@ export default function GlobalHeader({
                                 onPress={() => navigation.navigate('Profile')}
                             
                                 <Box sx={{ marginRight: '$4' }}>
-                                    <UserAvatar>
+                                    <UserAvatar/>
                                         avatarUrl={avatarUrl || user?.user_metadata?.avatar_url}
                                         fullName={userFullName}
                                         fallbackEmoji={RoleEmoji}
@@ -292,7 +292,7 @@ export default function GlobalHeader({
                     <Box sx={{
                         marginTop: Theme.spacing.sm,
                     }}>
-                        <SanctuaryInput>
+                        <SanctuaryInput/>
                             value={searchQuery}
                             onChangeText={setSearchQuery}
                             placeholder={searchProps?.placeholder ?? t('searchPlaceholder')}

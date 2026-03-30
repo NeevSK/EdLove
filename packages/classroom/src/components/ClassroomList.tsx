@@ -333,7 +333,7 @@ export default function ClassroomList({
                     >))
                 )}
 
-                <CreateClassroomModal>
+                <CreateClassroomModal/>
                     isOpen={isCreateModalOpen}
                     initialData={pendingInitialData}
                     onClose={() => {

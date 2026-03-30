@@ -95,7 +95,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
         ><SkeletonCard height={80} /
         ><SkeletonCard height={80} /
       ></VStack
-    );
+    >);
   }
 
   if (!activeUserId) {
@@ -205,7 +205,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                 borderColor: Theme.colors.transparent
               }}
             
-              <InputField>
+              <InputField/>
                 placeholder={t('self.exampleStudent')}
                 value={studentName}
                 onChangeText={setStudentName}
@@ -274,7 +274,7 @@ export default function JoyJar({ userId, disabled }: JoyJarProps) {
                 minHeight: 100
               }}
             
-              <InputField>
+              <InputField/>
                 placeholder={t('self.momentDescriptionPlaceholder')}
                 value={momentDescription}
                 onChangeText={setMomentDescription}

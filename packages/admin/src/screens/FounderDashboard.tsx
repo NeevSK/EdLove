@@ -147,7 +147,7 @@ export default function FounderDashboard() {
                                 <SkeletonCard height={80} style={{ flex: 1 }} /
                                 ><SkeletonCard height={80} style={{ flex: 1 }} /
                             ></HStack
-                        ) : (
+                        >) : (
                             <HStack sx={{ gap: Theme.spacing.md }}>
                                 <StatCard>
                                     label="Total Schools"
@@ -162,7 +162,7 @@ export default function FounderDashboard() {
                                     color={colors.success}
                                 /
                             ></HStack
-                        )}
+                        >)}
 
                         {!isLoading && (
                             <HStack sx={{ gap: Theme.spacing.md }}>
@@ -179,11 +179,11 @@ export default function FounderDashboard() {
                                     color={Theme.colors.sanctuarySaffron}
                                 /
                             ></HStack
-                        )}
+                        >)}
 
                         {/* Quick Actions */}
                         <HStack sx={{ gap: Theme.spacing.md, marginTop: Theme.spacing.sm }}>
-                            <QuickAction>
+                            <QuickAction/>
                                 icon={Wind}
                                 label={t('founder.breathing') || 'Breathing Reset'}
                                 onPress={() => {
@@ -196,7 +196,7 @@ export default function FounderDashboard() {
                             <Box sx={{ flex: 1 }} /
                             ><Box sx={{ flex: 1 }} /
                         ></HStack
-                    </VStack>
+                    ></VStack>
 
                     {/* 2. School Gallery */}
                     <VStack sx={{ gap: Theme.spacing.md }}>
@@ -221,7 +221,7 @@ export default function FounderDashboard() {
                                 <SkeletonCard height={100} /
                                 ><SkeletonCard height={100} /
                             ></VStack
-                        ) : (
+                        >) : (
                             <VStack sx={{ gap: Theme.spacing.md }}>
                                 {filteredSchools.map((school) => (
                                     <SchoolGalleryItem>
@@ -292,7 +292,7 @@ function QuickAction({ icon: LucideIcon, label, onPress, color }: { icon: any, l
             
                 <LucideIcon color={color} size={28} /
             ></TouchableOpacity
-            <Text color={colors.text} sx={{ textAlign: 'center', fontSize: 11, fontWeight: '700' }}>
+            ><Text color={colors.text} sx={{ textAlign: 'center', fontSize: 11, fontWeight: '700' }}>
                 {label}>
             </Text>
         </VStack>

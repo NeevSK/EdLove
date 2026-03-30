@@ -37,12 +37,12 @@ export const VatyaView: React.FC<PerspectiveViewProps> = ({
     const polygonPoints = layout.points.map(p => `${p.x},${p.y}`).join(' ');
 
     return (
-        <View style={styles.container}
-            <Svg width={width} height={height * 0.7}
-                <G
+        <View style={styles.container}>
+            <Svg width={width} height={height * 0.7}>
+                <G>
                     {/* Concentric Circles (Scale) */}
                     {[0.2, 0.4, 0.6, 0.8, 1].map((scale) => (
-                        <Circle
+                        <Circle>
                             key={`circle-${scale}`}
                             cx={layout.center.x}
                             cy={layout.center.y}
@@ -56,8 +56,8 @@ export const VatyaView: React.FC<PerspectiveViewProps> = ({
 
                     {/* Axes */}
                     {layout.axes.map((axis, i) => (
-                        <G key={`axis-${i}`}
-                            <Line
+                        <G key={`axis-${i}`}>
+                            <Line>
                                 x1={layout.center.x}
                                 y1={layout.center.y}
                                 x2={axis.x}
@@ -66,7 +66,7 @@ export const VatyaView: React.FC<PerspectiveViewProps> = ({
                                 strokeWidth={1}
                                 opacity={0.3}
                             /
-                            <SvgText
+                            <SvgText>
                                 x={axis.x}
                                 y={axis.y + (axis.y > layout.center.y ? 20 : -10)}
                                 fill={colors.textSecondary}
@@ -75,12 +75,12 @@ export const VatyaView: React.FC<PerspectiveViewProps> = ({
                                 textAnchor="middle"
                             
                                 {axis.attribute}
-                            </SvgText
-                        </G
+                            </SvgText>
+                        </G>
                     ))}
 
                     {/* The Data Polygon */}
-                    <Polygon
+                    <Polygon>
                         points={polygonPoints}
                         fill={`${Theme.colors.sanctuarySaffron}40`}
                         stroke={Theme.colors.sanctuarySaffron}
@@ -89,7 +89,7 @@ export const VatyaView: React.FC<PerspectiveViewProps> = ({
 
                     {/* Data Points */}
                     {layout.points.map((p, i) => (
-                        <Circle
+                        <Circle>
                             key={`point-${i}`}
                             cx={p.x}
                             cy={p.y}
@@ -99,9 +99,9 @@ export const VatyaView: React.FC<PerspectiveViewProps> = ({
                             strokeWidth={2}
                         /
                     ))}
-                </G
-            </Svg
-        </View
+                </G>
+            </Svg>
+        </View>
     );
 };
 

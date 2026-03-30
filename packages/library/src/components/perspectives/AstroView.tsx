@@ -67,7 +67,7 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
     }));
 
     return (
-        <GestureDetector gesture={combinedGesture}            <Animated.View style={[{ flex: 1 }, animatedStyle]}                <Svg 
+        <GestureDetector gesture={combinedGesture}            <Animated.View style={[{ flex: 1 }, animatedStyle]}                <Svg >
                     width={layout.bounds.width + 1000} 
                     height={layout.bounds.height + 1000} 
                     viewBox={`${layout.bounds.minX - 500} ${layout.bounds.minY - 500} ${layout.bounds.width + 1000} ${layout.bounds.height + 1000}`}
@@ -82,7 +82,7 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
                         if (!sourcePos || !targetPos) return null;
 
                         return (
-                            <Line
+                            <Line>
                                 key={`link-${i}`}
                                 x1={sourcePos.x}
                                 y1={sourcePos.y}
@@ -103,10 +103,10 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
                         const isSelected = selectedNode?.id === node.id;
                         
                         return (
-                            <G 
+                            <G >
                                 key={`node-${node.id}`} 
                                 onPress={() => onNodePress?.(node)}
-                                                            <Circle
+                                                            <Circle>
                                     cx={pos.x}
                                     cy={pos.y}
                                     r={isSelected ? 10 : 6}

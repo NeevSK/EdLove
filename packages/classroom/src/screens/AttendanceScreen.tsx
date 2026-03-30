@@ -106,30 +106,30 @@ export default function AttendanceScreen() {
 
     if (isLoading) {
         return (
-            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.ink }}
-                <Spinner color={Theme.colors.sanctuarySaffron} /
+            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.ink }}>
+                <Spinner color={Theme.colors.sanctuarySaffron} />
                 <Text color={Theme.colors.starlightGray} sx={{ marginTop: 16 }}>Loading class list...</Text
-            </Box
+            ></Box>
         );
     }
 
     if (error) {
         return (
-            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.ink }}
+            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Theme.colors.ink }}>
                 <Text color={Theme.colors.emberRed}>{error}</Text
-            </Box
+            ></Box>
         );
     }
 
     return (
-        <VStack sx={{ flex: 1, backgroundColor: Theme.colors.ink }}
-            <AttendanceSheet
+        <VStack sx={{ flex: 1, backgroundColor: Theme.colors.ink }}>
+            <AttendanceSheet>
                 classroomId={classroomId}
                 initialStudents={students}
                 onAttendanceChange={handleAttendanceChange}
             /
-            <Box sx={{ padding: 16, backgroundColor: Theme.colors.ink }}
-                <Button
+            <Box sx={{ padding: 16, backgroundColor: Theme.colors.ink }}>
+                <Button>
                     onPress={handleSave}
                     disabled={saveMutation.isLoading}
                     sx={{
@@ -140,11 +140,11 @@ export default function AttendanceScreen() {
                         justifyContent: 'center'
                     }}
                 
-                    <ButtonText color="white" sx={{ fontWeight: '700' }}
+                    <ButtonText color="white" sx={{ fontWeight: '700' }}>
                         {saveMutation.isLoading ? 'Syncing...' : 'Complete Marking'}
-                    </ButtonText
-                </Button
-            </Box
-        </VStack
+                    </ButtonText>
+                </Button>
+            </Box>
+        </VStack>
     );
 }

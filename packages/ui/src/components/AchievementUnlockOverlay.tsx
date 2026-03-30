@@ -67,7 +67,7 @@ export default function AchievementUnlockOverlay({
     if (!visible) return null;
 
     return (
-        <Animated.View style={[styles.container, animatedStyle]}
+        <Animated.View style={[styles.container, animatedStyle]}>
             <Box sx={{
                 width: width * 0.85,
                 backgroundColor: Theme.colors.ink,
@@ -81,28 +81,28 @@ export default function AchievementUnlockOverlay({
                 shadowRadius: 15,
                 elevation: 20,
                 alignItems: 'center',
-            }}
-                <VStack space="sm" alignItems="center"
-                    <Box
+            }}>
+                <VStack space="sm" alignItems="center">
+                    <Box>
                         p="$3"
                         backgroundColor={`${Theme.colors.templeGold}20`}
                         borderRadius={Theme.corners.full}
                         mb="$2"
                     
-                        <Trophy color={Theme.colors.templeGold} size={40} /
-                    </Box
-                    <Text color={Theme.colors.templeGold} bold size="lg"
+                        <Trophy color={Theme.colors.templeGold} size={40} />
+                    </Box>
+                    <Text color={Theme.colors.templeGold} bold size="lg">
                         ACHIEVEMENT UNLOCKED!
-                    </Text
-                    <Text color={Theme.colors.sacredWhite} bold textAlign="center" size="xl"
+                    </Text>
+                    <Text color={Theme.colors.sacredWhite} bold textAlign="center" size="xl">
                         {title}
-                    </Text
-                    <Text color={Theme.colors.starlightGray} size="sm" textAlign="center"
+                    </Text>
+                    <Text color={Theme.colors.starlightGray} size="sm" textAlign="center">
                         Your discovery adds to the sanctuary.
-                    </Text
-                </VStack
-            </Box
-        </Animated.View
+                    </Text>
+                </VStack>
+            </Box>
+        </Animated.View>
     );
 }
 

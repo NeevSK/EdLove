@@ -118,12 +118,12 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                                         <Text color={colors.text} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.xl, marginTop: Theme.spacing.sm }}>{stats?.total_students || 0}</Text
                                         ><Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>{t('founder.totalSouls')}</Text
                                     ></Box
-                                    <Box sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable }}>
+                                    ><Box sx={{ flex: 1, padding: Theme.spacing.md, backgroundColor: colors.secondary, borderRadius: Theme.corners.comfortable }}>
                                         <Zap color={colors.warning} size={20} /
                                         ><Text color={colors.text} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.xl, marginTop: Theme.spacing.sm }}>{stats?.total_teachers || 0}</Text
                                         ><Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>{t('founder.guidingSpirits')}</Text
                                     ></Box
-                                </HStack>
+                                ></HStack>
                             </VStack>
 
                             {/* Ecology Health (Simulated Cross-School/Platform Trends) */}
@@ -197,7 +197,7 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                                 <SkeletonCard height={100} style={{ flex: 1 }} /
                                 ><SkeletonCard height={100} style={{ flex: 1 }} /
                             ></HStack
-                            <SkeletonCard height={80} />
+                            ><SkeletonCard height={80} />
                         </VStack>
                     )}
                 </VStack>

@@ -67,9 +67,9 @@ export function SankeyDiagram({
   return (
     <Card style={[styles.container, { width: actualWidth, height }]}      {title && <Text style={styles.title}>{title}</Text>}
       
-      <View style={styles.diagramContainer}        {/* Links */}
+      <View style={styles.diagramContainer}        {/* Links */}>
         {links.map((link, index) => (
-          <View key={index} style={styles.linkContainer}            <View
+          <View key={index} style={styles.linkContainer}            <View>
               style={[
                 styles.linkPath,
                 {
@@ -81,13 +81,13 @@ export function SankeyDiagram({
             /            
             {/* Link value label */}
             {showLabels && (
-              <Text style={styles.linkLabel}                {link.value}
+              <Text style={styles.linkLabel}                {link.value}>
               </Text            )}
           </View        ))}
         
         {/* Nodes */}
         {nodes.map((node, index) => (
-          <View
+          <View>
             key={node.id}
             style={[
               styles.node,
@@ -98,7 +98,7 @@ export function SankeyDiagram({
                 width: nodeWidth,
               }
             ]}
-                      <Text style={styles.nodeLabel}              {showLabels ? node.label : ''}
+                      <Text style={styles.nodeLabel}              {showLabels ? node.label : ''}>
             </Text          </View        ))}
       </View    </Card  );
 }

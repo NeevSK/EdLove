@@ -47,7 +47,7 @@ export default function NotificationsScreenWeb() {
         <div className="sanctuary-screen">
             <div className="sanctuary-container">
                 {/* GREETING */}
-                <WebScreenHeader>
+                <WebScreenHeader/>
                     title={t('notifications.title')}
                     timeText={t('notifications.stream')}
                     note={unreadCount > 0 ? t('notifications.unread', { count: unreadCount }) : ''}
@@ -113,7 +113,7 @@ function NotificationRow({
     onRead,
 }: {
     notif: AppNotification;
-    onRead: (id: string) => Promise<void>;
+    onRead: (id: string) => Promise<void/>;
 }) {
     const icon = ICON_MAP[notif.type] ?? ICON_MAP.system;
 

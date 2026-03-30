@@ -69,13 +69,13 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
     });
 
     return (
-        <ScrollView 
+        <ScrollView >
             style={{ flex: 1 }} 
-            contentContainerStyle={{ padding: 24, paddingTop: 100, paddingBottom: 100 }}>
+            contentContainerStyle={{ padding: 24, paddingTop: 100, paddingBottom: 100 }}
         
-            <VStack spacing={24}
+            <VStack spacing={24}>
                 {/* Header Stats using Standard Sanctuary Component */}>
-                <SanctuaryStatsCard 
+                <SanctuaryStatsCard >
                     title="Knowledge Resonance"
                     showTrophy={false}
                     items={[>
@@ -102,14 +102,14 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
                     backgroundColor: 'rgba(255,255,255,0.03)', 
                     borderRadius: 24,
                     borderWidth: 1,
-                    borderColor: 'rgba(255,255,255,0.05)'>
-                }}
-                    <HStack {...({ alignItems: 'center', mb: 20 } as any)}
+                    borderColor: 'rgba(255,255,255,0.05)'
+                }}>
+                    <HStack {...({ alignItems: 'center', mb: 20 } as any)}>
                         <Layers size={18} color={Theme.colors.sanctuarySaffron} style={{ marginRight: 8 }} />
                         ><Text {...({ color: colors.text, bold: true, size: "md" } as any)}>Node Distribution</Text
                     ></HStack>
                     
-                    <BarChart
+                    <BarChart>
                         data={barData}
                         barWidth={40}
                         noOfSections={3}
@@ -130,21 +130,21 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
                     backgroundColor: 'rgba(255,255,255,0.03)', 
                     borderRadius: 24,
                     borderWidth: 1,
-                    borderColor: 'rgba(255,255,255,0.05)'>
-                }}
-                    <HStack {...({ alignItems: 'center', mb: 20 } as any)}
+                    borderColor: 'rgba(255,255,255,0.05)'
+                }}>
+                    <HStack {...({ alignItems: 'center', mb: 20 } as any)}>
                         <TrendingUp size={18} color={Theme.colors.sanctuarySaffron} style={{ marginRight: 8 }} />
                         ><Text {...({ color: colors.text, bold: true, size: "md" } as any)}>Domain Resonance</Text
                     ></HStack>
 
-                    <View style={{ alignItems: 'center' }}
-                        <PieChart
+                    <View style={{ alignItems: 'center' }}>
+                        <PieChart>
                             data={pieData}
                             donut
                             radius={80}
                             innerRadius={60}
                             centerLabelComponent={() => (
-                                <VStack {...({ alignItems: 'center', justifyContent: 'center' } as any)}
+                                <VStack {...({ alignItems: 'center', justifyContent: 'center' } as any)}>
                                     <Text {...({ size: "xl", bold: true, color: colors.text } as any)}>{totalNodes}</Text
                                     ><Text {...({ size: "xs", color: colors.textTertiary } as any)}>Total</Text
                                 ></VStack>
@@ -152,9 +152,9 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
                         /
                     ></View>
 
-                    <VStack spacing={8} sx={{ marginTop: 20 }}
+                    <VStack spacing={8} sx={{ marginTop: 20 }}>
                         {pieData.map((item, i) => (
-                            <HStack key={i} {...({ alignItems: 'center' } as any)}
+                            <HStack key={i} {...({ alignItems: 'center' } as any)}>
                                 <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: item.color, marginRight: 8 }} />
                                 ><Text {...({ size: "xs", color: colors.textSecondary, sx: { flex: 1 } } as any)}>{item.text}</Text
                                 ><Text {...({ size: "xs", bold: true, color: colors.text } as any)}>{item.value}</Text

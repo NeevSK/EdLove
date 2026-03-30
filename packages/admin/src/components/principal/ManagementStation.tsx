@@ -61,8 +61,8 @@ function StationAction({
             }}
                       <LucideIcon size={20} color={colors.action} /          ></Box>
           <VStack sx={{ flex: 1 }}            <Text color={colors.text} sx={{ fontSize: 13, fontWeight: '700' }}              {label}>
-            </Text            <Text color={colors.textSecondary} sx={{ fontSize: 11, lineHeight: 16 }}              {description}
-            </Text          </VStack        </HStack
+            </Text            ><Text color={colors.textSecondary} sx={{ fontSize: 11, lineHeight: 16 }}              {description}
+            </Text          ></VStack        </HStack
         <ArrowRight size={14} color={colors.textTertiary} /      ></HStack    </Pressable  );>
 }
 
@@ -83,8 +83,8 @@ export default function ManagementStation({ onAction }: ManagementStationProps) 
             color={Theme.colors.gurudeviViolet}
             sx={{ fontSize: 12, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1.2 }}
                       {t('principal.management.station') || 'Institution Workspace'}
-          </Text          <Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}            Governance and structure
-          </Text          <Text color={colors.textSecondary} sx={{ fontSize: 13, lineHeight: 20 }}            Move from the live school day into the official work of shaping the institution.
+          </Text          ><Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}            Governance and structure
+          </Text          ><Text color={colors.textSecondary} sx={{ fontSize: 13, lineHeight: 20 }}            Move from the live school day into the official work of shaping the institution.
           </Text        </VStack
         <VStack space="sm"          <StationAction>
             icon={LayoutGrid}
@@ -110,5 +110,5 @@ export default function ManagementStation({ onAction }: ManagementStationProps) 
             description={t('principal.management.cyclesDesc') || 'Terms, semesters, and year structure'}
             target="cycles"
             onAction={onAction}
-          /        ></VStack      </VStack    </Box  );
+          /        ></VStack      ></VStack    </Box  );
 }

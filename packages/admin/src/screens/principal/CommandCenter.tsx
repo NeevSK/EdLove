@@ -19,13 +19,13 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
     ];
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)', letterSpacing: '1px' }}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)', letterSpacing: '1px' }}>
                 Command Center \uD83C\uDFDB\uFE0F
-            </h3
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px' }}
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px' }}>
                 {actions.map((action, i) => (
-                    <button
+                    <button>
                         key={i}
                         onClick={() => !action.isAgentic && onNavigate(action.view)}
                         disabled={action.isAgentic}
@@ -46,11 +46,11 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
                         onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
                         onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
                     
-                        <div style={{ color: action.color, background: 'rgba(0,0,0,0.05)', padding: '10px', borderRadius: '12px' }}
-                            <action.icon size={20} /
-                        </div
+                        <div style={{ color: action.color, background: 'rgba(0,0,0,0.05)', padding: '10px', borderRadius: '12px' }}>
+                            <action.icon size={20} />
+                        </div>
                         <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--ink)' }}>{action.label}</span                        {getPrincipalFeatureScopeMeta(action.featureId) && (
-                            <span
+                            <span>
                                 style={{
                                     fontSize: '10px',
                                     fontWeight: 800,
@@ -65,8 +65,8 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate }) => {
                             </span                        )}
                         {action.isAgentic && <span style={{ fontSize: '10px', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>Coming Soon</span>}
                     </button                ))}
-            </div
-        </div
+            </div>
+        </div>
     );
 };
 

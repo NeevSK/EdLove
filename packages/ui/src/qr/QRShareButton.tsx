@@ -93,31 +93,31 @@ export default function QRShareButton({
   };
 
   return (
-    <View style={[styles.container, { backgroundColor }]}
+    <View style={[styles.container, { backgroundColor }]}>
       {/* QR code \u2014 captured by ViewShot */}
-      <View ref={viewRef} collapsable={false} style={[styles.qrWrapper, { backgroundColor }]}
-        <QRCodeGenerator value={value} size={size} label={label} /
-      </View
+      <View ref={viewRef} collapsable={false} style={[styles.qrWrapper, { backgroundColor }]}>
+        <QRCodeGenerator value={value} size={size} label={label} />
+      </View>
 
       {/* Action buttons */}
-      <View style={styles.buttonRow}
-        <TouchableOpacity
+      <View style={styles.buttonRow}>
+        <TouchableOpacity>
           onPress={handleShareImage}
           style={[styles.button, { borderColor: accentColor }]}
           accessibilityLabel="Share QR code as image"
         
           <Text style={[styles.buttonText, { color: accentColor }]}>\uD83D\uDCE4 Share Image</Text
-        </TouchableOpacity
+        ></TouchableOpacity>
 
-        <TouchableOpacity
+        <TouchableOpacity>
           onPress={handleCopyLink}
           style={[styles.button, { borderColor: accentColor }]}
           accessibilityLabel="Copy QR link to clipboard"
         
           <Text style={[styles.buttonText, { color: accentColor }]}>\uD83D\uDD17 Copy Link</Text
-        </TouchableOpacity
-      </View
-    </View
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 

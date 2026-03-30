@@ -98,7 +98,7 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
 
                 {/* 3. Did You Know? (The Wisdom) */}
                 <BreathAnimation delay={400}>
-                    <DailyResonanceCard>
+                    <DailyResonanceCard/>
                         title={t('pulse.wisdom') || 'Seed of Wisdom'}
                         content={dailyContent?.didYouKnow?.content || 'Did you know? Every student brings a unique harmony to the classroom.'}
                         icon={BookOpen}

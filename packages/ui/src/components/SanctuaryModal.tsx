@@ -68,13 +68,13 @@ export default function SanctuaryModal({
     const { scene, text, isDark } = useTheme();
 
     return (
-        <Modal
+        <Modal>
             isOpen={isOpen}
             onClose={onClose}
             {...({ size } as any)}
         
             {/* Backdrop: Shadow Violet  NEVER black */}
-            <ModalBackdrop
+            <ModalBackdrop>
                 sx={{
                     backgroundColor: isDark
                         ? 'rgba(107,100,128,0.65)'
@@ -82,7 +82,7 @@ export default function SanctuaryModal({
                 }}
             /
 
-            <ModalContent
+            <ModalContent>
                 sx={{
                     width: '90%',
                     backgroundColor: scene.elevated.bg,
@@ -97,43 +97,43 @@ export default function SanctuaryModal({
                     elevation: 8,
                 }}
             
-                <ModalHeader
-                    <HStack
+                <ModalHeader>
+                    <HStack>
                         {...({ space: 'sm', alignItems: 'center', flex: 1 } as any)}
                     
                         {icon && icon}
-                        <VStack {...({ flex: 1 } as any)}
-                            <Heading
+                        <VStack {...({ flex: 1 } as any)}>
+                            <Heading>
                                 size="md"
                                 {...({ color: text.onElevated } as any)}
                             
                                 {title}
-                            </Heading
+                            </Heading>
                             {subtitle ? (
-                                <Text
+                                <Text>
                                     {...({ size: 'xs', color: text.secondary } as any)}
                                 
                                     {subtitle}
-                                </Text
+                                </Text>
                             ) : null}
-                        </VStack
-                    </HStack
+                        </VStack>
+                    </HStack>
 
                     {showCloseButton && (
-                        <ModalCloseButton
-                            <Icon
+                        <ModalCloseButton>
+                            <Icon>
                                 as={CloseIcon}
                                 {...({ color: text.onElevated } as any)}
                             /
-                        </ModalCloseButton
+                        </ModalCloseButton>
                     )}
-                </ModalHeader
+                </ModalHeader>
 
                 <ModalBody>{children}</ModalBody
 
                 {footer ? <ModalFooter>{footer}</ModalFooter> : null}
-            </ModalContent
-        </Modal
+            </ModalContent>
+        </Modal>
     );
 }
 

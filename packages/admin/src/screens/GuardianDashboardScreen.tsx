@@ -60,7 +60,7 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
         ]}
         showsVerticalScrollIndicator={false}
               {/* Students Section (Direct Component) */}
-        <GuardianChildrenList >
+        <GuardianChildrenList />
           students={dashboard.students}
           onStudentPress={onStudentPress}
           isDesktop={isDesktop}

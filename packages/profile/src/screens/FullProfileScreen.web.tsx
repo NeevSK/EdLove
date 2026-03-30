@@ -95,7 +95,7 @@ export default function FullProfileScreenWeb() {
                                 }}
                             /                            ><VStack                                <Heading >size="xl">{profile.full_name}</Heading                                ><Text color={colors.textTertiary}>@{profile.username || 'no-handle'}</Text                                >{isTeacherProfile && profile.school_id ? (
                                     <StaffPresencePulse userId={profile.id} schoolId={profile.school_id} /                                >) : null}
-                            </VStack                        </HStack>
+                            </VStack                        ></HStack>
                         <Box>
                             sx={{
                                 backgroundColor: colors.secondary,
@@ -118,7 +118,7 @@ export default function FullProfileScreenWeb() {
                                     field="username"
                                     onSave={handleSave}
                                     disabled={isOtherProfile}
-                                /                            ></VStack                        </Box
+                                /                            ></VStack                        ></Box
                         <ContactLinktree>
                             links={socialLinks || []}
                             userName={profile.full_name}
@@ -130,7 +130,7 @@ export default function FullProfileScreenWeb() {
                             <SanctuaryButton onPress={() => setShowSocialModal(true)}                                <HStack space="sm" alignItems="center"                                    <Edit3 size={18} color="white" /                                    ><Text color="white" bold>Manage Social Links</Text                                ></HStack                            </SanctuaryButton                        )}
                     </VStack                </Box            </ScrollView
             {!isOtherProfile && (
-                <AddSocialLinkModal>
+                <AddSocialLinkModal/>
                     visible={showSocialModal}
                     onClose={() => setShowSocialModal(false)}
                     userId={profile.id}
@@ -146,5 +146,5 @@ export default function FullProfileScreenWeb() {
                     giverId={currentUserId}
                     giverName={currentUserName}
                 /            >)}
-        </ScreenWrapper    );
+        </ScreenWrapper    >);
 }

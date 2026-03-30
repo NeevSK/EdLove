@@ -86,7 +86,7 @@ export default function LeaveApprovalSection({ schoolId, principalId }: LeaveApp
 
       {!loading && leaves.length === 0 && (
         <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}          No pending leave requests>
-        </Text      )}>
+        </Text      >)}>
 
       {!loading &&
         leaves.map((leave) => {
@@ -111,7 +111,7 @@ export default function LeaveApprovalSection({ schoolId, principalId }: LeaveApp
                 </Text              ></HStack
               {leave.reason ? (
                 <Text sx={{ fontSize: 12, color: colors.textSecondary }} numberOfLines={1}                  {leave.reason}>
-                </Text              ) : null}>
+                </Text              >) : null}>
 
               <HStack sx={{ gap: Theme.spacing.sm }}                <TouchableOpacity onPress={() => handleDecision(leave.id, true)} activeOpacity={0.8} disabled={isProcessing} style={{ flex: 1 }}                  <Box
                     sx={{

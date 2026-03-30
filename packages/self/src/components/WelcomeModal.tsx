@@ -26,34 +26,34 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
     };
 
     const footer = (
-        <Button
+        <Button>
             size="md"
             onPress={handleStart}
             sx={{ backgroundColor: accent.action, width: '100%', borderRadius: Theme.corners.comfortable }}
         
-            <ButtonText {...({ color: text.inverse } as any)}
+            <ButtonText {...({ color: text.inverse } as any)}>
                 {t('welcome.start')}
-            </ButtonText
-        </Button
+            </ButtonText>
+        </Button>
     );
 
     return (
-        <SanctuaryModal
+        <SanctuaryModal>
             isOpen={isOpen}
             onClose={onClose}
             title={t('welcome.title')}
             showCloseButton={false}
             footer={footer}
         
-            <VStack {...({ space: "md" } as any)}
-                <Text {...({ size: "lg", lineHeight: "$xl", color: text.primary } as any)}
+            <VStack {...({ space: "md" } as any)}>
+                <Text {...({ size: "lg", lineHeight: "$xl", color: text.primary } as any)}>
                     {t('welcome.message')}
-                </Text
-                <Text {...({ size: "md", lineHeight: "$lg", color: text.secondary } as any)}
+                </Text>
+                <Text {...({ size: "md", lineHeight: "$lg", color: text.secondary } as any)}>
                     {t('welcome.description')}
-                </Text
-            </VStack
-        </SanctuaryModal
+                </Text>
+            </VStack>
+        </SanctuaryModal>
     );
 }
 

@@ -14,15 +14,15 @@ export default function StepIndicator({
     stepLabels,
 }: StepIndicatorProps) {
     return (
-        <VStack sx={{ gap: Theme.spacing.sm, paddingHorizontal: Theme.spacing.md, paddingVertical: Theme.spacing.md }}
-            <HStack sx={{ gap: Theme.spacing.xs, width: '100%', alignItems: 'center' }}
+        <VStack sx={{ gap: Theme.spacing.sm, paddingHorizontal: Theme.spacing.md, paddingVertical: Theme.spacing.md }}>
+            <HStack sx={{ gap: Theme.spacing.xs, width: '100%', alignItems: 'center' }}>
                 {Array.from({ length: totalSteps }).map((_, index) => {
                     const isCompleted = index + 1 < currentStep;
                     const isActive = index + 1 === currentStep;
 
                     return (
-                        <React.Fragment key={index}
-                            <Box
+                        <React.Fragment key={index}>
+                            <Box>
                                 sx={{
                                     flex: 1,
                                     height: 4,
@@ -34,18 +34,18 @@ export default function StepIndicator({
                                 }}
                             /
                             {index < totalSteps - 1 && <Box sx={{ width: 4 }} />}
-                        </React.Fragment
+                        </React.Fragment>
                     );
                 })}
-            </HStack
-            <HStack sx={{ justifyContent: 'space-between', width: '100%' }}
-                <Text color={Theme.colors.sanctuarySaffron} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.sm }}
+            </HStack>
+            <HStack sx={{ justifyContent: 'space-between', width: '100%' }}>
+                <Text color={Theme.colors.sanctuarySaffron} sx={{ fontWeight: '700', fontSize: Theme.typography.fontSize.sm }}>
                     Step {currentStep} of {totalSteps}
-                </Text
-                <Text color={Theme.colors.mistGray} sx={{ fontSize: Theme.typography.fontSize.sm }}
+                </Text>
+                <Text color={Theme.colors.mistGray} sx={{ fontSize: Theme.typography.fontSize.sm }}>
                     {stepLabels[currentStep - 1]}
-                </Text
-            </HStack
-        </VStack
+                </Text>
+            </HStack>
+        </VStack>
     );
 }

@@ -129,74 +129,74 @@ export const UniversalPerspective: React.FC<UniversalPerspectiveProps> = ({
     if (!layout) return null;
 
     return (
-        <View style={styles.container}
-            <View style={styles.header}
+        <View style={styles.container}>
+            <View style={styles.header}>
                 {title && <Text style={styles.title}>{title}</Text>}
                 {topologyId && (
-                    <TouchableOpacity 
+                    <TouchableOpacity >
                         onPress={handleShare} 
                         style={[styles.shareBtn, isSharing && { opacity: 0.5 }]}
                         disabled={isSharing}
                     
-                        <Share2 size={18} color="white" /
-                    </TouchableOpacity
+                        <Share2 size={18} color="white" />
+                    </TouchableOpacity>
                 )}
-            </View
+            </View>
 
-            <View style={styles.viewer}
+            <View style={styles.viewer}>
                 {renderPerspective()}
-            </View
+            </View>
 
             {showToggle && (
-                <GlassCard style={styles.toggleBar}
-                    <HStack space="md" justifyContent="center"
-                        <LensButton 
+                <GlassCard style={styles.toggleBar}>
+                    <HStack space="md" justifyContent="center">
+                        <LensButton >
                             active={perspective === 'astro'} 
                             icon={Network} 
                             onPress={() => setPerspective('astro')} 
                             label="Constellation"
                         /
-                        <LensButton 
+                        <LensButton >
                             active={perspective === 'vastu'} 
                             icon={GitBranch} 
                             onPress={() => setPerspective('vastu')} 
                             label="Mindmap"
                         /
-                        <LensButton 
+                        <LensButton >
                             active={perspective === 'dharma'} 
                             icon={ArrowRightLeft} 
                             onPress={() => setPerspective('dharma')} 
                             label="Flow"
                         /
-                        <LensButton 
+                        <LensButton >
                             active={perspective === 'vatya'} 
                             icon={Target} 
                             onPress={() => setPerspective('vatya')} 
                             label="Analysis"
                         /
-                         <LensButton 
+                         <LensButton >
                             active={perspective === 'terra'} 
                             icon={MapIcon} 
                             onPress={() => setPerspective('terra')} 
                             label="Ecology"
                         /
-                    </HStack
-                </GlassCard
+                    </HStack>
+                </GlassCard>
             )}
-        </View
+        </View>
     );
 };
 
 const LensButton = ({ active, icon: Icon, onPress, label }: any) => {
     const colors = useThemedColors();
     return (
-        <TouchableOpacity 
+        <TouchableOpacity >
             onPress={onPress} 
             style={[styles.lensBtn, active && styles.lensBtnActive]}
         
-            <Icon size={18} color={active ? Theme.colors.sanctuarySaffron : colors.textSecondary} /
+            <Icon size={18} color={active ? Theme.colors.sanctuarySaffron : colors.textSecondary} />
             {active && <Text style={styles.lensLabel}>{label}</Text>}
-        </TouchableOpacity
+        </TouchableOpacity>
     );
 };
 

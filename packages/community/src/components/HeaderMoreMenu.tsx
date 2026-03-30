@@ -68,13 +68,13 @@ export default function HeaderMoreMenu({
     };
 
     return (
-        <Box
-            <TouchableOpacity onPress={() => setIsMenuOpen(!isMenuOpen)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                <MoreVertical size={24} color={colors.text} /
-            </TouchableOpacity
+        <Box>
+            <TouchableOpacity >onPress={() => setIsMenuOpen(!isMenuOpen)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                <MoreVertical size={24} color={colors.text} />
+            </TouchableOpacity>
 
             {isMenuOpen && (
-                <Box
+                <Box>
                     sx={{
                         position: 'absolute',
                         top: 35,
@@ -93,41 +93,41 @@ export default function HeaderMoreMenu({
                         overflow: 'hidden',
                     }}
                 
-                    <VStack
-                        <TouchableOpacity style={styles.menuItem} onPress={handleToggleMute}
-                            <HStack space="md" alignItems="center"
+                    <VStack>
+                        <TouchableOpacity >style={styles.menuItem} onPress={handleToggleMute}>
+                            <HStack space="md" alignItems="center">
                                 {isMuted ? <Bell size={18} color={colors.text} /> : <BellOff size={18} color={colors.text} />}
                                 <Text size="sm" color={colors.text}>{isMuted ? 'Unmute Sanctuary' : 'Mute Sanctuary'}</Text
-                            </HStack
-                        </TouchableOpacity
+                            ></HStack>
+                        </TouchableOpacity>
 
                         {targetUserId && (
-                            <TouchableOpacity style={styles.menuItem} onPress={handleBlock}
-                                <HStack space="md" alignItems="center"
-                                    <UserX size={18} color={Theme.colors.sanctuarySaffron} /
+                            <TouchableOpacity style={styles.menuItem} onPress={handleBlock}>
+                                <HStack space="md" alignItems="center">
+                                    <UserX size={18} color={Theme.colors.sanctuarySaffron} />
                                     <Text size="sm" color={Theme.colors.sanctuarySaffron}>Block User</Text
-                                </HStack
-                            </TouchableOpacity
+                                ></HStack>
+                            </TouchableOpacity>
                         )}
 
                         <TouchableOpacity style={[styles.menuItem, { borderBottomWidth: 0 }]} onPress={() => { setShowReportModal(true); setIsMenuOpen(false); }}
-                            <HStack space="md" alignItems="center"
-                                <ShieldAlert size={18} color={colors.text} /
+                            <HStack space="md" alignItems="center">
+                                <ShieldAlert size={18} color={colors.text} />
                                 <Text size="sm" color={colors.text}>Report</Text
-                            </HStack
-                        </TouchableOpacity
-                    </VStack
-                </Box
+                            ></HStack>
+                        </TouchableOpacity>
+                    </VStack>
+                </Box>
             )}
 
-            <SocialShieldModal
+            <SocialShieldModal>
                 isOpen={showReportModal}
                 onClose={() => setShowReportModal(false)}
                 targetUserId={targetUserId}
                 targetUserName={targetUserName}
                 groupId={groupId}
             /
-        </Box
+        </Box>
     );
 }
 

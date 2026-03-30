@@ -71,29 +71,29 @@ export default function LotusLoader({
     }));
 
     const content = (
-        <VStack space="md" alignItems="center" justifyContent="center"
-            <Animated.View style={animatedStyle}
-                <Flower
+        <VStack space="md" alignItems="center" justifyContent="center">
+            <Animated.View style={animatedStyle}>
+                <Flower>
                     size={SIZES[size]}
                     color={Theme.colors.sanctuarySaffron}
                     strokeWidth={1.5}
                 /
-            </Animated.View
-            <ActivityIndicator
+            </Animated.View>
+            <ActivityIndicator>
                 size="large"
                 color={Theme.colors.starlightGray}
             /
             {text && (
-                <Text
+                <Text>
                     color={Theme.colors.starlightGray}
                     fontFamily={Theme.typography.fontFamily.english}
                     size="sm"
                     sx={{ letterSpacing: 1 }}
                 
                     {text}
-                </Text
+                </Text>
             )}
-        </VStack
+        </VStack>
     );
 
     if (fullscreen) {
@@ -108,15 +108,15 @@ export default function LotusLoader({
                 left: 0,
                 right: 0,
                 bottom: 0,
-            }}
+            }}>
                 {content}
-            </Center
+            </Center>
         );
     }
 
     return (
-        <Center sx={{ padding: Theme.spacing.lg }}
+        <Center sx={{ padding: Theme.spacing.lg }}>
             {content}
-        </Center
+        </Center>
     );
 }

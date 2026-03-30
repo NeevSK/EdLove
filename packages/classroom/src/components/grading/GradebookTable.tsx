@@ -94,7 +94,7 @@ export default function GradebookTable({
 
     // Memoized row renderer
     const renderGradeRow = useCallback(({ item: grade, index }: ListRenderItemInfo<StudentGrade>) => (
-        <GradeRow>
+        <GradeRow/>
             grade={grade}
             index={index}
             totalItems={sortedGrades.length}
@@ -162,7 +162,7 @@ export default function GradebookTable({
                 </HStack>
 
                 {/* Table Body with FlatList */}
-                <FlatList>
+                <FlatList/>
                     data={sortedGrades}
                     renderItem={renderGradeRow}
                     keyExtractor={keyExtractor}
@@ -173,7 +173,7 @@ export default function GradebookTable({
                     windowSize={5}
                 /
             ></VStack
-        </Box>
+        ></Box>
     );
 }
 

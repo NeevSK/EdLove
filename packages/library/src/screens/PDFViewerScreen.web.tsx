@@ -53,15 +53,15 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
     };
 
     return (
-        <ScreenWrapper scroll={false} style={{ backgroundColor: colors.secondary, flex: 1 }}
-            <GlobalHeader
+        <ScreenWrapper scroll={false} style={{ backgroundColor: colors.secondary, flex: 1 }}>
+            <GlobalHeader>
                 title={title}
                 subtitle="Document Viewer"
                 showBack
                 onBack={() => (navigation as any).goBack()}
                 rightAction={
-                    <Box sx={{ backgroundColor: isBookmarked ? colors.primary + '22' : 'transparent', borderRadius: 20 }}
-                        <SanctuaryButton
+                    <Box sx={{ backgroundColor: isBookmarked ? colors.primary + '22' : 'transparent', borderRadius: 20 }}>
+                        <SanctuaryButton>
                             variant="ghost"
                             size="sm"
                             leftIcon={Bookmark}
@@ -69,25 +69,25 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
                             accessibilityLabel={isBookmarked ? 'Remove bookmark' : 'Bookmark document'}
                         
                             {''}
-                        </SanctuaryButton
-                    </Box
+                        </SanctuaryButton>
+                    </Box>
                 }
             /
 
             {/* Inline iframe viewer */}
-            <View style={styles.iframeContainer}
+            <View style={styles.iframeContainer}>
                 {/* @ts-ignore  'iframe' is valid in react-native-web */}
-                <iframe
+                <iframe>
                     key={iframeKey}
                     src={url}
                     title={title}
                     style={styles.iframe as any}
                     allowFullScreen
                 /
-            </View
+            </View>
 
             {/* Action bar below the iframe */}
-            <HStack
+            <HStack>
                 sx={{
                     padding: Theme.spacing.md,
                     gap: Theme.spacing.sm,
@@ -97,7 +97,7 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
                     borderTopColor: colors.border,
                 }}
             
-                <SanctuaryButton
+                <SanctuaryButton>
                     variant="outline"
                     size="sm"
                     leftIcon={RefreshCw}
@@ -105,17 +105,17 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
                     accessibilityLabel="Reload document"
                 
                     Reload
-                </SanctuaryButton
-                <SanctuaryButton
+                </SanctuaryButton>
+                <SanctuaryButton>
                     size="sm"
                     leftIcon={ExternalLink}
                     onPress={openInNewTab}
                     accessibilityLabel="Open PDF in new tab"
                 
                     Open in New Tab
-                </SanctuaryButton
-            </HStack
-        </ScreenWrapper
+                </SanctuaryButton>
+            </HStack>
+        </ScreenWrapper>
     );
 }
 

@@ -213,7 +213,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                         isInvalid={false}
                                         isDisabled={loading}>
                                     
-                                        <InputField>
+                                        <InputField/>
                                             {...({ color: text.primary } as any)}
                                             value={fullName}
                                             onChangeText={setFullName}
@@ -233,7 +233,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                         isInvalid={false}
                                         isDisabled={loading}>
                                     
-                                        <InputField>
+                                        <InputField/>
                                             {...({ color: text.primary } as any)}
                                             value={phone}
                                             onChangeText={setPhone}
@@ -254,7 +254,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                         isInvalid={false}
                                         isDisabled={loading}>
                                     
-                                        <InputField>
+                                        <InputField/>
                                             {...({ color: text.primary } as any)}
                                             value={bio}
                                             onChangeText={setBio}
@@ -276,7 +276,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                             style={[styles.input, { borderColor: glass.interact.border, backgroundColor: glass.interact.bg }]}
                                             isDisabled={loading}>
                                         
-                                            <InputField>
+                                            <InputField/>
                                                 {...({ color: text.primary } as any)}
                                                 value={nicNumber}
                                                 onChangeText={setNicNumber}
@@ -297,7 +297,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                             style={[styles.input, { borderColor: glass.interact.border, backgroundColor: glass.interact.bg }]}
                                             isDisabled={loading}>
                                         
-                                            <InputField>
+                                            <InputField/>
                                                 {...({ color: text.primary } as any)}
                                                 value={indexNumber}
                                                 onChangeText={setIndexNumber}
@@ -328,7 +328,7 @@ export default function EditProfileModal({ visible, onClose, onSave, currentProf
                                             ><SelectIcon mr="$3" as={ChevronDown} color={text.muted} /
                                         ></SelectTrigger>
                                         <SelectPortal>
-                                            <SelectBackdrop >/>
+                                            <SelectBackdrop />/>
                                             <SelectContent>
                                                 <SelectDragIndicatorWrapper>
                                                     ><SelectDragIndicator /

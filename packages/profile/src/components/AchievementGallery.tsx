@@ -76,7 +76,7 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
     const AchievementItem = ({ achievement }: { achievement: Achievement }) => {
         const Icon = achievement.icon;
         return (
-            <VStack
+            <VStack>
                 alignItems="center"
                 space="xs"
                 style={[
@@ -84,7 +84,7 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
                     !achievement.unlocked && { opacity: 0.4 }
                 ]}
             
-                <Box
+                <Box>
                     style={{
                         padding: Theme.spacing.md,
                         backgroundColor: achievement.unlocked
@@ -95,12 +95,12 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
                         borderColor: `${colors.action}40`,
                     }}
                 
-                    <Icon
+                    <Icon>
                         size={24}
                         color={achievement.unlocked ? colors.action : colors.textTertiary}
                     /
-                </Box
-                <Text
+                </Box>
+                <Text>
                     size="xs"
                     bold={achievement.unlocked}
                     textAlign="center"
@@ -108,14 +108,14 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
                     numberOfLines={1}
                 
                     {achievement.title}
-                </Text
-            </VStack
+                </Text>
+            </VStack>
         );
     };
 
     return (
-        <VStack sx={{ mt: Theme.spacing.lg, px: Theme.spacing.md }}
-            <Box
+        <VStack sx={{ mt: Theme.spacing.lg, px: Theme.spacing.md }}>
+            <Box>
                 sx={{
                     backgroundColor: colors.secondary,
                     borderRadius: Theme.corners.generous,
@@ -129,21 +129,21 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
                     elevation: 5,
                 }}
             
-                <Heading
+                <Heading>
                     color={colors.textSecondary as any}
                     size="sm"
                     mt={Theme.spacing.sm}
                     mb={Theme.spacing.md}
                 
                     {t('achievements.title')}
-                </Heading
-                <HStack style={styles.galleryGrid}
+                </Heading>
+                <HStack style={styles.galleryGrid}>
                     {achievements.map((item) => (
-                        <AchievementItem key={item.id} achievement={item} /
+                        <AchievementItem key={item.id} achievement={item} />
                     ))}
-                </HStack
-            </Box
-        </VStack
+                </HStack>
+            </Box>
+        </VStack>
     );
 }
 

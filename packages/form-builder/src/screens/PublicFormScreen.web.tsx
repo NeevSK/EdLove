@@ -86,7 +86,7 @@ export default function PublicFormScreenWeb() {
         }}
               <VStack sx={{ marginBottom: 32, alignItems: 'center' }}          <Heading size="xl" sx={{ textAlign: 'center' }}>{template.title}</Heading          >{template.description && (
             <Text sx={{ textAlign: 'center', marginTop: 8, color: colors.textSecondary }}              {template.description}>
-            </Text          )}
-        </VStack        <NativeForm manager={manager} submitLabel="Submit Response" /      </Box    </VStack  );
+            </Text          >)}
+        </VStack        ><NativeForm manager={manager} submitLabel="Submit Response" /      ></Box    </VStack  );
 }
 

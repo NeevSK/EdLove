@@ -29,8 +29,8 @@ export default function EmptyState({
             minHeight,
             opacity: 1.0,
             padding: Theme.spacing.xl
-        }}
-            <VStack space="md" alignItems="center" maxWidth={300}
+        }}>
+            <VStack space="md" alignItems="center" maxWidth={300}>
                 <Box sx={{
                     padding: Theme.spacing.lg,
                     backgroundColor: scene.interactive.bg,
@@ -38,41 +38,41 @@ export default function EmptyState({
                     borderWidth: 1,
                     borderRadius: Theme.corners.full,
                     marginBottom: Theme.spacing.sm
-                }}
-                    <Icon size={48} color={accent.action} strokeWidth={1.5} /
-                </Box
+                }}>
+                    <Icon size={48} color={accent.action} strokeWidth={1.5} />
+                </Box>
 
-                <Text
+                <Text>
                     color={text.onCanvas}
                     fontSize="$xl"
                     fontWeight="$bold"
                     textAlign="center"
                 
                     {title}
-                </Text
+                </Text>
 
-                <Text
+                <Text>
                     color={text.secondary}
                     textAlign="center"
                     fontSize="$md"
                     sx={{ lineHeight: 24 }}
                 
                     {description}
-                </Text
+                </Text>
 
                 {actionLabel && onAction && (
-                    <Box mt="$4"
-                        <SanctuaryButton
+                    <Box mt="$4">
+                        <SanctuaryButton>
                             onPress={onAction}
                             size="md"
                             variant="outline"
                         
                             {actionLabel}
-                        </SanctuaryButton
-                    </Box
+                        </SanctuaryButton>
+                    </Box>
                 )}
-            </VStack
-        </Center
+            </VStack>
+        </Center>
     );
 }
 

@@ -188,7 +188,7 @@ export default function SchoolCreationScreen() {
                             <Text sx={{ fontSize: Theme.typography.fontSize.xs, fontWeight: 'bold', color: Theme.colors.sanctuarySaffron, marginBottom: Theme.spacing.md, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 }}>
                                 Share this QR to invite others>
                             </Text>
-                            <QRCodeGenerator>
+                            <QRCodeGenerator/>
                                 value={QRBuilder.school(successData.schoolId, successData.groupId)}
                                 size={180}
                                 label={successData.schoolName}

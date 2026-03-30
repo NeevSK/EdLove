@@ -56,7 +56,7 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
     if (showSettings) {
         return (
             gradingSettings && (
-                <GradingSettings>
+                <GradingSettings/>
                     currentSettings={gradingSettings}
                     onSave={handleSaveSettings}
                     onCancel={() => setShowSettings(false)}

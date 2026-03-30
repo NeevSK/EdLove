@@ -109,7 +109,7 @@ export default function CommunityPresence({
                         backgroundColor: vibeColor,
                     }}
                 /                ><Text size="xs" color={colors.textSecondary} bold                    {isOffline ? t('community.offline') : `${onlineCount} ${roleLabel}`}
-                </Text            </HStack        );
+                </Text            ></HStack        );
     }
 
     return (
@@ -135,7 +135,7 @@ export default function CommunityPresence({
                     </Heading                    ><Text color={colors.text>Secondary} size="sm"                        {isOffline
                             ? t('community.offlineDesc')
                             : `${onlineCount} ${roleLabel} ${t('community.onlineNow')}`}
-                    </Text                    {!isOffline && (
+                    </Text                    >{!isOffline && (
                         <Text>
                             color={colors.textTertiary}
                             size="xs"
@@ -153,6 +153,6 @@ export default function CommunityPresence({
                         borderColor: colors.border,
                     }}
                                     <Text size="xs" color={colors.textSecondary} italic                        {motivationText}>
-                    </Text                </Box            )}>
+                    </Text                ></Box            >)}>
         </VStack    >);
 }

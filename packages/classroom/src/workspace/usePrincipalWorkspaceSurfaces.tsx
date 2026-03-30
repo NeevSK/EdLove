@@ -64,9 +64,9 @@ export function usePrincipalWorkspaceSurfaces({
     onOpenBreathing,
     onEditSchool,
     renderTodayContent: () => (
-      <VStack sx={{ gap: Theme.spacing.lg }}        <MorningSituationalBrief schoolId={schoolId} principalId={userId} /        <TeacherCarousel schoolId={schoolId} /        <LeaveApprovalSection schoolId={schoolId} principalId={userId} /        <InstitutionalCalendarSection schoolId={schoolId} principalId={userId} /        <PrincipalObservationsSection schoolId={schoolId} principalId={userId} /      </VStack    ),
+      <VStack sx={{ gap: Theme.spacing.lg }}        <MorningSituationalBrief schoolId={schoolId} principalId={userId} /        ><TeacherCarousel schoolId={schoolId} /        ><LeaveApprovalSection schoolId={schoolId} principalId={userId} /        ><InstitutionalCalendarSection schoolId={schoolId} principalId={userId} /        ><PrincipalObservationsSection schoolId={schoolId} principalId={userId} /      ></VStack    ),>
     renderOutlookContent: () => (
-      <VStack sx={{ gap: Theme.spacing.lg }}        <PulseDashboard schoolId={schoolId} /        <ResourceNeedsDashboard schoolId={schoolId} /        <DashboardEcho schoolId={schoolId} /      </VStack    ),
+      <VStack sx={{ gap: Theme.spacing.lg }}        <PulseDashboard schoolId={schoolId} /        ><ResourceNeedsDashboard schoolId={schoolId} /        ><DashboardEcho schoolId={schoolId} /      ></VStack    ),>
   });
 
   return {

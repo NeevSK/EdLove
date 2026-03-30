@@ -70,23 +70,23 @@ export function SanctuaryProgressBar({
   const barHeight = compact ? 4 : 8;
 
   return (
-    <View style={[styles.container, style]}
+    <View style={[styles.container, style]}>
       {/* Header row: label + percentage */}
       {showPercentage && (
-        <View style={styles.headerRow}
-          <Text style={[styles.label, { color: text.secondary }]}
+        <View style={styles.headerRow}>
+          <Text style={[styles.label, { color: text.secondary }]}>
             Profile Completion
-          </Text
-          <Text style={[styles.percentage, { color: isComplete ? accent.reward : text.primary }]}
+          </Text>
+          <Text style={[styles.percentage, { color: isComplete ? accent.reward : text.primary }]}>
             {percentage}%
-          </Text
-        </View
+          </Text>
+        </View>
       )}
 
       {/* Track */}
-      <View style={[styles.track, { height: barHeight, backgroundColor: glass.surface.bg }]}
+      <View style={[styles.track, { height: barHeight, backgroundColor: glass.surface.bg }]}>
         {/* Animated fill */}
-        <Animated.View
+        <Animated.View>
           style={[
             StyleSheet.absoluteFillObject,
             {
@@ -101,7 +101,7 @@ export function SanctuaryProgressBar({
         /
         {/* Reanimated glow overlay on completion */}
         {isComplete && (
-          <Reanimated.View
+          <Reanimated.View>
             style={[
               StyleSheet.absoluteFillObject,
               { backgroundColor: glowColor, borderRadius: barHeight / 2 },
@@ -109,19 +109,19 @@ export function SanctuaryProgressBar({
             ]}
           /
         )}
-      </View
+      </View>
 
       {/* Hint / complete text */}
       {!isComplete && nextHint ? (
-        <Text style={[styles.hint, { color: text.secondary }]} numberOfLines={1}
+        <Text style={[styles.hint, { color: text.secondary }]} numberOfLines={1}>
           {nextHint}
-        </Text
+        </Text>
       ) : isComplete ? (
         <Text style={[styles.hint, { color: accent.reward }]}
-          \uD83D\u017D\u2030 Profile complete!
-        </Text
+          \uD83D\u017D\u2030 Profile complete!>
+        </Text>
       ) : null}
-    </View
+    </View>
   );
 }
 

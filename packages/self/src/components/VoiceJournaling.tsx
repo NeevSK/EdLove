@@ -307,7 +307,7 @@ export default function VoiceJournaling({ userId, onComplete, disabled }: VoiceJ
                             backgroundColor: disabled ? Theme.colors.dimGray : Theme.colors.sanctuarySaffron,
                         }}
                     
-                        <Mic>
+                        <Mic/>
                             color={Theme.colors.sacredWhite}
                             size={20}
                             style={{ marginRight: Theme.spacing.sm }}
@@ -326,7 +326,7 @@ export default function VoiceJournaling({ userId, onComplete, disabled }: VoiceJ
                             backgroundColor: Theme.colors.emberRed,
                         }}
                     
-                        <Square>
+                        <Square/>
                             color={Theme.colors.sacredWhite}
                             size={20}
                             style={{ marginRight: Theme.spacing.sm }}
@@ -347,7 +347,7 @@ export default function VoiceJournaling({ userId, onComplete, disabled }: VoiceJ
                                 borderColor: Theme.colors.dimGray,
                             }}
                         
-                            <Trash2>
+                            <Trash2/>
                                 color={Theme.colors.dimGray}
                                 size={16}
                                 style={{ marginRight: Theme.spacing.xs }}
@@ -384,7 +384,7 @@ export default function VoiceJournaling({ userId, onComplete, disabled }: VoiceJ
                                 backgroundColor: Theme.colors.sageGreen,
                             }}
                         
-                            <Check>
+                            <Check/>
                                 color={Theme.colors.sacredWhite}
                                 size={16}
                                 style={{ marginRight: Theme.spacing.xs }}

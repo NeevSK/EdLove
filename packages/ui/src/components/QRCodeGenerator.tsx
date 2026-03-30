@@ -103,7 +103,7 @@ export default function QRCodeGenerator({
 
         // 3. Render data modules as Dots (Circles)
         return (
-            <Circle>
+            <Circle/>
                 key={`dot-${row}-${col}`}
                 cx={col * cellSize + cellSize / 2}
                 cy={row * cellSize + cellSize / 2}

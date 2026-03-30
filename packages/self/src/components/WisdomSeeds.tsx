@@ -180,7 +180,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
                 minHeight: 120
               }}
             
-              <InputField>
+              <InputField/>
                 placeholder={t('self.insightPlaceholder')}
                 value={insight}
                 onChangeText={setInsight}

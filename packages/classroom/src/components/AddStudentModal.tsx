@@ -92,7 +92,7 @@ export const AddStudentModal = ({
                 toast.show({
                     placement: 'top',
                     render: ({ id }: { id: string }) => (
-                        <SanctuaryToast>
+                        <SanctuaryToast/>
                             message={t('students.success.updated') || 'Student updated successfully'}
                             type="success"
                             visible={true}
@@ -110,7 +110,7 @@ export const AddStudentModal = ({
                 toast.show({
                     placement: 'top',
                     render: ({ id }: { id: string }) => (
-                        <SanctuaryToast>
+                        <SanctuaryToast/>
                             message={t('students.success.created') || 'Student added successfully'}
                             type="success"
                             visible={true}
@@ -125,7 +125,7 @@ export const AddStudentModal = ({
             toast.show({
                 placement: 'top',
                 render: ({ id }: { id: string }) => (
-                    <SanctuaryToast>
+                    <SanctuaryToast/>
                         message={t('students.error.saveFailed') || 'Failed to save student'}
                         type="error"
                         visible={true}
@@ -206,7 +206,7 @@ export const AddStudentModal = ({
 
             {/* Scan Register tab */}
             {activeTab === 'scan' && !studentToEdit && (
-                <OCRStudentImport>
+                <OCRStudentImport/>
                     classroomId={classroomId}
                     onImported={(count) => {
                         toast.show({
@@ -241,7 +241,7 @@ export const AddStudentModal = ({
                                 borderRadius: Theme.corners.comfortable
                             }}
                         
-                            <InputField>
+                            <InputField/>
                                 placeholder={t('students.fullNamePlaceholder') || "E.g. John Doe"}
                                 value={fullName}
                                 onChangeText={setFullName}>
@@ -262,7 +262,7 @@ export const AddStudentModal = ({
                                 borderRadius: Theme.corners.comfortable
                             }}
                         
-                            <InputField>
+                            <InputField/>
                                 placeholder={t('students.rollNumberPlaceholder') || "E.g. 01"}
                                 value={rollNumber}
                                 onChangeText={setRollNumber}>
@@ -284,7 +284,7 @@ export const AddStudentModal = ({
                                 minHeight: 80
                             }}
                         
-                            <InputField>
+                            <InputField/>
                                 placeholder={t('students.notesPlaceholder') || "Add any relevant notes..."}
                                 value={notes}
                                 onChangeText={setNotes}

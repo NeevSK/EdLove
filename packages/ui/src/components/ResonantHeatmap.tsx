@@ -43,19 +43,19 @@ export const ResonantHeatmap: React.FC<ResonantHeatmapProps> = ({ data, loading 
 
     if (loading) {
         return (
-            <View style={styles.loadingContainer}
+            <View style={styles.loadingContainer}>
                 <Text style={styles.loadingText}>Visualizing growth arc...</Text
-            </View
+            ></View>
         );
     }
 
     return (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}
-            <View style={styles.grid}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+            <View style={styles.grid}>
                 {weeks.map((week, wIndex) => (
-                    <View key={wIndex} style={styles.weekColumn}
+                    <View key={wIndex} style={styles.weekColumn}>
                         {week.map((intensity, dIndex) => (
-                            <View 
+                            <View >
                                 key={dIndex} 
                                 style={[
                                     styles.dayCell, 
@@ -63,10 +63,10 @@ export const ResonantHeatmap: React.FC<ResonantHeatmapProps> = ({ data, loading 
                                 ]} 
                             /
                         ))}
-                    </View
+                    </View>
                 ))}
-            </View
-        </ScrollView
+            </View>
+        </ScrollView>
     );
 };
 

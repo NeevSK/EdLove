@@ -221,7 +221,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                                     backgroundColor: Theme.colors.obsidian,
                                 }}
                             
-                                <InputField>
+                                <InputField/>
                                     placeholder={
                                         t('studentGoals.goalPlaceholder') ||
                                         'I want to...'>

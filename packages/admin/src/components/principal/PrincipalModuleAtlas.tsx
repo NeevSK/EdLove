@@ -92,7 +92,7 @@ function CapabilityCard({
                     ? `${Theme.colors.gurudeviBlue}22`
                     : `${Theme.colors.gurudeviViolet}22`,
             }}
-                      <Icon>
+                      <Icon/>
               size={18}
               color={
                 capability.zone === 'today'
@@ -101,8 +101,8 @@ function CapabilityCard({
                     ? Theme.colors.gurudeviBlue
                     : Theme.colors.gurudeviViolet
               }
-            /          </Box          <VStack sx={{ gap: 2, flex: 1 }}            <Text sx={{ fontSize: 14, fontWeight: '700', color: colors.text }}>{capability.title}</Text            ><Text sx={{ fontSize: 11, color: colors.textSecondary }}              {capability.atlasFamily ?? 'Principal ERP'}
-            </Text          </VStack        </HStack
+            /          </Box          ><VStack sx={{ gap: 2, flex: 1 }}            <Text sx={{ fontSize: 14, fontWeight: '700', color: colors.text }}>{capability.title}</Text            ><Text sx={{ fontSize: 11, color: colors.textSecondary }}              {capability.atlasFamily ?? 'Principal ERP'}
+            </Text          ></VStack        </HStack
         <Box>
           sx={{
             paddingHorizontal: Theme.spacing.sm,
@@ -111,7 +111,7 @@ function CapabilityCard({
             backgroundColor: `${Theme.colors.gurudeviViolet}20`,
           }}
                   <Text sx={{ fontSize: 10, fontWeight: '800', color: Theme.colors.gurudeviViolet, textTransform: 'uppercase' }}            {capability.status}>
-          </Text        </Box      </HStack
+          </Text        ></Box      </HStack
       <Text sx={{ fontSize: 12, lineHeight: 18, color: colors.textSecondary }}        {capability.description}>
       </Text    </Box  );
 }

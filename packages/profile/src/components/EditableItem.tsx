@@ -86,30 +86,30 @@ export const EditableItem = ({
     };
 
     return (
-        <HStack space="md" alignItems="center"
-            <Box
+        <HStack space="md" alignItems="center">
+            <Box>
                 sx={{
                     padding: 10,
                     borderRadius: Theme.corners.full,
-                    backgroundColor: colors.tertiary>
+                    backgroundColor: colors.tertiary
                 }}
             
                 <Icon size={20} color={colors.action} /
             ></Box>
-            <VStack flex={1}
+            <VStack flex={1}>
                 <Text size="xs" color={colors.textSecondary}>
                     {label}
                 </Text>
                 {isEditing ? (
-                    <VStack space="xs"
+                    <VStack space="xs">
                         <HStack space="sm" alignItems="center">
-                            <Input
+                            <Input>
                                 sx={{
                                     flex: 1,
-                                    borderColor: error ? colors.error : colors.action>
+                                    borderColor: error ? colors.error : colors.action
                                 }}
                             
-                                <InputField
+                                <InputField>
                                     value={editValue}
                                     onChangeText={(text: string) => {
                                         const nextValue = transform ? transform(text) : text;
@@ -121,36 +121,36 @@ export const EditableItem = ({
                                     multiline={multiline}
                                 /
                             ></Input>
-                            <TouchableOpacity
+                            <TouchableOpacity>
                                 onPress={handleSave}
                                 disabled={isSaving || !!error}
-                                style={{ opacity: (isSaving || !!error) ? 0.3 : 1 }}>
+                                style={{ opacity: (isSaving || !!error) ? 0.3 : 1 }}
                             
                                 <Check size={20} color={colors.success} /
                             ></TouchableOpacity>
-                            <TouchableOpacity onPress={handleCancel}
+                            <TouchableOpacity onPress={handleCancel}>
                                 <X size={20} color={colors.error} />
                             </TouchableOpacity>
                         </HStack>
                         {error && (
-                            <Text size="xs" color={colors.error}
+                            <Text size="xs" color={colors.error}>
                                 {error}>
                             </Text>
                         )}
                     </VStack>
                 ) : (
-                    <TouchableOpacity
+                    <TouchableOpacity>
                         onPress={handleStartEdit}
-                        style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
                     
-                        <Text size="md" color={value ? colors.text : colors.textTertiary} bold
+                        <Text size="md" color={value ? colors.text : colors.textTertiary} bold>
                             {value || placeholder}>
                         </Text>
                         {!disabled && <Edit2 size={14} color={colors.textTertiary} />}
                     </TouchableOpacity>
                 )}
                 {helperText && (
-                    <Text size="xs" color={colors.textTertiary} mt={2} sx={{ opacity: 0.8 }}
+                    <Text size="xs" color={colors.textTertiary} mt={2} sx={{ opacity: 0.8 }}>
                         {helperText}>
                     </Text>
                 )}

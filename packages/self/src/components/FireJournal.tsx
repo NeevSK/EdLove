@@ -295,7 +295,7 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                             {t('fireJournal.released')}
                         </Text>
                     </Box>
-                </Animated.View            )}
+                </Animated.View            >)}
 
             {burnError && (
                 <Box>
@@ -305,7 +305,7 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                         borderRadius: Theme.corners.comfortable,
                     }}
                                     <Text color={Theme.colors.sacredWhite} size="sm" textAlign="center"                        {burnError}>
-                    </Text                ></Box            )}>
+                    </Text                ></Box            >)}>
 
             {/* Text Input Area with Ember Particles */}
             <Box sx={{ position: 'relative' }}>
@@ -378,7 +378,7 @@ export default function FireJournal({ userId, onBurned, disabled }: FireJournalP
                             }}
                             isDisabled={isBurning || isPastView}
                         
-                            <InputField>
+                            <InputField/>
                                 placeholder={isPastView ? (journalHistory.length > 0 ? '' : t('fireJournal.noPastRecord')) : t('fireJournal.placeholder')}
                                 multiline
                                 value={isPastView ? (journalHistory[0]?.content_preview || '') : content}

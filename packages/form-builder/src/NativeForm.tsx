@@ -20,12 +20,12 @@ export default function NativeForm<T extends Record<string, any>>({
   const config = manager.getConfig();
 
   return (
-    <VStack space="md" width="100%"
+    <VStack space="md" width="100%">
       {(Object.keys(config.fields) as (keyof T)[]).map((fieldName) => {
         const field = config.fields[fieldName];
         return (
-          <Box key={fieldName as string}
-            <SanctuaryInput
+          <Box key={fieldName as string}>
+            <SanctuaryInput>
               label={field.label}
               placeholder={field.placeholder}
               value={(state.values[fieldName] as string) || ''}
@@ -40,24 +40,24 @@ export default function NativeForm<T extends Record<string, any>>({
               multiline={field.type === 'textarea'}
               numberOfLines={field.type === 'textarea' ? 4 : 1}
             /
-          </Box
+          </Box>
         );
       })}
 
-      <SanctuaryButton
+      <SanctuaryButton>
         onPress={() => manager.submit()}
         isLoading={state.isSubmitting}
         isDisabled={state.isSubmitting}
         fullWidth
       
         {submitLabel}
-      </SanctuaryButton
+      </SanctuaryButton>
 
       {state.submitError && (
-        <Box sx={{ marginTop: '$2' }}
+        <Box sx={{ marginTop: '$2' }}>
           {/* You could add a specialized error alert component here */}
-        </Box
+        </Box>
       )}
-    </VStack
+    </VStack>
   );
 }

@@ -56,14 +56,14 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPa
     };
 
     return (
-        <div
+        <div>
             <button >onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--glass-surface)', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: '600', marginBottom: '24px' }}>
                 <ArrowLeft size={14} /> Back to Dashboard
             </button>
             <h2 style={{ margin: '0 0 4px', fontSize: '24px', fontWeight: '800' }}>\uD83D\uDCC5 Academic Cycles</h2
-            <p style={{ margin: '0 0 24px', color: 'var(--ink-ghost)', fontSize: '14px' }}>Define terms, semesters and academic periods.</p
+            ><p style={{ margin: '0 0 24px', color: 'var(--ink-ghost)', fontSize: '14px' }}>Define terms, semesters and academic periods.</p
             
-            <div className="sanctuary-card" style={{ padding: '24px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px', opacity: isPastView ? 0.6 : 1 }}
+            ><div className="sanctuary-card" style={{ padding: '24px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px', opacity: isPastView ? 0.6 : 1 }}>
                 <h4 style={{ margin: 0, fontSize: '13px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--ink-ghost)' }}>New Cycle</h4
                 ><input 
                     value={newName} 
@@ -83,7 +83,7 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPa
                             style={{ width: '100%', marginTop: '6px', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', boxSizing: 'border-box' as const }} 
                         /
                     ></div>
-                    <div style={{ flex: 1 }}
+                    <div style={{ flex: 1 }}>
                         <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>End Date</label
                         ><input 
                             type="date" 
@@ -94,11 +94,11 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPa
                         /
                     ></div>
                 </div>
-                <button 
+                <button >
                     onClick={handleCreateCycle} 
                     disabled={!newName.trim() || !newStart || saving || isPastView} 
                     className="premium-button" 
-                    style={{ alignSelf: 'flex-start', background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    style={{ alignSelf: 'flex-start', background: 'var(--lotus)', display: 'flex', alignItems: 'center', gap: '8px' }}
                 
                     {saving ? '\u23F3' : <><Plus size={14} /> Create</>}
                 </button>
@@ -107,11 +107,11 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({ schoolId, isPa
             {loading ? <SkeletonCard /> : academicCycles.length === 0 ? (
                 <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic' }}>No academic cycles yet. Create the first one above.</p
             >) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {academicCycles.map(c => (
-                        <div key={c.id} className="sanctuary-card" style={{ padding: '18px 24px', borderLeft: `3px solid ${c.status === 'active' ? 'var(--moss)' : c.status === 'upcoming' ? 'var(--water)' : 'var(--border)'}` }}
+                        <div key={c.id} className="sanctuary-card" style={{ padding: '18px 24px', borderLeft: `3px solid ${c.status === 'active' ? 'var(--moss)' : c.status === 'upcoming' ? 'var(--water)' : 'var(--border)'}` }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div
+                                <div>
                                     <div >style={{ fontWeight: '800', fontSize: '16px' }}>{c.name}</div
                                     ><div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '4px' }}>{c.start_date} \u2192 {c.end_date ?? 'ongoing'}</div
                                 ></div>

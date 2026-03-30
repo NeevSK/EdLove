@@ -31,7 +31,7 @@ export default function StepDemographics({ data, onUpdate }: StepDemographicsPro
 
     return (
         <VStack space="lg"            <FormControl                <FormControlLabel >sx={{ marginBottom: '$2' }}                    <FormControlLabelText color={colors.textSecondary} sx={{ fontSize: '$sm' }}                        {t('schoolSetup.studentBodyType')}>
-                    </FormControlLabelText                </FormControlLabel                <HStack sx={{ gap: '$sm', flexWrap: 'wrap' }}                    {STUDENT_TYPES.map(type => (
+                    </FormControlLabelText                ></FormControlLabel                <HStack sx={{ gap: '$sm', flexWrap: 'wrap' }}                    {STUDENT_TYPES.map(type => (
                         <Pressable accessibilityRole="button">
                             key={type.id}
                             onPress={() => onUpdate({ studentType: type.id as any })}
@@ -50,7 +50,7 @@ export default function StepDemographics({ data, onUpdate }: StepDemographicsPro
                                 bold={data.studentType === type.id}
                                 sx={{ fontSize: '$sm' }}
                                                             {(type[lang] ?? type.en).split(' ')[0]}
-                            </Text                        </Pressable                    ))}
+                            </Text                        ></Pressable                    >))}
                 </HStack            </FormControl
             {/* Religious Affiliation might use a similar selection style or dropdown */}
             <SanctuaryInput>
@@ -62,7 +62,7 @@ export default function StepDemographics({ data, onUpdate }: StepDemographicsPro
                 keyboardType="numeric"
             /
             <FormControl                <FormControlLabel >sx={{ marginBottom: '$2' }}                    <FormControlLabelText color={colors.textSecondary} sx={{ fontSize: '$sm' }}                        {t('schoolSetup.religiousContext')}>
-                    </FormControlLabelText                </FormControlLabel                <VStack space="xs"                    <HStack sx={{ gap: '$xs', flexWrap: 'wrap' }}                        {RELIGIOUS_AFFILIATIONS.map(rel => (
+                    </FormControlLabelText                ></FormControlLabel                ><VStack space="xs"                    <HStack sx={{ gap: '$xs', flexWrap: 'wrap' }}                        {RELIGIOUS_AFFILIATIONS.map(rel => (
                             <Pressable accessibilityRole="button">
                                 key={rel.id}
                                 onPress={() => onUpdate({ religiousAffiliation: rel.id })}
@@ -78,6 +78,6 @@ export default function StepDemographics({ data, onUpdate }: StepDemographicsPro
                                     color={data.religiousAffiliation === rel.id ? Theme.colors.sacredWhite : colors.textSecondary}
                                     sx={{ fontSize: '$xs' as any }}
                                                                     {rel[lang] ?? rel.en}
-                                </Text                            </Pressable                        ))}
+                                </Text                            ></Pressable                        >))}
                     </HStack                </VStack            </FormControl        </VStack    );
 }

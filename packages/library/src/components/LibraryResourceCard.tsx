@@ -76,7 +76,7 @@ export function LibraryResourceCard({
                         leftIcon={Heart}
                         action={isLiked ? 'negative' : 'secondary'}
                                             {isLiked ? 'Liked' : 'Like'}
-                    </SanctuaryButton                )}
+                    </SanctuaryButton                >)}
                 {onaddToDesk && (
                     <SanctuaryButton>
                         onPress={onaddToDesk}
@@ -85,7 +85,7 @@ export function LibraryResourceCard({
                         leftIcon={Plus}
                         action="primary"
                                             Add to Desk
-                    </SanctuaryButton                )}
+                    </SanctuaryButton                >)}
             </HStack        </HStack    );
 
     return (
@@ -105,10 +105,10 @@ export function LibraryResourceCard({
                         borderColor: colors.border
                     }}
                                     <Icon color={colors.action} size={24} /                    ><Text style={styles.typeLabel}>{config.label}</Text                ></Box
-                <View style={{ flex: 1 }}                    <Text style={styles.title} numberOfLines={2}                        {title}>
-                    </Text                    {description && (
+                ><View style={{ flex: 1 }}                    <Text style={styles.title} numberOfLines={2}                        {title}>
+                    </Text                    >{description && (
                         <Text style={styles.description} numberOfLines={2}                            {description}>
-                        </Text                    )}
+                        </Text                    >)}
                     {isPublic && (
                         <Box sx={{
                             alignSelf: 'flex-start',
@@ -119,7 +119,7 @@ export function LibraryResourceCard({
                             marginTop: 4,
                             borderWidth: 0.5,
                             borderColor: colors.border
-                        }}                            <Text style={styles.badge}>Public Resource</Text                        ></Box                    )}
+                        }}                            <Text style={styles.badge}>Public Resource</Text                        ></Box                    >)}
                 </View            </HStack        </SanctuaryCard    );
 }
 

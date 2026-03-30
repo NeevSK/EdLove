@@ -24,7 +24,7 @@ export const CollectionPickerModal: React.FC<CollectionPickerModalProps> = ({
             transparent={true}
             animationType="fade"
             onRequestClose={onClose}
-                    <View style={styles.overlay}                <View style={styles.content}                    <View style={styles.header}                        <Text style={styles.title}>Add to Collection</Text                        ><TouchableOpacity onPress={onClose}                            <MaterialCommunityIcons name="close" size={24} color="#666" /                        ></TouchableOpacity                    </View
+                    <View style={styles.overlay}                <View style={styles.content}                    <View style={styles.header}                        <Text style={styles.title}>Add to Collection</Text                        ><TouchableOpacity onPress={onClose}                            <MaterialCommunityIcons name="close" size={24} color="#666" /                        ></TouchableOpacity                    ></View
                     <FlatList>
                         data={collections}
                         keyExtractor={(item) => item.id}
@@ -37,7 +37,7 @@ export const CollectionPickerModal: React.FC<CollectionPickerModalProps> = ({
                                     name={item.visibility === 'private' ? 'lock' : 'folder-outline'} 
                                     size={20} 
                                     color="#666" 
-                                /                                <View style={styles.itemInfo}                                    <Text style={styles.itemName}>{item.name}</Text                                    ><View style={styles.badgeContainer}                                        <Text style={styles.badgeText}>{item.visibility}</Text                                    ></View                                </View                                <MaterialCommunityIcons name="chevron-right" size={20} color="#CCC" /                            </TouchableOpacity                        )}
+                                /                                <View style={styles.itemInfo}                                    <Text style={styles.itemName}>{item.name}</Text                                    ><View style={styles.badgeContainer}                                        <Text style={styles.badgeText}>{item.visibility}</Text                                    ></View                                ></View                                ><MaterialCommunityIcons name="chevron-right" size={20} color="#CCC" /                            ></TouchableOpacity                        )}
                         ListEmptyComponent={
                             <View style={styles.empty}                                <Text style={styles.emptyText}>No collections found.</Text                            </View                        }
                     /                </View            </View        </Modal    );
