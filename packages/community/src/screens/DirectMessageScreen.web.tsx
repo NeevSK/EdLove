@@ -162,7 +162,7 @@ export default function DirectMessageScreen() {
                     <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--ink)' }}>{userName}</div
                     ><div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>Private Message</div
                 ></div>
-                <HeaderMoreMenu >
+                <HeaderMoreMenu />
                     conversationId={conversationId}
                     targetUserId={targetUserId}
                     targetUserName={userName}

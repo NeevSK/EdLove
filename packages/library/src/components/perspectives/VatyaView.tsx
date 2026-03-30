@@ -57,7 +57,7 @@ export const VatyaView: React.FC<PerspectiveViewProps> = ({
                     {/* Axes */}
                     {layout.axes.map((axis, i) => (
                         <G key={`axis-${i}`}>
-                            <Line>
+                            <Line/>
                                 x1={layout.center.x}
                                 y1={layout.center.y}
                                 x2={axis.x}

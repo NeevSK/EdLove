@@ -141,7 +141,7 @@ export default function GroupChatScreen() {
                     <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--ink)' }}>{groupName}</div
                     ><div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>Group Chat</div
                 ></div>
-                <HeaderMoreMenu >
+                <HeaderMoreMenu />
                     conversationId={groupId}
                     groupId={groupId}
                     targetUserName={groupName}

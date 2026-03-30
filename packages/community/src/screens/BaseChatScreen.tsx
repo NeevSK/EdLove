@@ -220,7 +220,7 @@ export default function BaseChatScreen({
 
     return (
         <ScreenWrapper scroll={false} noTopInset={true}>
-            <GlobalHeader>
+            <GlobalHeader/>
                 title={title}
                 subtitle={subtitle}
                 showBack

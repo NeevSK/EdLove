@@ -59,23 +59,23 @@ export default function AttendanceView({ classroomId }: AttendanceViewProps) {
 
     if (isLoading) {
         return (
-            <Box sx={{ flex: 1, padding: 32, alignItems: 'center' }}
-                <Spinner color={Theme.colors.sanctuarySaffron} /
+            <Box sx={{ flex: 1, padding: 32, alignItems: 'center' }}>
+                <Spinner color={Theme.colors.sanctuarySaffron} />
                 <Text color={Theme.colors.textSecondary} sx={{ marginTop: 16 }}>Loading class list...</Text
-            </Box
+            ></Box>
         );
     }
 
     if (error) {
         return (
-            <Box sx={{ flex: 1, padding: 32, alignItems: 'center' }}
+            <Box sx={{ flex: 1, padding: 32, alignItems: 'center' }}>
                 <Text color={Theme.colors.errorText}>{error}</Text
-            </Box
+            ></Box>
         );
     }
 
     return (
-        <AttendanceSheet
+        <AttendanceSheet>
             classroomId={classroomId}
             initialStudents={students}
             onAttendanceChange={handleAttendanceChange}

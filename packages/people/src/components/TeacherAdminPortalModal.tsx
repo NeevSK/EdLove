@@ -34,7 +34,7 @@ export default function TeacherAdminPortalModal({
             borderBottomColor: colors.border,
           }}
                   <HStack justifyContent="space-between" alignItems="center"            <Heading size="lg" color={colors.text}              {title}>
-            </Heading            <TouchableOpacity
+            </Heading            ><TouchableOpacity
               onPress={() => {
                 hapticLight();
                 onClose();
@@ -46,5 +46,5 @@ export default function TeacherAdminPortalModal({
                 borderColor: colors.border,
                 borderWidth: 1,
               }}
-                          <X size={24} color={colors.text} /            ></TouchableOpacity          </HStack        </Box        <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg }}          <TeacherAdminWidget onAction={onAction} /        ></ScrollView      </Box    </Modal  );>
+                          <X size={24} color={colors.text} /            ></TouchableOpacity          ></HStack        ></Box        <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg }}          <TeacherAdminWidget onAction={onAction} /        ></ScrollView      </Box    </Modal  );>
 }

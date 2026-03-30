@@ -38,8 +38,8 @@ export default function FeatureInfoIcon({
                         transform: [{ scale: 0.92 }],
                     }
                 }}
-                            <Icon as={InfoIcon} color={color} size="sm" /            </Pressable
-            <FeatureDiscoveryModal
+                            <Icon as={InfoIcon} color={color} size="sm" /            ></Pressable>
+            <FeatureDiscoveryModal>
                 isOpen={isOpen}
                 onClose={() => setIsOpen(false)}
                 title={title}

@@ -44,8 +44,8 @@ export default function SupportSection() {
                     </Box>
                     <VStack>
                         <Text color={colors.text} bold>{title}</Text
-                        <Text color={colors.textSecondary} size="xs">{subtitle}</Text
-                    </VStack>
+                        ><Text color={colors.textSecondary} size="xs">{subtitle}</Text
+                    ></VStack>
                 </HStack>
                 <ChevronRight size={20} color={colors.textTertiary} />
             </HStack>
@@ -76,13 +76,13 @@ export default function SupportSection() {
                 subtitle={t('support.reportIssueDesc')}
                 onPress={handleSupport}
             /
-            <SupportItem>
+            <SupportItem/>
                 icon={Info}
                 title={t('support.about')}
                 subtitle={t('support.aboutDesc')}
                 onPress={() => { }}
             /
-            <SupportItem>
+            <SupportItem/>
                 icon={Star}
                 title={t('support.rateUs')}
                 subtitle={t('support.rateUsDesc')}

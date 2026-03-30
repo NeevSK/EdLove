@@ -27,9 +27,9 @@ export function CatchmentOverlay({
                 fillColor={color}
                 strokeColor={color.replace('0.3', '1')}
                 strokeWidth={2}
-            /            <Marker
+            /            ><Marker
                 coordinate={{ latitude: center.lat, longitude: center.lng }}
                 title={title}
                 pinColor="#F59E0B"
-            /        </    );
+            /        ></    );
 }

@@ -26,7 +26,7 @@ export default function ErrorMessageDemo() {
                     /                )}
                 {!showGentle && (
                     <Text style={styles.dismissedText}                        Gentle message dismissed. Refresh to see again.>
-                    </Text                )}
+                    </Text                >)}
 
                 {/* Warning Type */}
                 <Text style={styles.sectionTitle}>Warning</Text                >{showWarning && (
@@ -37,7 +37,7 @@ export default function ErrorMessageDemo() {
                     /                )}
                 {!showWarning && (
                     <Text style={styles.dismissedText}                        Warning message dismissed. Refresh to see again.>
-                    </Text                )}
+                    </Text                >)}
 
                 {/* Severe Type */}
                 <Text style={styles.sectionTitle}>Severe (Error)</Text                >{showSevere && (
@@ -48,7 +48,7 @@ export default function ErrorMessageDemo() {
                     /                )}
                 {!showSevere && (
                     <Text style={styles.dismissedText}                        Severe message dismissed. Refresh to see again.>
-                    </Text                )}
+                    </Text                >)}
 
                 {/* Without Dismiss Button */}
                 <Text style={styles.sectionTitle}>Without Dismiss (Warning)</Text                ><ErrorMessage

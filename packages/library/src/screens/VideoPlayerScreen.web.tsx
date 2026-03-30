@@ -115,7 +115,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                 accessibilityLabel="Toggle controls"
             
                 {/* @ts-ignore  'video' is a valid DOM element in react-native-web */}
-                <video>
+                <video/>
                     ref={videoRef}
                     src={url}
                     style={styles.video as any}

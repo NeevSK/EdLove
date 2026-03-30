@@ -54,10 +54,10 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     return (
-        <ToastContext.Provider value={{ showToast }}
+        <ToastContext.Provider value={{ showToast }}>
             {children}
             {toast && (
-                <Animated.View
+                <Animated.View>
                     entering={FadeInUp}
                     exiting={FadeOutUp}
                     style={{
@@ -73,16 +73,16 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                         borderRadius: Theme.corners.comfortable,
                         backgroundColor: getToastStyles(toast.type!).bg,
                         ...Theme.shadows.md
-                    }}
-                        <VStack sx={{ alignItems: 'center', gap: 4 }}
-                            <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '700', textAlign: 'center' }}
+                    }}>
+                        <VStack sx={{ alignItems: 'center', gap: 4 }}>
+                            <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '700', textAlign: 'center' }}>
                                 {getToastStyles(toast.type!).icon} {toast.message}
-                            </Text
-                        </VStack
-                    </Box
-                </Animated.View
+                            </Text>
+                        </VStack>
+                    </Box>
+                </Animated.View>
             )}
-        </ToastContext.Provider
+        </ToastContext.Provider>
     );
 };
 

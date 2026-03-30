@@ -85,7 +85,7 @@ export default function ClassroomHolisticInsights({ classroomId }: ClassroomHoli
             <Center sx={{ flex: 1, padding: 40 }}>
                 <ActivityIndicator color={Theme.colors.sanctuarySaffron} /
             ></Center
-        );
+        >);
     }
 
     return (
@@ -134,7 +134,7 @@ export default function ClassroomHolisticInsights({ classroomId }: ClassroomHoli
                             <Heading sx={{ color: '#EF4444', fontSize: 20 }}>{stats.concernObs}</Heading
                             ><Text sx={{ fontSize: 10, color: colors.textSecondary }}>{t('insights.areasOfConcern') || 'Concerns'}</Text
                         ></VStack
-                    </HStack>
+                    ></HStack>
                 </VStack>
             </Card>
 

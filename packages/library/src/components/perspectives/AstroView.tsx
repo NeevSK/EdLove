@@ -121,7 +121,7 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
                                     textAnchor="middle"
                                     fontWeight={isSelected ? "bold" : "normal"}
                                                                     {node.label}
-                                </SvgText                            </G                        );
+                                </SvgText                            ></G                        >);
                     })}
-                </Svg            </Animated.View        </GestureDetector    );
+                </Svg            ></Animated.View        ></GestureDetector    );
 };

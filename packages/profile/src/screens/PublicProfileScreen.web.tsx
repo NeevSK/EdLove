@@ -25,7 +25,7 @@ export default function PublicProfileScreenWeb() {
         if (!profile) {
             return (
                 <Box sx={{ padding: '40px', textAlign: 'center', color: 'var(--ink-ghost)' }}                    Profile Not Found or Error Loading>
-                </Box            );
+                </Box            >);
         }
 
         return (
@@ -40,7 +40,7 @@ export default function PublicProfileScreenWeb() {
     if (error || !instance) {
         return (
             <Box sx={{ padding: '40px', textAlign: 'center', color: 'var(--ink-ghost)' }}                Profile Not Found or Error Loading>
-            </Box        );
+            </Box        >);
     }
 
     return (
@@ -49,5 +49,5 @@ export default function PublicProfileScreenWeb() {
                 instance={instance} 
                 mode="view" 
                 renderView={(inst) => <IdentityCard data={inst as unknown as IdentityData} />}
-            /        </Box    );
+            /        </Box    >);
 }

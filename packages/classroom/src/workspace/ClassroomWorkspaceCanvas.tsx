@@ -49,7 +49,7 @@ export function ClassroomWorkspaceCanvas({
     const styles = createStyles();
 
     return (
-        <WorkspaceCanvas
+        <WorkspaceCanvas>
             surfaces={surfaces}
             layout={layout}
             title="Classroom Work Canvas"
@@ -68,16 +68,16 @@ export function ClassroomWorkspaceCanvas({
                 const nextZone = getNextZone(typedSurface.zone);
 
                 return (
-                    <View style={styles.actionsRow}                        <Pressable
+                    <View style={styles.actionsRow}                        <Pressable>
                             accessibilityRole="button"
                             onPress={() => onTogglePinned(typedSurface.surfaceId, !typedSurface.pinned)}
                             style={({ pressed }) => [styles.actionButton, pressed ? styles.actionButtonPressed : null]}
-                                                    <Text style={styles.actionText}                                {typedSurface.pinned ? 'Unpin' : 'Pin'}
+                                                    <Text style={styles.actionText}                                {typedSurface.pinned ? 'Unpin' : 'Pin'}>
                             </Text                        </Pressable                        <Pressable
                             accessibilityRole="button"
                             onPress={() => onMoveToNextZone(typedSurface.surfaceId, nextZone)}
                             style={({ pressed }) => [styles.actionButton, pressed ? styles.actionButtonPressed : null]}
-                                                    <Text style={styles.actionText}>Move to {nextZone}</Text                        </Pressable                    </View                );
+                                                    <Text style={styles.actionText}>Move to {nextZone}</Text                        ></Pressable                    </View                );
             }}
             onToggleHidden={(surface) => onToggleHidden(surface.surfaceId, !surface.hidden)}
         /    );

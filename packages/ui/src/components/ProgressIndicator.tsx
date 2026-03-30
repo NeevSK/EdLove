@@ -29,16 +29,16 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
     const colors = useThemedColors();
 
     return (
-        <VStack space="md" alignItems="center" style={{ width: '100%' }}
+        <VStack space="md" alignItems="center" style={{ width: '100%' }}>
             {/* Dot Indicators */}
-            <HStack space="xs" alignItems="center" justifyContent="center"
+            <HStack space="xs" alignItems="center" justifyContent="center">
                 {Array.from({ length: totalSteps }).map((_, index) => {
                     const isActive = index === currentStep;
                     const isPast = index < currentStep;
                     const isFuture = index > currentStep;
 
                     return (
-                        <Box
+                        <Box>
                             key={index}
                             testID={`progress-dot-${index}`}
                             sx={{
@@ -57,19 +57,19 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
                         /
                     );
                 })}
-            </HStack
+            </HStack>
 
             {/* Step Count Text */}
             {showStepCount && (
-                <Text
+                <Text>
                     size="sm"
                     color={colors.textSecondary}
                     sx={{ fontWeight: '$medium' }}
                 
                     Step {currentStep + 1} of {totalSteps}
-                </Text
+                </Text>
             )}
-        </VStack
+        </VStack>
     );
 };
 

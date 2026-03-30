@@ -221,7 +221,7 @@ export default function TeacherSelfView() {
             /
 
 
-            <WelcomeModal>
+            <WelcomeModal/>
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
             /

@@ -174,7 +174,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                     ><SkeletonCard height={72} /
                     ><SkeletonCard height={72} /
                 ></VStack
-            );
+            >);
         }
 
         if (activeSubTab === 'sanctuary') {
@@ -238,7 +238,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
         const animationDelay = Math.min(index * 150, 1500);
         return (
             <Animated.View entering={FadeInDown.duration(400).delay(animationDelay).springify()}>
-                <GroupCard>
+                <GroupCard/>
                     id={item.id}
                     name={isDemo() ? `(Sample) ${item.name}` : item.name}
                     memberCount={item.member_count}
@@ -247,7 +247,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                     onPress={() => onNavigateToGroup(item.id)}
                 /
             ></Animated.View
-        );
+        >);
     }, [onNavigateToGroup]);
 
     const keyExtractor = useCallback((item: Group) => item.id, []);
@@ -265,7 +265,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
             {renderSubTabs()}>
             {renderSearchBar()}
             {renderGalaxyActions()}
-            <SanctuaryFlashList>
+            <SanctuaryFlashList/>
                 data={activeGroups as any}
                 renderItem={renderItem}
                 keyExtractor={keyExtractor}

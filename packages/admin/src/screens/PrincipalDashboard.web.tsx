@@ -289,5 +289,5 @@ export default function PrincipalDashboardWeb({
               onNavigateToProfile={() => navigation.navigate('SchoolProfile', { schoolId: principalSchoolId })}
               onOpenCommons={() => navigation.navigate('Main', { screen: 'Community' })}
             /          )}
-        /      </div      <CreateClassroomModalComponent isOpen={showCreateClassroom} onClose={() => setShowCreateClassroom(false)} onSuccess={() => onRefresh?.()} /    </div  );
+        /      </div      ><CreateClassroomModalComponent isOpen={showCreateClassroom} onClose={() => setShowCreateClassroom(false)} onSuccess={() => onRefresh?.()} /    </div  >);
 }

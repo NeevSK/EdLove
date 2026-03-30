@@ -88,7 +88,7 @@ export const TemporalGlass: React.FC<TemporalGlassProps> = ({
                         r={0}
                         style="fill"
                     
-                        <LinearGradient>
+                        <LinearGradient/>
                             start={vec(0, 0)}
                             end={vec(width, 0)}
                             colors={[edges.bottom, edges.top, edges.bottom]}

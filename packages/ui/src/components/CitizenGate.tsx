@@ -29,8 +29,8 @@ export default function CitizenGate({
     context === 'profile' || context === 'general' ? 'self' : (context as any);
 
   return (
-    <VStack space="md" width="100%" alignItems="center"
-      <PositiveInvitation
+    <VStack space="md" width="100%" alignItems="center">
+      <PositiveInvitation>
         title={title}
         description={description}
         type="guest"
@@ -39,7 +39,7 @@ export default function CitizenGate({
         onAction={onAction}
       /
       {secondaryLabel && onSecondary && (
-        <Button
+        <Button>
           variant="outline"
           action="secondary"
           onPress={onSecondary}
@@ -50,9 +50,9 @@ export default function CitizenGate({
           }}
         
           <ButtonText color={colors.textSecondary}>{secondaryLabel}</ButtonText
-        </Button
+        ></Button>
       )}
-    </VStack
+    </VStack>
   );
 }
 

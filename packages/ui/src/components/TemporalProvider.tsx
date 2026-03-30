@@ -44,9 +44,9 @@ export const TemporalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }, [viewDate, viewMode]);
 
     return (
-        <TemporalContext.Provider value={value}            <View style={styles.container}                {children}
+        <TemporalContext.Provider value={value}            <View style={styles.container}                {children}>
                 {value.intensity > 0 && (
-                    <View
+                    <View>
                         pointerEvents="none"
                         style={[
                             StyleSheet.absoluteFillObject,

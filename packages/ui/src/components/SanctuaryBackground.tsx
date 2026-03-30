@@ -49,27 +49,27 @@ export function SanctuaryBackground() {
     }, [phase, isDark]); // Re-run when phase OR theme mode changes.
 
     return (
-        <View style={StyleSheet.absoluteFillObject} pointerEvents="none"
+        <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
             {/* Layer 0: Previous phase (fades out) */}
-            <LinearGradient
+            <LinearGradient>
                 colors={prevNodes.current}
                 start={{ x: 0.1, y: 0 }}
                 end={{ x: 0.9, y: 1 }}
                 style={StyleSheet.absoluteFillObject}
             /
             {/* Layer 1: Current phase (fades in) */}
-            <Animated.View
+            <Animated.View>
                 style={[StyleSheet.absoluteFillObject, { opacity: fadeAnim }]}
                 pointerEvents="none"
             
-                <LinearGradient
+                <LinearGradient>
                     colors={currentNodes.current}
                     start={{ x: 0.2, y: 0 }}
                     end={{ x: 0.8, y: 1 }}
                     style={StyleSheet.absoluteFillObject}
                 /
-            </Animated.View
-        </View
+            </Animated.View>
+        </View>
     );
 }
 

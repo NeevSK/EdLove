@@ -210,7 +210,7 @@ export default function GradingSettings({
                             {t('grading.settings.showRanksDesc') || 'Display rankings based on grades'}
                         </Text>
                     </VStack>
-                    <Switch>
+                    <Switch/>
                         value={showRanks}
                         onValueChange={setShowRanks}
                         sx={{

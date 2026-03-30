@@ -115,7 +115,7 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
                                             borderColor: 'rgba(42, 35, 24, 0.08)',
                                         }}
                                                                             <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}                                            {resolved.pinned ? 'Unpin' : 'Pin'}>
-                                        </Text                                    </TouchableOpacity                                    <TouchableOpacity
+                                        </Text                                    ></TouchableOpacity                                    ><TouchableOpacity
                                         onPress={() =                                            setSurfaceZone(
                                                 resolved.surfaceId,
                                                 resolved.zone === 'work' ? 'today' : resolved.zone === 'today' ? 'private' : 'work'
@@ -130,7 +130,7 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
                                             borderColor: 'rgba(42, 35, 24, 0.08)',
                                         }}
                                                                             <Text sx={{ fontSize: 12, fontWeight: '600', color: Theme.colors.inkTruth }}                                            Move zone>
-                                        </Text                                    </TouchableOpacity                                </Box                            );
+                                        </Text                                    ></TouchableOpacity                                ></Box                            >);
                         }}
                     /                ></Animated.View            </ScrollView        </Box    );
 }

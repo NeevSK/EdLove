@@ -104,7 +104,7 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
 
     return (
         <ScreenWrapper scroll={false} style={{ backgroundColor: colors.secondary }}>
-            <GlobalHeader>
+            <GlobalHeader/>
                 title={title}
                 subtitle="Institutional Document"
                 showBack

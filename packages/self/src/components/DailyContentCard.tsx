@@ -111,7 +111,7 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
 
     if (loading) {
         return (
-            <SkeletonCard height={120} /
+            <SkeletonCard height={120} />
         );
     }
 
@@ -127,7 +127,7 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
     const needsExpansion = content.content.length > 120;
 
     return (
-        <Pressable
+        <Pressable>
             onPress={() => needsExpansion && setExpanded(!expanded)}
             style={({ pressed }: PressableStateCallbackType) => [
                 styles.card,
@@ -135,20 +135,20 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
                 pressed && styles.cardPressed,
             ]}
         
-            <View style={styles.header}
+            <View style={styles.header}>
                 <Text style={styles.emoji}>{emoji}</Text
-                <Text style={styles.title}>{title}</Text
-            </View
+                ><Text style={styles.title}>{title}</Text
+            ></View>
 
             <Text style={styles.content}>{displayContent}</Text
 
             {content.author && (
                 <Text style={styles.author}>\u2014 {content.author}</Text
-            )}
+            >)}
 
             {needsExpansion && !expanded && (
                 <Text style={styles.tapToExpand}>{t('self.tapToReadMore')}</Text
-            )}
-        </Pressable
+            >)}
+        </Pressable>
     );
 }

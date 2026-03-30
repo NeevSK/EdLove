@@ -19,7 +19,7 @@ const SandboxBanner: React.FC<SandboxBannerProps> = ({ onExit }) => {
     if (!isDemoMode) return null;
 
     return (
-        <Box
+        <Box>
             sx={{
                 backgroundColor: Theme.colors.sanctuarySaffron,
                 padding: Theme.spacing.sm,
@@ -29,15 +29,15 @@ const SandboxBanner: React.FC<SandboxBannerProps> = ({ onExit }) => {
                 zIndex: Theme.zIndex.sticky + 1,
             }}
         
-            <HStack space="xs" alignItems="center"
-                <Zap color="white" size={16} fill="white" /
-                <Text color="white" bold size="xs"
+            <HStack space="xs" alignItems="center">
+                <Zap color="white" size={16} fill="white" />
+                <Text color="white" bold size="xs">
                     {t('demoMode.simulationAlert') || 'Exploring Sample Sanctuary'}
-                </Text
-            </HStack
+                </Text>
+            </HStack>
 
             {onExit && (
-                <Pressable accessibilityRole="button"
+                <Pressable accessibilityRole="button">
                     onPress={async () => {
                         hapticLight();
                         onExit();
@@ -51,13 +51,13 @@ const SandboxBanner: React.FC<SandboxBannerProps> = ({ onExit }) => {
                         paddingHorizontal: Theme.spacing.sm
                     }}
                 
-                    <HStack space="xs" alignItems="center"
+                    <HStack space="xs" alignItems="center">
                         <Text color="white" bold size="xs">{t('common.exit') || 'Exit'}</Text
-                        <X color="white" size={14} /
-                    </HStack
-                </Pressable
+                        ><X color="white" size={14} />
+                    </HStack>
+                </Pressable>
             )}
-        </Box
+        </Box>
     );
 };
 

@@ -14,12 +14,12 @@ export function WarmMirrorCard({ text }: WarmMirrorCardProps) {
     if (!text) return null;
 
     return (
-        <View style={styles.container}
+        <View style={styles.container}>
             <Text style={styles.tag}>{'\uD83D\uDCD6'} YOUR WEEK AS A STORY</Text
-            <Text style={styles.narrative}
+            ><Text style={styles.narrative}>
                 {text}
-            </Text
-        </View
+            </Text>
+        </View>
     );
 }
 

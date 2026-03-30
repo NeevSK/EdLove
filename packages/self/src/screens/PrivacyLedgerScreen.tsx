@@ -69,7 +69,7 @@ export default function PrivacyLedgerScreen() {
 
     return (
         <ScreenWrapper scroll={false}>
-            <GlobalHeader>
+            <GlobalHeader/>
                 title="Privacy Ledger"
                 subtitle="Your data activity journey"
                 showBack

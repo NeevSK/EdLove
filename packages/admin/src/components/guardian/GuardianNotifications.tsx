@@ -41,7 +41,7 @@ export const GuardianNotifications: React.FC<GuardianNotificationsProps> = ({
             }
           ]}
                   {notification.title}
-        </Text        <Text 
+        </Text        ><Text 
           style={[
             styles.notificationMessage,
             { 
@@ -51,7 +51,7 @@ export const GuardianNotifications: React.FC<GuardianNotificationsProps> = ({
             }
           ]}
                   {notification.message}
-        </Text        <Text 
+        </Text        ><Text 
           style={[
             styles.notificationTime,
             { 
@@ -65,7 +65,7 @@ export const GuardianNotifications: React.FC<GuardianNotificationsProps> = ({
 
   return (
     <View style={styles.notificationsList}      {notifications.slice(0, limit).map(renderNotificationItem)}>
-    </View  );
+    </View  >);
 };
 
 const styles = StyleSheet.create({

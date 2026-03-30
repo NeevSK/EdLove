@@ -259,7 +259,7 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
                             paddingHorizontal: Theme.spacing.xl,
                         }}
                     
-                        <Wind>
+                        <Wind/>
                             color={Theme.colors.sacredWhite}
                             size={20}
                             style={{ marginRight: Theme.spacing.sm }}

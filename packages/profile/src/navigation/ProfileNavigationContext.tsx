@@ -24,7 +24,7 @@ export function ProfileNavigationProvider({
     children: React.ReactNode;
 }) {
     return (
-        <ProfileNavigationContext.Provider value={value}            {children}
+        <ProfileNavigationContext.Provider value={value}            {children}>
         </ProfileNavigationContext.Provider    );
 }
 

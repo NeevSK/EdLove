@@ -68,19 +68,19 @@ export function PrincipalNativeWorkspace({
   const renderWorkspaceView = () => {
     if (activeView === 'hierarchy') {
       return (
-        <ScreenWrapper          <HierarchyBuilder schoolId={schoolId} onBack={() => navigatePrincipalView('main')} /        </ScreenWrapper      );
+        <ScreenWrapper          <HierarchyBuilder >schoolId={schoolId} onBack={() => navigatePrincipalView('main')} /        </ScreenWrapper      );
     }
 
     if (activeView === 'invites') {
       return (
-        <ScreenWrapper          <InviteManager schoolId={schoolId} userId={userId} onBack={() => navigatePrincipalView('main')} /        </ScreenWrapper      );
+        <ScreenWrapper          <InviteManager >schoolId={schoolId} userId={userId} onBack={() => navigatePrincipalView('main')} /        </ScreenWrapper      );
     }
 
     return renderAdditionalView?.(ctx) ?? null;
   };
 
   return (
-    <PrincipalWorkspaceContainer
+    <PrincipalWorkspaceContainer>
       activeView={activeView}
       onActiveViewChange={navigatePrincipalView}
       renderView={() => renderWorkspaceView()}

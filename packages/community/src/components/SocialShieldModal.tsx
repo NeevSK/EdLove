@@ -224,13 +224,13 @@ export default function SocialShieldModal({
                                     
                                         <ButtonText {...({ color: text.primary } as any)}>Back</ButtonText
                                     ></Button
-                                    <Button>
+                                    ><Button>
                                         onPress={handleSubmit}
                                         sx={{ flex: 2, backgroundColor: accent.action, borderRadius: Theme.corners.comfortable, height: 50 }}
                                     
                                         <ButtonText {...({ color: text.inverse, bold: true } as any)}>Submit Report</ButtonText
                                     ></Button
-                                </HStack>
+                                ></HStack>
                                 
                                 <Text size="xs" color={text.muted} textAlign="center" sx={{ mt: '$2' }}>
                                     Need to manage your blocks later? Visit Privacy Settings.>

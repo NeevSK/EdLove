@@ -216,7 +216,7 @@ export default function StudentSelfView() {
             /
 
 
-            <WelcomeModal>
+            <WelcomeModal/>
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
             /

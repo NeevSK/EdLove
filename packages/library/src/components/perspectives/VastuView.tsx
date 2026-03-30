@@ -121,7 +121,7 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({
                                         textAnchor="middle"
                                         fontWeight={isSelected ? "bold" : "normal"}
                                                                             {node.label}
-                                    </SvgText                                </G                            );
+                                    </SvgText                                ></G                            >);
                         })}
-                    </G                </Svg            </Animated.View        </GestureDetector    );
+                    </G                ></Svg            ></Animated.View        ></GestureDetector    );
 };

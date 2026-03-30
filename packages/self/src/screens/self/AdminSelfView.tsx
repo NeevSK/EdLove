@@ -64,7 +64,7 @@ export default function AdminSelfView() {
 
     return (
         <ScreenWrapper scroll={false} noTopInset={true}>
-            <BaseSelfView>
+            <BaseSelfView/>
                 perspective="admin"
                 description={t('self.adminDescription', 'Operational clarity from a source of inner stillness.')}
                 domains={[
@@ -94,7 +94,7 @@ export default function AdminSelfView() {
                                 id: 'mood-picker',
                                 label: 'Mood Tracking',
                                 content: (
-                                    <MoodPickerCard>
+                                    <MoodPickerCard/>
                                         isOpen={isMoodPickerOpen}
                                         onToggle={() => setIsMoodPickerOpen(!isMoodPickerOpen)}
                                         onSelect={handleMoodSelect}
@@ -110,7 +110,7 @@ export default function AdminSelfView() {
                                 label: 'Energy Rhythm',
                                 content: (
                                     <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
-                                        <EnergyBarChart>
+                                        <EnergyBarChart/>
                                             bars={forecasts.slice().reverse()}
                                             height={80}
                                         /
@@ -133,7 +133,7 @@ export default function AdminSelfView() {
                                 id: 'resonance',
                                 label: 'Resonance Patterns',
                                 content: user ? (
-                                    <ResonancePatternCard>
+                                    <ResonancePatternCard/>
                                         orientationSeeds={(user as any).orientation_seeds}
                                         moodLogs={moodHistory}
                                         energyForecasts={forecasts}

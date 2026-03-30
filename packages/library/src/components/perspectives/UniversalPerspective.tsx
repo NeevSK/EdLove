@@ -162,13 +162,13 @@ export const UniversalPerspective: React.FC<UniversalPerspectiveProps> = ({
                             onPress={() => setPerspective('vastu')} 
                             label="Mindmap"
                         /
-                        <LensButton >
+                        <LensButton />
                             active={perspective === 'dharma'} 
                             icon={ArrowRightLeft} 
                             onPress={() => setPerspective('dharma')} 
                             label="Flow"
                         /
-                        <LensButton >
+                        <LensButton />
                             active={perspective === 'vatya'} 
                             icon={Target} 
                             onPress={() => setPerspective('vatya')} 

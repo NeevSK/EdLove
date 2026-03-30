@@ -57,7 +57,7 @@ export default function PulseDashboard({ schoolId }: PulseDashboardProps) {
                                 ></Box>
                                 <Text color={colors.text} size="md" bold>Institutional Resonance</Text
                             ></HStack>
-                            <SanctuaryChip>
+                            <SanctuaryChip/>
                                 label={pulse.trend.toUpperCase()}
                                 selected={true}
                                 size="sm"

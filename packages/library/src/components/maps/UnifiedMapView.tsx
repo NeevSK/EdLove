@@ -34,24 +34,24 @@ export const UnifiedMapView = React.forwardRef<any, UnifiedMapViewProps>(({
     const MLCamera = MapLibreGL.Camera as any;
     
     return (
-      <MLMapView 
+      <MLMapView >
         ref={ref}
         style={[styles.map, style as any]} 
         styleURL={styleURL || (MapLibreGL as any).StyleURL?.Default}
         logoEnabled={false}
         attributionEnabled={false}
       
-        <MLCamera
+        <MLCamera>
           centerCoordinate={region ? [region.longitude, region.latitude] : undefined}
           zoomLevel={region ? 12 : undefined}
         /
         {children}
-      </MLMapView
+      </MLMapView>
     );
   }
 
   return (
-    <MapViewRN
+    <MapViewRN>
       ref={ref}
       provider={provider === 'google' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
       style={[styles.map, style]}
@@ -59,7 +59,7 @@ export const UnifiedMapView = React.forwardRef<any, UnifiedMapViewProps>(({
       {...props}
     
       {children}
-    </MapViewRN
+    </MapViewRN>
   );
 });
 

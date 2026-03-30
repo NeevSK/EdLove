@@ -89,7 +89,7 @@ export default function GradeEntryForm({
                         borderRadius: Theme.corners.comfortable,
                     }}
                 
-                    <InputField>
+                    <InputField/>
                         placeholder="0-100"
                         keyboardType="numeric"
                         value={marks}
@@ -151,7 +151,7 @@ export default function GradeEntryForm({
                         minHeight: 100,
                     }}
                 
-                    <TextareaInput>
+                    <TextareaInput/>
                         placeholder={t('grades.feedbackPlaceholder')}
                         value={feedback}
                         onChangeText={setFeedback}

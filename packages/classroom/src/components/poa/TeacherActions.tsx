@@ -21,7 +21,7 @@ export const TeacherCreateClassroomAction: React.FC<ActionProps> = ({ onCreateCl
                 color: 'white'
             }}
                     <Plus size={16} /> Create Sanctuary
-        </Box    </FeatureGuard);
+        </Box    ></FeatureGuard);
 
 export const TeacherScanQRAction: React.FC = () => (
     <FeatureGuard action="manage" subject="Attendance"        <Box >
@@ -37,7 +37,7 @@ export const TeacherScanQRAction: React.FC = () => (
                 borderColor: '$border'
             }}
                     <QrCode size={16} /> Scan Resonance
-        </Box    </FeatureGuard);
+        </Box    ></FeatureGuard);
 
 export const TeacherPrincipalEchoAction: React.FC = () => (
     <FeatureGuard action="read" subject="Announcement"        <Box >
@@ -53,7 +53,7 @@ export const TeacherPrincipalEchoAction: React.FC = () => (
                 borderColor: '$border'
             }}
                     <MessageSquare size={16} /> Principal's Echo
-        </Box    </FeatureGuard);
+        </Box    ></FeatureGuard);
 
 export const TeacherMyEchoesAction: React.FC = () => (
     <FeatureGuard action="manage" subject="Announcement"        <Box >
@@ -69,4 +69,4 @@ export const TeacherMyEchoesAction: React.FC = () => (
                 borderColor: '$border'
             }}
                     <History size={16} /> My Echoes
-        </Box    </FeatureGuard);
+        </Box    ></FeatureGuard);

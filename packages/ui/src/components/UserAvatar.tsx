@@ -53,7 +53,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 
     if (avatarUrl) {
         return (
-            <Image
+            <Image>
                 source={{ uri: avatarUrl }}
                 accessible={true}
                 accessibilityLabel={fullName ? `Avatar of ${fullName}` : 'User avatar'}
@@ -69,7 +69,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     }
 
     return (
-        <View
+        <View>
             accessible={true}
             accessibilityLabel={fullName ? `Avatar of ${fullName}` : 'User avatar'}
             accessibilityRole="image"
@@ -79,10 +79,10 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
                 style as any,
             ]}
         
-            <Text style={[styles.label, { fontSize: size * 0.35 }]}
+            <Text style={[styles.label, { fontSize: size * 0.35 }]}>
                 {initials || finalFallback}
-            </Text
-        </View
+            </Text>
+        </View>
     );
 };
 

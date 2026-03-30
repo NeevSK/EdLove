@@ -17,6 +17,6 @@ interface GlobalProviderProps {
  */
 export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   return (
-    <AssetsProvider      <AuthProvider        <AuthorityLifecycleProvider          {children}
+    <AssetsProvider      <AuthProvider        <AuthorityLifecycleProvider          >{children}>
         </AuthorityLifecycleProvider      </AuthProvider    </AssetsProvider  );
 };

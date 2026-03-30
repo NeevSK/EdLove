@@ -26,7 +26,7 @@ export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
   if (Platform.OS === 'web') {
     // Un-shimmed Web implementation using CSS gradients and animations
     return (
-      <SanctuaryCanvas width={size} height={size}        <View 
+      <SanctuaryCanvas width={size} height={size}        <View >
           style={[
             styles.webGlow,
             {
@@ -37,7 +37,7 @@ export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
             }
           ]}
         /        {/* Simple CSS simulation of "subsurface scattering" */}
-        <View 
+        <View >
           style={[
             styles.webCore,
             {
@@ -54,7 +54,7 @@ export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
 
   // Native implementation would ideally use Skia
   return (
-    <SanctuaryCanvas width={size} height={size}      <View 
+    <SanctuaryCanvas width={size} height={size}      <View >
         style={[
           styles.nativeBase,
           {

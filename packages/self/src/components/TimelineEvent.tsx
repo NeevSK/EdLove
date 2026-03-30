@@ -25,23 +25,23 @@ export const TimelineEvent: React.FC<TimelineEventProps> = ({
     const color = type === 'mood' ? '#FF6B6B' : type === 'journal' ? '#4D96FF' : '#F6BF8C';
 
     return (
-        <View style={styles.container}
+        <View style={styles.container}>
             {/* The Connecting Path */}
-            <View style={styles.pathContainer}
-                <View style={[styles.node, { backgroundColor: color, opacity: intensity }]} /
+            <View style={styles.pathContainer}>
+                <View style={[styles.node, { backgroundColor: color, opacity: intensity }]} />
                 {!isLast && <View style={[styles.line, { backgroundColor: color, opacity: 0.2 }]} />}
-            </View
+            </View>
 
             {/* The Event Card */}
-            <View style={styles.content}
-                <View style={styles.header}
-                    <Icon size={14} color={color} /
+            <View style={styles.content}>
+                <View style={styles.header}>
+                    <Icon size={14} color={color} />
                     <Text style={styles.time}>{new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text
-                </View
+                ></View>
                 <Text style={styles.title}>{title}</Text
                 {content && <Text style={styles.body} numberOfLines={2}>{content}</Text>}
-            </View
-        </View
+            </View>
+        </View>
     );
 };
 

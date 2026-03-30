@@ -13,7 +13,7 @@ interface GuardianChildrenListProps {
 export const GuardianChildrenList: React.FC<GuardianChildrenListProps> = ({ students, onStudentPress, isDesktop }) => {
   const theme = useTheme();
   return (
-    <View style={styles.section}      <Text 
+    <View style={styles.section}      <Text >
         style={[
           styles.sectionHeader,
           { 

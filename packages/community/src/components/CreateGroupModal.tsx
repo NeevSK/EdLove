@@ -74,7 +74,7 @@ export default function CreateGroupModal({
           </VStack>
 
           <Box sx={{ padding: 20, backgroundColor: 'white', borderRadius: 12 }}>
-            <QRCodeGenerator>
+            <QRCodeGenerator/>
               value={groupQRValue}
               size={180}
               color="#000"
@@ -87,11 +87,11 @@ export default function CreateGroupModal({
               navigation.navigate("GroupDetails", { groupId: createdGroupId });
             }}
           
-            <Text color="white" bold>Enter Group Space</Text          ></SanctuaryButton        </VStack      </SanctuaryModal    );
+            <Text color="white" bold>Enter Group Space</Text          ></SanctuaryButton        ></VStack      ></SanctuaryModal    >);
   }
 
   return (
-    <EntityModal>
+    <EntityModal/>
       isOpen={isOpen}
       onClose={onClose}
       definition={groupDefinition}

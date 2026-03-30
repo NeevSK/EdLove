@@ -24,14 +24,14 @@ export const TemporalShield: React.FC<TemporalShieldProps> = ({ children, style,
     if (!isPast) return <View style={style}>{children}</View>;
 
     return (
-        <View style={[styles.container, style]}
+        <View style={[styles.container, style]}>
             {children}
             
             {/* The Sanctuary Glass Overlay */}
-            <View style={[styles.overlay, { opacity: 0.1 * intensity }]} /
+            <View style={[styles.overlay, { opacity: 0.1 * intensity }]} />
             
             {/* Contextual Signal */}
-            <View style={styles.badge}                <Shield size={12} color={Theme.colors.resonance.past} /                <Text style={styles.badgeText}                    {label || 'PAST VIEW'}
+            <View style={styles.badge}                <Shield size={12} color={Theme.colors.resonance.past} /                ><Text style={styles.badgeText}                    {label || 'PAST VIEW'}>
                 </Text            </View        </View    );
 };
 

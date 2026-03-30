@@ -47,18 +47,18 @@ export default function ScreenWrapper({
     const resolvedBackground = backgroundColor || scene.canvas.bg;
 
     return (
-        <KeyboardAvoidingView
+        <KeyboardAvoidingView>
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             style={{ flex: 1 }}
         
-            <StatusBar
+            <StatusBar>
                 barStyle={isDark ? 'light-content' : 'dark-content'}
                 backgroundColor={resolvedBackground}
             /
 
-            <View style={[styles.container, safeAreaStyle, { backgroundColor: resolvedBackground }]}
+            <View style={[styles.container, safeAreaStyle, { backgroundColor: resolvedBackground }]}>
                 {(scroll ?? scrollable) ? (
-                    <ScrollView
+                    <ScrollView>
                         style={{ flex: 1 }}
                         contentContainerStyle={[
                             styles.contentContainer,
@@ -69,14 +69,14 @@ export default function ScreenWrapper({
                         refreshControl={refreshControl}
                     
                         {children}
-                    </ScrollView
+                    </ScrollView>
                 ) : (
-                    <View style={[styles.contentContainer, { flex: 1 }, style]}
+                    <View style={[styles.contentContainer, { flex: 1 }, style]}>
                         {children}
-                    </View
+                    </View>
                 )}
-            </View
-        </KeyboardAvoidingView
+            </View>
+        </KeyboardAvoidingView>
     );
 }
 

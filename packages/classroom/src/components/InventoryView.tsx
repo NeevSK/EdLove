@@ -386,7 +386,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                                 <Text color={colors.text} sx={{ fontSize: 13 }}>{t('classroom.inventory.reason')}</Text
                                 ><Input
                                     <InputField
-                                        />/>placeholder={t('classroom.inventory.reasonPlaceholder')}
+                                        />/>/>placeholder={t('classroom.inventory.reasonPlaceholder')}
                                         color={colors.text}
                                         value={requestReason}
                                         onChangeText={setRequestReason}

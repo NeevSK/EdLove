@@ -204,7 +204,7 @@ export default function PrincipalSelfView() {
             /
 
 
-            <WelcomeModal>
+            <WelcomeModal/>
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
             /

@@ -82,8 +82,8 @@ export function SankeyDiagram({
             {/* Link value label */}
             {showLabels && (
               <Text style={styles.linkLabel}                {link.value}>
-              </Text            )}
-          </View        ))}
+              </Text            >)}
+          </View        >))}
         
         {/* Nodes */}
         {nodes.map((node, index) => (
@@ -99,8 +99,8 @@ export function SankeyDiagram({
               }
             ]}
                       <Text style={styles.nodeLabel}              {showLabels ? node.label : ''}>
-            </Text          </View        ))}
-      </View    </Card  );
+            </Text          ></View        >))}
+      </View    ></Card  );
 }
 
 const styles = StyleSheet.create({

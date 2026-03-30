@@ -343,7 +343,7 @@ function DailyRhythmContent() {
                                         <SelectItem >label={t('self.subject')} value="subject" /
                                         ><SelectItem label={t('self.relief')} value="relief" /
                                         ><SelectItem label={t('self.interval')} value="interval" /
-                                    />/></SelectContent
+                                    />/>/></SelectContent
                                 ></SelectPortal>
                             </Select>
 

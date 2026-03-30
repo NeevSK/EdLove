@@ -27,7 +27,7 @@ export const SanctuaryChip: React.FC<SanctuaryChipProps> = ({
     const isSmall = size === 'sm';
 
     return (
-        <TouchableOpacity
+        <TouchableOpacity>
             onPress={onPress}
             style={[
                 styles.chip,
@@ -41,7 +41,7 @@ export const SanctuaryChip: React.FC<SanctuaryChipProps> = ({
             accessibilityState={{ selected }}
             activeOpacity={0.75}
         
-            <Text
+            <Text>
                 style={[
                     styles.label,
                     {
@@ -53,8 +53,8 @@ export const SanctuaryChip: React.FC<SanctuaryChipProps> = ({
                 numberOfLines={1}
             
                 {variant === 'tag' ? `#${label}` : label}
-            </Text
-        </TouchableOpacity
+            </Text>
+        </TouchableOpacity>
     );
 };
 

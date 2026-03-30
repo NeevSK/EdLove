@@ -26,7 +26,7 @@ export const GlassCard = ({ children, style, onLayout, ...props }: GlassCardProp
     const LivingCardAny = LivingCard as any;
 
     return (
-        <View
+        <View>
             style={[
                 {
                     borderRadius: Theme.corners.generous,
@@ -40,18 +40,18 @@ export const GlassCard = ({ children, style, onLayout, ...props }: GlassCardProp
             {...props}
         
             {dimensions.width > 0 && (
-                <View style={StyleSheet.absoluteFill}
-                    <LivingCardAny
+                <View style={StyleSheet.absoluteFill}>
+                    <LivingCardAny>
                         width={dimensions.width}
                         height={dimensions.height}
                         {...({ phase } as any)}
                         cornerRadius={Theme.corners.generous}
                     
                         {null}
-                    </LivingCardAny
-                </View
+                    </LivingCardAny>
+                </View>
             )}
             {children}
-        </View
+        </View>
     );
 };

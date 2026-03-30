@@ -59,7 +59,7 @@ export default function NetworkStatusBanner() {
                         </
                     ) : (
                         <
-                            <Spinner color={Theme.colors.white} size="small" />
+                            <Spinner >color={Theme.colors.white} size="small" />
                             <Text color={Theme.colors.white} size="xs" bold>
                                 Syncing {queue.length} pending actions...
                             </Text>

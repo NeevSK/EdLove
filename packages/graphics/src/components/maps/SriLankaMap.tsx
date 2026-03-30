@@ -30,7 +30,7 @@ export function SriLankaMap({
 
     return (
         <View style={[styles.container, { width, height }]}            <Svg viewBox="0 0 100 200" width="100%" height="100%"                <G                    {SRI_LANKAN_DISTRICTS.map((district) => (
-                        <Path
+                        <Path>
                             key={district.id}
                             d={DISTRICT_PATHS[district.id] || ""}
                             fill={

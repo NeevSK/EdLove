@@ -50,7 +50,7 @@ export const WebScreenHeader: React.FC<WebScreenHeaderProps> = ({
     }
 
     return (
-        <header 
+        <header >
             className="greeting" 
             role="banner"
             style={{ 
@@ -60,18 +60,18 @@ export const WebScreenHeader: React.FC<WebScreenHeaderProps> = ({
             flexWrap: 'wrap', 
             gap: '16px' 
         }}
-            <div aria-live="polite" aria-atomic="true"
-                <div className="greeting-time" aria-label={`${displayTimeText} ${emoji}`}
+            <div aria-live="polite" aria-atomic="true">
+                <div className="greeting-time" aria-label={`${displayTimeText} ${emoji}`}>
                     {displayTimeText} {emoji}
-                </div
+                </div>
                 <h1 className="greeting-main">{title}</h1
                 {note && <p className="greeting-note">{note}</p>}
-            </div
+            </div>
             {actions && (
-                <nav aria-label="Header Actions" style={{ display: 'flex', gap: '10px', paddingBottom: '4px' }}
+                <nav aria-label="Header Actions" style={{ display: 'flex', gap: '10px', paddingBottom: '4px' }}>
                     {actions}
-                </nav
+                </nav>
             )}
-        </header
+        </header>
     );
 };

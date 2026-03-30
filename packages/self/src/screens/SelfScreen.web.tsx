@@ -40,7 +40,7 @@ export default function SelfScreenWeb() {
   const { title, note } = getHeaderDetails();
 
   return (
-    <div className="sanctuary-screen"      <div className="sanctuary-container"        <WebScreenHeader
+    <div className="sanctuary-screen"      <div className="sanctuary-container"        <WebScreenHeader>
           title={title}
           note={note}
           showPersonalizedGreeting

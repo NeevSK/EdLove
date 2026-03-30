@@ -101,7 +101,7 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
                             <Text sx={{ fontSize: Theme.typography.fontSize.xs }} color={colors.textSecondary}>{item.coverage}%</Text
                         ></HStack>
                         <Progress value={item.coverage} sx={{ height: 8, width: '100%' }}>
-                            <ProgressFilledTrack>
+                            <ProgressFilledTrack/>
                                 sx={{
                                     backgroundColor: item.is_reform ? Theme.colors.amberGlow : colors.action
                                 }}

@@ -112,24 +112,24 @@ const ErrorMessage: FC<ErrorMessageProps> = ({
     // ============================================================================
 
     return (
-        <View style={[styles.container, { backgroundColor }]}
-            <HStack space="md" style={styles.hstack}
+        <View style={[styles.container, { backgroundColor }]}>
+            <HStack space="md" style={styles.hstack}>
                 {/* Icon */}
-                <Icon color={textColor} size={20} /
+                <Icon color={textColor} size={20} />
 
                 {/* Message Text */}
-                <Text style={[styles.message, { color: textColor }]}
+                <Text style={[styles.message, { color: textColor }]}>
                     {message}
-                </Text
+                </Text>
 
                 {/* Dismiss Button (X) */}
                 {onDismiss && (
-                    <Pressable accessibilityRole="button" onPress={onDismiss} style={styles.dismissButton}
-                        <X color={textColor} size={20} /
-                    </Pressable
+                    <Pressable accessibilityRole="button" onPress={onDismiss} style={styles.dismissButton}>
+                        <X color={textColor} size={20} />
+                    </Pressable>
                 )}
-            </HStack
-        </View
+            </HStack>
+        </View>
     );
 };
 

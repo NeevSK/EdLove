@@ -59,7 +59,7 @@ export const JournalSection: React.FC<{ entries: any[], loading?: boolean }> = (
                 <View key={entry.id} style={[styles.itemCard, { borderLeftColor: '#8B5CF6' }]}>
                     <Text style={styles.contentText} numberOfLines={2}>{entry.content || entry.title}</Text
                 ></View
-            ))
+            >))
         ) : (
             <Text style={styles.placeholder}>No recent reflections captured.</Text
         >)}
@@ -101,7 +101,7 @@ export const TeacherPulse: React.FC<{ banyan?: any, loading?: boolean }> = ({ ba
                     <Text >style={styles.contentText}>Banyan Stage: {banyan?.banyan_stage?.replace(/_/g, ' ') || 'Seedling'}</Text
                     ><Text style={[styles.contentText, { marginTop: 4 }]}>Ecosystem Ripple: {banyan?.peer_mentored_count || 0} mentorship points</Text
                 ></View
-            )}
+            >)}
         </View>
     );
 };
@@ -114,7 +114,7 @@ export const BanyanSection: React.FC = () => (
         ></View
         ><Text style={styles.contentText}>Visualizing your classroom's collective growth roots.</Text
     ></View
-);
+>);
 
 // --- PRINCIPAL SECTIONS ---
 
@@ -135,7 +135,7 @@ export const PrincipalPulse: React.FC<{ energy?: any, decisions?: any[], loading
                     <Text >style={styles.contentText}>Energy Equilibrium: {energy?.energy_level || 'Balanced'}/5</Text
                     ><Text style={[styles.contentText, { marginTop: 4 }]}>Strategic Acts: {decisions?.length || 0} active loops</Text
                 ></View
-            )}
+            >)}
         </View>
     );
 };
@@ -153,7 +153,7 @@ export const DecisionSection: React.FC<{ decisions: any[], loading?: boolean }> 
                 <View key={d.id} style={[styles.itemCard, { borderLeftColor: '#F59E0B' }]}>
                     <Text style={styles.contentText} numberOfLines={2}>{d.decision_text}</Text
                 ></View
-            ))
+            >))
         ) : (
             <Text style={styles.placeholder}>No major steering decisions recorded.</Text
         >)}
@@ -196,7 +196,7 @@ export const PhilosophySection: React.FC<{ wisdom: any[], loading?: boolean }> =
                     <View key={w.id} style={[styles.itemCard, { borderLeftColor: '#FBBF24' }]}>
                         <Text style={styles.contentText}>{w.insight}</Text
                     ></View
-                ))
+                >))
             ) : (
                 <Text style={styles.placeholder}>No wisdom seeds planted yet.</Text
             >)}
@@ -242,7 +242,7 @@ export const NatureSection: React.FC<{ paths: any, loading?: boolean }> = ({ pat
                 <Text >style={styles.contentText}>Stage: {paths?.banyan_stage?.replace(/_/g, ' ') || 'Growing'}</Text
                 ><Text style={[styles.contentText, { marginTop: 4 }]}>Mentorship Hub: {paths?.peer_mentored_count || 0} active ripples</Text
             ></View
-        )}
+        >)}
     </View>
 );
 
@@ -254,7 +254,7 @@ export const IdentitySection: React.FC = () => (
         ></View
         ><Text style={styles.placeholder}>Reflecting your inner qualities...</Text
     ></View
-);
+>);
 
 export const TeacherFeedbackSection: React.FC = () => (
     <View style={styles.sectionContainer}>
@@ -264,4 +264,4 @@ export const TeacherFeedbackSection: React.FC = () => (
         ></View
         ><Text style={styles.placeholder}>Guidance from your mentors.</Text
     ></View
-);
+>);

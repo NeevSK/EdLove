@@ -93,7 +93,7 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
 
   if (!userId) {
     return (
-      <PositiveInvitation>
+      <PositiveInvitation/>
         type="guest"
         onAction={() => navigation.navigate('Auth' as never)}
       /
@@ -104,7 +104,7 @@ export default function EnergyForecast({ userId, disabled }: EnergyForecastProps
     <VStack space="lg" sx={{ flex: 1 }}>
       <VStack space="xs">
         <HStack space="sm" alignItems="center">
-          <Battery>
+          <Battery/>
             color={(selectedLevel !== null && selectedLevel >= 1 && selectedLevel <= 5) ? energyLevels[selectedLevel - 1]?.color : colors.action}
             size={24}
           /

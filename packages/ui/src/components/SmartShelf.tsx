@@ -81,30 +81,30 @@ export function SmartShelf({
     });
 
     return (
-        <View style={styles.container}
+        <View style={styles.container}>
             {/* Header */}
-            <View style={styles.header}
+            <View style={styles.header}>
                 <Text style={styles.title}>{title}</Text
-                {onSeeAll && (
-                    <Pressable accessibilityRole="button" onPress={onSeeAll} style={styles.seeAllRow} hitSlop={8}
+                >{onSeeAll && (
+                    <Pressable accessibilityRole="button" onPress={onSeeAll} style={styles.seeAllRow} hitSlop={8}>
                         <Text style={styles.seeAllText}>See All</Text
-                        <ChevronRight
+                        ><ChevronRight>
                             color={Theme.colors.sanctuarySaffron}
                             size={16}
                         /
-                    </Pressable
+                    </Pressable>
                 )}
-            </View
+            </View>
 
             {/* Horizontal Scroll */}
-            <ScrollView
+            <ScrollView>
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
             
                 {children}
-            </ScrollView
-        </View
+            </ScrollView>
+        </View>
     );
 }
 

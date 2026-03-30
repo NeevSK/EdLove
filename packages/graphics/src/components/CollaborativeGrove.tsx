@@ -42,9 +42,9 @@ export const CollaborativeGrove: React.FC<{ tenantIds: string[] }> = ({ tenantId
                     opacity: 0.6 + (m.growth || 0) * 0.4
                   }
                 ]} 
-              /              <View style={styles.trunk} /            ></View          );
+              /              <View style={styles.trunk} /            ></View          >);
         })}
-      </View      <Text style={styles.label}>Collaborative Knowledge Grove</Text    </SanctuaryCanvas  );
+      </View      ><Text style={styles.label}>Collaborative Knowledge Grove</Text    ></SanctuaryCanvas  );
 };
 
 const styles = StyleSheet.create({

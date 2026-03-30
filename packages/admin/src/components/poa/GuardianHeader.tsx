@@ -10,7 +10,7 @@ interface GuardianHeaderProps {
 export const GuardianHeader: React.FC<GuardianHeaderProps> = ({ studentCount, isDesktop }) => {
   const theme = useTheme();
   return (
-    <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}      <Text 
+    <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}      <Text >
         style={[
           styles.title,
           { 

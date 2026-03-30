@@ -31,7 +31,7 @@ export default function EntityModal({
 
         if (specializedComponent) {
             return (
-                <EntityView >
+                <EntityView />
                     definition={definition} 
                     instance={instance} 
                     mode={mode} 
@@ -56,7 +56,7 @@ export default function EntityModal({
         }
 
         return (
-            <EntityView >
+            <EntityView />
                 definition={definition} 
                 instance={instance} 
                 mode={mode} 

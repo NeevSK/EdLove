@@ -75,7 +75,7 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
         
             <VStack spacing={24}>
                 {/* Header Stats using Standard Sanctuary Component */}>
-                <SanctuaryStatsCard >
+                <SanctuaryStatsCard />
                     title="Knowledge Resonance"
                     showTrophy={false}
                     items={[>
@@ -109,7 +109,7 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
                         ><Text {...({ color: colors.text, bold: true, size: "md" } as any)}>Node Distribution</Text
                     ></HStack>
                     
-                    <BarChart>
+                    <BarChart/>
                         data={barData}
                         barWidth={40}
                         noOfSections={3}
@@ -138,7 +138,7 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
                     ></HStack>
 
                     <View style={{ alignItems: 'center' }}>
-                        <PieChart>
+                        <PieChart/>
                             data={pieData}
                             donut
                             radius={80}
